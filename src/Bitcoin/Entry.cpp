@@ -13,8 +13,7 @@
 
 namespace TW::Bitcoin {
 
-bool Entry::validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
-                            const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
@@ -23,20 +22,29 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, byte p2
     case TWCoinTypeQtum:
     case TWCoinTypeViacoin:
     case TWCoinTypeBitcoinGold:
-        return SegwitAddress::isValid(address, hrp) || Address::isValid(address, {{p2pkh}, {p2sh}});
-
+        if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+            return Address::isValid(address, {{prefix->p2pkh}, {prefix->p2sh}});
+        } else if (auto* hrp = std::get_if<HRPPrefix>(&addressPrefix); hrp) {
+            return SegwitAddress::isValid(address, *hrp);
+        }
+        return false;
     case TWCoinTypeBitcoinCash:
-        return BitcoinCashAddress::isValid(address) || Address::isValid(address, {{p2pkh}, {p2sh}});
-
+        if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+            return Address::isValid(address, {{prefix->p2pkh}, {prefix->p2sh}});
+        }
+        return BitcoinCashAddress::isValid(address);
     case TWCoinTypeECash:
-        return ECashAddress::isValid(address) || Address::isValid(address, {{p2pkh}, {p2sh}});
-
+        if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+            return Address::isValid(address, {{prefix->p2pkh}, {prefix->p2sh}});
+        }
+        return ECashAddress::isValid(address);
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:
     default:
-        return Address::isValid(address, {{p2pkh}, {p2sh}});
+        auto prefix = std::get<UTXOPrefix>(addressPrefix);
+        return Address::isValid(address, {{prefix.p2pkh}, {prefix.p2sh}});
     }
 }
 

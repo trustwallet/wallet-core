@@ -21,6 +21,10 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
     return TW::validateAddress(coin, address);
 }
 
+bool TWAnyAddressIsValidSS58([[maybe_unused]] TWString* string, [[maybe_unused]] enum TWCoinType coin, [[maybe_unused]] uint32_t networkPrefix) {
+    return false;
+}
+
 bool TWAnyAddressIsValidBech32(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp) {
     const auto& address = *reinterpret_cast<const std::string*>(string);
     const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
@@ -46,6 +50,11 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateBech32(TWString* _Nonnull strin
         return nullptr;
     }
     return new TWAnyAddress{impl};
+}
+
+
+struct TWAnyAddress* TWAnyAddressCreateSS58([[maybe_unused]] TWString* string, [[maybe_unused]] enum TWCoinType coin, [[maybe_unused]] uint32_t prefixNetwork) {
+    return nullptr;
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(

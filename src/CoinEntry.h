@@ -17,18 +17,29 @@
 
 #include <string>
 #include <vector>
+#include <variant>
 #include <utility>
 
 namespace TW {
 
 typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 
+struct UTXOPrefix {
+    TW::byte p2pkh;
+    TW::byte p2sh;
+};
+
+using HRPPrefix = const char *;
+using SS58Prefix = uint32_t;
+
+using PrefixVariant = std::variant<UTXOPrefix, HRPPrefix, SS58Prefix, std::monostate>;
+
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.
 class CoinEntry {
 public:
     virtual ~CoinEntry() noexcept = default;
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
     virtual std::string normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const { return address; }
     // Address derivation, default derivation

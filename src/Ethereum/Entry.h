@@ -14,7 +14,7 @@ namespace TW::Ethereum {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry : public CoinEntry {
 public:
-     bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const final;
+    bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const final;
      std::string normalizeAddress(TWCoinType coin, const std::string& address) const final;
      std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const final;
      Data addressToData(TWCoinType coin, const std::string& address) const final;

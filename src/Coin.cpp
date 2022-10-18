@@ -180,7 +180,20 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string, const char*
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
+    bool isValid = false;
+    // First check HRP.
+    if (hrp != nullptr && !std::string(hrp).empty()) {
+        isValid = dispatcher->validateAddress(coin, string, HRPPrefix(hrp));
+    }
+    // Then check UTXO
+    if ((p2pkh != 0 || p2sh != 0) && !isValid) {
+        return isValid || dispatcher->validateAddress(coin, string, UTXOPrefix{.p2pkh = p2pkh, .p2sh = p2sh});
+    }
+    // Then check normal
+    if (!isValid) {
+        isValid = dispatcher->validateAddress(coin, string, std::monostate());
+    }
+    return isValid;
 }
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
