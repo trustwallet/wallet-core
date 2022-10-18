@@ -41,6 +41,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build
       run: |
+        echo $nproc
         make -Cbuild -j12 TrustWalletCore
       env:
         CC: /usr/bin/clang
