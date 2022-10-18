@@ -1,6 +1,8 @@
 pub mod walletcore;
+pub mod proto;
 
 use crate::walletcore::*;
+use crate::proto::Ethereum::transaction;
 
 fn test_address(coin: i32, coin_name: &str, wallet: &HDWallet) {
     let address = hd_wallet_get_address_for_coin(wallet, coin);
@@ -24,4 +26,8 @@ fn main() {
     test_address(0, "bitcoin", &wallet);
 
     test_address(60, "ethereum", &wallet);
+
+    // Ethereum transaction
+    let _transfer = transaction::Transfer::new();
+    // TODO
 }

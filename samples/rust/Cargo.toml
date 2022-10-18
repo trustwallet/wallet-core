@@ -6,6 +6,7 @@ build = "src/build.rs"
 
 [dependencies]
 libc = "0.2"
+protobuf = "3.2.0"
 
 [build-dependencies]
 cc = { version = "1.0", features = ["parallel"] }
