@@ -6,7 +6,7 @@ static LIBS: [&str; 3] = ["TrustWalletCore", "TrezorCrypto", "protobuf"];
 
 fn main() {
     let proto_src: &str = "../../src/proto";
-    let out_dir: &str = "src/proto";
+    let out_dir: &str = "src/wc_proto";
     protobuf_codegen::Codegen::new()
         // Use `protoc` parser, optional.
         //.protoc()

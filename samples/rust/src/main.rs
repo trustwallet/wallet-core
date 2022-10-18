@@ -1,8 +1,8 @@
 pub mod walletcore;
-pub mod proto;
+pub mod wc_proto;
 
 use crate::walletcore::*;
-use crate::proto::Ethereum::transaction;
+use crate::wc_proto::Ethereum::transaction;
 
 fn test_address(coin: i32, coin_name: &str, wallet: &HDWallet) {
     let address = hd_wallet_get_address_for_coin(wallet, coin);
