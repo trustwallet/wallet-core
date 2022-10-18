@@ -6,6 +6,8 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include "PublicKey.h"
+#include "Bech32Address.h"
 #include "HexCoding.h"
 #include "Hash.h"
 
