@@ -10,7 +10,7 @@
 #include "TWCurve.h"
 #include "TWData.h"
 #include "TWPublicKey.h"
-#include "TWCoinTypeEnum.h"
+#include "TWCoinType.h"
 
 TW_EXTERN_C_BEGIN
 

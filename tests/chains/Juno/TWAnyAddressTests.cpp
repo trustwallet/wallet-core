@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWAnyAddress.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include "HexCoding.h"
 #include "Hash.h"
 
