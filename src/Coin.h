@@ -33,10 +33,11 @@ std::vector<TWCoinType> getCoinTypes();
 bool validateAddress(TWCoinType coin, const std::string& address);
 
 /// Validates an address for a particular coin.
-bool validateAddress(TWCoinType coin, const std::string& address, const char* hrp);
+bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix);
 
 /// Validates and normalizes an address for a particular coin.
-std::string normalizeAddress(TWCoinType coin, const std::string& address, const std::string& hrp = "");
+std::string normalizeAddress(TWCoinType coin, const std::string& address);
+std::string normalizeAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix);
 
 /// Returns the blockchain for a coin type.
 TWBlockchain blockchain(TWCoinType coin);
