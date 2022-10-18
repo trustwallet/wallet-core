@@ -11,6 +11,7 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWCoinType.h>
 
 #include <exception>
 
@@ -127,4 +128,8 @@ TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData 
     } else {
         return TWDataCreateWithBytes(result.data(), result.size());
     }
+}
+
+struct TWPublicKey* TWPrivateKeyGetPublicKey(struct TWPrivateKey* pk, enum TWCoinType coinType) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWCoinTypePublicKeyType(coinType)) };
 }
