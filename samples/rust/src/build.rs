@@ -1,6 +1,6 @@
 static WALLET_CORE_PROJECT_DIR: &str = "../../build";
     // libs to link with
-    static LIBS: [&str; 3] = ["protobuf", "TrezorCrypto", "TrustWalletCore"];
+    static LIBS: [&str; 3] = ["TrustWalletCore", "TrezorCrypto", "protobuf"];
 
 fn main() {
     println!("cargo:rustc-link-search=native={}", WALLET_CORE_PROJECT_DIR);
