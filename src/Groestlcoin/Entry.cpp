@@ -13,10 +13,10 @@
 namespace TW::Groestlcoin {
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
-    if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+    if (auto* prefix = std::get_if<Base58Prefix>(&addressPrefix); prefix) {
         return Address::isValid(address, {prefix->p2pkh, prefix->p2sh});
     }
-    return TW::Bitcoin::SegwitAddress::isValid(address, std::get<HRPPrefix>(addressPrefix));
+    return TW::Bitcoin::SegwitAddress::isValid(address, std::get<Bech32Prefix>(addressPrefix));
 }
 
 std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, const char* hrp) const {

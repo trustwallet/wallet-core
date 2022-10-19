@@ -17,7 +17,7 @@ namespace TW::Cosmos {
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
-    if (auto* hrp = std::get_if<HRPPrefix>(&addressPrefix); hrp) {
+    if (auto* hrp = std::get_if<Bech32Prefix>(&addressPrefix); hrp) {
         if (hrpForString(*hrp) != TWHRPUnknown) {
             return Address::isValid(coin, address);
         }

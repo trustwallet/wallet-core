@@ -24,15 +24,15 @@ namespace TW {
 
 typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 
-struct UTXOPrefix {
+struct Base58Prefix {
     TW::byte p2pkh;
     TW::byte p2sh;
 };
 
-using HRPPrefix = const char *;
+using Bech32Prefix = const char *;
 using SS58Prefix = uint32_t;
 
-using PrefixVariant = std::variant<UTXOPrefix, HRPPrefix, SS58Prefix, std::monostate>;
+using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, std::monostate>;
 
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.

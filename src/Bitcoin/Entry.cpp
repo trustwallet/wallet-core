@@ -22,19 +22,19 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
     case TWCoinTypeQtum:
     case TWCoinTypeViacoin:
     case TWCoinTypeBitcoinGold:
-        if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+        if (auto* prefix = std::get_if<Base58Prefix>(&addressPrefix); prefix) {
             return Address::isValid(address, {{prefix->p2pkh}, {prefix->p2sh}});
-        } else if (auto* hrp = std::get_if<HRPPrefix>(&addressPrefix); hrp) {
+        } else if (auto* hrp = std::get_if<Bech32Prefix>(&addressPrefix); hrp) {
             return SegwitAddress::isValid(address, *hrp);
         }
         return false;
     case TWCoinTypeBitcoinCash:
-        if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+        if (auto* prefix = std::get_if<Base58Prefix>(&addressPrefix); prefix) {
             return Address::isValid(address, {{prefix->p2pkh}, {prefix->p2sh}});
         }
         return BitcoinCashAddress::isValid(address);
     case TWCoinTypeECash:
-        if (auto* prefix = std::get_if<UTXOPrefix>(&addressPrefix); prefix) {
+        if (auto* prefix = std::get_if<Base58Prefix>(&addressPrefix); prefix) {
             return Address::isValid(address, {{prefix->p2pkh}, {prefix->p2sh}});
         }
         return ECashAddress::isValid(address);
@@ -43,7 +43,7 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:
     default:
-        auto prefix = std::get<UTXOPrefix>(addressPrefix);
+        auto prefix = std::get<Base58Prefix>(addressPrefix);
         return Address::isValid(address, {{prefix.p2pkh}, {prefix.p2sh}});
     }
 }
