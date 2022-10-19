@@ -1,3 +1,11 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+// Interfacing to wallet-core: interface methods, type utilites, wrappers
+
 use libc::c_char;
 use std::ffi::CString;
 use std::ffi::CStr;
@@ -24,7 +32,6 @@ pub trait FromString {
 }
 
 impl FromString for TWString {
-    //fn from_str(s: &str) -> Result<Self, Self::Err> {
     fn from_str(s: &str) -> Self {
         let cstring = CString::new(s).unwrap();
         let ptr = unsafe { TWStringCreateWithUTF8Bytes(cstring.as_ptr()) };
@@ -66,4 +73,3 @@ pub fn mnemonic_is_valid(mnemonic: &TWString) -> bool {
         TWMnemonicIsValid(mnemonic.wrapped)
     }
 }
-

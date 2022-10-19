@@ -1,15 +1,20 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 use std::path::Path;
 
 static WALLET_CORE_PROJECT_DIR: &str = "../../build";
-// libs to link with
+// libs to link with, in reverse dependency order
 static LIBS: [&str; 3] = ["TrustWalletCore", "TrezorCrypto", "protobuf"];
 
 fn main() {
     let proto_src: &str = "../../src/proto";
     let out_dir: &str = "src/wc_proto";
     protobuf_codegen::Codegen::new()
-        // Use `protoc` parser, optional.
-        //.protoc()
+        //.protoc()  // use `protoc` parser, optional.
         .protoc_path(Path::new("../../build/local/bin/protoc"))
         .out_dir(out_dir)
         .input(proto_src.to_string() + "/Common.proto")
