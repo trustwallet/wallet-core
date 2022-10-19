@@ -16,14 +16,18 @@ fn test_address(coin: i32, coin_name: &str, wallet: &HDWallet) {
     println!("==>   address: {}", address.to_string());
 
     let priv_key = hd_wallet_get_key_for_coin(wallet, coin);
-    let pk = private_key_data(&priv_key);
-    println!("==>   privkey: {}", pk.to_hex())
+    let priv_key_data = private_key_data(&priv_key);
+    println!("==>   privkey: {}", priv_key_data.to_hex());
+
+    let pub_key = private_key_get_public_key_secp256k1(&priv_key, true);
+    let pub_key_data = public_key_data(&pub_key);
+    println!("==>   pubkey:  {}", pub_key_data.to_hex());
 }
 
 fn main() {
 	println!("==> Calling wallet-core from Rust");
 
-    let mnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+    let mnemonic = "confirm bleak useless tail chalk destroy horn step bulb genuine attract split";
     println!("==> mnemonic is valid: {}", mnemonic_is_valid(&TWString::from_str(mnemonic)));
 
     let mnemonic_tw = TWString::from_str(mnemonic);

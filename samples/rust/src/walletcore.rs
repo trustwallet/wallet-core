@@ -17,9 +17,12 @@ extern "C" {
     fn TWStringUTF8Bytes(twstring: *const u8) -> *const c_char;
 
     fn TWDataSize(data: *const u8) -> usize;
+    fn TWDataBytes(data: *const u8) -> *const u8;
 
     fn TWPrivateKeyData(private_key: *const u8) -> *const u8;
     fn TWPrivateKeyGetPublicKeySecp256k1(private_key: *const u8, compressed: bool) -> *const u8;
+
+    fn TWPublicKeyData(private_key: *const u8) -> *const u8;
 
     fn TWHDWalletCreateWithMnemonic(mnemonic: *const u8, passphrase: *const u8) -> *const u8;
     fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: i32) -> *const u8;
@@ -76,7 +79,8 @@ fn tw_data_size(data: &TWData) -> usize {
 impl ToVec for TWData {
     fn to_vec(&self) -> Vec<u8> {
         let size = tw_data_size(self);
-        let slice: &[u8] = unsafe { std::slice::from_raw_parts(self.wrapped, size) };
+        let ptr = unsafe { TWDataBytes(self.wrapped) };
+        let slice: &[u8] = unsafe { std::slice::from_raw_parts(ptr, size) };
         return slice.to_vec();
     }
 }
@@ -94,8 +98,22 @@ pub struct PrivateKey {
 
 pub fn private_key_data(private_key: &PrivateKey) -> TWData {
     let ptr = unsafe { TWPrivateKeyData(private_key.wrapped) };
-    let twdata = TWData { wrapped: ptr };
-    return twdata;
+    return TWData { wrapped: ptr };
+}
+
+pub fn private_key_get_public_key_secp256k1(private_key: &PrivateKey, compressed: bool) -> PublicKey {
+    let ptr = unsafe { TWPrivateKeyGetPublicKeySecp256k1(private_key.wrapped, compressed) };
+    return PublicKey { wrapped: ptr };
+}
+
+pub struct PublicKey {
+    wrapped: *const u8
+    // TODO delete when destructing
+}
+
+pub fn public_key_data(public_key: &PublicKey) -> TWData {
+    let ptr = unsafe { TWPublicKeyData(public_key.wrapped) };
+    return TWData { wrapped: ptr };
 }
 
 pub struct HDWallet {
