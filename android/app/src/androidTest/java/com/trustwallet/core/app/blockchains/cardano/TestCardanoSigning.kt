@@ -79,7 +79,7 @@ class TestCardanoSigning {
     fun testSignTransferToken1() {
         val toToken = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
-            .setAssetName("SUNDAE")
+            .setAssetName("53554e444145")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("01312d00"))) // 20000000
             .build()
         val toTokenBundle = Cardano.TokenBundle.newBuilder()
@@ -114,7 +114,7 @@ class TestCardanoSigning {
             .setAmount(8_051_373)
         val token3 = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
-            .setAssetName("CUBY")
+            .setAssetName("43554259")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("2dc6c0"))) // 3000000
             .build()
         utxo1.addTokenAmount(token3)
@@ -130,13 +130,13 @@ class TestCardanoSigning {
             .setAmount(2_000_000)
         val token1 = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
-            .setAssetName("SUNDAE")
+            .setAssetName("53554e444145")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("04d3e8d9"))) // 80996569
             .build()
         utxo2.addTokenAmount(token1)
         val token2 = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
-            .setAssetName("CUBY")
+            .setAssetName("43554259")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("1e8480"))) // 2000000
             .build()
         utxo2.addTokenAmount(token2)

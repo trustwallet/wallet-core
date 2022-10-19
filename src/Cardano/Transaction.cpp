@@ -122,7 +122,7 @@ uint64_t TokenBundle::minAdaAmount() const {
     }
     numPids = uint64_t(policyIdRegistry.size());
     numAssets = uint64_t(assetNameRegistry.size());
-    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](string a){ sumAssetNameLengths += a.length(); });
+    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](string a){ sumAssetNameLengths += a.length()/2; });
     return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
 }
 
@@ -222,7 +222,7 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         map<Cbor::Encode, Cbor::Encode> subTokensMap;
         for (const auto& token: subTokens) {
             subTokensMap.emplace(
-                Cbor::Encode::bytes(data(token.assetName)),
+                Cbor::Encode::bytes(parse_hex(token.assetName)),
                 Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
             );
         }
