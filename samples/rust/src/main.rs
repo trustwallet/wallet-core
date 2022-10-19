@@ -11,8 +11,13 @@ use crate::walletcore::*;
 use crate::wc_proto::Ethereum::transaction;
 
 fn test_address(coin: i32, coin_name: &str, wallet: &HDWallet) {
+    println!("==> coin {}:", coin_name);
     let address = hd_wallet_get_address_for_coin(wallet, coin);
-    println!("==> addr for {}: {}", coin_name, address.to_string());
+    println!("==>   address: {}", address.to_string());
+
+    let priv_key = hd_wallet_get_key_for_coin(wallet, coin);
+    let pk = private_key_data(&priv_key);
+    println!("==>   privkey: {}", pk.to_hex())
 }
 
 fn main() {

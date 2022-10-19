@@ -5,6 +5,7 @@ edition = "2021"
 build = "src/build.rs"
 
 [dependencies]
+hex = "0.4.3"
 libc = "0.2"
 protobuf = "3.2.0"
 
