@@ -35,4 +35,14 @@ TEST(TWAcalaAnyAddress, createFromPubKeyAcala) {
     TWPublicKeyDelete(pubkey);
 }
 
+TEST(TWAcalaAnyAddress, createFromStringAcala) {
+    const auto acalaAddress = STRING("24CKv1LJ1T3U9ujCN63YzTPuQjcmURGA2xTjim98UKXxgNXT");
+    const auto anyAddr = TWAnyAddressCreateSS58(acalaAddress.get(), TWCoinTypePolkadot, acalaPrefix);
+    const auto addrDescription = TWAnyAddressDescription(anyAddr);
+    ASSERT_TRUE(TWAnyAddressIsValidSS58(addrDescription, TWCoinTypePolkadot, acalaPrefix));
+    TWStringDelete(addrDescription);
+    TWAnyAddressDelete(anyAddr);
+
+}
+
 }

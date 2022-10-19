@@ -54,8 +54,13 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateBech32(TWString* _Nonnull strin
 }
 
 
-struct TWAnyAddress* TWAnyAddressCreateSS58([[maybe_unused]] TWString* string, [[maybe_unused]] enum TWCoinType coin, [[maybe_unused]] uint32_t prefixNetwork) {
-    return nullptr;
+struct TWAnyAddress* TWAnyAddressCreateSS58(TWString* _Nonnull string, enum TWCoinType coin, uint32_t prefixNetwork) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    auto *impl = TW::AnyAddress::createAddress(address, coin, prefixNetwork);
+    if (impl == nullptr) {
+        return nullptr;
+    }
+    return new TWAnyAddress{impl};
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
