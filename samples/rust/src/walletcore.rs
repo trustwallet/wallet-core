@@ -13,22 +13,24 @@ use hex::ToHex;
 
 // signatures
 extern "C" {
-    fn TWStringCreateWithUTF8Bytes(twstring: *const c_char) -> *const i8;
-    fn TWStringUTF8Bytes(twstring: *const i8) -> *const c_char;
+    fn TWStringCreateWithUTF8Bytes(twstring: *const c_char) -> *const u8;
+    fn TWStringUTF8Bytes(twstring: *const u8) -> *const c_char;
 
     fn TWDataSize(data: *const u8) -> usize;
+
     fn TWPrivateKeyData(private_key: *const u8) -> *const u8;
+    fn TWPrivateKeyGetPublicKeySecp256k1(private_key: *const u8, compressed: bool) -> *const u8;
 
-    fn TWHDWalletCreateWithMnemonic(mnemonic: *const i8, passphrase: *const i8) -> *const i8;
-    fn TWHDWalletGetAddressForCoin(wallet: *const i8, coin: i32) -> *const i8;
-    fn TWHDWalletGetKeyForCoin(wallet: *const i8, coin: i32) -> *const u8;
+    fn TWHDWalletCreateWithMnemonic(mnemonic: *const u8, passphrase: *const u8) -> *const u8;
+    fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: i32) -> *const u8;
+    fn TWHDWalletGetKeyForCoin(wallet: *const u8, coin: i32) -> *const u8;
 
-    fn TWMnemonicIsValid(mnemonic: *const i8) -> bool;
+    fn TWMnemonicIsValid(mnemonic: *const u8) -> bool;
 }
 
 // type utilities
 pub struct TWString {
-    wrapped: *const i8
+    wrapped: *const u8
     // TODO delete when destructing with TWStringDelete
 }
 
@@ -97,7 +99,7 @@ pub fn private_key_data(private_key: &PrivateKey) -> TWData {
 }
 
 pub struct HDWallet {
-    wrapped: *const i8
+    wrapped: *const u8
     // TODO delete when destructing
 }
 
@@ -110,10 +112,10 @@ pub fn hd_wallet_create_with_mnemonic(mnemonic: &TWString, passphrase: &TWString
 }
 
 pub fn hd_wallet_get_address_for_coin(wallet: &HDWallet, coin: i32) -> TWString {
-    let s: *const c_char = unsafe {
+    let ptr = unsafe {
         TWHDWalletGetAddressForCoin(wallet.wrapped, coin)
     };
-    return TWString { wrapped: s };
+    return TWString { wrapped: ptr };
 }
 
 pub fn hd_wallet_get_key_for_coin(wallet: &HDWallet, coin: i32) -> PrivateKey {
