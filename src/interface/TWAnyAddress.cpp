@@ -69,6 +69,10 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, hrpStr)};
 }
 
+struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* publicKey, enum TWCoinType coin, uint32_t prefixNetwork) {
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, prefixNetwork)};
+}
+
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
     delete address->impl;
     delete address;

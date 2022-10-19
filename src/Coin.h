@@ -80,6 +80,8 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDeriv
 
 /// Derives the address for a particular coin from the public key, with given derivation.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation = TWDerivationDefault, const std::string& hrp = "");
+/// Derives the address for a particular coin from the public key, with given derivation and explicit addressPrefix.
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation = TWDerivationDefault);
 
 /// Returns the binary representation of a string address
 Data addressToData(TWCoinType coin, const std::string& address);

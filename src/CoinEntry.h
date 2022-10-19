@@ -44,6 +44,9 @@ public:
     virtual std::string normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const { return address; }
     // Address derivation, default derivation
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const = 0;
+    virtual std::string deriveAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+        return "";
+    };
     // Address derivation, by default invoking default
     virtual std::string deriveAddress(TWCoinType coin, [[maybe_unused]] TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
         return deriveAddress(coin, publicKey, p2pkh, hrp);

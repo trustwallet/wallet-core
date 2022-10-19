@@ -33,4 +33,11 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    if (auto* networkPrefix = std::get_if<SS58Prefix>(&addressPrefix); networkPrefix) {
+        return Address(publicKey, *networkPrefix).string();
+    }
+    return "";
+}
+
 } // namespace TW::Polkadot

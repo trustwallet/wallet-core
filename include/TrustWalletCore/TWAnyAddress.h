@@ -97,6 +97,15 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(struct TWPublicKey
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp);
 
+/// Creates an SS58 address from a public key and a given prefixNetwork.
+///
+/// \param publicKey derivates the address from the public key.
+/// \param coin coin type of the address.
+/// \param prefixNetwork prefixNetwork of the SS58 address.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, uint32_t prefixNetwork);
+
 /// Deletes an address.
 ///
 /// \param address address to delete.

@@ -31,4 +31,10 @@ AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinTyp
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& addressPrefix) {
+
+    auto derivedAddress = TW::deriveAddress(coin, publicKey, addressPrefix);
+    return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
+}
+
 } // namespace TW
