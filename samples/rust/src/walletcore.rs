@@ -16,6 +16,7 @@ extern "C" {
     fn TWStringCreateWithUTF8Bytes(twstring: *const c_char) -> *const u8;
     fn TWStringUTF8Bytes(twstring: *const u8) -> *const c_char;
 
+    fn TWDataCreateWithBytes(bytes: *const u8, size: usize) -> *const u8;
     fn TWDataSize(data: *const u8) -> usize;
     fn TWDataBytes(data: *const u8) -> *const u8;
 
@@ -25,8 +26,10 @@ extern "C" {
     fn TWPublicKeyData(private_key: *const u8) -> *const u8;
 
     fn TWHDWalletCreateWithMnemonic(mnemonic: *const u8, passphrase: *const u8) -> *const u8;
-    fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: i32) -> *const u8;
-    fn TWHDWalletGetKeyForCoin(wallet: *const u8, coin: i32) -> *const u8;
+    fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: u32) -> *const u8;
+    fn TWHDWalletGetKeyForCoin(wallet: *const u8, coin: u32) -> *const u8;
+
+    fn TWAnySignerSign(input: *const u8, coin: u32) -> *const u8;
 
     fn TWMnemonicIsValid(mnemonic: *const u8) -> bool;
 }
@@ -45,6 +48,10 @@ pub trait ToVec {
     fn to_vec(self: &Self) -> Vec<u8>;
 }
 
+pub trait FromVec {
+    fn from_vec(vec: &Vec<u8>) -> Self;
+}
+
 pub trait ToHexString {
     fn to_hex(self: &Self) -> String;
 }
@@ -53,7 +60,7 @@ impl FromString for TWString {
     fn from_str(s: &str) -> Self {
         let cstring = CString::new(s).unwrap();
         let ptr = unsafe { TWStringCreateWithUTF8Bytes(cstring.as_ptr()) };
-        return TWString { wrapped: ptr };
+        TWString { wrapped: ptr }
     }
 }
 
@@ -62,8 +69,7 @@ impl ToString for TWString {
         let s1 = unsafe { TWStringUTF8Bytes(self.wrapped) };
         let c_str: &CStr = unsafe { CStr::from_ptr(s1) };
         let str_slice: &str = c_str.to_str().unwrap();
-        let str_buf: String = str_slice.to_owned();
-        return str_buf;
+        str_slice.to_owned()
     }
 }
 
@@ -73,7 +79,7 @@ pub struct TWData {
 }
 
 fn tw_data_size(data: &TWData) -> usize {
-    return unsafe { TWDataSize(data.wrapped) };
+    unsafe { TWDataSize(data.wrapped) }
 }
 
 impl ToVec for TWData {
@@ -81,13 +87,20 @@ impl ToVec for TWData {
         let size = tw_data_size(self);
         let ptr = unsafe { TWDataBytes(self.wrapped) };
         let slice: &[u8] = unsafe { std::slice::from_raw_parts(ptr, size) };
-        return slice.to_vec();
+        slice.to_vec()
+    }
+}
+
+impl FromVec for TWData {
+    fn from_vec(v: &Vec<u8>) -> Self {
+        let ptr = unsafe { TWDataCreateWithBytes(v.as_ptr(), v.len()) };
+        TWData { wrapped: ptr }
     }
 }
 
 impl ToHexString for TWData {
     fn to_hex(&self) -> String {
-        return self.to_vec().encode_hex::<String>();
+        self.to_vec().encode_hex::<String>()
     }
 }
 
@@ -98,12 +111,12 @@ pub struct PrivateKey {
 
 pub fn private_key_data(private_key: &PrivateKey) -> TWData {
     let ptr = unsafe { TWPrivateKeyData(private_key.wrapped) };
-    return TWData { wrapped: ptr };
+    TWData { wrapped: ptr }
 }
 
 pub fn private_key_get_public_key_secp256k1(private_key: &PrivateKey, compressed: bool) -> PublicKey {
     let ptr = unsafe { TWPrivateKeyGetPublicKeySecp256k1(private_key.wrapped, compressed) };
-    return PublicKey { wrapped: ptr };
+    PublicKey { wrapped: ptr }
 }
 
 pub struct PublicKey {
@@ -113,7 +126,7 @@ pub struct PublicKey {
 
 pub fn public_key_data(public_key: &PublicKey) -> TWData {
     let ptr = unsafe { TWPublicKeyData(public_key.wrapped) };
-    return TWData { wrapped: ptr };
+    TWData { wrapped: ptr }
 }
 
 pub struct HDWallet {
@@ -123,28 +136,25 @@ pub struct HDWallet {
 
 // wrappers
 pub fn hd_wallet_create_with_mnemonic(mnemonic: &TWString, passphrase: &TWString) -> HDWallet {
-    let ptr = unsafe {
-        TWHDWalletCreateWithMnemonic(mnemonic.wrapped, passphrase.wrapped)
-    };
-    return HDWallet {wrapped: ptr};
+    let ptr = unsafe { TWHDWalletCreateWithMnemonic(mnemonic.wrapped, passphrase.wrapped) };
+    HDWallet { wrapped: ptr }
 }
 
-pub fn hd_wallet_get_address_for_coin(wallet: &HDWallet, coin: i32) -> TWString {
-    let ptr = unsafe {
-        TWHDWalletGetAddressForCoin(wallet.wrapped, coin)
-    };
-    return TWString { wrapped: ptr };
+pub fn hd_wallet_get_address_for_coin(wallet: &HDWallet, coin: u32) -> TWString {
+    let ptr = unsafe { TWHDWalletGetAddressForCoin(wallet.wrapped, coin) };
+    TWString { wrapped: ptr }
 }
 
-pub fn hd_wallet_get_key_for_coin(wallet: &HDWallet, coin: i32) -> PrivateKey {
-    let ptr = unsafe {
-        TWHDWalletGetKeyForCoin(wallet.wrapped, coin)
-    };
-    return PrivateKey { wrapped: ptr };
+pub fn hd_wallet_get_key_for_coin(wallet: &HDWallet, coin: u32) -> PrivateKey {
+    let ptr = unsafe { TWHDWalletGetKeyForCoin(wallet.wrapped, coin) };
+    PrivateKey { wrapped: ptr }
+}
+
+pub fn any_signer_sign(input: &TWData, coin: u32) -> TWData {
+    let ptr = unsafe { TWAnySignerSign(input.wrapped, coin) };
+    TWData { wrapped: ptr }
 }
 
 pub fn mnemonic_is_valid(mnemonic: &TWString) -> bool {
-    unsafe {
-        TWMnemonicIsValid(mnemonic.wrapped)
-    }
+    unsafe { TWMnemonicIsValid(mnemonic.wrapped) }
 }
