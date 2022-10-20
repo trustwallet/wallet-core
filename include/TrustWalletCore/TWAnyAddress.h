@@ -48,10 +48,10 @@ bool TWAnyAddressIsValidBech32(TWString* _Nonnull string, enum TWCoinType coin, 
 ///
 /// \param string address to validate.
 /// \param coin coin type of the address.
-/// \param networkPrefix explicit ss58Prefix of the given address.
+/// \param ss58Prefix ss58Prefix of the given address.
 /// \return bool indicating if the address is valid.
 TW_EXPORT_STATIC_METHOD
-bool TWAnyAddressIsValidSS58(TWString* _Nonnull string, enum TWCoinType coin, uint32_t networkPrefix);
+bool TWAnyAddressIsValidSS58(TWString* _Nonnull string, enum TWCoinType coin, uint32_t ss58Prefix);
 
 /// Creates an address from a string representation and a coin type. Must be deleted with TWAnyAddressDelete after use.
 ///

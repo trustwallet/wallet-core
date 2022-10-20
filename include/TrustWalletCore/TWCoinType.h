@@ -239,10 +239,10 @@ TWString* _Nonnull TWCoinTypeChainId(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 
-/// NetworkPrefix for this coin type
+/// SS58Prefix for this coin type
 ///
 /// \param coin A coin type
-/// \return NetworkPrefix for the given coin type
+/// \return SS58Prefix for the given coin type
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSS58Prefix(enum TWCoinType coin);
 
