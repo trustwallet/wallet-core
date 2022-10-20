@@ -63,31 +63,31 @@ TWData *TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk) {
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeNIST256p1) };
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeNIST256p1);
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey *_Nonnull pk, bool compressed) {
     if (compressed)  {
-        return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeSECP256k1) };
+        return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeSECP256k1);
      } else {
-        return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeSECP256k1Extended) };
+         return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeSECP256k1Extended);
      }
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519) };
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeED25519);
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Blake2b) };
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeED25519Blake2b);
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Cardano) };
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeED25519Cardano);
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{pk->impl.getPublicKey(TWPublicKeyTypeCURVE25519)};
+    return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeCURVE25519);
 }
 
 TWData *_Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey *_Nonnull pk, const struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve) {
@@ -131,5 +131,9 @@ TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData 
 }
 
 struct TWPublicKey* TWPrivateKeyGetPublicKey(struct TWPrivateKey* pk, enum TWCoinType coinType) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWCoinTypePublicKeyType(coinType)) };
+    return TWPrivateKeyGetPublicKeyByType(pk, TWCoinTypePublicKeyType(coinType));
+}
+
+struct TWPublicKey* TWPrivateKeyGetPublicKeyByType(struct TWPrivateKey* pk, enum TWPublicKeyType pubkeyType) {
+    return new TWPublicKey{ pk->impl.getPublicKey(pubkeyType) };
 }

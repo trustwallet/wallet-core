@@ -86,6 +86,11 @@ TEST(TWPrivateKeyTests, PublicKey) {
     {
         const auto publicKey =  WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeEthereum));
         ASSERT_EQ(TW::hex(publicKey.get()->impl.bytes), "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
+
+        auto pubkeyType = TWCoinTypePublicKeyType(TWCoinTypeEthereum);
+        const auto publicKeyByType =  WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyByType(privateKey.get(), pubkeyType));
+
+        ASSERT_EQ(TW::hex(publicKey.get()->impl.bytes), TW::hex(publicKeyByType.get()->impl.bytes));
     }
     {
         const auto publicKey =  WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeNEO));

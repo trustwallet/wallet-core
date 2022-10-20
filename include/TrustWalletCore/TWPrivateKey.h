@@ -72,6 +72,14 @@ TWData* _Nonnull TWPrivateKeyData(struct TWPrivateKey* _Nonnull pk);
 TW_EXPORT_METHOD
 struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKey(struct TWPrivateKey* _Nonnull pk, enum TWCoinType coinType);
 
+/// Returns the public key associated with the given pubkeyType and privateKey
+///
+/// \param pk Non-null pointer to the private key
+/// \param pubkeyType pubkeyType of the given private key
+/// \return Non-null pointer to the corresponding public key
+TW_EXPORT_METHOD
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyByType(struct TWPrivateKey* _Nonnull pk, enum TWPublicKeyType pubkeyType);
+
 /// Returns the Secp256k1 public key associated with the given private key
 ///
 /// \param pk Non-null pointer to the private key
