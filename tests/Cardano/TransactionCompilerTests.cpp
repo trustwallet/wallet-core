@@ -45,19 +45,19 @@ TEST(CardanoCompiler, CompileWithSignaturesAndPubKeyType) {
 
     auto* tokenBundle1 = utxo2->add_token_amount();
     tokenBundle1->set_policy_id("122d15a15dc753d2b3ca9ee46c1c6ca41dda38d735942d9d259c785b");
-    tokenBundle1->set_asset_name("TTToken-1");
+    tokenBundle1->set_asset_name("5454546f6b656e2d31");
     const auto tokenAmount1 = store(uint256_t(3000000));
     tokenBundle1->set_amount(tokenAmount1.data(), tokenAmount1.size());
 
     auto* tokenBundle2 = utxo2->add_token_amount();
     tokenBundle2->set_policy_id("122d15a15dc753d2b3ca9ee46c1c6ca41dda38d735942d9d259c785b");
-    tokenBundle2->set_asset_name("TTToken-2");
+    tokenBundle2->set_asset_name("5454546f6b656e2d32");
     const auto tokenAmount2 = store(uint256_t(3000000));
     tokenBundle2->set_amount(tokenAmount2.data(), tokenAmount2.size());
 
     auto* tokenBundle3 = utxo2->add_token_amount();
     tokenBundle3->set_policy_id("122d15a15dc753d2b3ca9ee46c1c6ca41dda38d735942d9d259c785b");
-    tokenBundle3->set_asset_name("TTToken-3");
+    tokenBundle3->set_asset_name("5454546f6b656e2d33");
     const auto tokenAmount3 = store(uint256_t(5000000));
     tokenBundle3->set_amount(tokenAmount3.data(), tokenAmount3.size());
 
