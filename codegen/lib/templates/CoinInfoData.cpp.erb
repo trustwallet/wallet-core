@@ -74,7 +74,7 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
                 "<%= explorer_tx_url(coin) %>",
                 "<%= explorer_account_url(coin) %>",
                 <% if coin['slip44'].nil? -%><%= coin['coinId'] %><% else -%><%= coin['slip44'] %><% end -%>,
-                <% if coin['networkPrefix'].nil? -%>0<% else -%><%= coin['networkPrefix'] %><% end -%>,
+                <% if coin['ss58Prefix'].nil? -%>0<% else -%><%= coin['ss58Prefix'] %><% end -%>,
             };
 <% end -%>
         default:

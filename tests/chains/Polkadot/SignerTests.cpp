@@ -44,7 +44,7 @@ TEST(PolkadotSigner, SignTransfer_9fd062) {
         EXPECT_EQ(address.string(), addressThrow2);
     }
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
     // era: for blockhash and block number, use curl -H "Content-Type: application/json" -H "Accept: text/plain" https://<polkadot-rpc-url>/transaction/material?noMeta=true
@@ -79,7 +79,7 @@ TEST(PolkadotSigner, SignTransferDOT) {
     input.set_nonce(0);
     input.set_spec_version(17);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(3);
 
     auto& era = *input.mutable_era();
@@ -111,7 +111,7 @@ TEST(PolkadotSigner, SignTransfer_72dd5b) {
     input.set_nonce(1);
     input.set_spec_version(28);
     input.set_private_key(privateKeyIOS.bytes.data(), privateKeyIOS.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(6);
 
     auto& era = *input.mutable_era();
@@ -145,7 +145,7 @@ TEST(PolkadotSigner, SignBond_8da66d) {
         EXPECT_EQ(address.string(), addressThrow2);
     }
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
     // era: for blockhash and block number, use curl -H "Content-Type: application/json" -H "Accept: text/plain" https://<polkadot-rpc-url>/transaction/material?noMeta=true
@@ -174,7 +174,7 @@ TEST(PolkadotSigner, SignBondAndNominate_4955314_2) {
     input.set_nonce(4);
     input.set_spec_version(30);
     input.set_private_key(key.data(), key.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(7);
 
     auto stakingCall = input.mutable_staking_call();
@@ -199,7 +199,7 @@ TEST(PolkadotSigner, SignNominate_452522) {
     input.set_nonce(1);
     input.set_spec_version(26);
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
     // era: for blockhash and block number, use curl -H "Content-Type: application/json" -H "Accept: text/plain" https://<polkadot-rpc-url>/transaction/material?noMeta=true
@@ -227,7 +227,7 @@ TEST(PolkadotSigner, SignNominate2) {
     input.set_nonce(0);
     input.set_spec_version(17);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
@@ -254,7 +254,7 @@ TEST(PolkadotSigner, SignChill) {
     input.set_nonce(0);
     input.set_spec_version(17);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
@@ -273,7 +273,7 @@ TEST(PolkadotSigner, SignWithdraw) {
     input.set_nonce(0);
     input.set_spec_version(17);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
@@ -294,7 +294,7 @@ TEST(PolkadotSigner, SignUnbond_070957) {
     input.set_nonce(2);
     input.set_spec_version(26);
     input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(5);
 
     auto era = input.mutable_era();
@@ -320,7 +320,7 @@ TEST(PolkadotSigner, SignChillAndUnbond) {
     input.set_nonce(6);
     input.set_spec_version(9200);
     input.set_private_key(privateKeyPolkadot.bytes.data(), privateKeyPolkadot.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypePolkadot));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypePolkadot));
     input.set_transaction_version(12);
 
     auto era = input.mutable_era();

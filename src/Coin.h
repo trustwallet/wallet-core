@@ -107,8 +107,8 @@ byte p2shPrefix(TWCoinType coin);
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
 
-/// Returns the network prefix of a coin type.
-std::uint32_t networkPrefix(TWCoinType coin);
+/// Returns the ss58 prefix of a coin type.
+std::uint32_t ss58Prefix(TWCoinType coin);
 
 /// Returns chain ID.
 const char* chainId(TWCoinType coin);
@@ -161,7 +161,7 @@ struct CoinInfo {
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
     uint32_t slip44;
-    std::uint32_t networkPrefix;
+    std::uint32_t ss58Prefix;
 
     // returns default derivation
     const Derivation defaultDerivation() const {

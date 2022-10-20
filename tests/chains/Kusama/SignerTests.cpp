@@ -33,7 +33,7 @@ TEST(PolkadotSigner, SignTransferKSM) {
     input.set_nonce(0);
     input.set_spec_version(2019);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_network(networkPrefix(TWCoinType::TWCoinTypeKusama));
+    input.set_network(ss58Prefix(TWCoinType::TWCoinTypeKusama));
     input.set_transaction_version(2);
 
     auto balanceCall = input.mutable_balance_call();

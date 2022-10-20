@@ -84,5 +84,5 @@ enum TWPublicKeyType TWCoinTypePublicKeyType(enum TWCoinType coin) {
 }
 
 uint32_t TWCoinTypeNetworkPrefix(enum TWCoinType coin) {
-    return TW::networkPrefix(coin);
+    return TW::ss58Prefix(coin);
 }

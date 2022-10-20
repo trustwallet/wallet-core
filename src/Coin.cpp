@@ -389,8 +389,8 @@ uint32_t TW::slip44Id(TWCoinType coin) {
     return getCoinInfo(coin).slip44;
 }
 
-std::uint32_t TW::networkPrefix(TWCoinType coin) {
-    return getCoinInfo(coin).networkPrefix;
+std::uint32_t TW::ss58Prefix(TWCoinType coin) {
+    return getCoinInfo(coin).ss58Prefix;
 }
 
 TWString* _Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {

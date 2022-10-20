@@ -36,7 +36,7 @@ class TestKusamaSigner {
             blockHash = hash
             nonce = 1
             specVersion = 2019
-            network = KUSAMA.networkPrefix()
+            network = KUSAMA.ss58Prefix()
             transactionVersion = 2
             privateKey = key
             balanceCall = Polkadot.Balance.newBuilder().apply {
