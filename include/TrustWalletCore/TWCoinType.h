@@ -244,7 +244,7 @@ uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 /// \param coin A coin type
 /// \return NetworkPrefix for the given coin type
 TW_EXPORT_PROPERTY
-uint32_t TWCoinTypeNetworkPrefix(enum TWCoinType coin);
+uint32_t TWCoinTypeSS58Prefix(enum TWCoinType coin);
 
 /// public key type for this coin type
 ///
