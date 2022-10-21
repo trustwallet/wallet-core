@@ -15,10 +15,10 @@ namespace TW::Decred {
 class Entry final : public CoinEntry {
 public:
     bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
-     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-     Data addressToData(TWCoinType coin, const std::string& address) const;
-     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-     void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    Data addressToData(TWCoinType coin, const std::string& address) const;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Decred
