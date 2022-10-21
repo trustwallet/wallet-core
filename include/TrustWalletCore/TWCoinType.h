@@ -11,12 +11,15 @@
 #include "TWCurve.h"
 #include "TWHDVersion.h"
 #include "TWHRP.h"
-#include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
 #include "TWDerivation.h"
+#include "TWPublicKeyType.h"
 
 TW_EXTERN_C_BEGIN
+
+/// Represents a private key.
+struct TWPrivateKey;
 
 /// Coin type for Level 2 of BIP44.
 ///

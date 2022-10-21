@@ -10,6 +10,7 @@
 #include "TWCurve.h"
 #include "TWData.h"
 #include "TWPublicKey.h"
+#include "TWCoinType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -62,6 +63,22 @@ bool TWPrivateKeyIsValid(TWData* _Nonnull data, enum TWCurve curve);
 /// \return Non-null block of data (raw bytes) of the given private key
 TW_EXPORT_PROPERTY
 TWData* _Nonnull TWPrivateKeyData(struct TWPrivateKey* _Nonnull pk);
+
+/// Returns the public key associated with the given coinType and privateKey
+///
+/// \param pk Non-null pointer to the private key
+/// \param coinType coinType of the given private key
+/// \return Non-null pointer to the corresponding public key
+TW_EXPORT_METHOD
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKey(struct TWPrivateKey* _Nonnull pk, enum TWCoinType coinType);
+
+/// Returns the public key associated with the given pubkeyType and privateKey
+///
+/// \param pk Non-null pointer to the private key
+/// \param pubkeyType pubkeyType of the given private key
+/// \return Non-null pointer to the corresponding public key
+TW_EXPORT_METHOD
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyByType(struct TWPrivateKey* _Nonnull pk, enum TWPublicKeyType pubkeyType);
 
 /// Returns the Secp256k1 public key associated with the given private key
 ///

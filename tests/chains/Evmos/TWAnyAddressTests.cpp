@@ -8,6 +8,7 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <gtest/gtest.h>
 

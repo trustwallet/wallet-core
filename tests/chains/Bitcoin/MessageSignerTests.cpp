@@ -13,6 +13,7 @@
 #include "Base64.h"
 #include "Coin.h"
 #include "Data.h"
+#include "TestUtilities.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
