@@ -11,9 +11,12 @@ use std::ffi::CString;
 use std::ffi::CStr;
 use hex::ToHex;
 
-// signatures
+// Rust interfaces to wallet-core
+// Could be auto-generated
+
+// Signatures
 extern "C" {
-    fn TWStringCreateWithUTF8Bytes(twstring: *const c_char) -> *const u8;
+    fn TWStringCreateWithUTF8Bytes(bytes: *const c_char) -> *const u8;
     fn TWStringDelete(twstring: *const u8);
     fn TWStringUTF8Bytes(twstring: *const u8) -> *const c_char;
 
@@ -39,9 +42,28 @@ extern "C" {
     fn TWMnemonicIsValid(mnemonic: *const u8) -> bool;
 }
 
-// type utilities
+// Types
 pub struct TWString {
     wrapped: *const u8
+}
+
+pub fn tw_string_create_with_utf8_bytes(bytes: &str) -> TWString {
+    let cstring = CString::new(bytes).unwrap();
+    let ptr = unsafe { TWStringCreateWithUTF8Bytes(cstring.as_ptr()) };
+    TWString { wrapped: ptr }
+}
+
+pub fn tw_string_utf8_bytes(twstring: &TWString) -> String {
+    let s1 = unsafe { TWStringUTF8Bytes(twstring.wrapped) };
+    let c_str: &CStr = unsafe { CStr::from_ptr(s1) };
+    let str_slice: &str = c_str.to_str().unwrap();
+    str_slice.to_owned()
+}
+
+impl Drop for TWString {
+    fn drop(&mut self) {
+        unsafe { TWStringDelete(self.wrapped) };
+    }
 }
 
 pub trait FromString {
@@ -62,24 +84,13 @@ pub trait ToHexString {
 
 impl FromString for TWString {
     fn from_str(s: &str) -> Self {
-        let cstring = CString::new(s).unwrap();
-        let ptr = unsafe { TWStringCreateWithUTF8Bytes(cstring.as_ptr()) };
-        TWString { wrapped: ptr }
+        tw_string_create_with_utf8_bytes(s)
     }
 }
 
 impl ToString for TWString {
     fn to_string(&self) -> String {
-        let s1 = unsafe { TWStringUTF8Bytes(self.wrapped) };
-        let c_str: &CStr = unsafe { CStr::from_ptr(s1) };
-        let str_slice: &str = c_str.to_str().unwrap();
-        str_slice.to_owned()
-    }
-}
-
-impl Drop for TWString {
-    fn drop(&mut self) {
-        unsafe { TWStringDelete(self.wrapped) };
+        tw_string_utf8_bytes(&self)
     }
 }
 
@@ -87,23 +98,31 @@ pub struct TWData {
     wrapped: *const u8
 }
 
+fn tw_data_create_with_bytes(bytes: &Vec<u8>) -> TWData {
+    let ptr = unsafe { TWDataCreateWithBytes(bytes.as_ptr(), bytes.len()) };
+    TWData { wrapped: ptr }
+}
+
 fn tw_data_size(data: &TWData) -> usize {
     unsafe { TWDataSize(data.wrapped) }
 }
 
+pub fn tw_data_bytes(data: &TWData) -> Vec<u8> {
+    let size = tw_data_size(data);
+    let ptr = unsafe { TWDataBytes(data.wrapped) };
+    let slice: &[u8] = unsafe { std::slice::from_raw_parts(ptr, size) };
+    slice.to_vec()
+}
+
 impl ToVec for TWData {
     fn to_vec(&self) -> Vec<u8> {
-        let size = tw_data_size(self);
-        let ptr = unsafe { TWDataBytes(self.wrapped) };
-        let slice: &[u8] = unsafe { std::slice::from_raw_parts(ptr, size) };
-        slice.to_vec()
+        tw_data_bytes(&self)
     }
 }
 
 impl FromVec for TWData {
     fn from_vec(v: &Vec<u8>) -> Self {
-        let ptr = unsafe { TWDataCreateWithBytes(v.as_ptr(), v.len()) };
-        TWData { wrapped: ptr }
+        tw_data_create_with_bytes(v)
     }
 }
 
@@ -158,7 +177,6 @@ pub struct HDWallet {
     wrapped: *const u8
 }
 
-// wrappers
 pub fn hd_wallet_create_with_mnemonic(mnemonic: &TWString, passphrase: &TWString) -> HDWallet {
     let ptr = unsafe { TWHDWalletCreateWithMnemonic(mnemonic.wrapped, passphrase.wrapped) };
     HDWallet { wrapped: ptr }
