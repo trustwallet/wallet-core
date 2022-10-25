@@ -1,0 +1,31 @@
+#!/bin/bash
+
+pushd jni
+
+DOKKA_CLI_JAR=https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-cli/1.7.20/dokka-cli-1.7.20.jar
+
+declare -a DOKKA_DEPS=(
+https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-base/1.7.20/dokka-base-1.7.20.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-analysis/1.7.20/dokka-analysis-1.7.20.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/kotlin-analysis-intellij/1.7.20/kotlin-analysis-intellij-1.7.20.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/kotlin-analysis-compiler/1.7.20/kotlin-analysis-compiler-1.7.20.jar
+https://repo1.maven.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.6.4/kotlinx-coroutines-core-1.6.4.jar
+https://repo1.maven.org/maven2/org/jetbrains/kotlinx/kotlinx-html-jvm/0.8.0/kotlinx-html-jvm-0.8.0.jar
+https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar
+)
+
+pluginClassPath=""
+
+curl $DOKKA_CLI_JAR --output dokka.jar
+
+for dep in "${DOKKA_DEPS[@]}" ; do
+	curl $dep --output ${dep##*/}
+	pluginClassPath="$pluginClassPath;${dep##*/}"
+done
+
+echo $pluginClassPath
+
+
+java -jar dokka.jar -outputDir dokka-out -pluginsClasspath $pluginClassPath -sourceSet "-sourceSetName TrustWallet -src java/wallet/core/jni"
+
+popd #jni
