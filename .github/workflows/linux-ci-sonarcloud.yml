@@ -1,4 +1,4 @@
-name: Linux CI
+name: Linux CI SonarCloud
 
 on:
   push:
@@ -43,8 +43,6 @@ jobs:
         CXX: /usr/bin/clang++
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
-      with:
-        projectBaseDir: /home/runner/work/wallet-core/wallet-core/
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
