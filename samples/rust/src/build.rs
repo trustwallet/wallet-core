@@ -4,15 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::fs;
 use std::path::Path;
 
+// Wallet-core project folder, with sources (proto) and build library binaries
 static WALLET_CORE_PROJECT_DIR: &str = "../..";
+
 // libs to link with, in reverse dependency order
 static LIBS: [&str; 3] = ["TrustWalletCore", "TrezorCrypto", "protobuf"];
 
 fn main() {
+    // Generate protobuf interface files
     let proto_src: String = WALLET_CORE_PROJECT_DIR.to_string() + "/src/proto";
     let out_dir: &str = "src/wc_proto";
+
+    let _create_folder_res = fs::create_dir_all(out_dir);
     protobuf_codegen::Codegen::new()
         //.protoc()  // use `protoc` parser, optional.
         .protoc_path(Path::new(&(WALLET_CORE_PROJECT_DIR.to_string() + "/build/local/bin/protoc")))
