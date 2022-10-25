@@ -40,11 +40,6 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Build and test
       run: |
         ninja -Cbuild tests TrezorCryptoTests
@@ -54,6 +49,11 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
         CK_TIMEOUT_MULTIPLIER: 4
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Gather and check code coverage
       run: |
         sudo rm -rf coverage.info
