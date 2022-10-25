@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod walletcore;
+pub mod walletcore_iface;
 pub mod wc_proto;
 
-use crate::walletcore::*;
+use crate::walletcore_iface::*;
 use crate::wc_proto::Ethereum;
 use protobuf::Message;
 use hex::ToHex;
@@ -30,7 +30,7 @@ fn get_wallet_info(coin: u32, coin_name: &str, wallet: &HDWallet) -> TWData {
 }
 
 fn main() {
-	println!("=== Calling wallet-core from Rust");
+    println!("=== Calling wallet-core from Rust");
 
     let mnemonic = "confirm bleak useless tail chalk destroy horn step bulb genuine attract split";
     println!("mnemonic is valid: {}", mnemonic_is_valid(&TWString::from_str(mnemonic)));
