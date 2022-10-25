@@ -9,36 +9,12 @@
 
 use libc::c_char;
 
-// Signatures
 extern "C" {
     fn TWStringCreateWithUTF8Bytes(bytes: *const c_char) -> *const u8;
     fn TWStringDelete(twstring: *const u8);
     fn TWStringUTF8Bytes(twstring: *const u8) -> *const c_char;
+}
 
-    fn TWDataCreateWithBytes(bytes: *const u8, size: usize) -> *const u8;
-    fn TWDataDelete(twstring: *const u8);
-    fn TWDataSize(data: *const u8) -> usize;
-    fn TWDataBytes(data: *const u8) -> *const u8;
-
-    fn TWPrivateKeyData(private_key: *const u8) -> *const u8;
-    fn TWPrivateKeyGetPublicKeySecp256k1(private_key: *const u8, compressed: bool) -> *const u8;
-    fn TWPrivateKeyDelete(twstring: *const u8);
-
-    fn TWPublicKeyData(private_key: *const u8) -> *const u8;
-    fn TWPublicKeyDelete(twstring: *const u8);
-
-    fn TWHDWalletCreateWithMnemonic(mnemonic: *const u8, passphrase: *const u8) -> *const u8;
-    fn TWHDWalletDelete(twstring: *const u8);
-    fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: u32) -> *const u8;
-    fn TWHDWalletGetKeyForCoin(wallet: *const u8, coin: u32) -> *const u8;
-
-    fn TWAnySignerSign(input: *const u8, coin: u32) -> *const u8;
-
-    fn TWMnemonicIsValid(mnemonic: *const u8) -> bool;
-} // extern "C"
-
-
-// Types
 pub struct TWString {
     wrapped: *const u8
 }
@@ -58,6 +34,13 @@ impl Drop for TWString {
     }
 }
 
+
+extern "C" {
+    fn TWDataCreateWithBytes(bytes: *const u8, size: usize) -> *const u8;
+    fn TWDataDelete(data: *const u8);
+    fn TWDataSize(data: *const u8) -> usize;
+    fn TWDataBytes(data: *const u8) -> *const u8;
+}
 
 pub struct TWData {
     wrapped: *const u8
@@ -86,6 +69,12 @@ impl Drop for TWData {
 }
 
 
+extern "C" {
+    fn TWPrivateKeyData(private_key: *const u8) -> *const u8;
+    fn TWPrivateKeyGetPublicKeySecp256k1(private_key: *const u8, compressed: bool) -> *const u8;
+    fn TWPrivateKeyDelete(private_key: *const u8);
+}
+
 pub struct PrivateKey {
     wrapped: *const u8
 }
@@ -107,6 +96,11 @@ impl Drop for PrivateKey {
 }
 
 
+extern "C" {
+    fn TWPublicKeyData(public_key: *const u8) -> *const u8;
+    fn TWPublicKeyDelete(public_key: *const u8);
+}
+
 pub struct PublicKey {
     wrapped: *const u8
 }
@@ -122,6 +116,13 @@ impl Drop for PublicKey {
     }
 }
 
+
+extern "C" {
+    fn TWHDWalletCreateWithMnemonic(mnemonic: *const u8, passphrase: *const u8) -> *const u8;
+    fn TWHDWalletDelete(wallet: *const u8);
+    fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: u32) -> *const u8;
+    fn TWHDWalletGetKeyForCoin(wallet: *const u8, coin: u32) -> *const u8;
+}
 
 pub struct HDWallet {
     wrapped: *const u8
@@ -149,11 +150,19 @@ impl Drop for HDWallet {
 }
 
 
+extern "C" {
+    fn TWAnySignerSign(input: *const u8, coin: u32) -> *const u8;
+}
+
 pub fn any_signer_sign(input: &TWData, coin: u32) -> TWData {
     let ptr = unsafe { TWAnySignerSign(input.wrapped, coin) };
     TWData { wrapped: ptr }
 }
 
+
+extern "C" {
+    fn TWMnemonicIsValid(mnemonic: *const u8) -> bool;
+}
 
 pub fn mnemonic_is_valid(mnemonic: &TWString) -> bool {
     unsafe { TWMnemonicIsValid(mnemonic.wrapped) }
