@@ -14,18 +14,23 @@ use hex::ToHex;
 // signatures
 extern "C" {
     fn TWStringCreateWithUTF8Bytes(twstring: *const c_char) -> *const u8;
+    fn TWStringDelete(twstring: *const u8);
     fn TWStringUTF8Bytes(twstring: *const u8) -> *const c_char;
 
     fn TWDataCreateWithBytes(bytes: *const u8, size: usize) -> *const u8;
+    fn TWDataDelete(twstring: *const u8);
     fn TWDataSize(data: *const u8) -> usize;
     fn TWDataBytes(data: *const u8) -> *const u8;
 
     fn TWPrivateKeyData(private_key: *const u8) -> *const u8;
     fn TWPrivateKeyGetPublicKeySecp256k1(private_key: *const u8, compressed: bool) -> *const u8;
+    fn TWPrivateKeyDelete(twstring: *const u8);
 
     fn TWPublicKeyData(private_key: *const u8) -> *const u8;
+    fn TWPublicKeyDelete(twstring: *const u8);
 
     fn TWHDWalletCreateWithMnemonic(mnemonic: *const u8, passphrase: *const u8) -> *const u8;
+    fn TWHDWalletDelete(twstring: *const u8);
     fn TWHDWalletGetAddressForCoin(wallet: *const u8, coin: u32) -> *const u8;
     fn TWHDWalletGetKeyForCoin(wallet: *const u8, coin: u32) -> *const u8;
 
@@ -37,7 +42,6 @@ extern "C" {
 // type utilities
 pub struct TWString {
     wrapped: *const u8
-    // TODO delete when destructing with TWStringDelete
 }
 
 pub trait FromString {
@@ -73,9 +77,14 @@ impl ToString for TWString {
     }
 }
 
+impl Drop for TWString {
+    fn drop(&mut self) {
+        unsafe { TWStringDelete(self.wrapped) };
+    }
+}
+
 pub struct TWData {
     wrapped: *const u8
-    // TODO delete when destructing
 }
 
 fn tw_data_size(data: &TWData) -> usize {
@@ -104,9 +113,14 @@ impl ToHexString for TWData {
     }
 }
 
+impl Drop for TWData {
+    fn drop(&mut self) {
+        unsafe { TWDataDelete(self.wrapped) };
+    }
+}
+
 pub struct PrivateKey {
     wrapped: *const u8
-    // TODO delete when destructing
 }
 
 pub fn private_key_data(private_key: &PrivateKey) -> TWData {
@@ -119,9 +133,14 @@ pub fn private_key_get_public_key_secp256k1(private_key: &PrivateKey, compressed
     PublicKey { wrapped: ptr }
 }
 
+impl Drop for PrivateKey {
+    fn drop(&mut self) {
+        unsafe { TWPrivateKeyDelete(self.wrapped) };
+    }
+}
+
 pub struct PublicKey {
     wrapped: *const u8
-    // TODO delete when destructing
 }
 
 pub fn public_key_data(public_key: &PublicKey) -> TWData {
@@ -129,9 +148,14 @@ pub fn public_key_data(public_key: &PublicKey) -> TWData {
     TWData { wrapped: ptr }
 }
 
+impl Drop for PublicKey {
+    fn drop(&mut self) {
+        unsafe { TWPublicKeyDelete(self.wrapped) };
+    }
+}
+
 pub struct HDWallet {
     wrapped: *const u8
-    // TODO delete when destructing
 }
 
 // wrappers
@@ -148,6 +172,12 @@ pub fn hd_wallet_get_address_for_coin(wallet: &HDWallet, coin: u32) -> TWString 
 pub fn hd_wallet_get_key_for_coin(wallet: &HDWallet, coin: u32) -> PrivateKey {
     let ptr = unsafe { TWHDWalletGetKeyForCoin(wallet.wrapped, coin) };
     PrivateKey { wrapped: ptr }
+}
+
+impl Drop for HDWallet {
+    fn drop(&mut self) {
+        unsafe { TWHDWalletDelete(self.wrapped) };
+    }
 }
 
 pub fn any_signer_sign(input: &TWData, coin: u32) -> TWData {
