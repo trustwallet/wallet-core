@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,18 +11,17 @@
 
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Algorand;
+namespace TW::Algorand {
 
 const Data TRANSACTION_TAG = {84, 88};
 const std::string TRANSACTION_PAY = "pay";
 const std::string ASSET_TRANSACTION = "axfer";
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto protoOutput = Proto::SigningOutput();
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
-    
+
     auto preImageData = Signer::preImage(pubkey, input);
     auto signature = key.sign(preImageData, TWCurveED25519);
     return Signer::encodeTransaction(signature, pubkey, input);
@@ -68,7 +67,7 @@ TW::Data Signer::preImage(const TW::PublicKey& pubKey, const Proto::SigningInput
         auto to = Address(message.to_address());
 
         auto transaction = Transfer(from, to, fee, message.amount(), firstRound,
-                                       lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
+                                    lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
         transactionData = transaction.serialize();
     } else if (input.has_asset_transfer()) {
         auto message = input.asset_transfer();
@@ -76,15 +75,15 @@ TW::Data Signer::preImage(const TW::PublicKey& pubKey, const Proto::SigningInput
 
         auto transaction =
             AssetTransfer(from, to, fee, message.amount(),
-                                            message.asset_id(), firstRound, lastRound, note,
-                                    ASSET_TRANSACTION,genesisId, genesisHash);
+                          message.asset_id(), firstRound, lastRound, note,
+                          ASSET_TRANSACTION, genesisId, genesisHash);
         transactionData = transaction.serialize();
     } else if (input.has_asset_opt_in()) {
         auto message = input.asset_opt_in();
 
         auto transaction = OptInAssetTransaction(from, fee, message.asset_id(),
                                                  firstRound, lastRound, note,
-                                                 ASSET_TRANSACTION,genesisId, genesisHash);
+                                                 ASSET_TRANSACTION, genesisId, genesisHash);
         transactionData = transaction.serialize();
     } else {
         return {Data{}};
@@ -107,13 +106,12 @@ Proto::SigningOutput Signer::encodeTransaction(const Data& signature, const TW::
     auto note = Data(input.note().begin(), input.note().end());
     auto genesisId = input.genesis_id();
     auto genesisHash = Data(input.genesis_hash().begin(), input.genesis_hash().end());
-
     if (input.has_transfer()) {
         auto message = input.transfer();
         auto to = Address(message.to_address());
 
         auto transaction = Transfer(from, to, fee, message.amount(), firstRound,
-                                       lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
+                                    lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
 
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
@@ -123,8 +121,8 @@ Proto::SigningOutput Signer::encodeTransaction(const Data& signature, const TW::
 
         auto transaction =
             AssetTransfer(from, to, fee, message.amount(),
-                                            message.asset_id(), firstRound, lastRound, note,
-                                    ASSET_TRANSACTION,genesisId, genesisHash);
+                          message.asset_id(), firstRound, lastRound, note,
+                          ASSET_TRANSACTION, genesisId, genesisHash);
 
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
@@ -133,10 +131,12 @@ Proto::SigningOutput Signer::encodeTransaction(const Data& signature, const TW::
 
         auto transaction = OptInAssetTransaction(from, fee, message.asset_id(),
                                                  firstRound, lastRound, note,
-                                                 ASSET_TRANSACTION,genesisId, genesisHash);
+                                                 ASSET_TRANSACTION, genesisId, genesisHash);
 
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     }
     return protoOutput;
 }
+
+} // namespace TW::Algorand

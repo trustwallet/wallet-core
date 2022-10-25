@@ -6,7 +6,6 @@
 
 #include "Transaction.h"
 #include "RLP.h"
-#include "../Ethereum/RLP.h"
 
 using namespace TW;
 using boost::multiprecision::uint128_t;

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Base64;
+namespace TW::Base64::tests {
 
 TEST(Base64, encode) {
     auto encoded = encode(data("Hello, world!"));
@@ -49,7 +48,7 @@ TEST(Base64, decode) {
 
 TEST(Base64, UrlFormat) {
     const std::string const1 = "11003faa8556289975ec991ac9994dfb613abec4ea000d5094e6379080f594e559b330b8";
-    
+
     // Encoded string has both special characters
     auto encoded = encode(parse_hex(const1));
     EXPECT_EQ("EQA/qoVWKJl17JkayZlN+2E6vsTqAA1QlOY3kID1lOVZszC4", encoded);
@@ -61,3 +60,5 @@ TEST(Base64, UrlFormat) {
     decoded = decodeBase64Url("EQA_qoVWKJl17JkayZlN-2E6vsTqAA1QlOY3kID1lOVZszC4");
     EXPECT_EQ(const1, hex(decoded));
 }
+
+} // namespace TW::Base64::tests

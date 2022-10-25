@@ -30,6 +30,8 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
 
+nlohmann::json wasmExecuteSendPayload(const Proto::Message_WasmExecuteContractSend& msg);
+
 nlohmann::json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg);
 
 nlohmann::json wasmExecuteSendPayload(const Proto::Message_WasmExecuteContractSend& msg);

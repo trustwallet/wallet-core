@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../Bech32Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PublicKey.h"
 #include "../Coin.h"
 #include <TrustWalletCore/TWCoinType.h>

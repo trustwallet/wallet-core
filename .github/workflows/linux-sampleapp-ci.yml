@@ -1,4 +1,4 @@
-name: Linux SampleApp CI
+name: Linux SampleApps CI
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: CMake
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
@@ -55,9 +55,16 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+    - name: Build, run, and test devconsole.ts
+      run: |
+        cd samples/typescript/devconsole.ts
+        npm install
+        npm run build
+        echo -e "help() \n .exit" | npm run start
+        npm run test
     - name: Install Go
       env:
-        GO_VERSION: 1.16.12
+        GO_VERSION: 1.19
         GO_ARCH: amd64
       run: |
         curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
@@ -70,6 +77,14 @@ jobs:
         go version
         go build -o main
         ./main
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build Golang dev console
+      run: |
+        cd samples/go/dev-console
+        ./prepare.sh
+        cd cmd && go build -o ../tw_dev_console && cd -
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++

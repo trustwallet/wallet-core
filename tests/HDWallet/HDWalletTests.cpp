@@ -21,9 +21,9 @@
 
 extern std::string TESTS_ROOT;
 
-namespace TW {
+namespace TW::HDWalletTests {
 
-const auto mnemonic2 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 const auto gPassphrase = "passphrase";
 
 TEST(HDWallet, generate) {
@@ -49,15 +49,15 @@ TEST(HDWallet, generateInvalid) {
 
 TEST(HDWallet, createFromMnemonic) {
     {
-        HDWallet wallet = HDWallet(mnemonic2, gPassphrase);
-        EXPECT_EQ(wallet.getMnemonic(), mnemonic2);
+        HDWallet wallet = HDWallet(mnemonic1, gPassphrase);
+        EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
         EXPECT_EQ(wallet.getPassphrase(), gPassphrase);
         EXPECT_EQ(hex(wallet.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         EXPECT_EQ(hex(wallet.getSeed()), "143cd5fc27ae46eb423efebc41610473f5e24a80f2ca2e2fa7bf167e537f58f4c68310ae487fce82e25bad29bab2530cf77fd724a5ebfc05a45872773d7ee2d6");
     }
     {   // empty passphrase
-        HDWallet wallet = HDWallet(mnemonic2, "");
-        EXPECT_EQ(wallet.getMnemonic(), mnemonic2);
+        HDWallet wallet = HDWallet(mnemonic1, "");
+        EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
         EXPECT_EQ(wallet.getPassphrase(), "");
         EXPECT_EQ(hex(wallet.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         EXPECT_EQ(hex(wallet.getSeed()), "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
@@ -126,7 +126,7 @@ TEST(HDWallet, createFromMnemonicInvalid) {
 TEST(HDWallet, createFromEntropy) {
     {
         HDWallet wallet = HDWallet(parse_hex("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), gPassphrase);
-        EXPECT_EQ(wallet.getMnemonic(), mnemonic2);
+        EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
     }
 }
 
@@ -137,8 +137,8 @@ TEST(HDWallet, createFromEntropyInvalid) {
 
 TEST(HDWallet, recreateFromEntropy) {
     {
-        HDWallet wallet1 = HDWallet(mnemonic2, gPassphrase);
-        EXPECT_EQ(wallet1.getMnemonic(), mnemonic2);
+        HDWallet wallet1 = HDWallet(mnemonic1, gPassphrase);
+        EXPECT_EQ(wallet1.getMnemonic(), mnemonic1);
         EXPECT_EQ(hex(wallet1.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         HDWallet wallet2 = HDWallet(wallet1.getEntropy(), gPassphrase);
         EXPECT_EQ(wallet2.getMnemonic(), wallet1.getMnemonic());
@@ -287,7 +287,7 @@ TEST(HDWallet, Bip39Vectors) {
 }
 
 TEST(HDWallet, getExtendedPrivateKey) {
-    const HDWallet wallet = HDWallet(mnemonic2, "");
+    const HDWallet wallet = HDWallet(mnemonic1, "");
     const auto purpose = TWPurposeBIP44;
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPRV;
@@ -306,7 +306,7 @@ TEST(HDWallet, getExtendedPrivateKey) {
 }
 
 TEST(HDWallet, getExtendedPublicKey) {
-    const HDWallet wallet = HDWallet(mnemonic2, "");
+    const HDWallet wallet = HDWallet(mnemonic1, "");
     const auto purpose = TWPurposeBIP44;
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPUB;
@@ -331,7 +331,7 @@ TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
     // - Extended Public: mnemonic -> seed -> zpub -> publicKey -> address
     // - Extended Private: mnemonic -> seed -> zpriv -> privateKey -> publicKey -> address
 
-    const HDWallet wallet = HDWallet(mnemonic2, "");
+    const HDWallet wallet = HDWallet(mnemonic1, "");
     const auto coin = TWCoinTypeBitcoin;
     const auto derivPath1 = DerivationPath("m/84'/0'/0'/0/0");
     const auto derivPath2 = DerivationPath("m/84'/0'/0'/0/2");
@@ -399,7 +399,7 @@ TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
 
 TEST(HDWallet, getKeyByCurve) {
     const auto derivPath = "m/44'/539'/0'/0/0";
-    HDWallet wallet = HDWallet(mnemonic2, "");
+    HDWallet wallet = HDWallet(mnemonic1, "");
     {
         const auto privateKey = wallet.getKeyByCurve(TWCurveSECP256k1, DerivationPath(derivPath));
         EXPECT_EQ(hex(privateKey.bytes), "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
@@ -412,7 +412,7 @@ TEST(HDWallet, getKeyByCurve) {
 
 TEST(HDWallet, getKey) {
     const auto derivPath = "m/44'/539'/0'/0/0";
-    HDWallet wallet = HDWallet(mnemonic2, "");
+    HDWallet wallet = HDWallet(mnemonic1, "");
     {
         const auto privateKey = wallet.getKey(TWCoinTypeBitcoin, DerivationPath(derivPath));
         EXPECT_EQ(hex(privateKey.bytes), "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
@@ -423,4 +423,15 @@ TEST(HDWallet, getKey) {
     }
 }
 
-} // namespace
+TEST(HDWallet, AptosKey) {
+    const auto derivPath = "m/44'/637'/0'/0'/0'";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeAptos, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "7f2634c0e2414a621e96e39c41d09021700cee12ee43328ed094c5580cd0bd6f");
+        EXPECT_EQ(hex(privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes), "633e5c7e355bdd484706436ce1f06fdf280bd7c2229a7f9b6489684412c6967c");
+    }
+}
+
+
+} // namespace TW::HDWalletTests

@@ -14,8 +14,10 @@
 // Bech32M variant also supported (BIP350)
 // Max length of 90 constraint is extended here to 120 for other usages
 
-using namespace TW::Bech32;
+
 using namespace TW;
+
+namespace TW::Bech32 {
 
 namespace {
 
@@ -26,14 +28,13 @@ const char* charset = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 constexpr std::array<int8_t, 128> charset_rev = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, 15, -1, 10, 17, 21, 20, 26, 30, 7,  5,  -1, -1, -1, -1, -1, -1, -1, 29,
-    -1, 24, 13, 25, 9,  8,  23, -1, 18, 22, 31, 27, 19, -1, 1,  0,  3,  16, 11, 28, 12, 14,
-    6,  4,  2,  -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9,  8,  23, -1, 18, 22, 31, 27,
-    19, -1, 1,  0,  3,  16, 11, 28, 12, 14, 6,  4,  2,  -1, -1, -1, -1, -1};
+    -1, -1, -1, -1, 15, -1, 10, 17, 21, 20, 26, 30, 7, 5, -1, -1, -1, -1, -1, -1, -1, 29,
+    -1, 24, 13, 25, 9, 8, 23, -1, 18, 22, 31, 27, 19, -1, 1, 0, 3, 16, 11, 28, 12, 14,
+    6, 4, 2, -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9, 8, 23, -1, 18, 22, 31, 27,
+    19, -1, 1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1};
 
 const uint32_t BECH32_XOR_CONST = 0x01;
 const uint32_t BECH32M_XOR_CONST = 0x2bc830a3;
-
 
 /** Find the polynomial with value coefficients mod the generator as 30-bit. */
 uint32_t polymod(const Data& values) {
@@ -105,7 +106,7 @@ Data create_checksum(const std::string& hrp, const Data& values, ChecksumVariant
 } // namespace
 
 /** Encode a Bech32 string. */
-std::string Bech32::encode(const std::string& hrp, const Data& values, ChecksumVariant variant) {
+std::string encode(const std::string& hrp, const Data& values, ChecksumVariant variant) {
     Data checksum = create_checksum(hrp, values, variant);
     Data combined = values;
     append(combined, checksum);
@@ -118,7 +119,7 @@ std::string Bech32::encode(const std::string& hrp, const Data& values, ChecksumV
 }
 
 /** Decode a Bech32 string. */
-std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string& str) {
+std::tuple<std::string, Data, ChecksumVariant> decode(const std::string& str) {
     if (str.length() > 120 || str.length() < 2) {
         // too long or too short
         return std::make_tuple(std::string(), Data(), None);
@@ -141,7 +142,7 @@ std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string&
         ok = false;
     }
     size_t pos = str.rfind('1');
-    if (ok && pos != str.npos && pos >= 1 && pos + 7 <= str.size()) {
+    if (ok && pos != std::string::npos && pos >= 1 && pos + 7 <= str.size()) {
         Data values;
         values.resize(str.size() - 1 - pos);
         for (size_t i = 0; i < str.size() - 1 - pos; ++i) {
@@ -164,3 +165,5 @@ std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string&
     }
     return std::make_tuple(std::string(), Data(), None);
 }
+
+} // namespace TW::Bech32

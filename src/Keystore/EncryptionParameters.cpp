@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,17 +7,15 @@
 #include "EncryptionParameters.h"
 
 #include "../Hash.h"
-#include "../HexCoding.h"
 
 #include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/scrypt.h>
-
-#include <boost/variant/get.hpp>
 #include <cassert>
 
 using namespace TW;
-using namespace TW::Keystore;
+
+namespace TW::Keystore {
 
 template <typename Iter>
 static Data computeMAC(Iter begin, Iter end, const Data& key) {
@@ -58,22 +56,20 @@ nlohmann::json EncryptionParameters::json() const {
     j[CodingKeys::cipher] = cipher;
     j[CodingKeys::cipherParams] = cipherParams.json();
 
-    if (kdfParams.which() == 0) {
-        auto scryptParams = boost::get<ScryptParameters>(kdfParams);
+    if (auto* scryptParams = std::get_if<ScryptParameters>(&kdfParams); scryptParams) {
         j[CodingKeys::kdf] = "scrypt";
-        j[CodingKeys::kdfParams] = scryptParams.json();
-    } else if (kdfParams.which() == 1) {
-        auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
+        j[CodingKeys::kdfParams] = scryptParams->json();
+    } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&kdfParams); pbkdf2Params) {
         j[CodingKeys::kdf] = "pbkdf2";
-        j[CodingKeys::kdfParams] = pbkdf2Params.json();
+        j[CodingKeys::kdfParams] = pbkdf2Params->json();
     }
 
     return j;
 }
 
-EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params) :
-    params(std::move(params)), _mac() {
-    auto scryptParams = boost::get<ScryptParameters>(params.kdfParams);
+EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params)
+    : params(std::move(params)), _mac() {
+    auto scryptParams = std::get<ScryptParameters>(this->params.kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
            scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
@@ -83,7 +79,7 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     auto result = aes_encrypt_key128(derivedKey.data(), &ctx);
     assert(result == EXIT_SUCCESS);
     if (result == EXIT_SUCCESS) {
-        Data iv = params.cipherParams.iv;
+        Data iv = this->params.cipherParams.iv;
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
 
@@ -100,19 +96,17 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     auto derivedKey = Data();
     auto mac = Data();
 
-    if (params.kdfParams.which() == 0) {
-        auto scryptParams = boost::get<ScryptParameters>(params.kdfParams);
-        derivedKey.resize(scryptParams.defaultDesiredKeyLength);
-        scrypt(password.data(), password.size(), scryptParams.salt.data(),
-            scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
-            scryptParams.defaultDesiredKeyLength);
+    if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
+        derivedKey.resize(scryptParams->defaultDesiredKeyLength);
+        scrypt(password.data(), password.size(), scryptParams->salt.data(),
+               scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
+               scryptParams->defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
-    } else if (params.kdfParams.which() == 1) {
-        auto pbkdf2Params = boost::get<PBKDF2Parameters>(params.kdfParams);
-        derivedKey.resize(pbkdf2Params.defaultDesiredKeyLength);
-        pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params.salt.data(),
-            static_cast<int>(pbkdf2Params.salt.size()), pbkdf2Params.iterations, derivedKey.data(),
-            pbkdf2Params.defaultDesiredKeyLength);
+    } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
+        derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);
+        pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params->salt.data(),
+                           static_cast<int>(pbkdf2Params->salt.size()), pbkdf2Params->iterations, derivedKey.data(),
+                           pbkdf2Params->defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     } else {
         throw DecryptionError::unsupportedKDF;
@@ -158,3 +152,5 @@ nlohmann::json EncryptedPayload::json() const {
     j[CodingKeys::mac] = hex(_mac);
     return j;
 }
+
+} // namespace TW::Keystore

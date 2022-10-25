@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,13 +8,8 @@
 
 #include "Hash.h"
 #include "Signer.h"
-#include "../BinaryCoding.h"
-#include "../PublicKey.h"
 
 #include <vector>
-
-using namespace TW;
-using namespace std;
 
 namespace TW::Solana {
 
@@ -55,31 +50,30 @@ void Message::addAccountKeys(const Address& account) {
 }
 
 void Message::compileAccounts() {
-    for (auto& instr: instructions) {
-        for (auto& address: instr.accounts) {
+    for (auto& instr : instructions) {
+        for (auto& address : instr.accounts) {
             addAccount(address);
         }
     }
     // add programIds (read-only, at end)
-    for (auto& instr: instructions) {
+    for (auto& instr : instructions) {
         addAccount(AccountMeta{instr.programId, false, true});
     }
 
     header = MessageHeader{
         (uint8_t)signedAccounts.size(),
         0,
-        (uint8_t)readOnlyAccounts.size()
-    };
+        (uint8_t)readOnlyAccounts.size()};
 
     // merge the three buckets
     accountKeys.clear();
-    for(auto& a: signedAccounts) {
+    for (auto& a : signedAccounts) {
         addAccountKeys(a);
     }
-    for(auto& a: unsignedAccounts) {
+    for (auto& a : unsignedAccounts) {
         addAccountKeys(a);
     }
-    for(auto& a: readOnlyAccounts) {
+    for (auto& a : readOnlyAccounts) {
         addAccountKeys(a);
     }
 
@@ -88,7 +82,7 @@ void Message::compileAccounts() {
 
 void Message::compileInstructions() {
     compiledInstructions.clear();
-    for (auto instruction: instructions) {
+    for (auto instruction : instructions) {
         compiledInstructions.emplace_back(CompiledInstruction(instruction, accountKeys));
     }
 }

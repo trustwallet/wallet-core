@@ -4,18 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HexCoding.h"
-#include "PublicKey.h"
 #include "Solana/Address.h"
-#include "Solana/Program.h"
 #include "Solana/Transaction.h"
+#include "Solana/Program.h"
 
 #include "BinaryCoding.h"
+#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana {
 
 TEST(SolanaTransaction, TransferMessageData) {
     auto from = Address("6eoo7i1khGhVm8tLBMAdq4ax2FxkKP4G7mCcfHyr3STN");
@@ -543,3 +541,5 @@ TEST(SolanaTransaction, AdvanceNonceAccount) {
         "FE9pCP2dKxCLH8Wfaez8bLtopjmWun9cbikxo7LZsarYzMXvxwZmerRd1";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+} // namespace TW::Solana

@@ -41,7 +41,7 @@ string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
-        txInputData, [=](const auto& input, auto& output) {
+        txInputData, [](const auto& input, auto& output) {
             auto unsignedTxBytes = Signer::buildUnsignedTxBytes(input);
             output.set_data(unsignedTxBytes.data(), unsignedTxBytes.size());
             output.set_data_hash(unsignedTxBytes.data(), unsignedTxBytes.size()); });
@@ -58,9 +58,9 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
             } 
 
             if (signatures.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error(Common::Proto::Error_signatures_count);
                 output.set_error_message(
-                    Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                    Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
 

@@ -122,25 +122,25 @@ TEST(StoredKey, AccountGetCreate) {
     // not exists, wallet nonnull, create
     std::optional<Account> acc3 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc3.has_value());
-    EXPECT_EQ(acc3->coin, coinTypeBc);
+    EXPECT_EQ(acc3->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists
     std::optional<Account> acc4 = key.account(coinTypeBc);
     EXPECT_TRUE(acc4.has_value());
-    EXPECT_EQ(acc4->coin, coinTypeBc);
+    EXPECT_EQ(acc4->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet nonnull, not create
     std::optional<Account> acc5 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc5.has_value());
-    EXPECT_EQ(acc5->coin, coinTypeBc);
+    EXPECT_EQ(acc5->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet null, not create
     std::optional<Account> acc6 = key.account(coinTypeBc, nullptr);
     EXPECT_TRUE(acc6.has_value());
-    EXPECT_EQ(acc6->coin, coinTypeBc);
+    EXPECT_EQ(acc6->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
@@ -297,14 +297,14 @@ TEST(StoredKey, LoadPBKDF2Key) {
     EXPECT_EQ(key.id, "3198bc9c-6672-5ab3-d995-4942343ae5b6");
 
     const auto& payload = key.payload;
-    ASSERT_TRUE(payload.params.kdfParams.which() == 1);
-    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).desiredKeyLength, 32ul);
-    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144ul);
-    EXPECT_EQ(hex(boost::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
+    ASSERT_TRUE(std::holds_alternative<PBKDF2Parameters>(payload.params.kdfParams));
+    EXPECT_EQ(std::get<PBKDF2Parameters>(payload.params.kdfParams).desiredKeyLength, 32ul);
+    EXPECT_EQ(std::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144ul);
+    EXPECT_EQ(hex(std::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
 
     EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 
-    auto j = boost::get<PBKDF2Parameters>(payload.params.kdfParams).json();
+    auto j = std::get<PBKDF2Parameters>(payload.params.kdfParams).json();
     auto expected = R"|({"c":262144,"dklen":32,"salt":"ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd"})|";
     EXPECT_EQ(j.dump(), expected);
 }
@@ -355,12 +355,12 @@ TEST(StoredKey, ReadWallet) {
     EXPECT_EQ(hex(header._mac), "2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097");
     EXPECT_EQ(hex(header.params.cipherParams.iv), "83dbcc02d8ccb40e466191a123791e0e");
 
-    ASSERT_TRUE(header.params.kdfParams.which() == 0);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).desiredKeyLength, 32ul);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).n, 262144ul);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).p, 8ul);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).r, 1ul);
-    EXPECT_EQ(hex(boost::get<ScryptParameters>(header.params.kdfParams).salt), "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19");
+    ASSERT_TRUE(std::holds_alternative<ScryptParameters>(header.params.kdfParams));
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).desiredKeyLength, 32ul);
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).n, 262144ul);
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).p, 8ul);
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).r, 1ul);
+    EXPECT_EQ(hex(std::get<ScryptParameters>(header.params.kdfParams).salt), "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19");
 }
 
 TEST(StoredKey, ReadMyEtherWallet) {
@@ -398,7 +398,7 @@ TEST(StoredKey, CreateAccounts) {
     string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault);
     const auto wallet = key.wallet(gPassword);
-
+    
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");

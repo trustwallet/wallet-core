@@ -6,9 +6,11 @@
 
 #pragma once
 
+#include <utility>
+
 #include "Address.h"
 #include "BaseTransaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Algorand.pb.h"
 
 namespace TW::Algorand {
@@ -31,7 +33,7 @@ class OptInAssetTransaction: public BaseTransaction {
         : address(address), fee(fee)
         , assetId(assetId), firstRound(firstRound)
         , lastRound(lastRound), note(note)
-        , type(type), genesisId(genesisId)
+        , type(std::move(type)), genesisId(genesisId)
         , genesisHash(genesisHash) {}
 
   public:

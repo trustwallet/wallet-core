@@ -76,14 +76,15 @@ public:
 class SegwitFeeCalculator : public LinearFeeCalculator {
 private:
     bool disableDustFilter = false;
-    
+
 public:
     constexpr SegwitFeeCalculator(bool disableFilter = false) noexcept
-        :LinearFeeCalculator(101.25, 31, 10), disableDustFilter(disableFilter) {}
+        : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase)
+        , disableDustFilter(disableFilter) {}
 
     [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
-        if (disableDustFilter) { 
-            return 0; 
+        if (disableDustFilter) {
+            return 0;
         }
         return LinearFeeCalculator::calculateSingleInput(byteFee);
     }

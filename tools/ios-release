@@ -37,8 +37,9 @@ popd
 
 # upload to release
 download_url=$(wc_upload_asset ${release_url} ${filename})
+echo "download_url is $download_url"
 download_url=$(tr -d '"' <<< $download_url)
-echo "download_url is ${download_url}"
+echo "trimmed download_url is ${download_url}"
 
 # create podspec
 podspec_name=TrustWalletCore

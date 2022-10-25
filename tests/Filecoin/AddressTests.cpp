@@ -104,4 +104,4 @@ TEST(FilecoinAddress, FromString) {
         EXPECT_ANY_THROW(new Address(test));
 }
 
-}
+} // TW::Filecoin::tests

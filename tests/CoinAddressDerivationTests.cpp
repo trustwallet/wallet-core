@@ -57,6 +57,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeMoonbeam:
         case TWCoinTypeMoonriver:
         case TWCoinTypeOptimism:
+        case TWCoinTypeZksync:
         case TWCoinTypeOKXChain:
         case TWCoinTypePOANetwork:
         case TWCoinTypePolygon:
@@ -158,6 +159,9 @@ TEST(Coin, DeriveAddress) {
             break;
         case TWCoinTypeElrond:
             EXPECT_EQ(address, "erd1a6f6fan035ttsxdmn04ellxdlnwpgyhg0lhx5vjv92v6rc8xw9yq83344f");
+            break;
+        case TWCoinTypeEverscale:
+            EXPECT_EQ(address, "0:ef64d51f95ef17973b737277cfecbd2a8d551141be2f58f5fb362575fc3eb5b0");
             break;
         case TWCoinTypeFIO:
             EXPECT_EQ(address, "FIO5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
@@ -267,7 +271,12 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeStratis:
             EXPECT_EQ(address, "strax1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0rvt20n");
             break;
-
+        case TWCoinTypeNervos:
+            EXPECT_EQ(address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtsqfsf77ae0wn5a7795hs2ydv83g6hl4qleywxw");
+            break;
+        case TWCoinTypeAptos:
+            EXPECT_EQ(address, "0xce2fd04ac9efa74f17595e5785e847a2399d7e637f5e8179244f76191f653276");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

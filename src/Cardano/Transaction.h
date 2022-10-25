@@ -13,6 +13,9 @@
 #include "../proto/Cardano.pb.h"
 #include "../proto/Common.pb.h"
 
+#include <set>
+#include <string>
+#include <utility>
 #include <vector>
 #include <string>
 #include <set>
@@ -28,7 +31,8 @@ public:
     uint256_t amount;
 
     TokenAmount() = default;
-    TokenAmount(const std::string& policyId, const std::string& assetName, uint256_t amount) : policyId(policyId), assetName(assetName), amount(amount) {}
+    TokenAmount(std::string policyId, std::string assetName, uint256_t amount)
+        : policyId(std::move(policyId)), assetName(std::move(assetName)), amount(std::move(amount)) {}
 
     static TokenAmount fromProto(const Proto::TokenAmount& proto);
     Proto::TokenAmount toProto() const;
@@ -41,7 +45,11 @@ public:
     std::map<std::string, TokenAmount> bundle;
 
     TokenBundle() = default;
-    TokenBundle(const std::vector<TokenAmount>& tokens) { for (const auto& t: tokens) { add(t); } }
+    explicit TokenBundle(const std::vector<TokenAmount>& tokens) {
+        for (const auto& t : tokens) {
+            add(t);
+        }
+    }
 
     static TokenBundle fromProto(const Proto::TokenBundle& proto);
     Proto::TokenBundle toProto() const;
@@ -64,14 +72,14 @@ public:
 class OutPoint {
 public:
     Data txHash;
-    uint64_t outputIndex;
+    uint64_t outputIndex{};
 
     OutPoint() = default;
-    OutPoint(const Data& txHash, uint64_t outputIndex) : txHash(txHash), outputIndex(outputIndex) {}
-    static OutPoint fromProto(const Proto::OutPoint& proto);
+    OutPoint(Data txHash, uint64_t outputIndex)
+        : txHash(std::move(txHash)), outputIndex(outputIndex) {}
 };
 
-class TxInput: public OutPoint {
+class TxInput : public OutPoint {
 public:
     std::string address;
 
@@ -92,30 +100,67 @@ public:
     Data address;
 
     /// ADA amount
-    Amount amount;
+    Amount amount{};
 
     /// Token amounts (optional)
     TokenBundle tokenBundle;
 
     TxOutput() = default;
-    TxOutput(const Data& address, Amount amount) : address(address), amount(amount) {}
-    TxOutput(const Data& address, Amount amount, const TokenBundle& tokenBundle) : address(address), amount(amount), tokenBundle(tokenBundle) {}
+    TxOutput(Data address, Amount amount)
+        : address(std::move(address)), amount(amount) {}
+    TxOutput(Data address, Amount amount, TokenBundle tokenBundle)
+        : address(std::move(address)), amount(amount), tokenBundle(std::move(tokenBundle)) {}
 };
 
 class TransactionPlan {
 public:
     std::vector<TxInput> utxos;
-    Amount availableAmount = 0;  // total coins in the utxos
-    Amount amount = 0;  // coins in the output UTXO
-    Amount fee = 0;  // coin amount deducted as fee
-    Amount change = 0;  // coins in the change UTXO
-    TokenBundle availableTokens;  // total tokens in the utxos (optional)
-    TokenBundle outputTokens;  // tokens in the output (optional)
-    TokenBundle changeTokens;  // tokens in the change (optional)
+    Amount availableAmount = 0;  // total coins in the input utxos
+    Amount amount = 0;           // coins in the output UTXO
+    Amount fee = 0;              // coin amount deducted as fee
+    Amount change = 0;           // coins in the change UTXO
+    Amount deposit = 0;          // coins deposited (going to deposit) in this TX
+    Amount undeposit = 0;        // coins undeposited (returned from deposit) in this TX
+    TokenBundle availableTokens; // total tokens in the utxos (optional)
+    TokenBundle outputTokens;    // tokens in the output (optional)
+    TokenBundle changeTokens;    // tokens in the change (optional)
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 
     static TransactionPlan fromProto(const Proto::TransactionPlan& proto);
     Proto::TransactionPlan toProto() const;
+};
+
+/// A key with a type, used in a Certificate
+class CertificateKey {
+public:
+    enum KeyType : uint8_t {
+        AddressKeyHash = 0,
+        // ScriptHash = 1,
+    };
+    KeyType type;
+    Data key;
+};
+
+/// Certificate, mainly used for staking
+class Certificate {
+public:
+    enum CertificateType : uint8_t {
+        SkatingKeyRegistration = 0,
+        StakingKeyDeregistration = 1,
+        Delegation = 2,
+        // StakePoolRegistration = 3, // not supported
+    };
+    CertificateType type;
+    CertificateKey certKey;
+    /// Optional PoolId, used in delegation
+    Data poolId;
+};
+
+/// Staking withdrawal
+class Withdrawal {
+public:
+    Data stakingKey;
+    Amount amount;
 };
 
 class Transaction {
@@ -124,6 +169,8 @@ public:
     std::vector<TxOutput> outputs;
     Amount fee;
     uint64_t ttl;
+    std::vector<Certificate> certificates;
+    std::vector<Withdrawal> withdrawals;
 
     // Encode into CBOR binary format
     Data encode() const;

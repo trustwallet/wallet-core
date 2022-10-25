@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,8 @@
 
 #include "../Ethereum/RLP.h"
 
-using namespace TW;
-using namespace TW::VeChain;
+namespace TW::VeChain {
+
 using RLP = Ethereum::RLP;
 
 Data encode(const Clause& clause) noexcept {
@@ -45,3 +45,5 @@ Data Transaction::encode() const noexcept {
     }
     return RLP::encodeList(encoded);
 }
+
+} // namespace TW::VeChain

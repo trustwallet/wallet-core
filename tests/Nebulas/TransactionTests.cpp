@@ -1,6 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
-//
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,11 +11,11 @@
 
 #include <gtest/gtest.h>
 
-using namespace std;
-using namespace TW;
-using namespace TW::Nebulas;
-
 extern std::string htmlescape(const std::string& str);
+
+namespace TW::Nebulas::tests {
+
+using namespace std;
 
 TEST(NebulasTransaction, serialize) {
     auto from = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
@@ -36,7 +34,7 @@ TEST(NebulasTransaction, serialize) {
     auto signer = Signer(1);
     signer.sign(privateKey, transaction);
     transaction.serializeToRaw();
-    
+
     ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiBQXdR2neMqnEu21q/U+OHqZHSBX9Q0hNiRfL2eCZO4hRIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6CAoGYmluYXJ5QAFKEAAAAAAAAAAAAAAAAAAPQkBSEAAAAAAAAAAAAAAAAAADDUBYAWJB9T9KkUH/jkYrCUE47M2MOl14Zfnpq1CWJseEYKngsPw19+1boXlc64Gl5Gt1gKb3+0MdRP26klFTmc9qjkfnFQA=");
 }
 
@@ -79,5 +77,7 @@ TEST(NebulasTransaction, serializeUnsigned) {
         /* timestamp: */ 1560052938,
         /* payload: */ std::string());
 
-    ASSERT_THROW(transaction.serializeToRaw(),std::logic_error);
+    ASSERT_THROW(transaction.serializeToRaw(), std::logic_error);
 }
+
+} // namespace TW::Nebulas::tests

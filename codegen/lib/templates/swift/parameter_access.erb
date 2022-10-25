@@ -10,11 +10,13 @@
         let <%= param.name %>String: UnsafeRawPointer?
         if let s = <%= param.name %> {
             <%= param.name %>String = TWStringCreateWithNSString(s)
-            defer {
-                TWStringDelete(s)
-            }
         } else {
             <%= param.name %>String = nil
+        }
+        defer {
+            if let s = <%= param.name %>String {
+                TWStringDelete(s)
+            }
         }
 <%      else -%>
         let <%= param.name %>String = TWStringCreateWithNSString(<%= param.name %>)

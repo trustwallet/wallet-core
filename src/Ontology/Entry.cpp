@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,21 +10,18 @@
 #include "Signer.h"
 #include "OntTxBuilder.h"
 #include "OngTxBuilder.h"
-#include "OepTxBuilder.h"
+#include "Oep4TxBuilder.h"
 #include "../proto/TransactionCompiler.pb.h"
 
-using namespace TW::Ontology;
-using namespace TW;
-using namespace std;
-
+namespace TW::Ontology {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
@@ -49,7 +46,7 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
                 preImage = tx.serializeUnsigned();
                 preImageHash = tx.txHash();
             } else {
-                auto tx = OepTxBuilder::buildTransferTx(txInput);
+                auto tx = Oep4TxBuilder::buildTx(input);
                 preImage = tx.serializeUnsigned();
                 preImageHash = tx.txHash();
             }
@@ -77,3 +74,4 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
             output.set_encoded(signedTx.data(), signedTx.size());
     });
 }
+} // namespace TW::Ontology

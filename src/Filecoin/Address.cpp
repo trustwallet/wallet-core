@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust.
+// Copyright © 2017-2022 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,9 +10,7 @@
 #include <climits>
 
 #include "../Base32.h"
-#include "../Data.h"
 
-using namespace TW;
 namespace TW::Filecoin {
 
 static const char BASE32_ALPHABET_FILECOIN[] = "abcdefghijklmnopqrstuvwxyz234567";

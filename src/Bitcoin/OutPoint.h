@@ -7,7 +7,7 @@
 #pragma once
 
 #include "algorithm/to_array.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
@@ -33,7 +33,7 @@ struct OutPoint {
     /// Initializes an out-point reference with hash, index.
     template <typename T>
     OutPoint(const T& h, uint32_t index, uint32_t sequence = 0) noexcept
-        : hash(to_array<TW::byte, 32>(h)), index(index), sequence(sequence) {}
+        : hash(to_array<byte, 32>(h)), index(index), sequence(sequence) {}
 
     /// Initializes an out-point from a Protobuf out-point.
     OutPoint(const Proto::OutPoint& other) noexcept

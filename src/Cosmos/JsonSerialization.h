@@ -9,6 +9,7 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "../proto/Cosmos.pb.h"
+#include <TrustWalletCore/TWCoinType.h>
 #include <nlohmann/json.hpp>
 
 extern const std::string TYPE_PREFIX_MSG_SEND;
@@ -25,10 +26,9 @@ using string = std::string;
 using json = nlohmann::json;
 
 json signaturePreimageJSON(const Proto::SigningInput& input);
-
-json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature);
-
-std::string buildJsonTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature);
-json transactionJSON(const Proto::SigningInput& input, const Data& signature);
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin);
+json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature, TWCoinType coin);
+std::string buildJsonTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature, TWCoinType coin);
+json signatureJSON(const Data& signature, const Data& pubkey, TWCoinType coin);
 
 } // namespace TW::Cosmos::json

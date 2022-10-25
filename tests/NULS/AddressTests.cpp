@@ -1,17 +1,15 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
-#include "NULS/Address.h"
 
+#include "NULS/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include <gtest/gtest.h>
 
-using namespace TW;
-
-namespace TW::NULS {
+namespace TW::NULS::tests {
 
 TEST(NULSAddress, StaticInvalid) {
     ASSERT_FALSE(Address::isValid("abc"));
@@ -69,4 +67,4 @@ TEST(NULSAddress, FromPrivateKey33) {
     ASSERT_EQ(address.string(), "NULSd6HgXx8YkwEjePLWUmdRSZzPQzK6BXnsB");
 }
 
-} // namespace TW::NULS
+} // namespace TW::NULS::tests

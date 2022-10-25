@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
 
-#include "../Data.h"
-#include "../uint256.h"
+#include "Data.h"
+#include "uint256.h"
 
 namespace TW::NEO {
 

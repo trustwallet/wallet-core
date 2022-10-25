@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 #include <proto/Nano.pb.h>
 

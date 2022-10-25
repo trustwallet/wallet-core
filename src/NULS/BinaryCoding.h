@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Address.h"
-#include "Signer.h"
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 #include "../proto/NULS.pb.h"

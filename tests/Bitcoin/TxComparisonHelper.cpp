@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,12 +16,10 @@
 #include "HexCoding.h"
 #include "BinaryCoding.h"
 
-#include <gtest/gtest.h>
 #include <iostream>
 #include <cassert>
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
 
@@ -30,14 +28,15 @@ UTXO buildTestUTXO(int64_t amount) {
     utxo.amount = amount;
     utxo.outPoint = emptyTxOutPoint;
     utxo.outPoint.sequence = UINT32_MAX;
-    utxo.script = Script(parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
+    utxo.script = Script(parse_hex("0014"
+                                   "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
     return utxo;
 }
 
 UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
     UTXOs utxos;
-    for (auto it = amounts.begin(); it != amounts.end(); it++) {
-        utxos.push_back(buildTestUTXO(*it));
+    for (long long amount : amounts) {
+        utxos.push_back(buildTestUTXO(amount));
     }
     return utxos;
 }
@@ -48,7 +47,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
     input.byteFee = byteFee;
     input.useMaxAmount = useMaxAmount;
     input.coinType = coin;
-    
+
     if (!omitPrivateKey) {
         auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
         auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -65,7 +64,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
 
 int64_t sumUTXOs(const UTXOs& utxos) {
     int64_t s = 0u;
-    for (auto& utxo: utxos) {
+    for (auto& utxo : utxos) {
         s += utxo.amount;
     }
     return s;
@@ -104,8 +103,8 @@ bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmo
         std::cerr << "Mismatch in fee, act " << plan.fee << ", exp " << fee << std::endl;
     }
     int64_t sumExpectedUTXOs = 0;
-    for (auto i = 0ul; i < utxoAmounts.size(); ++i) {
-        sumExpectedUTXOs += utxoAmounts[i];
+    for (long long utxoAmount : utxoAmounts) {
+        sumExpectedUTXOs += utxoAmount;
     }
     if (plan.availableAmount != sumExpectedUTXOs) {
         ret = false;
@@ -140,7 +139,7 @@ bool operator==(const EncodedTxSize& s1, const EncodedTxSize& s2) {
 }
 
 EncodedTxSize getEncodedTxSize(const Transaction& tx) {
-    EncodedTxSize size;
+    EncodedTxSize size{};
     { // full segwit size
         Data data;
         tx.encode(data, Transaction::SegwitFormatMode::Segwit);
@@ -159,10 +158,10 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
         assert(size.segwit - size.nonSegwit == 2ul + witnessSize);
     }
     // compute virtual size: 3/4 of (smaller) non-segwit + 1/4 of segwit size
-    uint64_t sum = size.nonSegwit * 3 + size.segwit; 
+    uint64_t sum = size.nonSegwit * 3 + size.segwit;
     size.virtualBytes = sum / 4 + (sum % 4 != 0);
     // alternative computation: (smaller) non-segwit + 1/4 of the diff (witness-only)
-    uint64_t vSize2 = size.nonSegwit + (witnessSize + 2)/ 4 + ((witnessSize + 2) % 4 != 0);
+    uint64_t vSize2 = size.nonSegwit + (witnessSize + 2) / 4 + ((witnessSize + 2) % 4 != 0);
     assert(size.virtualBytes == vSize2);
     return size;
 }
@@ -207,7 +206,7 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
     data.clear();
     encodeVarInt(tx.inputs.size(), data);
     std::cout << "        \"" << hex(data) << "\" // inputs\n";
-    for (auto& input: tx.inputs) {
+    for (auto& input : tx.inputs) {
         auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(input.previousOutput);
         std::cout << "            \"" << hex(outpoint.hash) << "\"";
         data.clear();
@@ -223,7 +222,7 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
     data.clear();
     encodeVarInt(tx.outputs.size(), data);
     std::cout << "        \"" << hex(data) << "\" // outputs\n";
-    for (auto& output: tx.outputs) {
+    for (auto& output : tx.outputs) {
         data.clear();
         encode64LE(output.value, data);
         std::cout << "            \"" << hex(data) << "\"";
@@ -233,11 +232,11 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
 
     if (useWitnessFormat) {
         std::cout << "        // witness\n";
-        for (auto& input: tx.inputs) {
+        for (auto& input : tx.inputs) {
             data.clear();
             encodeVarInt(input.scriptWitness.size(), data);
             std::cout << "            \"" << hex(data) << "\"\n";
-            for (auto& item: input.scriptWitness) {
+            for (auto& item : input.scriptWitness) {
                 data.clear();
                 encodeVarInt(item.size(), data);
                 std::cout << "                \"" << hex(data) << "\"";
@@ -251,3 +250,5 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
     std::cout << "        \"" << hex(data) << "\" // nLockTime\n";
     std::cout << "\n";
 }
+
+} // namespace TW::Bitcoin

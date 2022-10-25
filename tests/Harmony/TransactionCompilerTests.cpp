@@ -108,7 +108,7 @@ TEST(HarmonyCompiler, CompileWithSignatures) {
         Harmony::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 
     { // Negative: empty signatures

@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,8 +13,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace TW;
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(CryptoorgAddress, Valid) {
     ASSERT_TRUE(Address::isValid(TWCoinTypeCryptoOrg, "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0"));
@@ -50,3 +49,5 @@ TEST(CryptoorgAddress, FromString) {
     EXPECT_EQ(address.string(), "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0");
     EXPECT_EQ(hex(address.getKeyHash()), "c2dcbc3828b42c429cedbaefa943e66679b471ed");
 }
+
+} // namespace TW::Cosmos::tests

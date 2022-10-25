@@ -1,27 +1,25 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Entry.h"
-#include <proto/TransactionCompiler.pb.h>
 #include "../proto/EOS.pb.h"
+#include <proto/TransactionCompiler.pb.h>
 
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW;
-using namespace TW::EOS;
-using namespace std;
+namespace TW::EOS {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
@@ -44,8 +42,8 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                output.set_error(Common::Proto::Error_signatures_count);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
 
@@ -54,3 +52,5 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
             output.set_json_encoded(signedTx.data(), signedTx.size());
         });
 }
+
+} // namespace TW::EOS

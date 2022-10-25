@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,6 @@
 #include "Ethereum/Signer.h"
 #include "Ethereum/Transaction.h"
 #include "Ethereum/Address.h"
-#include "Ethereum/RLP.h"
 #include "Ethereum/ABI.h"
 #include "proto/Ethereum.pb.h"
 #include "HexCoding.h"
@@ -19,15 +18,11 @@
 
 namespace TW::Binance {
 
-using namespace TW::Ethereum;
-using namespace TW::Ethereum::ABI;
-
-
 TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
 
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto transaction = TransactionNonTyped::buildNativeTransfer(
+    auto transaction = Ethereum::TransactionNonTyped::buildNativeTransfer(
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
@@ -46,9 +41,9 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
 
 TEST(BinanceSmartChain, SignTokenTransfer) {
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
-        std::make_shared<ParamAddress>(toAddress),
-        std::make_shared<ParamUInt256>(uint256_t(10000000000000000))
+    auto func = Ethereum::ABI::Function("transfer", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
+        std::make_shared<Ethereum::ABI::ParamAddress>(toAddress),
+        std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(10000000000000000))
     });
     Data payloadFunction;
     func.encode(payloadFunction);

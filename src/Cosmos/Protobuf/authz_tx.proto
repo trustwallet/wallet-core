@@ -1,0 +1,32 @@
+// Since: cosmos-sdk 0.43
+syntax = "proto3";
+package cosmos.authz.v1beta1;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+// Grant gives permissions to execute
+// the provide method with expiration time.
+message Grant {
+  google.protobuf.Any authorization = 1;
+  // time when the grant will expire and will be pruned. If null, then the grant
+  // doesn't have a time expiration (other conditions  in `authorization`
+  // may apply to invalidate the grant)
+  google.protobuf.Timestamp expiration = 2;
+}
+
+// MsgGrant is a request type for Grant method. It declares authorization to the grantee
+// on behalf of the granter with the provided expiration time.
+message MsgGrant {
+  string granter = 1;
+  string grantee = 2;
+  Grant grant = 3;
+}
+
+// MsgRevoke revokes any authorization with the provided sdk.Msg type on the
+// granter's account with that has been granted to the grantee.
+message MsgRevoke {
+  string granter      = 1;
+  string grantee      = 2;
+  string msg_type_url = 3;
+}

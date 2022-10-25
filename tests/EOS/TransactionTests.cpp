@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS::tests {
 
 static std::string k1Sigs[5]{
     "SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7",
@@ -123,3 +123,5 @@ TEST(EOSTransaction, Create) {
     auto emptyData = Data{};
     EXPECT_ANY_THROW(new Transaction(emptyData, 0));
 }
+
+} // namespace TW::EOS::tests

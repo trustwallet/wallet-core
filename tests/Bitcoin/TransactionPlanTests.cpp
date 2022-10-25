@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,9 +16,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Bitcoin;
-
+namespace TW::Bitcoin {
 
 TEST(TransactionPlan, OneTypical) {
     auto utxos = buildTestUTXOs({100'000});
@@ -196,7 +194,7 @@ TEST(TransactionPlan, ThreeNoDust) {
 }
 
 TEST(TransactionPlan, TenThree) {
-    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5,000, 125'000, 6'000, 150'000, 7'000});
+    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5, 000, 125'000, 6'000, 150'000, 7'000});
     auto sigingInput = buildSigningInput(300'000, 1, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
@@ -263,7 +261,7 @@ TEST(TransactionPlan, Inputs5_33Req19NoDustFee2) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 283*byteFee;
+    auto expectedFee = 283 * byteFee;
     EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
@@ -278,7 +276,7 @@ TEST(TransactionPlan, Inputs5_33Req19Dust1Fee5) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 283*byteFee;
+    auto expectedFee = 283 * byteFee;
     EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
@@ -293,7 +291,7 @@ TEST(TransactionPlan, Inputs5_33Req19Dust1Fee9) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 283*byteFee;
+    auto expectedFee = 283 * byteFee;
     EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
@@ -319,7 +317,7 @@ TEST(TransactionPlan, Inputs5_33Req13Fee20) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 283*byteFee;
+    auto expectedFee = 283 * byteFee;
     EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 13'000, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
@@ -688,3 +686,5 @@ TEST(TransactionPlan, OpReturn) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 174 * byteFee);
     EXPECT_EQ(feeCalculator.calculate(1, 3, byteFee), 205 * byteFee);
 }
+
+} // namespace TW::Bitcoin

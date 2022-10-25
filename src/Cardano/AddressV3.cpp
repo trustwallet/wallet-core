@@ -7,22 +7,16 @@
 #include "AddressV3.h"
 #include "AddressV2.h"
 #include <TrustWalletCore/TWCoinType.h>
-#include "../Data.h"
 #include "../Bech32.h"
 #include "../Base32.h"
-#include "../Crc.h"
 #include "../HexCoding.h"
-#include "../Hash.h"
 
 #include <array>
 
-using namespace TW;
-using namespace TW::Cardano;
-using namespace std;
+namespace TW::Cardano {
 
 bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
-    switch (kind)
-    {
+    switch (kind) {
     case Kind_Base:
         return (length == EncodedSize2);
 
@@ -37,7 +31,7 @@ bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
 }
 
 bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
-    if (raw.size() < 1ul) {
+    if (raw.empty()) {
         // too short, cannot extract kind and networkId
         return false;
     }
@@ -56,7 +50,7 @@ bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kin
 bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
     try {
         auto bech = Bech32::decode(addr);
-        if (std::get<1>(bech).size() == 0) {
+        if (std::get<1>(bech).empty()) {
             // empty Bech data
             return false;
         }
@@ -133,6 +127,17 @@ AddressV3 AddressV3::createBase(NetworkId networkId, const PublicKey& spendingKe
     return createBase(networkId, hash1, hash2);
 }
 
+AddressV3 AddressV3::createReward(NetworkId networkId, const TW::Data& stakingKeyHash) {
+    if (stakingKeyHash.size() != HashSize) {
+        throw std::invalid_argument("Wrong spending key hash size");
+    }
+    auto addr = AddressV3();
+    addr.networkId = networkId;
+    addr.kind = Kind_Reward;
+    addr.bytes = stakingKeyHash;
+    return addr;
+}
+
 AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, networkId, kind, bytes)) {
         // values stored
@@ -170,14 +175,6 @@ AddressV3::Kind AddressV3::kindFromFirstByte(uint8_t first) {
     return (Kind)((first & 0xF0) >> 4);
 }
 
-void AddressV3::operator=(const AddressV3& other)
-{
-    networkId = other.networkId;
-    kind = other.kind;
-    bytes = other.bytes;
-    legacyAddressV2 = other.legacyAddressV2;
-}
-
 std::string AddressV3::getHrp(Kind kind) noexcept {
     switch (kind) {
     case Kind_Base:
@@ -189,12 +186,12 @@ std::string AddressV3::getHrp(Kind kind) noexcept {
     }
 }
 
-string AddressV3::string() const {
+std::string AddressV3::string() const {
     const auto hrp = getHrp(kind);
     return string(hrp);
 }
 
-string AddressV3::string(const std::string& hrp) const {
+std::string AddressV3::string(const std::string& hrp) const {
     if (legacyAddressV2.has_value()) {
         return legacyAddressV2->string();
     }
@@ -208,7 +205,7 @@ string AddressV3::string(const std::string& hrp) const {
     return Bech32::encode(hrp, bech, Bech32::ChecksumVariant::Bech32);
 }
 
-Data AddressV3::data() const {
+Data AddressV3::data() const noexcept {
     if (legacyAddressV2.has_value()) {
         return legacyAddressV2->getCborData();
     }
@@ -219,3 +216,13 @@ Data AddressV3::data() const {
     TW::append(raw, bytes);
     return raw;
 }
+
+std::string AddressV3::getStakingAddress() const noexcept {
+    if (kind != Kind_Base || bytes.size() != (2 * HashSize)) {
+        return "";
+    }
+    const auto& stakingKeyHash = TW::subData(bytes, HashSize, HashSize);
+    return createReward(this->networkId, stakingKeyHash).string();
+}
+
+} // namespace TW::Cardano

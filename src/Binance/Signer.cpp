@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,7 +6,6 @@
 
 #include "Signer.h"
 #include "Serialization.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
@@ -17,8 +16,7 @@
 
 #include <string>
 
-using namespace TW;
-using namespace TW::Binance;
+namespace TW::Binance {
 
 // Message prefixes
 // see https://docs.binance.org/api-reference/transactions.html#amino-types
@@ -69,7 +67,7 @@ Data Signer::sign() const {
     auto hash = preImageHash();
     auto key = PrivateKey(input.private_key());
     auto signature = key.sign(hash, TWCurveSECP256k1);
-    return Data(signature.begin(), signature.end() - 1);
+    return {signature.begin(), signature.end() - 1};
 }
 
 Data Signer::preImageHash() const {
@@ -91,7 +89,7 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
     const auto encoded = encodeTransaction(encodeSignature(signature, publicKey));
     auto output = Proto::SigningOutput();
     output.set_encoded(encoded.data(), encoded.size());
-    return output;    
+    return output;
 }
 
 std::string Signer::signaturePreimage() const {
@@ -216,5 +214,7 @@ Data Signer::aminoWrap(const std::string& raw, const Data& typePrefix, bool pref
         cos.WriteRaw(raw.data(), static_cast<int>(raw.size()));
     }
 
-    return Data(msg.begin(), msg.end());
+    return {msg.begin(), msg.end()};
 }
+
+} // namespace TW::Binance

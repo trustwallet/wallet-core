@@ -7,15 +7,10 @@
 #include "Signer.h"
 #include "Asset.h"
 #include "PackedTransaction.h"
-#include "../proto/Common.pb.h"
-#include "../HexCoding.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/nist256p1.h>
-#include <TrezorCrypto/secp256k1.h>
 
-using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Proto::SigningOutput output;
@@ -86,7 +81,7 @@ TW::Data Signer::serializeTx(const Transaction& transaction) const noexcept {
     transaction.serialize(hashInput);
 
     Data cfdHash(Hash::sha256Size); // default value for empty cfd
-    if (transaction.contextFreeData.size()) {
+    if (!transaction.contextFreeData.empty()) {
         cfdHash = Hash::sha256(transaction.contextFreeData);
     }
 
@@ -96,10 +91,12 @@ TW::Data Signer::serializeTx(const Transaction& transaction) const noexcept {
 
 // canonical check for EOS
 int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
+    // clang-format off
     return !(sig[0] & 0x80) 
         && !(sig[0] == 0 && !(sig[1] & 0x80))
         && !(sig[32] & 0x80)
         && !(sig[32] == 0 && !(sig[33] & 0x80));
+    // clang-format on
 }
 
 Transaction Signer::buildTx(const Proto::SigningInput& input) const {
@@ -151,3 +148,5 @@ std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& 
     auto stx = ptx.serialize().dump();
     return stx;
 }
+
+} // namespace TW::EOS

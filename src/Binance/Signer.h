@@ -12,6 +12,7 @@
 #include "../PublicKey.h"
 
 #include <cstdint>
+#include <utility>
 
 namespace TW::Binance {
 
@@ -27,7 +28,7 @@ class Signer {
     bool testnet;
 
     /// Initializes a transaction signer.
-    explicit Signer(const Proto::SigningInput& input, bool testnet = false) : input(input), testnet(testnet) {}
+    explicit Signer(Proto::SigningInput input, bool test = false) : input(std::move(input)), testnet(test) {}
 
     /// Builds a signed transaction.
     ///

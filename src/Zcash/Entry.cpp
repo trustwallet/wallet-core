@@ -40,7 +40,7 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
     signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::plan([[maybe_unused]] [[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
 

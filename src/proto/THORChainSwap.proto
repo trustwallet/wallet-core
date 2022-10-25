@@ -17,7 +17,8 @@ enum Chain {
 
 // Predefined error codes
 enum ErrorCode {
-    OK = 0; // OK
+    // OK
+    OK = 0;
     Error_general = 1;
     Error_Input_proto_deserialization = 2;
     Error_Unsupported_from_chain = 13;
@@ -30,14 +31,22 @@ enum ErrorCode {
 
 // An error code + a free text
 message Error {
+    // code of the error
     ErrorCode code = 1;
+
+    // optional error message
     string message = 2;
 }
 
 // Represents an asset.  Examples: BNB.BNB, RUNE.RUNE, BNB.RUNE-67C
 message Asset {
+    // Chain ID
     Chain chain = 1;
+
+    // Symbol
     string symbol = 2;
+
+    // The ID of the token (blockchain-specific format)
     string token_id = 3;
 }
 
@@ -68,11 +77,15 @@ message SwapInput {
     string to_amount_limit = 8;
 }
 
+// Result of the swap, a SigningInput struct for the specific chain
 message SwapOutput {
+    // Source chain
     Chain from_chain = 1;
+
+    // Destination chain
     Chain to_chain = 2;
 
-    // Error code, filled in case of error, OK&"" on success
+    // Error code, filled in case of error, OK/empty on success
     Error error = 3;
 
     // Prepared unsigned transaction input, on the source chain, to THOR.  Some fields must be completed, and it has to be signed.

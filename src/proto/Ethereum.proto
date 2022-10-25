@@ -9,7 +9,7 @@ import "Common.proto";
 message Transaction {
     // Native coin transfer transaction
     message Transfer {
-        // Amount to send in wei (256-bit number)
+        // Amount to send in wei (uint256, serialized little endian)
         bytes amount = 1;
 
         // Optional payload data
@@ -18,40 +18,46 @@ message Transaction {
 
     // ERC20 token transfer transaction
     message ERC20Transfer {
+        // destination address (string)
         string to = 1;
 
-        // Amount to send (256-bit number)
+        // Amount to send (uint256, serialized little endian)
         bytes amount = 2;
     }
 
     // ERC20 approve transaction
     message ERC20Approve {
+        // Target of the approval
         string spender = 1;
 
-        // Amount to send (256-bit number)
+        // Amount to send (uint256, serialized little endian)
         bytes amount = 2;
     }
 
     // ERC721 NFT transfer transaction
     message ERC721Transfer {
+        // Source address
         string from = 1;
 
+        // Destination address
         string to = 2;
 
-        // ID of the token (256-bit number)
+        // ID of the token (uint256, serialized little endian)
         bytes token_id = 3;
     }
 
     // ERC1155 NFT transfer transaction
     message ERC1155Transfer {
+        // Source address
         string from = 1;
 
+        // Destination address
         string to = 2;
 
-        // ID of the token (256-bit number)
+        // ID of the token (uint256, serialized little endian)
         bytes token_id = 3;
 
-        // The amount of tokens being transferred
+        // The amount of tokens being transferred (uint256, serialized little endian)
         bytes value = 4;
 
         bytes data = 5;
@@ -59,13 +65,14 @@ message Transaction {
 
     // Generic smart contract transaction
     message ContractGeneric {
-        // Amount to send in wei (256-bit number)
+        // Amount to send in wei (uint256, serialized little endian)
         bytes amount = 1;
 
         // Contract call payload data
         bytes data = 2;
     }
 
+    // Payload transfer
     oneof transaction_oneof {
         Transfer transfer = 1;
         ERC20Transfer erc20_transfer = 2;
@@ -76,53 +83,59 @@ message Transaction {
     }
 }
 
+// Transaction type
 enum TransactionMode {
-    Legacy = 0; // Legacy transaction, pre-EIP2718/EIP1559; for fee gasPrice/gasLimit is used
-    Enveloped = 1; // Enveloped transaction EIP2718 (with type 0x2), fee is according to EIP1559 (base fee, inclusion fee, ...) 
+    // Legacy transaction, pre-EIP2718/EIP1559; for fee gasPrice/gasLimit is used
+    Legacy = 0;
+
+    // Enveloped transaction EIP2718 (with type 0x2), fee is according to EIP1559 (base fee, inclusion fee, ...) 
+    Enveloped = 1; 
 }
 
 // Input data necessary to create a signed transaction.
 // Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
-    // Chain identifier (256-bit number)
+    // Chain identifier (uint256, serialized little endian)
     bytes chain_id = 1;
 
-    // Nonce (256-bit number)
+    // Nonce (uint256, serialized little endian)
     bytes nonce = 2;
 
     // Transaction version selector: Legacy or enveloped, has impact on fee structure.
     // Default is Legacy (value 0)
     TransactionMode tx_mode = 3;
 
-    // Gas price (256-bit number)
+    // Gas price (uint256, serialized little endian)
     // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
     bytes gas_price = 4;
 
-    // Gas limit (256-bit number)
+    // Gas limit (uint256, serialized little endian)
     bytes gas_limit = 5;
 
-    // Maxinmum optional inclusion fee (aka tip) (256-bit number)
+    // Maximum optional inclusion fee (aka tip) (uint256, serialized little endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
     bytes max_inclusion_fee_per_gas = 6;
 
-    // Maxinmum fee (256-bit number)
+    // Maximum fee (uint256, serialized little endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
     bytes max_fee_per_gas = 7;
 
     // Recipient's address.
     string to_address = 8;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 9;
 
+    // The payload transaction
     Transaction transaction = 10;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
+    // The V, R, S components of the resulting signature, (each uint256, serialized little endian)
     bytes v = 2;
     bytes r = 3;
     bytes s = 4;
@@ -130,9 +143,9 @@ message SigningOutput {
     // The payload part, supplied in the input or assembled from input parameters
     bytes data = 5;
 
-    /// error code, 0 is ok, other codes will be treated as errors
+    // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 6;
 
-    /// error code description
+    // error code description
     string error_message = 7;
 }

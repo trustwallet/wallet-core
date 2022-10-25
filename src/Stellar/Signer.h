@@ -6,7 +6,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../proto/Stellar.pb.h"

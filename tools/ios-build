@@ -23,7 +23,7 @@ init() {
 # build destination archivePath
 build() {
     echo "Building scheme: $1, destination: $2, path: $3"
-    xcodebuild archive -project swift/${FRAMEWORK}.xcodeproj -scheme "$1" -destination "$2" -archivePath "$BUILD_FOLDER/$3".xcarchive SKIP_INSTALL=NO | xcpretty
+    xcodebuild archive -project swift/${FRAMEWORK}.xcodeproj -scheme "$1" -destination "$2" -archivePath "$BUILD_FOLDER/$3".xcarchive SKIP_INSTALL=NO | xcbeautify
 }
 
 build_ios_arm64() {

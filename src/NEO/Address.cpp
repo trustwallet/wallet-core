@@ -6,9 +6,8 @@
 
 #include "OpCode.h"
 #include "../Base58.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
-#include "../Ontology/ParamsBuilder.h"
 
 #include "Address.h"
 

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PublicKey.h"
 
 #include <TrustWalletCore/TWHRP.h>
@@ -27,7 +27,7 @@ public:
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<TW::byte, size> bytes{};
+    std::array<byte, size> bytes{};
 
     /// Cash address human-readable part
     const std::string hrp;

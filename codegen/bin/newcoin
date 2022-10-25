@@ -68,7 +68,7 @@ def insert_coin_entry(coin)
     insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
     target_line = "#{entryName}::Entry #{entryName}DP;" + $flag_comment + "\n"
     insert_target_line(target_file, target_line, "// end_of_coin_dipatcher_declarations_marker_do_not_modify\n")
-    target_line = "        case TWCoinType#{entryName}: entry = &#{entryName}DP; break;" + $flag_comment + "\n"
+    target_line = "        case TWBlockchain#{entryName}: entry = &#{entryName}DP; break;" + $flag_comment + "\n"
     insert_target_line(target_file, target_line, "        // end_of_coin_dipatcher_switch_marker_do_not_modify\n")
 end
 
@@ -104,7 +104,7 @@ puts "New coin template for coin '#{coin_id}' requested"
 json_string = File.read('registry.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 
-entity = EntityDecl.new(name: "New" + coin_id, is_struct: false)
+entity = EntityDecl.new(name: "New" + coin_id, is_struct: false, comment: '')
 file = "new"+ coin_id
 
 generator = CodeGenerator.new(entities: [entity], files: [file], output_folder: ".")

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::EOS {
 
@@ -16,7 +16,7 @@ public:
 
     Name() = default;
     Name(const std::string& str);
-    uint64_t toSymbol(char c) const noexcept;
+    static uint64_t toSymbol(char c) noexcept;
     std::string string() const noexcept;
 
     void serialize(TW::Data& o) const noexcept;

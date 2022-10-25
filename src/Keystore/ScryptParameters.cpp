@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,20 +10,22 @@
 #include <limits>
 
 using namespace TW;
-using namespace TW::Keystore;
+
+namespace TW::Keystore {
 
 ScryptParameters ScryptParameters::Minimal = ScryptParameters(Data(), minimalN, defaultR, minimalP, defaultDesiredKeyLength);
 ScryptParameters ScryptParameters::Weak = ScryptParameters(Data(), weakN, defaultR, weakP, defaultDesiredKeyLength);
 ScryptParameters ScryptParameters::Standard = ScryptParameters(Data(), standardN, defaultR, standardP, defaultDesiredKeyLength);
 
-ScryptParameters::ScryptParameters() : salt(32) {
+ScryptParameters::ScryptParameters()
+    : salt(32) {
     random_buffer(salt.data(), salt.size());
 }
 
 #pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
 
 std::optional<ScryptValidationError> ScryptParameters::validate() const {
-    if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false 
+    if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false
         return ScryptValidationError::desiredKeyLengthTooLarge;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {
@@ -44,12 +46,14 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
 // -----------------
 
 namespace CodingKeys::SP {
+
 static const auto salt = "salt";
 static const auto desiredKeyLength = "dklen";
 static const auto n = "n";
 static const auto p = "p";
 static const auto r = "r";
-} // namespace CodingKeys
+
+} // namespace CodingKeys::SP
 
 ScryptParameters::ScryptParameters(const nlohmann::json& json) {
     salt = parse_hex(json[CodingKeys::SP::salt].get<std::string>());
@@ -72,3 +76,5 @@ nlohmann::json ScryptParameters::json() const {
     j[CodingKeys::SP::r] = r;
     return j;
 }
+
+} // namespace TW::Keystore

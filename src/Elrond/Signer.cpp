@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,16 +8,14 @@
 #include "Address.h"
 #include "Serialization.h"
 #include "TransactionFactory.h"
-#include "../PublicKey.h"
 #include "HexCoding.h"
 
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Elrond;
-using namespace TW::Elrond::Proto;
+namespace TW::Elrond {
 
-SigningOutput Signer::sign(const SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    TransactionFactory factory;
 
     auto privateKey = PrivateKey(input.private_key());
     auto signableAsData = buildUnsignedTxBytes(input);
@@ -55,3 +53,5 @@ Proto::SigningOutput Signer::buildSigningOutput(const Proto::SigningInput &input
     protoOutput.set_encoded(encoded);
     return protoOutput;
 }
+
+} // namespace TW::Elrond

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,18 +7,19 @@
 #include "Signer.h"
 #include "InvocationTransaction.h"
 #include "Script.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 #include "../proto/Common.pb.h"
 #include "../proto/NEO.pb.h"
 
-using namespace TW;
-using namespace TW::NEO;
 using namespace std;
+using namespace TW;
 
-Signer::Signer(const PrivateKey& priKey) : privateKey(std::move(priKey)) {
+namespace TW::NEO {
+
+Signer::Signer(const PrivateKey& priKey)
+    : privateKey(std::move(priKey)) {
     auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pub.bytes;
     address = Address(pub);
@@ -293,3 +294,5 @@ Data Signer::encodeTransaction(const Proto::SigningInput& input,
 
     return transaction->serialize();
 }
+
+} // namespace TW::NEO

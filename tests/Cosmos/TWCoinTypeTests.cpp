@@ -21,11 +21,13 @@ TEST(TWCosmosCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCosmos, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
+    const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeCosmos));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeCosmos));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCosmos));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCosmos));
+    assertStringsEqual(chainId, "cosmoshub-4");
     assertStringsEqual(symbol, "ATOM");
     assertStringsEqual(txUrl, "https://mintscan.io/cosmos/txs/541FA06FB37AC1BF61922143783DD76FECA361830F9876D0342536EE8A87A790");
     assertStringsEqual(accUrl, "https://mintscan.io/cosmos/account/cosmos1gu6y2a0ffteesyeyeesk23082c6998xyzmt9mz");

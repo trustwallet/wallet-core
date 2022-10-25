@@ -61,9 +61,9 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data &txInputData, c
             } 
 
             if (signatures.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error(Common::Proto::Error_signatures_count);
                 output.set_error_message(
-                    Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                    Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
 

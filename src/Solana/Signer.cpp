@@ -7,15 +7,11 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Program.h"
-#include "../Base58.h"
-#include <TrezorCrypto/ed25519.h>
 
 #include <google/protobuf/util/json_util.h>
 
-#include <algorithm>
 #include <optional>
 
-using namespace TW;
 namespace TW::Solana {
 
 void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction) {
@@ -54,7 +50,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             /* to */ Address(protoMessage.recipient()),
             /* value */ protoMessage.value(),
             /* recent_blockhash */ blockhash,
-            /* memo */ protoMessage.memo(), convertReferences(protoMessage.references()));
+            /* memo */ protoMessage.memo(),
+            convertReferences(protoMessage.references()));
         signerKeys.push_back(key);
     } break;
 
@@ -66,8 +63,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         std::optional<Address> stakeAddress;
         if (protoMessage.stake_account().size() == 0) {
             // no stake address specified, generate a new unique
-            stakeAddress =
-                StakeProgram::addressFromRecentBlockhash(userAddress, blockhash, stakeProgramId);
+            stakeAddress = StakeProgram::addressFromRecentBlockhash(userAddress, blockhash, stakeProgramId);
         } else {
             // stake address specified, use it
             stakeAddress = Address(protoMessage.stake_account());
@@ -207,8 +203,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     } break;
 
     default:
-        assert(input.transaction_type_case() !=
-               Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
+        assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
     auto transaction = Transaction(message);
 

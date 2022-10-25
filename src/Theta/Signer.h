@@ -9,7 +9,7 @@
 #include <string>
 
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Theta.pb.h"
 

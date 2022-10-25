@@ -16,6 +16,7 @@
 #include "Aeternity/Entry.h"
 #include "Aion/Entry.h"
 #include "Algorand/Entry.h"
+#include "Aptos/Entry.h"
 #include "Binance/Entry.h"
 #include "Bitcoin/Entry.h"
 #include "BitcoinDiamond/Entry.h"
@@ -38,11 +39,12 @@
 #include "NULS/Entry.h"
 #include "Nano/Entry.h"
 #include "Nebulas/Entry.h"
+#include "Nervos/Entry.h"
 #include "Nimiq/Entry.h"
 #include "Oasis/Entry.h"
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
-#include "Ripple/Entry.h"
+#include "XRP/Entry.h"
 #include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
@@ -56,6 +58,7 @@
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Zen/Entry.h"
+#include "Everscale/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -65,6 +68,7 @@ using namespace std;
 Aeternity::Entry aeternityDP;
 Aion::Entry aionDP;
 Algorand::Entry algorandDP;
+Aptos::Entry AptosDP;
 Binance::Entry binanceDP;
 Bitcoin::Entry bitcoinDP;
 Cardano::Entry cardanoDP;
@@ -105,6 +109,8 @@ Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
 BitcoinDiamond::Entry bcdDP;
 Zen::Entry zenDP;
+Nervos::Entry NervosDP;
+Everscale::Entry EverscaleDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -156,6 +162,9 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainThorchain: entry = &thorchainDP; break;
         case TWBlockchainRonin: entry = &roninDP; break;
         case TWBlockchainKusama: entry = &kusamaDP; break;
+        case TWBlockchainNervos: entry = &NervosDP; break;
+        case TWBlockchainEverscale: entry = &EverscaleDP; break;
+        case TWBlockchainAptos: entry = &AptosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

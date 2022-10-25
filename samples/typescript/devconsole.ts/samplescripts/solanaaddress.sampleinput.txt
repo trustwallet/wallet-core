@@ -1,0 +1,13 @@
+// Derive a Solana address directly and through privKey-pubKey
+
+coin = CoinType.solana
+
+wallet = HDWallet.createWithMnemonic('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', '')
+
+address = wallet.getAddressForCoin(coin)
+
+pk = wallet.getKeyForCoin(coin); HexCoding.encode(pk.data())
+pubkey = pk.getPublicKeyEd25519(); HexCoding.encode(pubkey.data())
+a1 = AnyAddress.createWithPublicKey(pubkey, coin); a1.description()
+
+address === a1.description()

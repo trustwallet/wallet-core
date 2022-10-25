@@ -42,7 +42,7 @@ class CoinAddressDerivationTests {
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
-        ETHEREUM, SMARTCHAIN, POLYGON, OPTIMISM, ARBITRUM, ECOCHAIN, AVALANCHECCHAIN, XDAI,
+        ETHEREUM, SMARTCHAIN, POLYGON, OPTIMISM, ZKSYNC, ARBITRUM, ECOCHAIN, AVALANCHECCHAIN, XDAI,
         FANTOM, CELO, CRONOSCHAIN, SMARTBITCOINCASH, KUCOINCOMMUNITYCHAIN, BOBA, METIS,
         AURORA, EVMOS, MOONRIVER, MOONBEAM, KAVAEVM, KLAYTN, METER, OKXCHAIN -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         RONIN -> assertEquals("ronin:8f348F300873Fd5DA36950B2aC75a26584584feE", address)
@@ -103,13 +103,16 @@ class CoinAddressDerivationTests {
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
         OASIS -> assertEquals("oasis1qzcpavvmuw280dk0kd4lxjhtpf0u3ll27yf7sqps", address)
         THORCHAIN -> assertEquals("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65", address)
+        IOST -> assertEquals("4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu", address)
+        SYSCOIN -> assertEquals("sys1qkl640se3mwpt666e3lyywnwh09e9jquvx9x8qj", address)
+        STRATIS -> assertEquals("strax1q0caanaw4nkf6fzwnzq2p7yum680e57pdg05zkm", address)
         BLUZELLE -> assertEquals("bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund", address)
         CRYPTOORG -> assertEquals("cro16fdf785ejm00jf9a24d23pzqzjh2h05klxjwu8", address)
         OSMOSIS -> assertEquals("osmo142j9u5eaduzd7faumygud6ruhdwme98qclefqp", address)
         ECASH -> assertEquals("ecash:qpelrdn7a0hcucjlf9ascz3lkxv7r3rffgzn6x5377", address)
-        IOST -> assertEquals("4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu", address)
-        SYSCOIN -> assertEquals("sys1qkl640se3mwpt666e3lyywnwh09e9jquvx9x8qj", address)
         NATIVEEVMOS -> assertEquals("evmos13u6g7vqgw074mgmf2ze2cadzvkz9snlwstd20d", address)
-        STRATIS -> assertEquals("strax1q0caanaw4nkf6fzwnzq2p7yum680e57pdg05zkm", address)
+        NERVOS -> assertEquals("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdtyq04tvp02wectaumxn0664yw2jd53lqk4mxg3", address)
+        EVERSCALE -> assertEquals("0:0c39661089f86ec5926ea7d4ee4223d634ba4ed6dcc2e80c7b6a8e6d59f79b04", address)
+        APTOS -> assertEquals("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", address)
     }
 }

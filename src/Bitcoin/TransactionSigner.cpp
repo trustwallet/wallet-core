@@ -17,8 +17,7 @@
 #include "../Zcash/TransactionBuilder.h"
 #include "../Zen/TransactionBuilder.h"
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 template <typename Transaction, typename TransactionBuilder>
 TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan(const SigningInput& input) {
@@ -35,8 +34,8 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     }
     auto transaction = TransactionBuilder::template build<Transaction>(plan, input);
     SigningMode signingMode =
-        estimationMode ? SigningMode_SizeEstimationOnly :
-        optionalExternalSigs.has_value() ? SigningMode_External : SigningMode_Normal;
+        estimationMode ? SigningMode_SizeEstimationOnly : optionalExternalSigs.has_value() ? SigningMode_External
+                                                                                           : SigningMode_Normal;
     SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, signingMode, optionalExternalSigs);
     return signer.sign();
 }
@@ -65,3 +64,5 @@ template class Bitcoin::TransactionSigner<Bitcoin::Transaction, Zen::Transaction
 template class Bitcoin::TransactionSigner<Groestlcoin::Transaction, TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Verge::Transaction, Verge::TransactionBuilder>;
 template class Bitcoin::TransactionSigner<BitcoinDiamond::Transaction, BitcoinDiamond::TransactionBuilder>;
+
+} // namespace TW::Bitcoin

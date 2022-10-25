@@ -17,17 +17,16 @@
 #include <TrustWalletCore/TWSS58AddressType.h>
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Polkadot;
+
 namespace TW::Polkadot::tests {
-auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
-auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
-auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
-auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
-auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
-auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
-auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
-auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
+    auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
+    auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
+    auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
+    auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
+    auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
+    auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
+    auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
+    auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
 
 TEST(PolkadotSigner, SignTransfer_9fd062) {
     auto toAddress = Address("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");

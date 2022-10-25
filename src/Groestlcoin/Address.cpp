@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,6 @@
 
 #include "../Base58.h"
 #include <TrezorCrypto/ecdsa.h>
-
-#include <cassert>
 
 namespace TW::Groestlcoin {
 
@@ -22,7 +20,7 @@ bool Address::isValid(const std::string& string) {
     // return isValid(string, std::vector<byte>{36, 5});
 }
 
-bool Address::isValid(const std::string& string, const std::vector<TW::byte>& validPrefixes) {
+bool Address::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
     const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::HasherGroestl512d);
     if (decoded.size() != Address::size) {
         return false;

@@ -1,18 +1,15 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "SignatureBuilder.h"
-
 #include "SigHashType.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "InputSelector.h"
 
 #include "../BinaryCoding.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
 
 #include "../BitcoinDiamond/Transaction.h"
@@ -21,8 +18,7 @@
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 template <typename Transaction>
 Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign() {
@@ -64,7 +60,7 @@ Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::
 
 template <typename Transaction>
 Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Script script, size_t index,
-                                                  const UTXO& utxo) {
+                                                                              const UTXO& utxo) {
     assert(index < _transaction.inputs.size());
 
     Script redeemScript;
@@ -73,7 +69,7 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
     uint32_t signatureVersion = [this]() {
         if ((input.hashType & TWBitcoinSigHashTypeFork) != 0) {
             return WITNESS_V0;
-        } 
+        }
         return BASE;
     }();
     auto result = signStep(script, index, utxo, signatureVersion);
@@ -158,7 +154,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({data});
     }
     if (script.isWitnessProgram()) {
-        // Error: Invalid sutput script
+        // Error: Invalid output script
         return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_script_output);
     }
     if (script.matchMultisig(keys, required)) {
@@ -240,15 +236,14 @@ Data SignatureBuilder<Transaction>::createSignature(
     const std::optional<KeyPair>& pair,
     size_t index,
     Amount amount,
-    uint32_t version
-) {
+    uint32_t version) {
     if (signingMode == SigningMode_SizeEstimationOnly) {
         // Don't sign, only estimate signature size. It is 71-72 bytes.  Return placeholder.
         return Data(72);
     }
 
     const Data sighash = transaction.getSignatureHash(script, index, input.hashType, amount,
-                                                static_cast<SignatureVersion>(version));
+                                                      static_cast<SignatureVersion>(version));
 
     if (signingMode == SigningMode_HashOnly) {
         // Don't sign, only store hash-to-be-signed + pubkeyhash.  Return placeholder.
@@ -264,7 +259,7 @@ Data SignatureBuilder<Transaction>::createSignature(
 
         if (!externalSignatures.has_value() || externalSignatures.value().size() <= _index) {
             // Error: no or not enough signatures provided
-            return Data();
+            return {};
         }
 
         Data externalSignature = std::get<0>(externalSignatures.value()[_index]);
@@ -273,12 +268,12 @@ Data SignatureBuilder<Transaction>::createSignature(
         // Verify provided signature
         if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {
             // Error: invalid public key
-            return Data();
+            return {};
         }
         const auto publicKeyObj = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
         if (!publicKeyObj.verifyAsDER(externalSignature, sighash)) {
             // Error: Signature does not match publickey+hash
-            return Data();
+            return {};
         }
         externalSignature.push_back(static_cast<TW::byte>(input.hashType));
 
@@ -347,8 +342,10 @@ Data SignatureBuilder<Transaction>::scriptForScriptHash(const Data& hash) const 
 }
 
 // Explicitly instantiate a Signers for compatible transactions.
-template class Bitcoin::SignatureBuilder<Bitcoin::Transaction>;
-template class Bitcoin::SignatureBuilder<BitcoinDiamond::Transaction>;
-template class Bitcoin::SignatureBuilder<Verge::Transaction>;
-template class Bitcoin::SignatureBuilder<Zcash::Transaction>;
-template class Bitcoin::SignatureBuilder<Groestlcoin::Transaction>;
+template class SignatureBuilder<Bitcoin::Transaction>;
+template class SignatureBuilder<BitcoinDiamond::Transaction>;
+template class SignatureBuilder<Verge::Transaction>;
+template class SignatureBuilder<Zcash::Transaction>;
+template class SignatureBuilder<Groestlcoin::Transaction>;
+
+} // namespace TW::Bitcoin

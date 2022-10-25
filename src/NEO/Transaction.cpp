@@ -9,14 +9,14 @@
 #include "InvocationTransaction.h"
 #include "MinerTransaction.h"
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../uint256.h"
 
 using namespace std;
-
 using namespace TW;
-using namespace TW::NEO;
+
+namespace TW::NEO {
 
 int64_t Transaction::size() const {
     return serialize().size();
@@ -76,11 +76,16 @@ bool Transaction::operator==(const Transaction& other) const {
     if (this == &other) {
         return true;
     }
-    return this->type == other.type && this->version == other.version &&
-           this->attributes.size() == other.attributes.size() &&
-           this->inInputs.size() == other.inInputs.size() &&
-           this->outputs.size() == other.outputs.size() && this->attributes == other.attributes &&
-           this->inInputs == other.inInputs && this->outputs == other.outputs;
+    // clang-format off
+    return this->type == other.type
+        && this->version == other.version
+        && this->attributes.size() == other.attributes.size()
+        && this->inInputs.size() == other.inInputs.size()
+        && this->outputs.size() == other.outputs.size()
+        && this->attributes == other.attributes
+        && this->inInputs == other.inInputs
+        && this->outputs == other.outputs;
+    // clang-format on
 }
 
 Data Transaction::getHash() const {
@@ -90,3 +95,5 @@ Data Transaction::getHash() const {
 uint256_t Transaction::getHashUInt256() const {
     return load(getHash());
 }
+
+} // namespace TW::NEO

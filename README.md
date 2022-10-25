@@ -38,20 +38,9 @@ If you want to use wallet core in your project follow these instructions.
 
 ## Android
 
-Android releases are hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), please checkout [this installation guide](https://docs.github.com/en/packages/guides/configuring-gradle-for-use-with-github-packages#installing-a-package), you need to add GitHub access token to install it.
+Android releases are hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), you need to add GitHub access token to install it. Please checkout [this installation guide](https://developer.trustwallet.com/wallet-core/integration-guide/android-guide#adding-library-dependency) or `build.gradle` from our [android sample](https://github.com/trustwallet/wallet-core/blob/master/samples/android/build.gradle)
 
-Add this dependency to build.gradle and run `gradle install`
-
-```groovy
-plugins {
-    id 'maven'
-}
-
-dependencies {
-    implementation 'com.trustwallet:wallet-core:x.y.z'
-}
-```
-Replace x.y.z with latest version: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
+Don't forget replacing the version in the code with latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
 
 ## iOS
 

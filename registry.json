@@ -18,6 +18,12 @@
         "path": "m/44'/0'/0'/0/0",
         "xpub": "xpub",
         "xprv": "xprv"
+      },
+      {
+        "name": "testnet",
+        "path": "m/84'/1'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
@@ -466,12 +472,43 @@
     }
   },
   {
+    "id": "aptos",
+    "name": "Aptos",
+    "displayName": "Aptos",
+    "coinId": 637,
+    "symbol": "APT",
+    "decimals": 8,
+    "chainId": "1",
+    "blockchain": "Aptos",
+    "derivation": [
+      {
+        "path": "m/44'/637'/0'/0'/0'"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://explorer.aptoslabs.com",
+      "txPath": "/txn/",
+      "accountPath": "/account/",
+      "sampleTx": "91424546",
+      "sampleAccount": "0x6af7d07b8a541913dfa87a9f99628faa255c70241ef9ebd9b82a7e715ee13108"
+    },
+    "info": {
+      "url": "https://aptoslabs.com/",
+      "source": "https://github.com/aptos-labs/aptos-core",
+      "rpc": "https://fullnode.devnet.aptoslabs.com",
+      "documentation": "https://fullnode.devnet.aptoslabs.com/v1/spec#/"
+    }
+  },
+  {
     "id": "cosmos",
     "name": "Cosmos",
     "displayName": "Cosmos Hub",
     "coinId": 118,
     "symbol": "ATOM",
     "decimals": 6,
+    "chainId": "cosmoshub-4",
     "blockchain": "Cosmos",
     "derivation": [
       {
@@ -1010,6 +1047,33 @@
     }
   },
   {
+    "id": "nervos",
+    "name": "Nervos",
+    "coinId": 309,
+    "symbol": "CKB",
+    "decimals": 8,
+    "blockchain": "Nervos",
+    "derivation": [
+      {
+        "path": "m/44'/309'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "ckb",
+    "explorer": {
+      "url": "https://explorer.nervos.org",
+      "txPath": "/transaction/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://nervos.org",
+      "source": "https://github.com/nervosnetwork/ckb",
+      "rpc": "https://mainnet.ckb.dev/rpc",
+      "documentation": "https://github.com/nervosnetwork/rfcs"
+    }
+  },
+  {
     "id": "zilliqa",
     "name": "Zilliqa",
     "coinId": 313,
@@ -1044,6 +1108,7 @@
     "symbol": "LUNC",
     "decimals": 6,
     "blockchain": "Cosmos",
+    "chainId": "columbus-5",
     "derivation": [
       {
         "path": "m/44'/330'/0'/0/0"
@@ -1122,6 +1187,34 @@
       "source": "https://github.com/paritytech/polkadot",
       "rpc": "",
       "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
+    }
+  },
+  {
+    "id": "everscale",
+    "name": "Everscale",
+    "coinId": 396,
+    "symbol": "EVER",
+    "decimals": 9,
+    "blockchain": "Everscale",
+    "derivation": [
+      {
+        "path": "m/44'/396'/0'/0/0"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://everscan.io",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "781238b2b0d15cd4cd2e2a0a142753750cd5e1b2c8b506fcede75a90e02f1268",
+      "sampleAccount": "0:d2bf59964a05dee84a0dd1ddc0ad83ba44d49719cf843d689dc8b726d0fb59d8"
+    },
+    "info": {
+      "url": "https://everscale.network/",
+      "source": "https://github.com/tonlabs/evernode-ds",
+      "rpc": "https://evercloud.dev",
+      "documentation": "https://docs.everos.dev/evernode-platform/products/evercloud/get-started"
     }
   },
   {
@@ -1240,6 +1333,7 @@
     "symbol": "KAVA",
     "decimals": 6,
     "blockchain": "Cosmos",
+    "chainId": "kava_2222-10",
     "derivation": [
       {
         "path": "m/44'/459'/0'/0/0"
@@ -1328,6 +1422,7 @@
     "coinId": 494,
     "decimals": 6,
     "blockchain": "Cosmos",
+    "chainId": "laozi-mainnet",
     "derivation": [
       {
         "path": "m/44'/494'/0'/0/0"
@@ -2079,7 +2174,8 @@
       "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "documentation": "https://eth.wiki/json-rpc/API"
     },
-    "deprecated": true
+    "deprecated": true,
+    "testFolderName" : "Binance"
   },
   {
     "id": "smartchain",
@@ -2111,7 +2207,8 @@
       "source": "https://github.com/binance-chain/bsc",
       "rpc": "https://bsc-dataseed1.binance.org",
       "documentation": "https://eth.wiki/json-rpc/API"
-    }
+    },
+    "testFolderName" : "Binance"
   },
   {
     "id": "polygon",
@@ -2206,6 +2303,36 @@
     }
   },
   {
+    "id": "zksync",
+    "name": "Zksync",
+    "displayName": "zkSync v2",
+    "coinId": 10000280,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "280",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://zksync2-testnet.zkscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://portal.zksync.io/",
+      "source": "https://github.com/matter-labs/zksync",
+      "rpc": "https://zksync2-testnet.zksync.dev",
+      "documentation": "https://v2-docs.zksync.io"
+    }
+  },
+  {
     "id": "arbitrum",
     "name": "Arbitrum",
     "coinId": 10042221,
@@ -2264,7 +2391,8 @@
       "source": "https://github.com/HuobiGroup/huobi-eco-chain",
       "rpc": "https://http-mainnet-node.huobichain.com",
       "documentation": "https://eth.wiki/json-rpc/API"
-    }
+    },
+    "testFolderName" : "ECO"
   },
   {
     "id": "avalanchec",
@@ -2294,7 +2422,8 @@
       "client": "https://github.com/ava-labs/avalanchego",
       "clientPublic": "https://api.avax.network/ext/bc/C/rpc",
       "clientDocs": "https://docs.avax.network/"
-    }
+    },
+    "testFolderName" : "Avalanche"
   },
   {
     "id": "xdai",
@@ -2577,7 +2706,8 @@
       "client": "https://github.com/crypto-org-chain/cronos",
       "clientPublic": "https://evm-cronos.crypto.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
-    }
+    },
+    "testFolderName" : "Cronos"
   },
   {
     "id": "kavaevm",
@@ -2635,7 +2765,8 @@
       "source": "https://github.com/smartbch/smartbch",
       "rpc": "https://smartbch.fountainhead.cash/mainnet",
       "documentation": "https://github.com/smartbch/docs/blob/main/developers-guide/jsonrpc.md"
-    }
+    },
+    "testFolderName" : "Bitcoin"
   },
   {
     "id": "kcc",
@@ -2665,7 +2796,8 @@
       "source": "https://github.com/kcc-community/kcc",
       "rpc": "https://rpc-mainnet.kcc.network",
       "documentation": "https://docs.kcc.io/#/en-us/"
-    }
+    },
+    "testFolderName" : "KuCoinCommunityChain"
   },
   {
     "id": "boba",

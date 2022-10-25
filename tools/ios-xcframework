@@ -5,6 +5,10 @@
 
 set -e
 
+echo "Building Docc..."
+tools/ios-doc
+
+echo "Building xcframework..."
 pushd swift
 fastlane ios xcframework
 popd

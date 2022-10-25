@@ -20,8 +20,7 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& addr
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte,
-                            const char*) const {
+string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 

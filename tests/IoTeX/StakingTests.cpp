@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,16 +6,13 @@
 
 #include "Data.h"
 #include "HexCoding.h"
-#include "IoTeX/Signer.h"
 #include "IoTeX/Staking.h"
-#include "PrivateKey.h"
 #include "proto/IoTeX.pb.h"
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 
-using namespace TW;
-namespace TW::IoTeX {
+namespace TW::IoTeX::tests {
 
 TEST(TWIoTeXStaking, Create) {
     std::string IOTEX_STAKING_CANDIDATE = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj";
@@ -131,8 +128,7 @@ TEST(TWIoTeXStaking, CandidateUpdate) {
                           "326e756b7034766763776b32676e6335637539617964");
 }
 
-Proto::SigningInput createSigningInput()
-{
+Proto::SigningInput createSigningInput() {
     auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     auto input = Proto::SigningInput();
     input.set_version(1);
@@ -333,4 +329,4 @@ TEST(TWIoTeXStaking, SignAll) {
     }
 }
 
-} // namespace TW::IoTeX
+} // namespace TW::IoTeX::tests

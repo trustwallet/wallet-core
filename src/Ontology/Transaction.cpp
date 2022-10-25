@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,12 +8,8 @@
 #include "Address.h"
 #include "ParamsBuilder.h"
 
-#include "../Hash.h"
-#include "../HexCoding.h"
-
 #include <string>
 
-using namespace TW;
 namespace TW::Ontology {
 
 const std::string Transaction::ZERO_PAYER = "AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM";

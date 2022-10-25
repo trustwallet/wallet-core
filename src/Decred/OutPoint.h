@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Data.h"
+#include "Data.h"
 #include "../Bitcoin/OutPoint.h"
 #include "../proto/Bitcoin.pb.h"
 

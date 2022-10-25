@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,17 +6,14 @@
 
 #include "Transaction.h"
 #include "SegwitAddress.h"
-#include "SigHashType.h"
-#include "../BinaryCoding.h"
-#include "../Data.h"
-#include "../Hash.h"
-
 #include "SignatureVersion.h"
+#include "SigHashType.h"
+
+#include "../BinaryCoding.h"
 
 #include <cassert>
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 Data Transaction::getPreImage(const Script& scriptCode, size_t index,
                               enum TWBitcoinSigHashType hashType, uint64_t amount) const {
@@ -46,7 +43,7 @@ Data Transaction::getPreImage(const Script& scriptCode, size_t index,
 
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
-    // may already be contain in hashSequence.
+    // may already be contained in hashSequence.
     reinterpret_cast<const OutPoint&>(inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
@@ -261,3 +258,5 @@ Proto::Transaction Transaction::proto() const {
 
     return protoTx;
 }
+
+} // namespace TW::Bitcoin

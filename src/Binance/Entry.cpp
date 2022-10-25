@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,11 +11,9 @@
 #include "Coin.h"
 #include "Signer.h"
 
-using namespace TW::Binance;
-using namespace TW;
-using namespace std;
+namespace TW::Binance {
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, TW::byte, TW::byte, const char*) const {
    switch (coin) {
    case TWCoinTypeTBinance:
        return TAddress::isValid(address);
@@ -24,7 +22,7 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
    }
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     switch (coin) {
     case TWCoinTypeTBinance:
         return TAddress(publicKey).string();
@@ -56,7 +54,7 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
-string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
+std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
     return Signer::signJSON(json, key, coin == TWCoinTypeTBinance);
 }
 
@@ -89,7 +87,7 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
         });
 }
 
-Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
+Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
     auto input = Proto::SigningInput();
     input.set_chain_id(chainId);
     input.set_account_number(0);
@@ -147,3 +145,5 @@ Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, 
     const auto txInputData = data(input.SerializeAsString());
     return txInputData;
 }
+
+} // namespace TW::Binance

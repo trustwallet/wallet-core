@@ -25,6 +25,8 @@
 
 using namespace TW;
 
+namespace TW::Bitcoin {
+
 TEST(GroestlcoinCompiler, CompileWithSignatures) {
     const auto coin = TWCoinTypeGroestlcoin;
 
@@ -112,3 +114,5 @@ TEST(GroestlcoinCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
+
+} // TW::Bitcoin

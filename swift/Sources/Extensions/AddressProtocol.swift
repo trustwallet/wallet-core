@@ -6,6 +6,7 @@
 
 import Foundation
 
+/// Generic Address protocol for AnyAddress / SegwitAddress / SolanaAddress
 public protocol Address: CustomStringConvertible {}
 
 extension AnyAddress: Equatable {}

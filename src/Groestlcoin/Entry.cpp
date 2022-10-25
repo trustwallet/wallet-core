@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,20 +10,17 @@
 #include "../Bitcoin/SegwitAddress.h"
 #include "Signer.h"
 
-using namespace std;
-
 namespace TW::Groestlcoin {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
-    return TW::Bitcoin::SegwitAddress::isValid(address, hrp)
-        || Address::isValid(address, {p2pkh, p2sh});
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
+    return TW::Bitcoin::SegwitAddress::isValid(address, hrp) || Address::isValid(address, {p2pkh, p2sh});
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
     return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
                             TW::byte p2pkh, const char* hrp) const {
     switch (derivation) {
     case TWDerivationBitcoinLegacy:

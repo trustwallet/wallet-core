@@ -6,7 +6,6 @@
 
 #include <Oasis/Signer.h>
 
-#include "Signer.h"
 #include "Address.h"
 #include "Signer.h"
 

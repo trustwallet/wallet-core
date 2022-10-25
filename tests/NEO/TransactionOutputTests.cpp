@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,13 +7,11 @@
 #include "uint256.h"
 #include "HexCoding.h"
 #include "NEO/TransactionOutput.h"
-
-#include <iostream>
 #include <gtest/gtest.h>
 
+namespace TW::NEO::tests {
+
 using namespace std;
-using namespace TW;
-using namespace TW::NEO;
 
 TEST(NEOTransactionOutput, Serialize) {
     auto transactionOutput = TransactionOutput();
@@ -42,3 +40,5 @@ TEST(NEOTransactionOutput, Deserialize) {
     EXPECT_EQ(assetId, hex(store(transactionOutput.assetId)));
     EXPECT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
 }
+
+} // namespace TW::NEO::tests

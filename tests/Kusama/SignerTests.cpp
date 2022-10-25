@@ -16,10 +16,11 @@
 #include <TrustWalletCore/TWSS58AddressType.h>
 #include <gtest/gtest.h>
 
-namespace TW::Kusama::tests {
-auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
-auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
-auto genesisHashKSM = parse_hex("b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe");
+
+namespace TW::Polkadot::tests {
+    extern PrivateKey privateKey;
+    extern PublicKey toPublicKey;
+    auto genesisHashKSM = parse_hex("b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe");
 
 TEST(KusamaSigner, SignTransferKSM) {
     auto blockHash = parse_hex("4955dd4813f3e91ef3fd5a825b928af2fc50a71380085f753ccef00bb1582891");
@@ -48,4 +49,4 @@ TEST(KusamaSigner, SignTransferKSM) {
     ASSERT_EQ(hex(output.encoded()), "25028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee000765cfa76cfe19499f4f19ef7dc4527652ec5b2e6b5ecfaf68725dafd48ae2694ad52e61f44152a544784e847de10ddb2c56bee4406574dcbcfdb5e5d35b6d0300000004008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
 }
 
-} // namespace TW::Kusama::tests
+} // namespace TW::Polkadot::tests

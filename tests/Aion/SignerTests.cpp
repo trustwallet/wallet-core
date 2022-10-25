@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Aion;
+namespace TW::Aion::tests {
 
 TEST(AionSigner, Sign) {
     auto address = Aion::Address("0xa082c3de528b7807dc27ad66debb16d4cfe4054209398cee619dd95955063d1e");
@@ -38,3 +37,5 @@ TEST(AionSigner, SignWithData) {
     // Raw transaction
     EXPECT_EQ(hex(transaction.encode()), "f8a109a0a082c3de528b7807dc27ad66debb16d4cfe4054209398cee619dd95955063d1e8227108641494f4e000085242019b04d8252088800000004a817c80001b860a775daa30b33fda3091768f0561c8042ee23cb48a6a3e5d7e8248b13d04a48a736fc2642c2d62900204779aa274dba3b8712eff7a8464aa78ea52b09ece20679fe3f5edf94c84a7e0c5f93213be891bc279af927086f455167f5bc73d3046c0d");
 }
+
+} // namespace TW::Aion::tests

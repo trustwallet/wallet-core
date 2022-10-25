@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PublicKey.h"
 #include "SS58Address.h"
 #include <boost/multiprecision/cpp_int.hpp>

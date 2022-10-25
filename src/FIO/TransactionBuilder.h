@@ -10,7 +10,7 @@
 #include "Address.h"
 #include "../proto/FIO.pb.h"
 
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 
 #include <string>

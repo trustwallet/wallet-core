@@ -8,7 +8,7 @@
 
 #include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Script.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::Decred {
 

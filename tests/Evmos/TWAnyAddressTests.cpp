@@ -11,6 +11,8 @@
 
 #include <gtest/gtest.h>
 
+namespace TW::Evmos::tests {
+
 TEST(EvmosAnyAddress, EvmosValidate) {
     auto string = STRING("0x30627903124Aa1e71384bc52e1cb96E4AB3252b6");
 
@@ -56,3 +58,5 @@ TEST(EvmosAnyAddress, NativeEvmosCreate) {
     auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
     assertHexEqual(keyHash, "dba016e284d7e4f47f657c8b04799b1d2d0d8313");
 }
+
+} // namespace TW::Evmos::tests

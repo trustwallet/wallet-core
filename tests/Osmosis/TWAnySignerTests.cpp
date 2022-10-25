@@ -12,11 +12,7 @@
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
-using namespace TW;
-
-namespace TW::Osmosis::tests {
-
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(TWAnySignerOsmosis, Sign) {
     auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
@@ -57,4 +53,4 @@ TEST(TWAnySignerOsmosis, Sign) {
     EXPECT_EQ(output.json(), "");
 }
 
-} // namespace TW::Osmosis::tests
+} // namespace TW::Cosmos::tests

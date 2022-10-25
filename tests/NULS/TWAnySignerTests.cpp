@@ -15,8 +15,7 @@
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::NULS;
+namespace TW::NULS::tests {
 
 TEST(TWAnySignerNULS, Sign) {
     auto privateKey =
@@ -179,3 +178,4 @@ TEST(TWAnySigner, SignTokenWithFeePayer) {
         "3045022100ff6f45a1c3856f9ea954baca6b2988295bbb22c958f87f0d3baf9989930549530220426ecb152051"
         "3710b99ab50e1f6c7e21b0175adef08aa05070bb9bfca8a001d8");
 }
+} // namespace TW::NULS::tests

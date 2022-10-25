@@ -8,7 +8,7 @@
 
 #include "OutPoint.h"
 #include "Script.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <vector>
 

@@ -10,9 +10,6 @@
 #include "../proto/Theta.pb.h"
 #include "../proto/TransactionCompiler.pb.h"
 
-using namespace TW;
-using namespace std;
-
 namespace TW::Theta {
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

@@ -1,22 +1,19 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+
 #include "HexCoding.h"
 #include "SigData.h"
+#include "../Ontology/Oep4TxBuilder.h"
 #include "../Ontology/OngTxBuilder.h"
 #include "../Ontology/OntTxBuilder.h"
-#include "../Ontology/OepTxBuilder.h"
-
-
-#include "../Hash.h"
 
 #include <stdexcept>
 
-using namespace TW;
 namespace TW::Ontology {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
@@ -30,7 +27,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             auto encoded = OngTxBuilder::build(input);
             output.set_encoded(encoded.data(), encoded.size());
         } else {
-            auto encoded = OepTxBuilder::build(input);
+            // then assume it's oep4 address
+            auto encoded = Oep4TxBuilder::build(input);
             output.set_encoded(encoded.data(), encoded.size());
         }
     } catch (...) {
@@ -52,14 +50,14 @@ Proto::TransactionInput Signer::signInput2TxInput(const Proto::SigningInput& inp
     return txInput;
 }
 
-Signer::Signer(TW::PrivateKey priKey) : privateKey(std::move(priKey)) {
-    auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+Signer::Signer(TW::PrivateKey priKey) : privKey(std::move(priKey)) {
+    auto pubKey = privKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pubKey.bytes;
     address = Address(pubKey).string();
 }
 
 PrivateKey Signer::getPrivateKey() const {
-    return privateKey;
+    return privKey;
 }
 
 PublicKey Signer::getPublicKey() const {
@@ -98,7 +96,7 @@ Data Signer::encodeTransaction(const Proto::SigningInput& input, const Data& sig
     } else if (contract == "ONG") {
             tx = OngTxBuilder::buildTransferTx(txInput);
     } else {
-            tx = OepTxBuilder::buildTransferTx(txInput);
+            tx = Oep4TxBuilder::buildTx(input);
     }
 
     tx.sigVec.emplace_back(publicKey.bytes, signature, 1);

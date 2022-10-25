@@ -643,7 +643,7 @@ void sha1_Final(SHA1_CTX* context, sha2_byte digest[]) {
 	usedspace = 0;
 }
 
-char *sha1_End(SHA1_CTX* context, char buffer[]) {
+char *sha1_End(SHA1_CTX* context, char buffer[SHA1_DIGEST_STRING_LENGTH]) {
 	sha2_byte	digest[SHA1_DIGEST_LENGTH] = {0}, *d = digest;
 	int		i = 0;
 
@@ -950,7 +950,7 @@ void sha256_Final(SHA256_CTX* context, sha2_byte digest[]) {
 	usedspace = 0;
 }
 
-char *sha256_End(SHA256_CTX* context, char buffer[]) {
+char *sha256_End(SHA256_CTX* context, char buffer[SHA256_DIGEST_STRING_LENGTH]) {
 	sha2_byte	digest[SHA256_DIGEST_LENGTH] = {0}, *d = digest;
 	int		i = 0;
 
@@ -1269,7 +1269,7 @@ void sha512_Final(SHA512_CTX* context, sha2_byte digest[]) {
 	memzero(context, sizeof(SHA512_CTX));
 }
 
-char *sha512_End(SHA512_CTX* context, char buffer[]) {
+char *sha512_End(SHA512_CTX* context, char buffer[SHA512_DIGEST_STRING_LENGTH]) {
 	sha2_byte	digest[SHA512_DIGEST_LENGTH] = {0}, *d = digest;
 	int		i = 0;
 

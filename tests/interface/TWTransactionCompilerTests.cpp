@@ -222,9 +222,8 @@ Data dataFromTWData(std::shared_ptr<TWData> data) {
 }
 
 TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
-    // Test external signining with a Bitcoin transaction with 3 input UTXOs, all used, but only
-    // using 2 public keys. Three signatures are neeeded.  This illustrates that order of
-    // UTXOs/hashes is not always the same.
+    // Test external signining with a Bitcoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
+    // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
 
     const auto revUtxoHash0 =
         parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");

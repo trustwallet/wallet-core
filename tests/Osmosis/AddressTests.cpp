@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,11 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace TW;
-
-namespace TW::Osmosis::tests {
-
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(OsmosisAddress, Valid) {
     EXPECT_TRUE(Address::isValid(TWCoinTypeOsmosis, "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5"));
@@ -47,4 +43,4 @@ TEST(OsmosisAddress, FromString) {
     EXPECT_EQ(hex(address.getKeyHash()), "dd89a2e267cd96e23cf5a33382f030686f65996f");
 }
 
-} // namespace TW::Osmosis::tests
+} // namespace TW::Cosmos::tests

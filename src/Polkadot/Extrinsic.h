@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Polkadot.pb.h"
 #include "../uint256.h"
 #include  "ScaleCodec.h"

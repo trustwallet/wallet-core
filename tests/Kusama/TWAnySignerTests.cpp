@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Polkadot;
+namespace TW::Polkadot::tests {
 
 TEST(TWAnySignerKusama, Sign) {
     auto key = parse_hex("0x8cdc538e96f460da9d639afc5c226f477ce98684d77fb31e88db74c1f1dd86b2");
@@ -39,3 +38,5 @@ TEST(TWAnySignerKusama, Sign) {
 
     ASSERT_EQ(hex(output.encoded()), "350284f41296779fd61a5bed6c2f506cc6c9ea93d6aeb357b9c69717193f434ba24ae700cd78b46eff36c433e642d7e9830805aab4f43eef70067ef32c8b2a294c510673a841c5f8a6e8900c03be40cfa475ae53e6f8aa61961563cb7cc0fa169ef9630d00040004000e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc720700e40b5402");
 }
+
+} // namespace TW::Polkadot::tests

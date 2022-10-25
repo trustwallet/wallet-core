@@ -6,10 +6,12 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWCardano.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWCardano.h>
 #include "../interface/TWTestUtilities.h"
 #include "PrivateKey.h"
 
@@ -52,4 +54,19 @@ TEST(TWCardano, AddressFromWallet) {
 
     auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeCardano, privateKey.get()));
     assertStringsEqual(address, "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+}
+
+TEST(TWCardano, GetStakingKey) {
+    {
+        auto stakingAddress = WRAPS(TWCardanoGetStakingAddress(STRING("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23").get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(stakingAddress.get())), "stake1u80jysjtdzqt88jt4jx93h5lumfr67d273r4vwyasfa2pxcwxllmx");
+    }
+    {   // negative case: cannot get staking address from non-base address
+        auto stakingAddress = WRAPS(TWCardanoGetStakingAddress(STRING("stake1u95zuevxqjvpdh83r08ywq9xal6nxl48fgm0wvngyenvs4qh0hqf9").get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(stakingAddress.get())), "");
+    }
+    {   // negative case: cannot get staking address from invalid address, should not throw
+        auto stakingAddress = WRAPS(TWCardanoGetStakingAddress(STRING("__THIS_IS_NOT_A_VALID_CARDANO_ADDRESS__").get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(stakingAddress.get())), "");
+    }
 }

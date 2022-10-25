@@ -45,11 +45,11 @@ public:
     }
 };
 
-static constexpr DefaultFeeCalculator defaultFeeCalculator;
+static constexpr DefaultFeeCalculator defaultFeeCalculator{};
 static constexpr DefaultFeeCalculator defaultFeeCalculatorNoDustFilter(true);
-static constexpr DecredFeeCalculator decredFeeCalculator;
+static constexpr DecredFeeCalculator decredFeeCalculator{};
 static constexpr DecredFeeCalculator decredFeeCalculatorNoDustFilter(true);
-static constexpr SegwitFeeCalculator segwitFeeCalculator;
+static constexpr SegwitFeeCalculator segwitFeeCalculator{};
 static constexpr SegwitFeeCalculator segwitFeeCalculatorNoDustFilter(true);
 
 const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) noexcept {

@@ -9,16 +9,15 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::<%= format_name(coin) %>;
-using namespace std;
+namespace TW::<%= format_name(coin) %> {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
@@ -33,3 +32,5 @@ TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     
 }
+
+} // namespace TW::<%= format_name(coin) %>

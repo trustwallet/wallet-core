@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyAddress, validation) {
     ASSERT_FALSE(Address::isValid("abc"));
@@ -62,3 +61,5 @@ TEST(OntologyAddress, fromBytes) {
     v.pop_back();
     EXPECT_ANY_THROW(new Address(v));
 }
+
+} // namespace TW::Ontology::tests

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,7 @@
 #include <TrustWalletCore/TWSS58AddressType.h>
 #include <map>
 
-using namespace TW;
-using namespace TW::Polkadot;
+namespace TW::Polkadot {
 
 static constexpr uint8_t signedBit = 0x80;
 static constexpr uint8_t sigTypeEd25519 = 0x00;
@@ -18,7 +17,7 @@ static constexpr uint32_t multiAddrSpecVersion = 28;
 static constexpr uint32_t multiAddrSpecVersionKsm = 2028;
 
 static const std::string balanceTransfer = "Balances.transfer";
-static const std::string utilityBatch = "Utility.batch";
+static const std::string utilityBatch = "Utility.batch_all";
 static const std::string stakingBond = "Staking.bond";
 static const std::string stakingBondExtra = "Staking.bond_extra";
 static const std::string stakingUnbond = "Staking.unbond";
@@ -281,3 +280,5 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     encodeLengthPrefix(data);
     return data;
 }
+
+} // namespace TW::Polkadot

@@ -9,7 +9,7 @@
 #include <cctype>
 #include <limits>
 
-#include "../Data.h"
+#include "Data.h"
 #include "../BinaryCoding.h"
 
 namespace TW {

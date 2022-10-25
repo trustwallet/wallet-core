@@ -37,10 +37,12 @@ This list is generated from [./registry.json](../registry.json)
 | 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iost/info/logo.png" width="32" />         | <https://iost.io>             |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
+| 309     | Nervos           | CKB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nervos/info/logo.png" width="32" />       | <https://nervos.org>          |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra Classic    | LUNC   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
 | 354     | Polkadot         | DOT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polkadot/info/logo.png" width="32" />     | <https://polkadot.network/>   |
 | 394     | Crypto.org       | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cryptoorg/info/logo.png" width="32" />    | <https://crypto.org/>         |
+| 396     | Everscale        | EVER   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/everscale/info/logo.png" width="32" />    | <https://everscale.network/>  |
 | 397     | NEAR             | NEAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/near/info/logo.png" width="32" />         | <https://nearprotocol.com>    |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
 | 434     | Kusama           | KSM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kusama/info/logo.png" width="32" />       | <https://kusama.network>      |
@@ -53,6 +55,7 @@ This list is generated from [./registry.json](../registry.json)
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
 | 508     | Elrond           | eGLD   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/elrond/info/logo.png" width="32" />       | <https://elrond.com/>         |
+| 637     | Aptos            | APT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png" width="32" />        | <https://aptoslabs.com/>      |
 | 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://www.bnbchain.org>    |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/callisto/info/logo.png" width="32" />     | <https://callisto.network>    |
@@ -84,6 +87,7 @@ This list is generated from [./registry.json](../registry.json)
 | 10000118 | Osmosis          | OSMO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/osmosis/info/logo.png" width="32" />      | <https://osmosis.zone/>       |
 | 10000145 | Smart Bitcoin Cash | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartbch/info/logo.png" width="32" />     | <https://smartbch.org/>       |
 | 10000250 | Fantom           | FTM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fantom/info/logo.png" width="32" />       | <https://fantom.foundation>   |
+| 10000280 | zkSync v2        | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zksync/info/logo.png" width="32" />       | <https://portal.zksync.io/>   |
 | 10000288 | Boba             | BOBAETH | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/boba/info/logo.png" width="32" />         | <https://boba.network/>       |
 | 10000321 | KuCoin Community Chain | KCS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kcc/info/logo.png" width="32" />          | <https://www.kcc.io/>         |
 | 10000330 | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terrav2/info/logo.png" width="32" />      | <https://terra.money>         |

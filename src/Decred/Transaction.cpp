@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,14 +8,10 @@
 
 #include "../Bitcoin/SigHashType.h"
 #include "../BinaryCoding.h"
-#include "../Hash.h"
-
-#include "Bitcoin/SignatureVersion.h"
 
 #include <cassert>
 
-using namespace TW;
-using namespace TW::Decred;
+namespace TW::Decred {
 
 namespace {
 // Indicates the serialization does not include any witness data.
@@ -239,3 +235,5 @@ std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
            signScript.bytes.size();
 }
 } // namespace
+
+} // namespace TW::Decred

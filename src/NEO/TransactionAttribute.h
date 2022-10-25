@@ -6,10 +6,11 @@
 
 #pragma once
 
+#include "Constants.h"
 #include "ISerializable.h"
 #include "Serializable.h"
 #include "TransactionAttributeUsage.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::NEO {
 
@@ -21,15 +22,19 @@ public:
     virtual ~TransactionAttribute() {}
 
     int64_t size() const override {
-        if (usage == TransactionAttributeUsage::TAU_ContractHash ||
-            usage == TransactionAttributeUsage::TAU_ECDH02 ||
-            usage == TransactionAttributeUsage::TAU_ECDH03 ||
-            usage == TransactionAttributeUsage::TAU_Vote ||
-            (usage >= TransactionAttributeUsage::TAU_Hash1 && usage <= TransactionAttributeUsage::TAU_Hash15)) {
-            return 1 + 32;
-        } else if (usage == TransactionAttributeUsage::TAU_Script) {
-            return 1 + 20;
-        } else {
+        switch (usage) {
+        case TransactionAttributeUsage::TAU_ContractHash:
+        case TransactionAttributeUsage::TAU_ECDH02:
+        case TransactionAttributeUsage::TAU_ECDH03:
+        case TransactionAttributeUsage::TAU_Vote:
+            return 1 + contractHashSize;
+        case TransactionAttributeUsage::TAU_Script:
+            return 1 + scriptHashSize;
+        default:
+            if (usage >= TransactionAttributeUsage::TAU_Hash1 &&
+                usage <= TransactionAttributeUsage::TAU_Hash15) {
+                return 1 + contractHashSize;
+            }
             return 1 + varIntSize(_data.size()) + _data.size();
         }
     }
@@ -41,21 +46,32 @@ public:
 
         // see: https://github.com/neo-project/neo/blob/v2.12.0/neo/Network/P2P/Payloads/TransactionAttribute.cs#L32
         usage = (TransactionAttributeUsage)data[initial_pos];
-        if (usage == TransactionAttributeUsage::TAU_ContractHash ||
-            usage == TransactionAttributeUsage::TAU_Vote ||
-            (usage >= TransactionAttributeUsage::TAU_Hash1 &&
-             usage <= TransactionAttributeUsage::TAU_Hash15)) {
-            this->_data = readBytes(data, 32, initial_pos + 1);
-        } else if (usage == TransactionAttributeUsage::TAU_ECDH02 ||
-                    usage == TransactionAttributeUsage::TAU_ECDH03) {
-            this->_data = concat({(TW::byte)usage}, readBytes(data, 32, initial_pos + 1));
-        } else if (usage == TransactionAttributeUsage::TAU_Script) {
-            this->_data = readBytes(data, 20, initial_pos + 1);
-        } else if (usage == TransactionAttributeUsage::TAU_DescriptionUrl ||
-                   usage == TransactionAttributeUsage::TAU_Description ||
-                   usage >= TransactionAttributeUsage::TAU_Remark) {
+        switch (usage) {
+        case TransactionAttributeUsage::TAU_ECDH02:
+        case TransactionAttributeUsage::TAU_ECDH03: {
+            this->_data = concat({(TW::byte)usage}, readBytes(data, contractHashSize, initial_pos + 1));
+            break;
+        }
+
+        case TransactionAttributeUsage::TAU_Script: {
+            this->_data = readBytes(data, scriptHashSize, initial_pos + 1);
+            break;
+        }
+
+        case TransactionAttributeUsage::TAU_DescriptionUrl:
+        case TransactionAttributeUsage::TAU_Description:
+        case TransactionAttributeUsage::TAU_Remark: {
             this->_data = readVarBytes(data, initial_pos + 1);
-        } else {
+            break;
+        }
+
+        default:
+            if (usage == TransactionAttributeUsage::TAU_ContractHash ||
+                usage == TransactionAttributeUsage::TAU_Vote ||
+                (usage >= TransactionAttributeUsage::TAU_Hash1 && usage <= TransactionAttributeUsage::TAU_Hash15)) {
+                this->_data = readBytes(data, contractHashSize, initial_pos + 1);
+                break;
+            }
             throw std::invalid_argument("TransactionAttribute Deserialize FormatException");
         }
     }
@@ -74,7 +90,7 @@ public:
         }
         if (usage == TransactionAttributeUsage::TAU_ECDH02 ||
             usage == TransactionAttributeUsage::TAU_ECDH03) {
-            result.insert(result.end(), _data.begin() + 1, _data.begin() + 33);
+            result.insert(result.end(), _data.begin() + 1, _data.begin() + 1 + contractHashSize);
         } else {
             result.insert(result.end(), _data.begin(), _data.end());
         }

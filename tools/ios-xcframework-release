@@ -22,6 +22,9 @@ protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
 protobuf_dsyms_filename="SwiftProtobuf.xcframework.dSYM.zip"
 
 rm -rf ${core_zip_filename} ${core_dsyms_filename} ${protobuf_zip_filename} ${protobuf_dsyms_filename}
+protobuf_dsyms_filename="SwiftProtobuf.xcframework.dSYM.zip"
+
+rm -rf ${core_zip_filename} ${core_dsyms_filename} ${protobuf_zip_filename} ${protobuf_dsyms_filename}
 
 zip -r ${core_dsyms_filename} WalletCore.dSYMs
 
@@ -81,5 +84,8 @@ echo "protobuf dsyms url is: ${protobuf_dsyms_url}"
 
 core_dsyms_url=$(wc_upload_asset ${release_url} ${core_dsyms_filename})
 echo "core dsyms url is: ${core_dsyms_url}"
+
+docc_url=$(wc_upload_asset ${release_url} WalletCore.doccarchive.zip)
+echo "docc url is: ${docc_url}"
 
 popd

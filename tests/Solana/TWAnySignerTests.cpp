@@ -16,7 +16,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana::tests {
 
 const auto expectedString1 =
     "3p2kzZ1DvquqC6LApPuxpTg5CCDVPqJFokGSnGhnBHrta4uq7S2EyehV1XNUVXp51D69GxGzQZU"
@@ -513,3 +513,5 @@ TEST(TWAnySignerSolana, SignAdvanceNonceAccount) {
         "FE9pCP2dKxCLH8Wfaez8bLtopjmWun9cbikxo7LZsarYzMXvxwZmerRd1";
     ASSERT_EQ(output.encoded(), expectedString);
 }
+
+} // namespace TW::Solana::tests

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../Base58Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PublicKey.h"
 
 #include <array>
