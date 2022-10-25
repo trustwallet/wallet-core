@@ -11,7 +11,7 @@
 
 namespace TW::Zcash {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& address, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return TAddress::isValid(address);
 }
 

@@ -3,12 +3,6 @@ syntax = "proto3";
 package TW.Polkadot.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Known networks
-enum Network {
-    POLKADOT = 0;
-    KUSAMA = 2;
-}
-
 // Destination options for reward
 enum RewardDestination {
     STAKED = 0;
@@ -142,7 +136,7 @@ message SigningInput {
     bytes private_key = 8;
 
     // Network type
-    Network network = 9;
+    uint32 network = 9;
 
     // Payload message
     oneof message_oneof {

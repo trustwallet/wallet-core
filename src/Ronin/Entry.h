@@ -13,7 +13,7 @@ namespace TW::Ronin {
 /// Entry point for Ronin (EVM side chain)
 class Entry final : public CoinEntry {
 public:
-     bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
+    bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
      std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
      std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
      Data addressToData(TWCoinType coin, const std::string& address) const;

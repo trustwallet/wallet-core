@@ -13,7 +13,10 @@ namespace TW::Polkadot {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
+    if (auto* prefix = std::get_if<SS58Prefix>(&addressPrefix); prefix) {
+        return Address::isValid(address, *prefix);
+    }
     return Address::isValid(address);
 }
 
@@ -28,6 +31,13 @@ Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& a
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    if (auto* ss58Prefix = std::get_if<SS58Prefix>(&addressPrefix); ss58Prefix) {
+        return Address(publicKey, *ss58Prefix).string();
+    }
+    return "";
 }
 
 } // namespace TW::Polkadot

@@ -17,22 +17,36 @@
 
 #include <string>
 #include <vector>
+#include <variant>
 #include <utility>
 
 namespace TW {
 
 typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 
+struct Base58Prefix {
+    TW::byte p2pkh;
+    TW::byte p2sh;
+};
+
+using Bech32Prefix = const char *;
+using SS58Prefix = uint32_t;
+
+using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, std::monostate>;
+
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.
 class CoinEntry {
 public:
     virtual ~CoinEntry() noexcept = default;
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
     virtual std::string normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const { return address; }
     // Address derivation, default derivation
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const = 0;
+    virtual std::string deriveAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+        return "";
+    };
     // Address derivation, by default invoking default
     virtual std::string deriveAddress(TWCoinType coin, [[maybe_unused]] TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
         return deriveAddress(coin, publicKey, p2pkh, hrp);

@@ -82,3 +82,7 @@ uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin) {
 enum TWPublicKeyType TWCoinTypePublicKeyType(enum TWCoinType coin) {
     return TW::publicKeyType(coin);
 }
+
+uint32_t TWCoinTypeSS58Prefix(enum TWCoinType coin) {
+    return TW::ss58Prefix(coin);
+}

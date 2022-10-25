@@ -173,32 +173,62 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     return Derivation();
 }
 
-bool TW::validateAddress(TWCoinType coin, const std::string& string, const char* hrp) {
+bool TW::validateAddress(TWCoinType coin, const string& address, const PrefixVariant& prefix) {
+    // dispatch
+    auto* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->validateAddress(coin, address, prefix);
+}
+
+bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+    const auto* hrp = stringForHRP(TW::hrp(coin));
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
 
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
+    bool isValid = false;
+    // First check HRP.
+    if (hrp != nullptr && !std::string(hrp).empty()) {
+        isValid = dispatcher->validateAddress(coin, string, Bech32Prefix(hrp));
+    }
+    // Then check UTXO
+    if ((p2pkh != 0 || p2sh != 0) && !isValid) {
+        return isValid || dispatcher->validateAddress(coin, string, Base58Prefix{.p2pkh = p2pkh, .p2sh = p2sh});
+    }
+    // Then check normal
+    if (!isValid) {
+        isValid = dispatcher->validateAddress(coin, string, std::monostate());
+    }
+    return isValid;
 }
 
-bool TW::validateAddress(TWCoinType coin, const std::string& string) {
-    const auto* hrp = stringForHRP(TW::hrp(coin));
-    return TW::validateAddress(coin, string, hrp);
+namespace TW::internal {
+    inline std::string normalizeAddress(TWCoinType coin, const string& address) {
+        // dispatch
+        auto* dispatcher = coinDispatcher(coin);
+        assert(dispatcher != nullptr);
+        return dispatcher->normalizeAddress(coin, address);
+    }
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string& address, const std::string& hrp) {
-    const char* rawHrp = hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
-    if (!TW::validateAddress(coin, address, rawHrp)) {
+std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
+    if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";
     }
 
-    // dispatch
-    auto* dispatcher = coinDispatcher(coin);
-    assert(dispatcher != nullptr);
-    return dispatcher->normalizeAddress(coin, address);
+    return internal::normalizeAddress(coin, address);
+}
+
+std::string TW::normalizeAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix) {
+    if (!TW::validateAddress(coin, address, prefix)) {
+        // invalid address, not normalizing
+        return "";
+    }
+
+    return internal::normalizeAddress(coin, address);
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
@@ -208,6 +238,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDerivation derivation) {
     auto keyType = TW::publicKeyType(coin);
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
+}
+
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation) {
+    auto const* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->deriveAddress(coin, publicKey, derivation, addressPrefix);
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
@@ -351,6 +387,10 @@ Hash::Hasher TW::addressHasher(TWCoinType coin) {
 
 uint32_t TW::slip44Id(TWCoinType coin) {
     return getCoinInfo(coin).slip44;
+}
+
+std::uint32_t TW::ss58Prefix(TWCoinType coin) {
+    return getCoinInfo(coin).ss58Prefix;
 }
 
 TWString* _Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {

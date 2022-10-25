@@ -39,7 +39,7 @@ class TestPolkadotSigner {
             blockHash = genesisHashStr
             nonce = 0
             specVersion = 17
-            network = Polkadot.Network.POLKADOT
+            network = POLKADOT.ss58Prefix()
             transactionVersion = 3
             privateKey = key
             stakingCall = Polkadot.Staking.newBuilder().apply {
@@ -69,7 +69,7 @@ class TestPolkadotSigner {
             blockHash = genesisHashStr
             nonce = 4
             specVersion = 30
-            network = Polkadot.Network.POLKADOT
+            network = POLKADOT.ss58Prefix()
             transactionVersion = 7
             privateKey = iOSTestKey
             stakingCall = Polkadot.Staking.newBuilder().apply {
@@ -96,7 +96,7 @@ class TestPolkadotSigner {
             blockHash = "0x35ba668bb19453e8da6334cadcef2a27c8d4141bfc8b49e78e853c3d73e1ecd0".toHexBytesInByteString()
             nonce = 6
             specVersion = 9200
-            network = Polkadot.Network.POLKADOT
+            network = POLKADOT.ss58Prefix()
             transactionVersion = 12
             privateKey = "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266".toHexBytesInByteString()
             era = Polkadot.Era.newBuilder().apply {

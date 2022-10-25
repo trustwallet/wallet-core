@@ -33,10 +33,11 @@ std::vector<TWCoinType> getCoinTypes();
 bool validateAddress(TWCoinType coin, const std::string& address);
 
 /// Validates an address for a particular coin.
-bool validateAddress(TWCoinType coin, const std::string& address, const char* hrp);
+bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix);
 
 /// Validates and normalizes an address for a particular coin.
-std::string normalizeAddress(TWCoinType coin, const std::string& address, const std::string& hrp = "");
+std::string normalizeAddress(TWCoinType coin, const std::string& address);
+std::string normalizeAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix);
 
 /// Returns the blockchain for a coin type.
 TWBlockchain blockchain(TWCoinType coin);
@@ -79,6 +80,8 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDeriv
 
 /// Derives the address for a particular coin from the public key, with given derivation.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation = TWDerivationDefault, const std::string& hrp = "");
+/// Derives the address for a particular coin from the public key, with given derivation and explicit addressPrefix.
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation = TWDerivationDefault);
 
 /// Returns the binary representation of a string address
 Data addressToData(TWCoinType coin, const std::string& address);
@@ -103,6 +106,9 @@ byte p2shPrefix(TWCoinType coin);
 
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
+
+/// Returns the ss58 prefix of a coin type.
+std::uint32_t ss58Prefix(TWCoinType coin);
 
 /// Returns chain ID.
 const char* chainId(TWCoinType coin);
@@ -155,6 +161,7 @@ struct CoinInfo {
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
     uint32_t slip44;
+    std::uint32_t ss58Prefix;
 
     // returns default derivation
     const Derivation defaultDerivation() const {

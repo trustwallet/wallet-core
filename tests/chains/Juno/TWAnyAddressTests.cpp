@@ -10,6 +10,8 @@
 #include "Bech32Address.h"
 #include "HexCoding.h"
 #include "Hash.h"
+#include "PublicKey.h"
+#include "Bech32Address.h"
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>

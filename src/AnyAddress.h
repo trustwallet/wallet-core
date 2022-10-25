@@ -12,6 +12,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWData.h>
+#include <CoinEntry.h>
 #include <string>
 
 namespace TW {
@@ -22,8 +23,9 @@ public:
 
     enum TWCoinType coin;
 
-    static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin, const std::string& hrp = "");
+    static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin, const PrefixVariant& prefix = std::monostate());
     static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp = "");
+    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& prefix);
 
     Data getData() const;
 };
