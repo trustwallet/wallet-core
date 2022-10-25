@@ -42,7 +42,8 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      run: |
+        ./tools/sonarcloud-analysis
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
