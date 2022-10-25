@@ -41,7 +41,6 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build
       run: |
-        echo $nproc
         make -Cbuild -j12 TrustWalletCore
       env:
         CC: /usr/bin/clang
@@ -89,7 +88,7 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Build Rust sample app
+    - name: Build and run Rust sample app
       run: |
         cd samples/rust
         rustc --version
