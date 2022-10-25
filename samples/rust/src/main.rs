@@ -5,9 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod walletcore_iface;
+pub mod walletcore_extra;
 pub mod wc_proto;
 
 use crate::walletcore_iface::*;
+use crate::walletcore_extra::*;
 use crate::wc_proto::Ethereum;
 use protobuf::Message;
 use hex::ToHex;
