@@ -32,7 +32,7 @@ bool Mnemonic::isValidWord(const std::string& word) {
     // (i.e., no early exit on match)
     auto found = false;
     for (const char* const* w = mnemonicWordlist(); *w != nullptr; ++w) {
-        if (strlen(*w) == len && strncmp(*w, wordC, len) == 0) {
+        if (std::string(*w).size() == len && strncmp(*w, wordC, len) == 0) {
             found = true;
         }
     }

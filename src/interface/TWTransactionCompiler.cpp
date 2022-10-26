@@ -31,13 +31,15 @@ TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWStr
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
-std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dataVector) {
+static std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dataVector) {
     std::vector<Data> ret;
     const auto n = TWDataVectorSize(dataVector);
-    for (auto i = 0ul; i < n; ++i) {
-        auto elem = TWDataVectorGet(dataVector, i);
-        ret.push_back(*(static_cast<const Data*>(elem)));
-        TWDataDelete(elem);
+    for (auto i = 0uL; i < n; ++i) {
+        const auto* const elem = TWDataVectorGet(dataVector, i);
+        if (const auto* const data = reinterpret_cast<const Data *>(elem); data) {
+            ret.emplace_back(*data);
+            TWDataDelete(elem);
+        }
     }
     return ret;
 }
