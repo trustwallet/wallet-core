@@ -58,6 +58,72 @@ class TestElrondSigner {
     }
 
     @Test
+    fun signGenericActionUndelegate() {
+        // Successfully broadcasted https://explorer.elrond.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+
+        val accounts = Elrond.Accounts.newBuilder()
+            .setSenderNonce(6)
+            .setSender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa")
+            .setReceiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r")
+            .build()
+
+        val genericAction = Elrond.GenericAction.newBuilder()
+            .setAccounts(accounts)
+            .setValue("0")
+            .setData("unDelegate@0de0b6b3a7640000")
+            .setVersion(1)
+            .build()
+
+        val signingInput = Elrond.SigningInput.newBuilder()
+            .setGenericAction(genericAction)
+            .setGasPrice(1000000000)
+            .setGasLimit(12000000)
+            .setChainId("1")
+            .setPrivateKey(privateKey)
+            .build()
+
+        val output = AnySigner.sign(signingInput, CoinType.ELROND, Elrond.SigningOutput.parser())
+        val expectedSignature = "89f9683af92f7b835bff4e1d0dbfcff5245b3367df4d23538eb799e0ad0a90be29ac3bd3598ce55b35b35ebef68bfa5738eed39fd01adc33476f65bd1b966e0b"
+
+        assertEquals(expectedSignature, output.signature)
+        assertEquals("""{"nonce":6,"value":"0","receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r","sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa","gasPrice":1000000000,"gasLimit":12000000,"data":"dW5EZWxlZ2F0ZUAwZGUwYjZiM2E3NjQwMDAw","chainID":"1","version":1,"signature":"$expectedSignature"}""", output.encoded)
+    }
+
+    @Test
+    fun signGenericActionDelegate() {
+        // Successfully broadcasted https://explorer.elrond.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
+        val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
+
+        val accounts = Elrond.Accounts.newBuilder()
+            .setSenderNonce(1)
+            .setSender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa")
+            .setReceiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r")
+            .build()
+
+        val genericAction = Elrond.GenericAction.newBuilder()
+            .setAccounts(accounts)
+            .setValue("1")
+            .setData("delegate")
+            .setVersion(1)
+            .build()
+
+        val signingInput = Elrond.SigningInput.newBuilder()
+            .setGenericAction(genericAction)
+            .setGasPrice(1000000000)
+            .setGasLimit(12000000)
+            .setChainId("1")
+            .setPrivateKey(privateKey)
+            .build()
+
+        val output = AnySigner.sign(signingInput, CoinType.ELROND, Elrond.SigningOutput.parser())
+        val expectedSignature = "3b9164d47a4e3c0330ae387cd29ba6391f9295acf5e43a16a4a2611645e66e5fa46bf22294ca68fe1948adf45cec8cb47b8792afcdb248bd9adec7c6e6c27108"
+
+        assertEquals(expectedSignature, output.signature)
+        assertEquals("""{"nonce":1,"value":"1","receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r","sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa","gasPrice":1000000000,"gasLimit":12000000,"data":"ZGVsZWdhdGU=","chainID":"1","version":1,"signature":"$expectedSignature"}""", output.encoded)
+    }
+
+    @Test
     fun signEGLDTransfer() {
         val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
 
