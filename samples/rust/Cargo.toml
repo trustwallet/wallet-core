@@ -1,0 +1,16 @@
+[package]
+name = "rustsample"
+version = "1.0.0"
+edition = "2021"
+build = "src/build.rs"
+
+[dependencies]
+hex = "0.4.3"
+libc = "0.2"
+protobuf = "3.2.0"
+
+[build-dependencies]
+cc = { version = "1.0", features = ["parallel"] }
+pkg-config = "0.3"
+protobuf = "3.2.0"
+protobuf-codegen = "3.2.0"
