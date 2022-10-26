@@ -6,7 +6,7 @@
 
 #include "Address.h"
 #include "HexCoding.h"
-#include "algorithm/string.h"
+#include "algorithm/string.hpp"
 
 #include <regex>
 

@@ -1,8 +1,10 @@
+// Copyright © 2017-2022 Trust Wallet.
 //
-// Created by Roman Sztergbaum on 26/10/2022.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
-#include "algorithm/string.h"
+#include "algorithm/string.hpp"
 
 #include "gtest/gtest.h"
 
