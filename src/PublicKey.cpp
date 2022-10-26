@@ -16,8 +16,6 @@
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
 
-#include <iostream>
-
 #include "HexCoding.h"
 
 #include <iterator>
