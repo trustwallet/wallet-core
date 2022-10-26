@@ -8,17 +8,15 @@
 
 #include "../CoinEntry.h"
 
-namespace TW::<%= format_name(coin) %> {
+namespace TW::Hedera {
 
-/// Entry point for implementation of <%= format_name(coin) %> coin.
+/// Entry point for implementation of Hedera coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry final : public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, const PrefixVariant& addressPrefix) const;
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    // normalizeAddress(): implement this if needed, e.g. Ethereum address is EIP55 checksummed
-    // plan(): implement this if the blockchain is UTXO based
 };
 
-} // namespace TW::<%= format_name(coin) %>
+} // namespace TW::Hedera

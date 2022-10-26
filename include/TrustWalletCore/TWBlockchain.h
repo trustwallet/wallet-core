@@ -55,6 +55,7 @@ enum TWBlockchain {
     TWBlockchainNervos = 41,
     TWBlockchainEverscale = 42,
     TWBlockchainAptos = 43, // Aptos
+    TWBlockchainHedera = 45,  // TODO remove if the blockchain already exists, or just remove this comment if not
 };
 
 TW_EXTERN_C_END
