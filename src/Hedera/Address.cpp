@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "HexCoding.h"
 
 namespace TW::Hedera {
 
@@ -26,8 +27,15 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    // TODO: Finalize implementation
-    return "TODO";
+   std::string out = std::to_string(mShard) + "." + std::to_string(mRealm) + ".";
+   if (mAlias.has_value()) {
+       return out + hex(mAlias->bytesWithHederaDerPrefix());
+   }
+   return out + std::to_string(mNum);
+}
+
+Address::Address(std::size_t shard, std::size_t realm, std::size_t num, std::optional<PublicKey> alias)
+    : mShard(shard), mRealm(realm), mNum(num), mAlias(alias) {
 }
 
 } // namespace TW::Hedera
