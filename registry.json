@@ -2831,7 +2831,7 @@
     "blockchain": "Hedera",
     "derivation": [
       {
-        "path": "m/44'/3030'/0'/0'/0'"
+        "path": "m/44'/3030'/0'/0'/0"
       }
     ],
     "curve": "ed25519",

@@ -16,7 +16,13 @@
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
 
+#include "HexCoding.h"
+
 #include <iterator>
+
+namespace {
+    static constexpr const char* const gHederaDerPrefixPublic = "302a300506032b6570032100";
+}
 
 namespace TW {
 
@@ -243,6 +249,10 @@ bool PublicKey::isValidED25519() const {
     assert(bytes.size() == ed25519Size);
     ge25519 r;
     return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
+}
+
+Data PublicKey::bytesWithHederaDerPrefix() const {
+    return concat(parse_hex(gHederaDerPrefixPublic), this->bytes);
 }
 
 } // namespace TW

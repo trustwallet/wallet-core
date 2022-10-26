@@ -19,9 +19,15 @@
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
 
+#include "HexCoding.h"
+
 #include <iterator>
 
 using namespace TW;
+
+namespace {
+    static constexpr const char* const gHederaDerPrefix = "302e020100300506032b657004220420";
+}
 
 bool PrivateKey::isValid(const Data& data) {
     // Check length
@@ -293,4 +299,8 @@ Data PrivateKey::signZilliqa(const Data& message) const {
 
 void PrivateKey::cleanup() {
     std::fill(bytes.begin(), bytes.end(), 0);
+}
+
+Data PrivateKey::bytesWithHederaDerPrefix() const {
+    return concat(parse_hex(gHederaDerPrefix), this->bytes);
 }

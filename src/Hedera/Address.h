@@ -15,8 +15,6 @@ namespace TW::Hedera {
 
 class Address {
   public:
-    // TODO: Complete class definition
-
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 

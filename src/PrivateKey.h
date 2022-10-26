@@ -83,6 +83,9 @@ class PrivateKey {
     /// Signs a digest using given ECDSA curve, returns Zilliqa schnorr signature
     Data signZilliqa(const Data& message) const;
 
+    /// Get bytes with Hedera DER prefix https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/src/Ed25519PrivateKey.js#L8
+    Data bytesWithHederaDerPrefix() const;
+
     /// Cleanup contents (fill with 0s), called before destruction
     void cleanup();
 };

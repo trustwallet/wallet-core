@@ -433,5 +433,27 @@ TEST(HDWallet, AptosKey) {
     }
 }
 
+TEST(HDWallet, HederaKey) {
+    // https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/test/unit/Mnemonic.js#L47
+    {
+        const auto derivPath = "m/44'/3030'/0'/0'/0";
+        HDWallet wallet = HDWallet("inmate flip alley wear offer often piece magnet surge toddler submit right radio absent pear floor belt raven price stove replace reduce plate home", "");
+        {
+            const auto privateKey = wallet.getKey(TWCoinTypeHedera, DerivationPath(derivPath));
+            EXPECT_EQ(hex(privateKey.bytesWithHederaDerPrefix()), "302e020100300506032b657004220420853f15aecd22706b105da1d709b4ac05b4906170c2b9c7495dff9af49e1391da");
+            EXPECT_EQ(hex(privateKey.getPublicKey(TWPublicKeyTypeED25519).bytesWithHederaDerPrefix()), "302a300506032b6570032100b63b3815f453cf697b53b290b1d78e88c725d39bde52c34c79fb5b4c93894673");
+        }
+    }
+    {
+        const auto derivPath = "m/44'/3030'/0'/0'/0";
+        HDWallet wallet = HDWallet("walk gun glide frequent exhaust sugar siege prosper staff skill swarm label", "");
+        {
+            const auto privateKey = wallet.getKey(TWCoinTypeHedera, DerivationPath(derivPath));
+            EXPECT_EQ(hex(privateKey.bytesWithHederaDerPrefix()), "302e020100300506032b657004220420650c5120cbdc6244e3d10001eb27eea4dd3f80c331b3b6969fa434797d4edd50");
+            EXPECT_EQ(hex(privateKey.getPublicKey(TWPublicKeyTypeED25519).bytesWithHederaDerPrefix()), "302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860");
+        }
+    }
+}
+
 
 } // namespace
