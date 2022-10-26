@@ -6,12 +6,40 @@
 
 #include "Address.h"
 #include "HexCoding.h"
+#include "algorithm/string.h"
+
+#include <regex>
+
+namespace TW::Hedera::internal {
+    inline const std::regex gEntityIDRegex{"(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-z]{5}))?$"};
+}
 
 namespace TW::Hedera {
 
 bool Address::isValid(const std::string& string) {
-    // TODO: Finalize implementation
-    return false;
+    using namespace internal;
+    std::smatch match;
+    auto isValid = std::regex_match(string, match, gEntityIDRegex);
+    if (!isValid) {
+        auto parts = TW::split(string, '.');
+        if (parts.size() != 3) {
+            return false;
+        }
+        auto isNumberFunctor = [](std::string_view input){
+            return input.find_first_not_of("0123456789") == std::string::npos;
+        };
+        if (!isNumberFunctor(parts[0]) || !isNumberFunctor(parts[1])) {
+            return false;
+        }
+        try {
+            [[maybe_unused]] auto pubKey = PublicKey::fromHederaDerPrefix(parts[2]);
+            isValid = true;
+        }
+        catch ([[maybe_unused]] const std::runtime_error& error) {
+            return false;
+        }
+    }
+    return isValid;
 }
 
 Address::Address(const std::string& string) {

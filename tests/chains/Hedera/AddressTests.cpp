@@ -8,6 +8,9 @@
 #include "Hedera/Address.h"
 #include "PublicKey.h"
 #include "PrivateKey.h"
+
+#include "TestUtilities.h"
+
 #include <gtest/gtest.h>
 #include <vector>
 
@@ -15,12 +18,16 @@ namespace TW::Hedera::tests {
 
 TEST(HederaAddress, FromStandardArgument) {
     {
+        EXPECT_ANY_THROW(PublicKey::fromHederaDerPrefix(""));
+    }
+    {
         // 0.0.1377988
         Address addr(0uL, 0uL, 1'377'988uL);
         ASSERT_EQ(addr.shard(), 0uL);
         ASSERT_EQ(addr.realm(), 0uL);
         ASSERT_EQ(addr.num(), 1'377'988uL);
         ASSERT_EQ(addr.string(), "0.0.1377988");
+        ASSERT_TRUE(addr.isValid(addr.string()));
     }
 
     {
@@ -33,14 +40,20 @@ TEST(HederaAddress, FromStandardArgument) {
         ASSERT_EQ(addr.num(), 0uL);
         ASSERT_EQ(hex(addr.alias().value().bytesWithHederaDerPrefix()), "302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860");
         ASSERT_EQ(addr.string(), "0.0.302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860");
+        ASSERT_TRUE(addr.isValid(addr.string()));
     }
 }
 
-/*TEST(HederaAddress, Valid) {
-    ASSERT_TRUE(Address::isValid("__ADD_VALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
+TEST(HederaAddress, Valid) {
+    ASSERT_FALSE(Address::isValid("invalid"));
+    ASSERT_FALSE(Address::isValid("302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860"));
+    ASSERT_FALSE(Address::isValid("0.0.abc"));
+    ASSERT_TRUE(Address::isValid("0.0.1"));
+    ASSERT_TRUE(Address::isValid("0.0.1377988"));
+    ASSERT_TRUE(Address::isValid("0.0.302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860"));
 }
+
+/*
 
 TEST(HederaAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("__ADD_INVALID_ADDRESS_HERE__"));

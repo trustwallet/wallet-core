@@ -94,6 +94,8 @@ class PublicKey {
     /// Naming is kept for backwards compatibility.
     static PublicKey recover(const Data& signature, const Data& messageDigest);
 
+    static PublicKey fromHederaDerPrefix(const std::string& input);
+
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;
 

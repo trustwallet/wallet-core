@@ -16,6 +16,8 @@
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
 
+#include <iostream>
+
 #include "HexCoding.h"
 
 #include <iterator>
@@ -253,6 +255,13 @@ bool PublicKey::isValidED25519() const {
 
 Data PublicKey::bytesWithHederaDerPrefix() const {
     return concat(parse_hex(gHederaDerPrefixPublic), this->bytes);
+}
+
+PublicKey PublicKey::fromHederaDerPrefix(const std::string& input) {
+    if (std::size_t pos = input.find(gHederaDerPrefixPublic); pos != std::string::npos) {
+        return PublicKey(parse_hex(input.substr(pos + std::string(gHederaDerPrefixPublic).size())), TWPublicKeyTypeED25519);
+    }
+    throw std::runtime_error("invalid input");
 }
 
 } // namespace TW
