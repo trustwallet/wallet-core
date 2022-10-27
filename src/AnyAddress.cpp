@@ -25,15 +25,15 @@ AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinTyp
     return new AnyAddress{.address = std::move(normalized), .coin = coin};
 }
 
-AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp) {
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp, TWDerivation derivation) {
 
-    auto derivedAddress = TW::deriveAddress(coin, publicKey, TWDerivationDefault, hrp);
+    auto derivedAddress = TW::deriveAddress(coin, publicKey, derivation, hrp);
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 
-AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& addressPrefix) {
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& addressPrefix, TWDerivation derivation) {
 
-    auto derivedAddress = TW::deriveAddress(coin, publicKey, addressPrefix);
+    auto derivedAddress = TW::deriveAddress(coin, publicKey, addressPrefix, derivation);
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 

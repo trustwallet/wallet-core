@@ -24,8 +24,8 @@ public:
     enum TWCoinType coin;
 
     static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin, const PrefixVariant& prefix = std::monostate());
-    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp = "");
-    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& prefix);
+    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp = "", TWDerivation derivation = TWDerivationDefault);
+    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& prefix, TWDerivation derivation = TWDerivationDefault);
 
     Data getData() const;
 };
