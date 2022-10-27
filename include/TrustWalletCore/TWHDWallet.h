@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -100,7 +100,8 @@ TWData* _Nonnull TWHDWalletEntropy(struct TWHDWallet* _Nonnull wallet);
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nonnull TWHDWalletGetMasterKey(struct TWHDWallet* _Nonnull wallet, enum TWCurve curve);
 
-/// Generates the default private key for the specified coin.
+/// Generates the default private key for the specified coin, using default derivation.
+/// See also TWHDWalletGetKey, TWHDWalletGetKeyDerivation
 ///
 /// \param wallet non-null TWHDWallet
 /// \param coin  a coin type
@@ -118,6 +119,7 @@ TW_EXPORT_METHOD
 TWString* _Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin);
 
 /// Generates the private key for the specified derivation path.
+/// See also TWHDWalletGetKeyForCoin, TWHDWalletGetKeyDerivation
 ///
 /// \param wallet non-null TWHDWallet
 /// \param coin a coin type
@@ -126,6 +128,17 @@ TWString* _Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet* _Nonnull walle
 /// \return The private key for the specified derivation path/coin
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nonnull TWHDWalletGetKey(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, TWString* _Nonnull derivationPath);
+
+/// Generates the private key for the specified derivation.
+/// See also TWHDWalletGetKey, TWHDWalletGetKeyForCoin
+///
+/// \param wallet non-null TWHDWallet
+/// \param coin a coin type
+/// \param derivation a (custom) derivation to use
+/// \note Returned object needs to be deleted with \TWPrivateKeyDelete
+/// \return The private key for the specified derivation path/coin
+TW_EXPORT_METHOD
+struct TWPrivateKey* _Nonnull TWHDWalletGetKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation);
 
 /// Generates the private key for the specified derivation path and curve.
 ///
