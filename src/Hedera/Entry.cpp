@@ -15,11 +15,11 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string&
     return Address::isValid(address);
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
