@@ -43,9 +43,4 @@ private:
     std::optional<PublicKey> mAlias{std::nullopt};
 };
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    // TODO: Complete equality operator
-    return true;
-}
-
 } // namespace TW::Hedera

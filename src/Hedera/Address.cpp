@@ -8,10 +8,11 @@
 #include "HexCoding.h"
 #include "algorithm/string.hpp"
 
+#include <charconv>
 #include <regex>
 
 namespace TW::Hedera::internal {
-    inline const std::regex gEntityIDRegex{"(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-z]{5}))?$"};
+    static const std::regex gEntityIDRegex{"(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-z]{5}))?$"};
 }
 
 namespace TW::Hedera {
@@ -25,7 +26,7 @@ bool Address::isValid(const std::string& string) {
         if (parts.size() != 3) {
             return false;
         }
-        auto isNumberFunctor = [](std::string_view input){
+        auto isNumberFunctor = [](std::string_view input) {
             return input.find_first_not_of("0123456789") == std::string::npos;
         };
         if (!isNumberFunctor(parts[0]) || !isNumberFunctor(parts[1])) {
@@ -34,8 +35,7 @@ bool Address::isValid(const std::string& string) {
         try {
             [[maybe_unused]] auto pubKey = PublicKey::fromHederaDerPrefix(parts[2]);
             isValid = true;
-        }
-        catch ([[maybe_unused]] const std::runtime_error& error) {
+        } catch ([[maybe_unused]] const std::runtime_error& error) {
             return false;
         }
     }
@@ -43,27 +43,39 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const std::string& string) {
-    // TODO: Finalize implementation
-
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
+
+    auto toInt = [](std::string_view s) -> std::optional<std::size_t> {
+        if (std::size_t value = 0; std::from_chars(s.begin(), s.end(), value).ec == std::errc{}) {
+            return value;
+        } else {
+            return std::nullopt;
+        }
+    };
+
+    // When creating an Address by string - we assume to only sent to 0.0.1 format, alias is internal.
+    auto parts = TW::split(string, '.');
+    mShard = *toInt(parts[0]);
+    mRealm = *toInt(parts[1]);
+    mNum = *toInt(parts[2]);
 }
 
-Address::Address(const PublicKey& publicKey) {
-    // TODO: Finalize implementation
+Address::Address(const PublicKey& publicKey)
+    : Address(0, 0, 0, publicKey) {
 }
 
 std::string Address::string() const {
-   std::string out = std::to_string(mShard) + "." + std::to_string(mRealm) + ".";
-   if (mAlias.has_value()) {
-       return out + hex(mAlias->bytesWithHederaDerPrefix());
-   }
-   return out + std::to_string(mNum);
+    std::string out = std::to_string(mShard) + "." + std::to_string(mRealm) + ".";
+    if (mAlias.has_value()) {
+        return out + hex(mAlias->bytesWithHederaDerPrefix());
+    }
+    return out + std::to_string(mNum);
 }
 
 Address::Address(std::size_t shard, std::size_t realm, std::size_t num, std::optional<PublicKey> alias)
-    : mShard(shard), mRealm(realm), mNum(num), mAlias(alias) {
+    : mShard(shard), mRealm(realm), mNum(num), mAlias(std::move(alias)) {
 }
 
 } // namespace TW::Hedera
