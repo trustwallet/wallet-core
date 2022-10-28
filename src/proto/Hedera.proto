@@ -9,305 +9,32 @@ syntax = "proto3";
 package TW.Hedera.Proto;
 option java_package = "wallet.core.jni.proto";
 
-/**
- * An exact date and time. This is the same data structure as the protobuf Timestamp.proto (see the
- * comments in https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto)
- */
 message Timestamp {
-  /**
-   * Number of complete seconds since the start of the epoch
-   */
   int64 seconds = 1;
-
-  /**
-   * Number of nanoseconds since the start of the last second
-   */
   int32 nanos = 2;
 }
 
-/**
- * A length of time in seconds.
- */
-message Duration {
-  /**
-   * The number of seconds
-   */
-  int64 seconds = 1;
-}
-
-/**
- * The ID for an a cryptocurrency account
- */
-message AccountID {
-  /**
-   * The shard number (nonnegative)
-   */
-  int64 shardNum = 1;
-
-  /**
-   * The realm number (nonnegative)
-   */
-  int64 realmNum = 2;
-
-  /**
-   * The account number unique within its realm which can be either a non-negative integer or an alias public key.
-   * For any AccountID fields in the query response, transaction record or transaction receipt only accountNum will
-   * be populated.
-   */
-  oneof account {
-    /**
-     * A non-negative account number unique within its realm
-     */
-    int64 accountNum = 3;
-
-    /**
-     * The public key bytes to be used as the account's alias. The public key bytes are the result of serializing
-     * a protobuf Key message for any primitive key type. Currently only primitive key bytes are supported as an alias
-     * (ThresholdKey, KeyList, ContractID, and delegatable_contract_id are not supported)
-     *
-     * May also be the ethereum account 20-byte EVM address to be used initially in place of the public key bytes. This EVM
-     * address may be either the encoded form of the shard.realm.num or the keccak-256 hash of a ECDSA_SECP256K1 primitive key.
-     *
-     * At most one account can ever have a given alias and it is used for account creation if it
-     * was automatically created using a crypto transfer. It will be null if an account is created normally.
-     * It is immutable once it is set for an account.
-     *
-     * If a transaction auto-creates the account, any further transfers to that alias will simply be deposited
-     * in that account, without creating anything, and with no creation fee being charged.
-     *
-     * If a transaction lazily-creates this account, a subsequent transaction will be required containing the public key bytes
-     * that map to the EVM address bytes. The provided public key bytes will then serve as the final alias bytes.
-     */
-    bytes alias = 4;
-
-  }
-}
-
-/**
- * An account, and the amount that it sends or receives during a cryptocurrency or token transfer.
- */
-message AccountAmount {
-  /**
-   * The Account ID that sends/receives cryptocurrency or tokens
-   */
-  AccountID accountID = 1;
-
-  /**
-   * The amount of tinybars (for Crypto transfers) or in the lowest
-   * denomination (for Token transfers) that the account sends(negative) or
-   * receives(positive)
-   */
-  sint64 amount = 2;
-
-  /**
-   * If true then the transfer is expected to be an approved allowance and the
-   * accountID is expected to be the owner. The default is false (omitted).
-   */
-  bool is_approval = 3;
-}
-
-/**
- * A list of accounts and amounts to transfer out of each account (negative) or into it (positive).
- */
-message TransferList {
-  /**
-   * Multiple list of AccountAmount pairs, each of which has an account and
-   * an amount to transfer into it (positive) or out of it (negative)
-   */
-  repeated AccountAmount accountAmounts = 1;
-}
-
-/**
- * Unique identifier for a token
- */
-message TokenID {
-  /**
-   * A nonnegative shard number
-   */
-  int64 shardNum = 1;
-
-  /**
-   * A nonnegative realm number
-   */
-  int64 realmNum = 2;
-
-  /**
-   * A nonnegative token number
-   */
-  int64 tokenNum = 3;
-}
-
-/**
- * A sender account, a receiver account, and the serial number of an NFT of a Token with
- * NON_FUNGIBLE_UNIQUE type. When minting NFTs the sender will be the default AccountID instance
- * (0.0.0) and when burning NFTs, the receiver will be the default AccountID instance.
- */
-message NftTransfer {
-  /**
-   * The accountID of the sender
-   */
-  AccountID senderAccountID = 1;
-
-  /**
-   * The accountID of the receiver
-   */
-  AccountID receiverAccountID = 2;
-
-  /**
-   * The serial number of the NFT
-   */
-  int64 serialNumber = 3;
-
-  /**
-   * If true then the transfer is expected to be an approved allowance and the
-   * senderAccountID is expected to be the owner. The default is false (omitted).
-   */
-  bool is_approval = 4;
-}
-
-/**
- * A list of token IDs and amounts representing the transferred out (negative) or into (positive)
- * amounts, represented in the lowest denomination of the token
- */
-message TokenTransferList {
-  /**
-   * The ID of the token
-   */
-  TokenID token = 1;
-
-  /**
-   * Applicable to tokens of type FUNGIBLE_COMMON. Multiple list of AccountAmounts, each of which
-   * has an account and amount
-   */
-  repeated AccountAmount transfers = 2;
-
-  /**
-   * Applicable to tokens of type NON_FUNGIBLE_UNIQUE. Multiple list of NftTransfers, each of
-   * which has a sender and receiver account, including the serial number of the NFT
-   */
-  repeated NftTransfer nftTransfers = 3;
-
-  /**
-   * If present, the number of decimals this fungible token type is expected to have. The transfer
-   * will fail with UNEXPECTED_TOKEN_DECIMALS if the actual decimals differ.
-   */
-  uint32 expected_decimals = 4;
-}
-
-/**
- * Transfers cryptocurrency among two or more accounts by making the desired adjustments to their
- * balances. Each transfer list can specify up to 10 adjustments. Each negative amount is withdrawn
- * from the corresponding account (a sender), and each positive one is added to the corresponding
- * account (a receiver). The amounts list must sum to zero. Each amount is a number of tinybars
- * (there are 100,000,000 tinybars in one hbar).  If any sender account fails to have sufficient
- * hbars, then the entire transaction fails, and none of those transfers occur, though the
- * transaction fee is still charged. This transaction must be signed by the keys for all the sending
- * accounts, and for any receiving accounts that have receiverSigRequired == true. The signatures
- * are in the same order as the accounts, skipping those accounts that don't need a signature.
- */
-message CryptoTransferTransactionBody {
-  /**
-   * The desired hbar balance adjustments
-   */
-  TransferList transfers = 1;
-
-  /**
-   * The desired token unit balance adjustments; if any custom fees are assessed, the ledger will
-   * try to deduct them from the payer of this CryptoTransfer, resolving the transaction to
-   * INSUFFICIENT_PAYER_BALANCE_FOR_CUSTOM_FEE if this is not possible
-   */
-  repeated TokenTransferList tokenTransfers = 2;
-}
-
-/**
- * The ID for a transaction. This is used for retrieving receipts and records for a transaction, for
- * appending to a file right after creating it, for instantiating a smart contract with bytecode in
- * a file just created, and internally by the network for detecting when duplicate transactions are
- * submitted. A user might get a transaction processed faster by submitting it to N nodes, each with
- * a different node account, but all with the same TransactionID. Then, the transaction will take
- * effect when the first of all those nodes submits the transaction and it reaches consensus. The
- * other transactions will not take effect. So this could make the transaction take effect faster,
- * if any given node might be slow. However, the full transaction fee is charged for each
- * transaction, so the total fee is N times as much if the transaction is sent to N nodes.
- *
- * Applicable to Scheduled Transactions:
- *  - The ID of a Scheduled Transaction has transactionValidStart and accountIDs inherited from the
- *    ScheduleCreate transaction that created it. That is to say that they are equal
- *  - The scheduled property is true for Scheduled Transactions
- *  - transactionValidStart, accountID and scheduled properties should be omitted
- */
 message TransactionID {
-  /**
-   * The transaction is invalid if consensusTimestamp < transactionID.transactionStartValid
-   */
   Timestamp transactionValidStart = 1;
-
-  /**
-   * The Account ID that paid for this transaction
-   */
-  AccountID accountID = 2;
-
-  /**
-   * Whether the Transaction is of type Scheduled or no
-   */
+  string accountID = 2;
   bool scheduled = 3;
-
-  /**
-   * The identifier for an internal transaction that was spawned as part
-   * of handling a user transaction. (These internal transactions share the
-   * transactionValidStart and accountID of the user transaction, so a
-   * nonce is necessary to give them a unique TransactionID.)
-   *
-   * An example is when a "parent" ContractCreate or ContractCall transaction
-   * calls one or more HTS precompiled contracts; each of the "child"
-   * transactions spawned for a precompile has a id with a different nonce.
-   */
   int32 nonce = 4;
 }
 
+message TransferMessage {
+  string from = 1;
+  string to = 2;
+  sint64 amount = 3;
+}
+
 message TransactionBody {
-  /**
-   * The ID for this transaction, which includes the payer's account (the account paying the
-   * transaction fee). If two transactions have the same transactionID, they won't both have an
-   * effect
-   */
   TransactionID transactionID = 1;
-
-  /**
-   * The account of the node that submits the client's transaction to the network
-   */
-  AccountID nodeAccountID = 2;
-
-  /**
-   * The maximum transaction fee the client is willing to pay
-   */
+  string nodeAccountID = 2;
   uint64 transactionFee = 3;
-
-  /**
-   * The transaction is invalid if consensusTimestamp > transactionID.transactionValidStart +
-   * transactionValidDuration
-   */
-  Duration transactionValidDuration = 4;
-
-  /**
-   * Should a record of this transaction be generated? (A receipt is always generated, but the
-   * record is optional)
-   */
-  bool generateRecord = 5 [deprecated = true];
-
-  /**
-   * Any notes or descriptions that should be put into the record (max length 100)
-   */
-  string memo = 6;
-
-  /**
-  * The choices here are arranged by service in roughly lexicographical order. The field ordinals are non-sequential, and a result of the historical order of implementation.
-  */
+  int64 transactionValidDuration = 4;
+  string memo = 5;
   oneof data {
-    /**
-     * Transfer amount between accounts
-     */
-    CryptoTransferTransactionBody cryptoTransfer = 7;
+    TransferMessage transfer = 6;
   }
 }
 
