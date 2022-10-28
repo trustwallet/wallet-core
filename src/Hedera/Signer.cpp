@@ -8,13 +8,14 @@
 #include "Address.h"
 #include "../PublicKey.h"
 #include "Protobuf/transaction_body.pb.h"
+#include "Protobuf/transaction_contents.pb.h"
 
 namespace TW::Hedera {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto protoOutput = Proto::SigningOutput();
     Data encoded;
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     switch (input.body().data_case()) {
 
@@ -60,6 +61,20 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         timestamp.set_nanos(input.body().transactionid().transactionvalidstart().nanos());
         *transactionId.mutable_transactionvalidstart() = timestamp;
         *transactionId.mutable_accountid() = transactionAccountID;
+
+        auto encodedBody = data(body.SerializeAsString());
+        auto signedBody = privateKey.sign(encodedBody, TWCurveED25519);
+        auto sigMap = proto::SignatureMap();
+        auto *sigPair = sigMap.add_sigpair();
+        sigPair->set_ed25519(signedBody.data(), signedBody.size());
+        auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        sigPair->set_pubkeyprefix(pubKey.bytes.data(), pubKey.bytes.size());
+        auto signedTx = proto::SignedTransaction();
+        signedTx.set_bodybytes(encodedBody.data(), encodedBody.size());
+        *sigMap.add_sigpair() = *sigPair;
+        *signedTx.mutable_sigmap() = sigMap;
+        encoded = data(signedTx.SerializeAsString());
+        protoOutput.set_encoded(encoded.data(), encoded.size());
         break;
     }
     case Proto::TransactionBody::DATA_NOT_SET:
