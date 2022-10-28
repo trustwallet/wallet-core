@@ -101,8 +101,9 @@ TW_EXPORT_METHOD
 struct TWPrivateKey* _Nonnull TWHDWalletGetMasterKey(struct TWHDWallet* _Nonnull wallet, enum TWCurve curve);
 
 /// Generates the default private key for the specified coin, using default derivation.
-/// See also TWHDWalletGetKey, TWHDWalletGetKeyDerivation
 ///
+/// \see TWHDWalletGetKey
+/// \see TWHDWalletGetKeyDerivation
 /// \param wallet non-null TWHDWallet
 /// \param coin  a coin type
 /// \note Returned object needs to be deleted with \TWPrivateKeyDelete
@@ -111,8 +112,8 @@ TW_EXPORT_METHOD
 struct TWPrivateKey* _Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin);
 
 /// Generates the default address for the specified coin (without exposing intermediary private key), default derivation.
-/// See also TWHDWalletGetAddressDerivation
 ///
+/// \see TWHDWalletGetAddressDerivation
 /// \param wallet non-null TWHDWallet
 /// \param coin  a coin type
 /// \return return the default address for the specified coin as a non-null TWString
@@ -120,8 +121,8 @@ TW_EXPORT_METHOD
 TWString* _Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin);
 
 /// Generates the default address for the specified coin and derivation (without exposing intermediary private key).
-/// See also TWHDWalletGetAddressForCoin
 ///
+/// \see TWHDWalletGetAddressForCoin
 /// \param wallet non-null TWHDWallet
 /// \param coin  a coin type
 /// \param derivation  a (custom) derivation to use
@@ -130,8 +131,9 @@ TW_EXPORT_METHOD
 TWString* _Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation);
 
 /// Generates the private key for the specified derivation path.
-/// See also TWHDWalletGetKeyForCoin, TWHDWalletGetKeyDerivation
 ///
+/// \see TWHDWalletGetKeyForCoin
+/// \see TWHDWalletGetKeyDerivation
 /// \param wallet non-null TWHDWallet
 /// \param coin a coin type
 /// \param derivationPath  a non-null derivation path
@@ -141,8 +143,9 @@ TW_EXPORT_METHOD
 struct TWPrivateKey* _Nonnull TWHDWalletGetKey(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, TWString* _Nonnull derivationPath);
 
 /// Generates the private key for the specified derivation.
-/// See also TWHDWalletGetKey, TWHDWalletGetKeyForCoin
 ///
+/// \see TWHDWalletGetKey
+/// \see TWHDWalletGetKeyForCoin
 /// \param wallet non-null TWHDWallet
 /// \param coin a coin type
 /// \param derivation a (custom) derivation to use
