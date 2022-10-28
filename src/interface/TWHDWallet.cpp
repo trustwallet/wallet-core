@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -71,9 +71,13 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet,
 }
 
 TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
-    auto derivationPath = TW::derivationPath(coin);
+    return TWHDWalletGetAddressDerivation(wallet, coin, TWDerivationDefault);
+}
+
+TWString *_Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet *wallet, TWCoinType coin, enum TWDerivation derivation) {
+    auto derivationPath = TW::derivationPath(coin, derivation);
     PrivateKey privateKey = wallet->impl.getKey(coin, derivationPath);
-    std::string address = deriveAddress(coin, privateKey);
+    std::string address = deriveAddress(coin, privateKey, derivation);
     return TWStringCreateWithUTF8Bytes(address.c_str());
 }
 

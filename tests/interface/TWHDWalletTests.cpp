@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -155,6 +155,18 @@ TEST(HDWallet, DeriveAddressBitcoin) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto address = WRAP(TWString, TWHDWalletGetAddressForCoin(wallet.get(), TWCoinTypeBitcoin));
     assertStringsEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85");
+}
+
+TEST(HDWallet, DeriveAddressBitcoinDerivation) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    {
+        auto address = WRAP(TWString, TWHDWalletGetAddressDerivation(wallet.get(), TWCoinTypeBitcoin, TWDerivationBitcoinSegwit));
+        assertStringsEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85");
+    }
+    {
+        auto address = WRAP(TWString, TWHDWalletGetAddressDerivation(wallet.get(), TWCoinTypeBitcoin, TWDerivationBitcoinLegacy));
+        assertStringsEqual(address, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1");
+    }
 }
 
 TEST(HDWallet, DeriveEthereum) {
