@@ -173,6 +173,8 @@ message SigningInput {
     }
     string sender = 14;        // required for building pre-signing hash of a transaction
     string nonce_account = 15; // required for using durable transaction nonce
+    bytes fee_payer_private_key = 17; // optional external fee payer private key. support: TokenTransfer, CreateAndTransferToken
+    string fee_payer = 18; // optional external fee payer. support: TokenTransfer, CreateAndTransferToken
 }
 
 // Result containing the signed and encoded transaction.

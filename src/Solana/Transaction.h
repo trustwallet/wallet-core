@@ -7,9 +7,9 @@
 #pragma once
 
 #include "Address.h"
+#include "Data.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-#include "Data.h"
 
 #include <string>
 #include <vector>
@@ -332,9 +332,9 @@ class Message {
 
     Message() : recentBlockhash(NULL_ID_ADDRESS){};
 
-    Message(Hash recentBlockhash, const std::vector<Instruction>& instructions)
+    Message(Hash recentBlockhash, const std::vector<Instruction>& instructions, const std::string feePayerStr = "")
         : recentBlockhash(recentBlockhash), instructions(instructions) {
-        compileAccounts();
+        compileAccounts(feePayerStr);
     }
 
     // add an acount, to the corresponding bucket
@@ -342,7 +342,7 @@ class Message {
     // add an account to accountKeys if not yet present
     void addAccountKeys(const Address& account);
     // compile the single accounts lists from the buckets
-    void compileAccounts();
+    void compileAccounts(const std::string feePayerStr = "");
     // compile the instructions; replace instruction accounts with indices
     void compileInstructions();
 
@@ -535,7 +535,7 @@ class Message {
                                        const Address& recipientTokenAddress, uint64_t amount,
                                        uint8_t decimals, Hash recentBlockhash,
                                        std::string memo = "", std::vector<Address> references = {},
-                                       std::string nonceAccountStr = "") {
+                                       std::string nonceAccountStr = "", std::string feePayerStr = "") {
         std::vector<Instruction> instructions;
         if (Address::isValid(nonceAccountStr)) {
             instructions.push_back(
@@ -552,7 +552,11 @@ class Message {
             AccountMeta(signer, true, false),
         };
         appendReferences(accountMetas, references);
+
         instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
+        if (Address::isValid(feePayerStr)) {
+            return Message(recentBlockhash, instructions, feePayerStr);
+        }
         return Message(recentBlockhash, instructions);
     }
 
@@ -562,7 +566,7 @@ class Message {
         const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
         const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount,
         uint8_t decimals, Hash recentBlockhash, std::string memo = "",
-        std::vector<Address> references = {}, std::string nonceAccountStr = "") {
+        std::vector<Address> references = {}, std::string nonceAccountStr = "", std::string feePayerStr = "") {
         const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         const auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
@@ -572,15 +576,19 @@ class Message {
                 Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
         }
         instructions.reserve(3);
-        instructions.emplace_back(Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
-            AccountMeta(signer, true, false), // fundingAddress,
-            AccountMeta(recipientTokenAddress, false, false),
-            AccountMeta(recipientMainAddress, false, true),
-            AccountMeta(tokenMintAddress, false, true),
-            AccountMeta(systemProgramId, false, true),
-            AccountMeta(tokenProgramId, false, true),
-            AccountMeta(sysvarRentId, false, true),
-        }));
+        std::vector<AccountMeta> createTokenAccountAccountMetas;
+        if (Address::isValid(feePayerStr)) {
+            createTokenAccountAccountMetas.emplace_back(AccountMeta(Address(feePayerStr), true, false));
+        } else {
+            createTokenAccountAccountMetas.emplace_back(AccountMeta(signer, true, false));
+        }
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(recipientTokenAddress, false, false));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(recipientMainAddress, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(tokenMintAddress, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(systemProgramId, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(tokenProgramId, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(sysvarRentId, false, true));
+        instructions.emplace_back(Instruction::createTokenCreateAccount(createTokenAccountAccountMetas));
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.emplace_back(Instruction::createMemo(memo));
@@ -593,6 +601,9 @@ class Message {
         };
         appendReferences(accountMetas, references);
         instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
+        if (Address::isValid(feePayerStr)) {
+            return Message(recentBlockhash, instructions, feePayerStr);
+        }
         return Message(recentBlockhash, instructions);
     }
 
