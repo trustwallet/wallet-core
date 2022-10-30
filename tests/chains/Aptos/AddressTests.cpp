@@ -16,8 +16,8 @@ namespace TW::Aptos::tests {
 
 TEST(AptosAddress, Valid) {
     ASSERT_TRUE(Address::isValid("0x1"));
-    ASSERT_TRUE(Address::isValid(gAddressOne.string()));
-    ASSERT_TRUE(Address::isValid(gAddressZero.string()));
+    ASSERT_TRUE(Address::isValid(Address::one().string()));
+    ASSERT_TRUE(Address::isValid(Address::zero().string()));
     ASSERT_TRUE(Address::isValid("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
     ASSERT_TRUE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
     ASSERT_TRUE(Address::isValid("19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c"));
@@ -47,8 +47,8 @@ TEST(AptosAddress, FromString) {
 }
 
 TEST(AptosAddress, ShortString) {
-    ASSERT_EQ(gAddressOne.string(), "0x0000000000000000000000000000000000000000000000000000000000000001");
-    ASSERT_EQ(gAddressOne.shortString(), "1");
+    ASSERT_EQ(Address::one().string(), "0x0000000000000000000000000000000000000000000000000000000000000001");
+    ASSERT_EQ(Address::one().shortString(), "1");
 }
 
 } // namespace TW::Aptos::tests
