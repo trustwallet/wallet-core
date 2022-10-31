@@ -29,3 +29,6 @@ echo $pluginClassPath
 java -jar dokka.jar -outputDir dokka-out -pluginsClasspath $pluginClassPath -sourceSet "-sourceSetName TrustWallet -src java/wallet/core/jni"
 
 popd #jni
+
+zip -rq kdoc.zip jni/dokka-out
+mv kdoc.zip build/
