@@ -59,7 +59,7 @@ message TransactionBody {
   /**
    * Any notes or descriptions that should be put into the record (max length 100)
    */
-  string memo = 5;
+  string memo = 6;
 
   /**
    * The choices here are arranged by service in roughly lexicographical order. The field ordinals are non-sequential, and a result of the historical order of implementation.
