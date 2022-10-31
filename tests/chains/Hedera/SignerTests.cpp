@@ -103,7 +103,7 @@ TEST(HederaSigner, ProtoTestsDoubleTransferList) {
     }
 
     auto encoded = hex(transferList.SerializeAsString());
-    ASSERT_EQ(encoded, "0a0c0a0518e2f18d17108084af5f0a0c0a0518cb889c17108084af5f");
+    ASSERT_EQ(encoded, "0a0c0a0518e2f18d17108084af5f0a0c0a0518cb889c1710ff83af5f");
 }
 
 TEST(HederaSigner, ProtoTestsCryptoTransfer) {
