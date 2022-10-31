@@ -8,7 +8,6 @@
 #include "Address.h"
 #include "HexCoding.h"
 #include "../PublicKey.h"
-#include "google/protobuf/util/json_util.h"
 #include "Protobuf/transaction_body.pb.h"
 #include "Protobuf/transaction_contents.pb.h"
 
@@ -69,12 +68,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         sigPair->set_pubkeyprefix(pubKey.data(), pubKey.size());
         auto signedTx = proto::SignedTransaction();
         signedTx.set_bodybytes(encodedBody.data(), encodedBody.size());
-        *sigMap.add_sigpair() = *sigPair;
         *signedTx.mutable_sigmap() = sigMap;
-        // TODO: delete print
-        std::cout << "Encoded Body: " << hex(encodedBody) << std::endl;
-        std::cout << "Encoded Signed Body: " << hex(signedBody) << std::endl;
-        std::cout << "Signed Tx Body: " << hex(signedTx.SerializeAsString()) << std::endl;
         encoded = data(signedTx.SerializeAsString());
         protoOutput.set_encoded(encoded.data(), encoded.size());
         break;
