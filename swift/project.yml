@@ -60,6 +60,7 @@ targets:
           fi
         name: SwiftLint
         shell: /bin/bash
+        basedOnDependencyAnalysis: false
 
   WalletCoreTests:
     type: bundle.unit-test
