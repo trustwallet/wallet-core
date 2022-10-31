@@ -50,7 +50,6 @@ TEST(HederaSigner, SignWithMemo) {
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto* body = input.mutable_body();
 
-    // memo doesn't work yet
     *body->mutable_memo() = "wallet core";
     *body->mutable_nodeaccountid() = "0.0.7";
     body->set_transactionfee(100000000);
