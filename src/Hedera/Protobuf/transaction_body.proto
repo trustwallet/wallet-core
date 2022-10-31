@@ -69,6 +69,6 @@ message TransactionBody {
     /**
      * Transfer amount between accounts
      */
-    CryptoTransferTransactionBody cryptoTransfer = 6;
+    CryptoTransferTransactionBody cryptoTransfer = 14;
   }
 }

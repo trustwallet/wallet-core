@@ -6,7 +6,9 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "HexCoding.h"
 #include "../PublicKey.h"
+#include "google/protobuf/util/json_util.h"
 #include "Protobuf/transaction_body.pb.h"
 #include "Protobuf/transaction_contents.pb.h"
 
@@ -21,58 +23,58 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
 
     case Proto::TransactionBody::kTransfer: {
         // TODO: refactor with auto conversion operator etc
-        auto body = proto::TransactionBody();
         auto amount = input.body().transfer().amount();
         auto fromAccount = Address(input.body().transfer().from());
         auto toAccount = Address(input.body().transfer().to());
-        auto* transferMsg = body.mutable_cryptotransfer();
+        auto nodeAccount = Address(input.body().nodeaccountid());
+        auto body = proto::TransactionBody();
+        {
+            auto transferList = proto::TransferList();
+            {
+                auto* to = transferList.add_accountamounts();
+                to->set_amount(amount);
+                auto* accountIdTo = to->mutable_accountid();
+                accountIdTo->set_shardnum(0);
+                accountIdTo->set_realmnum(0);
+                accountIdTo->set_accountnum(toAccount.num());
+            }
 
-        // from
-        auto* from = transferMsg->mutable_transfers()->add_accountamounts();
-        from->set_amount(-amount);
-        auto* fromAccountId = from->mutable_accountid();
-        fromAccountId->set_shardnum(static_cast<int64_t>(fromAccount.shard()));
-        fromAccountId->set_realmnum(static_cast<int64_t>(fromAccount.realm()));
-        fromAccountId->set_accountnum(static_cast<int64_t>(fromAccount.num()));
+            {
+                auto* from = transferList.add_accountamounts();
+                from->set_amount(-amount);
+                auto* accountIdFrom = from->mutable_accountid();
+                accountIdFrom->set_shardnum(0);
+                accountIdFrom->set_realmnum(0);
+                accountIdFrom->set_accountnum(fromAccount.num());
+            }
 
-        // to
-        auto* to = transferMsg->mutable_transfers()->add_accountamounts();
-        to->set_amount(amount);
-        auto* toAccountId = from->mutable_accountid();
-        toAccountId->set_shardnum(static_cast<int64_t>(toAccount.shard()));
-        toAccountId->set_realmnum(static_cast<int64_t>(toAccount.realm()));
-        toAccountId->set_accountnum(static_cast<int64_t>(toAccount.num()));
-
-        *body.mutable_memo() = input.body().memo();
-        auto duration = proto::Duration();
-        duration.set_seconds(input.body().transactionvalidduration());
-        *body.mutable_transactionvalidduration() = duration;
-        body.set_transactionfee(input.body().transactionfee());
-
-        auto transactionId = proto::TransactionID();
-        auto timestamp = proto::Timestamp();
-        auto transactionAccountID = proto::AccountID();
-        auto addressTransactionAccountId = Address(input.body().transactionid().accountid());
-
-        transactionAccountID.set_accountnum(static_cast<int64_t>(addressTransactionAccountId.num()));
-        transactionAccountID.set_realmnum(static_cast<int64_t>(addressTransactionAccountId.realm()));
-        transactionAccountID.set_shardnum(static_cast<int64_t>(addressTransactionAccountId.shard()));
-        timestamp.set_seconds(input.body().transactionid().transactionvalidstart().seconds());
-        timestamp.set_nanos(input.body().transactionid().transactionvalidstart().nanos());
-        *transactionId.mutable_transactionvalidstart() = timestamp;
-        *transactionId.mutable_accountid() = transactionAccountID;
-
+            auto cryptoTransfer = proto::CryptoTransferTransactionBody();
+            *cryptoTransfer.mutable_transfers() = transferList;
+            *body.mutable_cryptotransfer() = cryptoTransfer;
+            body.set_memo(input.body().memo());
+            body.set_transactionfee(input.body().transactionfee());
+            body.mutable_nodeaccountid()->set_accountnum(nodeAccount.num());
+            body.mutable_transactionvalidduration()->set_seconds(input.body().transactionvalidduration());
+            auto& transactionID = *body.mutable_transactionid();
+            transactionID.mutable_accountid()->set_accountnum(fromAccount.num());
+            transactionID.mutable_transactionvalidstart()->set_nanos(input.body().transactionid().transactionvalidstart().nanos());
+            transactionID.mutable_transactionvalidstart()->set_seconds(input.body().transactionid().transactionvalidstart().seconds());
+        }
         auto encodedBody = data(body.SerializeAsString());
         auto signedBody = privateKey.sign(encodedBody, TWCurveED25519);
         auto sigMap = proto::SignatureMap();
         auto *sigPair = sigMap.add_sigpair();
         sigPair->set_ed25519(signedBody.data(), signedBody.size());
-        auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        sigPair->set_pubkeyprefix(pubKey.bytes.data(), pubKey.bytes.size());
+        auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
+        sigPair->set_pubkeyprefix(pubKey.data(), pubKey.size());
         auto signedTx = proto::SignedTransaction();
         signedTx.set_bodybytes(encodedBody.data(), encodedBody.size());
         *sigMap.add_sigpair() = *sigPair;
         *signedTx.mutable_sigmap() = sigMap;
+        // TODO: delete print
+        std::cout << "Encoded Body: " << hex(encodedBody) << std::endl;
+        std::cout << "Encoded Signed Body: " << hex(signedBody) << std::endl;
+        std::cout << "Signed Tx Body: " << hex(signedTx.SerializeAsString()) << std::endl;
         encoded = data(signedTx.SerializeAsString());
         protoOutput.set_encoded(encoded.data(), encoded.size());
         break;
