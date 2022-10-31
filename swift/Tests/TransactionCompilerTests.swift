@@ -143,8 +143,8 @@ class TransactionCompilerTests: XCTestCase {
         XCTAssertEqual(preSigningOutput.hashPublicKeys[2].publicKeyHash.hexString, inPubKeyHash0.hexString)
 
         // Simulate signatures, normally they are obtained from external source, e.g. a signature server.
-        var signatureVec = DataVector()
-        var pubkeyVec = DataVector()
+        let signatureVec = DataVector()
+        let pubkeyVec = DataVector()
         for h in preSigningOutput.hashPublicKeys {
             let preImageHash = h.dataHash
             let pubkeyHash = h.publicKeyHash
@@ -153,14 +153,14 @@ class TransactionCompilerTests: XCTestCase {
             XCTAssertTrue(signatureInfos.contains { $0.key == key })
             let sigInfo: SignatureInfo = signatureInfos[key]!
             let publicKeyData = sigInfo.publicKey
-            let publicKey = PublicKey(data: publicKeyData, type: PublicKeyType.secp256k1)
+            let publicKey = PublicKey(data: publicKeyData, type: PublicKeyType.secp256k1)!
             let signature = sigInfo.signature
             
             signatureVec.add(data: signature)
             pubkeyVec.add(data: publicKeyData)
 
             // Verify signature (pubkey & hash & signature)
-            publicKey?.verifyAsDER(signature: signature, message: preImageHash)
+            XCTAssertTrue(publicKey.verifyAsDER(signature: signature, message: preImageHash))
         }
         
         /// Step 3: Compile transaction info
