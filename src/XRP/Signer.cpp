@@ -10,7 +10,6 @@
 
 namespace TW::Ripple {
 
-//static const int64_t fullyCanonical = 0x80000000; // deprecated
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
