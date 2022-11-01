@@ -49,7 +49,10 @@ void Message::addAccountKeys(const Address& account) {
     }
 }
 
-void Message::compileAccounts() {
+void Message::compileAccounts(const std::string feePayerStr) {
+    if (Address::isValid(feePayerStr)) {
+        addAccount(AccountMeta(Address(feePayerStr), true, false));
+    }
     for (auto& instr : instructions) {
         for (auto& address : instr.accounts) {
             addAccount(address);

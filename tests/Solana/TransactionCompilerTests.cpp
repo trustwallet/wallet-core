@@ -388,3 +388,162 @@ TEST(SolanaCompiler, SolanaCompileAdvanceNonceAccountWithSignatures) {
         ASSERT_EQ(output.encoded(), ExpectedTx);
     }
 }
+
+TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithExternalFeePayerWithSignatures) {
+    const auto coin = TWCoinTypeSolana;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_and_transfer_token_transaction();
+    auto sender = std::string("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto token = std::string("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    auto senderTokenAddress = std::string("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    auto recipientMainAddress = std::string("E54BymfdhXQtzDSGtgiJayauEMdB2gJjPqoDjzfbCXwj");
+    auto recipientTokenAddress = std::string("Ay7G7Yb7ZCebCQdG39FxD1nFNDtqFWJCBgfd5Ek7DDcS");
+    auto feePayer = std::string("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    input.set_sender(sender);
+    input.set_recent_blockhash(std::string("EsnN3ksLV6RLBW7qqgrvm2diwVJNTzL9QCuzm6tqWsU8"));
+    input.set_fee_payer(feePayer);
+    message.set_recipient_main_address(recipientMainAddress);
+    message.set_token_mint_address(token);
+    message.set_recipient_token_address(recipientTokenAddress);
+    message.set_sender_token_address(senderTokenAddress);
+    message.set_amount(amount);
+    message.set_decimals(decimals);
+    auto inputString = input.SerializeAsString();
+    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
+    auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.signers_size(), 2);
+    auto feepayerSigner = preSigningOutput.signers(0);
+    EXPECT_EQ(feepayerSigner, feePayer);
+    auto signer = preSigningOutput.signers(1);
+    EXPECT_EQ(signer, sender);
+    auto preImageHash = preSigningOutput.data();
+    EXPECT_EQ(
+        hex(preImageHash),
+        "0200060acb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a9418c9576a9c00c6bd8fc223f471573f7172488de10aa84dbf63c53a20bae717485a24ffb4070461bb6d7f1c8b758c6b2dc90029d551b5fd4eacd82d65e30220c231dc02f482980f7d9915c1ecf53374091d38c060b49487f9c5d932e077ed763b442cb3912157f13a933d0134282d032b5ffecd01a2dbf1b7790608df002ea7000000000000000000000000000000000000000000000000000000000000000006ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a906a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a000000008c97258f4e2489f1bb3d1029148e0d830b5a1399daff1084048e7bd8dbe9f859ce2a4331bce3670e6ea8bedff5908c6d91f833a31a7fdeac16978c261a1801d502090700020405060708000704030502010a0ca00f00000000000006");
+    // Simulate signature, normally obtained from signature server
+    // Verify signature (pubkey & hash & signature)
+    const Data feePayerPublicKeyData = Base58::bitcoin.decode(feePayer);
+    const PublicKey feePayerPublicKey = PublicKey(feePayerPublicKeyData, TWPublicKeyTypeED25519);
+    const auto signature1 = Base58::bitcoin.decode(
+        "7GZGFT2VA4dpJBBwjiMqj1o8yChDvoCsqnQ7xz4GxY513W3efxRqbB8y7g4tH2GEGQRx4vCkKipG1sMaDEen1A2");
+    EXPECT_TRUE(feePayerPublicKey.verify(signature1, TW::data(preImageHash)));
+
+    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
+    const auto signature2 = Base58::bitcoin.decode(
+        "3n7RHTCBAtnFVuDn5eRbyQB24h6AqajJi5nGMPrfnUVFUDh2Cb8AoaJ7mVtjnv73V4HaJCzSwCLAj3zcGEaFftWZ");
+    EXPECT_TRUE(publicKey.verify(signature2, TW::data(preImageHash)));
+
+    /// Step 3: Compile transaction info
+    auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature1, signature2}, {feePayerPublicKeyData, publicKeyData});
+    const auto ExpectedTx =
+        "5sxFkQYd2FvqRU64N79A6xjJKNkgUsEEg2wKgai2NiK7A7hF3q5GYEbjQsYBG9S2MejwTENbwHzvypaa3D3cEkxvVTg19aJFWdCtXQiz42QF5fN2MuAb6eJR4KHFnzCtxxnYGtN9swZ5B5cMSPCffCRZeUTe3kooRmbTYPvSaemU6reVSM7X2beoFKPd2svrLFa8XnvhBwL9EiFWQ9WhHB2cDV7KozCnJAW9kdNDR4RbfFQxboANGo3ZGE5ddcZ6YdomATKze1TtHj2qzJEJRwxsRr3iM3iNFb4Eav5Q2n71KUriRf73mo44GQUPbQ2LvpZKf4V6M2PzxJwzBo7FiFZurPmsanT3U5efEsKnnueddbiLHedc8JXc1d3Z53sFxVGJpsGA8RR6thse9wUvaEWqXVtPbNA6NMao9DFGD6Dudza9pJXSobPc7mDHZmVmookf5vi6Lb9Y1Q4EgcEPQmbaDnKGGB6uGfZe629i3iKXRzAd2dB7mKfffhDadZ8S1eYGT3dhddV3ExRxcqDP9BAGQT3rkRw1JpeSSi7ziYMQ3vn4t3okdgQSq6rrpbPDUNG8tLSHFMAq3ydnh4Cb4ECKkYoz9SFAnXACUu4mWETxijuKMK9kHrTqPGk9weHTzobzCC8q8fcPWV3TcyUyMxsbVxh5q1p5h5tWfD9td5TZJ2HEUbTop2dA53ZF";
+    EXPECT_EQ(outputData.size(), 703ul);
+    {
+        Solana::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+        EXPECT_EQ(output.encoded(), ExpectedTx);
+        EXPECT_EQ(output.encoded().size(), 700ul);
+    }
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        Solana::Proto::SigningInput signingInput;
+        ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
+        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        signingInput.set_private_key(key.data(), key.size());
+        auto feePayerKey = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+        signingInput.set_fee_payer_private_key(feePayerKey.data(), feePayerKey.size());
+
+        Solana::Proto::SigningOutput output;
+        ANY_SIGN(signingInput, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
+
+TEST(SolanaCompiler, CompileTokenTransferWithExternalFeePayerWithSignatures) {
+    const auto coin = TWCoinTypeSolana;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_token_transfer_transaction();
+    auto sender = std::string("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto token = std::string("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    auto senderTokenAddress = std::string("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    // auto recipientMainAddress = std::string("E54BymfdhXQtzDSGtgiJayauEMdB2gJjPqoDjzfbCXwj");
+    auto recipientTokenAddress = std::string("AZapcpAZtEL1gQuC87F2L1hSfAZnAvNy1hHtJ8DJzySN");
+    auto feePayer = std::string("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    input.set_sender(sender);
+    input.set_recent_blockhash(std::string("GwB5uixiTQUG2Pvo6fWAaNQmz41Jt4WMEPD7b83wvHkX"));
+    input.set_fee_payer(feePayer);
+    message.set_token_mint_address(token);
+    message.set_recipient_token_address(recipientTokenAddress);
+    message.set_sender_token_address(senderTokenAddress);
+    message.set_amount(amount);
+    message.set_decimals(decimals);
+    auto inputString = input.SerializeAsString();
+    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
+    auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.signers_size(), 2);
+    auto feepayerSigner = preSigningOutput.signers(0);
+    EXPECT_EQ(feepayerSigner, feePayer);
+    auto signer = preSigningOutput.signers(1);
+    EXPECT_EQ(signer, sender);
+    auto preImageHash = preSigningOutput.data();
+    EXPECT_EQ(
+        hex(preImageHash),
+        "02000206cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a485a24ffb4070461bb6d7f1c8b758c6b2dc90029d551b5fd4eacd82d65e302208e12027e9261a6a276b5ff00ddecfda567ff3ae510a5b47045086ad1d50cab573b442cb3912157f13a933d0134282d032b5ffecd01a2dbf1b7790608df002ea706ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a9ecc01200a43c87ad04ab8b382c0934a54e585e7dcd9cdef6d1cacd52718981c4010504020403010a0ca00f00000000000006");
+    // Simulate signature, normally obtained from signature server
+    // Verify signature (pubkey & hash & signature)
+    const Data feePayerPublicKeyData = Base58::bitcoin.decode(feePayer);
+    const PublicKey feePayerPublicKey = PublicKey(feePayerPublicKeyData, TWPublicKeyTypeED25519);
+    const auto signature1 = Base58::bitcoin.decode(
+        "2LbovMDuKoR2LFcV5NbK9bCQZcTG99W6VE1urvdWFWvRhNg9ocDGhayyeBGisoqZgYZtcD3b6LJDTmPx9Gp3T6qd");
+    EXPECT_TRUE(feePayerPublicKey.verify(signature1, TW::data(preImageHash)));
+
+    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
+    const auto signature2 = Base58::bitcoin.decode(
+        "2hUHMS9rwbUbXrpC7sK7utL2M4soTyQ7EX3sBYvdee9wraJvYoPH2XjovHDn8eRFY8z5uCx9DCj2Zfjpmzfa81Db");
+    EXPECT_TRUE(publicKey.verify(signature2, TW::data(preImageHash)));
+
+    /// Step 3: Compile transaction info
+    auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature1, signature2}, {feePayerPublicKeyData, publicKeyData});
+    const auto ExpectedTx =
+        "qjgNVBmoPDHNTN2ENQfxNVE57jWXpqdmu5GQX4msA7iK8ZRAnKpvbusQagv8CZGyNYti23p9jBsjTSx75ZU26UW5vgC8D88pusW8W5dp1ERo5DSfurMSYJ6afgQHdcuzn7exb8znSm6uV4y1cWgBRcuAGdg3wRpVhP8HEB1EeKgzjYVWvMSy6yR7qVrSL6BxHG6eiAMyahLFbEt4qBqLEdxxY7Dt4DyydVYmG2ZVtheaMHD3ACwCjpyPLXj399wxSgGXQQFGtzEJQw9awVezmJ4wZk6W4dDpXQvdKYaqUvwTwRZsQB5o2iekPWZXR9xvHiMLjMVBPzYgcU14ZSaCbqSNVv2pAJxP1sMvxZMNMzZPttPxCsDDGq9biC7exXwzesXSnZ3rsgEYeZtkUiBHAxR4rYqBpA6VzLs1bPx8MPTvr9mhNi2ezMBbg2nEfHV6Fz7H7rEY2g3jDtRz35Vmgits8s9RKi3kb73WtGUieRiXjiqkNhpvKkST1oEYRQ9";
+    EXPECT_EQ(outputData.size(), 514ul);
+    {
+        Solana::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+        EXPECT_EQ(output.encoded(), ExpectedTx);
+        EXPECT_EQ(output.encoded().size(), 511ul);
+    }
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        Solana::Proto::SigningInput signingInput;
+        ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
+        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        signingInput.set_private_key(key.data(), key.size());
+        auto feePayerKey = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+        signingInput.set_fee_payer_private_key(feePayerKey.data(), feePayerKey.size());
+
+        Solana::Proto::SigningOutput output;
+        ANY_SIGN(signingInput, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}

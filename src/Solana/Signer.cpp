@@ -42,6 +42,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Message message;
     std::vector<PrivateKey> signerKeys;
 
+    if (Address::isValid(input.fee_payer())) {
+        auto feePayerKey = PrivateKey(Data(input.fee_payer_private_key().begin(), input.fee_payer_private_key().end()));
+        signerKeys.push_back(feePayerKey);
+    }
+
     switch (input.transaction_type_case()) {
     case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
         auto protoMessage = input.transfer_transaction();
@@ -147,7 +152,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress,
                                                recipientTokenAddress, amount, decimals, blockhash,
                                                memo, convertReferences(protoMessage.references()),
-                                               input.nonce_account());
+                                               input.nonce_account(), input.fee_payer());
         signerKeys.push_back(key);
     } break;
 
@@ -164,7 +169,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         message = Message::createTokenCreateAndTransfer(
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, blockhash, memo,
-            convertReferences(protoMessage.references()), input.nonce_account());
+            convertReferences(protoMessage.references()), input.nonce_account(), input.fee_payer());
         signerKeys.push_back(key);
     } break;
 
@@ -316,7 +321,7 @@ TW::Data Signer::preImageHash() const {
         auto message = Message::createTokenTransfer(
             userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount,
             decimals, recentBlockhash, memo,
-            convertReferences(tokenTransferTransaction.references()), input.nonce_account());
+            convertReferences(tokenTransferTransaction.references()), input.nonce_account(), input.fee_payer());
         auto transaction = Transaction(message);
         preImageHash = transaction.messageData();
     } break;
@@ -336,7 +341,7 @@ TW::Data Signer::preImageHash() const {
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, recentBlockhash, memo,
             convertReferences(createAndTransferTokenTransaction.references()),
-            input.nonce_account());
+            input.nonce_account(), input.fee_payer());
         auto transaction = Transaction(message);
         preImageHash = transaction.messageData();
     } break;
@@ -360,6 +365,9 @@ TW::Data Signer::preImageHash() const {
 
 std::vector<std::string> Signer::signers() const {
     std::vector<std::string> signers;
+    if (Address::isValid(input.fee_payer())) {
+        signers.push_back(input.fee_payer());
+    }
     switch (input.transaction_type_case()) {
     case Proto::SigningInput::TransactionTypeCase::kTransferTransaction:
     case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount:
@@ -461,7 +469,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         message = Message::createTokenTransfer(
             userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount,
             decimals, recentBlockhash, memo,
-            convertReferences(tokenTransferTransaction.references()), input.nonce_account());
+            convertReferences(tokenTransferTransaction.references()), input.nonce_account(), input.fee_payer());
     } break;
     case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction: {
         auto createAndTransferTokenTransaction = input.create_and_transfer_token_transaction();
@@ -479,7 +487,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, recentBlockhash, memo,
             convertReferences(createAndTransferTokenTransaction.references()),
-            input.nonce_account());
+            input.nonce_account(), input.fee_payer());
     } break;
     case Proto::SigningInput::TransactionTypeCase::kAdvanceNonceAccount: {
         if (signatures.size() < 1) {

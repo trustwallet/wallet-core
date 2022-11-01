@@ -6,10 +6,10 @@
 
 #include "Base58.h"
 #include "HexCoding.h"
-#include "proto/Solana.pb.h"
+#include "PrivateKey.h"
 #include "Solana/Address.h"
 #include "Solana/Program.h"
-#include "PrivateKey.h"
+#include "proto/Solana.pb.h"
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
@@ -401,7 +401,7 @@ TEST(TWAnySignerSolana, SignCreateNonceAccount) {
     const auto nonceAccountPrivateKeyData = parse_hex("2a9737aca3cde2dc0b4f3ae3487e3a90000490cb39fbc979da32b974ff5d7490");
     const auto nonceAccountPrivateKey = PrivateKey(nonceAccountPrivateKeyData);
     EXPECT_EQ(Address(PrivateKey(nonceAccountPrivateKey).getPublicKey(TWPublicKeyTypeED25519)).string(), "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
-    
+
     auto input = Solana::Proto::SigningInput();
     auto& message = *input.mutable_create_nonce_account();
     auto nonceAccount = std::string("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
@@ -514,4 +514,66 @@ TEST(TWAnySignerSolana, SignAdvanceNonceAccount) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
+TEST(TWAnySignerSolana, SignTokenTransferWithExternalFeePayer) {
+    const auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    const auto feePayerPrivateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    ASSERT_EQ(Address(PrivateKey(feePayerPrivateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_token_transfer_transaction();
+    message.set_token_mint_address("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    message.set_sender_token_address("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    message.set_recipient_token_address("AZapcpAZtEL1gQuC87F2L1hSfAZnAvNy1hHtJ8DJzySN");
+    message.set_amount(4000); // 0.004
+    message.set_decimals(6);
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("H4gZ56AdmHfZj1F36oWrxDJMUJ8ph7XdTHtmsbtHZshG");
+    input.set_fee_payer("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    input.set_fee_payer_private_key(feePayerPrivateKeyData.data(), feePayerPrivateKeyData.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/3KbvREZUat76wgWMtnJfWbJL74Vzh4U2eabVJa3Z3bb2fPtW8AREP5pbmRwUrxZCESbTomWpL41PeKDcPGbojsej?cluster=devnet
+        "ushDP6dNZWq32FASGqdnw7E8x14zFDAEZBViTyevUptV9yb4WSgpYzEGCxt9sXkrEtHVyww4F4GdcGZbPEaQTjAeyX5KGvHHDhWoPeFNnECzjUTuPj35dpF7zJ75Jx3ADfLQtUyzu5w7812fQvhwBwP8XDm3btqSG4VLWeQU5XuVqpg33Mq1L9zkGHQ8PZ4WkgNuSrC584EVnDcFE4rZsUtAv2jFTMjinQJB1qQEGTCHbjgdtJt8PzmXGXeczNyisPsEDrhZUw3g7RFYsgBDB1RFe1TxspzbWmxwr6CNPkGVsopmS6cbvSG9ejXY8xRYaswP7knAoPXwYk26yetoA824mzdv9vJ2RYpyK72EyCqFfFidm8MrJjFR49KwV3HRQKxZzYcvhYuJhR15GKBUWAQvYJTQQWArTi7pr7m84wNsV1mCUjrYsCVK47QtMAYvWU4toTxfgThngfF47awnpcSxfy8ggbwamq7qcaSH6cQVk1LPGo1iB5YxitSbaXP";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignCreateTokenAccountAndTransferWithExternalFeePayer) {
+    const auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    const auto privateKey = PrivateKey(privateKeyData);
+    EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    const auto feePayerPrivateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    EXPECT_EQ(Address(PrivateKey(feePayerPrivateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_and_transfer_token_transaction();
+    auto signer = std::string("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto token = std::string("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    auto senderTokenAddress = std::string("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    auto recipientMainAddress = std::string("E54BymfdhXQtzDSGtgiJayauEMdB2gJjPqoDjzfbCXwj");
+    auto recipientTokenAddress = std::string("Ay7G7Yb7ZCebCQdG39FxD1nFNDtqFWJCBgfd5Ek7DDcS");
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash(std::string("EsnN3ksLV6RLBW7qqgrvm2diwVJNTzL9QCuzm6tqWsU8"));
+    input.set_fee_payer("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    input.set_fee_payer_private_key(feePayerPrivateKeyData.data(), feePayerPrivateKeyData.size());
+    message.set_recipient_main_address(recipientMainAddress);
+    message.set_token_mint_address(token);
+    message.set_recipient_token_address(recipientTokenAddress);
+    message.set_sender_token_address(senderTokenAddress);
+    message.set_amount(amount);
+    message.set_decimals(decimals);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    // https://explorer.solana.com/tx/7GZGFT2VA4dpJBBwjiMqj1o8yChDvoCsqnQ7xz4GxY513W3efxRqbB8y7g4tH2GEGQRx4vCkKipG1sMaDEen1A2?cluster=devnet
+    auto expectedString =
+        "5sxFkQYd2FvqRU64N79A6xjJKNkgUsEEg2wKgai2NiK7A7hF3q5GYEbjQsYBG9S2MejwTENbwHzvypaa3D3cEkxvVTg19aJFWdCtXQiz42QF5fN2MuAb6eJR4KHFnzCtxxnYGtN9swZ5B5cMSPCffCRZeUTe3kooRmbTYPvSaemU6reVSM7X2beoFKPd2svrLFa8XnvhBwL9EiFWQ9WhHB2cDV7KozCnJAW9kdNDR4RbfFQxboANGo3ZGE5ddcZ6YdomATKze1TtHj2qzJEJRwxsRr3iM3iNFb4Eav5Q2n71KUriRf73mo44GQUPbQ2LvpZKf4V6M2PzxJwzBo7FiFZurPmsanT3U5efEsKnnueddbiLHedc8JXc1d3Z53sFxVGJpsGA8RR6thse9wUvaEWqXVtPbNA6NMao9DFGD6Dudza9pJXSobPc7mDHZmVmookf5vi6Lb9Y1Q4EgcEPQmbaDnKGGB6uGfZe629i3iKXRzAd2dB7mKfffhDadZ8S1eYGT3dhddV3ExRxcqDP9BAGQT3rkRw1JpeSSi7ziYMQ3vn4t3okdgQSq6rrpbPDUNG8tLSHFMAq3ydnh4Cb4ECKkYoz9SFAnXACUu4mWETxijuKMK9kHrTqPGk9weHTzobzCC8q8fcPWV3TcyUyMxsbVxh5q1p5h5tWfD9td5TZJ2HEUbTop2dA53ZF";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
 } // namespace TW::Solana::tests
