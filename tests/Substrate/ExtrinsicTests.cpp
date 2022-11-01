@@ -32,11 +32,7 @@ TEST(SubstrateExtrinsic, Polymesh_encodeTransferWithMemo) {
     transfer->set_memo("MEMO PADDED WITH SPACES");
 
     auto result = Substrate::Extrinsic(input).encodeCall();
-    EXPECT_EQ(hex(result), "050100"
-                            "4c6c63e3dc083959f876788716b78885460b5f3c7ed9379f8d5f408e08639e02"
-                            "04"
-                            "01"
-                            "4d454d4f20504144444544205749544820535041434553202020202020202020");
+    EXPECT_EQ(hex(result), "0501004c6c63e3dc083959f876788716b78885460b5f3c7ed9379f8d5f408e08639e0204014d454d4f20504144444544205749544820535041434553000000000000000000");
 }
 
 TEST(SubstrateExtrinsic, Polymesh_encodeAuthorizationJoinIdentity) {

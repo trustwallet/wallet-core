@@ -109,8 +109,8 @@ Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t
         append(data, 0x01);
         auto memo = transfer.memo();
         if (memo.length() < 32) {
-            // padding memo with space
-            memo.append(32 - memo.length(), ' ');
+            // padding memo with null
+            memo.append(32 - memo.length(), '\0');
         }
         append(data, TW::data(memo));
     }
