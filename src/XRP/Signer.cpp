@@ -101,7 +101,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     /// See https://github.com/trezor/trezor-core/blob/master/src/apps/ripple/sign_tx.py#L59
-    //transaction.flags |= fullyCanonical; // deprecated
     transaction.pub_key = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
 
     auto unsignedTx = transaction.getPreImage();
