@@ -159,7 +159,6 @@ TEST(HederaSigner, ProtoTestsTransactionBody) {
     *cryptoTransfer.mutable_transfers() = transferList;
 
     auto transactionBody = proto::TransactionBody();
-    //transactionBody.set_memo("wallet core");
     *transactionBody.mutable_cryptotransfer() = cryptoTransfer;
     transactionBody.set_transactionfee(100000000);
     transactionBody.mutable_nodeaccountid()->set_accountnum(9);
