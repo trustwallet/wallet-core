@@ -216,7 +216,7 @@ Data forgeOperation(const Proto::Operation& operation) {
         append(forged, forgedStorageLimit);
         append(forged, forgedAmount);
         append(forged, forgedDestination);
-        if (!operation.transaction_operation_data().has_parameters()) {
+        if (!operation.transaction_operation_data().has_parameters() && operation.transaction_operation_data().encoded_parameter().empty()) {
             append(forged, forgeBool(false));
         } else if (operation.transaction_operation_data().has_parameters()) {
             append(forged, forgeBool(true));
@@ -233,6 +233,8 @@ Data forgeOperation(const Proto::Operation& operation) {
             case OperationParameters::PARAMETERS_NOT_SET:
                 break;
             }
+        } else {
+            append(forged, TW::data(operation.transaction_operation_data().encoded_parameter()));
         }
         return forged;
     }

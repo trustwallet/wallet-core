@@ -112,7 +112,8 @@ message OperationParameters {
 message TransactionOperationData {
   string destination = 1;
   int64 amount = 2;
-  OperationParameters parameters = 3;
+  bytes encoded_parameter = 3;
+  OperationParameters parameters = 4;
 }
 
 // Reveal operation specific data.
