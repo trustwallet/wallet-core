@@ -47,11 +47,11 @@ static inline proto::TransactionBody transactionBodyPrerequisites(const Proto::S
 
 static inline proto::TransferList transferListFromInput(const Proto::SigningInput& input) {
     auto transferList = proto::TransferList();
-    auto fromAccountID = internals::accountIDfromStr(input.body().transfer().from());
+    auto fromAccountID = accountIDfromStr(input.body().transfer().from());
     auto amount = input.body().transfer().amount();
     auto* to = transferList.add_accountamounts();
     to->set_amount(amount);
-    *to->mutable_accountid() = internals::accountIDfromStr(input.body().transfer().to());
+    *to->mutable_accountid() = accountIDfromStr(input.body().transfer().to());
     auto* from = transferList.add_accountamounts();
     from->set_amount(-amount);
     *from->mutable_accountid() = fromAccountID;
@@ -59,7 +59,7 @@ static inline proto::TransferList transferListFromInput(const Proto::SigningInpu
 }
 
 static inline proto::CryptoTransferTransactionBody cryptoTransferFromInput(const Proto::SigningInput& input) {
-    auto transferList = internals::transferListFromInput(input);
+    auto transferList = transferListFromInput(input);
     auto cryptoTransfer = proto::CryptoTransferTransactionBody();
     *cryptoTransfer.mutable_transfers() = transferList;
     return cryptoTransfer;
