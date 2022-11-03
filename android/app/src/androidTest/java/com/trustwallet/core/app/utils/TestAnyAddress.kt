@@ -89,5 +89,7 @@ class TestAnyAddress {
         val coin = CoinType.BITCOIN
         XCTAssertTrue(AnyAddress.isValidBech32(ANY_ADDRESS_TEST_ADDRESS, coin, "bc"));
         XCTAssertFalse(AnyAddress.isValidBech32(ANY_ADDRESS_TEST_ADDRESS, coin, "tb"));
+        XCTAssertTrue(AnyAddress.isValidBech32("tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin, "tb"));
+        XCTAssertFalse(AnyAddress.isValidBech32("tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin, "bc"));
     }
 }
