@@ -11,6 +11,15 @@ import { TW } from "../../dist";
 import Long = require("long");
 
 describe("Hedera", () => {
+
+  it("test address", () => {
+    const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve } = globalThis.core;
+    const address = AnyAddress.createWithString("0.0.48694347", CoinType.hedera);
+    assert.equal(address.description(), "0.0.48694347");
+    assert.equal(AnyAddress.isValid("0.0.48694347", CoinType.hedera), true);
+    address.delete();
+  });
+
   it("test sign simple transfer Hedera", () => {
     const { PrivateKey, HexCoding, AnySigner, AnyAddress, CoinType } = globalThis.core;
     const transferMsg = TW.Hedera.Proto.TransferMessage.create({
