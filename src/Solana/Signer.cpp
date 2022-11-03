@@ -173,6 +173,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto encoded = transaction.serialize();
     protoOutput.set_encoded(encoded);
 
+    auto unsignedTx = Base58::bitcoin.encode(transaction.messageData());
+    protoOutput.set_unsigned_tx(unsignedTx.data(), unsignedTx.size());
+
     return protoOutput;
 }
 
