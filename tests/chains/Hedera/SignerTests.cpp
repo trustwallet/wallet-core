@@ -4,14 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Hedera/Signer.h"
 #include "Hedera/Address.h"
-#include "HexCoding.h"
-#include "PrivateKey.h"
-#include "PublicKey.h"
 #include "Hedera/Protobuf/basic_types.pb.h"
 #include "Hedera/Protobuf/crypto_transfer.pb.h"
 #include "Hedera/Protobuf/transaction_body.pb.h"
+#include "Hedera/Signer.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
+#include "PublicKey.h"
 
 #include <gtest/gtest.h>
 
@@ -209,9 +209,5 @@ TEST(HederaSigner, ProtoTestsTransactionBodyWithMemo) {
     auto encoded = hex(transactionBody.SerializeAsString());
     ASSERT_EQ(encoded, "0a150a0c08baddfe9a0610a1ceccc103120518cb889c17120218031880c2d72f22020878320b77616c6c657420636f7265721e0a1c0a0c0a0518e2f18d17108084af5f0a0c0a0518cb889c1710ff83af5f");
 }
-
-
-
-
 
 } // namespace TW::Hedera::tests
