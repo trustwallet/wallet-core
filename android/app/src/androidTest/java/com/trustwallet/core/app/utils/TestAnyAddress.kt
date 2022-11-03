@@ -9,6 +9,7 @@ package com.trustwallet.core.app.utils
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
+import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
 import wallet.core.jni.Derivation
@@ -79,17 +80,17 @@ class TestAnyAddress {
     @Test
     fun testIsValid() {
         val coin = CoinType.BITCOIN
-        XCTAssertTrue(AnyAddress.isValid(ANY_ADDRESS_TEST_ADDRESS, coin));
-        XCTAssertFalse(AnyAddress.isValid(ANY_ADDRESS_TEST_ADDRESS, CoinType.ETHEREUEM));
-        XCTAssertFalse(AnyAddress.isValid("__INVALID_ADDRESS__", CoinType.ETHEREUEM));
+        assertTrue(AnyAddress.isValid(ANY_ADDRESS_TEST_ADDRESS, coin));
+        assertFalse(AnyAddress.isValid(ANY_ADDRESS_TEST_ADDRESS, CoinType.ETHEREUM));
+        assertFalse(AnyAddress.isValid("__INVALID_ADDRESS__", CoinType.ETHEREUM));
     }
 
     @Test
     fun testIsValidBech32() {
         val coin = CoinType.BITCOIN
-        XCTAssertTrue(AnyAddress.isValidBech32(ANY_ADDRESS_TEST_ADDRESS, coin, "bc"));
-        XCTAssertFalse(AnyAddress.isValidBech32(ANY_ADDRESS_TEST_ADDRESS, coin, "tb"));
-        XCTAssertTrue(AnyAddress.isValidBech32("tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin, "tb"));
-        XCTAssertFalse(AnyAddress.isValidBech32("tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin, "bc"));
+        assertTrue(AnyAddress.isValidBech32(ANY_ADDRESS_TEST_ADDRESS, coin, "bc"));
+        assertFalse(AnyAddress.isValidBech32(ANY_ADDRESS_TEST_ADDRESS, coin, "tb"));
+        assertTrue(AnyAddress.isValidBech32("tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin, "tb"));
+        assertFalse(AnyAddress.isValidBech32("tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin, "bc"));
     }
 }
