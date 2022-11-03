@@ -20,9 +20,11 @@ class AnyAddressTests: XCTestCase {
 
     func testCreateWithStringBech32() {
         let coin = CoinType.bitcoin
-        let address = AnyAddress(string: ANY_ADDRESS_TEST_ADDRESS, coin: coin, hrp: "bc")!
-        XCTAssertEqual(address.coin, coin)
-        XCTAssertEqual(address.description, ANY_ADDRESS_TEST_ADDRESS)
+        let address1 = AnyAddress(string: ANY_ADDRESS_TEST_ADDRESS, coin: coin, hrp: "bc")!
+        XCTAssertEqual(address1.description, ANY_ADDRESS_TEST_ADDRESS)
+
+        let address2 = AnyAddress(string: "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3", coin: coin, hrp: "tb")!
+        XCTAssertEqual(address2.description, "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3")
     }
 
     func testCreateWithPublicKey() {
@@ -38,8 +40,18 @@ class AnyAddressTests: XCTestCase {
         let address1 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinSegwit)
         XCTAssertEqual(address1.description, ANY_ADDRESS_TEST_ADDRESS)
 
-        let address3 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinLegacy)
-        XCTAssertEqual(address3.description, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx")
+        let address2 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinLegacy)
+        XCTAssertEqual(address2.description, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx")
+    }
+
+    func testCreateBech32WithPublicKey() {
+        let coin = CoinType.bitcoin
+        let pubkey = PublicKey(data: Data(hexString: ANY_ADDRESS_TEST_PUBKEY)!, type: .secp256k1)!
+        let address1 = AnyAddress(publicKey: pubkey, coin: coin, hrp: "bc")
+        XCTAssertEqual(address1.description, ANY_ADDRESS_TEST_ADDRESS)
+
+        let address2 = AnyAddress(publicKey: pubkey, coin: coin, hrp: "tb")
+        XCTAssertEqual(address2.description, "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3")
     }
 
     func testIsValid() {
