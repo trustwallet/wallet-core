@@ -14,6 +14,7 @@ import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
 import wallet.core.jni.Derivation
 import wallet.core.jni.HDWallet
+import wallet.core.jni.PublicKey
 import java.security.InvalidParameterException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
