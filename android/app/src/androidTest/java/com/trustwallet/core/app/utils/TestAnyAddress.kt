@@ -9,12 +9,7 @@ package com.trustwallet.core.app.utils
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
-import wallet.core.jni.AnyAddress
-import wallet.core.jni.CoinType
-import wallet.core.jni.Curve
-import wallet.core.jni.Derivation
-import wallet.core.jni.HDWallet
-import wallet.core.jni.PublicKey
+import wallet.core.jni.*
 import java.security.InvalidParameterException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -51,7 +46,7 @@ class TestAnyAddress {
     @Test
     fun testCreateWithPublicKey() {
         val coin = CoinType.BITCOIN
-        val pubkey = PublicKey(ANY_ADDRESS_TEST_PUBKEY.toHexByteArray(), Curve.SECP256K1)
+        val pubkey = PublicKey(ANY_ADDRESS_TEST_PUBKEY.toHexByteArray(), PublicKeyType.SECP256K1)
         val address = AnyAddress(pubkey, coin)
         assertEquals(address.description(), ANY_ADDRESS_TEST_ADDRESS)
     }
@@ -59,7 +54,7 @@ class TestAnyAddress {
     @Test
     fun testCreateWithPublicKeyDerivation() {
         val coin = CoinType.BITCOIN
-        val pubkey = PublicKey(ANY_ADDRESS_TEST_PUBKEY.toHexByteArray(), Curve.SECP256K1)
+        val pubkey = PublicKey(ANY_ADDRESS_TEST_PUBKEY.toHexByteArray(), PublicKeyType.SECP256K1)
         val address1 = AnyAddress(pubkey, coin, Derivation.BITCOINSEGWIT)
         assertEquals(address1.description(), ANY_ADDRESS_TEST_ADDRESS)
 
@@ -70,7 +65,7 @@ class TestAnyAddress {
     @Test
     fun testCreateBech32WithPublicKey() {
         val coin = CoinType.BITCOIN
-        val pubkey = PublicKey(ANY_ADDRESS_TEST_PUBKEY.toHexByteArray(), Curve.SECP256K1)
+        val pubkey = PublicKey(ANY_ADDRESS_TEST_PUBKEY.toHexByteArray(), PublicKeyType.SECP256K1)
         val address1 = AnyAddress(pubkey, coin, "bc")
         assertEquals(address1.description(), ANY_ADDRESS_TEST_ADDRESS)
 
