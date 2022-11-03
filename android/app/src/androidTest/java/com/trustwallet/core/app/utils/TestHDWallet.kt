@@ -10,6 +10,7 @@ import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHex
 import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
+import wallet.core.jni.Derivation
 import wallet.core.jni.HDVersion
 import wallet.core.jni.HDWallet
 import wallet.core.jni.Mnemonic
