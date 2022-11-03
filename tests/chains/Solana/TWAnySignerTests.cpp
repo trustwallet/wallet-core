@@ -38,6 +38,7 @@ TEST(TWAnySignerSolana, SignTransfer) {
     ANY_SIGN(input, TWCoinTypeSolana);
 
     ASSERT_EQ(output.encoded(), expectedString1);
+    ASSERT_EQ(output.unsigned_tx(), "87PYsiS4MUU1UqXrsDoCBmD5FcKsXhwEBD8hc4zbq78yePu7bLENmbnmjmVbsj4VvaxnZhy4bERndPFzjSRH5WpwKwMLSCKvn9eSDmPESNcdkqne2UdMfWiFoq8ZeQBnF9h98dP8GM9kfzWPjvLmhjwuwA1E2k5WCtfii7LKQ34v6AtmFQGZqgdKiNqygP7ZKusHWGT8ZkTZ");
 }
 
 TEST(TWAnySignerSolana, SignTransferToSelf) {

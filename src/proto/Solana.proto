@@ -156,4 +156,7 @@ message SigningInput {
 message SigningOutput {
     // The encoded transaction
     string encoded = 1;
+
+    // The unsigned transaction
+    string unsigned_tx = 2;
 }
