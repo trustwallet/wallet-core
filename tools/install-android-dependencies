@@ -3,6 +3,7 @@
 set -e
 
 # Dokka stuff
+ROOT="$PWD"
 DOKKA_CLI_JAR=https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-cli/1.7.20/dokka-cli-1.7.20.jar
 
 declare -a DOKKA_DEPS=(
