@@ -67,6 +67,31 @@ TEST(HederaSigner, SignWithMemo) {
     ASSERT_EQ(hex(result.encoded()), "0a510a150a0c08a4bdff9a0610a9a5be9703120518cb889c17120218071880c2d72f22020878320b77616c6c657420636f7265721e0a1c0a0c0a0518e2f18d17108084af5f0a0c0a0518cb889c1710ff83af5f12660a640a205d3a70d08b2beafb72c7a68986b3ff819a306078b8c359d739e4966e82e6d40e1a40ee1764c9acf79b68a675c1a78c8c43cb7d136f5f230b48b44992ad3e7ba87a8256758b823120a76142e58b94f082a0551000cf68cd3336fc4393c6b2191d8603");
 }
 
+TEST(HederaSigner, SignWithMemoMainnet) {
+    // Successfully broadcasted: https://hashscan.io/mainnet/transaction/0.0.1377988-1667566445-926176449?t=1667566457.533804616
+    Proto::SigningInput input;
+    auto privateKey = PrivateKey(parse_hex("650c5120cbdc6244e3d10001eb27eea4dd3f80c331b3b6969fa434797d4edd50"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto* body = input.mutable_body();
+
+    *body->mutable_memo() = "wallet core";
+    *body->mutable_nodeaccountid() = "0.0.12";
+    body->set_transactionfee(100000000);
+    body->set_transactionvalidduration(120);
+    auto* transferMsg = body->mutable_transfer();
+    transferMsg->set_from("0.0.1377988");
+    transferMsg->set_to("0.0.19783");
+    transferMsg->set_amount(100000000);
+
+    auto* transactionID = body->mutable_transactionid();
+    transactionID->mutable_transactionvalidstart()->set_seconds(1667566445);
+    transactionID->mutable_transactionvalidstart()->set_nanos(926176449);
+    transactionID->set_accountid("0.0.1377988");
+
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.encoded()), "0a4e0a140a0c08ed96949b0610c1a9d1b903120418c48d541202180c1880c2d72f22020878320b77616c6c657420636f7265721c0a1a0a0b0a0418c79a01108084af5f0a0b0a0418c48d5410ff83af5f12660a640a207df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b08601a4020a527f81c10a256b089fb2fbe2a1fc5917e0d221c0d06b8bb9095a6b26390634610f2034b99025ad70db4d84e08751841c2a70651220e32d1213a4b05ec9906");
+}
+
 TEST(HederaSigner, ProtoTestsTransferList) {
     auto transferList = proto::TransferList();
     auto* to = transferList.add_accountamounts();
