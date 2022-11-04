@@ -68,6 +68,11 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin)};
 }
 
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyDerivation(
+    struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, enum TWDerivation derivation) {
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, std::string(""), derivation)};
+}
+
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp) {
     const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);

@@ -14,7 +14,7 @@
   "author": "Trust Wallet",
   "license": "MIT",
   "dependencies": {
-    "@trustwallet/wallet-core": "3.0.4",
+    "@trustwallet/wallet-core": "3.0.8",
     "chalk": "^4.1.2",
     "clear": "^0.1.0",
     "figlet": "^1.5.2",

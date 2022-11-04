@@ -26,6 +26,19 @@ TEST(AnyAddress, createFromPubKey) {
     EXPECT_EQ(ANY_ADDRESS_TEST_ADDRESS, addr->address);
 }
 
+TEST(AnyAddress, createFromPubKeyDerivation) {
+    const Data key = parse_hex(ANY_ADDRESS_TEST_PUBKEY);
+    PublicKey publicKey(key, TWPublicKeyTypeSECP256k1);
+    {
+        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, std::string(""), TWDerivationDefault));
+        EXPECT_EQ(addr->address, ANY_ADDRESS_TEST_ADDRESS);
+    }
+    {
+        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, std::string(""), TWDerivationBitcoinLegacy));
+        EXPECT_EQ(addr->address, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx");
+    }
+}
+
 TEST(AnyAddress, createFromWrongString) {
     std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress("1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax", TWCoinTypeBitcoin));
     EXPECT_EQ(nullptr, addr);

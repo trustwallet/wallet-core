@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -47,6 +47,48 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(wallet.seed.hexString, "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8")
         let masterKey = wallet.getMasterKey(curve: Curve.secp256k1)
         XCTAssertEqual(masterKey.data.hexString, "e120fc1ef9d193a851926ebd937c3985dc2c4e642fb3d0832317884d5f18f3b3")
+    }
+
+    func testGetKeyForCoin() {
+        let coin = CoinType.bitcoin
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: coin)
+
+        let address = coin.deriveAddress(privateKey: key)
+        XCTAssertEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+    }
+
+    func testGetKeyDerivation() {
+        let coin = CoinType.bitcoin
+        let wallet = HDWallet.test
+
+        let key1 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinSegwit)
+        XCTAssertEqual(key1.data.hexString, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac")
+
+        let key2 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinLegacy)
+        XCTAssertEqual(key2.data.hexString, "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")
+
+        let key3 = wallet.getKeyDerivation(coin: coin, derivation: .bitcoinTestnet)
+        XCTAssertEqual(key3.data.hexString, "ca5845e1b43e3adf577b7f110b60596479425695005a594c88f9901c3afe864f")
+    }
+
+    func testGetAddressForCoin() {
+        let coin = CoinType.bitcoin
+        let wallet = HDWallet.test
+
+        let address = wallet.getAddressForCoin(coin: coin)
+        XCTAssertEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+    }
+
+    func testGetAddressDerivation() {
+        let coin = CoinType.bitcoin
+        let wallet = HDWallet.test
+
+        let address1 = wallet.getAddressDerivation(coin: coin, derivation: .bitcoinSegwit)
+        XCTAssertEqual(address1, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+
+        let address2 = wallet.getAddressDerivation(coin: coin, derivation: .bitcoinLegacy)
+        XCTAssertEqual(address2, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")
     }
 
     func testDerive() {

@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -133,10 +133,40 @@ TEST(HDWallet, DeriveBitcoinExtended) {
     assertStringsEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85");
 }
 
+TEST(HDWallet, GetKeyDerivation) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    {
+        auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyDerivation(wallet.get(), TWCoinTypeBitcoin, TWDerivationBitcoinSegwit));
+        assertHexEqual(WRAPD(TWPrivateKeyData(key.get())), "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
+        auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
+        auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
+        assertHexEqual(publicKeyData, "037ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b941");
+    }
+    {
+        auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyDerivation(wallet.get(), TWCoinTypeBitcoin, TWDerivationBitcoinLegacy));
+        assertHexEqual(WRAPD(TWPrivateKeyData(key.get())), "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4");
+        auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
+        auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
+        assertHexEqual(publicKeyData, "0240ebf906b948281289405317a5eb9a98045af8a8ab5311b2e3060cfb66c507a1");
+    }
+}
+
 TEST(HDWallet, DeriveAddressBitcoin) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto address = WRAP(TWString, TWHDWalletGetAddressForCoin(wallet.get(), TWCoinTypeBitcoin));
     assertStringsEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85");
+}
+
+TEST(HDWallet, DeriveAddressBitcoinDerivation) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
+    {
+        auto address = WRAP(TWString, TWHDWalletGetAddressDerivation(wallet.get(), TWCoinTypeBitcoin, TWDerivationBitcoinSegwit));
+        assertStringsEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85");
+    }
+    {
+        auto address = WRAP(TWString, TWHDWalletGetAddressDerivation(wallet.get(), TWCoinTypeBitcoin, TWDerivationBitcoinLegacy));
+        assertStringsEqual(address, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1");
+    }
 }
 
 TEST(HDWallet, DeriveEthereum) {

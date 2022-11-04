@@ -88,6 +88,15 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateSS58(TWString* _Nonnull string,
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin);
 
+/// Creates an address from a public key and derivation option.
+///
+/// \param publicKey derivates the address from the public key.
+/// \param coin coin type of the address.
+/// \param derivation the custom derivation to use.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyDerivation(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, enum TWDerivation derivation);
+
 /// Creates an bech32 address from a public key and a given hrp.
 ///
 /// \param publicKey derivates the address from the public key.
