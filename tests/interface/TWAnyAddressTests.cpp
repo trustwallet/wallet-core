@@ -179,7 +179,7 @@ TEST(TWAnyAddress, createFromPubKey) {
 
     const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubkey_obj.get(), TWCoinTypeBitcoin));
 
-    EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWAnyAddressDescription(addr.get())).get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
+    assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
 }
 
 TEST(TWAnyAddress, createFromPubKeyDerivation) {
@@ -190,14 +190,14 @@ TEST(TWAnyAddress, createFromPubKeyDerivation) {
 
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationDefault));
-        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWAnyAddressDescription(addr.get())).get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
     }
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinLegacy));
-        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWAnyAddressDescription(addr.get())).get())), "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx");
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx");
     }
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinTestnet));
-        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWAnyAddressDescription(addr.get())).get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
     }
 }
