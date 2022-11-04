@@ -17,6 +17,7 @@ describe("Hedera", () => {
     const address = AnyAddress.createWithString("0.0.48694347", CoinType.hedera);
     assert.equal(address.description(), "0.0.48694347");
     assert.equal(AnyAddress.isValid("0.0.48694347", CoinType.hedera), true);
+    assert.equal(AnyAddress.isValid("0.0.a", CoinType.hedera), false);
     address.delete();
   });
 

@@ -32,12 +32,7 @@ bool Address::isValid(const std::string& string) {
         if (!isNumberFunctor(parts[0]) || !isNumberFunctor(parts[1])) {
             return false;
         }
-        try {
-            [[maybe_unused]] auto pubKey = PublicKey::fromHederaDerPrefix(parts[2]);
-            isValid = true;
-        } catch ([[maybe_unused]] const std::runtime_error& error) {
-            return false;
-        }
+        isValid = PublicKey::hasHederaDerPrefix(parts[2]);
     }
     return isValid;
 }
