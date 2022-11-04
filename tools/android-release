@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # This script uploads android build to repositories defined in maven-push.gradle
+# It also builds and uploads Kotlin docs
 
 set -e
 
@@ -14,3 +15,14 @@ pushd android
 ./gradlew clean build assembleRelease publish -Pversion="$version"
 
 echo "Android build uploaded"
+popd # android
+
+echo "Building docs..."
+tools/kotlin-doc
+
+release_url=$(wc_release_url ${version})
+echo "release_url url for docs is $release_url"
+
+filename=build/dokka/kdoc.zip
+download_url=$(wc_upload_asset ${release_url} ${filename})
+echo "download_url is $download_url"

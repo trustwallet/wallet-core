@@ -64,5 +64,3 @@ samples/cpp/sample
 
 *.xcuserdatad/
 
-# java binaries
-*.jar
