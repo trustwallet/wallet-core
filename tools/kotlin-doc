@@ -19,6 +19,8 @@ for dep in "${DOKKA_DEPS[@]}" ; do
 	pluginClassPath="$pluginClassPath;../build/dokka/$dep"
 done
 
+mkdir -p dokka-out
+
 java -jar ${DOKKA_CLI_JAR} -outputDir dokka-out -pluginsClasspath $pluginClassPath -sourceSet "-sourceSetName TrustWallet -src java/wallet/core/jni"
 
 popd #jni
