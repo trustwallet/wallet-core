@@ -247,22 +247,4 @@ bool PublicKey::isValidED25519() const {
     return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
 }
 
-/*Data PublicKey::bytesWithHederaDerPrefix() const {
-    return concat(parse_hex(gHederaDerPrefixPublic), this->bytes);
-}
-
-PublicKey PublicKey::fromHederaDerPrefix(const std::string& input) {
-    if (std::size_t pos = input.find(gHederaDerPrefixPublic); pos != std::string::npos) {
-        return PublicKey(parse_hex(input.substr(pos + std::string(gHederaDerPrefixPublic).size())), TWPublicKeyTypeED25519);
-    }
-    throw std::runtime_error("invalid input");
-}
-
-bool PublicKey::hasHederaDerPrefix(const std::string& input) {
-    if (std::size_t pos = input.find(gHederaDerPrefixPublic); pos != std::string::npos) {
-        return PublicKey::isValid(parse_hex(input.substr(pos + std::string(gHederaDerPrefixPublic).size())), TWPublicKeyTypeED25519);
-    }
-    return false;
-}*/
-
 } // namespace TW

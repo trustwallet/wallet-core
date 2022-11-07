@@ -296,7 +296,3 @@ Data PrivateKey::signZilliqa(const Data& message) const {
 void PrivateKey::cleanup() {
     std::fill(bytes.begin(), bytes.end(), 0);
 }
-
-/*Data PrivateKey::bytesWithHederaDerPrefix() const {
-    return concat(parse_hex(gHederaDerPrefix), this->bytes);
-}*/
