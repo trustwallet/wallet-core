@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios armv7-apple-ios armv7s-apple-ios x86_64-apple-ios i386-apple-ios
-cargo install lipo
+cargo install cargo-lipo
 
 TARGET_NAME="libwalletcore_crypto_bindgen.a"
 cd bindgen/rust
