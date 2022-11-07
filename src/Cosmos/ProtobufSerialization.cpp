@@ -143,6 +143,17 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
+        case Proto::Message::kSetWithdrawAddressMessage:
+            {
+                assert(msg.has_set_withdraw_address_message());
+                const auto& withdraw = msg.set_withdraw_address_message();
+                auto msgWithdraw = cosmos::distribution::v1beta1::MsgSetWithdrawAddress();
+                msgWithdraw.set_delegator_address(withdraw.delegator_address());
+                msgWithdraw.set_withdraw_address(withdraw.withdraw_address());
+                any.PackFrom(msgWithdraw, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
         case Proto::Message::kExecuteContractMessage:
             {
                 assert(msg.has_execute_contract_message());

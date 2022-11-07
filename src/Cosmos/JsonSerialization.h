@@ -17,6 +17,7 @@ extern const std::string TYPE_PREFIX_MSG_TRANSFER;
 extern const std::string TYPE_PREFIX_MSG_DELEGATE;
 extern const std::string TYPE_PREFIX_MSG_UNDELEGATE;
 extern const std::string TYPE_PREFIX_MSG_REDELEGATE;
+extern const std::string TYPE_PREFIX_MSG_SET_WITHDRAW_ADDRESS;
 extern const std::string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
 extern const std::string TYPE_PREFIX_PUBLIC_KEY;
 

@@ -22,6 +22,7 @@ const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
 const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
 const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
 const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
+const string TYPE_PREFIX_MSG_SET_WITHDRAW_ADDRESS = "cosmos-sdk/MsgSetWithdrawAddress";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const string TYPE_EVMOS_PREFIX_PUBLIC_KEY = "ethermint/PubKeyEthSecp256k1";
@@ -144,11 +145,20 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
+static json messageSetWithdrawAddress(const Proto::Message_SetWithdrawAddress& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_SET_WITHDRAW_ADDRESS : message.type_prefix();
 
-/// Resolved.
-/// Joye: TODO:<@FitzLu> the following two functions shares same codes, should we consider to refactor them?
-/// Fitz: no need, this method accept encoded execute message, see line 156. this method not only support
-/// token transfer, but also support all other types of contract call.
+    return {
+        {"type", typePrefix},
+        {"value", {
+            {"delegator_address", message.delegator_address()},
+            {"withdraw_address", message.withdraw_address()}
+        }}
+    };
+}
+
+
+// This method not only support token transfer, but also support all other types of contract call.
 // https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
 static json messageExecuteContract(const Proto::Message_ExecuteContract& message) {
     auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_WASM_MSG_EXECUTE : message.type_prefix();
@@ -196,6 +206,8 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageUndelegate(msg.unstake_message()));
         } else if (msg.has_withdraw_stake_reward_message()) {
             j.push_back(messageWithdrawReward(msg.withdraw_stake_reward_message()));
+        } else if (msg.has_set_withdraw_address_message()) {
+            j.push_back(messageSetWithdrawAddress(msg.set_withdraw_address_message()));
         } else if (msg.has_restake_message()) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {

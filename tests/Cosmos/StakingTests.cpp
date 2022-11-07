@@ -243,4 +243,41 @@ TEST(CosmosStaking, Withdraw) {
     }
 }
 
+TEST(CosmosStaking, SetWithdrawAddress) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1037);
+    input.set_chain_id("gaia-13003");
+    input.set_memo("");
+    input.set_sequence(7);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_set_withdraw_address_message();
+    message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
+    message.set_withdraw_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(101721);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("muon");
+    amountOfFee->set_amount("1018");
+
+    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+
+    assertJSONEqual(output.serialized(), R"({"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"Cp4BCpsBCjIvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1NldFdpdGhkcmF3QWRkcmVzcxJlCi1jb3Ntb3MxaHNrNmpyeXlxamZocDVkaGM1NXRjOWp0Y2t5Z3gwZXBoNmRkMDISNGNvc21vc3ZhbG9wZXIxemt1cHI4M2hyemtuM3VwNWVsa3R6Y3EzdHVmdDhueHNtd2RxZ3ASZgpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAcSEgoMCgRtdW9uEgQxMDE4ENmaBhpAkm2TJLw4FcIwN5bkqVaGbmAgkTSHeYD8sUkIyJHLa89cPvThkFO/lKlxBMl2UAMs06hL6cYcl4Px+B6rpFdBpA=="})");
+    EXPECT_EQ(hex(output.signature()), "926d9324bc3815c2303796e4a956866e60209134877980fcb14908c891cb6bcf5c3ef4e19053bf94a97104c97650032cd3a84be9c61c9783f1f81eaba45741a4");
+    EXPECT_EQ(output.error_message(), "");
+
+    { // Json-serialization, for coverage (to be removed later)
+        input.set_signing_mode(Proto::JSON);
+        output = Signer::sign(input, TWCoinTypeCosmos);
+        ASSERT_EQ(hex(output.signature()), "22cfbcec33d06ed42623264049d11d6fb86566103d5621a23b1444022eb1aace3a0790a1c46b48c0218689616daf97f99ae72c3589966205de45b57194fbada2");
+        EXPECT_EQ(output.error_message(), "");
+        EXPECT_EQ(hex(output.serialized()), "");
+    }
+}
+
 } // namespace TW::Cosmos::tests

@@ -3,6 +3,13 @@ package cosmos.distribution.v1beta1;
 
 // Src: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/distribution/v1beta1/tx.proto
 
+// MsgSetWithdrawAddress sets the withdraw address for
+// a delegator (or validator self-delegation).
+message MsgSetWithdrawAddress {
+  string delegator_address = 1;
+  string withdraw_address = 2;
+}
+
 // MsgWithdrawDelegatorReward represents delegation withdrawal to a delegator
 // from a single validator.
 message MsgWithdrawDelegatorReward {

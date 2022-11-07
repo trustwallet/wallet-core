@@ -90,6 +90,13 @@ message Message {
         string type_prefix = 5;
     }
 
+     // cosmos-sdk/MsgSetWithdrawAddress
+     message SetWithdrawAddress {
+        string delegator_address = 1;
+        string withdraw_address = 2;
+        string type_prefix = 3;
+    }
+
     // cosmos-sdk/MsgWithdrawDelegationReward
     message WithdrawDelegationReward {
         string delegator_address = 1;
@@ -300,6 +307,7 @@ message Message {
         SignDirect sign_direct_message = 16;
         AuthGrant  auth_grant = 17;
         AuthRevoke auth_revoke = 18;
+        SetWithdrawAddress set_withdraw_address_message = 19;
     }
 }
 
