@@ -87,10 +87,15 @@ function build_swift_plugin() {
     $PREFIX/bin/protoc-gen-swift --version
 }
 
+function build_rust_bindgen() {
+  ${BASE_DIR}/rust-bindgen
+}
+
 download_dependencies
 
 build_gtest
 build_libcheck
 build_protobuf
+build_rust_bindgen
 
 cd "$ROOT"
