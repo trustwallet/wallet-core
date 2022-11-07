@@ -30,8 +30,10 @@ target_link_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/lib)
 set_project_warnings(${PROJECT_NAME}_INTERFACE)
 
 add_subdirectory(trezor-crypto)
+set(WALLET_CORE_BINDGEN ${PREFIX}/lib/libwalletcore_crypto_bindgen.a)
 if (TW_COMPILE_WASM)
     message(STATUS "Wasm build enabled")
+    set(WALLET_CORE_BINDGEN ${PREFIX}/wasm32-unknown-emscripten/release/libwalletcore_crypto_bindgen.a)
     add_subdirectory(wasm)
 endif ()
 
@@ -59,7 +61,7 @@ else ()
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf walletcore_crypto_bindgen Boost::boost)
+    target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf ${WALLET_CORE_BINDGEN} Boost::boost)
 endif ()
 
 if (TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
