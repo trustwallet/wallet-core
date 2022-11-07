@@ -7,6 +7,6 @@
 #include "TrustWalletCore/TWCryptoBindgen.h"
 #include "rust/bindgen/WalletCoreCryptoBindgen.h"
 
-int32_t TWRustFunction() {
+int32_t TWCryptoBindgenRustFunction() {
     return rust_function();
 }

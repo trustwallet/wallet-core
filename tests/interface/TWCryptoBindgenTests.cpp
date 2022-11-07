@@ -9,5 +9,5 @@
 #include <gtest/gtest.h>
 
 TEST(TWCryptoBindgen, SimpleRustFunction) {
-    ASSERT_EQ(TWRustFunction(), 42);
+    ASSERT_EQ(TWCryptoBindgenRustFunction(), 42);
 }
