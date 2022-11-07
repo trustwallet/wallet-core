@@ -94,14 +94,8 @@ class PublicKey {
     /// Naming is kept for backwards compatibility.
     static PublicKey recover(const Data& signature, const Data& messageDigest);
 
-    static bool hasHederaDerPrefix(const std::string& input);;
-    static PublicKey fromHederaDerPrefix(const std::string& input);
-
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;
-
-    /// Get bytes with Hedera DER prefix https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/src/Ed25519PublicKey.js#L7
-    Data bytesWithHederaDerPrefix() const;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

@@ -18,9 +18,6 @@ namespace TW::Hedera::tests {
 
 TEST(HederaAddress, FromStandardArgument) {
     {
-        EXPECT_ANY_THROW(PublicKey::fromHederaDerPrefix(""));
-    }
-    {
         // 0.0.1377988
         Address addr(0uL, 0uL, 1'377'988uL);
         ASSERT_EQ(addr.shard(), 0uL);
@@ -38,7 +35,7 @@ TEST(HederaAddress, FromStandardArgument) {
         ASSERT_EQ(addr.shard(), 0uL);
         ASSERT_EQ(addr.realm(), 0uL);
         ASSERT_EQ(addr.num(), 0uL);
-        ASSERT_EQ(hex(addr.alias().value().bytesWithHederaDerPrefix()), "302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860");
+        ASSERT_EQ(addr.alias().string(), "302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860");
         ASSERT_EQ(addr.string(), "0.0.302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860");
         ASSERT_TRUE(addr.isValid(addr.string()));
     }

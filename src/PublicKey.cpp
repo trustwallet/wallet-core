@@ -20,10 +20,6 @@
 
 #include <iterator>
 
-namespace {
-    static constexpr const char* const gHederaDerPrefixPublic = "302a300506032b6570032100";
-}
-
 namespace TW {
 
 /// Determines if a collection of bytes makes a valid public key of the
@@ -251,7 +247,7 @@ bool PublicKey::isValidED25519() const {
     return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
 }
 
-Data PublicKey::bytesWithHederaDerPrefix() const {
+/*Data PublicKey::bytesWithHederaDerPrefix() const {
     return concat(parse_hex(gHederaDerPrefixPublic), this->bytes);
 }
 
@@ -267,6 +263,6 @@ bool PublicKey::hasHederaDerPrefix(const std::string& input) {
         return PublicKey::isValid(parse_hex(input.substr(pos + std::string(gHederaDerPrefixPublic).size())), TWPublicKeyTypeED25519);
     }
     return false;
-}
+}*/
 
 } // namespace TW

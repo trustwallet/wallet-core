@@ -6,6 +6,7 @@
 
 #include "Address.h"
 #include "HexCoding.h"
+#include "DER.h"
 #include "algorithm/string.hpp"
 
 #include <charconv>
@@ -16,6 +17,19 @@ namespace TW::Hedera::internal {
 }
 
 namespace TW::Hedera {
+
+
+Alias::Alias(std::optional<PublicKey> alias) noexcept : mPubKey(std::move(alias)) {
+
+}
+
+std::string Alias::string() const noexcept {
+    std::string pubkeyBytes = "";
+    if (mPubKey.has_value()) {
+        pubkeyBytes = hex(mPubKey.value().bytes);
+    }
+    return gHederaDerPrefixPublic + pubkeyBytes;
+}
 
 bool Address::isValid(const std::string& string) {
     using namespace internal;
@@ -32,7 +46,7 @@ bool Address::isValid(const std::string& string) {
         if (!isNumberFunctor(parts[0]) || !isNumberFunctor(parts[1])) {
             return false;
         }
-        isValid = PublicKey::hasHederaDerPrefix(parts[2]);
+        isValid = hasDerPrefix(parts[2]);
     }
     return isValid;
 }
@@ -63,8 +77,8 @@ Address::Address(const PublicKey& publicKey)
 
 std::string Address::string() const {
     std::string out = std::to_string(mShard) + "." + std::to_string(mRealm) + ".";
-    if (mAlias.has_value()) {
-        return out + hex(mAlias->bytesWithHederaDerPrefix());
+    if (mAlias.mPubKey.has_value()) {
+        return out + mAlias.string();
     }
     return out + std::to_string(mNum);
 }

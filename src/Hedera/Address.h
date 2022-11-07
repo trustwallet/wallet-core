@@ -14,6 +14,12 @@
 
 namespace TW::Hedera {
 
+struct Alias {
+    explicit Alias(std::optional<PublicKey> alias = std::nullopt) noexcept;
+    std::string string() const noexcept;
+    std::optional<PublicKey> mPubKey{std::nullopt};
+};
+
 class Address {
 public:
     /// Determines whether a string makes a valid address.
@@ -34,13 +40,13 @@ public:
     std::size_t shard() const { return mShard; }
     std::size_t realm() const { return mRealm; }
     std::size_t num() const { return mNum; }
-    std::optional<PublicKey> alias() const {return mAlias;}
+    const Alias& alias() const {return mAlias;}
 
 private:
     std::size_t mShard{0};
     std::size_t mRealm{0};
     std::size_t mNum;
-    std::optional<PublicKey> mAlias{std::nullopt};
+    Alias mAlias;
 };
 
 } // namespace TW::Hedera

@@ -25,10 +25,6 @@
 
 using namespace TW;
 
-namespace {
-    static constexpr const char* const gHederaDerPrefix = "302e020100300506032b657004220420";
-}
-
 bool PrivateKey::isValid(const Data& data) {
     // Check length
     if (data.size() != _size && data.size() != cardanoKeySize) {
@@ -301,6 +297,6 @@ void PrivateKey::cleanup() {
     std::fill(bytes.begin(), bytes.end(), 0);
 }
 
-Data PrivateKey::bytesWithHederaDerPrefix() const {
+/*Data PrivateKey::bytesWithHederaDerPrefix() const {
     return concat(parse_hex(gHederaDerPrefix), this->bytes);
-}
+}*/
