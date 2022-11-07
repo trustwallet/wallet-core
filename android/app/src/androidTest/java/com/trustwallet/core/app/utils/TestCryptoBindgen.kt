@@ -6,15 +6,8 @@
 
 package com.trustwallet.core.app.utils
 
-import com.trustwallet.core.app.utils.Numeric
-import com.trustwallet.core.app.utils.toHex
-import com.trustwallet.core.app.utils.toHexByteArray
 import wallet.core.jni.*
-import java.security.InvalidParameterException
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.Test
 
 class TestCryptoBindgen {
