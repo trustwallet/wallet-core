@@ -52,6 +52,9 @@ codegen/bin/codegen
 # Convert doxygen comments to appropriate format
 tools/doxygen_convert_comments
 
+# Generate rust bindgen
+tools/rust-bindgen
+
 # Generate Java, C++ and Swift Protobuf files
 if [ -x "$(command -v protoc-gen-swift)" ]; then
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/java --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
@@ -79,3 +82,4 @@ if [ -x "$(command -v xcodegen)" ]; then
 else
     echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
 fi
+
