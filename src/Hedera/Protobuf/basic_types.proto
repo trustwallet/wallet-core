@@ -1,3 +1,5 @@
+// Taken from https://github.com/hashgraph/hedera-protobufs/tree/main/services
+
 syntax = "proto3";
 
 package proto;

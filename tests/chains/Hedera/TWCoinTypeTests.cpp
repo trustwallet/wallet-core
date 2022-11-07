@@ -28,6 +28,6 @@ TEST(TWHederaCoinType, TWCoinType) {
     assertStringsEqual(symbol, "HBAR");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainHedera);
-    assertStringsEqual(txUrl, "https://hashscan.io//transaction/0.0.19790-1666769504-858851231");
-    assertStringsEqual(accUrl, "https://hashscan.io//account/0.0.19790");
+    assertStringsEqual(txUrl, "https://hashscan.io/mainnet/transaction/0.0.19790-1666769504-858851231");
+    assertStringsEqual(accUrl, "https://hashscan.io/mainnet/account/0.0.19790");
 }

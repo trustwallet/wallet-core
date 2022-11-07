@@ -12,7 +12,7 @@
 
 namespace TW {
 
-static std::vector<std::string> split(const std::string& input, char delimiter) {
+static std::vector<std::string> ssplit(const std::string& input, char delimiter) {
     std::istringstream iss(input);
     std::vector<std::string> tokens;
     std::string token;

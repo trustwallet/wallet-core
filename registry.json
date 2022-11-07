@@ -2837,7 +2837,7 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://hashscan.io/",
+      "url": "https://hashscan.io/mainnet",
       "txPath": "/transaction/",
       "accountPath": "/account/",
       "sampleTx": "0.0.19790-1666769504-858851231",

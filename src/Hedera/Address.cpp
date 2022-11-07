@@ -22,7 +22,7 @@ bool Address::isValid(const std::string& string) {
     std::smatch match;
     auto isValid = std::regex_match(string, match, gEntityIDRegex);
     if (!isValid) {
-        auto parts = TW::split(string, '.');
+        auto parts = TW::ssplit(string, '.');
         if (parts.size() != 3) {
             return false;
         }
@@ -51,7 +51,7 @@ Address::Address(const std::string& string) {
     };
 
     // When creating an Address by string - we assume to only sent to 0.0.1 format, alias is internal.
-    auto parts = TW::split(string, '.');
+    auto parts = TW::ssplit(string, '.');
     mShard = *toInt(parts[0]);
     mRealm = *toInt(parts[1]);
     mNum = *toInt(parts[2]);

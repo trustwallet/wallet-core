@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Data.h"
-#include "../PublicKey.h"
+#include "PublicKey.h"
 
 #include <optional>
 #include <string>
@@ -25,7 +25,7 @@ public:
     /// Initializes a Hedera address with a public key.
     explicit Address(const PublicKey& publicKey);
 
-    /// Initializes a Hedera address with a shard, real, num and optional alias
+    /// Initializes a Hedera address with a shard, realm, num and optional alias
     explicit Address(std::size_t shard, std::size_t realm, std::size_t num, std::optional<PublicKey> alias = std::nullopt);
 
     /// Returns a string representation of the address.

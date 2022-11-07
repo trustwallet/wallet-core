@@ -10,7 +10,7 @@
 
 namespace TW::tests {
     TEST(Algorithm, StringSplit) {
-        auto splitted = TW::split("0.0.1", '.');
+        auto splitted = TW::ssplit("0.0.1", '.');
         ASSERT_EQ(splitted.size(), 3uL);
         ASSERT_EQ(splitted[0], "0");
         ASSERT_EQ(splitted[1], "0");
