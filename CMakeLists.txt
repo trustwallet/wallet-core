@@ -54,7 +54,7 @@ else ()
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
+    target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf walletcore_crypto_bindgen Boost::boost)
 endif ()
 
 if (TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
