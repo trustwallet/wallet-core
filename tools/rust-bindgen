@@ -7,10 +7,10 @@ TARGET_NAME="libwalletcore_crypto_bindgen.a"
 cd bindgen/rust
 echo "Generating Native targets"
 CARGO_TARGET_DIR=../../build/local cargo build --release
-echo "Generating Android targets"
-CARGO_TARGET_DIR=../../build/local cargo build --target aarch64-linux-android --release
-CARGO_TARGET_DIR=../../build/local cargo build --target i686-linux-android --release
 if [[ $OSTYPE == 'darwin'* ]]; then
+  echo "Generating Android targets"
+  CARGO_TARGET_DIR=../../build/local cargo build --target aarch64-linux-android --release
+  CARGO_TARGET_DIR=../../build/local cargo build --target i686-linux-android --release
   echo "Generating iOS targets"
   CARGO_TARGET_DIR=../../build/local cargo lipo --release
   CARGO_TARGET_DIR=../../build/local cargo build --target aarch64-apple-ios-sim --release
