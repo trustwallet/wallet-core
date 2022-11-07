@@ -6,6 +6,7 @@ settings:
   base:
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include /opt/homebrew/include
+    LIBRARY_SEARCH_PATHS: "$(inherited) ${SRCROOT}/../build/local/aarch64-apple-ios-sim/release"
     CLANG_CXX_LANGUAGE_STANDARD: c++20
     SWIFT_VERSION: 5.1
     IPHONEOS_DEPLOYMENT_TARGET: 13.0
@@ -37,6 +38,7 @@ targets:
       - target: protobuf
         link: true
       - sdk: libc++.tbd
+      - framework: libwalletcore_crypto_bindgen.a
     scheme:
       testTargets:
         - WalletCoreTests
