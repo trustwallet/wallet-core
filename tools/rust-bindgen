@@ -3,7 +3,7 @@
 TARGET_NAME="libwalletcore_crypto_bindgen.a"
 cd bindgen/rust
 CARGO_TARGET_DIR=../../build cargo build --release
+CARGO_TARGET_DIR=../../build cargo lipo --release
 cbindgen --crate walletcore-crypto-bindgen --output ../../src/rust/bindgen/WalletCoreCryptoBindgen.h
 cd -
 mv build/release/${TARGET_NAME} build/local/lib/
-rm -rf build/release
