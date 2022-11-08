@@ -1,20 +1,29 @@
 #!/bin/bash
 
+TARGET_NAME="libwalletcore_crypto_bindgen.a"
+BUILD_FOLDER="../../build/local"
+
+create_xc_framework() {
+    xcodebuild -create-xcframework -library ../../build/local/$TARGET_NAME -library ../../build/local/aarch64-apple-ios/release/$TARGET_NAME -output ../../swift/WalletCoreRs.xcframework
+}
+
 rustup target add aarch64-linux-android i686-linux-android x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios wasm32-unknown-emscripten
 cargo install cargo-lipo
 
-TARGET_NAME="libwalletcore_crypto_bindgen.a"
+
 cd bindgen/rust
 echo "Generating Native targets"
-CARGO_TARGET_DIR=../../build/local cargo build --release
-CARGO_TARGET_DIR=../../build/local cargo build --target wasm32-unknown-emscripten --release
+CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --release
+CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target wasm32-unknown-emscripten --release
 if [[ $OSTYPE == 'darwin'* ]]; then
   echo "Generating Android targets"
-  CARGO_TARGET_DIR=../../build/local cargo build --target aarch64-linux-android --release
-  CARGO_TARGET_DIR=../../build/local cargo build --target i686-linux-android --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target aarch64-linux-android --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target i686-linux-android --release
   echo "Generating iOS targets"
-  CARGO_TARGET_DIR=../../build/local cargo lipo --release
-  CARGO_TARGET_DIR=../../build/local cargo build --target aarch64-apple-ios-sim --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo lipo --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-ios-sim --release
+  lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/libwalletcore_crypto_bindgen.a
+  create_xc_framework
 fi
 cbindgen --crate walletcore-crypto-bindgen --output ../../src/rust/bindgen/WalletCoreCryptoBindgen.h
 cd -
