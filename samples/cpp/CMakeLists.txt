@@ -32,10 +32,7 @@ set (CMAKE_C_STANDARD_REQUIRED ON)
 include_directories (${CMAKE_SOURCE_DIR} ${WALLET_CORE}/include ${WALLET_CORE}/src ${WALLET_CORE}/build/local/include)
 link_directories (${WALLET_CORE}/build ${WALLET_CORE}/build/trezor-crypto ${WALLET_CORE}/build/local/lib)
 
-find_library(WALLET_CORE_LIB_FILE TrustWalletCore PATHS
-		${WALLET_CORE}/build
-		${WALLET_CORE}/build_debug
-		${WALLET_CORE}/cmake-build-debug)
+find_library(WALLET_CORE_LIB_FILE TrustWalletCore PATH ${WALLET_CORE}/build)
 if (NOT WALLET_CORE_LIB_FILE)
     message (FATAL_ERROR "TrustWalletCore library not found.  ${SETUP_MESSAGE}")
 else ()
