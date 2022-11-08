@@ -35,11 +35,12 @@ jobs:
         CXX: /usr/bin/clang++
     - name: CMake
       run: |
-        mkdir build_debug && cd build_debug && cmake -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON ../ -GNinja && cd -
+        mkdir build_debug && cd build_debug && cmake -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON ../ -GNinja
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: Build
+      working-directory: build_debug
       run: |
         ninja TrustWalletCore
       env:
