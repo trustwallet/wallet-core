@@ -4,10 +4,10 @@ TARGET_NAME="libwalletcore_crypto_bindgen.a"
 BUILD_FOLDER="../../build/local"
 
 create_xc_framework() {
-    xcodebuild -create-xcframework -library ../../build/local/$TARGET_NAME -library ../../build/local/aarch64-apple-ios/release/$TARGET_NAME -output ../../swift/WalletCoreRs.xcframework
+    xcodebuild -create-xcframework -library $BUILD_FOLDER/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-ios/release/$TARGET_NAME -output ../../swift/WalletCoreRs.xcframework
 }
 
-rustup target add aarch64-linux-android i686-linux-android x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios wasm32-unknown-emscripten
+rustup target add aarch64-linux-android x86_64-linux-android armv7-linux-androideabi i686-linux-android x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios wasm32-unknown-emscripten
 cargo install cargo-lipo
 
 
@@ -18,6 +18,8 @@ CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target wasm32-unknown-emscripten --
 if [[ $OSTYPE == 'darwin'* ]]; then
   echo "Generating Android targets"
   CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target aarch64-linux-android --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target armv7-linux-androideabi --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target x86_64-linux-android --release
   CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target i686-linux-android --release
   echo "Generating iOS targets"
   CARGO_TARGET_DIR=$BUILD_FOLDER cargo lipo --release
