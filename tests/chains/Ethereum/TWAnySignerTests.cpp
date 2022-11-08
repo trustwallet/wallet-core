@@ -494,13 +494,19 @@ TEST(TWAnySignerEthereum, StakeRocketPool) {
     auto gasLimit = store(uint256_t(205000));
     auto maxFeePerGas = store(uint256_t(27900000000));
     auto maxInclusionFeePerGas = store(uint256_t(1000000000));
-
     auto toAddress = "0x2cac916b2a963bf162f076c0a8a4a8200bcfbfb4";
-    auto valueData = parse_hex("2386f26fc10000");
-    auto data = parse_hex("d0e30db0");
     auto key = parse_hex("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498");
-
     const auto pk = PrivateKey(key);
+
+    // 0.01 ETH
+    auto valueData = store(uint256_t(10000000000000000));
+
+    Data payload;
+    {
+        auto func = ABI::Function("deposit", std::vector<std::shared_ptr<ABI::ParamBase>>{ });
+        func.encode(payload);
+    }
+
 
     Proto::SigningInput input;
     input.set_tx_mode(Proto::TransactionMode::Enveloped);
@@ -518,11 +524,10 @@ TEST(TWAnySignerEthereum, StakeRocketPool) {
 
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
     transfer.set_amount(valueData.data(), valueData.size());
-    transfer.set_data(data.data(), data.size());
+    transfer.set_data(payload.data(), payload.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEthereum);
-
 
     // https://etherscan.io/tx/0xfeba0c579f3e964fbc4eafa500e86891b9f4113735b1364edd4433d765506f1e
     EXPECT_EQ(hex(output.r()), "fb39e5079d7a0598ec45785d73a06b91fe1db707b9c6a150c87ffce2492c66d6");
@@ -538,13 +543,18 @@ TEST(TWAnySignerEthereum, UnstakeRocketPool) {
     auto gasLimit = store(uint256_t(350000));
     auto maxFeePerGas = store(uint256_t(27900000000));
     auto maxInclusionFeePerGas = store(uint256_t(1000000000));
-
     auto toAddress = "0xae78736Cd615f374D3085123A210448E74Fc6393";
-    auto valueData = parse_hex("0");
-    auto data = parse_hex("42966c680000000000000000000000000000000000000000000000000021faa32ab2502b");
     auto key = parse_hex("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498");
-
     const auto pk = PrivateKey(key);
+
+    auto valueData = store(uint256_t(0));
+
+    Data payload;
+    {
+        auto func = ABI::Function("burn", std::vector<std::shared_ptr<ABI::ParamBase>>{
+                                                          std::make_shared<ABI::ParamUInt256>(uint256_t(0x21faa32ab2502b))});
+        func.encode(payload);
+    }
 
     Proto::SigningInput input;
     input.set_tx_mode(Proto::TransactionMode::Enveloped);
@@ -562,11 +572,10 @@ TEST(TWAnySignerEthereum, UnstakeRocketPool) {
 
     auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
     transfer.set_amount(valueData.data(), valueData.size());
-    transfer.set_data(data.data(), data.size());
+    transfer.set_data(payload.data(), payload.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEthereum);
-
 
     // https://etherscan.io/tx/0x7fd3c0e9b8b309b4258baa7677c60f5e00e8db7b647fbe3a52adda25058a4b37
     EXPECT_EQ(hex(output.r()), "1fc6e94908107584357799e952b4e3fb87f088aeb66d7930a7015643f19c9e7f");
