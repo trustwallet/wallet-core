@@ -1,7 +1,9 @@
 #!/bin/bash
 
-TARGET_NAME="libwalletcore_crypto_bindgen.a"
+TARGET_NAME="libwallet_core_rs.a"
 BUILD_FOLDER="../../build/local"
+CRATE="wallet-core-rs"
+HEADER_NAME="WalletCoreRSBindgen.h"
 
 create_xc_framework() {
     xcodebuild -create-xcframework -library $BUILD_FOLDER/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-ios/release/$TARGET_NAME -output ../../swift/WalletCoreRs.xcframework
@@ -24,9 +26,9 @@ if [[ $OSTYPE == 'darwin'* ]]; then
   echo "Generating iOS targets"
   CARGO_TARGET_DIR=$BUILD_FOLDER cargo lipo --release
   CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-ios-sim --release
-  lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/libwalletcore_crypto_bindgen.a
+  lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
   create_xc_framework
 fi
-cbindgen --crate walletcore-crypto-bindgen --output ../../src/rust/bindgen/WalletCoreCryptoBindgen.h
+cbindgen --crate $CRATE --output ../../src/rust/bindgen/$HEADER_NAME
 cd -
 mv build/local/release/${TARGET_NAME} build/local/lib/
