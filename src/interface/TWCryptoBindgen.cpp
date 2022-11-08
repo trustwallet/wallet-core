@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TrustWalletCore/TWCryptoBindgen.h"
-#include "rust/bindgen/WalletCoreCryptoBindgen.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 int32_t TWCryptoBindgenRustFunction() {
     return rust_function();
