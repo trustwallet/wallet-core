@@ -1944,7 +1944,7 @@
       "documentation": "https://eth.wiki/json-rpc/API"
     },
     "deprecated": true,
-    "testFolderName" : "Binance"
+    "testFolderName": "Binance"
   },
   {
     "id": "smartchain",
@@ -1977,7 +1977,7 @@
       "rpc": "https://bsc-dataseed1.binance.org",
       "documentation": "https://eth.wiki/json-rpc/API"
     },
-    "testFolderName" : "Binance"
+    "testFolderName": "Binance"
   },
   {
     "id": "polygon",
@@ -2157,7 +2157,7 @@
       "rpc": "https://http-mainnet-node.huobichain.com",
       "documentation": "https://eth.wiki/json-rpc/API"
     },
-    "testFolderName" : "ECO"
+    "testFolderName": "ECO"
   },
   {
     "id": "avalanchec",
@@ -2188,7 +2188,7 @@
       "clientPublic": "https://api.avax.network/ext/bc/C/rpc",
       "clientDocs": "https://docs.avax.network/"
     },
-    "testFolderName" : "Avalanche"
+    "testFolderName": "Avalanche"
   },
   {
     "id": "xdai",
@@ -2436,7 +2436,7 @@
       "clientPublic": "https://evm-cronos.crypto.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     },
-    "testFolderName" : "Cronos"
+    "testFolderName": "Cronos"
   },
   {
     "id": "kavaevm",
@@ -2495,7 +2495,7 @@
       "rpc": "https://smartbch.fountainhead.cash/mainnet",
       "documentation": "https://github.com/smartbch/docs/blob/main/developers-guide/jsonrpc.md"
     },
-    "testFolderName" : "Bitcoin"
+    "testFolderName": "Bitcoin"
   },
   {
     "id": "kcc",
@@ -2526,7 +2526,7 @@
       "rpc": "https://rpc-mainnet.kcc.network",
       "documentation": "https://docs.kcc.io/#/en-us/"
     },
-    "testFolderName" : "KuCoinCommunityChain"
+    "testFolderName": "KuCoinCommunityChain"
   },
   {
     "id": "boba",
@@ -2820,6 +2820,33 @@
       "source": "https://github.com/okex/exchain",
       "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
+    }
+  },
+  {
+    "id": "hedera",
+    "name": "Hedera",
+    "coinId": 3030,
+    "symbol": "HBAR",
+    "decimals": 8,
+    "blockchain": "Hedera",
+    "derivation": [
+      {
+        "path": "m/44'/3030'/0'/0'/0"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://hashscan.io/mainnet",
+      "txPath": "/transaction/",
+      "accountPath": "/account/",
+      "sampleTx": "0.0.19790-1666769504-858851231",
+      "sampleAccount": "0.0.19790"
+    },
+    "info": {
+      "url": "https://hedera.com/",
+      "source": "https://github.com/hashgraph",
+      "documentation": "https://docs.hedera.com"
     }
   }
 ]

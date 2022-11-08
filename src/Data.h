@@ -32,6 +32,12 @@ inline void append(Data& data, const Data& suffix) {
     data.insert(data.end(), suffix.begin(), suffix.end());
 }
 
+inline Data concat(const Data& data, const Data& suffix) {
+    Data out = data;
+    append(out, suffix);
+    return out;
+}
+
 inline void append(Data& data, const byte suffix) {
     data.push_back(suffix);
 }
