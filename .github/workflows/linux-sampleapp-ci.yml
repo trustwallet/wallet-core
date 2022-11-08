@@ -42,6 +42,8 @@ jobs:
     - name: Build
       run: |
         make -Cbuild -j12 TrustWalletCore
+        echo "nm"
+        nm build/libTrustWalletCore.a | grep "rust_function"
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
