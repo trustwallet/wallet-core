@@ -37,6 +37,8 @@ jobs:
     - name: CMake (coverage/clang-tidy/clang-asan)
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
+        echo "nm"
+        nm build/libTrustWalletCore.a | grep "rust_function"
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
