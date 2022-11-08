@@ -30,7 +30,7 @@ target_link_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/lib)
 set_project_warnings(${PROJECT_NAME}_INTERFACE)
 
 add_subdirectory(trezor-crypto)
-set(WALLET_CORE_RS_LIB libwalletcore_crypto_bindgen.a)
+set(WALLET_CORE_RS_LIB libwallet_core_rs.a)
 set(WALLET_CORE_BINDGEN ${PREFIX}/lib/${WALLET_CORE_RS_LIB})
 if (TW_COMPILE_WASM)
     message(STATUS "Wasm build enabled")

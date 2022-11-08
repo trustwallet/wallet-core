@@ -1,10 +1,10 @@
 [package]
-name = "walletcore-crypto-bindgen"
+name = "wallet-core-rs"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "walletcore_crypto_bindgen"
+name = "wallet_core_rs"
 crate-type = ["staticlib"] # Creates static lib
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
