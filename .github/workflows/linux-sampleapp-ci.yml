@@ -42,7 +42,7 @@ jobs:
     - name: Build
       working-directory: build
       run: |
-        ninja TrustWalletCore
+        ninja
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
