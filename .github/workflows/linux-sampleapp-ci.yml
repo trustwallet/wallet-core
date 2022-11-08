@@ -35,13 +35,13 @@ jobs:
         CXX: /usr/bin/clang++
     - name: CMake
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON
+        mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON ../ -GNinja && cd -
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: Build
       run: |
-        make -Cbuild -j12 TrustWalletCore
+        ninja TrustWalletCore
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
@@ -49,8 +49,8 @@ jobs:
     - name: Build and run C++ sample app
       run: |
         cd samples/cpp
-        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug
-        make
+        mkdir build && cd build && cmake ../ -DWALLET_CORE=../../../wallet-core -DCMAKE_BUILD_TYPE=Debug -GNinja
+        ninja
         ./sample
       env:
         CC: /usr/bin/clang
