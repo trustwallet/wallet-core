@@ -2042,7 +2042,7 @@
   {
     "id": "optimism",
     "name": "Optimism",
-    "displayName": "Optimistic Ethereum",
+    "displayName": "Optimism Ethereum",
     "coinId": 10000070,
     "slip44": 60,
     "symbol": "ETH",

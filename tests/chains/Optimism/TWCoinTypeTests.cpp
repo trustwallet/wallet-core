@@ -9,7 +9,6 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
-
 TEST(TWOptimismCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeOptimism));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x6fd99288be9bf71eb002bb31da10a4fb0fbbb3c45ae73693b212f49c9db7df8f"));
@@ -26,5 +25,5 @@ TEST(TWOptimismCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://optimistic.etherscan.io/tx/0x6fd99288be9bf71eb002bb31da10a4fb0fbbb3c45ae73693b212f49c9db7df8f");
     assertStringsEqual(accUrl, "https://optimistic.etherscan.io/address/0x1f932361e31d206b4f6b2478123a9d0f8c761031");
     assertStringsEqual(id, "optimism");
-    assertStringsEqual(name, "Optimistic Ethereum");
+    assertStringsEqual(name, "Optimism Ethereum");
 }
