@@ -10,6 +10,7 @@ import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.ETHEREUM
 import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.EthereumAbi
+import wallet.core.jni.EthereumAbiFunction
 import wallet.core.jni.proto.Ethereum.SigningOutput
 import wallet.core.jni.proto.Ethereum.TransactionMode
 import com.trustwallet.core.app.utils.Numeric
