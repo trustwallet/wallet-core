@@ -75,7 +75,9 @@ EntryFunction EntryFunction::from_json(const nlohmann::json& payload) noexcept {
     std::vector<Data> args;
     for (auto&& cur : payload.at("arguments")) {
         auto curStr = cur.get<std::string>();
-        args.emplace_back(parse_hex(parse_function_argument_to_bcs(curStr.c_str())));
+        auto* res = parse_function_argument_to_bcs(curStr.c_str());
+        args.emplace_back(parse_hex(res));
+        free_string(res);
     }
 
     std::vector<TypeTag> tags;
