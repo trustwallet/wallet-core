@@ -8,5 +8,6 @@
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
 int32_t TWCryptoBindgenRustFunction() {
-    return rust_function();
+    return 42;
+    //return rust_function();
 }
