@@ -8,6 +8,8 @@
 
 #include "gtest/gtest.h"
 
-TEST(RustBindgen, ExampleFunction) {
-    //ASSERT_EQ(rust_function(), 42);
+TEST(RustBindgen, MoveParseFunctionArgument) {
+    std::string arg = "10000000";
+    auto result = std::string(parse_function_argument_to_bcs(arg.c_str()));
+    ASSERT_EQ(result, "8096980000000000");
 }
