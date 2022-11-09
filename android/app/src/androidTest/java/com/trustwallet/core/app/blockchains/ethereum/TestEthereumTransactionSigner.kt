@@ -174,10 +174,9 @@ class TestEthereumTransactionSigner {
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
 
         // https://etherscan.io/tx/0xfeba0c579f3e964fbc4eafa500e86891b9f4113735b1364edd4433d765506f1e
-        assertEquals(Numeric.toHexString(output.r.toByteArray()), "fb39e5079d7a0598ec45785d73a06b91fe1db707b9c6a150c87ffce2492c66d6")
-        assertEquals(Numeric.toHexString(output.v.toByteArray()), "00")
-        assertEquals(Numeric.toHexString(output.s.toByteArray()), "7fbd43a6f4733b2b4f98ad1bc4678ea2615f5edf56ad91408337adec2f07c0ac")
-        assertEquals(Numeric.toHexString(output.data.toByteArray()), "02f8770101843b9aca0085067ef83700830320c8942cac916b2a963bf162f076c0a8a4a8200bcfbfb4872386f26fc1000084d0e30db0c080a0fb39e5079d7a0598ec45785d73a06b91fe1db707b9c6a150c87ffce2492c66d6a07fbd43a6f4733b2b4f98ad1bc4678ea2615f5edf56ad91408337adec2f07c0ac")
+        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0xfb39e5079d7a0598ec45785d73a06b91fe1db707b9c6a150c87ffce2492c66d6")
+        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x7fbd43a6f4733b2b4f98ad1bc4678ea2615f5edf56ad91408337adec2f07c0ac")
+        assertEquals(Numeric.toHexString(output.data.toByteArray()), "0x02f8770101843b9aca0085067ef83700830320c8942cac916b2a963bf162f076c0a8a4a8200bcfbfb4872386f26fc1000084d0e30db0c080a0fb39e5079d7a0598ec45785d73a06b91fe1db707b9c6a150c87ffce2492c66d6a07fbd43a6f4733b2b4f98ad1bc4678ea2615f5edf56ad91408337adec2f07c0ac")
     }
 
     @Test
@@ -207,10 +206,9 @@ class TestEthereumTransactionSigner {
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
 
         // https://etherscan.io/tx/0x7fd3c0e9b8b309b4258baa7677c60f5e00e8db7b647fbe3a52adda25058a4b37
-        assertEquals(Numeric.toHexString(output.r.toByteArray()), "1fc6e94908107584357799e952b4e3fb87f088aeb66d7930a7015643f19c9e7f")
-        assertEquals(Numeric.toHexString(output.v.toByteArray()), "00")
-        assertEquals(Numeric.toHexString(output.s.toByteArray()), "2c56a0b70ff2e52bf374a3dcd404bc42317d5ca15d319f5e33665352eb48f06f")
-        assertEquals(Numeric.toHexString(output.data.toByteArray()), "02f8900103843b9aca0085067ef837008305573094ae78736cd615f374d3085123a210448e74fc639380a442966c680000000000000000000000000000000000000000000000000021faa32ab2502bc080a01fc6e94908107584357799e952b4e3fb87f088aeb66d7930a7015643f19c9e7fa02c56a0b70ff2e52bf374a3dcd404bc42317d5ca15d319f5e33665352eb48f06f")
+        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x1fc6e94908107584357799e952b4e3fb87f088aeb66d7930a7015643f19c9e7f")
+        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x2c56a0b70ff2e52bf374a3dcd404bc42317d5ca15d319f5e33665352eb48f06f")
+        assertEquals(Numeric.toHexString(output.data.toByteArray()), "0x02f8900103843b9aca0085067ef837008305573094ae78736cd615f374d3085123a210448e74fc639380a442966c680000000000000000000000000000000000000000000000000021faa32ab2502bc080a01fc6e94908107584357799e952b4e3fb87f088aeb66d7930a7015643f19c9e7fa02c56a0b70ff2e52bf374a3dcd404bc42317d5ca15d319f5e33665352eb48f06f")
     }
 
     @Test
