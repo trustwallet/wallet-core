@@ -61,6 +61,13 @@ pub extern fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_c
     p
 }
 
+//TODO:  Move it elsewhere
+#[no_mangle]
+pub unsafe extern fn free_string(ptr: *const c_char) {
+    // Take the ownership back to rust and drop the owner
+    let _ = CString::from_raw(ptr as *mut _);
+}
+
 #[cfg(test)]
 mod tests {
     use crate::move_parser::{ETypeTag, parse_function_argument_to_bcs, parse_type_tag};
