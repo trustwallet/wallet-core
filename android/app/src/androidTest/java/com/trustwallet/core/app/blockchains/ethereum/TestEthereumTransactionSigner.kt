@@ -9,6 +9,8 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.ETHEREUM
 import wallet.core.jni.proto.Ethereum
+import wallet.core.jni.EthereumAbi
+import wallet.core.jni.EthereumAbiFunction
 import wallet.core.jni.proto.Ethereum.SigningOutput
 import wallet.core.jni.proto.Ethereum.TransactionMode
 import com.trustwallet.core.app.utils.Numeric
@@ -145,6 +147,66 @@ class TestEthereumTransactionSigner {
 
         assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "0xf9014a808509c7652400830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b8e4f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000026a010315488201ac801ce346bffd1570de147615462d7e7db3cf08cf558465c6b79a06643943b24593bc3904a9fda63bb169881730994c973ab80f07d66a698064573")
         assertEquals(Numeric.toHexString(output.data.toByteArray()), "0xf242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000")
+    }
+
+    @Test
+    fun testEthereumStakeRocketPool() {
+        val function = EthereumAbiFunction("deposit")
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            chainId = ByteString.copyFrom("01".toHexByteArray())
+            nonce = ByteString.copyFrom("01".toHexByteArray())
+            txMode = TransactionMode.Enveloped
+            gasPrice = ByteString.copyFrom("77541880".toHexByteArray()) // 2002000000
+            gasLimit = ByteString.copyFrom("0320c8".toHexByteArray()) // 205000
+            maxFeePerGas = ByteString.copyFrom("067ef83700".toHexByteArray()) // 27900000000
+            maxInclusionFeePerGas = ByteString.copyFrom("3b9aca00".toHexByteArray()) // 1000000000
+            toAddress = "0x2cac916b2a963bf162f076c0a8a4a8200bcfbfb4" // contract
+            privateKey = ByteString.copyFrom(PrivateKey("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498".toHexByteArray()).data())
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                    amount = ByteString.copyFrom("2386f26fc10000".toHexByteArray()) // 0.01 ETH
+                    data = ByteString.copyFrom(EthereumAbi.encode(function))
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        // https://etherscan.io/tx/0xfeba0c579f3e964fbc4eafa500e86891b9f4113735b1364edd4433d765506f1e
+        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0xfb39e5079d7a0598ec45785d73a06b91fe1db707b9c6a150c87ffce2492c66d6")
+        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x7fbd43a6f4733b2b4f98ad1bc4678ea2615f5edf56ad91408337adec2f07c0ac")
+    }
+
+    @Test
+    fun testEthereumUnstakeRocketPool() {
+        val function = EthereumAbiFunction("burn")
+        function.addParamUInt256("0x21faa32ab2502b".toHexByteArray(), false)
+
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            chainId = ByteString.copyFrom("01".toHexByteArray())
+            nonce = ByteString.copyFrom("03".toHexByteArray())
+            txMode = TransactionMode.Enveloped
+            gasPrice = ByteString.copyFrom("77541880".toHexByteArray()) // 2002000000
+            gasLimit = ByteString.copyFrom("055730".toHexByteArray()) // 350000
+            maxFeePerGas = ByteString.copyFrom("067ef83700".toHexByteArray()) // 27900000000
+            maxInclusionFeePerGas = ByteString.copyFrom("3b9aca00".toHexByteArray()) // 1000000000
+            toAddress = "0xae78736Cd615f374D3085123A210448E74Fc6393" // contract
+            privateKey = ByteString.copyFrom(PrivateKey("9f56448d33de406db1561aae15fce64bdf0e9706ff15c45d4409e8fcbfd1a498".toHexByteArray()).data())
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                contractGeneric = Ethereum.Transaction.ContractGeneric.newBuilder().apply {
+                    amount = ByteString.copyFrom("00".toHexByteArray())
+                    data = ByteString.copyFrom(EthereumAbi.encode(function))
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        // https://etherscan.io/tx/0x7fd3c0e9b8b309b4258baa7677c60f5e00e8db7b647fbe3a52adda25058a4b37
+        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x1fc6e94908107584357799e952b4e3fb87f088aeb66d7930a7015643f19c9e7f")
+        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x2c56a0b70ff2e52bf374a3dcd404bc42317d5ca15d319f5e33665352eb48f06f")
     }
 
     @Test
