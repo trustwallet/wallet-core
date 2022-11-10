@@ -41,6 +41,7 @@ targets:
       - target: protobuf_${platform}
         link: true
       - sdk: libc++.tbd
+      - framework: WalletCoreRs.xcframework
     settings:
       SKIP_INSTALL: false
       SUPPORTS_MACCATALYST: true
