@@ -25,11 +25,6 @@ function download_dependencies() {
     ${BASE_DIR}/download-dependencies
 }
 
-function setup_rust() {
-    echo "Installing rust dependencies"
-    ${BASE_DIR}/install-rust-dependencies
-}
-
 function build_gtest() {
     # Build gtest
     GTEST_DIR="$ROOT/build/local/src/gtest"
@@ -93,7 +88,6 @@ function build_swift_plugin() {
 }
 
 download_dependencies
-setup_rust
 
 build_gtest
 build_libcheck
