@@ -26,6 +26,7 @@ function download_dependencies() {
 }
 
 function setup_rust() {
+    echo "Installing rust dependencies"
     ${BASE_DIR}/install-rust-dependencies
 }
 
