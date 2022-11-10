@@ -21,6 +21,7 @@ class AptosTests: XCTestCase {
     }
     
     func testBlindSign() {
+        // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x7efd69e7f9462774b932ce500ab51c0d0dcc004cf272e09f8ffd5804c2a84e33?network=mainnet
         let payloadJson = """
                              {
                                      "expiration_timestamp_secs": "3664390082",
