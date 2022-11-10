@@ -13,7 +13,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        brew install boost ninja xcodegen xcbeautify
+        tools/install-sys-dependencies-mac
+        tools/install-rust-dependencies
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2

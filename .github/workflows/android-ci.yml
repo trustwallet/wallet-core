@@ -19,7 +19,9 @@ jobs:
         java-version: 11
 
     - name: Install system dependencies
-      run: brew install boost ninja
+      run: |
+        tools/install-sys-dependencies-mac
+        tools/install-rust-dependencies
 
     - name: Install Android Dependencies
       run: tools/install-android-dependencies
