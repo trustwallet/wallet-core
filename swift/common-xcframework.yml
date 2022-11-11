@@ -8,7 +8,7 @@ options:
     macOS: 10.14
 settings:
   base:
-    ENABLE_BITCODE: YES
+    ENABLE_BITCODE: NO
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include /opt/homebrew/include
     CLANG_CXX_LANGUAGE_STANDARD: c++20
