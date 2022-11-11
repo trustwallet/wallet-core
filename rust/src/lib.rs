@@ -5,3 +5,4 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod move_parser;
+pub mod memory;

@@ -1,11 +1,17 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 use std::{
     ffi::c_char,
-    ffi::CString,
     ffi::CStr
 };
 use move_core_types::*;
 use move_core_types::language_storage::TypeTag;
 use move_core_types::transaction_argument::TransactionArgument;
+use crate::memory;
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -55,17 +61,7 @@ pub extern fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_c
         TransactionArgument::U8Vector(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::Bool(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
     };
-    let res = CString::new(v).unwrap();
-    let p = res.as_ptr();
-    std::mem::forget(res);
-    p
-}
-
-//TODO:  Move it elsewhere
-#[no_mangle]
-pub unsafe extern fn free_string(ptr: *const c_char) {
-    // Take the ownership back to rust and drop the owner
-    let _ = CString::from_raw(ptr as *mut _);
+    memory::c_string_standalone(v)
 }
 
 #[cfg(test)]
