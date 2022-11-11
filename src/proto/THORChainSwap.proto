@@ -75,6 +75,15 @@ message SwapInput {
 
     // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
     string to_amount_limit = 8;
+
+    // Optional affiliate fee destination address.  A Rune address.
+    string affiliate_fee_address = 9;
+
+    // Optional affiliate fee, percentage base points, e.g. 100 means 1%, 0 - 1000, as string. Empty means to ignore it.
+    string affiliate_fee_rate_bp = 10;
+
+    // Optional extra custom memo, reserved for later use.
+    string extra_memo = 11;
 }
 
 // Result of the swap, a SigningInput struct for the specific chain
