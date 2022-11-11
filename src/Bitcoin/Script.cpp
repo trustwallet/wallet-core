@@ -259,7 +259,7 @@ Script Script::buildPayToV1WitnessProgram(const Data& publicKey) {
 }
 
 Script Script::buildOpReturnScript(const Data& data) {
-    static const size_t MaxOpReturnLength = 64;
+    static const size_t MaxOpReturnLength = 80;
     Script script;
     script.bytes.push_back(OP_RETURN);
     size_t size = std::min(data.size(), MaxOpReturnLength);
