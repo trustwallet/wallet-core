@@ -94,6 +94,17 @@ struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel);
 
+/// Creates a new key, with given encryption strength level.  Returned object needs to be deleted.
+///
+/// \param name The name of the key to be stored
+/// \param password Non-null block of data, password of the stored key
+/// \param encryptionLevel The level of encryption, see \TWStoredKeyEncryptionLevel
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return The stored key as a non-null pointer
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevelAndEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel, enum TWStoredKeyEncryption encryption);
+
 /// Creates a new key.
 ///
 /// \deprecated use TWStoredKeyCreateLevel.
@@ -102,6 +113,16 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWD
 /// \note Returned object needs to be deleted with \TWStoredKeyDelete
 /// \return The stored key as a non-null pointer
 TW_EXPORT_STATIC_METHOD struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
+
+/// Creates a new key.
+///
+/// \deprecated use TWStoredKeyCreateLevel.
+/// \param name The name of the key to be stored
+/// \param password Non-null block of data, password of the stored key
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return The stored key as a non-null pointer
+TW_EXPORT_STATIC_METHOD struct TWStoredKey* _Nonnull TWStoredKeyCreateEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryption encryption);
 
 /// Delete a stored key
 ///

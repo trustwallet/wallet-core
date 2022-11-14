@@ -50,7 +50,7 @@ public:
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
-    static StoredKey createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel);
+    static StoredKey createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
 
     /// Create a new StoredKey, with the given name, mnemonic and password, and also add the default address for the given coin..
     /// @throws std::invalid_argument if mnemonic is invalid

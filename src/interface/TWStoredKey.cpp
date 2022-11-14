@@ -25,10 +25,18 @@ struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path) {
     }
 }
 
-struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel) {
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevelAndEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel, enum TWStoredKeyEncryption encryption) {
     const auto& nameString = *reinterpret_cast<const std::string*>(name);
     const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-    return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicRandom(nameString, passwordData, encryptionLevel) };
+    return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicRandom(nameString, passwordData, encryptionLevel, encryption) };
+}
+
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel) {
+   return TWStoredKeyCreateLevelAndEncryption(name, password, encryptionLevel, TWStoredKeyEncryptionAes128Ctr);
+}
+
+struct TWStoredKey* _Nonnull TWStoredKeyCreateEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryption encryption) {
+    return TWStoredKeyCreateLevelAndEncryption(name, password, TWStoredKeyEncryptionLevelDefault, encryption);
 }
 
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password) {
