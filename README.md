@@ -100,6 +100,7 @@ Projects using Trust Wallet Core. Add yours too!
 | [Alice](https://www.alicedapp.com/)
 | [Frontier](https://frontier.xyz/)
 | [Tokenary](https://tokenary.io/)
+| [MemesWallet](https://planetmemes.com/)
 
 # Community
 
