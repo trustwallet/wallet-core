@@ -97,6 +97,21 @@ TEST(TWStoredKey, importHDWallet) {
     EXPECT_EQ(nokey.get(), nullptr);
 }
 
+TEST(TWStoredKey, importHDWalletAES256) {
+    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportHDWalletWithEncryption(mnemonic.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes256Ctr));
+    EXPECT_TRUE(TWStoredKeyIsMnemonic(key.get()));
+
+    // invalid mnemonic
+    const auto mnemonicInvalid = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_AN_INVALID_MNEMONIC_"));
+    const auto nokey = WRAP(TWStoredKey, TWStoredKeyImportHDWalletWithEncryption(mnemonicInvalid.get(), name.get(), password.get(), coin, TWStoredKeyEncryptionAes256Ctr));
+    EXPECT_EQ(nokey.get(), nullptr);
+}
+
 TEST(TWStoredKey, addressAddRemove) {
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));

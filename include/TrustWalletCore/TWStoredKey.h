@@ -13,6 +13,7 @@
 #include "TWHDWallet.h"
 #include "TWPrivateKey.h"
 #include "TWStoredKeyEncryptionLevel.h"
+#include "TWStoredKeyEncryption.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -50,6 +51,17 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull priva
 /// \return Nullptr if the key can't be imported, the stored key otherwise
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
+
+/// Imports an HD wallet.
+///
+/// \param mnemonic Non-null bip39 mnemonic
+/// \param name The name of the stored key to import as a non-null string
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return Nullptr if the key can't be imported, the stored key otherwise
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
 
 /// Imports a key from JSON.
 ///

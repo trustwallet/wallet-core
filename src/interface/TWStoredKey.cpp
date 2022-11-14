@@ -47,11 +47,16 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull priva
 }
 
 struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
+    return TWStoredKeyImportHDWalletWithEncryption(mnemonic, name, password, coin, TWStoredKeyEncryptionAes128Ctr);
+}
+
+
+struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* mnemonic, TWString* name, TWData* password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
     try {
         const auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicAddDefaultAddress(nameString, passwordData, mnemonicString, coin) };
+        return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicAddDefaultAddress(nameString, passwordData, mnemonicString, coin, encryption) };
     } catch (...) {
         return nullptr;
     }
