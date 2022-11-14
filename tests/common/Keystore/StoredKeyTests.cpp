@@ -405,7 +405,7 @@ TEST(StoredKey, CreateAccounts) {
 
 TEST(StoredKey, CreateAccountsAes256) {
     string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-    auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault, TWAes256Ctr);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes256Ctr);
     auto header = key.payload;
     const auto wallet = key.wallet(gPassword);
 

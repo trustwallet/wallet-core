@@ -13,10 +13,10 @@ TW_EXTERN_C_BEGIN
 /// Preset encryption kind
 TW_EXPORT_ENUM(uint32_t)
 enum TWStoredKeyEncryption {
-    TWAes128Ctr = 0,
-    TWAes128Cbc = 1,
-    TWAes192Ctr = 2,
-    TWAes256Ctr = 3,
+    TWStoredKeyEncryptionAes128Ctr = 0,
+    TWStoredKeyEncryptionAes128Cbc = 1,
+    TWStoredKeyEncryptionAes192Ctr = 2,
+    TWStoredKeyEncryptionAes256Ctr = 3,
 };
 
 TW_EXTERN_C_END

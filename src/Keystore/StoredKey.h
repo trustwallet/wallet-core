@@ -46,7 +46,7 @@ public:
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
-    static StoredKey createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWAes128Ctr);
+    static StoredKey createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
@@ -153,7 +153,7 @@ private:
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     /// This constructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWAes128Ctr);
+    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
 
     /// Find default account for coin, if exists.  If multiple exist, default is returned.
     /// Optional wallet is needed to derive default address

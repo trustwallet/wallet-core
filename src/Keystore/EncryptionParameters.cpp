@@ -78,13 +78,14 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     aes_encrypt_ctx ctx;
     auto result = 0;
     switch(this->params.mCipher) {
-    case TWAes128Ctr:
-    case TWAes128Cbc:
+    case TWStoredKeyEncryptionAes128Ctr:
+    case TWStoredKeyEncryptionAes128Cbc:
         result = aes_encrypt_key128(derivedKey.data(), &ctx);
-    case TWAes192Ctr:
+        break;
+    case TWStoredKeyEncryptionAes192Ctr:
         result = aes_encrypt_key192(derivedKey.data(), &ctx);
         break;
-    case TWAes256Ctr:
+    case TWStoredKeyEncryptionAes256Ctr:
         result = aes_encrypt_key256(derivedKey.data(), &ctx);
         break;
     }
@@ -129,14 +130,14 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
-    if (params.mCipher == TWAes128Ctr || params.mCipher == TWAes256Ctr) {
+    if (params.mCipher == TWStoredKeyEncryptionAes128Ctr || params.mCipher == TWStoredKeyEncryptionAes256Ctr) {
         aes_encrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (params.mCipher == TWAes128Cbc) {
+    } else if (params.mCipher == TWStoredKeyEncryptionAes128Cbc) {
         aes_decrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
