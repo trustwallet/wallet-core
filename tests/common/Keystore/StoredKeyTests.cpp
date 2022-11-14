@@ -345,7 +345,7 @@ TEST(StoredKey, ReadWallet) {
 
     const auto header = key.payload;
 
-    EXPECT_EQ(header.params.cipher, "aes-128-ctr");
+    EXPECT_EQ(header.params.cipher(), "aes-128-ctr");
     EXPECT_EQ(hex(header.encrypted), "d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c");
     EXPECT_EQ(hex(header._mac), "2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097");
     EXPECT_EQ(hex(header.params.cipherParams.iv), "83dbcc02d8ccb40e466191a123791e0e");

@@ -40,8 +40,8 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
-    cipher = json[CodingKeys::cipher].get<std::string>();
-    cipherParams = AESParameters(json[CodingKeys::cipherParams], cipher);
+    mCipher = getCipher(json[CodingKeys::cipher].get<std::string>());
+    cipherParams = AESParameters(json[CodingKeys::cipherParams], cipher());
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
@@ -53,7 +53,7 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
 
 nlohmann::json EncryptionParameters::json() const {
     nlohmann::json j;
-    j[CodingKeys::cipher] = cipher;
+    j[CodingKeys::cipher] = cipher();
     j[CodingKeys::cipherParams] = cipherParams.json();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&kdfParams); scryptParams) {
@@ -118,14 +118,14 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
-    if (params.cipher == "aes-128-ctr" || params.cipher == "aes-256-ctr") {
+    if (params.mCipher == TWAes128Ctr || params.mCipher == TWAes256Ctr) {
         aes_encrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (params.cipher == "aes-128-cbc") {
+    } else if (params.mCipher == TWAes128Cbc) {
         aes_decrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);

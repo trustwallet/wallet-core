@@ -11,6 +11,7 @@
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
 #include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
+#include <TrustWalletCore/TWStoredKeyEncryption.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -20,16 +21,26 @@ namespace TW::Keystore {
 
 /// Set of parameters used when encoding
 struct EncryptionParameters {
-    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset) {
+    static TWStoredKeyEncryption getCipher(const std::string& cipher) {
+        if (cipher == "aes-128-ctr") {
+            return TWStoredKeyEncryption::TWAes128Ctr;
+        } else if (cipher == "aes-192-ctr") {
+            return TWStoredKeyEncryption::TWAes192Ctr;
+        } else if (cipher == "aes-256-ctr") {
+            return TWStoredKeyEncryption::TWAes256Ctr;
+        }
+        return TWAes128Ctr;
+    }
+    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset, enum TWStoredKeyEncryption encryption = TWAes128Ctr) {
         switch (preset) {
         case TWStoredKeyEncryptionLevelMinimal:
-            return EncryptionParameters(AESParameters(), ScryptParameters::Minimal);
+            return EncryptionParameters(AESParameters(), ScryptParameters::Minimal, encryption);
         case TWStoredKeyEncryptionLevelWeak:
         case TWStoredKeyEncryptionLevelDefault:
         default:
-            return EncryptionParameters(AESParameters(), ScryptParameters::Weak);
+            return EncryptionParameters(AESParameters(), ScryptParameters::Weak, encryption);
         case TWStoredKeyEncryptionLevelStandard:
-            return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
+            return EncryptionParameters(AESParameters(), ScryptParameters::Standard, encryption);
         }
     }
 
@@ -37,8 +48,21 @@ struct EncryptionParameters {
         return cipherParams.mKeyLength;
     }
 
+    std::string cipher() const noexcept {
+        switch (mCipher) {
+        case TWAes128Ctr:
+            return "aes-128-ctr";
+        case TWAes192Ctr:
+            return "aes-192-ctr";
+        case TWAes256Ctr:
+            return "aes-256-ctr";
+        default:
+            return "aes-128-ctr";
+        }
+    }
+
     /// Cipher algorithm.
-    std::string cipher{"aes-128-ctr"};
+    TWStoredKeyEncryption mCipher{TWAes128Ctr};
 
     /// Cipher parameters.
     AESParameters cipherParams = AESParameters();
@@ -49,8 +73,8 @@ struct EncryptionParameters {
     EncryptionParameters() = default;
 
     /// Initializes with standard values.
-    EncryptionParameters(AESParameters cipherParams, std::variant<ScryptParameters, PBKDF2Parameters> kdfParams, std::string cipher = "aes-128-ctr")
-        : cipher(std::move(cipher)), cipherParams(std::move(cipherParams)), kdfParams(std::move(kdfParams)) {
+    EncryptionParameters(AESParameters cipherParams, std::variant<ScryptParameters, PBKDF2Parameters> kdfParams, TWStoredKeyEncryption cipher = TWAes128Ctr)
+        : mCipher(cipher), cipherParams(std::move(cipherParams)), kdfParams(std::move(kdfParams)) {
     }
 
     /// Initializes with a JSON object.

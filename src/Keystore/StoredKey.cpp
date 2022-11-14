@@ -26,13 +26,13 @@ using namespace TW;
 
 namespace TW::Keystore {
 
-StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel) {
+StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel,  TWStoredKeyEncryption encryption) {
     if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
 
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel);
+    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
 }
 
 StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel) {
@@ -69,9 +69,9 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel)
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption)
     : type(type), id(), name(std::move(name)), accounts() {
-    const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel);
+    const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
     payload = EncryptedPayload(password, data, encryptionParams);
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
