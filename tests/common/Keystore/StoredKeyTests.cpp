@@ -115,6 +115,23 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
     EXPECT_EQ(json["version"], 3);
 }
 
+TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressAes256) {
+    const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey, TWStoredKeyEncryptionAes256Ctr);
+    auto header = key.payload;
+    EXPECT_EQ(header.params.cipher(), "aes-256-ctr");
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    EXPECT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), hex(privateKey));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "private-key");
+    EXPECT_EQ(json["version"], 3);
+}
+
 TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressInvalid) {
     try {
         const auto privateKeyInvalid = parse_hex("0001020304");

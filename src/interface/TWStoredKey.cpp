@@ -36,11 +36,15 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* 
 }
 
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
+    return TWStoredKeyImportPrivateKeyWithEncryption(privateKey, name, password, coin, TWStoredKeyEncryptionAes128Ctr);
+}
+
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryption(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
     try {
         const auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData) };
+        return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData, encryption) };
     } catch (...) {
         return nullptr;
     }
@@ -51,7 +55,7 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 }
 
 
-struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* mnemonic, TWString* name, TWData* password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
+struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
     try {
         const auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);

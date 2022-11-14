@@ -58,11 +58,11 @@ public:
 
     /// Create a new StoredKey, with the given name and private key.
     /// @throws std::invalid_argument if privateKeyData is not a valid private key
-    static StoredKey createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData);
+    static StoredKey createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
 
     /// Create a new StoredKey, with the given name and private key, and also add the default address for the given coin..
     /// @throws std::invalid_argument if privateKeyData is not a valid private key
-    static StoredKey createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData);
+    static StoredKey createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr);
 
     /// Create a StoredKey from a JSON object.
     static StoredKey createWithJson(const nlohmann::json& json);

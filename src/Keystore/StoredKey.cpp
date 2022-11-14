@@ -50,17 +50,17 @@ StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name
     return key;
 }
 
-StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData) {
-    return StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWStoredKeyEncryptionLevelDefault);
+StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData, TWStoredKeyEncryption encryption) {
+    return StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWStoredKeyEncryptionLevelDefault, encryption);
 }
 
-StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData) {
+StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption) {
     const auto curve = TW::curve(coin);
     if (!PrivateKey::isValid(privateKeyData, curve)) {
         throw std::invalid_argument("Invalid private key data");
     }
 
-    StoredKey key = createWithPrivateKey(name, password, privateKeyData);
+    StoredKey key = createWithPrivateKey(name, password, privateKeyData, encryption);
     const auto derivationPath = TW::derivationPath(coin);
     const auto pubKeyType = TW::publicKeyType(coin);
     const auto pubKey = PrivateKey(privateKeyData).getPublicKey(pubKeyType);
