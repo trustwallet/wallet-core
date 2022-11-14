@@ -94,7 +94,6 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         Data iv = this->params.cipherParams.iv;
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-
         _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     }
 }

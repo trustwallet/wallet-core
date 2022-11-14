@@ -26,7 +26,7 @@ using namespace TW;
 
 namespace TW::Keystore {
 
-StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel,  TWStoredKeyEncryption encryption) {
+StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption) {
     if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
@@ -43,8 +43,8 @@ StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Dat
     return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel);
 }
 
-StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin) {
-    StoredKey key = createWithMnemonic(name, password, mnemonic, TWStoredKeyEncryptionLevelDefault);
+StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin, TWStoredKeyEncryption encryption) {
+    StoredKey key = createWithMnemonic(name, password, mnemonic, TWStoredKeyEncryptionLevelDefault, encryption);
     const auto wallet = key.wallet(password);
     key.account(coin, &wallet);
     return key;

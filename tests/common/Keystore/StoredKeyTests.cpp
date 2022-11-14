@@ -84,6 +84,22 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
     EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
 }
 
+TEST(StoredKey, CreateWithMnemonicAddDefaultAddressAes256) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coinTypeBc, TWStoredKeyEncryptionAes256Ctr);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    auto header = key.payload;
+    EXPECT_EQ(header.params.cipher(), "aes-256-ctr");
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.accounts.size(), 1ul);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    EXPECT_EQ(key.accounts[0].publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
+    EXPECT_EQ(key.accounts[0].extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
+}
+
 TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey);
