@@ -10,8 +10,8 @@
 #include "Data.h"
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
-#include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 #include <TrustWalletCore/TWStoredKeyEncryption.h>
+#include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -31,16 +31,32 @@ struct EncryptionParameters {
         }
         return TWAes128Ctr;
     }
+
+    static AESSize getAesKeylength(TWStoredKeyEncryption cipher) {
+        switch (cipher) {
+        case TWAes128Ctr:
+            return AESSize::A128;
+        case TWAes128Cbc:
+            return AESSize::A128;
+        case TWAes192Ctr:
+            return AESSize::A192;
+        case TWAes256Ctr:
+            return AESSize::A256;
+        default:
+            return AESSize::A128;
+        }
+    }
+
     static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset, enum TWStoredKeyEncryption encryption = TWAes128Ctr) {
         switch (preset) {
         case TWStoredKeyEncryptionLevelMinimal:
-            return EncryptionParameters(AESParameters(), ScryptParameters::Minimal, encryption);
+            return EncryptionParameters(AESParameters(getAesKeylength(encryption)), ScryptParameters::Minimal, encryption);
         case TWStoredKeyEncryptionLevelWeak:
         case TWStoredKeyEncryptionLevelDefault:
         default:
-            return EncryptionParameters(AESParameters(), ScryptParameters::Weak, encryption);
+            return EncryptionParameters(AESParameters(getAesKeylength(encryption)), ScryptParameters::Weak, encryption);
         case TWStoredKeyEncryptionLevelStandard:
-            return EncryptionParameters(AESParameters(), ScryptParameters::Standard, encryption);
+            return EncryptionParameters(AESParameters(getAesKeylength(encryption)), ScryptParameters::Standard, encryption);
         }
     }
 

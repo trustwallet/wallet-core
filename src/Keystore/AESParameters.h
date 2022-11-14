@@ -28,7 +28,7 @@ struct AESParameters {
     Data iv;
 
     /// Initializes `AESParameters` with a random `iv` for AES 128/192/256.
-    AESParameters(AESSize blockSize = A128);
+    AESParameters(AESSize keyLength = A128);
 
     /// Initializes `AESParameters` with a JSON object.
     AESParameters(const nlohmann::json& json, const std::string& cipher);
