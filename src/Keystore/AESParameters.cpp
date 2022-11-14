@@ -14,9 +14,9 @@ using namespace TW;
 
 namespace TW::Keystore {
 
-AESParameters::AESParameters() {
-    iv = Data(blockSize, 0);
-    random_buffer(iv.data(), blockSize);
+AESParameters::AESParameters(AESSize blockSize) : mBlockSize(blockSize) {
+    iv = Data(mBlockSize, 0);
+    random_buffer(iv.data(), mBlockSize);
 }
 
 namespace CodingKeys {

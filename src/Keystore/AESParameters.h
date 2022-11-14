@@ -12,14 +12,21 @@
 
 namespace TW::Keystore {
 
-// AES128 parameters.
+enum AESSize: std::int32_t {
+    Uninitialized = 0,
+    A128 = 16,
+    A192 = 24,
+    A256 = 32,
+};
+
+// AES128/192/256 parameters.
 struct AESParameters {
-    static const std::size_t blockSize = 128 / 8;
+    std::int32_t mBlockSize;
 
     Data iv;
 
-    /// Initializes `AESParameters` with a random `iv` for AES 128.
-    AESParameters();
+    /// Initializes `AESParameters` with a random `iv` for AES 128/192/256.
+    AESParameters(AESSize blockSize = A128);
 
     /// Initializes `AESParameters` with a JSON object.
     AESParameters(const nlohmann::json& json);

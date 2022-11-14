@@ -33,12 +33,6 @@ struct EncryptionParameters {
         }
     }
 
-    enum AESSize: std::int32_t {
-        Uninitialized = 0,
-        A128 = 16,
-        A256 = 32,
-    };
-
     std::int32_t getKeyBytesSize() const noexcept {
         if (this->cipher == "aes-128-ctr" || this->cipher == "aes-128-cbc") {
             return A128;
