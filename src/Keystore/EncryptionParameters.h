@@ -68,6 +68,8 @@ struct EncryptionParameters {
         switch (mCipher) {
         case TWAes128Ctr:
             return "aes-128-ctr";
+        case TWAes128Cbc:
+            return "aes-128-cbc";
         case TWAes192Ctr:
             return "aes-192-ctr";
         case TWAes256Ctr:
