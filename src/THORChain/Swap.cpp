@@ -54,13 +54,33 @@ std::string chainName(Chain chain) {
     }
 }
 
-std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit) {
+std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra) {
     std::string prefix = "SWAP";
     if (toChain == Chain::ETH) {
         prefix = "=";
     }
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
-    return prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + toAddress + ":" + std::to_string(limit);
+    std::stringstream memo;
+    memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + toAddress + ":" + std::to_string(limit);
+
+    if (!feeAddress.empty() || feeRate.has_value() || !extra.empty()) {
+        memo << ":";
+        if (!feeAddress.empty()) {
+            memo << feeAddress;
+        }
+        if (feeRate.has_value() || !extra.empty()) {
+            memo << ":";
+            if (feeRate.has_value()) {
+                memo << std::to_string(feeRate.value());
+            }
+            if (!extra.empty()) {
+                memo << ":";
+                memo << extra;
+            }
+        }
+    }
+
+    return memo.str();
 }
 
 bool validateAddress(Chain chain, const std::string& address) {
@@ -77,7 +97,10 @@ std::tuple<Data, int, std::string> Swap::build(
     const std::string& vaultAddress,
     const std::string& routerAddress,
     const std::string& fromAmount,
-    const std::string& toAmountLimit
+    const std::string& toAmountLimit,
+    const std::string& affFeeAddress,
+    const std::string& affFeeRate,
+    const std::string& extraMemo
 )  {
     if (!validateAddress(fromChain, fromAddress)) {
         return std::make_tuple<Data, int, std::string>({}, static_cast<int>(Proto::ErrorCode::Error_Invalid_from_address), "Invalid from address");
@@ -88,7 +111,9 @@ std::tuple<Data, int, std::string> Swap::build(
 
     uint64_t fromAmountNum = std::atoll(fromAmount.c_str());
     uint64_t toAmountLimitNum = std::atoll(toAmountLimit.c_str());
-    const auto memo = buildMemo(toChain, toSymbol, toTokenId, toAddress, toAmountLimitNum);
+    std::optional<uint16_t> feeRateNum = affFeeRate.empty() ? std::nullopt : std::optional<uint16_t>(std::atoll(affFeeRate.c_str()));
+
+    const auto memo = buildMemo(toChain, toSymbol, toTokenId, toAddress, toAmountLimitNum, affFeeAddress, feeRateNum, extraMemo);
 
     switch (fromChain) {
         case Chain::BTC: {
