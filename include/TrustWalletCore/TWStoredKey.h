@@ -58,6 +58,7 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 /// \param name The name of the stored key to import as a non-null string
 /// \param password Non-null block of data, password of the stored key
 /// \param coin the coin type
+/// \param encryption cipher encryption mode
 /// \note Returned object needs to be deleted with \TWStoredKeyDelete
 /// \return Nullptr if the key can't be imported, the stored key otherwise
 TW_EXPORT_STATIC_METHOD
