@@ -21,7 +21,9 @@ enum AESSize: std::int32_t {
 
 // AES128/192/256 parameters.
 struct AESParameters {
-    std::int32_t mBlockSize;
+    // For AES, your block length is always going to be 128 bits/16 bytes
+    std::int32_t mBlockSize{16};
+    std::int32_t mKeyLength{A128};
 
     Data iv;
 

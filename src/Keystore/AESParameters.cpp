@@ -14,9 +14,14 @@ using namespace TW;
 
 namespace TW::Keystore {
 
-AESParameters::AESParameters(AESSize blockSize) : mBlockSize(blockSize) {
-    iv = Data(mBlockSize, 0);
-    random_buffer(iv.data(), mBlockSize);
+AESParameters::AESParameters(AESSize keyLength) : mKeyLength(keyLength) {
+    // https://www.reddit.com/r/crypto/comments/30x5xg/what_length_should_the_iv_be_for_aes256ctr/
+    // First off, AES 128 uses a 128 bit key.
+    // So if you're using AES 256, you're using a 256 bit key.
+    // Let's not confuse the block length with key length here.
+    // For AES, your block length is always going to be 128 bits/16 bytes regardless of the key length used
+    iv = Data(A128, 16);
+    random_buffer(iv.data(), 16);
 }
 
 namespace CodingKeys {
@@ -27,11 +32,11 @@ static const auto iv = "iv";
 AESParameters::AESParameters(const nlohmann::json& json, const std::string& cipher) {
     iv = parse_hex(json[CodingKeys::iv].get<std::string>());
     if (cipher == "aes-128-ctr" || cipher == "aes-128-cbc") {
-        mBlockSize = A128;
+        mKeyLength = A128;
     } else if (cipher == "aes-192-ctr") {
-        mBlockSize = A192;
+        mKeyLength = A192;
     } else if (cipher == "aes-256-ctr") {
-        mBlockSize = A256;
+        mKeyLength = A256;
     }
 }
 

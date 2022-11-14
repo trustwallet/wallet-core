@@ -34,7 +34,7 @@ struct EncryptionParameters {
     }
 
     std::int32_t getKeyBytesSize() const noexcept {
-        return cipherParams.mBlockSize;
+        return cipherParams.mKeyLength;
     }
 
     /// Cipher algorithm.
