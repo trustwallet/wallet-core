@@ -29,7 +29,7 @@ struct AESParameters {
     AESParameters(AESSize blockSize = A128);
 
     /// Initializes `AESParameters` with a JSON object.
-    AESParameters(const nlohmann::json& json);
+    AESParameters(const nlohmann::json& json, const std::string& cipher);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

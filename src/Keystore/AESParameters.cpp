@@ -24,8 +24,15 @@ static const auto iv = "iv";
 } // namespace CodingKeys
 
 /// Initializes `AESParameters` with a JSON object.
-AESParameters::AESParameters(const nlohmann::json& json) {
+AESParameters::AESParameters(const nlohmann::json& json, const std::string& cipher) {
     iv = parse_hex(json[CodingKeys::iv].get<std::string>());
+    if (cipher == "aes-128-ctr" || cipher == "aes-128-cbc") {
+        mBlockSize = A128;
+    } else if (cipher == "aes-192-ctr") {
+        mBlockSize = A192;
+    } else if (cipher == "aes-256-ctr") {
+        mBlockSize = A256;
+    }
 }
 
 /// Saves `this` as a JSON object.

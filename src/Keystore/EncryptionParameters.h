@@ -34,12 +34,7 @@ struct EncryptionParameters {
     }
 
     std::int32_t getKeyBytesSize() const noexcept {
-        if (this->cipher == "aes-128-ctr" || this->cipher == "aes-128-cbc") {
-            return A128;
-        } else if (this->cipher == "aes-256-ctr") {
-            return A256;
-        }
-        return Uninitialized;
+        return cipherParams.mBlockSize;
     }
 
     /// Cipher algorithm.
@@ -55,7 +50,8 @@ struct EncryptionParameters {
 
     /// Initializes with standard values.
     EncryptionParameters(AESParameters cipherParams, std::variant<ScryptParameters, PBKDF2Parameters> kdfParams, std::string cipher = "aes-128-ctr")
-        : cipher(std::move(cipher)), cipherParams(std::move(cipherParams)), kdfParams(std::move(kdfParams)) {}
+        : cipher(std::move(cipher)), cipherParams(std::move(cipherParams)), kdfParams(std::move(kdfParams)) {
+    }
 
     /// Initializes with a JSON object.
     EncryptionParameters(const nlohmann::json& json);

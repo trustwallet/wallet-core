@@ -41,7 +41,7 @@ static const auto mac = "mac";
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     cipher = json[CodingKeys::cipher].get<std::string>();
-    cipherParams = AESParameters(json[CodingKeys::cipherParams]);
+    cipherParams = AESParameters(json[CodingKeys::cipherParams], cipher);
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
