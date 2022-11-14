@@ -9,7 +9,6 @@
 #include "../BinaryCoding.h"
 
 #include <algorithm>
-#include <cmath>
 #include <sstream>
 #include <string>
 
@@ -65,12 +64,12 @@ Data Transaction::serialize() const {
         (transaction_type == TransactionType::NFTokenCreateOffer)) {
         encodeType(FieldType::amount, 1, data);
         append(data,
-               (currency_amt.currency.size() > 0) ?
-                 serializeCurrencyAmt(currency_amt) :
+               (currency_amount.currency.size() > 0) ?
+                 serializeCurrencyAmount(currency_amount) :
                  serializeAmount(amount));
     } else if (transaction_type == TransactionType::TrustSet) {
         encodeType(FieldType::amount, 3, data);
-        append(data, serializeCurrencyAmt(limit_amt));
+        append(data, serializeCurrencyAmount(limit_amount));
     }
 
     /// "fee"
@@ -130,21 +129,19 @@ Data Transaction::serializeAmount(int64_t amount) {
     return data;
 }
 
-Data Transaction::serializeCurrencyAmt(const CurrencyAmt& currency_amt) {
+Data Transaction::serializeCurrencyAmount(const CurrencyAmount& currency_amount) {
     // Calculate value
     // https://xrpl.org/serialization.html#token-amount-format
     int64_t sign = 0;
     int64_t mantissa = 0;
     int32_t exp = 0;
     try {
-        // double stores 52-bit mantissa but ripple stores 54-bit mantissa
-        // can parse to boost::multiprecision::float128_t but needs quadmath.h
         int32_t num_after_dot = 0;
         bool after_dot = false;
         bool after_e = false;
         bool has_exp = false;
         std::ostringstream mantissa_oss, exp_oss;
-        for (auto i : currency_amt.value) {
+        for (auto i : currency_amount.value) {
             if (i == '.') {
                 after_dot = true;
             } else if (i == 'e') {
@@ -203,30 +200,30 @@ Data Transaction::serializeCurrencyAmt(const CurrencyAmt& currency_amt) {
             uint64_t sign : 1;
             uint64_t not_xrp : 1;
         } parts;
-    } amt_cast;
+    } AmountCast;
 
-    amt_cast ac;
-    ac.parts.mantissa = mantissa;
-    ac.parts.exp = exp + 97;
-    ac.parts.sign = sign;
-    ac.parts.not_xrp = 1;
+    AmountCast amount_cast;
+    amount_cast.parts.mantissa = mantissa;
+    amount_cast.parts.exp = exp + 97;
+    amount_cast.parts.sign = sign;
+    amount_cast.parts.not_xrp = 1;
 
     // Serialize fields
 	// https://xrpl.org/serialization.html#amount-fields
     auto data = Data();
-    encode64BE(ac.value, data);
+    encode64BE(amount_cast.value, data);
 
     // ISO-4217 currency code
-    encode0(1, data); // type code (0x00)
-    encode0(11, data); // reserved
-    if (currency_amt.currency.size() == 3) {
-        data.insert(data.end(), currency_amt.currency.begin(), currency_amt.currency.end());
+    encodeZeros(1, data); // type code (0x00)
+    encodeZeros(11, data); // reserved
+    if (currency_amount.currency.size() == 3) {
+        data.insert(data.end(), currency_amount.currency.begin(), currency_amount.currency.end());
     } else {
-        encode0(3, data); // none
+        encodeZeros(3, data); // none
     }
 
-    encode0(5, data); // reserved
-    data.insert(data.end(), currency_amt.issuer.begin(), currency_amt.issuer.end());
+    encodeZeros(5, data); // reserved
+    data.insert(data.end(), currency_amount.issuer.begin(), currency_amount.issuer.end());
     return data;
 }
 

@@ -45,15 +45,15 @@ class Transaction {
     /// Float and negative amounts are not supported.
     /// See https://github.com/trezor/trezor-core/tree/master/src/apps/ripple#transactions
   public:
-      struct CurrencyAmt {
+      struct CurrencyAmount {
         Data currency;
         Data value;
         Data issuer;
     };
 
     int64_t amount;
-    CurrencyAmt currency_amt;
-    CurrencyAmt limit_amt;
+    CurrencyAmount currency_amount;
+    CurrencyAmount limit_amount;
     int64_t fee;
     int64_t flags;
     int32_t sequence;
@@ -98,14 +98,14 @@ class Transaction {
 
     void createTrustSet(const std::string& currency, const std::string& value, const std::string& issuer) {
         transaction_type = TransactionType::TrustSet;
-        setCurrencyAmt(limit_amt, currency, value, issuer);
+        setCurrencyAmount(limit_amount, currency, value, issuer);
     }
 
     void createTokenPayment(const std::string& currency, const std::string& value, const std::string& issuer,
                             const std::string& p_destination, int64_t p_destination_tag) {
         transaction_type = TransactionType::payment;
         setDestination(p_destination, p_destination_tag);
-        setCurrencyAmt(currency_amt, currency, value, issuer);
+        setCurrencyAmount(currency_amount, currency, value, issuer);
     }
 
     void createNFTokenBurn(const std::string& p_nftoken_id) {
@@ -140,14 +140,14 @@ class Transaction {
     Data getPreImage() const;
 
     static Data serializeAmount(int64_t amount);
-    static Data serializeCurrencyAmt(const CurrencyAmt& currency_amt);
+    static Data serializeCurrencyAmount(const CurrencyAmount& currency_amount);
     static Data serializeAddress(Address address);
 
   private:
-    void setCurrencyAmt(CurrencyAmt& p_currency_amt, const std::string& currency, const std::string& value, const std::string& issuer) {
-        p_currency_amt.currency = Data(currency.begin(), currency.end());
-        p_currency_amt.value = Data(value.begin(), value.end());
-        setAccount(issuer, p_currency_amt.issuer);
+    void setCurrencyAmount(CurrencyAmount& p_currency_amount, const std::string& currency, const std::string& value, const std::string& issuer) {
+        p_currency_amount.currency = Data(currency.begin(), currency.end());
+        p_currency_amount.value = Data(value.begin(), value.end());
+        setAccount(issuer, p_currency_amount.issuer);
     }
 
     void setDestination(const std::string& p_destination, int64_t p_destination_tag) {

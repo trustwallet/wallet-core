@@ -43,14 +43,33 @@ TEST(TWAnySignerRipple, SignXrpPayment) {
     EXPECT_EQ(output.encoded(), "");
 }
 
+TEST(TWAnySignerRipple, SignXrpPaymentMain) {
+    // https://xrpscan.com/tx/4B9D022E8C77D798B7D11C41FDFDCF468F03A5564151C520EECA1E96FF1A1610
+    auto key = parse_hex("acf1bbf6264e699da0cc65d17ac03fcca6ded1522d19529df7762db46097ff9f");
+    Proto::SigningInput input;
+
+    input.mutable_op_payment()->set_amount(1000000);
+    input.set_fee(10);
+    input.set_sequence(75674534);
+    input.set_last_ledger_sequence(75674797);
+    input.set_account("rGV1v1xw23PHcRn4Km4tF8R2mfh6yTZkcP");
+    input.mutable_op_payment()->set_destination("rNLpgsBTCwiaZAnHe2ZViAN1GcXZtYW6rg");
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+
+    EXPECT_EQ(hex(output.encoded()), "1200002200000000240482b3a6201b0482b4ad6140000000000f424068400000000000000a7321027efc5f15071d2ae5e73ee09a0c17456c5d9170a41d67e3297c554829199be80b74473045022100e1c746c3aeebc8278c627ee4c2ce5cae97e3856292c7fe5388f803920230a37b02207d2eccb76cd35dd379d6b24c2cabd786e62d34a564cf083e863176109c5b6bb48114aa000c09c692ef1f82787e51e22833149941ea2083149232ef60695add51f0f84534cc4084e4fdfc698e");
+}
+
 TEST(TWAnySignerRipple, SignTrustSetPayment) {
     // https://testnet.xrpl.org/transactions/31042345374CFF785B3F7E2A3716E3BAB7E2CAA30D40F5E488E67ABA116655B9
     auto key = parse_hex("8753e78ee2963f301f82e5eeab2754f593fc242ce94273dd2fb0684e3b0f2b91");
     Proto::SigningInput input;
 
-    input.mutable_op_trust_set()->mutable_limit_amt()->set_currency("USD");
-    input.mutable_op_trust_set()->mutable_limit_amt()->set_value("10");
-    input.mutable_op_trust_set()->mutable_limit_amt()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
+    input.mutable_op_trust_set()->mutable_limit_amount()->set_currency("USD");
+    input.mutable_op_trust_set()->mutable_limit_amount()->set_value("10");
+    input.mutable_op_trust_set()->mutable_limit_amount()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
     input.set_fee(10);
     input.set_sequence(32268473);
     input.set_last_ledger_sequence(32268494);
@@ -63,35 +82,37 @@ TEST(TWAnySignerRipple, SignTrustSetPayment) {
     EXPECT_EQ(hex(output.encoded()), "12001422000000002401ec60b9201b01ec60ce63d4c38d7ea4c6800000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a732103dc4a0dae2d550de7cace9c26c1a331a114e3e7efee5577204b476d27e2dc683a7446304402206ebcc7a689845df373dd2566cd3789862d426d9ad4e6a09c2d2772b57e82696a022066b1f217a0f0d834d167613a313f74097423a9ccd11f1ae7f90ffab0d2fc26b58114308ea8e515b64f2e6616a33b42e1bbb9fa00bbd2");
 }
 
-TEST(TWAnySignerRipple, SignTokenPayment) {
+TEST(TWAnySignerRipple, SignTokenPayment0) {
     // https://testnet.xrpl.org/transactions/8F7820892294598B58CFA2E1101D15ED98C179B25A2BA6DAEB4F5B727CB00D4E
-    auto key = parse_hex("4ba5fd2ebf0f5d7e579b3c354c263ebb39cda4093845125786a280301af14e21");
-    Proto::SigningInput input;
+    for (auto value : std::vector({"10", "10e0", "10.0", "10.0e0", "1e1", ".1e2", "0.1e2", "100e-1", "10000000000000000e-15", "0.0000000000000001e17"})) {
+        auto key = parse_hex("4ba5fd2ebf0f5d7e579b3c354c263ebb39cda4093845125786a280301af14e21");
+        Proto::SigningInput input;
 
-    input.mutable_op_payment()->mutable_currency_amt()->set_currency("USD");
-    input.mutable_op_payment()->mutable_currency_amt()->set_value("10");
-    input.mutable_op_payment()->mutable_currency_amt()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
-    input.set_fee(10);
-    input.set_sequence(32268645);
-    input.set_last_ledger_sequence(32268666);
-    input.set_account("raPAA61ca99bdwNiZs5JJukR5rvkHWvkBX");
-    input.mutable_op_payment()->set_destination("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF");
-    input.set_private_key(key.data(), key.size());
+        input.mutable_op_payment()->mutable_currency_amount()->set_currency("USD");
+        input.mutable_op_payment()->mutable_currency_amount()->set_value("10");
+        input.mutable_op_payment()->mutable_currency_amount()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
+        input.set_fee(10);
+        input.set_sequence(32268645);
+        input.set_last_ledger_sequence(32268666);
+        input.set_account("raPAA61ca99bdwNiZs5JJukR5rvkHWvkBX");
+        input.mutable_op_payment()->set_destination("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF");
+        input.set_private_key(key.data(), key.size());
 
-    Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeXRP);
+        Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeXRP);
 
-    EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec6165201b01ec617a61d4c38d7ea4c6800000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a7321020652a477b0cca8b74d6e68a6a386a836b226101617481b95180eaffbe841b3227446304402203e925caeb05006afb135254e9ae4e46de2019db6c6f68614ef969885063a777602206af110fc29775256fcad8b14974c6a838141d82193192d3b57324fe1079afa1781143b2fa4f36553e5b7a4f54ff9e6883e44b4b0dbb383148132e4e20aecf29090ac428a9c43f230a829220d");
+        EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec6165201b01ec617a61d4c38d7ea4c6800000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a7321020652a477b0cca8b74d6e68a6a386a836b226101617481b95180eaffbe841b3227446304402203e925caeb05006afb135254e9ae4e46de2019db6c6f68614ef969885063a777602206af110fc29775256fcad8b14974c6a838141d82193192d3b57324fe1079afa1781143b2fa4f36553e5b7a4f54ff9e6883e44b4b0dbb383148132e4e20aecf29090ac428a9c43f230a829220d");
+    }
 }
 
-TEST(TWAnySignerRipple, SignTokenPaymentExp) {
+TEST(TWAnySignerRipple, SignTokenPayment1) {
     // https://testnet.xrpl.org/transactions/14606DAAFA54DB29B738000DFC133312B341FFC1D22D57AE0C8D54C9C56E19D8
     auto key = parse_hex("4041882ce8c2ceea6f4cfe1a067b927c1e1eb2f5eb025eaf2f429479a7ec3738");
     Proto::SigningInput input;
 
-    input.mutable_op_payment()->mutable_currency_amt()->set_currency("USD");
-    input.mutable_op_payment()->mutable_currency_amt()->set_value("29.3e-1");
-    input.mutable_op_payment()->mutable_currency_amt()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
+    input.mutable_op_payment()->mutable_currency_amount()->set_currency("USD");
+    input.mutable_op_payment()->mutable_currency_amount()->set_value("29.3e-1");
+    input.mutable_op_payment()->mutable_currency_amount()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
     input.set_fee(10);
     input.set_sequence(32268768);
     input.set_last_ledger_sequence(32268789);

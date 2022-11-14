@@ -22,7 +22,7 @@ message CurrencyAmount {
 
 // https://xrpl.org/trustset.html
 message OperationTrustSet {
-    CurrencyAmount limit_amt = 1;
+    CurrencyAmount limit_amount = 1;
 }
 
 // https://xrpl.org/payment.html
@@ -30,7 +30,7 @@ message OperationPayment {
     // Transfer amount
 	oneof amount_oneof {
 		int64 amount = 1;
-		CurrencyAmount currency_amt = 2;
+		CurrencyAmount currency_amount = 2;
 	}
 
     // Target account
@@ -42,29 +42,29 @@ message OperationPayment {
 
 // https://xrpl.org/nftokenburn.html 
 message OperationNFTokenBurn {
-  // Hash256 NFTokenId
-  bytes nftoken_id = 1;
+    // Hash256 NFTokenId
+    bytes nftoken_id = 1;
 }
 
 // https://xrpl.org/nftokencreateoffer.html 
 message OperationNFTokenCreateOffer {
-  // Hash256 NFTokenId
-  bytes nftoken_id = 1;
+    // Hash256 NFTokenId
+    bytes nftoken_id = 1;
 
-  // Destination account
-  string destination = 2;
+    // Destination account
+    string destination = 2;
 }
 
 // https://xrpl.org/nftokenacceptoffer.html 
 message OperationNFTokenAcceptOffer {
-  // Hash256 NFTokenOffer
-  bytes sell_offer = 1;
+    // Hash256 NFTokenOffer
+    bytes sell_offer = 1;
 }
 
 // https://xrpl.org/nftokencanceloffer.html 
 message OperationNFTokenCancelOffer {
-  // Vector256 NFTokenOffers
-  repeated bytes token_offers = 1;
+    // Vector256 NFTokenOffers
+    repeated bytes token_offers = 1;
 }
 
 // Input data necessary to create a signed transaction.

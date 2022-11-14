@@ -21,6 +21,13 @@ class Signer {
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
+
+  private:
+    static void signPayment(const Proto::SigningInput& input,
+                     Proto::SigningOutput& output,
+                     Transaction& transaction) noexcept;
+
+    static void signNfTokenCancelOffer(const Proto::SigningInput& input, Transaction& transaction) noexcept;
 };
 
 } // namespace TW::Ripple
