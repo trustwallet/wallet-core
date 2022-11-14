@@ -76,7 +76,18 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
            scryptParams.desiredKeyLength);
 
     aes_encrypt_ctx ctx;
-    auto result = aes_encrypt_key128(derivedKey.data(), &ctx);
+    auto result = 0;
+    switch(this->params.mCipher) {
+    case TWAes128Ctr:
+    case TWAes128Cbc:
+        result = aes_encrypt_key128(derivedKey.data(), &ctx);
+    case TWAes192Ctr:
+        result = aes_encrypt_key192(derivedKey.data(), &ctx);
+        break;
+    case TWAes256Ctr:
+        result = aes_encrypt_key256(derivedKey.data(), &ctx);
+        break;
+    }
     assert(result == EXIT_SUCCESS);
     if (result == EXIT_SUCCESS) {
         Data iv = this->params.cipherParams.iv;

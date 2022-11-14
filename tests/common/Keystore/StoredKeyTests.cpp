@@ -403,6 +403,22 @@ TEST(StoredKey, CreateAccounts) {
     EXPECT_EQ(key.account(coinTypeBc, &wallet)->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
 }
 
+TEST(StoredKey, CreateAccountsAes256) {
+    string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+    auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault, TWAes256Ctr);
+    auto header = key.payload;
+    const auto wallet = key.wallet(gPassword);
+
+    EXPECT_EQ(header.params.cipher(), "aes-256-ctr");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
+
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+}
+
 TEST(StoredKey, DecodingEthereumAddress) {
     const auto key = StoredKey::load(testDataPath("key.json"));
 
