@@ -20,8 +20,8 @@ AESParameters::AESParameters(AESSize keyLength) : mKeyLength(keyLength) {
     // So if you're using AES 256, you're using a 256 bit key.
     // Let's not confuse the block length with key length here.
     // For AES, your block length is always going to be 128 bits/16 bytes regardless of the key length used
-    iv = Data(A128, 16);
-    random_buffer(iv.data(), 16);
+    iv = Data(mBlockSize, 0);
+    random_buffer(iv.data(), mBlockSize);
 }
 
 namespace CodingKeys {
