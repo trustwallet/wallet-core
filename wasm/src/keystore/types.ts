@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import { CoinType, PrivateKey } from "../wallet-core";
+import { CoinType, PrivateKey, StoredKeyEncryption } from "../wallet-core";
 
 export enum WalletType {
   Mnemonic = "mnemonic",
@@ -54,7 +54,8 @@ export interface IKeyStore {
     mnemonic: string,
     name: string,
     password: string,
-    coins: CoinType[]
+    coins: CoinType[],
+    encryption: StoredKeyEncryption
   ): Promise<Wallet>;
 
   // Import a wallet by private key, name and password
@@ -62,7 +63,8 @@ export interface IKeyStore {
     key: Uint8Array,
     name: string,
     password: string,
-    coin: CoinType
+    coin: CoinType,
+    encryption: StoredKeyEncryption
   ): Promise<Wallet>;
 
   // Import a Wallet object directly
