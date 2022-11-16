@@ -9,6 +9,7 @@
 #include "Data.h"
 
 #include <nlohmann/json.hpp>
+#include <TrustWalletCore/TWStoredKeyEncryption.h>
 
 namespace TW::Keystore {
 
@@ -24,14 +25,15 @@ struct AESParameters {
     // For AES, your block length is always going to be 128 bits/16 bytes
     std::int32_t mBlockSize{16};
     std::int32_t mKeyLength{A128};
-
+    std::string  mCipher{"aes-128-ctr"};
+    TWStoredKeyEncryption mCipherEncryption{TWStoredKeyEncryptionAes128Ctr};
     Data iv;
 
-    /// Initializes `AESParameters` with a random `iv` for AES 128/192/256.
-    AESParameters(AESSize keyLength = A128);
+    /// Initializes `AESParameters` with a encryption cipher.
+    static AESParameters AESParametersFromEncryption(TWStoredKeyEncryption encryption);;
 
     /// Initializes `AESParameters` with a JSON object.
-    AESParameters(const nlohmann::json& json, const std::string& cipher);
+    static AESParameters AESParametersFromJson(const nlohmann::json& json, const std::string& cipher);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

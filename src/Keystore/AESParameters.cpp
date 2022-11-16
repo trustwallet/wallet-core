@@ -12,32 +12,51 @@
 
 using namespace TW;
 
-namespace TW::Keystore {
+namespace {
 
-AESParameters::AESParameters(AESSize keyLength) : mKeyLength(keyLength) {
+constexpr std::size_t gBlockSize{16};
+
+Data generateIv(std::size_t blockSize = gBlockSize) {
     // https://www.reddit.com/r/crypto/comments/30x5xg/what_length_should_the_iv_be_for_aes256ctr/
     // First off, AES 128 uses a 128 bit key.
     // So if you're using AES 256, you're using a 256 bit key.
     // Let's not confuse the block length with key length here.
     // For AES, your block length is always going to be 128 bits/16 bytes regardless of the key length used
-    iv = Data(mBlockSize, 0);
-    random_buffer(iv.data(), mBlockSize);
+    auto iv = Data(blockSize, 0);
+    random_buffer(iv.data(), blockSize);
+    return iv;
 }
+
+static TWStoredKeyEncryption getCipher(const std::string& cipher) {
+    if (cipher == "aes-128-ctr") {
+        return TWStoredKeyEncryption::TWStoredKeyEncryptionAes128Ctr;
+    } else if (cipher == "aes-192-ctr") {
+        return TWStoredKeyEncryption::TWStoredKeyEncryptionAes192Ctr;
+    } else if (cipher == "aes-256-ctr") {
+        return TWStoredKeyEncryption::TWStoredKeyEncryptionAes256Ctr;
+    }
+    return TWStoredKeyEncryptionAes128Ctr;
+}
+
+const std::unordered_map<TWStoredKeyEncryption, Keystore::AESParameters> gEncryptionRegistry{
+    {TWStoredKeyEncryptionAes128Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A128, .mCipher = "aes-128-ctr", .mCipherEncryption = TWStoredKeyEncryptionAes128Ctr}},
+    {TWStoredKeyEncryptionAes128Cbc, Keystore::AESParameters{.mKeyLength = Keystore::A128, .mCipher = "aes-128-cbc", .mCipherEncryption = TWStoredKeyEncryptionAes128Cbc}},
+    {TWStoredKeyEncryptionAes192Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A192, .mCipher = "aes-192-ctr", .mCipherEncryption = TWStoredKeyEncryptionAes192Ctr}},
+    {TWStoredKeyEncryptionAes256Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A256, .mCipher = "aes-256-ctr", .mCipherEncryption = TWStoredKeyEncryptionAes256Ctr}}
+};
+} // namespace
+
+namespace TW::Keystore {
 
 namespace CodingKeys {
 static const auto iv = "iv";
 } // namespace CodingKeys
 
 /// Initializes `AESParameters` with a JSON object.
-AESParameters::AESParameters(const nlohmann::json& json, const std::string& cipher) {
-    iv = parse_hex(json[CodingKeys::iv].get<std::string>());
-    if (cipher == "aes-128-ctr" || cipher == "aes-128-cbc") {
-        mKeyLength = A128;
-    } else if (cipher == "aes-192-ctr") {
-        mKeyLength = A192;
-    } else if (cipher == "aes-256-ctr") {
-        mKeyLength = A256;
-    }
+AESParameters AESParameters::AESParametersFromJson(const nlohmann::json& json, const std::string& cipher) {
+    auto parameters = AESParameters::AESParametersFromEncryption(getCipher(cipher));
+    parameters.iv = parse_hex(json[CodingKeys::iv].get<std::string>());
+    return parameters;
 }
 
 /// Saves `this` as a JSON object.
@@ -45,6 +64,13 @@ nlohmann::json AESParameters::json() const {
     nlohmann::json j;
     j[CodingKeys::iv] = hex(iv);
     return j;
+}
+
+AESParameters AESParameters::AESParametersFromEncryption(TWStoredKeyEncryption encryption) {
+    auto parameters = gEncryptionRegistry.at(encryption);
+    // be sure to regenerate an iv.
+    parameters.iv = generateIv();
+    return parameters;
 }
 
 } // namespace TW::Keystore

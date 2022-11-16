@@ -40,8 +40,8 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
-    mCipher = getCipher(json[CodingKeys::cipher].get<std::string>());
-    cipherParams = AESParameters(json[CodingKeys::cipherParams], cipher());
+    auto cipher = json[CodingKeys::cipher].get<std::string>();
+    cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
@@ -77,7 +77,7 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     aes_encrypt_ctx ctx;
     auto result = 0;
-    switch(this->params.mCipher) {
+    switch(this->params.cipherParams.mCipherEncryption) {
     case TWStoredKeyEncryptionAes128Ctr:
     case TWStoredKeyEncryptionAes128Cbc:
         result = aes_encrypt_key128(derivedKey.data(), &ctx);
@@ -129,14 +129,15 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
-    if (params.mCipher == TWStoredKeyEncryptionAes128Ctr || params.mCipher == TWStoredKeyEncryptionAes256Ctr) {
+    const auto encryption = params.cipherParams.mCipherEncryption;
+    if (encryption == TWStoredKeyEncryptionAes128Ctr || encryption == TWStoredKeyEncryptionAes256Ctr) {
         aes_encrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (params.mCipher == TWStoredKeyEncryptionAes128Cbc) {
+    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
         aes_decrypt_ctx ctx;
         [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
