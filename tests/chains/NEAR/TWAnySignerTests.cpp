@@ -9,6 +9,8 @@
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include "Base58.h"
+#include "Base64.h"
+#include "NEAR/Serialization.h"
 #include <gtest/gtest.h>
 
 namespace TW::NEAR {
@@ -70,45 +72,40 @@ TEST(TWAnySignerNEAR, SignStake) {
 }
 
 TEST(TWAnySignerNEAR, SignStakeMainnetReplication) {
+    auto privateKey = parse_hex("35e0d9631bd538d5569266abf6be7a9a403ebfda92ddd49b3268e35360a6c2dd");
+    privateKey = Base58::bitcoin.decode("3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom");
 
-    // 3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv
-    // 3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom
-    auto privateKey = parse_hex("35e0d9631bd538d5569266abf6be7a9a403ebfda92ddd49b3268e35360a6c2dd");// Base58::bitcoin.decode("3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom");
-    ASSERT_EQ(privateKey, Base58::bitcoin.decode("3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom"));
-    auto publicKey = parse_hex("b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf"); // Base58::bitcoin.decode("Es9VoyZmEW6pjhoUf6BrUwEKykBQN3D3F2woke5KmuKd");
-    auto blockHash = Base58::bitcoin.decode("8f5gQd138LCkTstXGvW2dQ6TfYd41BPZXNqcB5zsmpLR");
-
-    // 1
-    auto amount = parse_hex("d3c21bcecceda1000000"); // little endian
+    auto blockHash = parse_hex("e78680996127b7a0f3f2343502e442f24366cba5f79cb72f8bc6d0debb26ce24");
+    
+    // 0.1
+    auto amount = parse_hex("0080f64ae1c7022d15000000000000");
 
     Proto::SigningInput input;
     input.set_signer_id("b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
-    input.set_nonce(77701544000001);
-     std::cout << hex(privateKey) << std::endl;
-    input.set_receiver_id("cryptogarik.poolv1.near");
-    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_nonce(77701544000004);
+    input.set_receiver_id("avado.poolv1.near");
+    input.set_private_key(privateKey.data(), 32);
     input.set_block_hash(blockHash.data(), blockHash.size());
 
     auto& action = *input.add_actions();
-    auto& stake = *action.mutable_stake();
-    stake.set_stake(amount.data(), amount.size());
+    auto& call = *action.mutable_function_call();
+    call.set_method_name("deposit_and_stake");
+    call.set_gas(125000000000000);
+    call.set_deposit(amount.data(), amount.size());
 
-    auto& pubkey = *stake.mutable_public_key();
-    pubkey.set_data(publicKey.data(), publicKey.size());
-    //pubkey.set_key_type(0);
+    auto serialized = transactionData(input);
+    auto serializedHex = hex(serialized);
+    std::cout << serializedHex << std::endl;
+
+    std::cout << "Expected:\n" << hex(Base64::decode("QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgEuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcueGgJlhJ7eg8/I0NQLkQvJDZsul95y3L4vG0N67Js4kAQAAAAIRAAAAZGVwb3NpdF9hbmRfc3Rha2UCAAAAe30A0JjUr3EAAAAAgPZK4ccCLRUAAAAAAAAALNrorr8qTL6u1nlxLpuPa45nFdYmjU96i7CmJP08mVHVzHUaw/bGN30Z3u3o1F2o2yefCBNqO9Ogn9fM25NGCg=="))
+        << std::endl;
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNEAR);
 
-    //ASSERT_EQ(Base64::encode(parse_hex("4bb25117a55c29dc03c4090ae6ad363db2595edd32787cca1bd9656b0e50c621")), "");
-    //ASSERT_EQ(hex(output.signed_transaction()), "400000006238643564663235303437383431333635303038663330666236623330646438323065396138346438363966303536323364313134653936383331663266626600b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf01baed4cab4600001700000063727970746f676172696b2e706f6f6c76312e6e656172f1fe6041dd77f0b0a44ecb571af5b6750e937d8778d413d95cda9c079cec9a92d10100000004000000004080d09f3c2e3b0300b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf00357e5b8d1910cac25ccb9a063443f6545d23f54e5f287d8e53be41fc7b43e8743a04c3167271fa14d232fe22770bfd2329ccf4be6cf26433767940676ee0af0d");
-    // 5yek5WDcpxPpveEF114u8E3YMv14WpQ3ULS2AFdpzMdE
-    // 95KRPyc9SQzxTExW5w2cmwBB1qHo6k1MqCaxAqLyvCDE
     std::cout << Base58::bitcoin.encode(data(output.hash())) << std::endl;
-    std::cout << hex(output.hash()) << std::endl;
-    //ASSERT_EQ(hex(output.hash()), "4bb25117a55c29dc03c4090ae6ad363db2595edd32787cca1bd9656b0e50c621");
-
-    //ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAuNXfJQR4QTZQCPMPtrMN2CDpqE2GnwViPRFOloMfL7/Fhj0os1QAABcAAABjcnlwdG9nYXJpay5wb29sdjEubmVhcuO2uRxh0WMllhnTygaKC3qLpnaSfGMPJBxVl63j22U38QEAAAAEFS0Cx+FK9gAAAAC41d8lBHhBNlAI8w+2sw3YIOmoTYafBWI9EU6Wgx8vvwCylmh0aTauy6kQ10AJXZ0FcBm8nIp740B4bbnMxSdMgbDJNZvSQKrQRXxevLYs6p+azMnq6w+8PKkuRxuWH+UE");
+    std::cout << Base64::encode(data(output.signed_transaction())) << std::endl;
+    std::cout << hex(data(output.signed_transaction())) << std::endl;
 }
 
 } // namespace TW::NEAR
