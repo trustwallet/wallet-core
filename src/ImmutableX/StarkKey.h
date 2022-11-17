@@ -20,28 +20,20 @@ inline constexpr const char* gApplication = "immutablex";
 inline constexpr const char* gIndex = "1";
 } // namespace internal
 
-static std::int64_t getIntFromBits(std::string hexString, std::size_t from, std::optional<std::size_t> length = std::nullopt) {
-    auto data = parse_hex(hexString);
-    auto sub = Data();
-    if (length.has_value()) {
-        sub = subData(data, from, length.value());
-    } else {
-        sub = subData(data, from);
-    }
-    return std::stoll(hex(sub), nullptr, 16);
+static std::string getIntFromBits(std::string hexString, std::size_t from, std::optional<std::size_t> length = std::nullopt) {
+    auto data = hex_str_to_bin_str(hexString);
+    auto sub = data.substr(data.size() - from, length.value_or(std::string::npos));
+    return std::to_string(std::stoll(sub, nullptr, 2));
 }
 
 // https://docs.starkware.co/starkex/key-derivation.html
-[[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress([[maybe_unused]] const std::string& ethAddress) noexcept {
+[[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress(const std::string& ethAddress) noexcept {
     std::stringstream out;
-    out << "m/2645'/";
     const auto layerHash = Hash::sha256(data(internal::gLayer));
-    out << std::to_string(getIntFromBits(hex(layerHash), 28)) << "'/";
     const auto applicationHash = Hash::sha256(data(internal::gApplication));
-    out << std::to_string(getIntFromBits(hex(applicationHash), 28)) << "'/";
-    const auto ethAddress1 = std::to_string(getIntFromBits(ethAddress.substr(2), 16));
-    const auto ethAddress2 = std::to_string(getIntFromBits(ethAddress.substr(2), 12, 4));
-    out << ethAddress1 << "'/" << ethAddress2 << "'/" << internal::gIndex;
+    const auto ethAddress1 = getIntFromBits(ethAddress.substr(2), 31);
+    const auto ethAddress2 = getIntFromBits(ethAddress.substr(2), 62, 31);
+    out << "m/2645'/" << getIntFromBits(hex(layerHash), 31) << "'/" << getIntFromBits(hex(applicationHash), 31) << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << internal::gIndex;
     return out.str();
 }
 
