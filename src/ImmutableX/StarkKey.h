@@ -28,12 +28,13 @@ static std::string getIntFromBits(std::string hexString, std::size_t from, std::
 
 // https://docs.starkware.co/starkex/key-derivation.html
 [[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress(const std::string& ethAddress) noexcept {
+    using namespace internal;
     std::stringstream out;
-    const auto layerHash = Hash::sha256(data(internal::gLayer));
-    const auto applicationHash = Hash::sha256(data(internal::gApplication));
+    const auto layerHash = getIntFromBits(hex(Hash::sha256(data(gLayer))), 31);
+    const auto applicationHash = getIntFromBits(hex(Hash::sha256(data(gApplication))), 31);
     const auto ethAddress1 = getIntFromBits(ethAddress.substr(2), 31);
     const auto ethAddress2 = getIntFromBits(ethAddress.substr(2), 62, 31);
-    out << "m/2645'/" << getIntFromBits(hex(layerHash), 31) << "'/" << getIntFromBits(hex(applicationHash), 31) << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << internal::gIndex;
+    out << "m/2645'/" << layerHash << "'/" << applicationHash << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << gIndex;
     return out.str();
 }
 
