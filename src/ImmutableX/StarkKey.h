@@ -16,7 +16,6 @@
 namespace TW::ImmutableX {
 
 namespace internal {
-inline constexpr const char* gSecpOrder = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141";
 inline constexpr const char* gLayer = "starkex";
 inline constexpr const char* gApplication = "immutablex";
 inline constexpr const char* gIndex = "1";
@@ -32,14 +31,14 @@ static std::string getIntFromBits(const std::string& hexString, std::size_t from
 
 static uint256_t hashKeyWithIndex(const std::string& seed, std::size_t index) {
     auto data = parse_hex(seed);
-    data[31] = index;
+    data.push_back(static_cast<uint8_t>(index));
     auto out = Hash::sha256(data);
     return load(out);
 }
 
 static std::string grindKey(const std::string& seed) {
     std::size_t index{0};
-    uint256_t  key = hashKeyWithIndex(seed, index);
+    uint256_t key = hashKeyWithIndex(seed, index);
     while (key >= internal::gStarkDeriveBias) {
             std::stringstream ss;
             ss << std::hex << key;
