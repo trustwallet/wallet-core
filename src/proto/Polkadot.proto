@@ -87,6 +87,12 @@ message Staking {
         bytes value = 1;
     }
 
+    // Rebond
+    message Rebond {
+        // amount (uint256, serialized little endian)
+        bytes value = 1;
+    }
+
     // Withdraw unbonded amounts
     message WithdrawUnbonded {
         int32 slashing_spans = 1;
@@ -118,6 +124,7 @@ message Staking {
         Nominate nominate = 6;
         Chill chill = 7;
         ChillAndUnbond chill_and_unbond = 8;
+        Rebond rebond = 9;
     }
 }
 
