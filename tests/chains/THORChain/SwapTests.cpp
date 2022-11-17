@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -366,10 +366,10 @@ TEST(THORChainSwap, SwapBnbBnbToken) {
 }
 
 TEST(THORChainSwap, SwapBtcEthWithAffFee) {
-    auto res = Swap::build(Chain::BTC, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultBtc, "", "1000000", "140000000000000000", "tthor1ql2tcqyrqsgnql2tcqyj2n8kfdmt9lh0yzql2tcqy", "10");
+    auto res = Swap::build(Chain::BTC, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultBtc, "", "1000000", "140000000000000000", "thrnm", "10");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
-    EXPECT_EQ(hex(std::get<0>(res)), "080110c0843d1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a7a3d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a3134303030303030303030303030303030303a7474686f7231716c3274637179727173676e716c32746371796a326e386b66646d74396c6830797a716c32746371793a3130");
+    EXPECT_EQ(hex(std::get<0>(res)), "080110c0843d1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a503d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a3134303030303030303030303030303030303a7468726e6d3a3130");
 
     auto tx = Bitcoin::Proto::SigningInput();
     ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
@@ -378,7 +378,7 @@ TEST(THORChainSwap, SwapBtcEthWithAffFee) {
     EXPECT_EQ(tx.amount(), 1000000);
     EXPECT_EQ(tx.to_address(), VaultBtc);
     EXPECT_EQ(tx.change_address(), Address1Btc);
-    EXPECT_EQ(tx.output_op_return(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:140000000000000000:tthor1ql2tcqyrqsgnql2tcqyj2n8kfdmt9lh0yzql2tcqy:10");
+    EXPECT_EQ(tx.output_op_return(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:140000000000000000:thrnm:10");
     EXPECT_EQ(tx.coin_type(), 0ul);
     EXPECT_EQ(tx.private_key_size(), 0);
     EXPECT_FALSE(tx.has_plan());
@@ -409,10 +409,10 @@ TEST(THORChainSwap, SwapBtcEthWithAffFee) {
         "03" // outputs
             "40420f0000000000"  "16"  "0014d6cbc5021c3eee72798718d447758b91d14e8c5f"
             "209ceb0200000000"  "16"  "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"
-            "0000000000000000"  "52"  "6a503d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a3134303030303030303030303030303030303a7474686f7231716c"
+            "0000000000000000"  "52"  "6a503d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a3134303030303030303030303030303030303a7468726e6d3a3130"
         // witness
             "02"
-                "48"  "3045022100d655ed4d84a5308f206039ff6125e456134e606fe620a81bc86c142a024226eb02207e53622e7572b7099b73af60ffdcc1e1e983f7ccca07dc3e3d496efb2270ada701"
+                "48"  "3045022100801dc46b14eb1b630050d48db27557b66254c3b9439909d864747eafbb12f7e902201fdf5433eaf4968a5596989330bc56513b5769c5c9fd77c41f9bdb55cf8202cd01"
                 "21"  "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee"
         "00000000" // nLockTime
     );
@@ -473,6 +473,46 @@ TEST(THORChainSwap, SwapEthBnbWithAffFee) {
     Ethereum::Proto::SigningOutput output;
     ANY_SIGN(tx, TWCoinTypeEthereum);
     EXPECT_EQ(hex(output.encoded()), "f90192038506fc23ac00830138809442a5ed456650a09dc10ebc6361a7480fdd61f27b87b1a2bc2ec50000b901241fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec5000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000071535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3630303030333a7474686f7231716c3274637179727173676e716c32746371796a326e386b66646d74396c6830797a716c32746371793a313000000000000000000000000000000026a027da86e94739f39e8b493f240eb043888a0dd6962a657963ff7fb26f10291ca8a03fed75d6703d5036402be4d0197432725e17fe6a5d3059abdcca74bd7a789cc8");
+}
+
+TEST(THORChainSwap, SwapBtcNegativeMemoTooLong) {
+    auto res = Swap::build(Chain::BTC, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultBtc, "", "1000000", "140000000000000000", "affiliate_address", "10", "extra_memo_very_loooooooooooooong");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "080110c0843d1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a7e3d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a3134303030303030303030303030303030303a616666696c696174655f616464726573733a31303a65787472615f6d656d6f5f766572795f6c6f6f6f6f6f6f6f6f6f6f6f6f6f6f6e67");
+
+    auto tx = Bitcoin::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
+
+    // check fields
+    EXPECT_EQ(tx.amount(), 1000000);
+    EXPECT_EQ(tx.to_address(), VaultBtc);
+    EXPECT_EQ(tx.change_address(), Address1Btc);
+    EXPECT_EQ(tx.output_op_return(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:140000000000000000:affiliate_address:10:extra_memo_very_loooooooooooooong");
+    EXPECT_EQ(tx.output_op_return().length(), 126ul);
+    EXPECT_EQ(tx.coin_type(), 0ul);
+    EXPECT_EQ(tx.private_key_size(), 0);
+    EXPECT_FALSE(tx.has_plan());
+
+    // set few fields before signing
+    tx.set_byte_fee(20);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
+    auto& utxo = *tx.add_utxo();
+    Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");
+    utxo.mutable_out_point()->set_hash(utxoHash.data(), utxoHash.size());
+    utxo.mutable_out_point()->set_index(0);
+    utxo.mutable_out_point()->set_sequence(UINT32_MAX);
+    auto utxoScript = Bitcoin::Script::lockScriptForAddress(Address1Btc, TWCoinTypeBitcoin);
+    utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    utxo.set_amount(50000000);
+    tx.set_use_max_amount(false);
+
+    // sign and encode resulting input
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_memo);
+    EXPECT_EQ(hex(output.encoded()), "");
 }
 
 TEST(THORChainSwap, Memo) {

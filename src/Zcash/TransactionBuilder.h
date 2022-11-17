@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,6 +11,7 @@
 #include "../Bitcoin/TransactionPlan.h"
 #include "../proto/Bitcoin.pb.h"
 #include  "../HexCoding.h"
+#include "../Result.h"
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <algorithm>
@@ -25,18 +26,20 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
+    static Result<Transaction, Common::Proto::SigningError> build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
         coin = TWCoinTypeZcash;
-        Transaction tx =
+        auto tx_result =
             Bitcoin::TransactionBuilder::build<Transaction>(plan, toAddress, changeAddress, coin, lockTime);
+        if (!tx_result) { return Result<Transaction, Common::Proto::SigningError>::failure(tx_result.error()); }
+        Transaction tx = tx_result.payload();
         // if not set, always use latest consensus branch id
         if (plan.branchId.empty()) {
             std::copy(BlossomBranchID.begin(), BlossomBranchID.end(), tx.branchId.begin());
         } else {
             std::copy(plan.branchId.begin(), plan.branchId.end(), tx.branchId.begin());
         }
-        return tx;
+        return Result<Transaction, Common::Proto::SigningError>(tx);
     }
 };
 
