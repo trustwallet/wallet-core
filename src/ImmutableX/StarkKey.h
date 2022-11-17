@@ -8,6 +8,7 @@
 
 #include "Hash.h"
 #include "HexCoding.h"
+#include "uint256.h"
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -15,15 +16,40 @@
 namespace TW::ImmutableX {
 
 namespace internal {
+inline constexpr const char* gSecpOrder = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141";
 inline constexpr const char* gLayer = "starkex";
 inline constexpr const char* gApplication = "immutablex";
 inline constexpr const char* gIndex = "1";
+inline const uint256_t gStarkCurveN("3618502788666131213697322783095070105526743751716087489154079457884512865583");
+inline const uint256_t gStarkDeriveBias("112173586448650067624617006275947173271329056303198712163776463194419898833073");
 } // namespace internal
 
-static std::string getIntFromBits(std::string hexString, std::size_t from, std::optional<std::size_t> length = std::nullopt) {
-    auto data = hex_str_to_bin_str(hexString);
-    auto sub = data.substr(data.size() - from, length.value_or(std::string::npos));
+static std::string getIntFromBits(const std::string& hexString, std::size_t from, std::optional<std::size_t> length = std::nullopt) {
+    const auto data = hex_str_to_bin_str(hexString);
+    const auto sub = data.substr(data.size() - from, length.value_or(std::string::npos));
     return std::to_string(std::stoll(sub, nullptr, 2));
+}
+
+static uint256_t hashKeyWithIndex(const std::string& seed, std::size_t index) {
+    auto data = parse_hex(seed);
+    data[31] = index;
+    auto out = Hash::sha256(data);
+    return load(out);
+}
+
+static std::string grindKey(const std::string& seed) {
+    std::size_t index{0};
+    uint256_t  key = hashKeyWithIndex(seed, index);
+    while (key >= internal::gStarkDeriveBias) {
+            std::stringstream ss;
+            ss << std::hex << key;
+            key = hashKeyWithIndex(ss.str(), index);
+            index += 1;
+    }
+    auto final = key % internal::gStarkCurveN;
+    std::stringstream ss;
+    ss << std::hex << final;
+    return ss.str();
 }
 
 // https://docs.starkware.co/starkex/key-derivation.html
