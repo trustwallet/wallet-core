@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,7 +10,6 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include "Base58.h"
 #include "Base64.h"
-#include "NEAR/Serialization.h"
 #include <gtest/gtest.h>
 
 namespace TW::NEAR {
@@ -72,13 +71,11 @@ TEST(TWAnySignerNEAR, SignStake) {
 }
 
 TEST(TWAnySignerNEAR, SignStakeMainnetReplication) {
-    auto privateKey = parse_hex("35e0d9631bd538d5569266abf6be7a9a403ebfda92ddd49b3268e35360a6c2dd");
-    privateKey = Base58::bitcoin.decode("3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom");
-
+    auto privateKey = Base58::bitcoin.decode("3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom");
     auto blockHash = parse_hex("e78680996127b7a0f3f2343502e442f24366cba5f79cb72f8bc6d0debb26ce24");
     
-    // 0.1
-    auto amount = parse_hex("0080f64ae1c7022d15000000000000");
+    // 0.1 with 24 decimal precision in big endian
+    auto amount = parse_hex("000080f64ae1c7022d15000000000000");
 
     Proto::SigningInput input;
     input.set_signer_id("b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
@@ -90,22 +87,15 @@ TEST(TWAnySignerNEAR, SignStakeMainnetReplication) {
     auto& action = *input.add_actions();
     auto& call = *action.mutable_function_call();
     call.set_method_name("deposit_and_stake");
+    call.set_args("{}");
     call.set_gas(125000000000000);
     call.set_deposit(amount.data(), amount.size());
-
-    auto serialized = transactionData(input);
-    auto serializedHex = hex(serialized);
-    std::cout << serializedHex << std::endl;
-
-    std::cout << "Expected:\n" << hex(Base64::decode("QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgEuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcueGgJlhJ7eg8/I0NQLkQvJDZsul95y3L4vG0N67Js4kAQAAAAIRAAAAZGVwb3NpdF9hbmRfc3Rha2UCAAAAe30A0JjUr3EAAAAAgPZK4ccCLRUAAAAAAAAALNrorr8qTL6u1nlxLpuPa45nFdYmjU96i7CmJP08mVHVzHUaw/bGN30Z3u3o1F2o2yefCBNqO9Ogn9fM25NGCg=="))
-        << std::endl;
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNEAR);
 
-    std::cout << Base58::bitcoin.encode(data(output.hash())) << std::endl;
-    std::cout << Base64::encode(data(output.signed_transaction())) << std::endl;
-    std::cout << hex(data(output.signed_transaction())) << std::endl;
+    ASSERT_EQ(Base58::bitcoin.encode(data(output.hash())), "kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq");
+    ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgEuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcueGgJlhJ7eg8/I0NQLkQvJDZsul95y3L4vG0N67Js4kAQAAAAIRAAAAZGVwb3NpdF9hbmRfc3Rha2UCAAAAe30A0JjUr3EAAAAAgPZK4ccCLRUAAAAAAAAALNrorr8qTL6u1nlxLpuPa45nFdYmjU96i7CmJP08mVHVzHUaw/bGN30Z3u3o1F2o2yefCBNqO9Ogn9fM25NGCg==");
 }
 
 } // namespace TW::NEAR
