@@ -25,7 +25,7 @@ namespace TW::ImmutableX::tests {
     TEST(StarkCurve, modInverseN) {
         int256_t value1(123123);
         int256_t value2(543543);
-        ASSERT_EQ(StarkCurve::modInverseP(value1, value2), StarkCurve::divide(value1, value2, internal::gStarkCurveN));
+        ASSERT_EQ(StarkCurve::modInverseN(value1, value2), StarkCurve::divide(value1, value2, internal::gStarkCurveN));
     }
 
     TEST(StarkCurve, AdditionReturnsNulloptWhenXsAreEqualButYsDifferent) {
