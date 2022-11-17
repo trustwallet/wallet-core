@@ -13,9 +13,9 @@
 namespace TW::ImmutableX {
     class PrivateKey {
     public:
-        uint256_t mNumber;
+        int256_t mNumber;
 
-        explicit PrivateKey(uint256_t number) : mNumber(number) {
+        explicit PrivateKey(int256_t number) : mNumber(number) {
             if (number > internal::gStarkCurveN || number < 1) {
                 throw std::runtime_error("Invalid private key");
             }

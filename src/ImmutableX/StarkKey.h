@@ -32,7 +32,7 @@ static uint256_t hashKeyWithIndex(const std::string& seed, std::size_t index) {
 
 static std::string grindKey(const std::string& seed) {
     std::size_t index{0};
-    uint256_t key = hashKeyWithIndex(seed, index);
+    int256_t key = hashKeyWithIndex(seed, index);
     while (key >= internal::gStarkDeriveBias) {
             std::stringstream ss;
             ss << std::hex << key;
