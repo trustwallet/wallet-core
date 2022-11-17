@@ -9,19 +9,13 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "uint256.h"
+#include "ImmutableX/PrivateKey.h"
+#include "ImmutableX/Constants.h"
 #include <sstream>
 #include <string>
 #include <iostream>
 
 namespace TW::ImmutableX {
-
-namespace internal {
-inline constexpr const char* gLayer = "starkex";
-inline constexpr const char* gApplication = "immutablex";
-inline constexpr const char* gIndex = "1";
-inline const uint256_t gStarkCurveN("3618502788666131213697322783095070105526743751716087489154079457884512865583");
-inline const uint256_t gStarkDeriveBias("112173586448650067624617006275947173271329056303198712163776463194419898833073");
-} // namespace internal
 
 static std::string getIntFromBits(const std::string& hexString, std::size_t from, std::optional<std::size_t> length = std::nullopt) {
     const auto data = hex_str_to_bin_str(hexString);
