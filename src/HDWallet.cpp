@@ -253,6 +253,18 @@ std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string&
     return PrivateKey(Data(node.private_key, node.private_key + 32));
 }
 
+PrivateKey HDWallet::bip32DeriveRawSeed(TWCoinType coin, const Data& seed, const DerivationPath& path) {
+    const auto curve = TWCoinTypeCurve(coin);
+    HDNode node;
+    hdnode_from_seed(seed.data(), static_cast<int>(seed.size()), curveName(curve), &node);
+    for (auto& index : path.indices) {
+        hdnode_private_ckd(&node, index.derivationIndex());
+    }
+    auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
+    TW::memzero(&node);
+    return PrivateKey(data);
+}
+
 namespace {
 
 uint32_t fingerprint(HDNode* node, Hash::Hasher hasher) {

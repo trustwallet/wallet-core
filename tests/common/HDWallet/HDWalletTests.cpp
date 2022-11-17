@@ -10,6 +10,7 @@
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/Address.h"
+#include "Ethereum/Signer.h"
 #include "Hedera/DER.h"
 #include "NEAR/Address.h"
 #include "HexCoding.h"
@@ -457,6 +458,18 @@ TEST(HDWallet, HederaKey) {
     }
 }
 
+TEST(HDWallet, FromSeedStark) {
+    std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
+    auto data = parse_hex(signature);
+    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
+    auto seed = store(ethSignature.s);
+    ASSERT_EQ(ethSignature.s, uint256_t("34506778598894488719068064129252410649539581100963007245393949841529394744783"));
+    auto derivationPath = DerivationPath("m/2645'/579218131'/211006541'/1534045311'/1431804530'/1");
+    auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, derivationPath);
+    ASSERT_EQ(hex(key.bytes), "57384e99059bb1c0e51d70f0fca22d18d7191398dd39d6b9b4e0521174b2377a");
+    auto addr = Ethereum::Address(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+    ASSERT_EQ(addr, "0x47bbe762944B089315ac50c9ca762F4B4884B965");
+}
 TEST(HDWallet, NearKey) {
     const auto derivPath = "m/44'/397'/0'";
     HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");

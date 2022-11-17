@@ -125,6 +125,8 @@ class HDWallet {
     /// Computes the private key from an extended private key representation.
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
 
+    static PrivateKey bip32DeriveRawSeed(TWCoinType coin, const Data& seed, const DerivationPath& path);
+
   private:
     void updateSeedAndEntropy(bool check = true);
 
