@@ -84,25 +84,20 @@ TEST(TWAnySignerRipple, SignTrustSetPayment) {
 
 TEST(TWAnySignerRipple, SignTokenPayment0) {
     // https://testnet.xrpl.org/transactions/8F7820892294598B58CFA2E1101D15ED98C179B25A2BA6DAEB4F5B727CB00D4E
-    for (auto value : std::vector({"10", "10e0", "10.0", "10.0e0", "1e1", ".1e2", "0.1e2", "100e-1", "10000000000000000e-15", "0.0000000000000001e17"})) {
-        auto key = parse_hex("4ba5fd2ebf0f5d7e579b3c354c263ebb39cda4093845125786a280301af14e21");
-        Proto::SigningInput input;
-
-        input.mutable_op_payment()->mutable_currency_amount()->set_currency("USD");
-        input.mutable_op_payment()->mutable_currency_amount()->set_value("10");
-        input.mutable_op_payment()->mutable_currency_amount()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
-        input.set_fee(10);
-        input.set_sequence(32268645);
-        input.set_last_ledger_sequence(32268666);
-        input.set_account("raPAA61ca99bdwNiZs5JJukR5rvkHWvkBX");
-        input.mutable_op_payment()->set_destination("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF");
-        input.set_private_key(key.data(), key.size());
-
-        Proto::SigningOutput output;
-        ANY_SIGN(input, TWCoinTypeXRP);
-
-        EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec6165201b01ec617a61d4c38d7ea4c6800000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a7321020652a477b0cca8b74d6e68a6a386a836b226101617481b95180eaffbe841b3227446304402203e925caeb05006afb135254e9ae4e46de2019db6c6f68614ef969885063a777602206af110fc29775256fcad8b14974c6a838141d82193192d3b57324fe1079afa1781143b2fa4f36553e5b7a4f54ff9e6883e44b4b0dbb383148132e4e20aecf29090ac428a9c43f230a829220d");
-    }
+    auto key = parse_hex("4ba5fd2ebf0f5d7e579b3c354c263ebb39cda4093845125786a280301af14e21");
+    Proto::SigningInput input;
+    input.mutable_op_payment()->mutable_currency_amount()->set_currency("USD");
+    input.mutable_op_payment()->mutable_currency_amount()->set_value("10");
+    input.mutable_op_payment()->mutable_currency_amount()->set_issuer("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn");
+    input.set_fee(10);
+    input.set_sequence(32268645);
+    input.set_last_ledger_sequence(32268666);
+    input.set_account("raPAA61ca99bdwNiZs5JJukR5rvkHWvkBX");
+    input.mutable_op_payment()->set_destination("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF");
+    input.set_private_key(key.data(), key.size());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeXRP);
+    EXPECT_EQ(hex(output.encoded()), "12000022000000002401ec6165201b01ec617a61d4c38d7ea4c6800000000000000000000000000055534400000000004b4e9c06f24296074f7bc48f92a97916c6dc5ea968400000000000000a7321020652a477b0cca8b74d6e68a6a386a836b226101617481b95180eaffbe841b3227446304402203e925caeb05006afb135254e9ae4e46de2019db6c6f68614ef969885063a777602206af110fc29775256fcad8b14974c6a838141d82193192d3b57324fe1079afa1781143b2fa4f36553e5b7a4f54ff9e6883e44b4b0dbb383148132e4e20aecf29090ac428a9c43f230a829220d");
 }
 
 TEST(TWAnySignerRipple, SignTokenPayment1) {

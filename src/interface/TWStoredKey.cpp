@@ -40,7 +40,7 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreateEncryption(TWString* _Nonnull name
 }
 
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password) {
-    return TWStoredKeyCreateLevel(name, password, TWStoredKeyEncryptionLevelDefault);
+    return TWStoredKeyCreateLevelAndEncryption(name, password, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes128Ctr);
 }
 
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {

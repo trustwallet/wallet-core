@@ -14,35 +14,28 @@ using namespace TW;
 
 namespace {
 
-constexpr std::size_t gBlockSize{16};
-
-Data generateIv(std::size_t blockSize = gBlockSize) {
-    // https://www.reddit.com/r/crypto/comments/30x5xg/what_length_should_the_iv_be_for_aes256ctr/
-    // First off, AES 128 uses a 128 bit key.
-    // So if you're using AES 256, you're using a 256 bit key.
-    // Let's not confuse the block length with key length here.
-    // For AES, your block length is always going to be 128 bits/16 bytes regardless of the key length used
+Data generateIv(std::size_t blockSize = TW::Keystore::gBlockSize) {
     auto iv = Data(blockSize, 0);
     random_buffer(iv.data(), blockSize);
     return iv;
 }
 
 static TWStoredKeyEncryption getCipher(const std::string& cipher) {
-    if (cipher == "aes-128-ctr") {
+    if (cipher == Keystore::gAes128Ctr) {
         return TWStoredKeyEncryption::TWStoredKeyEncryptionAes128Ctr;
-    } else if (cipher == "aes-192-ctr") {
+    } else if (cipher == Keystore::gAes192Ctr) {
         return TWStoredKeyEncryption::TWStoredKeyEncryptionAes192Ctr;
-    } else if (cipher == "aes-256-ctr") {
+    } else if (cipher == Keystore::gAes256Ctr) {
         return TWStoredKeyEncryption::TWStoredKeyEncryptionAes256Ctr;
     }
     return TWStoredKeyEncryptionAes128Ctr;
 }
 
 const std::unordered_map<TWStoredKeyEncryption, Keystore::AESParameters> gEncryptionRegistry{
-    {TWStoredKeyEncryptionAes128Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A128, .mCipher = "aes-128-ctr", .mCipherEncryption = TWStoredKeyEncryptionAes128Ctr}},
-    {TWStoredKeyEncryptionAes128Cbc, Keystore::AESParameters{.mKeyLength = Keystore::A128, .mCipher = "aes-128-cbc", .mCipherEncryption = TWStoredKeyEncryptionAes128Cbc}},
-    {TWStoredKeyEncryptionAes192Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A192, .mCipher = "aes-192-ctr", .mCipherEncryption = TWStoredKeyEncryptionAes192Ctr}},
-    {TWStoredKeyEncryptionAes256Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A256, .mCipher = "aes-256-ctr", .mCipherEncryption = TWStoredKeyEncryptionAes256Ctr}}
+    {TWStoredKeyEncryptionAes128Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A128, .mCipher = Keystore::gAes128Ctr, .mCipherEncryption = TWStoredKeyEncryptionAes128Ctr}},
+    {TWStoredKeyEncryptionAes128Cbc, Keystore::AESParameters{.mKeyLength = Keystore::A128, .mCipher = Keystore::gAes128Cbc, .mCipherEncryption = TWStoredKeyEncryptionAes128Cbc}},
+    {TWStoredKeyEncryptionAes192Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A192, .mCipher = Keystore::gAes192Ctr, .mCipherEncryption = TWStoredKeyEncryptionAes192Ctr}},
+    {TWStoredKeyEncryptionAes256Ctr, Keystore::AESParameters{.mKeyLength = Keystore::A256, .mCipher = Keystore::gAes256Ctr, .mCipherEncryption = TWStoredKeyEncryptionAes256Ctr}}
 };
 } // namespace
 
