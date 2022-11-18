@@ -9,8 +9,9 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "uint256.h"
-#include "ImmutableX/PrivateKey.h"
 #include "ImmutableX/Constants.h"
+#include "Ethereum/Signer.h"
+#include "HDWallet.h"
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -44,6 +45,11 @@ static std::string grindKey(const std::string& seed) {
     ss << std::hex << final;
     return ss.str();
 }
+static std::string getPrivateKeyFromSeed(const std::string& seed, const std::string& path) {
+    auto dataSeed = parse_hex(seed);
+    auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, dataSeed, DerivationPath(path));
+    return grindKey(hex(key.bytes));
+}
 
 // https://docs.starkware.co/starkex/key-derivation.html
 [[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress(const std::string& ethAddress) noexcept {
@@ -55,6 +61,13 @@ static std::string grindKey(const std::string& seed) {
     const auto ethAddress2 = getIntFromBits(ethAddress.substr(2), 62, 31);
     out << "m/2645'/" << layerHash << "'/" << applicationHash << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << gIndex;
     return out.str();
+}
+
+static std::string getPrivateKeyFromRawSignature(const std::string& signature, const std::string& ethAddress) {
+    auto data = parse_hex(signature);
+    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
+    auto seed = store(ethSignature.s);
+    return getPrivateKeyFromSeed(hex(seed), accountPathFromAddress(ethAddress));
 }
 
 } // namespace TW::ImmutableX
