@@ -29,25 +29,33 @@ class RippleTests: XCTestCase {
     }
 
     func testSigner() {
-        let input = RippleSigningInput.with {
-            $0.amount = 29_000_000
-            $0.fee = 200_000
-            $0.sequence = 1 // from account info api
-            $0.account = "rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF"
+        let operation = RippleOperationPayment.with {
             $0.destination = "rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF"
-            $0.privateKey = Data(hexString: "ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764")!
+            $0.amount = 10
+        }
+        let input = RippleSigningInput.with {
+            $0.fee = 10
+            $0.sequence = 32268248 // from account info api
+            $0.lastLedgerSequence = 32268269
+            $0.account = "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq"
+            $0.privateKey = Data(hexString: "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77")!
+            $0.opPayment = operation
         }
 
         let output: RippleSigningOutput = AnySigner.sign(input: input, coin: .xrp)
-        XCTAssertEqual(output.encoded.hexString, "12000022800000002400000001614000000001ba8140684000000000030d407321026cc34b92cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b6744630440220067f20b3eebfc7107dd0bcc72337a236ac3be042c0469f2341d76694a17d4bb9022048393d7ee7dcb729783b33f5038939ddce1bb8337e66d752974626854556bbb681148400b6b6d08d5d495653d73eda6804c249a5148883148132e4e20aecf29090ac428a9c43f230a829220d")
+        XCTAssertEqual(output.encoded.hexString, "12000022000000002401ec5fd8201b01ec5fed61400000000000000a68400000000000000a732103d13e1152965a51a4a9fd9a8b4ea3dd82a4eba6b25fcad5f460a2342bb650333f74463044022037d32835c9394f39b2cfd4eaf5b0a80e0db397ace06630fa2b099ff73e425dbc02205288f780330b7a88a1980fa83c647b5908502ad7de9a44500c08f0750b0d9e8481144c55f5a78067206507580be7bb2686c8460adff983148132e4e20aecf29090ac428a9c43f230a829220d")
 
-        let input2 = RippleSigningInput.with {
-            $0.amount = 29_000_000
-            $0.fee = 200_000
-            $0.sequence = 1 // from account info api
-            $0.account = "rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF"
+        let operation2 = RippleOperationPayment.with {
             $0.destination = "XVfvixWZQKkcenFRYApCjpTUyJ4BePMjMaPqnob9QVPiVJV"
-            $0.privateKey = Data(hexString: "ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764")!
+            $0.amount = 10
+        }
+        let input2 = RippleSigningInput.with {
+            $0.fee = 10
+            $0.sequence = 32268248 // from account info api
+            $0.lastLedgerSequence = 32268269
+            $0.account = "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq"
+            $0.privateKey = Data(hexString: "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77")!
+            $0.opPayment = operation
         }
         let output2: RippleSigningOutput = AnySigner.sign(input: input2, coin: .xrp)
         XCTAssertEqual(output2.encoded, output.encoded)

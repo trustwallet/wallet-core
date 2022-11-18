@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+#include "Data.h"
 
 namespace TW::Ripple {
 
@@ -17,11 +18,20 @@ enum class FieldType;
 /// Encodes a field type.
 inline void encodeType(FieldType type, int key, std::vector<uint8_t>& data) {
     const auto typeValue = static_cast<int>(type);
-    if (key <= 0xf) {
-        data.push_back(static_cast<uint8_t>((typeValue << 4) | key));
+    if (typeValue <= 0xf) {
+        if (key <= 0xf) {
+            data.emplace_back(static_cast<uint8_t>((typeValue << 4) | key));
+        } else {
+            data.emplace_back(static_cast<uint8_t>(typeValue << 4));
+            data.emplace_back(static_cast<uint8_t>(key));
+        }
+    } else if (key <= 0xf) {
+        data.emplace_back(static_cast<uint8_t>(key));
+        data.emplace_back(static_cast<uint8_t>(typeValue));
     } else {
-        data.push_back(static_cast<uint8_t>(typeValue << 4));
-        data.push_back(static_cast<uint8_t>(key));
+        data.emplace_back(0);
+        data.emplace_back(static_cast<uint8_t>(typeValue));
+        data.emplace_back(static_cast<uint8_t>(key));
     }
 }
 
@@ -45,6 +55,10 @@ inline void encodeVariableLength(size_t length, std::vector<uint8_t>& data) {
 inline void encodeBytes(std::vector<uint8_t> bytes, std::vector<uint8_t>& data) {
     encodeVariableLength(bytes.size(), data);
     data.insert(data.end(), bytes.begin(), bytes.end());
+}
+
+inline void encodeZeros(std::size_t len, std::vector<uint8_t>& data) {
+    append(data, Data(len));
 }
 
 } // namespace TW::Ripple
