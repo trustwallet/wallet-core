@@ -55,6 +55,13 @@
 #define TW_ASSUME_NONNULL_END
 #endif
 
+#if defined(__cplusplus) && (__cplusplus >= 201402L)
+#  define TW_DEPRECATED(since) [[deprecated("Since " #since)]]
+#  define TW_DEPRECATED_FOR(since, replacement) [[deprecated("Since " #since "; use " #replacement)]]
+#else
+#  define TW_DEPRECATED(since)
+#  define TW_DEPRECATED_FOR(since, replacement)
+#endif
 
 #if !__has_feature(nullability)
 #ifndef _Nullable

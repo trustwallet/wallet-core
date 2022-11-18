@@ -91,7 +91,7 @@ struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 /// \param encryptionLevel The level of encryption, see \TWStoredKeyEncryptionLevel
 /// \note Returned object needs to be deleted with \TWStoredKeyDelete
 /// \return The stored key as a non-null pointer
-[[deprecated("Use TWStoredKeyCreateLevelAndEncryption instead")]]
+TW_DEPRECATED_FOR("3.1.1", "TWStoredKeyCreateLevelAndEncryption")
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel);
 
