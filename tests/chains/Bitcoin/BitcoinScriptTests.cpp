@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -319,13 +319,14 @@ TEST(BitcoinScript, OpReturn) {
         Script script = Script::buildOpReturnScript(data);
         EXPECT_EQ(hex(script.bytes), "6a46000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
     }
-    {
-        // too long, truncated
-        Data data = Data(89);
-        data.push_back(0xab);
-        Script script = Script::buildOpReturnScript(data);
-        EXPECT_EQ(hex(script.bytes), "6a500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-    }
+}
+
+TEST(BitcoinScript, OpReturnTooLong) {
+    // too long, truncated
+    Data data = Data(89);
+    data.push_back(0xab);
+    Script script = Script::buildOpReturnScript(data);
+    EXPECT_EQ(hex(script.bytes), "");
 }
 
 TEST(BitcoinTransactionSigner, PushAllEmpty) {

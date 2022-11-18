@@ -1071,7 +1071,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
+    EXPECT_EQ(result.error(), Common::Proto::Error_invalid_address);
 }
 
 TEST(BitcoinSigning, Plan_10input_MaxAmount) {

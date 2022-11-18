@@ -27,7 +27,11 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     } else {
         plan = TransactionBuilder::plan(input);
     }
-    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    auto tx_result = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    if (!tx_result) {
+        return Result<Transaction, Common::Proto::SigningError>::failure(tx_result.error());
+    }
+    Transaction transaction = tx_result.payload();
     SigningMode signingMode =
         estimationMode ? SigningMode_SizeEstimationOnly : optionalExternalSigs.has_value() ? SigningMode_External
                                                                                            : SigningMode_Normal;
@@ -43,7 +47,11 @@ Result<HashPubkeyList, Common::Proto::SigningError> TransactionSigner<Transactio
     } else {
         plan = TransactionBuilder::plan(input);
     }
-    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    auto tx_result = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    if (!tx_result) {
+        return Result<HashPubkeyList, Common::Proto::SigningError>::failure(tx_result.error());
+    }
+    Transaction transaction = tx_result.payload();
     SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, SigningMode_HashOnly);
     auto signResult = signer.sign();
     if (!signResult) {

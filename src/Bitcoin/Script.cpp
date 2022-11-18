@@ -260,11 +260,15 @@ Script Script::buildPayToV1WitnessProgram(const Data& publicKey) {
 
 Script Script::buildOpReturnScript(const Data& data) {
     static const size_t MaxOpReturnLength = 80;
+    if (data.size() > MaxOpReturnLength) {
+        // data too long, cannot fit, fail (do not truncate)
+        return Script();
+    }
+    assert(data.size() <= MaxOpReturnLength);
     Script script;
     script.bytes.push_back(OP_RETURN);
-    size_t size = std::min(data.size(), MaxOpReturnLength);
-    script.bytes.push_back(static_cast<byte>(size));
-    script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + size);
+    script.bytes.push_back(static_cast<byte>(data.size()));
+    script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + data.size());
     return script;
 }
 
