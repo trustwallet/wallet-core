@@ -45,10 +45,12 @@ static std::string grindKey(const std::string& seed) {
     ss << std::hex << final;
     return ss.str();
 }
+
 static std::string getPrivateKeyFromSeed(const std::string& seed, const std::string& path) {
     auto dataSeed = parse_hex(seed);
     auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, dataSeed, DerivationPath(path));
-    return grindKey(hex(key.bytes));
+    auto data = parse_hex(grindKey(hex(key.bytes)), true);
+    return hex(data);
 }
 
 // https://docs.starkware.co/starkex/key-derivation.html
