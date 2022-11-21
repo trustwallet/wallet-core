@@ -5,15 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 //
 
-#include <emscripten.h>
-
-
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <random>
+#include <emscripten.h>
 
-
+// clang-format off
 static uint32_t
 javascript_random(void)
 {
@@ -22,6 +18,7 @@ javascript_random(void)
     });
 }
 
+// https://github.com/jedisct1/libsodium/blob/master/src/libsodium/randombytes/randombytes.c#L53
 static void
 javascript_stir(void)
 {
@@ -75,6 +72,7 @@ javascript_buf(void * const buf, const size_t size)
         p[i] = (unsigned char) javascript_random();
     }
 }
+// clang-format on
 
 extern "C" {
 uint32_t random32(void) {
