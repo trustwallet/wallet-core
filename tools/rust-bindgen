@@ -23,6 +23,7 @@ if [[ `uname` == "Darwin" ]]; then
   CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target x86_64-linux-android --release
   CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target i686-linux-android --release
   echo "Generating iOS targets"
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-ios --release
   CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-ios-sim --release
   CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target x86_64-apple-ios --release
   CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-darwin --release
