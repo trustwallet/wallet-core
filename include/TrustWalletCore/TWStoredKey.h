@@ -13,6 +13,7 @@
 #include "TWHDWallet.h"
 #include "TWPrivateKey.h"
 #include "TWStoredKeyEncryptionLevel.h"
+#include "TWStoredKeyEncryption.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -40,6 +41,18 @@ struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path);
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
 
+/// Imports a private key.
+///
+/// \param privateKey Non-null Block of data private key
+/// \param name The name of the stored key to import as a non-null string
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return Nullptr if the key can't be imported, the stored key otherwise
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryption(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
+
 /// Imports an HD wallet.
 ///
 /// \param mnemonic Non-null bip39 mnemonic
@@ -51,6 +64,18 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull priva
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
 
+/// Imports an HD wallet.
+///
+/// \param mnemonic Non-null bip39 mnemonic
+/// \param name The name of the stored key to import as a non-null string
+/// \param password Non-null block of data, password of the stored key
+/// \param coin the coin type
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return Nullptr if the key can't be imported, the stored key otherwise
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption);
+
 /// Imports a key from JSON.
 ///
 /// \param json Json stored key import format as a non-null block of data
@@ -59,15 +84,27 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 
-/// Creates a new key, with given encryption strength level.  Returned object needs to be deleted.
+/// Creates a new key, with given encryption strength level. Returned object needs to be deleted.
 ///
 /// \param name The name of the key to be stored
 /// \param password Non-null block of data, password of the stored key
 /// \param encryptionLevel The level of encryption, see \TWStoredKeyEncryptionLevel
 /// \note Returned object needs to be deleted with \TWStoredKeyDelete
 /// \return The stored key as a non-null pointer
+TW_DEPRECATED_FOR("3.1.1", "TWStoredKeyCreateLevelAndEncryption")
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel);
+
+/// Creates a new key, with given encryption strength level.  Returned object needs to be deleted.
+///
+/// \param name The name of the key to be stored
+/// \param password Non-null block of data, password of the stored key
+/// \param encryptionLevel The level of encryption, see \TWStoredKeyEncryptionLevel
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return The stored key as a non-null pointer
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevelAndEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel, enum TWStoredKeyEncryption encryption);
 
 /// Creates a new key.
 ///
@@ -77,6 +114,16 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWD
 /// \note Returned object needs to be deleted with \TWStoredKeyDelete
 /// \return The stored key as a non-null pointer
 TW_EXPORT_STATIC_METHOD struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
+
+/// Creates a new key.
+///
+/// \deprecated use TWStoredKeyCreateLevel.
+/// \param name The name of the key to be stored
+/// \param password Non-null block of data, password of the stored key
+/// \param encryption cipher encryption mode
+/// \note Returned object needs to be deleted with \TWStoredKeyDelete
+/// \return The stored key as a non-null pointer
+TW_EXPORT_STATIC_METHOD struct TWStoredKey* _Nonnull TWStoredKeyCreateEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryption encryption);
 
 /// Delete a stored key
 ///

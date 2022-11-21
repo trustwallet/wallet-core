@@ -40,8 +40,8 @@ static const auto mac = "mac";
 } // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
-    cipher = json[CodingKeys::cipher].get<std::string>();
-    cipherParams = AESParameters(json[CodingKeys::cipherParams]);
+    auto cipher = json[CodingKeys::cipher].get<std::string>();
+    cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
     if (kdf == "scrypt") {
@@ -53,7 +53,7 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
 
 nlohmann::json EncryptionParameters::json() const {
     nlohmann::json j;
-    j[CodingKeys::cipher] = cipher;
+    j[CodingKeys::cipher] = cipher();
     j[CodingKeys::cipherParams] = cipherParams.json();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&kdfParams); scryptParams) {
@@ -76,14 +76,25 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
            scryptParams.desiredKeyLength);
 
     aes_encrypt_ctx ctx;
-    auto result = aes_encrypt_key128(derivedKey.data(), &ctx);
+    auto result = 0;
+    switch(this->params.cipherParams.mCipherEncryption) {
+    case TWStoredKeyEncryptionAes128Ctr:
+    case TWStoredKeyEncryptionAes128Cbc:
+        result = aes_encrypt_key128(derivedKey.data(), &ctx);
+        break;
+    case TWStoredKeyEncryptionAes192Ctr:
+        result = aes_encrypt_key192(derivedKey.data(), &ctx);
+        break;
+    case TWStoredKeyEncryptionAes256Ctr:
+        result = aes_encrypt_key256(derivedKey.data(), &ctx);
+        break;
+    }
     assert(result == EXIT_SUCCESS);
     if (result == EXIT_SUCCESS) {
         Data iv = this->params.cipherParams.iv;
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-
-        _mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+        _mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     }
 }
 
@@ -101,13 +112,13 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         scrypt(password.data(), password.size(), scryptParams->salt.data(),
                scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
                scryptParams->defaultDesiredKeyLength);
-        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+        mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
         derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);
         pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params->salt.data(),
                            static_cast<int>(pbkdf2Params->salt.size()), pbkdf2Params->iterations, derivedKey.data(),
                            pbkdf2Params->defaultDesiredKeyLength);
-        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+        mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else {
         throw DecryptionError::unsupportedKDF;
     }
@@ -118,20 +129,21 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     Data decrypted(encrypted.size());
     Data iv = params.cipherParams.iv;
-    if (params.cipher == "aes-128-ctr") {
+    const auto encryption = params.cipherParams.mCipherEncryption;
+    if (encryption == TWStoredKeyEncryptionAes128Ctr || encryption == TWStoredKeyEncryptionAes256Ctr) {
         aes_encrypt_ctx ctx;
-        auto __attribute__((unused)) result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
+        [[maybe_unused]] auto result = aes_encrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
-    } else if (params.cipher == "aes-128-cbc") {
+    } else if (encryption == TWStoredKeyEncryptionAes128Cbc) {
         aes_decrypt_ctx ctx;
-        auto __attribute__((unused)) result = aes_decrypt_key(derivedKey.data(), 16, &ctx);
+        [[maybe_unused]] auto result = aes_decrypt_key(derivedKey.data(), params.getKeyBytesSize(), &ctx);
         assert(result != EXIT_FAILURE);
 
-        for (auto i = 0ul; i < encrypted.size(); i += 16) {
-            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, 16, iv.data(), &ctx);
+        for (auto i = 0ul; i < encrypted.size(); i += params.getKeyBytesSize()) {
+            aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, params.getKeyBytesSize(), iv.data(), &ctx);
         }
     } else {
         throw DecryptionError::unsupportedCipher;

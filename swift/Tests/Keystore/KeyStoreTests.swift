@@ -183,6 +183,20 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(storedData)
         XCTAssertNotNil(PrivateKey(data: storedData!))
     }
+    
+    func testImportPrivateKeyAES256() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
+        let key = StoredKey.importPrivateKeyWithEncryption(privateKey: privateKeyData, name: "name", password: Data("password".utf8), coin: .ethereum, encryption: StoredKeyEncryption.aes256Ctr)!
+        let json = key.exportJSON()!
+
+        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
+        let storedData = wallet.key.decryptPrivateKey(password: Data("newPassword".utf8))
+
+        XCTAssertNotNil(keyStore.keyWallet)
+        XCTAssertNotNil(storedData)
+        XCTAssertNotNil(PrivateKey(data: storedData!))
+    }
 
     func testImportPrivateKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
@@ -202,6 +216,16 @@ class KeyStoreTests: XCTestCase {
     func testImportWallet() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
+        let storedData = wallet.key.decryptMnemonic(password: Data("newPassword".utf8))
+
+        XCTAssertNotNil(storedData)
+        XCTAssertEqual(wallet.accounts.count, 1)
+        XCTAssertNotNil(keyStore.hdWallet)
+    }
+    
+    func testImportWalletAES256() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum], encryption: .aes256Ctr)
         let storedData = wallet.key.decryptMnemonic(password: Data("newPassword".utf8))
 
         XCTAssertNotNil(storedData)

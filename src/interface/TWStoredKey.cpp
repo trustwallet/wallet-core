@@ -25,33 +25,50 @@ struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path) {
     }
 }
 
-struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel) {
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevelAndEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel, enum TWStoredKeyEncryption encryption) {
     const auto& nameString = *reinterpret_cast<const std::string*>(name);
     const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-    return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicRandom(nameString, passwordData, encryptionLevel) };
+    return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicRandom(nameString, passwordData, encryptionLevel, encryption) };
+}
+
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel) {
+   return TWStoredKeyCreateLevelAndEncryption(name, password, encryptionLevel, TWStoredKeyEncryptionAes128Ctr);
+}
+
+struct TWStoredKey* _Nonnull TWStoredKeyCreateEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryption encryption) {
+    return TWStoredKeyCreateLevelAndEncryption(name, password, TWStoredKeyEncryptionLevelDefault, encryption);
 }
 
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password) {
-    return TWStoredKeyCreateLevel(name, password, TWStoredKeyEncryptionLevelDefault);
+    return TWStoredKeyCreateLevelAndEncryption(name, password, TWStoredKeyEncryptionLevelDefault, TWStoredKeyEncryptionAes128Ctr);
 }
 
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
+    return TWStoredKeyImportPrivateKeyWithEncryption(privateKey, name, password, coin, TWStoredKeyEncryptionAes128Ctr);
+}
+
+struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryption(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
     try {
         const auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData) };
+        return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData, encryption) };
     } catch (...) {
         return nullptr;
     }
 }
 
 struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
+    return TWStoredKeyImportHDWalletWithEncryption(mnemonic, name, password, coin, TWStoredKeyEncryptionAes128Ctr);
+}
+
+
+struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin, enum TWStoredKeyEncryption encryption) {
     try {
         const auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicAddDefaultAddress(nameString, passwordData, mnemonicString, coin) };
+        return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicAddDefaultAddress(nameString, passwordData, mnemonicString, coin, encryption) };
     } catch (...) {
         return nullptr;
     }

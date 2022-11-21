@@ -7,34 +7,40 @@
 #pragma once
 
 #include "AESParameters.h"
+#include "Data.h"
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
-#include "Data.h"
+#include <TrustWalletCore/TWStoredKeyEncryption.h>
 #include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 
-#include <variant>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <variant>
 
 namespace TW::Keystore {
 
 /// Set of parameters used when encoding
 struct EncryptionParameters {
-    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset) {
+    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset, enum TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr) {
         switch (preset) {
-            case TWStoredKeyEncryptionLevelMinimal:
-                return EncryptionParameters(AESParameters(), ScryptParameters::Minimal);
-            case TWStoredKeyEncryptionLevelWeak:
-            case TWStoredKeyEncryptionLevelDefault:
-            default:
-                return EncryptionParameters(AESParameters(), ScryptParameters::Weak);
-            case TWStoredKeyEncryptionLevelStandard:
-                return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
+        case TWStoredKeyEncryptionLevelMinimal:
+            return EncryptionParameters(AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::Minimal);
+        case TWStoredKeyEncryptionLevelWeak:
+        case TWStoredKeyEncryptionLevelDefault:
+        default:
+            return EncryptionParameters(AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::Weak);
+        case TWStoredKeyEncryptionLevelStandard:
+            return EncryptionParameters(AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::Standard);
         }
     }
 
-    /// Cipher algorithm.
-    std::string cipher = "aes-128-ctr";
+    std::int32_t getKeyBytesSize() const noexcept {
+        return cipherParams.mKeyLength;
+    }
+
+    std::string cipher() const noexcept {
+        return cipherParams.mCipher;
+    }
 
     /// Cipher parameters.
     AESParameters cipherParams = AESParameters();
@@ -46,8 +52,8 @@ struct EncryptionParameters {
 
     /// Initializes with standard values.
     EncryptionParameters(AESParameters cipherParams, std::variant<ScryptParameters, PBKDF2Parameters> kdfParams)
-        : cipherParams(std::move(cipherParams))
-        , kdfParams(std::move(kdfParams)) {}
+        : cipherParams(std::move(cipherParams)), kdfParams(std::move(kdfParams)) {
+    }
 
     /// Initializes with a JSON object.
     EncryptionParameters(const nlohmann::json& json);

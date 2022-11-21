@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import { WalletCore, CoinType, PrivateKey, StoredKey } from "../wallet-core";
+import {WalletCore, CoinType, PrivateKey, StoredKey, StoredKeyEncryption} from "../wallet-core";
 import * as Types from "./types";
 
 export class Default implements Types.IKeyStore {
@@ -53,16 +53,17 @@ export class Default implements Types.IKeyStore {
     mnemonic: string,
     name: string,
     password: string,
-    coins: CoinType[]
+    coins: CoinType[],
+    encryption: StoredKeyEncryption
   ): Promise<Types.Wallet> {
     return new Promise((resolve, reject) => {
-      const { Mnemonic, StoredKey, HDWallet } = this.core;
+      const { Mnemonic, StoredKey, HDWallet, StoredKeyEncryption } = this.core;
 
       if (!Mnemonic.isValid(mnemonic)) {
         throw Types.Error.InvalidMnemonic;
       }
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importHDWallet(mnemonic, name, pass, coins[0]);
+      let storedKey = StoredKey.importHDWalletWithEncryption(mnemonic, name, pass, coins[0], encryption);
       let hdWallet = HDWallet.createWithMnemonic(mnemonic, "");
       coins.forEach((coin) => {
         storedKey.accountForCoin(coin, hdWallet);
@@ -82,10 +83,11 @@ export class Default implements Types.IKeyStore {
     key: Uint8Array,
     name: string,
     password: string,
-    coin: CoinType
+    coin: CoinType,
+    encryption: StoredKeyEncryption
   ): Promise<Types.Wallet> {
     return new Promise((resolve, reject) => {
-      const { StoredKey, PrivateKey, Curve } = this.core;
+      const { StoredKey, PrivateKey, Curve, StoredKeyEncryption } = this.core;
 
       // FIXME: get curve from coin
       if (
@@ -95,7 +97,7 @@ export class Default implements Types.IKeyStore {
         throw Types.Error.InvalidKey;
       }
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importPrivateKey(key, name, pass, coin);
+      let storedKey = StoredKey.importPrivateKeyWithEncryption(key, name, pass, coin, encryption);
       let wallet = this.mapWallet(storedKey);
       storedKey.delete();
       this.importWallet(wallet)
