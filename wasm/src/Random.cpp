@@ -5,17 +5,14 @@
 // file LICENSE at the root of the source code distribution tree.
 //
 
-#ifdef __EMSCRIPTEN__
-# include <emscripten.h>
-#endif
+#include <emscripten.h>
+
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <random>
 
-
-#ifdef __EMSCRIPTEN__
 
 static uint32_t
 javascript_random(void)
@@ -78,7 +75,6 @@ javascript_buf(void * const buf, const size_t size)
         p[i] = (unsigned char) javascript_random();
     }
 }
-#endif
 
 extern "C" {
 uint32_t random32(void) {
