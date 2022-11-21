@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <random>
+#include <sys/random.h>
 
 extern "C" {
 uint32_t random32(void) {
@@ -17,8 +18,7 @@ uint32_t random32(void) {
 }
 
 void random_buffer(uint8_t* buf, size_t len) {
-    std::mt19937 rng(std::random_device{}());
-    std::generate_n(buf, len, [&rng]() -> uint8_t { return rng() & 0x000000ff; });
+    getentropy(buf, len);
     return;
 }
 
