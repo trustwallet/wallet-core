@@ -24,18 +24,19 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
 
     const auto fromChain = inputProto.from_asset().chain();
     const auto toChain = inputProto.to_asset().chain();
-    auto res = THORChainSwap::Swap::build(
-        inputProto.from_asset(),
-        inputProto.to_asset(),
-        inputProto.from_address(),
-        inputProto.to_address(),
-        inputProto.vault_address(),
-        inputProto.router_address(),
-        inputProto.from_amount(),
-        inputProto.to_amount_limit(),
-        inputProto.affiliate_fee_address(),
-        inputProto.affiliate_fee_rate_bp(),
-        inputProto.extra_memo());
+    auto res = THORChainSwap::SwapBuilder::builder()
+                   .from(inputProto.from_asset())
+                   .to(inputProto.to_asset())
+                   .fromAddress(inputProto.from_address())
+                   .toAddress(inputProto.to_address())
+                   .vault(inputProto.vault_address())
+                   .router(inputProto.router_address())
+                   .fromAmount(inputProto.from_amount())
+                   .toAmountLimit(inputProto.to_amount_limit())
+                   .affFeeAddress(inputProto.affiliate_fee_address())
+                   .affFeeRate(inputProto.affiliate_fee_rate_bp())
+                   .extraMemo(inputProto.extra_memo())
+                   .build();
 
     outputProto.set_from_chain(fromChain);
     outputProto.set_to_chain(toChain);
