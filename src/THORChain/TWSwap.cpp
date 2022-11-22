@@ -25,11 +25,9 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
     const auto fromChain = inputProto.from_asset().chain();
     const auto toChain = inputProto.to_asset().chain();
     auto res = THORChainSwap::Swap::build(
-        static_cast<THORChainSwap::Chain>(static_cast<int>(fromChain)),
-        static_cast<THORChainSwap::Chain>(static_cast<int>(toChain)),
+        inputProto.from_asset(),
+        inputProto.to_asset(),
         inputProto.from_address(),
-        inputProto.to_asset().symbol(),
-        inputProto.to_asset().token_id(),
         inputProto.to_address(),
         inputProto.vault_address(),
         inputProto.router_address(),

@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "proto/THORChainSwap.pb.h"
 
 #include <string>
 #include <utility>
@@ -29,11 +30,9 @@ public:
     /// Returns serialized SigningInput proto message, on the source chain,
     /// and an optional error code + message
     static std::tuple<Data, int, std::string> build(
-        Chain fromChain,
-        Chain toChain,
+        Proto::Asset fromAsset,
+        Proto::Asset toAsset, // destination asset with coin symbol and token id  on the destination chain, in case destination is a token, empty otherwise (optional)
         const std::string& fromAddress,     // source address, on source chain, string format
-        const std::string& toSymbol,        // destination coin symbol
-        const std::string& toTokenId,       // destination token ID, on the destination chain, in case destination is a token, empty otherwise
         const std::string& toAddress,       // destination address, on destination chain, string format
         const std::string& vaultAddress,    // ThorChainSwap vault, on the source chain. Should be queried afresh, as it may change
         const std::string& routerAddress,   // ThorChain router, only in case of Ethereum source network
@@ -45,12 +44,12 @@ public:
     );
 
 protected:
-    static std::pair<int, std::string> buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::pair<int, std::string> buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::pair<int, std::string> buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::pair<int, std::string> buildBitcoin(Proto::Asset toAsset, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::pair<int, std::string> buildEthereum(Proto::Asset toAsset, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::pair<int, std::string> buildBinance(Proto::Asset toAsset, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
 
 public:
-    static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra);
+    static std::string buildMemo(Proto::Asset toAsset, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra);
 };
 
 } // namespace TW
