@@ -332,16 +332,19 @@ TEST(BitcoinScript, OpReturn) {
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
     }
     {
-        // >75 bytes, in 2 data pushes
+        // >75 bytes, with OP_PUSHDATA1
         Data data = Data(79);
         data.push_back(0xab);
         Script script = Script::buildOpReturnScript(data);
-        EXPECT_EQ(script.bytes.size(), 3 + data.size());  // 1 more byte for the extra data push
+        EXPECT_EQ(script.bytes.size(), 3 + data.size());
         EXPECT_EQ(hex(script.bytes), 
-            "6a4b"
-            "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "05"
-            "00000000ab");
+            "6a4c50"
+            "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
+    }
+    {
+        // >80 bytes, fails
+        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(81)).bytes), "");
+        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(255)).bytes), "");
     }
 }
 

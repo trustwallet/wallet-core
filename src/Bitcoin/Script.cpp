@@ -229,10 +229,16 @@ Script Script::buildPayToScriptHash(const Data& scriptHash) {
 }
 
 // Append to the buffer the length for the upcoming data (push). Supported length range: 0-75 bytes
-void pushDataLength(Data& buffer, byte len) {
-    // Caller contexts make sure len is in the range, not returning error from here
-    assert(len <= Script::MaxDataPushLength);
-    buffer.push_back(len);
+void pushDataLength(Data& buffer, size_t len) {
+    assert(len <= 255);
+    if (len < static_cast<byte>(OP_PUSHDATA1)) {
+        // up to 75 bytes, simple OP_PUSHBYTES with len
+        buffer.push_back(static_cast<byte>(len));
+        return;
+    }
+    // 75 < len < 256, OP_PUSHDATA with 1-byte len
+    buffer.push_back(OP_PUSHDATA1);
+    buffer.push_back(static_cast<byte>(len));
 }
 
 Script Script::buildPayToV0WitnessProgram(const Data& program) {
@@ -273,19 +279,8 @@ Script Script::buildOpReturnScript(const Data& data) {
     assert(data.size() <= MaxOpReturnLength);
     Script script;
     script.bytes.push_back(OP_RETURN);
-    if (data.size() <= MaxDataPushLength) {
-        // can fit in one push
-        pushDataLength(script.bytes, static_cast<byte>(data.size()));
-        script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + data.size());
-    } else {
-        // This is the special case of 76-80 bytes, must be put in two data pushes. Use 75 bytes for the first, rest for the 2nd.
-        const byte push1len = MaxDataPushLength;
-        const byte push2len = static_cast<byte>(data.size()) - push1len;
-        pushDataLength(script.bytes, push1len);
-        script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + push1len);
-        pushDataLength(script.bytes, push2len);
-        script.bytes.insert(script.bytes.end(), data.begin() + push1len, data.begin() + push1len + push2len);
-    }
+    pushDataLength(script.bytes, data.size());
+    script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + data.size());
     assert(script.bytes.size() <= 83); // max script length, must always hold
     return script;
 }
