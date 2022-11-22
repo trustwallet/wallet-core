@@ -228,11 +228,18 @@ Script Script::buildPayToScriptHash(const Data& scriptHash) {
     return script;
 }
 
+// Append to the buffer the length for the upcoming data (push). Supported length range: 0-75 bytes
+void pushDataLength(Data& buffer, byte len) {
+    // Caller contexts make sure len is in the range, not returning error from here
+    assert(len <= Script::MaxDataPushLength);
+    buffer.push_back(len);
+}
+
 Script Script::buildPayToV0WitnessProgram(const Data& program) {
     assert(program.size() == 20 || program.size() == 32);
     Script script;
     script.bytes.push_back(OP_0);
-    script.bytes.push_back(static_cast<byte>(program.size()));
+    pushDataLength(script.bytes, static_cast<byte>(program.size()));
     append(script.bytes, program);
     assert(script.bytes.size() == 22 || script.bytes.size() == 34);
     return script;
@@ -252,23 +259,34 @@ Script Script::buildPayToV1WitnessProgram(const Data& publicKey) {
     assert(publicKey.size() == 32);
     Script script;
     script.bytes.push_back(OP_1);
-    script.bytes.push_back(static_cast<byte>(publicKey.size()));
+    pushDataLength(script.bytes, static_cast<byte>(publicKey.size()));
     append(script.bytes, publicKey);
     assert(script.bytes.size() == 34);
     return script;
 }
 
 Script Script::buildOpReturnScript(const Data& data) {
-    static const size_t MaxOpReturnLength = 80;
     if (data.size() > MaxOpReturnLength) {
         // data too long, cannot fit, fail (do not truncate)
-        return Script();
+        return {};
     }
     assert(data.size() <= MaxOpReturnLength);
     Script script;
     script.bytes.push_back(OP_RETURN);
-    script.bytes.push_back(static_cast<byte>(data.size()));
-    script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + data.size());
+    if (data.size() <= MaxDataPushLength) {
+        // can fit in one push
+        pushDataLength(script.bytes, static_cast<byte>(data.size()));
+        script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + data.size());
+    } else {
+        // This is the special case of 76-80 bytes, must be put in two data pushes. Use 75 bytes for the first, rest for the 2nd.
+        const byte push1len = MaxDataPushLength;
+        const byte push2len = static_cast<byte>(data.size()) - push1len;
+        pushDataLength(script.bytes, push1len);
+        script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + push1len);
+        pushDataLength(script.bytes, push2len);
+        script.bytes.insert(script.bytes.end(), data.begin() + push1len, data.begin() + push1len + push2len);
+    }
+    assert(script.bytes.size() <= 83); // max script length, must always hold
     return script;
 }
 

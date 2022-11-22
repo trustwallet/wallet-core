@@ -10,6 +10,7 @@ enum OpCode {
     // push value
    OP_0 = 0x00,
    OP_FALSE [[maybe_unused]] = OP_0,
+   // Note: values 0x01 -- 0x4b (1--75) mean that the next N bytes are interpreted as data pushed into the stack
    OP_PUSHDATA1 = 0x4c,
    OP_PUSHDATA2 = 0x4d,
    OP_PUSHDATA4 = 0x4e,
