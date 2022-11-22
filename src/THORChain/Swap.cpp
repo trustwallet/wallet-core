@@ -55,14 +55,13 @@ std::string chainName(Chain chain) {
 }
 
 std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra) {
-    std::string prefix = "SWAP";
-    if (toChain == Chain::ETH) {
-        prefix = "=";
-    }
+    // Memo: 'SWAP', or shortened '='; see https://dev.thorchain.org/thorchain-dev/concepts/memos
+    std::string prefix = "=";
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
     memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + toAddress + ":" + std::to_string(limit);
 
+    // optional fields
     if (!feeAddress.empty() || feeRate.has_value() || !extra.empty()) {
         memo << ":";
         if (!feeAddress.empty()) {
