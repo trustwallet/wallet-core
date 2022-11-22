@@ -14,6 +14,10 @@ RUN apt-get update \
         software-properties-common \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN echo "deb http://security.ubuntu.com/ubuntu focal-security main" | tee /etc/apt/sources.list.d/focal-security.list
+RUN apt-get update
+RUN apt-get install libssl1.1 -y
+
 # Add latest cmake/boost
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
