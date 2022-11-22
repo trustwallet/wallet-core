@@ -280,7 +280,7 @@ Script Script::buildOpReturnScript(const Data& data) {
     } else {
         // This is the special case of 76-80 bytes, must be put in two data pushes. Use 75 bytes for the first, rest for the 2nd.
         const byte push1len = MaxDataPushLength;
-        const byte push2len = data.size() - push1len;
+        const byte push2len = static_cast<byte>(data.size()) - push1len;
         pushDataLength(script.bytes, push1len);
         script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + push1len);
         pushDataLength(script.bytes, push2len);
