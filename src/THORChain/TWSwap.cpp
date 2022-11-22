@@ -22,7 +22,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
         return TWDataCreateWithBytes(outputData.data(), outputData.size());
     }
 
-    const auto fromChain = inputProto.from_chain();
+    const auto fromChain = inputProto.from_asset().chain();
     const auto toChain = inputProto.to_asset().chain();
     auto res = THORChainSwap::Swap::build(
         static_cast<THORChainSwap::Chain>(static_cast<int>(fromChain)),
