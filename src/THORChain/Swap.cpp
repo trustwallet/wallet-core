@@ -124,7 +124,7 @@ SwapBundled SwapBuilder::build() {
     case Chain::BTC: {
         return buildBitcoin(fromAmountNum, memo);
     case Chain::BNB:
-        return buildBinance(fromAmountNum, memo);
+        return buildBinance(mFromAsset, fromAmountNum, memo);
     case Chain::ETH:
         return buildEth(fromAmountNum, memo);
     }
@@ -187,7 +187,7 @@ SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo) 
     out.insert(out.end(), serialized.begin(), serialized.end());
     return {.out = std::move(out)};
 }
-SwapBundled SwapBuilder::buildBinance(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo) {
     auto input = Binance::Proto::SigningInput();
     Data out;
 
@@ -204,7 +204,7 @@ SwapBundled SwapBuilder::buildBinance(uint64_t amount, const std::string& memo) 
     auto& order = *input.mutable_send_order();
 
     auto token = Binance::Proto::SendOrder::Token();
-    token.set_denom("BNB");
+    token.set_denom(fromAsset.token_id().empty() ? "BNB" : fromAsset.token_id());
     token.set_amount(amount);
     {
         Binance::Address fromAddressBin;

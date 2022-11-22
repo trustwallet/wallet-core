@@ -46,7 +46,7 @@ class SwapBuilder {
 
     std::string buildMemo() noexcept;
     SwapBundled buildBitcoin(uint64_t amount, const std::string& memo);
-    SwapBundled buildBinance(uint64_t amount, const std::string& memo);
+    SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
     SwapBundled buildEth(uint64_t amount, const std::string& memo);
 
 public:

@@ -394,6 +394,59 @@ TEST(THORChainSwap, SwapBnbRune) {
     // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
 }
 
+TEST(THORChainSwap, SwapBusdTokenBnb) {
+    Proto::Asset fromAsset;
+    fromAsset.set_symbol("BNB");
+    fromAsset.set_token_id("BUSD-BD1");
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+    auto && [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress("bnb1gddl87crh47wzynjx3c6pmcclzk7txlkm74x28")
+                                         .toAddress("bnb1gddl87crh47wzynjx3c6pmcclzk7txlkm74x28")
+                                         .vault("bnb17e9qd0ffrkxsy9pehx7q6hjer730pzq5z4tv82")
+                                         .fromAmount("500000000")
+                                         .toAmountLimit("719019")
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "2a42535741503a424e422e424e423a626e62316764646c38376372683437777a796e6a78336336706d63636c7a6b3774786c6b6d37347832383a3731393031393a743a3052540a280a14435bf3fb03bd7ce112723471a0ef18f8ade59bf612100a08425553442d4244311080cab5ee0112280a14f64a06bd291d8d021439b9bc0d5e591fa2f0881412100a08425553442d4244311080cab5ee01");
+
+    auto tx = Binance::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+    // check fields
+    EXPECT_EQ(tx.memo(), "SWAP:BNB.BNB:bnb1gddl87crh47wzynjx3c6pmcclzk7txlkm74x28:719019:t:0");
+    ASSERT_TRUE(tx.has_send_order());
+    ASSERT_EQ(tx.send_order().inputs_size(), 1);
+    ASSERT_EQ(tx.send_order().outputs_size(), 1);
+    EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "435bf3fb03bd7ce112723471a0ef18f8ade59bf6");
+    EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "f64a06bd291d8d021439b9bc0d5e591fa2f08814");
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set private key and few other fields
+    const Data privateKey = parse_hex("412c379cccf9d792238f0a8bd923604e00c2be11ea1de715945f6a849796362a");
+    EXPECT_EQ(Binance::Address(PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "bnb1gddl87crh47wzynjx3c6pmcclzk7txlkm74x28");
+    tx.set_private_key(privateKey.data(), privateKey.size());
+    tx.set_chain_id("Binance-Chain-Tigris");
+    tx.set_account_number(7320332);
+    tx.set_sequence(2);
+
+    // sign and encode resulting input
+    Binance::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBinance);
+    EXPECT_EQ(hex(output.encoded()), "9502f0625dee0a582a2c87fa0a280a14435bf3fb03bd7ce112723471a0ef18f8ade59bf612100a08425553442d4244311080cab5ee0112280a14f64a06bd291d8d021439b9bc0d5e591fa2f0881412100a08425553442d4244311080cab5ee0112710a26eb5ae98721039aa92707d6789692628099f288de219c9c9a0dd179df4e8b1b717191c75fbbfb1240fb41cf3eaaf1286de4be633682c120886b39dcc41690b583f4f08561d660a1677ebda2323e0f22c440c6fe8855d21f1153557b94066ce956363f0a82d1ab3c92188ce6be0320021a42535741503a424e422e424e423a626e62316764646c38376372683437777a796e6a78336336706d63636c7a6b3774786c6b6d37347832383a3731393031393a743a30");
+
+    // https://viewblock.io/thorchain/tx/1B7E472C7C8D60176FCFD83CAD7DA970EB12B45145C553CD37BD34CABE276C59
+    // https://explorer.bnbchain.org/tx/1B7E472C7C8D60176FCFD83CAD7DA970EB12B45145C553CD37BD34CABE276C59
+    // https://explorer.bnbchain.org/tx/79D2194584F498CA2D4C391FBD7B158FC94B670703B629CA6F46852BB24234A6
+}
+
 TEST(THORChainSwap, SwapBnbBnbToken) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
