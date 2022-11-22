@@ -6,17 +6,17 @@
 
 #include "Swap.h"
 
-#include <TrustWalletCore/TWCoinType.h>
 #include "Coin.h"
+#include <TrustWalletCore/TWCoinType.h>
 
 // BTC
 #include "Bitcoin/SigHashType.h"
 #include "../proto/Bitcoin.pb.h"
 // ETH
-#include "Ethereum/Address.h"
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/ABI/ParamAddress.h"
+#include "Ethereum/ABI/ParamBase.h"
+#include "Ethereum/Address.h"
 #include "uint256.h"
 #include "../proto/Ethereum.pb.h"
 // BNB
@@ -44,23 +44,29 @@ static Data ethAddressStringToData(const std::string& asString) {
 
 TWCoinType chainCoinType(Chain chain) {
     switch (chain) {
-        case Chain::ETH: return TWCoinTypeEthereum;
-        case Chain::BNB: return TWCoinTypeBinance;
-        case Chain::BTC: return TWCoinTypeBitcoin;
-        case Chain::THOR:
-        default:
-            return TWCoinTypeTHORChain;
+    case Chain::ETH:
+        return TWCoinTypeEthereum;
+    case Chain::BNB:
+        return TWCoinTypeBinance;
+    case Chain::BTC:
+        return TWCoinTypeBitcoin;
+    case Chain::THOR:
+    default:
+        return TWCoinTypeTHORChain;
     }
 }
 
 std::string chainName(Chain chain) {
     switch (chain) {
-        case Chain::ETH: return "ETH";
-        case Chain::BNB: return "BNB";
-        case Chain::BTC: return "BTC";
-        case Chain::THOR:
-        default:
-            return "THOR";
+    case Chain::ETH:
+        return "ETH";
+    case Chain::BNB:
+        return "BNB";
+    case Chain::BTC:
+        return "BTC";
+    case Chain::THOR:
+    default:
+        return "THOR";
     }
 }
 
@@ -100,15 +106,15 @@ bool validateAddress(Chain chain, const std::string& address) {
     return TW::validateAddress(chainCoinType(chain), address);
 }
 
-std::tuple<Data, int, std::string> SwapBuilder::build() {
+SwapBundled SwapBuilder::build() {
     auto fromChain = static_cast<Chain>(mFromAsset.chain());
     auto toChain = static_cast<Chain>(mToAsset.chain());
 
     if (!validateAddress(fromChain, mFromAddress)) {
-        return std::make_tuple<Data, int, std::string>({}, static_cast<int>(Proto::ErrorCode::Error_Invalid_from_address), "Invalid from address");
+        return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_from_address), .error = "Invalid from address"};
     }
     if (!validateAddress(toChain, mToAddress)) {
-        return std::make_tuple<Data, int, std::string>({}, static_cast<int>(Proto::ErrorCode::Error_Invalid_to_address), "Invalid to address");
+        return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_to_address), .error = "Invalid to address"};
     }
 
     uint64_t fromAmountNum = std::stoull(mFromAmount);
@@ -123,7 +129,7 @@ std::tuple<Data, int, std::string> SwapBuilder::build() {
         return buildEth(fromAmountNum, memo);
     }
     default:
-        return std::make_tuple<Data, int, std::string>({}, static_cast<int>(Proto::ErrorCode::Error_Unsupported_from_chain), "Unsupported from chain: " + std::to_string(fromChain));
+        return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Unsupported_from_chain), .error = "Unsupported from chain: " + std::to_string(fromChain)};
     }
 }
 std::string SwapBuilder::buildMemo() noexcept {
@@ -159,7 +165,7 @@ std::string SwapBuilder::buildMemo() noexcept {
     return memo.str();
 }
 
-std::tuple<Data, int, std::string> SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo) {
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
@@ -179,9 +185,9 @@ std::tuple<Data, int, std::string> SwapBuilder::buildBitcoin(uint64_t amount, co
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());
-    return std::make_tuple(std::move(out), 0, "");
+    return {.out = std::move(out)};
 }
-std::tuple<Data, int, std::string> SwapBuilder::buildBinance(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBinance(uint64_t amount, const std::string& memo) {
     auto input = Binance::Proto::SigningInput();
     Data out;
 
@@ -217,20 +223,20 @@ std::tuple<Data, int, std::string> SwapBuilder::buildBinance(uint64_t amount, co
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());
-    return std::make_tuple(std::move(out), 0, "");
+    return {.out = std::move(out)};
 }
 
-std::tuple<Data, int, std::string> SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     Data out;
     auto input = Ethereum::Proto::SigningInput();
     const auto& toTokenId = mToAsset.token_id();
     // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(mVaultAddress);
     if (!Ethereum::Address::isValid(mVaultAddress) || vaultAddressBin.size() != Ethereum::Address::size) {
-        return std::make_tuple(Data(), static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), "Invalid vault address: " + mVaultAddress);
+        return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
     }
     if (!Ethereum::Address::isValid(*mRouterAddress)) {
-        return std::make_tuple(Data(), static_cast<int>(Proto::ErrorCode::Error_Invalid_router_address), "Invalid router address: " + *mRouterAddress);
+        return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_router_address), .error = "Invalid router address: " + *mRouterAddress};
     }
     Data toAssetAddressBin = ethAddressStringToData(toTokenId);
 
@@ -252,8 +258,7 @@ std::tuple<Data, int, std::string> SwapBuilder::buildEth(uint64_t amount, const 
                                                        std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
                                                        std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
                                                        std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
-                                                       std::make_shared<Ethereum::ABI::ParamString>(memo)
-                                                   });
+                                                       std::make_shared<Ethereum::ABI::ParamString>(memo)});
     Data payload;
     func.encode(payload);
     transfer.set_data(payload.data(), payload.size());
@@ -262,6 +267,6 @@ std::tuple<Data, int, std::string> SwapBuilder::buildEth(uint64_t amount, const 
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());
-    return std::make_tuple(std::move(out), 0, "");
+    return {.out = std::move(out)};
 }
-} // namespace TW
+} // namespace TW::THORChainSwap

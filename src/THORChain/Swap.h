@@ -23,6 +23,14 @@ enum Chain {
     BNB = 3,
 };
 
+using SwapErrorCode = int;
+
+struct SwapBundled {
+    Data out{};
+    SwapErrorCode status_code{0};
+    std::string error{""};
+};
+
 class SwapBuilder {
     Proto::Asset mFromAsset;
     Proto::Asset mToAsset;
@@ -37,9 +45,9 @@ class SwapBuilder {
     std::optional<std::string> mExtraMemo{std::nullopt};
 
     std::string buildMemo() noexcept;
-    std::tuple<Data, int, std::string> buildBitcoin(uint64_t amount, const std::string& memo);
-    std::tuple<Data, int, std::string> buildBinance(uint64_t amount, const std::string& memo);
-    std::tuple<Data, int, std::string> buildEth(uint64_t amount, const std::string& memo);;
+    SwapBundled buildBitcoin(uint64_t amount, const std::string& memo);
+    SwapBundled buildBinance(uint64_t amount, const std::string& memo);
+    SwapBundled buildEth(uint64_t amount, const std::string& memo);
 
 public:
     SwapBuilder() noexcept = default;
@@ -109,7 +117,7 @@ public:
         return *this;
     }
 
-    std::tuple<Data, int, std::string> build();
+    SwapBundled build();
 };
 
 /// Building THORChain cross-chain transactions

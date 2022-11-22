@@ -24,7 +24,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
 
     const auto fromChain = inputProto.from_asset().chain();
     const auto toChain = inputProto.to_asset().chain();
-    auto res = THORChainSwap::SwapBuilder::builder()
+    auto&& [txInput, errorCode, error] = THORChainSwap::SwapBuilder::builder()
                    .from(inputProto.from_asset())
                    .to(inputProto.to_asset())
                    .fromAddress(inputProto.from_address())
@@ -40,16 +40,15 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
 
     outputProto.set_from_chain(fromChain);
     outputProto.set_to_chain(toChain);
-    if (std::get<1>(res) != 0) {
+    if (errorCode != 0) {
         // error
-        outputProto.mutable_error()->set_code(static_cast<THORChainSwap::Proto::ErrorCode>(std::get<1>(res)));
-        outputProto.mutable_error()->set_message(std::get<2>(res));
+        outputProto.mutable_error()->set_code(static_cast<THORChainSwap::Proto::ErrorCode>(errorCode));
+        outputProto.mutable_error()->set_message(error);
     } else {
         // no error
         outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::OK);
         outputProto.mutable_error()->set_message("");
 
-        const Data& txInput = std::get<0>(res);
         switch (fromChain) {
         case THORChainSwap::Proto::BTC: {
             Bitcoin::Proto::SigningInput btcInput;
