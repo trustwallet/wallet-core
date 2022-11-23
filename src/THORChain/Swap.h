@@ -39,12 +39,11 @@ class SwapBuilder {
     std::string mVaultAddress;
     std::optional<std::string> mRouterAddress{std::nullopt};
     std::string mFromAmount;
-    std::string mToAmountLimit;
+    std::string mToAmountLimit{"0"};
     std::optional<std::string> mAffFeeAddress{std::nullopt};
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
 
-    std::string buildMemo(bool shortened = true) noexcept;
     SwapBundled buildBitcoin(uint64_t amount, const std::string& memo);
     SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
     SwapBundled buildEth(uint64_t amount, const std::string& memo);
@@ -89,6 +88,8 @@ public:
     SwapBuilder& affFeeAddress(std::string affFeeAddress) noexcept {
         if (!affFeeAddress.empty()) {
             mAffFeeAddress = std::move(affFeeAddress);
+        } else {
+            mAffFeeAddress = std::nullopt;
         }
         return *this;
     }
@@ -96,6 +97,8 @@ public:
     SwapBuilder& affFeeRate(std::string affFeeRate) noexcept {
         if (!affFeeRate.empty()) {
             mAffFeeRate = std::move(affFeeRate);
+        } else {
+            mAffFeeRate = std::nullopt;
         }
         return *this;
     }
@@ -103,6 +106,8 @@ public:
     SwapBuilder& extraMemo(std::string extraMemo) noexcept {
         if (!extraMemo.empty()) {
             mExtraMemo = std::move(extraMemo);
+        } else {
+            mExtraMemo = std::nullopt;
         }
         return *this;
     }
@@ -117,12 +122,9 @@ public:
         return *this;
     }
 
-    SwapBundled build(bool shortened = true);
-};
+    std::string buildMemo(bool shortened = true) noexcept;
 
-/// Building THORChain cross-chain transactions
-struct Swap {
-    static std::string buildMemo(Proto::Asset toAsset, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra);
+    SwapBundled build(bool shortened = true);
 };
 
 } // namespace TW::THORChainSwap

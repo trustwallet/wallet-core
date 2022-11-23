@@ -699,33 +699,32 @@ TEST(THORChainSwap, Memo) {
     Proto::Asset toAssetBTC;
     toAssetBTC.set_chain(static_cast<Proto::Chain>(Chain::BTC));
     toAssetBTC.set_symbol("BTC");
-
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "", std::nullopt, ""), "SWAP:BTC.BTC:btc123:1234");
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "feeaddr", std::nullopt, ""), "SWAP:BTC.BTC:btc123:1234:feeaddr");
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "feeaddr", 10, ""), "SWAP:BTC.BTC:btc123:1234:feeaddr:10");
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "feeaddr", 10, "extramemo"), "SWAP:BTC.BTC:btc123:1234:feeaddr:10:extramemo");
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "feeaddr", 0, ""), "SWAP:BTC.BTC:btc123:1234:feeaddr:0");
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "", 10, ""), "SWAP:BTC.BTC:btc123:1234::10");
-    EXPECT_EQ(Swap::buildMemo(toAssetBTC, "btc123", 1234, "", std::nullopt, "extramemo"), "SWAP:BTC.BTC:btc123:1234:::extramemo");
+    auto builder = SwapBuilder::builder().to(toAssetBTC).toAddress("btc123").toAmountLimit("1234");
+    EXPECT_EQ(builder.buildMemo(), "=:BTC.BTC:btc123:1234");
+    EXPECT_EQ(builder.affFeeAddress("feeaddr").buildMemo(), "=:BTC.BTC:btc123:1234:feeaddr");
+    EXPECT_EQ(builder.affFeeRate("10").buildMemo(), "=:BTC.BTC:btc123:1234:feeaddr:10");
+    EXPECT_EQ(builder.extraMemo("extramemo").buildMemo(), "=:BTC.BTC:btc123:1234:feeaddr:10:extramemo");
+    EXPECT_EQ(builder.extraMemo("").affFeeRate("0").buildMemo(), "=:BTC.BTC:btc123:1234:feeaddr:0");
+    EXPECT_EQ(builder.affFeeAddress("").affFeeRate("10").buildMemo(), "=:BTC.BTC:btc123:1234::10");
+    EXPECT_EQ(builder.extraMemo("extramemo").affFeeRate("").buildMemo(), "=:BTC.BTC:btc123:1234:::extramemo");
 
     Proto::Asset toAssetETH;
     toAssetETH.set_chain(static_cast<Proto::Chain>(Chain::ETH));
     toAssetETH.set_symbol("ETH");
-
-    EXPECT_EQ(Swap::buildMemo(toAssetETH, "0xaabbccdd", 1234, "", std::nullopt, ""), "=:ETH.ETH:0xaabbccdd:1234");
-    EXPECT_EQ(Swap::buildMemo(toAssetETH, "0xaabbccdd", 1234, "", std::nullopt, ""), "=:ETH.ETH:0xaabbccdd:1234");
+    builder = SwapBuilder::builder().to(toAssetETH).toAddress("0xaabbccdd").toAmountLimit("1234");
+    EXPECT_EQ(builder.buildMemo(), "=:ETH.ETH:0xaabbccdd:1234");
     toAssetETH.set_token_id("0x0000000000000000000000000000000000000000");
-    EXPECT_EQ(Swap::buildMemo(toAssetETH, "0xaabbccdd", 1234, "", std::nullopt, ""), "=:ETH.ETH:0xaabbccdd:1234");
+    EXPECT_EQ(builder.to(toAssetETH).buildMemo(), "=:ETH.ETH:0xaabbccdd:1234");
     toAssetETH.set_token_id("0x4B0F1812e5Df2A09796481Ff14017e6005508003");
-    EXPECT_EQ(Swap::buildMemo(toAssetETH, "0xaabbccdd", 1234, "", std::nullopt, ""), "=:ETH.0x4B0F1812e5Df2A09796481Ff14017e6005508003:0xaabbccdd:1234");
+    EXPECT_EQ(builder.to(toAssetETH).buildMemo(), "=:ETH.0x4B0F1812e5Df2A09796481Ff14017e6005508003:0xaabbccdd:1234");
 
+    builder = SwapBuilder::builder().to(toAssetETH).toAddress("bnb123").toAmountLimit("1234");
     Proto::Asset toAssetBNB;
     toAssetBNB.set_chain(static_cast<Proto::Chain>(Chain::BNB));
     toAssetBNB.set_symbol("BNB");
-    EXPECT_EQ(Swap::buildMemo(toAssetBNB, "bnb123", 1234, "", std::nullopt, ""), "SWAP:BNB.BNB:bnb123:1234");
-
+    EXPECT_EQ(builder.to(toAssetBNB).buildMemo(), "=:BNB.BNB:bnb123:1234");
     toAssetBNB.set_token_id("TWT-8C2");
-    EXPECT_EQ(Swap::buildMemo(toAssetBNB, "bnb123", 1234, "", std::nullopt, ""), "SWAP:BNB.TWT-8C2:bnb123:1234");
+    EXPECT_EQ(builder.to(toAssetBNB).buildMemo(), "=:BNB.TWT-8C2:bnb123:1234");
 }
 
 TEST(THORChainSwap, WrongFromAddress) {

@@ -70,38 +70,6 @@ std::string chainName(Chain chain) {
     }
 }
 
-std::string Swap::buildMemo(Proto::Asset toAsset, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra) {
-    std::string prefix = "SWAP";
-    const auto& toChain = static_cast<Chain>(toAsset.chain());
-    const auto& toTokenId = toAsset.token_id();
-    const auto& toSymbol = toAsset.symbol();
-    if (toChain == Chain::ETH) {
-        prefix = "=";
-    }
-    const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
-    std::stringstream memo;
-    memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + toAddress + ":" + std::to_string(limit);
-
-    if (!feeAddress.empty() || feeRate.has_value() || !extra.empty()) {
-        memo << ":";
-        if (!feeAddress.empty()) {
-            memo << feeAddress;
-        }
-        if (feeRate.has_value() || !extra.empty()) {
-            memo << ":";
-            if (feeRate.has_value()) {
-                memo << std::to_string(feeRate.value());
-            }
-            if (!extra.empty()) {
-                memo << ":";
-                memo << extra;
-            }
-        }
-    }
-
-    return memo.str();
-}
-
 bool validateAddress(Chain chain, const std::string& address) {
     return TW::validateAddress(chainCoinType(chain), address);
 }
@@ -134,7 +102,6 @@ SwapBundled SwapBuilder::build(bool shortened) {
 }
 std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     uint64_t toAmountLimitNum = std::stoull(mToAmountLimit);
-    std::optional<uint16_t> feeRateNum = !mAffFeeRate ? std::nullopt : std::make_optional(std::stoull(*mAffFeeRate));
 
     // Memo: 'SWAP', or shortened '='; see https://dev.thorchain.org/thorchain-dev/concepts/memos
     std::string prefix = shortened ? "=" : "SWAP";
@@ -146,13 +113,14 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress + ":" + std::to_string(toAmountLimitNum);
 
     if (mAffFeeAddress.has_value() || mAffFeeRate.has_value() || mExtraMemo.has_value()) {
+        memo << ":";
         if (mAffFeeAddress.has_value()) {
-            memo << ":" << mAffFeeAddress.value();
+             memo << mAffFeeAddress.value();
         }
-        if (mAffFeeRate.has_value() || !mExtraMemo.has_value()) {
+        if (mAffFeeRate.has_value() || mExtraMemo.has_value()) {
             memo << ":";
-            if (feeRateNum.has_value()) {
-                memo << std::to_string(feeRateNum.value());
+            if (mAffFeeRate.has_value()) {
+                memo << mAffFeeRate.value();
             }
             if (mExtraMemo.has_value()) {
                 memo << ":" << mExtraMemo.value();
