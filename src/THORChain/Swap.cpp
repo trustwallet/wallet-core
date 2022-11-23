@@ -106,7 +106,7 @@ bool validateAddress(Chain chain, const std::string& address) {
     return TW::validateAddress(chainCoinType(chain), address);
 }
 
-SwapBundled SwapBuilder::build() {
+SwapBundled SwapBuilder::build(bool shortened) {
     auto fromChain = static_cast<Chain>(mFromAsset.chain());
     auto toChain = static_cast<Chain>(mToAsset.chain());
 
@@ -118,7 +118,7 @@ SwapBundled SwapBuilder::build() {
     }
 
     uint64_t fromAmountNum = std::stoull(mFromAmount);
-    const auto memo = this->buildMemo();
+    const auto memo = this->buildMemo(shortened);
 
     switch (fromChain) {
     case Chain::BTC: {
@@ -132,17 +132,15 @@ SwapBundled SwapBuilder::build() {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Unsupported_from_chain), .error = "Unsupported from chain: " + std::to_string(fromChain)};
     }
 }
-std::string SwapBuilder::buildMemo() noexcept {
+std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     uint64_t toAmountLimitNum = std::stoull(mToAmountLimit);
     std::optional<uint16_t> feeRateNum = !mAffFeeRate ? std::nullopt : std::make_optional(std::stoull(*mAffFeeRate));
 
-    std::string prefix = "SWAP";
+    // Memo: 'SWAP', or shortened '='; see https://dev.thorchain.org/thorchain-dev/concepts/memos
+    std::string prefix = shortened ? "=" : "SWAP";
     const auto& toChain = static_cast<Chain>(mToAsset.chain());
     const auto& toTokenId = mToAsset.token_id();
     const auto& toSymbol = mToAsset.symbol();
-    if (toChain == Chain::ETH) {
-        prefix = "=";
-    }
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
     memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress + ":" + std::to_string(toAmountLimitNum);

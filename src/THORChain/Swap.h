@@ -44,7 +44,7 @@ class SwapBuilder {
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
 
-    std::string buildMemo() noexcept;
+    std::string buildMemo(bool shortened = true) noexcept;
     SwapBundled buildBitcoin(uint64_t amount, const std::string& memo);
     SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
     SwapBundled buildEth(uint64_t amount, const std::string& memo);
@@ -117,7 +117,7 @@ public:
         return *this;
     }
 
-    SwapBundled build();
+    SwapBundled build(bool shortened = true);
 };
 
 /// Building THORChain cross-chain transactions
