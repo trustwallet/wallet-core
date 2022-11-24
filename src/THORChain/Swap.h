@@ -7,10 +7,11 @@
 #pragma once
 
 #include "Data.h"
+#include "proto/THORChainSwap.pb.h"
 
+#include <optional>
 #include <string>
 #include <utility>
-#include <optional>
 
 namespace TW::THORChainSwap {
 
@@ -22,35 +23,108 @@ enum Chain {
     BNB = 3,
 };
 
-/// Building THORChain cross-chain transactions
-class Swap {
-public:
-    /// Logic to build a native transaction on the source chain for a swap
-    /// Returns serialized SigningInput proto message, on the source chain,
-    /// and an optional error code + message
-    static std::tuple<Data, int, std::string> build(
-        Chain fromChain,
-        Chain toChain,
-        const std::string& fromAddress,     // source address, on source chain, string format
-        const std::string& toSymbol,        // destination coin symbol
-        const std::string& toTokenId,       // destination token ID, on the destination chain, in case destination is a token, empty otherwise
-        const std::string& toAddress,       // destination address, on destination chain, string format
-        const std::string& vaultAddress,    // ThorChainSwap vault, on the source chain. Should be queried afresh, as it may change
-        const std::string& routerAddress,   // ThorChain router, only in case of Ethereum source network
-        const std::string& fromAmount,      // The source amount, as integer in the smallest native unit of the chain
-        const std::string& toAmountLimit,   // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
-        const std::string& affFeeAddress = "", // Optional affiliate fee destination address.  A Rune address.
-        const std::string& affFeeRate = "",    // Optional affiliate fee, percentage base points, e.g. 100 means 1%, 0 - 1000, as string.
-        const std::string& extraMemo = ""      // Optional extra custom memo, reserved for later use.
-    );
+using SwapErrorCode = int;
 
-protected:
-    static std::pair<int, std::string> buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::pair<int, std::string> buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::pair<int, std::string> buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
-
-public:
-    static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra);
+struct SwapBundled {
+    Data out{};
+    SwapErrorCode status_code{0};
+    std::string error{""};
 };
 
-} // namespace TW
+class SwapBuilder {
+    Proto::Asset mFromAsset;
+    Proto::Asset mToAsset;
+    std::string mFromAddress;
+    std::string mToAddress;
+    std::string mVaultAddress;
+    std::optional<std::string> mRouterAddress{std::nullopt};
+    std::string mFromAmount;
+    std::string mToAmountLimit{"0"};
+    std::optional<std::string> mAffFeeAddress{std::nullopt};
+    std::optional<std::string> mAffFeeRate{std::nullopt};
+    std::optional<std::string> mExtraMemo{std::nullopt};
+
+    SwapBundled buildBitcoin(uint64_t amount, const std::string& memo);
+    SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
+    SwapBundled buildEth(uint64_t amount, const std::string& memo);
+
+public:
+    SwapBuilder() noexcept = default;
+
+    static SwapBuilder builder() noexcept { return {}; }
+
+    SwapBuilder& from(Proto::Asset fromAsset) noexcept {
+        mFromAsset = std::move(fromAsset);
+        return *this;
+    }
+
+    SwapBuilder& fromAddress(std::string fromAddress) noexcept {
+        mFromAddress = std::move(fromAddress);
+        return *this;
+    }
+
+    SwapBuilder& to(Proto::Asset toAsset) noexcept {
+        mToAsset = std::move(toAsset);
+        return *this;
+    }
+
+    SwapBuilder& toAddress(std::string toAddress) noexcept {
+        mToAddress = std::move(toAddress);
+        return *this;
+    }
+
+    SwapBuilder& vault(std::string vaultAddress) noexcept {
+        mVaultAddress = std::move(vaultAddress);
+        return *this;
+    }
+
+    SwapBuilder& router(std::string router) noexcept {
+        if (!router.empty()) {
+            mRouterAddress = std::move(router);
+        }
+        return *this;
+    }
+
+    SwapBuilder& affFeeAddress(std::string affFeeAddress) noexcept {
+        if (!affFeeAddress.empty()) {
+            mAffFeeAddress = std::move(affFeeAddress);
+        } else {
+            mAffFeeAddress = std::nullopt;
+        }
+        return *this;
+    }
+
+    SwapBuilder& affFeeRate(std::string affFeeRate) noexcept {
+        if (!affFeeRate.empty()) {
+            mAffFeeRate = std::move(affFeeRate);
+        } else {
+            mAffFeeRate = std::nullopt;
+        }
+        return *this;
+    }
+
+    SwapBuilder& extraMemo(std::string extraMemo) noexcept {
+        if (!extraMemo.empty()) {
+            mExtraMemo = std::move(extraMemo);
+        } else {
+            mExtraMemo = std::nullopt;
+        }
+        return *this;
+    }
+
+    SwapBuilder& fromAmount(std::string fromAmount) noexcept {
+        mFromAmount = std::move(fromAmount);
+        return *this;
+    }
+
+    SwapBuilder& toAmountLimit(std::string toAmountLimit) noexcept {
+        mToAmountLimit = std::move(toAmountLimit);
+        return *this;
+    }
+
+    std::string buildMemo(bool shortened = true) noexcept;
+
+    SwapBundled build(bool shortened = true);
+};
+
+} // namespace TW::THORChainSwap

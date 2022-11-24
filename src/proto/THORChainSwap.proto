@@ -53,7 +53,7 @@ message Asset {
 // Input for a swap between source and destination chains; for creating a TX on the source chain.
 message SwapInput {
     // Source chain
-    Chain from_chain = 1;
+    Asset from_asset = 1;
 
     // Source address, on source chain
     string from_address = 2;
