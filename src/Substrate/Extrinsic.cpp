@@ -117,6 +117,23 @@ Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t
     return data;
 }
 
+Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer, int32_t network, bool enableMultiAddress) const {
+    Data data;
+    auto address = FullSS58Address(transfer.to_address(), network);
+    auto value = load(transfer.value());
+    // add prefix
+    append(data, TW::byte(00));
+    // call index
+    append(data, encodeCallIndex(transfer.module_index(), transfer.method_index()));
+    // asset id
+    append(data, encodeCompact(transfer.asset_id()));
+    // destination
+    append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
+    // value
+    append(data, encodeCompact(value));
+    return data;
+}
+
 Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
     Data data;
     if (balance.has_transfer()) {
@@ -131,6 +148,8 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
             calls.push_back(encodeTransfer(transfer, _network, multiAddress));
         }
         data = encodeBatchCall(calls, balance.batch_transfer().module_index(), balance.batch_transfer().method_index());
+    } else if (balance.has_asset_transfer()) {
+        append(data, encodeAssetTransfer(balance.asset_transfer(), _network, multiAddress));
     }
 
     return data;

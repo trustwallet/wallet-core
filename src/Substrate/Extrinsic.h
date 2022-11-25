@@ -66,6 +66,7 @@ public:
 protected:
     bool encodeRawAccount(bool enableMultiAddress) const;
     Data encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress) const;
+    Data encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer, int32_t network, bool enableMultiAddress) const;
     Data encodeBalanceCall(const Proto::Balance& balance) const;
     Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex) const;
     Data encodeEraNonceTip() const;

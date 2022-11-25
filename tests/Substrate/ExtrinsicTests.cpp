@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Substrate/Extrinsic.h"
 #include "Data.h"
 #include "HexCoding.h"
+#include "Substrate/Extrinsic.h"
 #include "proto/Substrate.pb.h"
 #include "uint256.h"
 
@@ -75,6 +75,33 @@ TEST(SubstrateExtrinsic, Polymesh_encodeIdentity) {
 
     auto result = Substrate::Extrinsic(input).encodeCall();
     EXPECT_EQ(hex(result), "07050b13000000000000");
+}
+
+TEST(SubstrateExtrinsic, Statemint_encodeAssetTransfer) {
+    // tx on mainnet
+    // https://statemint.subscan.io/extrinsic/2619512-2
+    
+    Substrate::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+
+    auto* transfer = input.mutable_balance_call()->mutable_asset_transfer();
+    transfer->set_module_index(0x32);
+    transfer->set_method_index(0x05);
+    transfer->set_to_address("14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD");
+
+    auto value = store(999500000);
+    transfer->set_value(std::string(value.begin(), value.end()));
+    transfer->set_asset_id(1984);
+
+    auto result = Substrate::Extrinsic(input).encodeCall();
+    // clang-format off
+    EXPECT_EQ(hex(result), "00"
+                           "3205"
+                           "011f"
+                           "00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943e"
+                           "da0d82a34cee");
+    // clang-format on
 }
 
 } // namespace TW::Substrate::tests
