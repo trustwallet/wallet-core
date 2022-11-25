@@ -24,6 +24,7 @@ static void writeU64(Data& data, uint64_t number) {
 }
 
 static void writeU128(Data& data, const std::string& numberData) {
+    assert(numberData.size() == 16 && "U128 number should be 16 bytes long");
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
 }
 
@@ -107,11 +108,11 @@ static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAcc
 static void writeAction(Data& data, const Proto::Action& action) {
     writeU8(data, action.payload_case() - Proto::Action::kCreateAccount);
     switch (action.payload_case()) {
-    case Proto::Action::kTransfer:
-        writeTransfer(data, action.transfer());
-        return;
     case Proto::Action::kFunctionCall:
         writeFunctionCall(data, action.function_call());
+        return;
+    case Proto::Action::kTransfer:
+        writeTransfer(data, action.transfer());
         return;
     case Proto::Action::kStake:
         writeStake(data, action.stake());
