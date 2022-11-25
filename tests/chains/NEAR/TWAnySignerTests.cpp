@@ -94,8 +94,37 @@ TEST(TWAnySignerNEAR, SignStakeMainnetReplication) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNEAR);
 
+    // https://explorer.near.org/transactions/kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq
     ASSERT_EQ(Base58::bitcoin.encode(data(output.hash())), "kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq");
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgEuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcueGgJlhJ7eg8/I0NQLkQvJDZsul95y3L4vG0N67Js4kAQAAAAIRAAAAZGVwb3NpdF9hbmRfc3Rha2UCAAAAe30A0JjUr3EAAAAAgPZK4ccCLRUAAAAAAAAALNrorr8qTL6u1nlxLpuPa45nFdYmjU96i7CmJP08mVHVzHUaw/bGN30Z3u3o1F2o2yefCBNqO9Ogn9fM25NGCg==");
+}
+
+TEST(TWAnySignerNEAR, SignUnstakeMainnetReplication) {
+    auto privateKey = Base58::bitcoin.decode("3BPZ9Qu7CviWD4CeKy3DYbNc4suyuBJYnjhVT2oTRCrfb4CQPiTK5tFVdg8Z3ijozxWoxxt9Y1kwkwPntrcc3dom");
+    auto blockHash = Base58::bitcoin.decode("CehJc9uZhqE2m17ZrkqcAog4mxSz6JSvYv1JEK1iBsX9");
+
+    auto amount = parse_hex("00000000000000000000000000000000");
+
+    Proto::SigningInput input;
+    input.set_signer_id("b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
+    input.set_nonce(77701544000006);
+    input.set_receiver_id("avado.poolv1.near");
+    input.set_private_key(privateKey.data(), 32);
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    auto& action = *input.add_actions();
+    auto& call = *action.mutable_function_call();
+    call.set_method_name("unstake_all");
+    call.set_args("{}");
+    call.set_gas(125000000000000);
+    call.set_deposit(amount.data(), amount.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeNEAR);
+
+    // https://explorer.near.org/transactions/DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P
+    ASSERT_EQ(Base58::bitcoin.encode(data(output.hash())), "DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P");
+    ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgGuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcq0YnhRlt+TTtagkoy0qKn56zAfGhE+jkTJW6PR5k5r8AQAAAAILAAAAdW5zdGFrZV9hbGwCAAAAe30A0JjUr3EAAAAAAAAAAAAAAAAAAAAAAAAABaFP0EkfJU3VQZ4QAiTwq9ebWDJ7jx7TxbA+VGH4hwKX3gWnmDHVve+LK7/UbbffjF/y8vn0KrPxdh3ONAG0Ag==");
 }
 
 } // namespace TW::NEAR
