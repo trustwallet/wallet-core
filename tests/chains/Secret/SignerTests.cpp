@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Secret/Signer.h"
-#include "Secret/Address.h"
+#include "Cosmos/Address.h"
+#include "Cosmos/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
