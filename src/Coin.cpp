@@ -56,6 +56,7 @@
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Hedera/Entry.h"
+#include "Cosmos/Entry.h" // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -105,6 +106,7 @@ Zilliqa::Entry zilliqaDP;
 Nervos::Entry NervosDP;
 Everscale::Entry EverscaleDP;
 Hedera::Entry HederaDP;
+Cosmos::Entry CosmosDP; // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
