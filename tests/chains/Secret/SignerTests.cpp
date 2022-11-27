@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Secret::tests {
+namespace TW::Cosmos::tests {
 
 TEST(SecretSigner, Sign) {
     auto input = Proto::SigningInput();

@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-namespace TW::Secret::tests {
+namespace TW::Cosmos::tests {
 
 TEST(SecretAddress, Valid) {
     ASSERT_TRUE(Address::isValid(TWCoinTypeSecret, "secret16vw3fp7x35tzmwlkdkyzr8vgscn0zewtduyjuf"));

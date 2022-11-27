@@ -259,6 +259,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .hedera:
                     let expectedResult = "0.0.302a300506032b657003210049eba62f64d0d941045595d9433e65d84ecc46bcdb1421de55e05fcf2d8357d5";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .secret:
+                    let expectedResult = "secret1f69sk5033zcdr2p2yf3xjehn7xvgdeq09d2llh"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                     
                 @unknown default:
                     fatalError()
