@@ -39,8 +39,8 @@ class SecretTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 25000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = "uscrt"
-                $0.denom = "2500"
+                $0.amount = "2500"
+                $0.denom = "uscrt"
             }]
         }
 
