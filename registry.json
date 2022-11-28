@@ -2345,6 +2345,38 @@
     }
   },
   {
+    "id": "secret",
+    "name": "Secret",
+    "displayName": "Secret",
+    "coinId": 529,
+    "symbol": "SCRT",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/529'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "secret",
+    "chainId": "secret-4",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://mintscan.io/secret",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "026B4886B1D9CE836A99755DDE99D4F8A7748D27B1CE9D298A763B1CFFF62C00",
+      "sampleAccount": "secret167m3s89ddurjpyr82vsluvvj0t8ylzn95trrqy"
+    },
+    "info": {
+      "url": "https://scrt.network/",
+      "source": "https://github.com/scrtlabs/SecretNetwork",
+      "rpc": "https://scrt-rpc.blockpane.com/",
+      "documentation": "https://docs.scrt.network/"
+    }
+  },
+  {
     "id": "osmosis",
     "name": "Osmosis",
     "displayName": "Osmosis",
