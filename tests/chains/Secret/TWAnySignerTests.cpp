@@ -35,7 +35,7 @@ TEST(TWAnySignerSecret, Sign) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uscrt");
-    amountOfTx->set_amount("50000");
+    amountOfTx->set_amount("100000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(25000);
