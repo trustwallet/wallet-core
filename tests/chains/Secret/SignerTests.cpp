@@ -17,7 +17,7 @@ namespace TW::Cosmos::tests {
 
 TEST(SecretSigner, Sign) {
     auto input = Proto::SigningInput();
-    input.set_signing_mode(Proto::JSON);
+    input.set_signing_mode(Proto::Protobuf);
     input.set_account_number(265538);
     input.set_chain_id("secret-4");
     input.set_memo("");
