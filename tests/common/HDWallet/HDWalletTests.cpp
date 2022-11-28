@@ -11,6 +11,7 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/Address.h"
 #include "Hedera/DER.h"
+#include "NEAR/Address.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Hash.h"
@@ -456,5 +457,16 @@ TEST(HDWallet, HederaKey) {
     }
 }
 
+TEST(HDWallet, NearKey) {
+    const auto derivPath = "m/44'/397'/0'";
+    HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeNEAR, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "35e0d9631bd538d5569266abf6be7a9a403ebfda92ddd49b3268e35360a6c2dd");
+        const auto p = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        EXPECT_EQ(hex(p.bytes), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
+        EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
+    }
+}
 
 } // namespace

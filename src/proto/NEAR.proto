@@ -14,7 +14,7 @@ message PublicKey {
 
 // Permissions for a function call
 message FunctionCallPermission {
-    // uint128 / little endian byte order
+    // uint128 / big endian byte order
     bytes allowance = 1;
 
     string receiver_id = 2;
@@ -58,19 +58,19 @@ message FunctionCall {
     // gas
     uint64 gas = 3;
 
-    // uint128 / little endian byte order
+    // uint128 / big endian byte order
     bytes deposit = 4;
 }
 
 // Transfer
 message Transfer {
-    // amount; uint128 / little endian byte order
+    // amount; uint128 / big endian byte order
     bytes deposit = 1; 
 }
 
 // Stake
 message Stake {
-    // amount; uint128 / little endian byte order
+    // amount; uint128 / big endian byte order
     bytes stake = 1;
 
     // owner public key
