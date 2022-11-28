@@ -21,7 +21,7 @@ TEST(SecretSigner, Sign) {
     input.set_account_number(265538);
     input.set_chain_id("secret-4");
     input.set_memo("");
-    input.set_sequence(0);
+    input.set_sequence(1);
 
     Address fromAddress;
     Address toAddress;
