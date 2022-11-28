@@ -48,7 +48,7 @@ TEST(TWAnySignerSecret, Sign) {
 
     // https://www.mintscan.io/secret/txs/01F4BD2458BF966F287533775C8D67BBC7CA7214CAEB1752D270A90223E9E82F
     assertJSONEqual(output.serialized(), "{\"tx_bytes\":\"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLXNlY3JldDE4bWRyamE0MGdmdWZ0dDV5eDZ0Z2owZm41bHVycGxlenlwODk0eRItc2VjcmV0MXJucTZoamZuYWx4ZWVmODdybWRleWEzbnU5ZGhwYzdrOXB1anMzGg8KBXVzY3J0EgYxMDAwMDASZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAkZqxdKMtPq2w0kGDGwWGejTAed0H7azPMHtrCX0XYZGEgQKAggBGAESEwoNCgV1c2NydBIEMjUwMBCowwEaQOcHd2gHpa5WKZ/5RRerEtrHlyDlojIEzUGhC9xMFgs7UQMWy+kTTN+NRf7zQ8rx3cPkIKeZhv0u1KRc8uRCc4o=\",\"mode\":\"BROADCAST_MODE_BLOCK\"}");
-    EXPECT_EQ(hex(output.signature()), "864570e35e032e76e8e1579661941c5e514c9c9a5348f8b458a1bddcb5777bac3a3249d230de16eec7aaf5e4a7c9a0593086d68f48e1b028aa7f75e5cc7f5268");
+    EXPECT_EQ(hex(output.signature()), "e707776807a5ae56299ff94517ab12dac79720e5a23204cd41a10bdc4c160b3b510316cbe9134cdf8d45fef343caf1ddc3e420a79986fd2ed4a45cf2e442738a");
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
 }
