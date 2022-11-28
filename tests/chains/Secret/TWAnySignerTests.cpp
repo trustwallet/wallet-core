@@ -21,7 +21,7 @@ TEST(TWAnySignerSecret, Sign) {
     input.set_account_number(265538);
     input.set_chain_id("secret-4");
     input.set_memo("");
-    input.set_sequence(0);
+    input.set_sequence(1);
     input.set_private_key(privateKey.data(), privateKey.size());
 
     Address fromAddress;
@@ -35,7 +35,7 @@ TEST(TWAnySignerSecret, Sign) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uscrt");
-    amountOfTx->set_amount("100000");
+    amountOfTx->set_amount("50000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(25000);
@@ -44,7 +44,7 @@ TEST(TWAnySignerSecret, Sign) {
     amountOfFee->set_amount("2500");
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeOsmosis);
+    ANY_SIGN(input, TWCoinTypeSecret);
 
     // https://www.mintscan.io/secret/txs/73AD8C2E10DB87E399DA62E9C3ABDDF03B415C6E7EC67127FEB60DD6BF0A2161
     assertJSONEqual(output.serialized(), "{\"tx_bytes\":\"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLXNlY3JldDE4bWRyamE0MGdmdWZ0dDV5eDZ0Z2owZm41bHVycGxlenlwODk0eRItc2VjcmV0MXJucTZoamZuYWx4ZWVmODdybWRleWEzbnU5ZGhwYzdrOXB1anMzGg8KBXVzY3J0EgYxMDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAkZqxdKMtPq2w0kGDGwWGejTAed0H7azPMHtrCX0XYZGEgQKAggBEhMKDQoFdXNjcnQSBDI1MDAQqMMBGkCGRXDjXgMudujhV5ZhlBxeUUycmlNI+LRYob3ctXd7rDoySdIw3hbux6r15KfJoFkwhtaPSOGwKKp/deXMf1Jo\",\"mode\":\"BROADCAST_MODE_BLOCK\"}");
