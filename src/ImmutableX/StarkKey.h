@@ -54,15 +54,18 @@ static std::string getPrivateKeyFromSeed(const std::string& seed, const std::str
     return hex(data);
 }
 
+static PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
+    return PrivateKey(parse_hex(ImmutableX::grindKey(hex(ethPrivKey.bytes)), true));
+}
+
 // https://docs.starkware.co/starkex/key-derivation.html
-[[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress(const std::string& ethAddress) noexcept {
-    using namespace internal;
+[[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress(const std::string& ethAddress, const std::string& application = internal::gApplication, const std::string& index = internal::gIndex) noexcept {
     std::stringstream out;
-    const auto layerHash = getIntFromBits(hex(Hash::sha256(data(gLayer))), 31);
-    const auto applicationHash = getIntFromBits(hex(Hash::sha256(data(gApplication))), 31);
+    const auto layerHash = getIntFromBits(hex(Hash::sha256(data(internal::gLayer))), 31);
+    const auto applicationHash = getIntFromBits(hex(Hash::sha256(data(application))), 31);
     const auto ethAddress1 = getIntFromBits(ethAddress.substr(2), 31);
     const auto ethAddress2 = getIntFromBits(ethAddress.substr(2), 62, 31);
-    out << "m/2645'/" << layerHash << "'/" << applicationHash << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << gIndex;
+    out << "m/2645'/" << layerHash << "'/" << applicationHash << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << index;
     return out.str();
 }
 

@@ -11,6 +11,7 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/Signer.h"
+#include "ImmutableX/StarkKey.h"
 #include "Hedera/DER.h"
 #include "NEAR/Address.h"
 #include "HexCoding.h"
@@ -469,6 +470,29 @@ TEST(HDWallet, FromSeedStark) {
     ASSERT_EQ(hex(key.bytes), "57384e99059bb1c0e51d70f0fca22d18d7191398dd39d6b9b4e0521174b2377a");
     auto addr = Ethereum::Address(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
     ASSERT_EQ(addr, "0x47bbe762944B089315ac50c9ca762F4B4884B965");
+}
+
+TEST(HDWallet, FromMnemonicStark) {
+    // https://github.com/starkware-libs/starkware-crypto-utils/blob/d3a1e655105afd66ebc07f88a179a3042407cc7b/test/js/key_derivation.spec.js#L20
+    const auto mnemonic = "range mountain blast problem vibrant void vivid doctor cluster enough melody salt layer language laptop boat major space monkey unit glimpse pause change vibrant";
+    const auto ethAddress = "0xA4864D977b944315389d1765Ffa7E66F74eE8cD7";
+    auto derivationPath = DerivationPath(ImmutableX::accountPathFromAddress(ethAddress, "starkdeployement", "0"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/891216374'/1961790679'/2135936222'/0");
+    HDWallet wallet = HDWallet(mnemonic, "");
+
+    // ETH
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+    }
+
+    // Stark
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath(derivationPath));
+        auto starkPrivKey = ImmutableX::getPrivateKeyFromEthPrivKey(ethPrivKey);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "06cf0a8bf113352eb863157a45c5e5567abb34f8d32cddafd2c22aa803f4892c");
+    }
 }
 
 TEST(HDWallet, NearKey) {

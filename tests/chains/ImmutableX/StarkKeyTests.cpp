@@ -19,8 +19,6 @@ TEST(ImmutableX, PathFromAddress) {
 TEST(ImmutableX, GrindKey) {
     auto res = grindKey("86F3E7293141F20A8BAFF320E8EE4ACCB9D4A4BF2B4D295E8CEE784DB46E0519");
     ASSERT_EQ(res, "5c8c8683596c732541a59e03007b2d30dbbbb873556fe65b5fb63c16688f941");
-    auto data = parse_hex(res, true);
-    std::cout << hex(data) << std::endl;
 }
 
 TEST(ImmutableX, GetPrivateKeySignature) {
@@ -40,10 +38,8 @@ TEST(ImmutableX, GetPrivateKeyFromSignature) {
     ASSERT_TRUE(PrivateKey::isValid(parse_hex(privKey)));
 }
 
-TEST(ImmutableX, GetPublicKeyFromSignature) {
+TEST(ImmutableX, GetPublicKeyFromPrivateKey) {
     auto pubKey = getPublicKeyFromPrivateKey("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
     ASSERT_EQ(pubKey, "0x2a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd");
 }
-
-
 }
