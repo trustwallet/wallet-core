@@ -11,6 +11,7 @@
 #include "uint256.h"
 #include "ImmutableX/Constants.h"
 #include "Ethereum/Signer.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "HDWallet.h"
 #include <sstream>
 #include <string>
@@ -70,6 +71,13 @@ static std::string getPrivateKeyFromRawSignature(const std::string& signature, c
     auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
     auto seed = store(ethSignature.s);
     return getPrivateKeyFromSeed(hex(seed), accountPathFromAddress(ethAddress));
+}
+
+static std::string getPublicKeyFromPrivateKey(const std::string& privateKey) {
+    auto privKey = starknet_pubkey_from_private(privateKey.c_str());
+    std::string privKeyStr = privKey;
+    free_string(privKey);
+    return privKeyStr;
 }
 
 } // namespace TW::ImmutableX

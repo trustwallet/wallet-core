@@ -566,6 +566,7 @@ dependencies = [
  "hex",
  "move-core-types",
  "starknet-crypto",
+ "starknet-ff",
 ]
 
 [[package]]

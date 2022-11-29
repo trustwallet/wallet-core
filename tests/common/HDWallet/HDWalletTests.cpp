@@ -482,28 +482,5 @@ TEST(HDWallet, NearKey) {
         EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
     }
 }
-TEST(HDWallet, FromSeedStark) {
-    std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
-    auto data = parse_hex(signature);
-    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
-    auto seed = store(ethSignature.s);
-    ASSERT_EQ(ethSignature.s, uint256_t("34506778598894488719068064129252410649539581100963007245393949841529394744783"));
-    auto derivationPath = DerivationPath("m/2645'/579218131'/211006541'/1534045311'/1431804530'/1");
-    auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, derivationPath);
-    ASSERT_EQ(hex(key.bytes), "57384e99059bb1c0e51d70f0fca22d18d7191398dd39d6b9b4e0521174b2377a");
-    auto addr = Ethereum::Address(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
-    ASSERT_EQ(addr, "0x47bbe762944B089315ac50c9ca762F4B4884B965");
-}
-TEST(HDWallet, NearKey) {
-    const auto derivPath = "m/44'/397'/0'";
-    HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");
-    {
-        const auto privateKey = wallet.getKey(TWCoinTypeNEAR, DerivationPath(derivPath));
-        EXPECT_EQ(hex(privateKey.bytes), "35e0d9631bd538d5569266abf6be7a9a403ebfda92ddd49b3268e35360a6c2dd");
-        const auto p = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        EXPECT_EQ(hex(p.bytes), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
-        EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
-    }
-}
 
 } // namespace

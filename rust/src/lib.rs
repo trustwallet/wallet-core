@@ -6,3 +6,4 @@
 
 pub mod move_parser;
 pub mod memory;
+pub mod starknet;
