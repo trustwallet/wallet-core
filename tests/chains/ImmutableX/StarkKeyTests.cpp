@@ -37,6 +37,7 @@ TEST(ImmutableX, GetPrivateKeyFromSignature) {
     std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
     auto privKey = getPrivateKeyFromRawSignature(signature, address);
     ASSERT_EQ(privKey, "058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
+    ASSERT_TRUE(PrivateKey::isValid(parse_hex(privKey)));
 }
 
 TEST(ImmutableX, GetPublicKeyFromSignature) {
