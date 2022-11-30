@@ -67,4 +67,15 @@ Data sign(const Data& privateKey, const Data& digest) {
     return parse_hex(starknet_sign(privKeyStr.c_str(), hexDigest.c_str()));
 }
 
+bool verify(const Data& pubKey, const Data& signature, const Data& digest) {
+    if (signature.size() != 64) {
+        return false;
+    }
+    auto r = hex(subData(signature, 0, 32));
+    auto s = hex(subData(signature, 32));
+    auto pubKeyStr = hex(pubKey);
+    auto digestStr = hex(digest);
+    return starknet_verify(pubKeyStr.c_str(), digestStr.c_str(), r.c_str(), s.c_str());
+}
+
 } // namespace TW::ImmutableX

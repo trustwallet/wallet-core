@@ -15,6 +15,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
+#include <ImmutableX/StarkKey.h>
 
 #include <iterator>
 
@@ -161,6 +162,8 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         verifyBuffer[63] &= 127;
         return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(), verifyBuffer.data()) == 0;
     }
+    case TWPublicKeyTypeStarkex:
+        return ImmutableX::verify(this->bytes, signature, message);
     default:
         throw std::logic_error("Not yet implemented");
     }
