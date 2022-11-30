@@ -31,10 +31,6 @@ class TestAptosSigner {
 
         val payloadJson = """
             {
-                "expiration_timestamp_secs": "3664390082",
-                "gas_unit_price": "100",
-                "max_gas_amount": "100011",
-                "payload": {
                     "function": "0x16fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c::AnimeSwapPoolV1::swap_exact_coins_for_coins_3_pair_entry",
                     "type_arguments": [
                         "0x1::aptos_coin::AptosCoin",
@@ -47,13 +43,15 @@ class TestAptosSigner {
                         "49329"
                     ],
                     "type": "entry_function_payload"
-                },
-                "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
-                "sequence_number": "42"
             }
         """.trimIndent()
         val signingInput = Aptos.SigningInput.newBuilder()
             .setChainId(1)
+            .setExpirationTimestampSecs(3664390082)
+            .setGasUnitPrice(100)
+            .setMaxGasAmount(100011)
+            .setSender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30")
+            .setSequenceNumber(42)
             .setAnyEncoded(payloadJson)
             .setPrivateKey(key)
             .build()
