@@ -9,6 +9,7 @@
 #include "../BinaryCoding.h"
 
 #include <algorithm>
+#include <cmath>
 #include <sstream>
 #include <string>
 
@@ -168,8 +169,8 @@ Data Transaction::serializeCurrencyAmount(const CurrencyAmount& currency_amount)
         return Data();
     }
 
-    int64_t min_mantissa = (uint64_t)pow(10, 15);
-    int64_t max_mantissa = (uint64_t)pow(10, 16) - 1;
+    int64_t min_mantissa = (uint64_t)std::pow(10, 15);
+    int64_t max_mantissa = (uint64_t)std::pow(10, 16) - 1;
     int32_t min_exp = -96;
     int32_t max_exp = 80;
 
