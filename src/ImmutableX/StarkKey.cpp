@@ -64,7 +64,10 @@ std::string getPublicKeyFromPrivateKey(const std::string& privateKey) {
 Data sign(const Data& privateKey, const Data& digest) {
     auto privKeyStr = hex(privateKey);
     auto hexDigest = hex(digest);
-    return parse_hex(starknet_sign(privKeyStr.c_str(), hexDigest.c_str()));
+    auto resultSignature = starknet_sign(privKeyStr.c_str(), hexDigest.c_str());
+    auto toReturn = parse_hex(resultSignature);
+    free_string(resultSignature);
+    return toReturn;
 }
 
 bool verify(const Data& pubKey, const Data& signature, const Data& digest) {
