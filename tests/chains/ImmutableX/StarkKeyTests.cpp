@@ -61,4 +61,22 @@ TEST(ImmutableX, GetPublicKeyFromPrivateKey) {
         ASSERT_EQ(hexEncoded(pub.bytes), "0x02a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd");
     }
 }
+
+TEST(ImmutableX, SimpleSign) {
+    auto privKey = parse_hex("0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79");
+    auto digest = parse_hex("06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76");
+    auto signature = hex(ImmutableX::sign(privKey, digest));
+    auto expectedSignature = "061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a";
+    ASSERT_EQ(signature.size(), 128ULL);
+    ASSERT_EQ(signature.substr(0, 64), "061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f");
+    ASSERT_EQ(signature.substr(64, 64), "04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a");
+    ASSERT_EQ(signature, expectedSignature);
+
+    {
+        PrivateKey priv(privKey);
+        auto result = hex(priv.sign(digest, TWCurveStarkex));
+        ASSERT_EQ(result, expectedSignature);
+    }
+}
+
 } // namespace TW::ImmutableX::tests

@@ -232,6 +232,11 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result.resize(65);
         success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
     } break;
+    case TWCurveStarkex: {
+        result = ImmutableX::sign(this->bytes, digest);
+        success = true;
+        break;
+    }
     case TWCurveNone:
     default:
         break;

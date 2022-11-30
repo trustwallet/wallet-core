@@ -24,4 +24,6 @@ std::string getPrivateKeyFromRawSignature(const std::string& signature, const st
 
 std::string getPublicKeyFromPrivateKey(const std::string& privateKey);
 
+Data sign(const Data &privateKey, const Data& digest);
+
 } // namespace TW::ImmutableX

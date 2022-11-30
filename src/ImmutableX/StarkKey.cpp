@@ -61,4 +61,10 @@ std::string getPublicKeyFromPrivateKey(const std::string& privateKey) {
     return pubKeyStr;
 }
 
+Data sign(const Data& privateKey, const Data& digest) {
+    auto privKeyStr = hex(privateKey);
+    auto hexDigest = hex(digest);
+    return parse_hex(starknet_sign(privKeyStr.c_str(), hexDigest.c_str()));
+}
+
 } // namespace TW::ImmutableX
