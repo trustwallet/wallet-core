@@ -154,12 +154,12 @@ Proto::SigningOutput blindSign(const Proto::SigningInput& input) {
         output.set_json(json.dump());
     } else {
         TransactionBuilder::builder()
-            .sender(Address(j.at("sender").get<std::string>()))
-            .sequenceNumber(std::stoull(j.at("sequence_number").get<std::string>()))
-            .payload(EntryFunction::from_json(j.at("payload")))
-            .maxGasAmount(std::stoull(j.at("max_gas_amount").get<std::string>()))
-            .gasUnitPrice(std::stoull(j.at("gas_unit_price").get<std::string>()))
-            .expirationTimestampSecs(std::stoull(j.at("expiration_timestamp_secs").get<std::string>()))
+            .sender(Address(input.sender()))
+            .sequenceNumber(input.sequence_number())
+            .payload(EntryFunction::from_json(j))
+            .maxGasAmount(input.max_gas_amount())
+            .gasUnitPrice(input.gas_unit_price())
+            .expirationTimestampSecs(input.expiration_timestamp_secs())
             .chainId(static_cast<uint8_t>(input.chain_id()))
             .sign(input, output);
     }
