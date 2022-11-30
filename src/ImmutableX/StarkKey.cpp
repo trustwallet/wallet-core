@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <Ethereum/EIP2645.h>
 #include <Ethereum/Signer.h>
-#include <Ethereum/eip2645.h>
 #include <HDWallet.h>
 #include <Hash.h>
 #include <HexCoding.h>

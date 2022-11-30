@@ -11,7 +11,7 @@
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
-#include "Ethereum/eip2645.h"
+#include "Ethereum/EIP2645.h"
 #include "ImmutableX/StarkKey.h"
 #include "Mnemonic.h"
 #include "memory/memzero_wrapper.h"
@@ -269,7 +269,7 @@ PrivateKey HDWallet::bip32DeriveRawSeed(TWCoinType coin, const Data& seed, const
     return PrivateKey(data);
 }
 
-std::string HDWallet::eip2645(const std::string& ethAddress, const std::string& layer, const std::string& application, const std::string& index) const {
+std::string HDWallet::eip2645Path(const std::string& ethAddress, const std::string& layer, const std::string& application, const std::string& index) const {
     return Ethereum::accountPathFromAddress(ethAddress, layer, application, index);
 }
 
