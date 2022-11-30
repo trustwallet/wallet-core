@@ -6,6 +6,7 @@
 
 #include "PrivateKey.h"
 
+#include "HexCoding.h"
 #include "PublicKey.h"
 
 #include <TrezorCrypto/bignum.h>
@@ -18,6 +19,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
+#include <ImmutableX/StarkKey.h>
 
 #include <iterator>
 
@@ -152,11 +154,18 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         append(result, secondChainCode());
     } break;
 
-    case TWPublicKeyTypeCURVE25519:
+    case TWPublicKeyTypeCURVE25519: {
         result.resize(PublicKey::ed25519Size);
         PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
         ed25519_pk_to_curve25519(result.data(), ed25519PublicKey.bytes.data());
         break;
+    }
+
+    case TWPublicKeyTypeStarkex: {
+        auto pubkeyStr = ImmutableX::getPublicKeyFromPrivateKey(hex(this->bytes));
+        result = parse_hex(pubkeyStr, true);
+        break;
+    }
     }
     return PublicKey(result, type);
 }

@@ -4,8 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "ImmutableX/StarkKey.h"
 #include "Ethereum/Signer.h"
+#include "Ethereum/eip2645.h"
+#include "HexCoding.h"
+#include "ImmutableX/Constants.h"
+#include "ImmutableX/StarkKey.h"
 #include <gtest/gtest.h>
 
 namespace TW::ImmutableX::tests {
@@ -41,5 +44,11 @@ TEST(ImmutableX, GetPrivateKeyFromSignature) {
 TEST(ImmutableX, GetPublicKeyFromPrivateKey) {
     auto pubKey = getPublicKeyFromPrivateKey("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
     ASSERT_EQ(pubKey, "0x2a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd");
+
+    {
+        auto priv = PrivateKey(parse_hex("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe"));
+        auto pub = priv.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hexEncoded(pub.bytes), "0x02a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd");
+    }
 }
-}
+} // namespace TW::ImmutableX::tests

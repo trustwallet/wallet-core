@@ -41,6 +41,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1Extended:
         return size == secp256k1ExtendedSize && data[0] == 0x04;
+    case TWPublicKeyTypeStarkex:
+        return size == starkexSize;
     default:
         return false;
     }
@@ -55,6 +57,7 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
         throw std::invalid_argument("Invalid public key data");
     }
     switch (type) {
+    case TWPublicKeyTypeStarkex:
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeSECP256k1Extended:

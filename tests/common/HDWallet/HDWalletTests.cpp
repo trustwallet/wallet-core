@@ -490,7 +490,9 @@ TEST(HDWallet, FromMnemonicStark) {
     // Stark
     {
         auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
+        auto starkPubKey  = hex(starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex).bytes);
         ASSERT_EQ(hex(starkPrivKey.bytes), "06cf0a8bf113352eb863157a45c5e5567abb34f8d32cddafd2c22aa803f4892c");
+        ASSERT_EQ(starkPubKey, "02d2bbdc1adaf887b0027cdde2113cfd81c60493aa6dc15d7887ddf1a82bc831");
     }
 }
 
