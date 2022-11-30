@@ -12,9 +12,9 @@
 
 namespace TW::ImmutableX {
 
-uint256_t hashKeyWithIndex(const std::string& seed, std::size_t index);
+uint256_t hashKeyWithIndex(const Data& seed, std::size_t index);
 
-std::string grindKey(const std::string& seed);
+std::string grindKey(const Data& seed);
 
 std::string getPrivateKeyFromSeed(const std::string& seed, const std::string& path);
 

@@ -15,37 +15,35 @@
 
 namespace TW::ImmutableX {
 
-uint256_t hashKeyWithIndex(const std::string& seed, std::size_t index) {
-    auto data = parse_hex(seed);
+uint256_t hashKeyWithIndex(const Data& seed, std::size_t index) {
+    auto data = seed;
     data.push_back(static_cast<uint8_t>(index));
     auto out = Hash::sha256(data);
     return load(out);
 }
 
-std::string grindKey(const std::string& seed) {
+std::string grindKey(const Data& seed) {
     std::size_t index{0};
     int256_t key = hashKeyWithIndex(seed, index);
     while (key >= internal::gStarkDeriveBias) {
-        std::stringstream ss;
-        ss << std::hex << key;
-        key = hashKeyWithIndex(ss.str(), index);
+        key = hashKeyWithIndex(store(uint256_t(key)), index);
         index += 1;
     }
-    auto final = key % internal::gStarkCurveN;
+    auto finalKey = key % internal::gStarkCurveN;
     std::stringstream ss;
-    ss << std::hex << final;
+    ss << std::hex << finalKey;
     return ss.str();
 }
 
 std::string getPrivateKeyFromSeed(const std::string& seed, const std::string& path) {
     auto dataSeed = parse_hex(seed);
     auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, dataSeed, DerivationPath(path));
-    auto data = parse_hex(grindKey(hex(key.bytes)), true);
+    auto data = parse_hex(grindKey(key.bytes), true);
     return hex(data);
 }
 
 PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
-    return PrivateKey(parse_hex(ImmutableX::grindKey(hex(ethPrivKey.bytes)), true));
+    return PrivateKey(parse_hex(ImmutableX::grindKey(ethPrivKey.bytes), true));
 }
 
 std::string getPrivateKeyFromRawSignature(const std::string& signature, const std::string& ethAddress) {
