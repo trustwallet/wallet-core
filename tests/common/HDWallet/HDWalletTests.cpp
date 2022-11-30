@@ -476,9 +476,9 @@ TEST(HDWallet, FromMnemonicStark) {
     // https://github.com/starkware-libs/starkware-crypto-utils/blob/d3a1e655105afd66ebc07f88a179a3042407cc7b/test/js/key_derivation.spec.js#L20
     const auto mnemonic = "range mountain blast problem vibrant void vivid doctor cluster enough melody salt layer language laptop boat major space monkey unit glimpse pause change vibrant";
     const auto ethAddress = "0xA4864D977b944315389d1765Ffa7E66F74eE8cD7";
-    auto derivationPath = DerivationPath(ImmutableX::accountPathFromAddress(ethAddress, "starkdeployement", "0"));
-    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/891216374'/1961790679'/2135936222'/0");
     HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(wallet.eip2645(ethAddress, "starkex", "starkdeployement", "0"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/891216374'/1961790679'/2135936222'/0");
 
     // ETH
     {

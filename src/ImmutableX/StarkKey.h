@@ -6,24 +6,20 @@
 
 #pragma once
 
+#include "Ethereum/Signer.h"
+#include "Ethereum/eip2645.h"
+#include "HDWallet.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include "uint256.h"
 #include "ImmutableX/Constants.h"
-#include "Ethereum/Signer.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
-#include "HDWallet.h"
+#include "uint256.h"
+
 #include <sstream>
 #include <string>
 #include <iostream>
 
 namespace TW::ImmutableX {
-
-static std::string getIntFromBits(const std::string& hexString, std::size_t from, std::optional<std::size_t> length = std::nullopt) {
-    const auto data = hex_str_to_bin_str(hexString);
-    const auto sub = data.substr(data.size() - from, length.value_or(std::string::npos));
-    return std::to_string(std::stoll(sub, nullptr, 2));
-}
 
 static uint256_t hashKeyWithIndex(const std::string& seed, std::size_t index) {
     auto data = parse_hex(seed);
@@ -58,22 +54,12 @@ static PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
     return PrivateKey(parse_hex(ImmutableX::grindKey(hex(ethPrivKey.bytes)), true));
 }
 
-// https://docs.starkware.co/starkex/key-derivation.html
-[[nodiscard("Use it to get derivation path")]] static std::string accountPathFromAddress(const std::string& ethAddress, const std::string& application = internal::gApplication, const std::string& index = internal::gIndex) noexcept {
-    std::stringstream out;
-    const auto layerHash = getIntFromBits(hex(Hash::sha256(data(internal::gLayer))), 31);
-    const auto applicationHash = getIntFromBits(hex(Hash::sha256(data(application))), 31);
-    const auto ethAddress1 = getIntFromBits(ethAddress.substr(2), 31);
-    const auto ethAddress2 = getIntFromBits(ethAddress.substr(2), 62, 31);
-    out << "m/2645'/" << layerHash << "'/" << applicationHash << "'/" << ethAddress1 << "'/" << ethAddress2 << "'/" << index;
-    return out.str();
-}
-
 static std::string getPrivateKeyFromRawSignature(const std::string& signature, const std::string& ethAddress) {
+    using namespace internal;
     auto data = parse_hex(signature);
     auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
     auto seed = store(ethSignature.s);
-    return getPrivateKeyFromSeed(hex(seed), accountPathFromAddress(ethAddress));
+    return getPrivateKeyFromSeed(hex(seed), Ethereum::accountPathFromAddress(ethAddress, gLayer, gApplication, gIndex));
 }
 
 static std::string getPublicKeyFromPrivateKey(const std::string& privateKey) {
