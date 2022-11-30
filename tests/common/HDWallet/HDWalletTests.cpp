@@ -4,21 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HDWallet.h"
-#include "Mnemonic.h"
+#include "Base58.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "Coin.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/Signer.h"
-#include "ImmutableX/StarkKey.h"
-#include "Hedera/DER.h"
-#include "NEAR/Address.h"
-#include "HexCoding.h"
-#include "PublicKey.h"
+#include "HDWallet.h"
 #include "Hash.h"
-#include "Base58.h"
-#include "Coin.h"
+#include "Hedera/DER.h"
+#include "HexCoding.h"
+#include "ImmutableX/StarkKey.h"
+#include "Mnemonic.h"
+#include "NEAR/Address.h"
+#include "PublicKey.h"
 #include "TestUtilities.h"
 
 #include <gtest/gtest.h>
@@ -59,7 +59,7 @@ TEST(HDWallet, createFromMnemonic) {
         EXPECT_EQ(hex(wallet.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         EXPECT_EQ(hex(wallet.getSeed()), "143cd5fc27ae46eb423efebc41610473f5e24a80f2ca2e2fa7bf167e537f58f4c68310ae487fce82e25bad29bab2530cf77fd724a5ebfc05a45872773d7ee2d6");
     }
-    {   // empty passphrase
+    { // empty passphrase
         HDWallet wallet = HDWallet(mnemonic1, "");
         EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
         EXPECT_EQ(wallet.getPassphrase(), "");
@@ -69,37 +69,37 @@ TEST(HDWallet, createFromMnemonic) {
 }
 
 TEST(HDWallet, entropyLength_createFromMnemonic) {
-    {   // 12 words
+    { // 12 words
         HDWallet wallet = HDWallet("oil oil oil oil oil oil oil oil oil oil oil oil", "");
         EXPECT_EQ(wallet.getEntropy().size(), 16ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "99d33a674ce99d33a674ce99d33a674c");
     }
-    {   // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+    { // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
         HDWallet wallet = HDWallet("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "");
         EXPECT_EQ(wallet.getEntropy().size(), 16ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "00000000000000000000000000000000");
     }
-    {   // 15 words
+    { // 15 words
         HDWallet wallet = HDWallet("history step cheap card humble screen raise seek robot slot coral roof spoil wreck caution", "");
         EXPECT_EQ(wallet.getEntropy().size(), 20ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "6c3aac9b9146ef832c4e18bb3980c0dddd25fc49");
     }
-    {   // 18 words
+    { // 18 words
         HDWallet wallet = HDWallet("caught hockey split gun symbol code payment copy broccoli silly shed secret stove tell citizen staff photo high", "");
         EXPECT_EQ(wallet.getEntropy().size(), 24ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "246d8f48b3fdc65a2869801c791715614d6bbd8a56a0a3ad");
     }
-    {   // 21 words
+    { // 21 words
         HDWallet wallet = HDWallet("diary shine country alpha bridge coast loan hungry hip media sell crucial swarm share gospel lake visa coin dizzy physical basket", "");
         EXPECT_EQ(wallet.getEntropy().size(), 28ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "3d58bcc40381bc59a0c37a6bf14f0d9a3db78a5933e5f4a5ad00d1f1");
     }
-    {   // 24 words
+    { // 24 words
         HDWallet wallet = HDWallet("poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp", "");
         EXPECT_EQ(wallet.getEntropy().size(), 32ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "a73a3732edebbb49f5fdfe68c7b5c0f6e9de3a1d5760faa8c771e384bf4229b6");
     }
-    {   // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+    { // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
         HDWallet wallet = HDWallet("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "");
         EXPECT_EQ(wallet.getEntropy().size(), 32ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "8080808080808080808080808080808080808080808080808080808080808080");
@@ -266,7 +266,7 @@ TEST(HDWallet, Bip39Vectors) {
     // BIP39 test vectors, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
     const auto passphrase = "TREZOR";
     const auto vectors = getVectors();
-    for (const auto& v: vectors) {
+    for (const auto& v : vectors) {
         const std::string entropy = v[0];
         const std::string mnemonic = v[1];
         const std::string seed = v[2];
@@ -295,7 +295,7 @@ TEST(HDWallet, getExtendedPrivateKey) {
     const auto purpose = TWPurposeBIP44;
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPRV;
-    
+
     // default
     const auto extPubKey1 = wallet.getExtendedPrivateKey(purpose, coin, hdVersion);
     EXPECT_EQ(extPubKey1, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
@@ -315,7 +315,7 @@ TEST(HDWallet, getExtendedPublicKey) {
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPUB;
     const auto derivation = TWDerivationDefault;
-    
+
     // default
     const auto extPubKey1 = wallet.getExtendedPublicKey(purpose, coin, hdVersion);
     EXPECT_EQ(extPubKey1, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
@@ -489,8 +489,7 @@ TEST(HDWallet, FromMnemonicStark) {
 
     // Stark
     {
-        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath(derivationPath));
-        auto starkPrivKey = ImmutableX::getPrivateKeyFromEthPrivKey(ethPrivKey);
+        auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
         ASSERT_EQ(hex(starkPrivKey.bytes), "06cf0a8bf113352eb863157a45c5e5567abb34f8d32cddafd2c22aa803f4892c");
     }
 }
@@ -507,4 +506,4 @@ TEST(HDWallet, NearKey) {
     }
 }
 
-} // namespace
+} // namespace TW::HDWalletTests

@@ -12,6 +12,7 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
 #include "Ethereum/eip2645.h"
+#include "ImmutableX/StarkKey.h"
 #include "Mnemonic.h"
 #include "memory/memzero_wrapper.h"
 
@@ -150,12 +151,14 @@ PrivateKey HDWallet::getKeyByCurve(TWCurve curve, const DerivationPath& derivati
         TW::memzero(&node);
         return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
     }
-
     case TWPrivateKeyTypeDefault:
     default:
         // default path
         auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
         TW::memzero(&node);
+        if (curve == TWCurveStarkex) {
+            return ImmutableX::getPrivateKeyFromEthPrivKey(PrivateKey(data));
+        }
         return PrivateKey(data);
     }
 }
@@ -369,6 +372,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
 
 const char* curveName(TWCurve curve) {
     switch (curve) {
+    case TWCurveStarkex:
     case TWCurveSECP256k1:
         return SECP256K1_NAME;
     case TWCurveED25519:
