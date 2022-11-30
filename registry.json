@@ -2139,17 +2139,17 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "280",
+    "chainId": "324",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://zksync2-testnet.zkscan.io",
+      "url": "https://explorer.zksync.io/",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
       "url": "https://portal.zksync.io/",
       "source": "https://github.com/matter-labs/zksync",
-      "rpc": "https://zksync2-testnet.zksync.dev",
+      "rpc": "https://zksync2-mainnet.zksync.io",
       "documentation": "https://v2-docs.zksync.io"
     }
   },
