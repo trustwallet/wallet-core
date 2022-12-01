@@ -496,6 +496,35 @@ TEST(HDWallet, FromMnemonicStark) {
     }
 }
 
+TEST(HDWallet, FromMnemonicImmutableX) {
+    // Successfully register the user: https://api.sandbox.x.immutable.com/v1/users/0x1A817D0cC495C8157E4C734c48a1e840473CBCa1
+    const auto mnemonic = "owner erupt swamp room swift final allow unaware hint identify figure cotton";
+    const auto ethAddress = "0x1A817D0cC495C8157E4C734c48a1e840473CBCa1";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(wallet.eip2645Path(ethAddress, "starkex", "immutablex", "1"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/1195162785'/289656960'/1");
+
+    // ETH
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        ASSERT_EQ(hex(ethPrivKey.bytes), "a84f129929f6effe3fd541bcaa8a13d80714cd93c205682bea8b9e0cfc28a2ad");
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+    }
+
+    // Stark
+    {
+        auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
+        auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "02d037bb9c1302295c2f9fa66bcc4ab8e353a3140600a390598777d69c1bc71a");
+        ASSERT_EQ(hex(starkPubKey.bytes), "006c061ea4195769058e0e2e14cd747619a866954a412e15fa2241fdf49438cf");
+        auto digest = parse_hex("28419a504c5b1c83df4fdcbf7f5f36a7d5cfa8148aff2d33aed2f40a64e7ea0", true);
+        auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
+        ASSERT_EQ(starkSignature, "077cae8f00327a2072d3ca8b31725263f61303dc0142a631561d33cb2b4cb221008d659541d59f1589b0e714ddc0a5bee77faddf093f96d529b6c55c0bffd45d");
+        ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
+    }
+}
+
 TEST(HDWallet, NearKey) {
     const auto derivPath = "m/44'/397'/0'";
     HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");
