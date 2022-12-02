@@ -9,19 +9,25 @@
 #include "Address.h"
 #include "Signer.h"
 
+#include "Everscale/WorkchainType.h"
+
 namespace TW::TheOpenNetwork {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress(TWCoinType coin, [[maybe_unused]] const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return Address::isValid(address);
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
-    return Address(publicKey).string();
+std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+    return Address(address).string();
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+std::string Entry::deriveAddress([[maybe_unused]]TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+    return Address(publicKey, Everscale::WorkchainType::Basechain).string();
+}
+
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 

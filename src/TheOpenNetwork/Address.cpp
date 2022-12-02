@@ -5,10 +5,20 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "HexCoding.h"
+
+#include "wallet/WalletV4R2.h"
 
 namespace TW::TheOpenNetwork {
 
-bool Address::isValid(const std::string& string) {
+namespace {
+Address createFromWallet(const PublicKey& publicKey, int8_t workchainId) {
+    WalletV4R2 wallet(publicKey, workchainId);
+    return wallet.getAddress();
+}
+} // namespace
+
+bool Address::isValid(const std::string& string) noexcept {
     // TODO: Finalize implementation
     return false;
 }
@@ -21,13 +31,14 @@ Address::Address(const std::string& string) {
     }
 }
 
-Address::Address(const PublicKey& publicKey) {
-    // TODO: Finalize implementation
+Address::Address(const PublicKey& publicKey, int8_t workchainId)
+    : Address(createFromWallet(publicKey, workchainId)) {
 }
 
 std::string Address::string() const {
-    // TODO: Finalize implementation
-    return "TODO";
+    // TODO(vbushev): base64url, crc16 calc
+    std::string address = std::to_string(workchainId) + ":" + hex(hash);
+    return address;
 }
 
 } // namespace TW::TheOpenNetwork

@@ -14,25 +14,31 @@
 namespace TW::TheOpenNetwork {
 
 class Address {
-  public:
-    // TODO: Complete class definition
+public:
+    static const size_t size = Hash::sha256Size;
+
+    std::int8_t workchainId;
+    std::array<byte, size> hash{};
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
+    [[nodiscard]] static bool isValid(const std::string& string) noexcept;
 
-    /// Initializes a TheOpenNetwork address with a string representation.
+    /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes a TheOpenNetwork address with a public key.
-    explicit Address(const PublicKey& publicKey);
+    /// Initializes an address with a public key.
+    explicit Address(const PublicKey& publicKey, int8_t workchainId);
+
+    /// Initializes an address with its parts
+    explicit Address(int8_t workchainId, std::array<byte, size> hash)
+        : workchainId(workchainId), hash(hash) {}
 
     /// Returns a string representation of the address.
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    // TODO: Complete equality operator
-    return true;
+    return lhs.workchainId == rhs.workchainId && lhs.hash == rhs.hash;
 }
 
 } // namespace TW::TheOpenNetwork

@@ -15,10 +15,9 @@ namespace TW::TheOpenNetwork {
 class Entry final : public CoinEntry {
 public:
     bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
+    std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    // normalizeAddress(): implement this if needed, e.g. Ethereum address is EIP55 checksummed
-    // plan(): implement this if the blockchain is UTXO based
 };
 
 } // namespace TW::TheOpenNetwork
