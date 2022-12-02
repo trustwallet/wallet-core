@@ -5,7 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "HexCoding.h"
+
+#include "Base64.h"
+#include "Crc.h"
 
 #include "wallet/WalletV4R2.h"
 
@@ -24,9 +26,7 @@ bool Address::isValid(const std::string& string) noexcept {
 }
 
 Address::Address(const std::string& string) {
-    // TODO: Finalize implementation
-
-    if (!isValid(string)) {
+    if (!Address::isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
 }
@@ -36,9 +36,19 @@ Address::Address(const PublicKey& publicKey, int8_t workchainId)
 }
 
 std::string Address::string() const {
-    // TODO(vbushev): base64url, crc16 calc
-    std::string address = std::to_string(workchainId) + ":" + hex(hash);
-    return address;
+    Data data;
+    Data hashData(hash.begin(), hash.end());
+
+    append(data, 0x11);         // bounceable
+    append(data, workchainId);
+    append(data, hashData);
+
+    const uint16_t crc16 = Crc::crc16(data.data(), (uint32_t) data.size());
+
+    append(data, (crc16 >> 8) & 0xff);
+    append(data, crc16 & 0xff);
+
+    return Base64::encodeBase64Url(data);
 }
 
 } // namespace TW::TheOpenNetwork

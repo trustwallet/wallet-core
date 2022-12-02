@@ -13,7 +13,7 @@
 
 namespace TW::TheOpenNetwork {
 
-class Address {
+class Address {  // TODO(vbushev): : inherit Everscale::Address?
 public:
     static const size_t size = Hash::sha256Size;
 

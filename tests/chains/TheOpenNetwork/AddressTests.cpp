@@ -37,13 +37,13 @@ TEST(TheOpenNetworkAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("ff3ceb81a22c726e9d61d3f336fc783de5d60020972ca3abc27b99e3cf573a88"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     const auto address = Address(publicKey, Everscale::WorkchainType::Basechain);
-    ASSERT_EQ(address.string(), "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae");
+    ASSERT_EQ(address.string(), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
 }
 
 TEST(TheOpenNetworkAddress, FromPublicKey) {
     const auto publicKey = PublicKey(parse_hex("c2036a1ca901059e1d1ab38cd7a7a4709b5e8f9d85b387f0514d7adae70b6afe"), TWPublicKeyTypeED25519);
     const auto address = Address(publicKey, Everscale::WorkchainType::Basechain);
-    ASSERT_EQ(address.string(), "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae");
+    ASSERT_EQ(address.string(), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
 }
 
 } // namespace TW::TheOpenNetwork::tests
