@@ -35,23 +35,22 @@ std::string grindKey(const Data& seed) {
     return ss.str();
 }
 
-std::string getPrivateKeyFromSeed(const std::string& seed, const std::string& path) {
-    auto dataSeed = parse_hex(seed);
-    auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, dataSeed, DerivationPath(path));
+PrivateKey getPrivateKeyFromSeed(const Data& seed, const DerivationPath& path) {
+    auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, path);
     auto data = parse_hex(grindKey(key.bytes), true);
-    return hex(data);
+    return PrivateKey(data);
 }
 
 PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
     return PrivateKey(parse_hex(ImmutableX::grindKey(ethPrivKey.bytes), true));
 }
 
-std::string getPrivateKeyFromRawSignature(const std::string& signature, const std::string& ethAddress) {
+PrivateKey getPrivateKeyFromRawSignature(const std::string& signature, const DerivationPath& derivationPath) {
     using namespace internal;
     auto data = parse_hex(signature);
     auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
     auto seed = store(ethSignature.s);
-    return getPrivateKeyFromSeed(hex(seed), Ethereum::accountPathFromAddress(ethAddress, gLayer, gApplication, gIndex));
+    return getPrivateKeyFromSeed(seed, derivationPath);
 }
 
 std::string getPublicKeyFromPrivateKey(const std::string& privateKey) {

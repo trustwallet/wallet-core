@@ -11,6 +11,7 @@
 #include "Coin.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/Signer.h"
+#include "Ethereum/EIP191.h"
 #include "HDWallet.h"
 #include "Hash.h"
 #include "Hedera/DER.h"
@@ -526,7 +527,6 @@ TEST(HDWallet, FromMnemonicImmutableX) {
 }
 
 TEST(HDWallet, FromMnemonicImmutableXMainnet) {
-    // Successfully register the user: https://api.sandbox.x.immutable.com/v1/users/0x1A817D0cC495C8157E4C734c48a1e840473CBCa1
     const auto mnemonic = "ocean seven canyon push fiscal banana music guess arrange edit glance school";
     const auto ethAddress = "0x39E652fE9458D391737058b0dd5eCC6ec910A7dd";
     HDWallet wallet = HDWallet(mnemonic, "");
@@ -540,15 +540,8 @@ TEST(HDWallet, FromMnemonicImmutableXMainnet) {
         auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
         ASSERT_EQ(ethAddressFromPub, ethAddress);
 
-
-        // TODO: should we refactor to include/TrustWalletCore/TWEthereumMessageSigner.h ?
-        std::string prefix;
-        prefix.push_back(0x19);
-        std::stringstream ss;
         std::string tosign = "Only sign this request if you’ve initiated an action with Immutable X.\n\nFor internal use:\nbd717ba31dca6e0f3f136f7c4197babce5f09a9f25176044c0b3112b1b6017a3";
-        ss << prefix << "Ethereum Signed Message:\n" << std::to_string(tosign.size()) << tosign;
-        Data signableMessage = Hash::keccak256(data(ss.str()));
-        auto hexEthSignature = hex(ethPrivKey.sign(signableMessage, TWCurveSECP256k1));
+        auto hexEthSignature = Ethereum::MessageSigner::signMessage(ethPrivKey, tosign);
 
         ASSERT_EQ(hexEthSignature, "32cd5a58f3419fc5db672e3d57f76199b853eda0856d491b38f557b629b0a0814ace689412bf354a1af81126d2749207dffae8ae8845160f33948a6b787e17ee01");
     }
@@ -562,6 +555,35 @@ TEST(HDWallet, FromMnemonicImmutableXMainnet) {
         auto digest = parse_hex("76b66c453cd1b812032ff206a28df59f6abe41e805b9f1c48a1c4afe780756c", true);
         auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
         ASSERT_EQ(starkSignature, "070ad88f79650fbdc152affd738d4ec29888bed554ea74f9ad8ca7031ef300b50597f4a62752336db06e6d37dfc18047fdd40804f5fd19cebfda8cac91e4f178");
+        ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
+    }
+}
+
+TEST(HDWallet, FromMnemonicImmutableXMainnetFromSignature) {
+    // Successfully register: https://api.x.immutable.com/v1/users/0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37
+    const auto mnemonic = "obscure opera favorite shuffle mail tip age debate dirt pact cement loyal";
+    const auto ethAddress = "0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(wallet.eip2645Path(ethAddress, "starkex", "immutablex", "1"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1");
+
+    // ETH + stark
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        ASSERT_EQ(hex(ethPrivKey.bytes), "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d");
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+        auto signature = Ethereum::MessageSigner::signMessage(ethPrivKey, "Only sign this request if you’ve initiated an action with Immutable X.");
+        ASSERT_EQ(signature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001");
+        auto starkPrivKey = wallet.getStarkeyFromSignature(DerivationPath(derivationPath), signature);
+        auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de");
+        ASSERT_EQ(hex(starkPubKey.bytes), "00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095");
+        auto digest = parse_hex("463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf", true);
+        auto signatureToSend = Ethereum::MessageSigner::signMessage(ethPrivKey, "Only sign this key linking request from Immutable X");
+        ASSERT_EQ(signatureToSend, "646da4160f7fc9205e6f502fb7691a0bf63ecbb74bbb653465cd62388dd9f56325ab1e4a9aba99b1661e3e6251b42822855a71e60017b310b9f90e990a12e1dc01");
+        auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
+        ASSERT_EQ(starkSignature, "04cf5f21333dd189ada3c0f2a51430d733501a9b1d5e07905273c1938cfb261e05b6013d74adde403e8953743a338c8d414bb96bf69d2ca1a91a85ed2700a528");
         ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
     }
 }

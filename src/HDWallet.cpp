@@ -273,6 +273,10 @@ std::string HDWallet::eip2645Path(const std::string& ethAddress, const std::stri
     return Ethereum::accountPathFromAddress(ethAddress, layer, application, index);
 }
 
+PrivateKey HDWallet::getStarkeyFromSignature(const DerivationPath& derivationPath, const std::string& signature) const {
+    return ImmutableX::getPrivateKeyFromRawSignature(signature, derivationPath);
+}
+
 namespace {
 
 uint32_t fingerprint(HDNode* node, Hash::Hasher hasher) {

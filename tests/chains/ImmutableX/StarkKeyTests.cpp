@@ -20,11 +20,13 @@ TEST(ImmutableX, PathFromAddress) {
 }
 
 TEST(ImmutableX, ExtraGrinding) {
+    using namespace internal;
     std::string signature = "0x6d1550458c7a9a1257d73adbcf0fabc12f4497e970d9fa62dd88bf7d9e12719148c96225c1402d8707fd061b1aae2222bdf13571dfc82b3aa9974039f247f2b81b";
     std::string address = "0xa4864d977b944315389d1765ffa7e66F74ee8cd7";
     auto data = parse_hex(signature);
-    auto privKey = getPrivateKeyFromRawSignature(signature, address);
-    auto pubKey = hexEncoded(parse_hex(getPublicKeyFromPrivateKey(privKey), true));
+    auto path = DerivationPath(Ethereum::accountPathFromAddress(address, gLayer, gApplication, gIndex));
+    auto privKey = ImmutableX::getPrivateKeyFromRawSignature(signature, path);
+    auto pubKey = hexEncoded(parse_hex(getPublicKeyFromPrivateKey(hex(privKey.bytes)), true));
     ASSERT_EQ(pubKey, "0x035919acd61e97b3ecdc75ff8beed8d1803f7ea3cad2937926ae59cc3f8070d4");
 }
 
@@ -44,11 +46,13 @@ TEST(ImmutableX, GetPrivateKeySignature) {
 }
 
 TEST(ImmutableX, GetPrivateKeyFromSignature) {
+    using namespace internal;
     std::string address = "0xa76e3eeb2f7143165618ab8feaabcd395b6fac7f";
     std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
-    auto privKey = getPrivateKeyFromRawSignature(signature, address);
-    ASSERT_EQ(privKey, "058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
-    ASSERT_TRUE(PrivateKey::isValid(parse_hex(privKey)));
+    auto path = DerivationPath(Ethereum::accountPathFromAddress(address, gLayer, gApplication, gIndex));
+    auto privKey = ImmutableX::getPrivateKeyFromRawSignature(signature, path);
+    ASSERT_EQ(hex(privKey.bytes), "058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
+    ASSERT_TRUE(PrivateKey::isValid(privKey.bytes));
 }
 
 TEST(ImmutableX, GetPublicKeyFromPrivateKey) {

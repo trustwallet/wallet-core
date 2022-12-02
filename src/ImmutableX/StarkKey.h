@@ -8,6 +8,7 @@
 
 #include "uint256.h"
 #include <PrivateKey.h>
+#include <DerivationPath.h>
 #include <string>
 
 namespace TW::ImmutableX {
@@ -16,11 +17,11 @@ uint256_t hashKeyWithIndex(const Data& seed, std::size_t index);
 
 std::string grindKey(const Data& seed);
 
-std::string getPrivateKeyFromSeed(const std::string& seed, const std::string& path);
+PrivateKey getPrivateKeyFromSeed(const std::string& seed, const DerivationPath& path);
 
 PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey);
 
-std::string getPrivateKeyFromRawSignature(const std::string& signature, const std::string& ethAddress);
+PrivateKey getPrivateKeyFromRawSignature(const std::string& signature, const DerivationPath& derivationPath);
 
 std::string getPublicKeyFromPrivateKey(const std::string& privateKey);
 
