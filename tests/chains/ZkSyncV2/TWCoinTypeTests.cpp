@@ -29,8 +29,8 @@ TEST(TWZksyncCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(chainId, "324");
-    assertStringsEqual(txUrl, "https://explorer.zkscan.io/tx/0xb526861291c0335435e3c976e672a464b70762e54d7167409fb4f66e374ed708");
-    assertStringsEqual(accUrl, "https://explorer.zkscan.io/address/0x970978989a51790ee591b2a54f92c7cd9cdc2f88");
+    assertStringsEqual(txUrl, "https://explorer.zksync.io/tx/0xb526861291c0335435e3c976e672a464b70762e54d7167409fb4f66e374ed708");
+    assertStringsEqual(accUrl, "https://explorer.zksync.io/address/0x970978989a51790ee591b2a54f92c7cd9cdc2f88");
 }
 
 } // namespace TW::TWZksync::tests
