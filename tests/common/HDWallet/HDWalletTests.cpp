@@ -525,6 +525,47 @@ TEST(HDWallet, FromMnemonicImmutableX) {
     }
 }
 
+TEST(HDWallet, FromMnemonicImmutableXMainnet) {
+    // Successfully register the user: https://api.sandbox.x.immutable.com/v1/users/0x1A817D0cC495C8157E4C734c48a1e840473CBCa1
+    const auto mnemonic = "ocean seven canyon push fiscal banana music guess arrange edit glance school";
+    const auto ethAddress = "0x39E652fE9458D391737058b0dd5eCC6ec910A7dd";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(wallet.eip2645Path(ethAddress, "starkex", "immutablex", "1"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/1225828317'/985503965'/1");
+
+    // ETH
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        ASSERT_EQ(hex(ethPrivKey.bytes), "3b0a61f46fdae924007146eacb6db6642de7a5603ad843ec58e10331d89d4b84");
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+
+
+        // TODO: should we refactor to include/TrustWalletCore/TWEthereumMessageSigner.h ?
+        std::string prefix;
+        prefix.push_back(0x19);
+        std::stringstream ss;
+        std::string tosign = "Only sign this request if you’ve initiated an action with Immutable X.\n\nFor internal use:\nbd717ba31dca6e0f3f136f7c4197babce5f09a9f25176044c0b3112b1b6017a3";
+        ss << prefix << "Ethereum Signed Message:\n" << std::to_string(tosign.size()) << tosign;
+        Data signableMessage = Hash::keccak256(data(ss.str()));
+        auto hexEthSignature = hex(ethPrivKey.sign(signableMessage, TWCurveSECP256k1));
+
+        ASSERT_EQ(hexEthSignature, "32cd5a58f3419fc5db672e3d57f76199b853eda0856d491b38f557b629b0a0814ace689412bf354a1af81126d2749207dffae8ae8845160f33948a6b787e17ee01");
+    }
+
+    // Stark
+    {
+        auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
+        auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "070128376c2cfd21e7475708049d00c83d7ab65f15368e28730bf1684dee8370");
+        ASSERT_EQ(hex(starkPubKey.bytes), "00453ca02b347f80e5ddfc4caf254852fc05b172b37bca8f7e28600631d12dfe");
+        auto digest = parse_hex("76b66c453cd1b812032ff206a28df59f6abe41e805b9f1c48a1c4afe780756c", true);
+        auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
+        ASSERT_EQ(starkSignature, "070ad88f79650fbdc152affd738d4ec29888bed554ea74f9ad8ca7031ef300b50597f4a62752336db06e6d37dfc18047fdd40804f5fd19cebfda8cac91e4f178");
+        ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
+    }
+}
+
 TEST(HDWallet, NearKey) {
     const auto derivPath = "m/44'/397'/0'";
     HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");
