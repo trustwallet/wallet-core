@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../CoinEntry.h"
+#include "CoinEntry.h"
 
 namespace TW::TheOpenNetwork {
 

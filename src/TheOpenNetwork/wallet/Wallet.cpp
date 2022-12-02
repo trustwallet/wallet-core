@@ -19,7 +19,13 @@ Wallet::Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode)
 
 Address Wallet::getAddress() {
     const Cell::Ref stateInit = this->createStateInit();
-    return Address(workchainId, stateInit->hash);
+    auto address = Address(workchainId, stateInit->hash);
+
+    address.isUserFriendly = true;
+    address.isBounceable = true;
+    address.isTestOnly = false;
+
+    return address;
 }
 
 Cell::Ref Wallet::createStateInit() {

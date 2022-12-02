@@ -9,16 +9,32 @@
 #include "Data.h"
 #include "PublicKey.h"
 
+#include "Everscale/Address.h"
+
 #include <string>
 
 namespace TW::TheOpenNetwork {
 
-class Address {  // TODO(vbushev): : inherit Everscale::Address?
-public:
-    static const size_t size = Hash::sha256Size;
+enum AddressTag : uint8_t {
+    BOUNCEABLE = 0x11,
+    NON_BOUNCEABLE = 0x51,
+    TEST_ONLY = 0x80,
+};
 
-    std::int8_t workchainId;
-    std::array<byte, size> hash{};
+class Address : public Everscale::Address {
+public:
+    /// User-friendly address lens
+    static const size_t b64UserFriendlyAddressLen = 48;
+    static const size_t userFriendlyAddressLen = 36;
+
+    // Determines whether the address is user-friendly
+    bool isUserFriendly = false;
+
+    /// Determines whether the address is bounceable
+    bool isBounceable = false;
+
+    /// Determines whether the address is for tests only
+    bool isTestOnly = false;
 
     /// Determines whether a string makes a valid address.
     [[nodiscard]] static bool isValid(const std::string& string) noexcept;
@@ -31,14 +47,15 @@ public:
 
     /// Initializes an address with its parts
     explicit Address(int8_t workchainId, std::array<byte, size> hash)
-        : workchainId(workchainId), hash(hash) {}
+        : Everscale::Address(workchainId, hash) { }
 
     /// Returns a string representation of the address.
-    [[nodiscard]] std::string string() const;
-};
+    [[nodiscard]] std::string string() const override;
+    [[nodiscard]] std::string string(bool userFriendly, bool bounceable = true, bool testOnly = false) const;
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.workchainId == rhs.workchainId && lhs.hash == rhs.hash;
-}
+private:
+    static Address createFromWallet(const PublicKey& publicKey, int8_t workchainId);
+    static Data decodeUserFriendlyAddress(const std::string& string);
+};
 
 } // namespace TW::TheOpenNetwork

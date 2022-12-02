@@ -8,9 +8,10 @@
 
 #include "TheOpenNetwork/Address.h"
 
+#include "PublicKey.h"
+
 #include "Everscale/Cell.h"
 #include "Everscale/CellBuilder.h"
-#include "PublicKey.h"
 
 using namespace TW::Everscale;  // TODO(vbushev): move cell, cell builder and the workchain type to the common code?
 

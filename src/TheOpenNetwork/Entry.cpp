@@ -20,11 +20,11 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] c
 }
 
 std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    return Address(address).string();
+    return Address(address).string(true);
 }
 
 std::string Entry::deriveAddress([[maybe_unused]]TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
-    return Address(publicKey, Everscale::WorkchainType::Basechain).string();
+    return Address(publicKey, Everscale::WorkchainType::Basechain).string(true);
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Data.h"
-#include "../PrivateKey.h"
-#include "../proto/TheOpenNetwork.pb.h"
+#include "PrivateKey.h"
+#include "proto/TheOpenNetwork.pb.h"
 
 namespace TW::TheOpenNetwork {
 

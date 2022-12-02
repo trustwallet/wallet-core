@@ -40,8 +40,14 @@ public:
     explicit Address(int8_t workchainId, std::array<byte, size> hash)
         : workchainId(workchainId), hash(hash) {}
 
+    /// Address destructor
+    virtual ~Address() = default;
+
     /// Returns a string representation of the address.
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] virtual std::string string() const;
+
+protected:
+    Address() = default;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

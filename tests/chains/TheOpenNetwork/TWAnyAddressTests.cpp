@@ -4,23 +4,31 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Data.h"
+
 #include <TrustWalletCore/TWAnyAddress.h>
-#include "HexCoding.h"
+#include <TrustWalletCore/TWHDWallet.h>
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
 
-// TODO: Finalize tests
+namespace TW::TheOpenNetwork::tests {
 
 TEST(TWTheOpenNetwork, Address) {
-    // TODO: Finalize test implementation
+    const auto mnemonic = STRING(
+        "stuff diamond cycle federal scan spread pigeon people engage teach snack grain");
+    const auto passphrase = STRING("");
 
-//    auto string = STRING("__ADD_VALID_ADDRESS_HERE__");
-//    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeTheOpenNetwork));
-//    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-//    EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
-//    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-//    assertHexEqual(keyHash, "__CORRESPONDING_ADDRESS_DATA__");
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(mnemonic.get(), passphrase.get()));
+
+    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTheOpenNetwork, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeTheOpenNetwork)).get()));
+    const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
+    const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeTheOpenNetwork));
+    const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
+
+    assertStringsEqual(addressStr, "EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
 }
+
+} // namespace TW::TheOpenNetwork::tests

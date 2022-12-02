@@ -5,8 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+
 #include "Address.h"
-#include "../PublicKey.h"
+//#include "PrivateKey.h"
 
 namespace TW::TheOpenNetwork {
 
