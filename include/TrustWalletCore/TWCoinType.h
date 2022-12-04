@@ -21,6 +21,9 @@ TW_EXTERN_C_BEGIN
 /// Represents a private key.
 struct TWPrivateKey;
 
+/// Represents a public key.
+struct TWPublicKey;
+
 /// Coin type for Level 2 of BIP44.
 ///
 /// \see https://github.com/satoshilabs/slips/blob/master/slip-0044.md

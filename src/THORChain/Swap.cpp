@@ -195,7 +195,7 @@ SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint64_t amount, c
 SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     Data out;
     auto input = Ethereum::Proto::SigningInput();
-    const auto& toTokenId = mToAsset.token_id();
+    const auto& toTokenId = mFromAsset.token_id();
     // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(mVaultAddress);
     if (!Ethereum::Address::isValid(mVaultAddress) || vaultAddressBin.size() != Ethereum::Address::size) {
@@ -228,7 +228,7 @@ SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     Data payload;
     func.encode(payload);
     transfer.set_data(payload.data(), payload.size());
-    Data amountData = store(uint256_t(amount));
+    Data amountData = store(toTokenId.empty() ? uint256_t(amount) : uint256_t(0));
     transfer.set_amount(amountData.data(), amountData.size());
 
     auto serialized = input.SerializeAsString();
