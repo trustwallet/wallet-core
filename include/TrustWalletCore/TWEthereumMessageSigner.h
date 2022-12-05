@@ -10,6 +10,7 @@
 #include "TWData.h"
 #include "TWString.h"
 #include "TWPrivateKey.h"
+#include "TWPublicKey.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -35,6 +36,6 @@ TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey*
 /// \param signature: in Hex-encoded form.
 /// \returns false on any invalid input (does not throw), true if the message can be recovered from the signature
 TW_EXPORT_STATIC_METHOD
-bool TWEthereumMessageSignerVerifyMessage(TWPublicKey* _Nonnull pubKey, TWString* _Nonnull message, TWString* _Nonnull signature);
+bool TWEthereumMessageSignerVerifyMessage(const struct TWPublicKey* _Nonnull pubKey, TWString* _Nonnull message, TWString* _Nonnull signature);
 
 TW_EXTERN_C_END

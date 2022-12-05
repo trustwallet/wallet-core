@@ -17,6 +17,6 @@ TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey*
     }
 }
 
-bool TWEthereumMessageSignerVerifyMessage(TWPublicKey* _Nonnull publicKey, TWString* _Nonnull message, TWString* _Nonnull signature) {
+bool TWEthereumMessageSignerVerifyMessage(const struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull message, TWString* _Nonnull signature) {
     return TW::Ethereum::MessageSigner::verifyMessage(publicKey->impl, TWStringUTF8Bytes(message), TWStringUTF8Bytes(signature));
 }

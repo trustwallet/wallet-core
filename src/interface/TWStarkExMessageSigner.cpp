@@ -17,6 +17,6 @@ TWString* _Nonnull TWStarkExMessageSignerSignMessage(const struct TWPrivateKey* 
     }
 }
 
-bool TWStarkExMessageSignerVerifyMessage(TWPublicKey* _Nonnull publicKey, TWString* _Nonnull message, TWString* _Nonnull signature) {
+bool TWStarkExMessageSignerVerifyMessage(const struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull message, TWString* _Nonnull signature) {
     return TW::StarkEx::MessageSigner::verifyMessage(publicKey->impl, TWStringUTF8Bytes(message), TWStringUTF8Bytes(signature));
 }

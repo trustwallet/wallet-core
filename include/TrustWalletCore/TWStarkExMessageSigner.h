@@ -35,6 +35,6 @@ TWString* _Nonnull TWStarkExMessageSignerSignMessage(const struct TWPrivateKey* 
 /// \param signature: in Hex-encoded form.
 /// \returns false on any invalid input (does not throw), true if the message can be recovered from the signature
 TW_EXPORT_STATIC_METHOD
-bool TWStarkExMessageSignerVerifyMessage(TWPublicKey* _Nonnull pubKey, TWString* _Nonnull message, TWString* _Nonnull signature);
+bool TWStarkExMessageSignerVerifyMessage(const struct TWPublicKey* _Nonnull pubKey, TWString* _Nonnull message, TWString* _Nonnull signature);
 
 TW_EXTERN_C_END
