@@ -1,0 +1,17 @@
+[package]
+name = "wallet-core-rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "wallet_core_rs"
+crate-type = ["staticlib"] # Creates static lib
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+move-core-types = { git = "https://github.com/move-language/move", rev = "f7137eabc2046f76fdad3ded2c51e03a3b1fbd01", features = ["address32"] }
+bcs = "0.1.4"
+hex = "0.4.3"
+
+[dev-dependencies]

@@ -27,9 +27,10 @@ targets:
         excludes:
           - ".vscode"
           - "proto/*.proto"
-          - "Cosmos/Protobuf/*.proto"
           - "Tron/Protobuf/*.proto"
           - "Zilliqa/Protobuf/*.proto"
+          - "Cosmos/Protobuf/*.proto"
+          - "Hedera/Protobuf/*.proto"
       - Sources
     dependencies:
       - target: trezor-crypto
@@ -37,6 +38,7 @@ targets:
       - target: protobuf
         link: true
       - sdk: libc++.tbd
+      - framework: WalletCoreRs.xcframework
     scheme:
       testTargets:
         - WalletCoreTests

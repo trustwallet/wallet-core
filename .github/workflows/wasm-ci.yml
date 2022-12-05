@@ -14,9 +14,8 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake python3
-        sudo apt-get update && sudo apt-get install libboost-all-dev --fix-missing
-
+        tools/install-sys-dependencies-linux
+        tools/install-rust-dependencies
     - name: Install emsdk
       run: tools/install-wasm-dependencies
 

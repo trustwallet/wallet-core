@@ -14,3 +14,4 @@ cpp.xcconfig
 # fastlane
 fastlane/README.md
 fastlane/report.xml
+WalletCoreRs.xcframework

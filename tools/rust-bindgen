@@ -1,0 +1,43 @@
+#!/bin/bash
+
+TARGET_NAME="libwallet_core_rs.a"
+TARGET_XCFRAMEWORK_NAME=../swift/WalletCoreRs.xcframework
+BUILD_FOLDER=../build/local
+CRATE="wallet-core-rs"
+HEADER_NAME="WalletCoreRSBindgen.h"
+
+create_xc_framework() {
+  rm -rf $TARGET_XCFRAMEWORK_NAME
+  xcodebuild -create-xcframework -library $BUILD_FOLDER/$TARGET_NAME -library $BUILD_FOLDER/darwin_universal/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-ios/release/$TARGET_NAME -library $BUILD_FOLDER/catalyst/$TARGET_NAME -output $TARGET_XCFRAMEWORK_NAME
+}
+
+cd rust
+
+echo "Generating Native targets"
+CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --release
+CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target wasm32-unknown-emscripten --release
+if [[ `uname` == "Darwin" ]]; then
+  echo "Generating Android targets"
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target aarch64-linux-android --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target armv7-linux-androideabi --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target x86_64-linux-android --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER/ cargo build --target i686-linux-android --release
+  echo "Generating iOS targets"
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-ios --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-ios-sim --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target x86_64-apple-ios --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target aarch64-apple-darwin --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo build --target x86_64-apple-darwin --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo +nightly build -Z build-std --target aarch64-apple-ios-macabi --release
+  CARGO_TARGET_DIR=$BUILD_FOLDER cargo +nightly build -Z build-std --target x86_64-apple-ios-macabi --release
+  lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
+  mkdir -p $BUILD_FOLDER/darwin_universal
+  lipo $BUILD_FOLDER/x86_64-apple-darwin/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-darwin/release/$TARGET_NAME -create -output $BUILD_FOLDER/darwin_universal/$TARGET_NAME
+  mkdir -p $BUILD_FOLDER/catalyst
+  lipo $BUILD_FOLDER/aarch64-apple-ios-macabi/release/$TARGET_NAME $BUILD_FOLDER/x86_64-apple-ios-macabi/release/$TARGET_NAME -create -output $BUILD_FOLDER/catalyst/$TARGET_NAME
+
+  create_xc_framework
+fi
+cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
+cd -
+cp build/local/release/${TARGET_NAME} build/local/lib/

@@ -244,6 +244,69 @@ TEST(AptosSigner, CreateAccount) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, BlindSignFromJson) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x7efd69e7f9462774b932ce500ab51c0d0dcc004cf272e09f8ffd5804c2a84e33?network=mainnet
+    auto payloadJson = R"(
+    {
+       "function": "0x16fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c::AnimeSwapPoolV1::swap_exact_coins_for_coins_3_pair_entry",
+       "type_arguments": [
+                "0x1::aptos_coin::AptosCoin",
+                "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
+            ],
+       "arguments": [
+                "1000000",
+                "49329"
+            ],
+       "type": "entry_function_payload"
+    })"_json;
+    Proto::SigningInput input;
+    input.set_sequence_number(42);
+    input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_gas_unit_price(100);
+    input.set_max_gas_amount(100011);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_any_encoded(payloadJson.dump());
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_chain_id(1);
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a000000000000000216fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c0f416e696d6553776170506f6f6c563127737761705f65786163745f636f696e735f666f725f636f696e735f335f706169725f656e747279040700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e0007881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f404636f696e044d4f4a4f0007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa05617373657404555344540007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa056173736574045553444300020840420f000000000008b1c0000000000000ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "42cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b");
+    ASSERT_EQ(hex(result.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a000000000000000216fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c0f416e696d6553776170506f6f6c563127737761705f65786163745f636f696e735f666f725f636f696e735f335f706169725f656e747279040700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e0007881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f404636f696e044d4f4a4f0007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa05617373657404555344540007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa056173736574045553444300020840420f000000000008b1c0000000000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c4042cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b");
+    nlohmann::json expectedJson = R"(
+{
+        "expiration_timestamp_secs": "3664390082",
+        "gas_unit_price": "100",
+        "max_gas_amount": "100011",
+        "payload": {
+            "function": "0x16fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c::AnimeSwapPoolV1::swap_exact_coins_for_coins_3_pair_entry",
+            "type_arguments": [
+                "0x1::aptos_coin::AptosCoin",
+                "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
+            ],
+            "arguments": [
+                "1000000",
+                "49329"
+            ],
+            "type": "entry_function_payload"
+        },
+        "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+        "sequence_number": "42",
+        "signature": {
+            "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+            "signature": "0x42cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b",
+            "type": "ed25519_signature"
+        }
+}
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
 TEST(AptosSigner, BlindSign) {
     // successfully broadcasted https://explorer.aptoslabs.com/txn/0xd95857a9e644528708778a3a0a6e13986751944fca30eaac98853c1655de0422?network=Devnet
     // encoded submission with:

@@ -7,8 +7,8 @@ import (
 	"tw/core"
 	"tw/protos/binance"
 	"tw/protos/bitcoin"
-	"tw/protos/common"
 	"tw/protos/ethereum"
+	"tw/protos/transactioncompiler"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -30,10 +30,10 @@ func SignExternalBinanceDemo() {
 		coin,
 		"bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", // from
 		"bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", // to
-		"1",   // amount
-		"BNB", // asset
-		"",    // memo
-		"",    // chainId
+		"1",                                          // amount
+		"BNB",                                        // asset
+		"",                                           // memo
+		"",                                           // chainId
 	)
 	fmt.Println("txInputData len: ", len(txInputData))
 
@@ -41,7 +41,7 @@ func SignExternalBinanceDemo() {
 	hashes := core.PreImageHashes(coin, txInputData)
 	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes))
 
-	var preSigningOutput common.PreSigningOutput
+	var preSigningOutput transactioncompiler.PreSigningOutput
 	proto.Unmarshal(hashes, &preSigningOutput)
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
@@ -93,7 +93,7 @@ func SignExternalEthereumDemo() {
 	hashes := core.PreImageHashes(coin, txInputData2)
 	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes))
 
-	var preSigningOutput common.PreSigningOutput
+	var preSigningOutput transactioncompiler.PreSigningOutput
 	proto.Unmarshal(hashes, &preSigningOutput)
 
 	fmt.Println("\n==> Step 3: Compile transaction info")

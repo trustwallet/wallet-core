@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 #include <Aptos/TransactionPayload.h>
 #include <utility>
 
@@ -52,6 +53,67 @@ nlohmann::json EntryFunction::json() const noexcept {
     };
     // clang-format on
     return out;
+}
+
+EntryFunction EntryFunction::from_json(const nlohmann::json& payload) noexcept {
+    auto splitFunctor = [](std::string s, std::string_view delimiter) {
+        size_t pos_start = 0, pos_end, delim_len = delimiter.size();
+        std::string token;
+        std::vector<std::string> output;
+
+        while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+            token = s.substr(pos_start, pos_end - pos_start);
+            pos_start = pos_end + delim_len;
+            output.emplace_back(token);
+        }
+
+        output.emplace_back(s.substr(pos_start));
+        return output;
+    };
+    auto functionSplitted = splitFunctor(payload.at("function").get<std::string>(), "::");
+    auto moduleId = ModuleId(Address(functionSplitted[0]), functionSplitted[1]);
+    std::vector<Data> args;
+    for (auto&& cur : payload.at("arguments")) {
+        auto curStr = cur.get<std::string>();
+        auto* res = parse_function_argument_to_bcs(curStr.c_str());
+        args.emplace_back(parse_hex(res));
+        free_string(res);
+    }
+
+    std::vector<TypeTag> tags;
+
+    for (auto&& cur : payload.at("type_arguments")) {
+        auto curStr = cur.get<std::string>();
+        switch (parse_type_tag(curStr.c_str())) {
+        case ETypeTag::Bool:
+            break;
+        case ETypeTag::U8:
+            break;
+        case ETypeTag::U64:
+            break;
+        case ETypeTag::U128:
+            break;
+        case ETypeTag::Address:
+            break;
+        case ETypeTag::Signer:
+            break;
+        case ETypeTag::Vector:
+            break;
+        case ETypeTag::Struct: {
+            auto structSplitted = splitFunctor(curStr, "::");
+            auto addr = Address(structSplitted[0]);
+            TypeTag tag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(addr, structSplitted[1], structSplitted[2], {})})};
+            tags.emplace_back(tag);
+            break;
+        }
+        case ETypeTag::Error:
+            break;
+        default:
+            break;
+        }
+    }
+
+    return EntryFunction(moduleId, functionSplitted[2], tags, {args}, payload.at("arguments"));
 }
 
 } // namespace TW::Aptos
