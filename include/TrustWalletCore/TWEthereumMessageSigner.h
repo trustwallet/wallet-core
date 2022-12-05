@@ -15,7 +15,7 @@ TW_EXTERN_C_BEGIN
 
 /// Ethereum message signing and verification.
 ///
-/// Ethereum Core and some other wallets support a message signing & verification format, to create a proof (a signature)
+/// Ethereum and some other wallets support a message signing & verification format, to create a proof (a signature)
 /// that someone has access to the private keys of a specific address.
 TW_EXPORT_CLASS
 struct TWEthereumMessageSigner;
@@ -24,7 +24,6 @@ struct TWEthereumMessageSigner;
 ///
 /// \param privateKey: the private key used for signing
 /// \param message: A custom message which is input to the signing.
-/// \note Address is derived assuming compressed public key format.
 /// \returns the signature, Hex-encoded. On invalid input empty string is returned. Returned object needs to be deleted after use.
 TW_EXPORT_STATIC_METHOD
 TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message);
@@ -34,7 +33,7 @@ TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey*
 /// \param pubKey: pubKey that will verify and recover the message from the signature
 /// \param message: the message signed (without prefix)
 /// \param signature: in Hex-encoded form.
-/// \returns false on any invalid input (does not throw).
+/// \returns false on any invalid input (does not throw), true if the message can be recovered from the signature
 TW_EXPORT_STATIC_METHOD
 bool TWEthereumMessageSignerVerifyMessage(TWPublicKey* _Nonnull pubKey, TWString* _Nonnull message, TWString* _Nonnull signature);
 
