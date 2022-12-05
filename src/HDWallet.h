@@ -82,7 +82,7 @@ class HDWallet {
     PrivateKey getKey(const TWCoinType coin, const DerivationPath& derivationPath) const;
 
     /// Returns the private stark key at the given derivation path from a valid eth signature.
-    PrivateKey getStarkeyFromSignature(const DerivationPath& derivationPath, const std::string& signature) const;;
+    PrivateKey getStarkeyFromSignature(const DerivationPath& derivationPath, const std::string& signature) const;
 
     /// Returns the private key at the given derivation path and curve.
     PrivateKey getKeyByCurve(TWCurve curve, const DerivationPath& derivationPath) const;

@@ -4,10 +4,9 @@ import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import wallet.core.jni.CoinType
-import wallet.core.jni.StarkExMessageSigner
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.PublicKeyType
+import wallet.core.jni.StarkExMessageSigner
 
 class TestStarkExMessageSigner {
 

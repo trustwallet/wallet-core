@@ -11,6 +11,7 @@
 #include "TWCurve.h"
 #include "TWData.h"
 #include "TWDerivation.h"
+#include "TWDerivationPath.h"
 #include "TWHDVersion.h"
 #include "TWPrivateKey.h"
 #include "TWPublicKey.h"
@@ -129,6 +130,26 @@ TWString* _Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet* _Nonnull walle
 /// \return return the default address for the specified coin as a non-null TWString
 TW_EXPORT_METHOD
 TWString* _Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation);
+
+/// Generate a layer 2 eip2645 derivation path from eth address, layer, application and given index.
+///
+/// \param wallet non-null TWHDWallet
+/// \param ethAddress non-null Ethereum address
+/// \param layer  non-null layer 2 name (E.G starkex)
+/// \param application non-null layer 2 application (E.G immutablex)
+/// \param index non-null layer 2 index (E.G 1)
+/// \return a valid eip2645 layer 2 derivation path as a string
+TW_EXPORT_METHOD
+TWString* _Nonnull TWHDWalletGetEip2645Path(struct TWHDWallet* _Nonnull wallet, TWString* _Nonnull ethAddress, TWString* _Nonnull layer,  TWString* _Nonnull application,  TWString* _Nonnull index);
+
+/// Generates the private stark key at the given derivation path from a valid eth signature
+///
+/// \param wallet non-null TWHDWallet
+/// \param derivationPath non-null StarkEx Derivation path
+/// \param signature valid eth signature
+/// \return  The private key for the specified derivation path/signature
+TW_EXPORT_METHOD
+struct TWPrivateKey* _Nonnull TWHDWalletGetStarkKeyFromSignature(struct TWHDWallet* _Nonnull wallet, const struct TWDerivationPath* _Nonnull derivationPath, TWString* _Nonnull signature);
 
 /// Generates the private key for the specified derivation path.
 ///
