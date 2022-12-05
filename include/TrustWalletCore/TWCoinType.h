@@ -125,6 +125,7 @@ enum TWCoinType {
     TWCoinTypeEverscale = 396,
     TWCoinTypeAptos = 637,
     TWCoinTypeHedera = 3030,
+    TWCoinTypeSecret = 529,
 };
 
 /// Returns the blockchain for a coin type.
