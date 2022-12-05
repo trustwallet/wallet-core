@@ -21,6 +21,7 @@
 #include "NEAR/Address.h"
 #include "PublicKey.h"
 #include "TestUtilities.h"
+#include "StarkEx/MessageSigner.h"
 
 #include <gtest/gtest.h>
 
@@ -519,10 +520,11 @@ TEST(HDWallet, FromMnemonicImmutableX) {
         auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
         ASSERT_EQ(hex(starkPrivKey.bytes), "02d037bb9c1302295c2f9fa66bcc4ab8e353a3140600a390598777d69c1bc71a");
         ASSERT_EQ(hex(starkPubKey.bytes), "006c061ea4195769058e0e2e14cd747619a866954a412e15fa2241fdf49438cf");
-        auto digest = parse_hex("28419a504c5b1c83df4fdcbf7f5f36a7d5cfa8148aff2d33aed2f40a64e7ea0", true);
-        auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
+
+        auto starkMsg = "28419a504c5b1c83df4fdcbf7f5f36a7d5cfa8148aff2d33aed2f40a64e7ea0";
+        auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);
         ASSERT_EQ(starkSignature, "077cae8f00327a2072d3ca8b31725263f61303dc0142a631561d33cb2b4cb221008d659541d59f1589b0e714ddc0a5bee77faddf093f96d529b6c55c0bffd45d");
-        ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
+        ASSERT_TRUE(StarkEx::MessageSigner::verifyMessage(starkPubKey, starkMsg, starkSignature));
     }
 }
 
@@ -552,10 +554,11 @@ TEST(HDWallet, FromMnemonicImmutableXMainnet) {
         auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
         ASSERT_EQ(hex(starkPrivKey.bytes), "070128376c2cfd21e7475708049d00c83d7ab65f15368e28730bf1684dee8370");
         ASSERT_EQ(hex(starkPubKey.bytes), "00453ca02b347f80e5ddfc4caf254852fc05b172b37bca8f7e28600631d12dfe");
-        auto digest = parse_hex("76b66c453cd1b812032ff206a28df59f6abe41e805b9f1c48a1c4afe780756c", true);
-        auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
+
+        auto starkMsg = "76b66c453cd1b812032ff206a28df59f6abe41e805b9f1c48a1c4afe780756c";
+        auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);
         ASSERT_EQ(starkSignature, "070ad88f79650fbdc152affd738d4ec29888bed554ea74f9ad8ca7031ef300b50597f4a62752336db06e6d37dfc18047fdd40804f5fd19cebfda8cac91e4f178");
-        ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
+        ASSERT_TRUE(StarkEx::MessageSigner::verifyMessage(starkPubKey, starkMsg, starkSignature));
     }
 }
 
@@ -579,12 +582,13 @@ TEST(HDWallet, FromMnemonicImmutableXMainnetFromSignature) {
         auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
         ASSERT_EQ(hex(starkPrivKey.bytes), "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de");
         ASSERT_EQ(hex(starkPubKey.bytes), "00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095");
-        auto digest = parse_hex("463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf", true);
         auto signatureToSend = Ethereum::MessageSigner::signMessage(ethPrivKey, "Only sign this key linking request from Immutable X");
         ASSERT_EQ(signatureToSend, "646da4160f7fc9205e6f502fb7691a0bf63ecbb74bbb653465cd62388dd9f56325ab1e4a9aba99b1661e3e6251b42822855a71e60017b310b9f90e990a12e1dc01");
-        auto starkSignature = hex(starkPrivKey.sign(digest, TWCurveStarkex));
+
+        auto starkMsg = "463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf";
+        auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);
         ASSERT_EQ(starkSignature, "04cf5f21333dd189ada3c0f2a51430d733501a9b1d5e07905273c1938cfb261e05b6013d74adde403e8953743a338c8d414bb96bf69d2ca1a91a85ed2700a528");
-        ASSERT_TRUE(starkPubKey.verify(parse_hex(starkSignature, true), digest));
+        ASSERT_TRUE(StarkEx::MessageSigner::verifyMessage(starkPubKey, starkMsg, starkSignature));
     }
 }
 
