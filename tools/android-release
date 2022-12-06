@@ -20,9 +20,13 @@ popd # android
 echo "Building docs..."
 tools/kotlin-doc
 
+pushd build/dokka
 release_url=$(wc_release_url ${version})
 echo "release_url url for docs is $release_url"
 
-filename=build/dokka/kdoc.zip
+filename=kdoc.zip
 download_url=$(wc_upload_asset ${release_url} ${filename})
 echo "download_url is $download_url"
+
+popd # build/dokka
+
