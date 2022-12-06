@@ -307,6 +307,109 @@ TEST(AptosSigner, BlindSignFromJson) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, BlindSignStaking) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/payload
+    auto payloadJson = R"(
+    {
+        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+        "type_arguments": [],
+        "arguments": [
+        "100000000"
+        ],
+        "type": "entry_function_payload"
+    })"_json;
+    Proto::SigningInput input;
+    input.set_sequence_number(43);
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_gas_unit_price(100);
+    input.set_max_gas_amount(100011);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_any_encoded(payloadJson.dump());
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_chain_id(1);
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b");
+    ASSERT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b");
+    nlohmann::json expectedJson = R"(
+{
+        "expiration_timestamp_secs": "3664390082",
+        "gas_unit_price": "100",
+        "max_gas_amount": "100011",
+        "payload": {
+            "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+            "type_arguments": [],
+            "arguments": [
+            "100000000"
+            ],
+            "type": "entry_function_payload"
+        },
+        "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+        "sequence_number": "43",
+        "signature": {
+            "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+            "signature": "0xa41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b",
+            "type": "ed25519_signature"
+        }
+}
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, BlindSignUnStaking) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968/payload
+    auto payloadJson = R"(
+    {
+        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+        "type_arguments": [],
+        "arguments": [
+        "99178100"
+        ],
+        "type": "entry_function_payload"
+    })"_json;
+    Proto::SigningInput input;
+    input.set_sequence_number(44);
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_gas_unit_price(100);
+    input.set_max_gas_amount(100011);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_any_encoded(payloadJson.dump());
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_chain_id(1);
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a");
+    ASSERT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a");
+    nlohmann::json expectedJson = R"(
+{
+        "expiration_timestamp_secs": "3664390082",
+        "gas_unit_price": "100",
+        "max_gas_amount": "100011",
+        "payload": {
+            "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+            "type_arguments": [],
+            "arguments": [
+            "99178100"
+            ],
+            "type": "entry_function_payload"
+        },
+        "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+        "sequence_number": "44",
+        "signature": {
+            "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+            "signature": "0xa58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a",
+            "type": "ed25519_signature"
+        }
+}
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+
 TEST(AptosSigner, BlindSign) {
     // successfully broadcasted https://explorer.aptoslabs.com/txn/0xd95857a9e644528708778a3a0a6e13986751944fca30eaac98853c1655de0422?network=Devnet
     // encoded submission with:
