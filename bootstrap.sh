@@ -7,6 +7,7 @@ set -e
 
 echo "#### Initializing workspace with dependencies ... ####"
 tools/install-dependencies
+tools/install-rust-dependencies
 
 echo "#### Building and running tests ... ####"
 tools/build-and-test
