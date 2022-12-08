@@ -28,7 +28,7 @@ static Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
     return Data{TW::byte(moduleIndex), TW::byte(methodIndex)};
 }
 
-Data Extrinsic::encodeCall() const {
+Data Extrinsic::encodeCall() {
     Data data;
     if (_network > maxByte) {
         throw std::invalid_argument("method index too large");
@@ -57,6 +57,10 @@ Data Extrinsic::encodePayload() const {
     append(data, call);
     // era / nonce / tip
     append(data, encodeEraNonceTip());
+    // fee asset id
+    if (feeAssetId.size() > 0) {
+        append(data, feeAssetId);
+    }
     // specVersion
     encode32LE(_specVersion, data);
     // transactionVersion
@@ -83,6 +87,10 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     append(data, signature);
     // era / nonce / tip
     append(data, encodeEraNonceTip());
+    // fee asset id
+    if (feeAssetId.size() > 0) {
+        append(data, feeAssetId);
+    }
     // call
     append(data, call);
     // append length
@@ -117,12 +125,11 @@ Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t
     return data;
 }
 
-Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer, int32_t network, bool enableMultiAddress) const {
+Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer, int32_t network, bool enableMultiAddress) {
     Data data;
     auto address = FullSS58Address(transfer.to_address(), network);
     auto value = load(transfer.value());
-    // add prefix
-    append(data, TW::byte(00));
+
     // call index
     append(data, encodeCallIndex(transfer.module_index(), transfer.method_index()));
     // asset id
@@ -134,7 +141,7 @@ Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfe
     return data;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) {
     Data data;
     if (balance.has_transfer()) {
         auto transfer = balance.transfer();
@@ -149,7 +156,22 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
         }
         data = encodeBatchCall(calls, balance.batch_transfer().module_index(), balance.batch_transfer().method_index());
     } else if (balance.has_asset_transfer()) {
+        // keep fee asset id encoding which will be used in encodePayload & encodeSignature.
+        this->feeAssetId = encodeCompact(balance.asset_transfer().fee_asset_id());
+
         append(data, encodeAssetTransfer(balance.asset_transfer(), _network, multiAddress));
+    }  else if (balance.has_batch_asset_transfer()) {
+        // keep fee asset id encoding which will be used in encodePayload & encodeSignature.
+        this->feeAssetId = encodeCompact(balance.batch_asset_transfer().fee_asset_id());
+
+        // init call array
+        auto calls = std::vector<Data>();
+        auto batchTransfer = balance.batch_asset_transfer().transfers();
+        for (auto transfer : batchTransfer) {
+            // put into calls array
+            calls.push_back(encodeAssetTransfer(transfer, _network, multiAddress));
+        }
+        data = encodeBatchCall(calls, balance.batch_asset_transfer().module_index(), balance.batch_asset_transfer().method_index());
     }
 
     return data;

@@ -38,6 +38,9 @@ public:
     // enable multi-address
     bool multiAddress;
 
+    // keep fee asset ids
+    Data feeAssetId;
+
     Extrinsic(const Proto::SigningInput& input)
         : _input(input)
         , blockHash(input.block_hash().begin(), input.block_hash().end())
@@ -57,7 +60,7 @@ public:
         call = encodeCall();
     }
 
-    Data encodeCall() const;
+    Data encodeCall();
     // Payload to sign.
     Data encodePayload() const;
     // Encode final data with signer public key and signature.
@@ -66,8 +69,8 @@ public:
 protected:
     bool encodeRawAccount(bool enableMultiAddress) const;
     Data encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress) const;
-    Data encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer, int32_t network, bool enableMultiAddress) const;
-    Data encodeBalanceCall(const Proto::Balance& balance) const;
+    Data encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer, int32_t network, bool enableMultiAddress);
+    Data encodeBalanceCall(const Proto::Balance& balance);
     Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex) const;
     Data encodeEraNonceTip() const;
     Data encodeAuthorizationCall(const Proto::Authorization& authorization) const;

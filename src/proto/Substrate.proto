@@ -30,11 +30,19 @@ message Balance {
     string to_address = 3;
     bytes value = 4; // BigInteger
     uint32 asset_id = 5;
+    uint32 fee_asset_id = 6;
+  }
+  message BatchAssetTransfer {
+    int32 module_index = 1;
+    int32 method_index = 2;
+    uint32 fee_asset_id = 3;
+    repeated AssetTransfer transfers = 4;
   }
   oneof message_oneof {
     Transfer transfer = 1;
     BatchTransfer batch_transfer = 2;
     AssetTransfer asset_transfer = 3;
+    BatchAssetTransfer batch_asset_transfer = 4;
   }
 }
 

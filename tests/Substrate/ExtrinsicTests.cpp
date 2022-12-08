@@ -96,11 +96,44 @@ TEST(SubstrateExtrinsic, Statemint_encodeAssetTransfer) {
 
     auto result = Substrate::Extrinsic(input).encodeCall();
     // clang-format off
-    EXPECT_EQ(hex(result), "00"
-                           "3205"
+    EXPECT_EQ(hex(result), "3205"
                            "011f"
-                           "00a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943e"
-                           "da0d82a34cee");
+                           "00"
+                           "a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d"
+                           "82a34cee");
+    // clang-format on
+}
+
+TEST(SubstrateExtrinsic, Statemint_encodeBatchAssetTransfer) {
+    // tx on mainnet
+    // https://statemint.subscan.io/extrinsic/2571849-2
+    
+    Substrate::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+
+    auto* transfer = input.mutable_balance_call()->mutable_batch_asset_transfer();
+    transfer->set_module_index(0x28);
+    transfer->set_method_index(0x00);
+    transfer->set_fee_asset_id(0x00);
+    auto* t = transfer->add_transfers();
+    t->set_to_address("13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy");
+
+    auto value = store(808081);
+    t->set_module_index(0x32);
+    t->set_method_index(0x06);
+    t->set_value(std::string(value.begin(), value.end()));
+    t->set_asset_id(1984);
+
+    auto result = Substrate::Extrinsic(input).encodeCall();
+    // clang-format off
+    EXPECT_EQ(hex(result), "2800"
+                           "04"
+                           "3206"
+                           "011f"
+                           "00"
+                           "81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91"
+                           "46523100");
     // clang-format on
 }
 
