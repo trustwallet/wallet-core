@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-# Sript for creating new skeleton files for a new coin. See also `newevmchain`.
+# Sript for creating new skeleton files for a new EVM chain, subset of newcoin
 # 1. Add relevsant entry to registry.json (in order to minimize merge conflict, don't add at the very end)
-# 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newcoin ethereum
+# 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newevmchain ethereumclone
 
 require 'erb'
 require 'fileutils'
@@ -50,27 +50,27 @@ def self.insert_coin_type(coin)
     target_file = "include/TrustWalletCore/TWCoinType.h"
     target_line = "    TWCoinType#{format_name(coin)} = #{coin['coinId']},\n"
     if insert_target_line(target_file, target_line, "};\n")
-        insert_blockchain_type(coin)
+        # insert_blockchain_type(coin)
     end
 end
 
-def insert_blockchain_type(coin)
-    target_file = "include/TrustWalletCore/TWBlockchain.h"
-    line_number = File.readlines(target_file).count + 2 # add offset because of removed blockchain enum type
-    target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17}, " + $flag_comment + "\n"
-    insert_target_line(target_file, target_line, "};\n")
-end
+# def insert_blockchain_type(coin)
+#     target_file = "include/TrustWalletCore/TWBlockchain.h"
+#     line_number = File.readlines(target_file).count + 2 # add offset because of removed blockchain enum type
+#     target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17}, " + $flag_comment + "\n"
+#     insert_target_line(target_file, target_line, "};\n")
+# end
 
-def insert_coin_entry(coin)
-    target_file = "src/Coin.cpp"
-    entryName = coin['blockchain']
-    target_line = "#include \"#{entryName}/Entry.h\"" + $flag_comment + "\n"
-    insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
-    target_line = "#{entryName}::Entry #{entryName}DP;" + $flag_comment + "\n"
-    insert_target_line(target_file, target_line, "// end_of_coin_dipatcher_declarations_marker_do_not_modify\n")
-    target_line = "        case TWBlockchain#{entryName}: entry = &#{entryName}DP; break;" + $flag_comment + "\n"
-    insert_target_line(target_file, target_line, "        // end_of_coin_dipatcher_switch_marker_do_not_modify\n")
-end
+# def insert_coin_entry(coin)
+#     target_file = "src/Coin.cpp"
+#     entryName = coin['blockchain']
+#     target_line = "#include \"#{entryName}/Entry.h\"" + $flag_comment + "\n"
+#     insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
+#     target_line = "#{entryName}::Entry #{entryName}DP;" + $flag_comment + "\n"
+#     insert_target_line(target_file, target_line, "// end_of_coin_dipatcher_declarations_marker_do_not_modify\n")
+#     target_line = "        case TWBlockchain#{entryName}: entry = &#{entryName}DP; break;" + $flag_comment + "\n"
+#     insert_target_line(target_file, target_line, "        // end_of_coin_dipatcher_switch_marker_do_not_modify\n")
+# end
 
 def self.insert_target_line(target_file, target_line, original_line)
     lines = File.readlines(target_file)
@@ -124,23 +124,23 @@ name = format_name(coin)
 
 
 insert_coin_type(coin)
-insert_coin_entry(coin)
+# insert_coin_entry(coin)
 
-generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
-generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
-generate_file("newcoin/Entry.h.erb", "src/#{name}", "Entry.h", coin)
-generate_file("newcoin/Entry.cpp.erb", "src/#{name}", "Entry.cpp", coin)
-generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
-generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
-generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
+# generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
+# generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
+# generate_file("newcoin/Entry.h.erb", "src/#{name}", "Entry.h", coin)
+# generate_file("newcoin/Entry.cpp.erb", "src/#{name}", "Entry.cpp", coin)
+# generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
+# generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
+# generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
 
-generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
-generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
-generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
-generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
-generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
-generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
-generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
+# generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
+# generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
+# generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
+# generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
+# generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
+# generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
+# generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
 
 coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
 
