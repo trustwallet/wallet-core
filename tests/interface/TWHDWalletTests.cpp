@@ -17,6 +17,7 @@
 #include <TrustWalletCore/TWBase58.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
+#include <TrustWalletCore/TWEthereumEip2645.h>
 #include <TrustWalletCore/TWEthereumMessageSigner.h>
 #include <TrustWalletCore/TWStarkExMessageSigner.h>
 #include <proto/Stellar.pb.h>
@@ -509,7 +510,7 @@ TEST(TWHDWallet, FromMnemonicImmutableXMainnetFromSignature) {
     const auto index = STRING("1");
     const auto ethDerivationPath = STRING("m/44'/60'/0'/0/0");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(mnemonic.get(), STRING("").get()));
-    auto derivationPath = WRAPS(TWHDWalletGetEip2645Path(wallet.get(), ethAddress.get(), layer.get(), application.get(), index.get()));
+    auto derivationPath = WRAPS(TWEthereumEip2645GetPath(ethAddress.get(), layer.get(), application.get(), index.get()));
     assertStringsEqual(derivationPath, "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1");
 
     // Retrieve eth private key

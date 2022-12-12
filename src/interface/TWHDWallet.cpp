@@ -136,14 +136,6 @@ TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enu
     return new TWPublicKey{ PublicKey(*publicKey) };
 }
 
-TWString* TWHDWalletGetEip2645Path(struct TWHDWallet* wallet, TWString* ethAddress, TWString* layer, TWString* application, TWString* index) {
-    const auto& ethAddressStr = *reinterpret_cast<const std::string*>(ethAddress);
-    const auto& layerStr = *reinterpret_cast<const std::string*>(layer);
-    const auto& applicationStr = *reinterpret_cast<const std::string*>(application);
-    const auto& indexStr = *reinterpret_cast<const std::string*>(index);
-    return new std::string(wallet->impl.eip2645Path(ethAddressStr, layerStr, applicationStr, indexStr));
-}
-
 struct TWPrivateKey *_Nonnull TWHDWalletGetStarkKeyFromSignature(struct TWHDWallet* _Nonnull wallet, const struct TWDerivationPath* _Nonnull derivationPath, TWString* _Nonnull signature) {
     const auto& ethSignatureStr = *reinterpret_cast<const std::string*>(signature);
     return new TWPrivateKey{ wallet->impl.getStarkeyFromSignature(derivationPath->impl, ethSignatureStr) };

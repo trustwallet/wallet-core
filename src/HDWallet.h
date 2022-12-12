@@ -93,9 +93,6 @@ class HDWallet {
     /// Derives the address for a coin with given derivation.
     std::string deriveAddress(TWCoinType coin, TWDerivation derivation) const;
 
-    /// Generate a layer 2 eip2645 derivation path from eth address, layer, application and given index.
-    std::string eip2645Path(const std::string& ethAddress, const std::string& layer, const std::string& application, const std::string& index) const;
-
     /// Returns the extended private key for default 0 account with the given derivation.
     std::string getExtendedPrivateKeyDerivation(TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version) const {
         return getExtendedPrivateKeyAccount(purpose, coin, derivation, version, 0);

@@ -269,10 +269,6 @@ PrivateKey HDWallet::bip32DeriveRawSeed(TWCoinType coin, const Data& seed, const
     return PrivateKey(data);
 }
 
-std::string HDWallet::eip2645Path(const std::string& ethAddress, const std::string& layer, const std::string& application, const std::string& index) const {
-    return Ethereum::accountPathFromAddress(ethAddress, layer, application, index);
-}
-
 PrivateKey HDWallet::getStarkeyFromSignature(const DerivationPath& derivationPath, const std::string& signature) const {
     return ImmutableX::getPrivateKeyFromRawSignature(signature, derivationPath);
 }
