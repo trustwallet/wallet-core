@@ -9,8 +9,6 @@
 #include "Address.h"
 #include "../Bitcoin/SegwitAddress.h"
 #include "Signer.h"
-#include "Coin.h"
-#include <TrustWalletCore/TWHRP.h>
 
 namespace TW::Groestlcoin {
 

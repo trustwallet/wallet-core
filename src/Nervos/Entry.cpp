@@ -8,8 +8,6 @@
 
 #include "Address.h"
 #include "Signer.h"
-#include "Coin.h"
-#include <TrustWalletCore/TWHRP.h>
 
 namespace TW::Nervos {
 using namespace std;

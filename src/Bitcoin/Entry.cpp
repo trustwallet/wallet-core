@@ -10,7 +10,6 @@
 #include "CashAddress.h"
 #include "SegwitAddress.h"
 #include "Signer.h"
-#include "Coin.h"
 
 namespace TW::Bitcoin {
 

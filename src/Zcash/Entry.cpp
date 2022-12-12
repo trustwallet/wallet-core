@@ -8,9 +8,6 @@
 
 #include "Signer.h"
 #include "TAddress.h"
-#include "Coin.h"
-
-#include <variant>
 
 namespace TW::Zcash {
 
