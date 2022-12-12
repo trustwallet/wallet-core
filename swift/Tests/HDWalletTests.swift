@@ -29,7 +29,7 @@ class HDWalletTests: XCTestCase {
         let ethMsg = "Only sign this request if you’ve initiated an action with Immutable X."
         let ethSignature = EthereumMessageSigner.signMessage(privateKey: ethPrivateKey, message: ethMsg)
         XCTAssertEqual(ethSignature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001")
-        let starkPrivateKey = wallet.getStarkKeyFromSignature(derivationPath: derivationPath, signature: ethSignature)
+        let starkPrivateKey = StarkWare.getStarkKeyFromSignature(derivationPath: derivationPath, signature: ethSignature)
         XCTAssertEqual(starkPrivateKey.data.hexString, "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de")
         let starkPublicKey = starkPrivateKey.getPublicKeyByType(pubkeyType: .starkex)
         XCTAssertEqual(starkPublicKey.data.hexString, "00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095")

@@ -579,7 +579,7 @@ TEST(HDWallet, FromMnemonicImmutableXMainnetFromSignature) {
         ASSERT_EQ(ethAddressFromPub, ethAddress);
         auto signature = Ethereum::MessageSigner::signMessage(ethPrivKey, "Only sign this request if you’ve initiated an action with Immutable X.");
         ASSERT_EQ(signature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001");
-        auto starkPrivKey = wallet.getStarkeyFromSignature(DerivationPath(derivationPath), signature);
+        auto starkPrivKey = ImmutableX::getPrivateKeyFromRawSignature(signature, DerivationPath(derivationPath));
         auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
         ASSERT_EQ(hex(starkPrivKey.bytes), "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de");
         ASSERT_EQ(hex(starkPubKey.bytes), "00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095");

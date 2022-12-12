@@ -43,7 +43,7 @@ class TestHDWallet {
         val ethMsg = "Only sign this request if you’ve initiated an action with Immutable X."
         val ethSignature = EthereumMessageSigner.signMessage(ethPrivateKey, ethMsg)
         assertEquals(ethSignature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001")
-        val starkPrivateKey = hd.getStarkKeyFromSignature(starkDerivationPath, ethSignature)
+        val starkPrivateKey = StarkWare.getStarkKeyFromSignature(starkDerivationPath, ethSignature)
         val starkPublicKey = starkPrivateKey.getPublicKeyByType(PublicKeyType.STARKEX)
         assertEquals(Numeric.toHexString(starkPrivateKey.data()), "0x04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de")
         assertEquals(Numeric.toHexString(starkPublicKey.data()), "0x00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095")

@@ -135,8 +135,3 @@ TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enu
     }
     return new TWPublicKey{ PublicKey(*publicKey) };
 }
-
-struct TWPrivateKey *_Nonnull TWHDWalletGetStarkKeyFromSignature(struct TWHDWallet* _Nonnull wallet, const struct TWDerivationPath* _Nonnull derivationPath, TWString* _Nonnull signature) {
-    const auto& ethSignatureStr = *reinterpret_cast<const std::string*>(signature);
-    return new TWPrivateKey{ wallet->impl.getStarkeyFromSignature(derivationPath->impl, ethSignatureStr) };
-}

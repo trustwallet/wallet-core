@@ -20,6 +20,7 @@
 #include <TrustWalletCore/TWEthereumEip2645.h>
 #include <TrustWalletCore/TWEthereumMessageSigner.h>
 #include <TrustWalletCore/TWStarkExMessageSigner.h>
+#include <TrustWalletCore/TWStarkWare.h>
 #include <proto/Stellar.pb.h>
 
 #include "HexCoding.h"
@@ -525,7 +526,7 @@ TEST(TWHDWallet, FromMnemonicImmutableXMainnetFromSignature) {
     const auto ethMsg = STRING("Only sign this request if you’ve initiated an action with Immutable X.");
     const auto ethSignature = WRAPS(TWEthereumMessageSignerSignMessage(ethPrivateKey.get(), ethMsg.get()));
     assertStringsEqual(ethSignature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001");
-    const auto starkPrivateKey = WRAP(TWPrivateKey, TWHDWalletGetStarkKeyFromSignature(wallet.get(), starkDerivationPath.get(), ethSignature.get()));
+    const auto starkPrivateKey = WRAP(TWPrivateKey, TWStarkWareGetStarkKeyFromSignature(starkDerivationPath.get(), ethSignature.get()));
     const auto starkPrivateKeyData = WRAPD(TWPrivateKeyData(starkPrivateKey.get()));
     const auto starkPubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyByType(starkPrivateKey.get(), TWPublicKeyTypeStarkex));
     const auto starkPublicKeyData = WRAPD(TWPublicKeyData(starkPubKey.get()));

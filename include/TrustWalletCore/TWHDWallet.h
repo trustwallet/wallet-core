@@ -131,15 +131,6 @@ TWString* _Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet* _Nonnull walle
 TW_EXPORT_METHOD
 TWString* _Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet* _Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation);
 
-/// Generates the private stark key at the given derivation path from a valid eth signature
-///
-/// \param wallet non-null TWHDWallet
-/// \param derivationPath non-null StarkEx Derivation path
-/// \param signature valid eth signature
-/// \return  The private key for the specified derivation path/signature
-TW_EXPORT_METHOD
-struct TWPrivateKey* _Nonnull TWHDWalletGetStarkKeyFromSignature(struct TWHDWallet* _Nonnull wallet, const struct TWDerivationPath* _Nonnull derivationPath, TWString* _Nonnull signature);
-
 /// Generates the private key for the specified derivation path.
 ///
 /// \see TWHDWalletGetKeyForCoin

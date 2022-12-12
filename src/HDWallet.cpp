@@ -11,7 +11,6 @@
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
-#include "Ethereum/EIP2645.h"
 #include "ImmutableX/StarkKey.h"
 #include "Mnemonic.h"
 #include "memory/memzero_wrapper.h"
@@ -267,10 +266,6 @@ PrivateKey HDWallet::bip32DeriveRawSeed(TWCoinType coin, const Data& seed, const
     auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
     TW::memzero(&node);
     return PrivateKey(data);
-}
-
-PrivateKey HDWallet::getStarkeyFromSignature(const DerivationPath& derivationPath, const std::string& signature) const {
-    return ImmutableX::getPrivateKeyFromRawSignature(signature, derivationPath);
 }
 
 namespace {
