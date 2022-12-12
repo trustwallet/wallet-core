@@ -17,12 +17,7 @@ class Entry final : public CoinEntry {
 public:
     bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
     std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
-    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,
-                              const char* hrp) const {
-        return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
-    }
-    std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
-                              TW::byte p2pkh, const char* hrp) const;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const;
     Data addressToData(TWCoinType coin, const std::string& address) const;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;

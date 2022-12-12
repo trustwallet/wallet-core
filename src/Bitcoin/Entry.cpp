@@ -10,6 +10,7 @@
 #include "CashAddress.h"
 #include "SegwitAddress.h"
 #include "Signer.h"
+#include "Coin.h"
 
 namespace TW::Bitcoin {
 
@@ -63,8 +64,10 @@ std::string Entry::normalizeAddress(TWCoinType coin, const std::string& address)
     }
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
-                                 byte p2pkh, const char* hrp) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    byte p2pkh = getFromPrefixPkhOrDefault(addressPrefix, coin);
+    const char* hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
+
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:

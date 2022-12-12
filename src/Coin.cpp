@@ -250,14 +250,14 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, const
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
-    auto p2pkh = TW::p2pkhPrefix(coin);
-    const char* hrpRaw = [&hrp, coin]() {
-        return hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
-    }();
+    // replace empty hrp with coin-default
+    const char* hrpRaw = hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrpRaw);
+    // Use hrp-case for prefix variant
+    const PrefixVariant prefix = Bech32Prefix(hrpRaw);
+    return dispatcher->deriveAddress(coin, publicKey, derivation, prefix);
 }
 
 Data TW::addressToData(TWCoinType coin, const std::string& address) {

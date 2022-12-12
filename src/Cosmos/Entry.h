@@ -15,11 +15,11 @@ namespace TW::Cosmos {
 class Entry : public CoinEntry {
 public:
     bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const final;
-     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const final;
-     Data addressToData(TWCoinType coin, const std::string& address) const final;
-     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
-     bool supportsJSONSigning() const final { return true; }
-     std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const override;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const override;
+    Data addressToData(TWCoinType coin, const std::string& address) const final;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+    bool supportsJSONSigning() const final { return true; }
+    std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const override;
 };
 
 } // namespace TW::Cosmos
