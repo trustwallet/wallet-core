@@ -26,14 +26,14 @@ AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinTyp
 }
 
 AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp, TWDerivation derivation) {
-
-    auto derivedAddress = TW::deriveAddress(coin, publicKey, derivation, hrp);
+    PrefixVariant prefix = hrp.empty() ? static_cast<PrefixVariant>(std::monostate()) : static_cast<PrefixVariant>(Bech32Prefix(hrp.c_str()));
+    const auto derivedAddress = TW::deriveAddress(coin, publicKey, derivation, prefix);
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 
 AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& addressPrefix, TWDerivation derivation) {
 
-    auto derivedAddress = TW::deriveAddress(coin, publicKey, addressPrefix, derivation);
+    const auto derivedAddress = TW::deriveAddress(coin, publicKey, derivation, addressPrefix);
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 
