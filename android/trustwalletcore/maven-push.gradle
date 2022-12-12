@@ -43,8 +43,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/trustwallet/wallet-core")
             credentials {
-                username = System.getenv("WC_GITHUB_USER")
-                password = System.getenv("WC_GITHUB_TOKEN")
+                username = System.getenv("GITHUB_USER")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
