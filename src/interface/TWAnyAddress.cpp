@@ -77,11 +77,11 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyDerivation(
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp) {
     const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, Bech32Prefix(hrpStr.c_str()))};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::Bech32Prefix(hrpStr.c_str()))};
 }
 
 struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* publicKey, enum TWCoinType coin, uint32_t ss58Prefix) {
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, SS58Prefix(ss58Prefix))};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::SS58Prefix(ss58Prefix))};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
