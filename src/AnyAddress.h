@@ -23,9 +23,10 @@ public:
 
     enum TWCoinType coin;
 
+    // Create address from string address and optional prefix; also normalizes the address.
     static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin, const PrefixVariant& prefix = std::monostate());
-    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp = "", TWDerivation derivation = TWDerivationDefault);
-    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& prefix, TWDerivation derivation = TWDerivationDefault);
+    // Create address from private key, with optional non-standard derivation and prefix
+    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, TWDerivation derivation = TWDerivationDefault, const PrefixVariant& prefix = std::monostate());
 
     Data getData() const;
 };
