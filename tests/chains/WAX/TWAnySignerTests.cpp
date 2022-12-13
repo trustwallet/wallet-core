@@ -20,8 +20,8 @@ namespace TW::EOS::tests {
 TEST(TWAnySignerWAX, Sign) {
     Proto::SigningInput input;
     const auto chainId = parse_hex("1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4");
-    const auto refBlock = parse_hex("0cfccda69fd86cd47dba49421a25d47d2a70a718e3cd597f6728a09d091316f6");
-    const auto key = parse_hex("<redacted>");
+    const auto refBlock = parse_hex("0cffaeda15039f3468398c5b4295d220fcc217f7cf96030c3729773097c6bd76");
+    const auto key = parse_hex("d30d185a296b9591d648cb92fe0aa8f8a42de30ed9d2a21da9e7f69c67e8e355");
 
     const auto pubKey = PublicKey(PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(pubKey);
@@ -34,7 +34,7 @@ TEST(TWAnySignerWAX, Sign) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_reference_block_id(refBlock.data(), refBlock.size());
-    input.set_reference_block_time(1670413402);
+    input.set_reference_block_time(1670507804);
     input.set_currency("eosio.token");
     input.set_sender("k52o1qdeh.gm");
     input.set_recipient("c2lrpvzxb.gm");
@@ -42,20 +42,13 @@ TEST(TWAnySignerWAX, Sign) {
     input.set_private_key(key.data(), key.size());
     input.set_private_key_type(Proto::KeyType::MODERNK1);
 
+    // https://wax.bloks.io/transaction/4548f7b28ee608663caea61234049ac0018415e02dd0abcea1c215c8da00d10a
     {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEOS);
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
-        EXPECT_EQ(output.json_encoded(), R"({\"compression\":\"none\",\"packed_context_free_data\":\"\",\"packed_trx\":\"787c9063a6cd7dba4942000000000100a6823403ea3055000000572d3ccdcd012019682ad940458100000000a8ed3232362019682ad9404581201938fdef7aa34000e1f5050000000008574158000000001573656e742066726f6d2077616c6c65742d636f726500\",\"signatures":["SIG_K1_KjAotwbF7RCWUpgS1WBpShfVAo2ffwm5BSeUNBT7HPGghPZZ6K3ovf86UrRSTv6oR6r5u2YE61uyd1MxcqxyxrkqZdGktG"]})");
-    }
-
-    input.set_private_key_type(Proto::KeyType::LEGACY);
-    {
-        Proto::SigningOutput output;
-        ANY_SIGN(input, TWCoinTypeEOS);
-        EXPECT_EQ(output.error(), Common::Proto::Error_internal);
-        EXPECT_TRUE(output.json_encoded().empty());
+        EXPECT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"3aed9163daae68398c5b000000000100a6823403ea3055000000572d3ccdcd012019682ad940458100000000a8ed3232362019682ad9404581201938fdef7aa34000e1f5050000000008574158000000001573656e742066726f6d2077616c6c65742d636f726500","signatures":["SIG_K1_KZoLDz11BeqFTojsifxZkxwP2zX2G3PAJvXm4bfjtkHHXtNv6hioALVa3ntoKJw5wLG4KdE5gaE4BHgmqoEf89f5YECS6T"]})");
     }
 }
 
