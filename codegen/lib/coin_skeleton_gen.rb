@@ -1,18 +1,14 @@
-#!/usr/bin/env ruby
-
-# Sript for creating new skeleton files for a new coin. See also `newevmchain`.
-# 1. Add relevsant entry to registry.json (in order to minimize merge conflict, don't add at the very end)
-# 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newcoin ethereum
+# frozen_string_literal: true
 
 require 'erb'
 require 'fileutils'
 require 'json'
 
-CurrentDir = File.dirname(__FILE__)
-$LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
 require 'entity_decl'
 require 'code_generator'
 require 'coin_test_gen'
+
+# Coin template generation
 
 $flag_comment = " // TODO remove if the blockchain already exists, or just remove this comment if not"
 
@@ -26,11 +22,11 @@ def self.format_name(coin)
 end
 
 def self.format_name_lowercase(coin)
-  format_name(coin).downcase
+format_name(coin).downcase
 end
 
 def self.format_name_uppercase(coin)
-  format_name(coin).upcase
+format_name(coin).upcase
 end
 
 def self.generate_file(templateFile, folder, fileName, coin)
@@ -46,11 +42,13 @@ def self.generate_file(templateFile, folder, fileName, coin)
     puts "Generated file " + path
 end
 
-def self.insert_coin_type(coin)
+def self.insert_coin_type(coin, mode)
     target_file = "include/TrustWalletCore/TWCoinType.h"
     target_line = "    TWCoinType#{format_name(coin)} = #{coin['coinId']},\n"
     if insert_target_line(target_file, target_line, "};\n")
-        insert_blockchain_type(coin)
+        if (mode != "evm")
+            insert_blockchain_type(coin)
+        end
     end
 end
 
@@ -92,56 +90,53 @@ def self.insert_target_line(target_file, target_line, original_line)
     return true
 end
 
-command_line_args = ARGV
-if command_line_args.length < 1
-    puts "Usage: newcoin <new_coin_id>"
-    return
+def generate_skeleton(coin_id, mode)
+    puts "New coin template for coin '#{coin_id}' #{mode} requested"
+
+    json_string = File.read('registry.json')
+    coins = JSON.parse(json_string).sort_by { |x| x['name'] }
+
+    entity = EntityDecl.new(name: "New" + coin_id, is_struct: false, comment: '')
+    file = "new"+ coin_id
+
+    generator = CodeGenerator.new(entities: [entity], files: [file], output_folder: ".")
+
+    @coins = coins
+
+    coin_test_gen = CoinTestGen.new()
+
+    # Find coin in list of coins, by Id
+    coinSelect = coins.select {|c| c['id'] == coin_id}
+    if coinSelect.length() == 0
+        puts "Error: coin #{coin_id} not found!"
+        return
+    end
+    coin = coinSelect.first
+    name = format_name(coin)
+
+
+    insert_coin_type(coin, mode)
+    if (mode != "evm")
+        insert_coin_entry(coin)
+
+        generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
+        generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
+        generate_file("newcoin/Entry.h.erb", "src/#{name}", "Entry.h", coin)
+        generate_file("newcoin/Entry.cpp.erb", "src/#{name}", "Entry.cpp", coin)
+        generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
+        generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
+        generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
+
+        generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
+        generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
+        generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
+        generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
+        generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
+        generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
+        generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
+    end
+
+    coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
+
+    puts "please tools/generate-files to generate Swift/Java/Protobuf files"
 end
-
-coin_id = command_line_args[0]
-puts "New coin template for coin '#{coin_id}' requested"
-
-json_string = File.read('registry.json')
-coins = JSON.parse(json_string).sort_by { |x| x['name'] }
-
-entity = EntityDecl.new(name: "New" + coin_id, is_struct: false, comment: '')
-file = "new"+ coin_id
-
-generator = CodeGenerator.new(entities: [entity], files: [file], output_folder: ".")
-
-@coins = coins
-
-coin_test_gen = CoinTestGen.new()
-
-# Find coin in list of coins, by Id
-coinSelect = coins.select {|c| c['id'] == coin_id}
-if coinSelect.length() == 0
-    puts "Error: coin #{coin_id} not found!"
-    return
-end
-coin = coinSelect.first
-name = format_name(coin)
-
-
-insert_coin_type(coin)
-insert_coin_entry(coin)
-
-generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
-generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
-generate_file("newcoin/Entry.h.erb", "src/#{name}", "Entry.h", coin)
-generate_file("newcoin/Entry.cpp.erb", "src/#{name}", "Entry.cpp", coin)
-generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
-generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
-generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
-
-generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
-generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
-generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
-generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
-generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
-generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
-generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
-
-coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
-
-puts "please tools/generate-files to generate Swift/Java/Protobuf files"
