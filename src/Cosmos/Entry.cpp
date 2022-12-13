@@ -26,9 +26,12 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
     return false;
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
-    if (!std::string(hrp).empty()) {
-        return Address(hrp, publicKey, coin).string();
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    if (std::holds_alternative<Bech32Prefix>(addressPrefix)) {
+        const std::string hrp = std::get<Bech32Prefix>(addressPrefix);
+        if (!hrp.empty()) {
+            return Address(hrp, publicKey, coin).string();
+        }
     }
     return Address(coin, publicKey).string();
 }

@@ -243,21 +243,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWD
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) {
     auto const* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->deriveAddress(coin, publicKey, derivation, addressPrefix);
-}
-
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
-    auto p2pkh = TW::p2pkhPrefix(coin);
-    const char* hrpRaw = [&hrp, coin]() {
-        return hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
-    }();
-    // dispatch
-    auto* dispatcher = coinDispatcher(coin);
-    assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrpRaw);
 }
 
 Data TW::addressToData(TWCoinType coin, const std::string& address) {

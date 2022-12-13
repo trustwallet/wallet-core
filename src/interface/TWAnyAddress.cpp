@@ -10,6 +10,7 @@
 
 #include "Data.h"
 #include "Coin.h"
+#include "CoinEntry.h"
 #include "AnyAddress.h"
 
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
@@ -70,17 +71,17 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyDerivation(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, enum TWDerivation derivation) {
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, std::string(""), derivation)};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, derivation)};
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp) {
     const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, hrpStr)};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::Bech32Prefix(hrpStr.c_str()))};
 }
 
 struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* publicKey, enum TWCoinType coin, uint32_t ss58Prefix) {
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, ss58Prefix)};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::SS58Prefix(ss58Prefix))};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {

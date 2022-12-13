@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -78,10 +78,8 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 /// Derives the address for a particular coin from the private key, with given derivation.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDerivation derivation);
 
-/// Derives the address for a particular coin from the public key, with given derivation.
-std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation = TWDerivationDefault, const std::string& hrp = "");
-/// Derives the address for a particular coin from the public key, with given derivation and explicit addressPrefix.
-std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation = TWDerivationDefault);
+/// Derives the address for a particular coin from the public key, with given derivation and addressPrefix.
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation = TWDerivationDefault, const PrefixVariant& addressPrefix = std::monostate());
 
 /// Returns the binary representation of a string address
 Data addressToData(TWCoinType coin, const std::string& address);

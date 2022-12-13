@@ -19,7 +19,8 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string&
     return TW::Bitcoin::SegwitAddress::isValid(address, std::get<Bech32Prefix>(addressPrefix));
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, const char* hrp) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    std::string hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
     return TW::Bitcoin::SegwitAddress(publicKey, hrp).string();
 }
 

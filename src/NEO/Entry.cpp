@@ -18,7 +18,7 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string&
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return Address(publicKey).string();
 }
 
