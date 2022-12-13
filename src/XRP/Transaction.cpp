@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <math.h>
 
 namespace TW::Ripple {
 
