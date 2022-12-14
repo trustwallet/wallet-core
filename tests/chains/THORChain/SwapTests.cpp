@@ -124,20 +124,20 @@ TEST(THORChainSwap, SwapDogeBusd) {
                                          .fromAddress(fromAddressDoge)
                                          .toAddress(toAddressBnb)
                                          .vault(vaultDoge)
-                                         .fromAmount("2000000000")
+                                         .fromAmount("10000000000")
                                          .toAmountLimit("789627468")
                                          .affFeeAddress("t")
                                          .affFeeRate("0")
                                          .build();
     ASSERT_EQ(errorCode, 0);
     ASSERT_EQ(error, "");
-    EXPECT_EQ(hex(out), "08011080a8d6b907180122224445786374396f546671723770666e625032686b434850315a3265554467715879612a22444b66746b5943744379597851793254524175417a51586f794b4464597345426e7750036a473d3a424e422e425553442d4244313a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3738393632373436383a743a30");
+    EXPECT_EQ(hex(out), "08011080c8afa025180122224445786374396f546671723770666e625032686b434850315a3265554467715879612a22444b66746b5943744379597851793254524175417a51586f794b4464597345426e7750036a473d3a424e422e425553442d4244313a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3738393632373436383a743a30");
 
     auto tx = Bitcoin::Proto::SigningInput();
     ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
 
     // check fields
-    EXPECT_EQ(tx.amount(), 2000000000);
+    EXPECT_EQ(tx.amount(), 10000000000);
     EXPECT_EQ(tx.to_address(), vaultDoge);
     EXPECT_EQ(tx.change_address(), fromAddressDoge);
     EXPECT_EQ(tx.output_op_return(), "=:BNB.BUSD-BD1:bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2:789627468:t:0");
@@ -145,47 +145,31 @@ TEST(THORChainSwap, SwapDogeBusd) {
     EXPECT_EQ(tx.private_key_size(), 0);
     EXPECT_FALSE(tx.has_plan());
 
-    //TODO: do the signing part
-
-    // set few fields before signing
-    //tx.set_byte_fee(80);
-    //EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
-    //tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
-    //auto& utxo = *tx.add_utxo();
-    //Data utxoHash = parse_hex("8eae5c3a4c75058d4e3facd5d72f18a40672bcd3d1f35ebf3094bd6c78da48eb");
-    //std::reverse(utxoHash.begin(), utxoHash.end());
-    //utxo.mutable_out_point()->set_hash(utxoHash.data(), utxoHash.size());
-    //utxo.mutable_out_point()->set_index(0);
-    //utxo.mutable_out_point()->set_sequence(UINT32_MAX - 3);
-    //auto utxoScript = Bitcoin::Script::lockScriptForAddress(Address1Btc, TWCoinTypeBitcoin);
-    //utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
-    //utxo.set_amount(450000);
-    //tx.set_use_max_amount(false);
+    //
+    auto dogeKey = parse_hex("3785864c91ed408ebaeae473962a471eb4d68ce998c2957e8e5f6be7a525f2d7");
+    tx.add_private_key(dogeKey.data(), dogeKey.size());
+    tx.set_byte_fee(1000);
+    auto& utxo = *tx.add_utxo();
+    Data previousUTXOHash = parse_hex("9989c36afdd1755a679226875425b368816031186c0f1b4a363ab2ef6d0a2fe8");
+    std::reverse(previousUTXOHash.begin(), previousUTXOHash.end());
+    utxo.mutable_out_point()->set_hash(previousUTXOHash.data(), previousUTXOHash.size());
+    utxo.mutable_out_point()->set_index(1);
+    utxo.mutable_out_point()->set_sequence(UINT32_MAX - 3);
+    auto utxoScript = Bitcoin::Script::lockScriptForAddress(fromAddressDoge, TWCoinTypeDogecoin);
+    utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    utxo.set_amount(16845776096);
+    tx.set_use_max_amount(false);
 
     // sign and encode resulting input
-    //Bitcoin::Proto::SigningOutput output;
-    //ANY_SIGN(tx, TWCoinTypeBitcoin);
-    //EXPECT_EQ(output.error(), 0);
-    //EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
-    //          "01000000" // version
-    //          "0001" // marker & flag
-    //          "01" // inputs
-    //          "eb48da786cbd9430bf5ef3d1d3bc7206a4182fd7d5ac3f4e8d05754c3a5cae8e"  "00000000"  "00"  ""  "fcffffff"
-    //          "03" // outputs
-    //          "400d030000000000"  "16"  "0014d6cbc5021c3eee72798718d447758b91d14e8c5f"
-    //          "b08d030000000000"  "16"  "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"
-    //          "0000000000000000"  "40"  "6a3e3d3a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a313430303030303030"
-              // witness
-    //          "02"
-    //          "48"  "3045022100e17d8cf207c79edfb7afa16102842b434e1f908bd9858553fd54970f1a8b4334022059583f89c3a126df0da46d92947bcbe7c265a1bb838b696c0e7ea7fc8761c2bf01210"
-    //          "21"  "e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee"
-    //          "00000000" // nLockTime
-    //);
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeDogecoin);
+    EXPECT_EQ(output.error(), 0);
+    EXPECT_EQ(hex(output.encoded()), "0100000001e82f0a6defb23a364a1b0f6c1831608168b32554872692675a75d1fd6ac38999010000006b4830450221008660de3d3123a9e6831517265fb84c4fb2bfc4b98366dbfb4b63bc78a5812cce02201a0673af15edab604d9cd89f0e2842ccdd973e107ff9cd08dcf45d8c0b27c5dd0121039535d01e184b4a6d624e7ab007612e2558697fbed29274e6474f17e70d31ce5afcffffff0300e40b54020000001976a9146bb602e5e8eca75c7f6f25f766254658581db71688ac40490698010000001976a9149f64d0c07876a1dbce40cdce328bc7ecd8182b2288ac0000000000000000496a473d3a424e422e425553442d4244313a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3738393632373436383a743a3000000000");
 
     // similar real transaction:
-    // https://blockchair.com/bitcoin/transaction/1cd9056b212b85d9d7d34d0795a746dd8691b8cd34ef56df0aa9622fbdec5f88
-    // https://viewblock.io/thorchain/tx/1CD9056B212B85D9D7D34D0795A746DD8691B8CD34EF56DF0AA9622FBDEC5F88
-    // https://explorer.binance.org/tx/8D78469069118E9B9546696214CCD46E63D3FA0D7E854C094D63C8F6061278B7
+    // https://viewblock.io/thorchain/tx/E7588A6A4C6B9DBA8B9AD8B0834655F9D9E5861744B5493E711623E320B981A5
+    // https://dogechain.info/tx/e7588a6a4c6b9dba8b9ad8b0834655f9d9e5861744b5493e711623e320b981a5
+    // https://binance.mintscan.io/txs/A5943D315BFD501DD5FC212F5A505772A20DDB154A8B5760A9897ABB8114CBDB
 }
 
 TEST(THORChainSwap, SwapBtcBnb) {
