@@ -107,6 +107,87 @@ TEST(THORChainSwap, SwapBtcEth) {
     );
 }
 
+TEST(THORChainSwap, SwapDogeBusd) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::DOGE));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+    toAsset.set_token_id("BUSD-BD1");
+
+    auto vaultDoge = "DExct9oTfqr7pfnbP2hkCHP1Z2eUDgqXya";
+    auto fromAddressDoge = "DKftkYCtCyYxQy2TRAuAzQXoyKDdYsEBnw";
+    auto toAddressBnb = "bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2";
+    auto && [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(fromAddressDoge)
+                                         .toAddress(toAddressBnb)
+                                         .vault(vaultDoge)
+                                         .fromAmount("2000000000")
+                                         .toAmountLimit("789627468")
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "08011080a8d6b907180122224445786374396f546671723770666e625032686b434850315a3265554467715879612a22444b66746b5943744379597851793254524175417a51586f794b4464597345426e7750036a473d3a424e422e425553442d4244313a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3738393632373436383a743a30");
+
+    auto tx = Bitcoin::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+    // check fields
+    EXPECT_EQ(tx.amount(), 2000000000);
+    EXPECT_EQ(tx.to_address(), vaultDoge);
+    EXPECT_EQ(tx.change_address(), fromAddressDoge);
+    EXPECT_EQ(tx.output_op_return(), "=:BNB.BUSD-BD1:bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2:789627468:t:0");
+    EXPECT_EQ(tx.coin_type(), TWCoinTypeDogecoin);
+    EXPECT_EQ(tx.private_key_size(), 0);
+    EXPECT_FALSE(tx.has_plan());
+
+    //TODO: do the signing part
+
+    // set few fields before signing
+    //tx.set_byte_fee(80);
+    //EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    //tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
+    //auto& utxo = *tx.add_utxo();
+    //Data utxoHash = parse_hex("8eae5c3a4c75058d4e3facd5d72f18a40672bcd3d1f35ebf3094bd6c78da48eb");
+    //std::reverse(utxoHash.begin(), utxoHash.end());
+    //utxo.mutable_out_point()->set_hash(utxoHash.data(), utxoHash.size());
+    //utxo.mutable_out_point()->set_index(0);
+    //utxo.mutable_out_point()->set_sequence(UINT32_MAX - 3);
+    //auto utxoScript = Bitcoin::Script::lockScriptForAddress(Address1Btc, TWCoinTypeBitcoin);
+    //utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    //utxo.set_amount(450000);
+    //tx.set_use_max_amount(false);
+
+    // sign and encode resulting input
+    //Bitcoin::Proto::SigningOutput output;
+    //ANY_SIGN(tx, TWCoinTypeBitcoin);
+    //EXPECT_EQ(output.error(), 0);
+    //EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
+    //          "01000000" // version
+    //          "0001" // marker & flag
+    //          "01" // inputs
+    //          "eb48da786cbd9430bf5ef3d1d3bc7206a4182fd7d5ac3f4e8d05754c3a5cae8e"  "00000000"  "00"  ""  "fcffffff"
+    //          "03" // outputs
+    //          "400d030000000000"  "16"  "0014d6cbc5021c3eee72798718d447758b91d14e8c5f"
+    //          "b08d030000000000"  "16"  "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"
+    //          "0000000000000000"  "40"  "6a3e3d3a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a313430303030303030"
+              // witness
+    //          "02"
+    //          "48"  "3045022100e17d8cf207c79edfb7afa16102842b434e1f908bd9858553fd54970f1a8b4334022059583f89c3a126df0da46d92947bcbe7c265a1bb838b696c0e7ea7fc8761c2bf01210"
+    //          "21"  "e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee"
+    //          "00000000" // nLockTime
+    //);
+
+    // similar real transaction:
+    // https://blockchair.com/bitcoin/transaction/1cd9056b212b85d9d7d34d0795a746dd8691b8cd34ef56df0aa9622fbdec5f88
+    // https://viewblock.io/thorchain/tx/1CD9056B212B85D9D7D34D0795A746DD8691B8CD34EF56DF0AA9622FBDEC5F88
+    // https://explorer.binance.org/tx/8D78469069118E9B9546696214CCD46E63D3FA0D7E854C094D63C8F6061278B7
+}
+
 TEST(THORChainSwap, SwapBtcBnb) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
