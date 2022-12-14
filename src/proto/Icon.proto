@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Icon.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Sender address.
@@ -37,4 +39,9 @@ message SigningOutput {
 
     // Signature.
     bytes signature = 2;
+
+    // error description
+    string error_message = 3;
+
+    Common.Proto.SigningError error = 4;
 }
