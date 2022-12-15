@@ -21,7 +21,8 @@ enum Chain {
     BTC = 1,
     ETH = 2,
     BNB = 3,
-    DOGE = 4
+    DOGE = 4,
+    BCH = 5
 };
 
 using SwapErrorCode = int;

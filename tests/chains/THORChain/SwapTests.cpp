@@ -172,6 +172,70 @@ TEST(THORChainSwap, SwapDogeBusd) {
     // https://binance.mintscan.io/txs/A5943D315BFD501DD5FC212F5A505772A20DDB154A8B5760A9897ABB8114CBDB
 }
 
+TEST(THORChainSwap, SwapBchBusd) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BCH));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+    toAsset.set_token_id("BUSD-BD1");
+
+    auto vaultBCH = "qpsfh5xvk7mgf9e6kl4e045nm6awl5hmks9x7h5ad6";
+    auto fromAddressBCH = "qr50u7hy3xcr3j0w9j5nfx2gevjqgfm42ykc2hqgy4";
+    auto toAddressBnb = "bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2";
+    auto && [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(fromAddressBCH)
+                                         .toAddress(toAddressBnb)
+                                         .vault(vaultBCH)
+                                         .fromAmount("10000000")
+                                         .toAmountLimit("977240514")
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "08411080ade2041801222a71707366683578766b376d67663965366b6c34653034356e6d3661776c35686d6b7339783768356164362a2a717235307537687933786372336a3077396a356e6678326765766a7167666d3432796b633268716779345091016a473d3a424e422e425553442d4244313a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3937373234303531343a743a30");
+
+    auto tx = Bitcoin::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+    // check fields
+    EXPECT_EQ(tx.amount(), 10000000);
+    EXPECT_EQ(tx.to_address(), vaultBCH);
+    EXPECT_EQ(tx.change_address(), fromAddressBCH);
+    EXPECT_EQ(tx.output_op_return(), "=:BNB.BUSD-BD1:bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2:977240514:t:0");
+    EXPECT_EQ(tx.coin_type(), TWCoinTypeBitcoinCash);
+    EXPECT_EQ(tx.private_key_size(), 0);
+    EXPECT_FALSE(tx.has_plan());
+
+    //
+    auto bchKey = parse_hex("1a3b0105a08908734ed0525f4c6fadca068514cdeb732d7ebca5b0fcbe6952a7");
+    tx.add_private_key(bchKey.data(), bchKey.size());
+    tx.set_byte_fee(3);
+    auto& utxo = *tx.add_utxo();
+    Data previousUTXOHash = parse_hex("651e5d3a60f8110a6cfb745005168bdfcaf21e7f2f4371873a24b5cd894564da");
+    std::reverse(previousUTXOHash.begin(), previousUTXOHash.end());
+    utxo.mutable_out_point()->set_hash(previousUTXOHash.data(), previousUTXOHash.size());
+    utxo.mutable_out_point()->set_index(1);
+    utxo.mutable_out_point()->set_sequence(UINT32_MAX - 3);
+    auto utxoScript = Bitcoin::Script::lockScriptForAddress(fromAddressBCH, TWCoinTypeBitcoinCash);
+    utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    utxo.set_amount(14118938);
+    tx.set_use_max_amount(false);
+
+    // sign and encode resulting input
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBitcoinCash);
+    EXPECT_EQ(output.error(), 0);
+    EXPECT_EQ(hex(output.encoded()), "0100000001da644589cdb5243a8771432f7f1ef2cadf8b16055074fb6c0a11f8603a5d1e65010000006a4730440220392fab53b86e02bef19638077fd378dd713dd6b1968d07f4507e28feb022d52a02200240bb2f2e8b8eb7673c4bc69b485e28a0d56c735d84e3f794c303c1b71759e941210393dc5157b5879cd602f25529437e01b3d4892a4b9b8d9efcaa640d842b27438efcffffff0380969800000000001976a914609bd0ccb7b684973ab7eb97d693debaefd2fbb488ac8ed63e00000000001976a914e8fe7ae489b038c9ee2ca9349948cb240427755188ac0000000000000000496a473d3a424e422e425553442d4244313a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3937373234303531343a743a3000000000");
+
+    // https://viewblock.io/thorchain/tx/B8AA6F2BFD09D7AC510BFCDA417903B2DDBEE0E9811821640D9C304B9B382B9B
+    // https://blockchair.com/bitcoin-cash/transaction/b8aa6f2bfd09d7ac510bfcda417903b2ddbee0e9811821640d9c304b9b382b9b
+    // https://binance.mintscan.io/txs/F4CD6554934E85D72269399607A7ADF8A92378C2287C164CC97CB57E8348B090
+}
+
 TEST(THORChainSwap, SwapBtcBnb) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));

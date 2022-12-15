@@ -52,6 +52,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeBitcoin;
     case Chain::DOGE:
         return TWCoinTypeDogecoin;
+    case Chain::BCH:
+        return TWCoinTypeBitcoinCash;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -68,6 +70,8 @@ std::string chainName(Chain chain) {
         return "BTC";
     case Chain::DOGE:
         return "DOGE";
+    case Chain::BCH:
+        return "BCH";
     case Chain::THOR:
     default:
         return "THOR";
@@ -94,7 +98,8 @@ SwapBundled SwapBuilder::build(bool shortened) {
 
     switch (fromChain) {
     case Chain::BTC:
-    case Chain::DOGE:{
+    case Chain::DOGE:
+    case Chain::BCH:{
         return buildUTXO(fromAmountNum, memo, fromChain);
     case Chain::BNB:
         return buildBinance(mFromAsset, fromAmountNum, memo);
