@@ -9,19 +9,54 @@ syntax = "proto3";
 package TW.TheOpenNetwork.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// TODO: typical balance transfer, add more fields needed to sign
-message TransferMessage {
-    int64 amount = 1;
-    int64 fee = 2;
-    string to = 3;
+enum WalletVersion {
+    WalletV3R1 = 0;
+    WalletV3R2 = 1;
+    WalletV4R2 = 2;
+};
+
+enum SendMode {
+    DEFAULT = 0;
+    PAY_FEES_SEPARATELY = 1;
+    IGNORE_ACTION_PHASE_ERRORS = 2;
+    DESTROY_ON_ZERO_BALANCE = 32;
+    ATTACH_ALL_INBOUND_MESSAGE_VALUE = 64;
+    ATTACH_ALL_CONTRACT_BALANCE = 128;
+};
+
+message Transfer {
+    // Wallet version
+    WalletVersion wallet_version = 1;
+
+    // Recipient address
+    string dest = 2;
+
+    // Amount to send in nanotons
+    uint64 amount = 3;
+
+    // Message counter (optional, 0 by default used for the first deploy)
+    // This field is required, because we need to protect the smart contract against "replay attacks"
+    // Learn more: https://ton.org/docs/develop/smart-contracts/guidelines/external-messages
+    uint32 seqno = 4;
+
+    // Send mode (optional)
+    // Learn more: https://ton.org/docs/develop/func/stdlib#send_raw_message
+    uint32 mode = 5;
+
+    // Expiration UNIX timestamp (optional, now() + 60 by default)
+    uint32 expired_at = 6;
+
+    // Transfer comment message (optional)
+    string comment = 7;
 }
 
-// TODO: Input data necessary to create a signed transaction.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
-    oneof message_oneof {
-        TransferMessage transfer = 2;
+    // The payload transfer
+    oneof action_oneof {
+        Transfer transfer = 2;
     }
 }
 

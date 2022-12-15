@@ -8,8 +8,8 @@
 
 #include "Address.h"
 #include "Signer.h"
-#include "wallet/WalletV4R2.h"
 
+#include "TheOpenNetwork/wallet/WalletV4R2.h"
 #include "Everscale/WorkchainType.h"
 
 namespace TW::TheOpenNetwork {

@@ -6,17 +6,16 @@
 
 #pragma once
 
-#include "Wallet.h"
+#include "Everscale/Messages.h"
+
+using namespace TW::Everscale;
 
 namespace TW::TheOpenNetwork {
 
-class WalletV4R2 : public Wallet {
+class Message : public Everscale::Message {
 public:
-    explicit WalletV4R2(PublicKey publicKey, int8_t workchainId);
-
-private:
-    [[nodiscard]] Cell::Ref createDataCell() const override;
-    void writeSigningPayload(CellBuilder& builder, uint32_t seqno = 0, uint32_t expireAt = 0) const override;
+    explicit Message(HeaderRef header) : Everscale::Message(std::move(header)) { }
+    [[nodiscard]] Cell::Ref intoCell() const override;
 };
 
 } // namespace TW::TheOpenNetwork

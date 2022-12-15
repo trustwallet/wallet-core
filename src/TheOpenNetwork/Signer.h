@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "PrivateKey.h"
+
 #include "proto/TheOpenNetwork.pb.h"
 
 namespace TW::TheOpenNetwork {
@@ -17,6 +18,9 @@ class Signer {
 public:
     /// Hide default constructor
     Signer() = delete;
+
+    /// Creates a signed transfer message
+    static Data createTransferMessage(const PublicKey& publicKey, const PrivateKey& privateKey, const Proto::Transfer& transfer);
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;

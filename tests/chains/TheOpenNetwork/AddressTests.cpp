@@ -4,16 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <gtest/gtest.h>
-#include <vector>
+#include "HexCoding.h"
+#include "PublicKey.h"
+#include "PrivateKey.h"
 
 #include "TheOpenNetwork/Address.h"
 #include "TheOpenNetwork/wallet/WalletV4R2.h"
 #include "Everscale/WorkchainType.h"
 
-#include "HexCoding.h"
-#include "PublicKey.h"
-#include "PrivateKey.h"
+#include <gtest/gtest.h>
 
 namespace TW::TheOpenNetwork::tests {
 

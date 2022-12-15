@@ -58,20 +58,21 @@ public:
 };
 
 class Message {
-private:
+protected:
     std::shared_ptr<CommonMsgInfo> _header;
 
     std::optional<StateInit> _init{};
-    std::optional<CellSlice> _body{};
+    std::optional<Cell::Ref> _body{};
 
 public:
+    virtual ~Message() noexcept = default;
     using HeaderRef = std::shared_ptr<CommonMsgInfo>;
 
     explicit Message(HeaderRef header)
         : _header(std::move(header)) {}
 
-    [[nodiscard]] Cell::Ref intoCell() const;
-    inline void setBody(CellSlice body) { _body = body; }
+    [[nodiscard]] virtual Cell::Ref intoCell() const;
+    inline void setBody(const Cell::Ref& body) { _body = body; }
     inline void setStateInit(const StateInit& stateInit) { _init = stateInit; }
 };
 

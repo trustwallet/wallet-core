@@ -6,14 +6,16 @@
 
 #pragma once
 
-#include "TheOpenNetwork/Address.h"
-
 #include "PublicKey.h"
+#include "PrivateKey.h"
+
+#include "TheOpenNetwork/Address.h"
+#include "TheOpenNetwork/Message.h"
 
 #include "Everscale/Cell.h"
 #include "Everscale/CellBuilder.h"
 
-using namespace TW::Everscale;  // TODO(vbushev): move cell, cell builder and the workchain type to the common code?
+using namespace TW::Everscale;
 
 namespace TW::TheOpenNetwork {
 
@@ -23,20 +25,38 @@ protected:
     int8_t workchainId;
 
     // Explore standard codes: https://github.com/toncenter/tonweb/blob/master/src/contract/wallet/WalletSources.md
-    const Data walletCode;      // TODO(vbushev): make some fields static?
-    const u_int32_t walletId;
+    const Data walletCode;
+    const uint32_t walletId;
 
 public:
-    Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode);
+    explicit Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode);
     virtual ~Wallet() noexcept = default;
 
-    [[nodiscard]] Address getAddress();
+    [[nodiscard]] Address getAddress() const;
+    [[nodiscard]] Cell::Ref createTransferMessage(
+        const PrivateKey& privateKey,
+        const Address& dest,
+        uint64_t amount,
+        uint32_t seqno,
+        uint8_t mode,
+        uint32_t expireAt = 0,
+        const std::string& comment = ""
+    ) const;
 
 protected:
-    [[nodiscard]] virtual Cell::Ref createDataCell() = 0;
+    [[nodiscard]] virtual Cell::Ref createDataCell() const = 0;
+    virtual void writeSigningPayload(CellBuilder& builder, uint32_t seqno = 0, uint32_t expireAt = 0) const = 0;
 
 private:
-    [[nodiscard]] Cell::Ref createStateInit();
+    [[nodiscard]] Cell::Ref createSigningMessage(
+        const Address& dest,
+        uint64_t amount,
+        uint32_t seqno,
+        uint8_t mode,
+        uint32_t expireAt = 0,
+        const std::string& comment = ""
+    ) const;
+    [[nodiscard]] Everscale::StateInit createStateInit() const;
 };
 
 } // namespace TW::TheOpenNetwork

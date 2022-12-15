@@ -55,6 +55,8 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
 
     // value
     builder.appendU128(_value);
+
+    // currency collections
     builder.appendBitZero();
 
     // fee
@@ -86,7 +88,7 @@ Cell::Ref Message::intoCell() const {
     // write Body
     if (_body.has_value()) {
         builder.appendBitZero();
-        builder.appendCellSlice(_body.value());
+        builder.appendCellSlice(CellSlice(_body.value().get()));
     } else {
         builder.appendBitZero();
     }
@@ -130,15 +132,10 @@ Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uin
         message.setStateInit(initData.makeStateInit());
     }
 
-    auto cell = payload.intoCell();
-    auto body = CellSlice(cell.get());
-
-    message.setBody(body);
-
-    const auto messageCell = message.intoCell();
+    message.setBody(payload.intoCell());
 
     Data result{};
-    messageCell->serialize(result);
+    message.intoCell()->serialize(result);
 
     return result;
 }

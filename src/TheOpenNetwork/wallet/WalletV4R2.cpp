@@ -19,15 +19,31 @@ WalletV4R2::WalletV4R2(PublicKey publicKey, int8_t workchainId)
       ) {
 }
 
-Cell::Ref WalletV4R2::createDataCell() {
+Cell::Ref WalletV4R2::createDataCell() const {
     CellBuilder builder;
 
-    builder.appendU32(0);
+    builder.appendU32(0);                       // seqno
     builder.appendU32(walletId);
     builder.appendRaw(publicKey.bytes, 256);
     builder.appendBitZero();                    // no plugins
 
     return builder.intoCell();
+}
+
+void WalletV4R2::writeSigningPayload(CellBuilder& builder, uint32_t seqno, uint32_t expireAt) const {
+    builder.appendU32(walletId);
+    if (seqno == 0) {
+        builder.appendU32(0xffffffff);
+    } else {
+        if (expireAt == 0) {
+            expireAt = (uint32_t) duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch()
+            ).count() + 60; // TON v4 wallet requires uint32 for now
+        }
+        builder.appendU32(expireAt);
+    }
+    builder.appendU32(seqno);
+    builder.appendU8(0);
 }
 
 } // namespace TW::TheOpenNetwork
