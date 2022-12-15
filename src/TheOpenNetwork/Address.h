@@ -27,7 +27,7 @@ public:
     static const size_t b64UserFriendlyAddressLen = 48;
     static const size_t userFriendlyAddressLen = 36;
 
-    // Determines whether the address is user-friendly
+    /// Determines whether the address is user-friendly
     bool isUserFriendly = false;
 
     /// Determines whether the address is bounceable
@@ -42,9 +42,6 @@ public:
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address with a public key.
-    explicit Address(const PublicKey& publicKey, int8_t workchainId);
-
     /// Initializes an address with its parts
     explicit Address(int8_t workchainId, std::array<byte, size> hash)
         : Everscale::Address(workchainId, hash) { }
@@ -54,7 +51,6 @@ public:
     [[nodiscard]] std::string string(bool userFriendly, bool bounceable = true, bool testOnly = false) const;
 
 private:
-    static Address createFromWallet(const PublicKey& publicKey, int8_t workchainId);
     static Data decodeUserFriendlyAddress(const std::string& string);
 };
 

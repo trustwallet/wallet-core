@@ -9,15 +9,9 @@
 #include "Base64.h"
 #include "Crc.h"
 
-#include "wallet/WalletV4R2.h"
 #include "Everscale/WorkchainType.h"
 
 namespace TW::TheOpenNetwork {
-
-Address Address::createFromWallet(const PublicKey& publicKey, int8_t workchainId) {
-    WalletV4R2 wallet(publicKey, workchainId);
-    return wallet.getAddress();
-}
 
 Data Address::decodeUserFriendlyAddress(const std::string& string) {
     Data decoded;
@@ -59,7 +53,7 @@ bool Address::isValid(const std::string& string) noexcept {
     }
 
     int8_t workchainId = decoded[1];
-    if (workchainId != WorkchainType::Basechain && workchainId != WorkchainType::Masterchain) {
+    if (workchainId != Everscale::WorkchainType::Basechain && workchainId != Everscale::WorkchainType::Masterchain) {
         return false;
     }
 
@@ -101,10 +95,6 @@ Address::Address(const std::string& string) {
 
         std::copy(decoded.begin() + 2, decoded.end() - 2, hash.begin());
     }
-}
-
-Address::Address(const PublicKey& publicKey, int8_t workchainId)
-    : Address(createFromWallet(publicKey, workchainId)) {
 }
 
 std::string Address::string() const {
