@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-# Sript for creating new skeleton files for a new coin. See also `newevmchain`.
+# Sript for creating new skeleton files for a new EVM chain, subset of newcoin
 # 1. Add relevant entry to registry.json (in order to minimize merge conflict, don't add at the very end)
-# 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newcoin ethereum
+# 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newevmchain ethereumclone
 
 require 'fileutils'
 
@@ -12,10 +12,10 @@ require 'coin_skeleton_gen'
 
 command_line_args = ARGV
 if command_line_args.length < 1
-    puts "Usage: newcoin <new_coin_id>"
+    puts "Usage: newevmchain <new_coin_id>"
     return
 end
 
 coin_id = command_line_args[0]
 
-generate_skeleton(coin_id, "")
+generate_skeleton(coin_id, "evm")
