@@ -15,11 +15,11 @@ namespace TW::TheOpenNetwork {
 
 Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
     std::unique_ptr<Wallet> wallet;
-    const auto& workchain_id = Everscale::WorkchainType::Basechain;
+    const int8_t workchainId = Everscale::WorkchainType::Basechain;
 
     switch (transfer.wallet_version()) {
     case Proto::WalletVersion::WalletV4R2: {
-        wallet.reset(new WalletV4R2(publicKey, workchain_id));
+        wallet.reset(new WalletV4R2(publicKey, workchainId));
         break;
     }
     default:
