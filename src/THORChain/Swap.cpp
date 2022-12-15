@@ -54,6 +54,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeDogecoin;
     case Chain::BCH:
         return TWCoinTypeBitcoinCash;
+    case Chain::LTC:
+        return TWCoinTypeLitecoin;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -72,6 +74,8 @@ std::string chainName(Chain chain) {
         return "DOGE";
     case Chain::BCH:
         return "BCH";
+    case Chain::LTC:
+        return "LTC";
     case Chain::THOR:
     default:
         return "THOR";
@@ -99,8 +103,9 @@ SwapBundled SwapBuilder::build(bool shortened) {
     switch (fromChain) {
     case Chain::BTC:
     case Chain::DOGE:
-    case Chain::BCH:{
-        return buildUTXO(fromAmountNum, memo, fromChain);
+    case Chain::BCH:
+    case Chain::LTC: {
+        return buildBitcoin(fromAmountNum, memo, fromChain);
     case Chain::BNB:
         return buildBinance(mFromAsset, fromAmountNum, memo);
     case Chain::ETH:
@@ -128,7 +133,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     if (mAffFeeAddress.has_value() || mAffFeeRate.has_value() || mExtraMemo.has_value()) {
         memo << ":";
         if (mAffFeeAddress.has_value()) {
-             memo << mAffFeeAddress.value();
+            memo << mAffFeeAddress.value();
         }
         if (mAffFeeRate.has_value() || mExtraMemo.has_value()) {
             memo << ":";
@@ -144,7 +149,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     return memo.str();
 }
 
-SwapBundled SwapBuilder::buildUTXO(uint64_t amount, const std::string& memo, Chain fromChain) {
+SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain) {
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
