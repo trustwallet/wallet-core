@@ -21,6 +21,9 @@ enum Chain {
     BTC = 1,
     ETH = 2,
     BNB = 3,
+    DOGE = 4,
+    BCH = 5,
+    LTC = 6
 };
 
 using SwapErrorCode = int;
@@ -44,7 +47,7 @@ class SwapBuilder {
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
 
-    SwapBundled buildBitcoin(uint64_t amount, const std::string& memo);
+    SwapBundled buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain);
     SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
     SwapBundled buildEth(uint64_t amount, const std::string& memo);
 

@@ -50,6 +50,12 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeBinance;
     case Chain::BTC:
         return TWCoinTypeBitcoin;
+    case Chain::DOGE:
+        return TWCoinTypeDogecoin;
+    case Chain::BCH:
+        return TWCoinTypeBitcoinCash;
+    case Chain::LTC:
+        return TWCoinTypeLitecoin;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -64,6 +70,12 @@ std::string chainName(Chain chain) {
         return "BNB";
     case Chain::BTC:
         return "BTC";
+    case Chain::DOGE:
+        return "DOGE";
+    case Chain::BCH:
+        return "BCH";
+    case Chain::LTC:
+        return "LTC";
     case Chain::THOR:
     default:
         return "THOR";
@@ -89,8 +101,11 @@ SwapBundled SwapBuilder::build(bool shortened) {
     const auto memo = this->buildMemo(shortened);
 
     switch (fromChain) {
-    case Chain::BTC: {
-        return buildBitcoin(fromAmountNum, memo);
+    case Chain::BTC:
+    case Chain::DOGE:
+    case Chain::BCH:
+    case Chain::LTC: {
+        return buildBitcoin(fromAmountNum, memo, fromChain);
     case Chain::BNB:
         return buildBinance(mFromAsset, fromAmountNum, memo);
     case Chain::ETH:
@@ -110,12 +125,15 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     const auto& toSymbol = mToAsset.symbol();
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
-    memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress + ":" + std::to_string(toAmountLimitNum);
+    memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress;
+    if (toAmountLimitNum > 0) {
+        memo << ":" << std::to_string(toAmountLimitNum);
+    }
 
     if (mAffFeeAddress.has_value() || mAffFeeRate.has_value() || mExtraMemo.has_value()) {
         memo << ":";
         if (mAffFeeAddress.has_value()) {
-             memo << mAffFeeAddress.value();
+            memo << mAffFeeAddress.value();
         }
         if (mAffFeeRate.has_value() || mExtraMemo.has_value()) {
             memo << ":";
@@ -131,11 +149,12 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     return memo.str();
 }
 
-SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain) {
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    auto coinType = chainCoinType(fromChain);
+    input.set_hash_type(Bitcoin::hashTypeForCoin(coinType));
     input.set_byte_fee(1);
     input.set_use_max_amount(false);
     // private_key[]
@@ -146,7 +165,7 @@ SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo) 
     input.set_amount(static_cast<int64_t>(amount));
     input.set_to_address(mVaultAddress);
     input.set_change_address(mFromAddress);
-    input.set_coin_type(TWCoinTypeBitcoin);
+    input.set_coin_type(coinType);
     input.set_output_op_return(memo);
 
     auto serialized = input.SerializeAsString();
