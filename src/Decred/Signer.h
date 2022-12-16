@@ -81,7 +81,7 @@ class Signer {
         } else {
             txPlan = TransactionBuilder::plan(input);
         }
-        _transaction = TransactionBuilder::build(txPlan, input.to_address(), input.change_address());
+        _transaction = TransactionBuilder::build(txPlan, input);
     }
 
     /// Signs the transaction.
