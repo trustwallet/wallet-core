@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../BinaryCoding.h"
 #include "Extrinsic.h"
 #include <map>
 
@@ -157,12 +158,33 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) {
         data = encodeBatchCall(calls, balance.batch_transfer().module_index(), balance.batch_transfer().method_index());
     } else if (balance.has_asset_transfer()) {
         // keep fee asset id encoding which will be used in encodePayload & encodeSignature.
-        this->feeAssetId = encodeCompact(balance.asset_transfer().fee_asset_id());
+        // see: https://github.com/paritytech/substrate/blob/d1221692968b8bc62d6eab9d10cb6b5bf38c5dc2/frame/transaction-payment/asset-tx-payment/src/lib.rs#L152
+        auto rawFeeAssetId = balance.asset_transfer().fee_asset_id();
+        if (rawFeeAssetId > 0) {
+            this->feeAssetId.push_back(0x01);
+            Data feeEncoding;
+            encode32LE(rawFeeAssetId, feeEncoding);
+            append(this->feeAssetId, feeEncoding);
+        } else {
+            // use native token
+            this->feeAssetId.push_back(0x00);
+        }
 
         append(data, encodeAssetTransfer(balance.asset_transfer(), _network, multiAddress));
     }  else if (balance.has_batch_asset_transfer()) {
         // keep fee asset id encoding which will be used in encodePayload & encodeSignature.
-        this->feeAssetId = encodeCompact(balance.batch_asset_transfer().fee_asset_id());
+        // see: https://github.com/paritytech/substrate/blob/d1221692968b8bc62d6eab9d10cb6b5bf38c5dc2/frame/transaction-payment/asset-tx-payment/src/lib.rs#L152
+        auto rawFeeAssetId = balance.batch_asset_transfer().fee_asset_id();
+        if (rawFeeAssetId > 0) {
+            this->feeAssetId.push_back(0x01);
+            Data feeEncoding;
+            encode32LE(rawFeeAssetId, feeEncoding);
+            append(this->feeAssetId, feeEncoding);
+        } else {
+            // use native token
+            this->feeAssetId.push_back(0x00);
+        }
+        
 
         // init call array
         auto calls = std::vector<Data>();
