@@ -46,7 +46,7 @@ Cell::Ref Wallet::createSigningMessage(
     TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(header);
 
     CellBuilder bodyBuilder;
-    if (comment.size() > 0) { // TODO(vbushev): test and finalize this branch
+    if (comment.size() > 0) {
         const auto& data = Data(comment.begin(), comment.end());
         bodyBuilder.appendU32(0);
         bodyBuilder.appendRaw(data, data.size() * 8);

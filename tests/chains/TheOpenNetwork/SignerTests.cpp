@@ -100,4 +100,50 @@ TEST(TheOpenNetworkSigner, TransferAllBalanceNonBounceable) {
     ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAK8AAAFFiAGwt/q8k4SrjbFbQCjJZfQr64ExRxcUMsWqaQODqTUijgwAAQGcRQQvxdU1u4QoE2Pas0AsZQMc9lea3+wtSvaC6QfLUlyJ9oISMCFnaErpyFHelDhPu4iuZqhkoLwjkR1VYhFSCimpoxdkM5WOAAAACACCAAIBYEIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmAAAAAAAAAAAAAAAAAAQADAAA=");
 }
 
+TEST(TheOpenNetworkSigner, TransferWithASCIIComment) {
+    auto input = Proto::SigningInput();
+
+    auto& transfer = *input.mutable_transfer();
+    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_dest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+    transfer.set_amount(10);
+    transfer.set_seqno(10);
+    transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
+    transfer.set_expired_at(1681102222);
+    transfer.set_comment("test comment");
+
+    const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(Everscale::Cell::fromBase64(output.encoded())->hash), "a8c6943d5587f590c43fcdb0e894046f1965c615e19bcaf0c8407e9ccb74518d");
+
+    // tx: https://tonscan.org/tx/9wjD-VrgEDpa0D9u1g03KSD7kvTNsxRocR7LEdQtCNQ=
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAMAAAAFFiAGwt/q8k4SrjbFbQCjJZfQr64ExRxcUMsWqaQODqTUijgwAAQGcY4XlvKqu7spxyjL6vyBSKjbskDgqkHhqBsdTe900RGrzExtpvwc04j94v8HOczEWSMCXjTXk0z+CVUXSL54qCimpoxdkM5WOAAAACgADAAIBYmIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmIUAAAAAAAAAAAAAAAAAEAAwAgAAAAAHRlc3QgY29tbWVudA==");
+}
+
+TEST(TheOpenNetworkSigner, TransferWithUTF8Comment) {
+    auto input = Proto::SigningInput();
+
+    auto& transfer = *input.mutable_transfer();
+    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_dest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+    transfer.set_amount(10);
+    transfer.set_seqno(11);
+    transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
+    transfer.set_expired_at(1681102222);
+    transfer.set_comment("тестовый комментарий");
+
+    const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(Everscale::Cell::fromBase64(output.encoded())->hash), "1091dfae81583d3972825633592c24eab0d3d74c91f60fda9d4afe7535103633");
+
+    // tx: https://tonscan.org/tx/VOTt8HW6eRuWHmuM_P3aC-Dy4TMu4cCRePoTAiDfcoQ=
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAANsAAAFFiAGwt/q8k4SrjbFbQCjJZfQr64ExRxcUMsWqaQODqTUijgwAAQGchoDa7EdGQuPuehHy3+0X9WNVEvYxdBtaEWn15oYUX8PEKyzztYy94Xq0T2XdhVvj2H7PTSQ+D/Ny1IBRCxk0BimpoxdkM5WOAAAACwADAAIBYmIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmIUAAAAAAAAAAAAAAAAAEAAwBWAAAAANGC0LXRgdGC0L7QstGL0Lkg0LrQvtC80LzQtdC90YLQsNGA0LjQuQ==");
+}
+
 } // namespace TW::TheOpenNetwork::tests
