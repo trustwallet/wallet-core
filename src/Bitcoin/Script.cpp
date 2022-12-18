@@ -9,6 +9,7 @@
 #include "OpCodes.h"
 #include "Script.h"
 #include "SegwitAddress.h"
+#include <TrustWalletCore/TWHRP.h>
 
 #include "../BinaryCoding.h"
 #include "../Coin.h"
@@ -291,6 +292,7 @@ void Script::encode(Data& data) const {
 }
 
 Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType coin) {
+    // First try legacy address, for all coins
     if (Address::isValid(string)) {
         auto address = Address(string);
         auto p2pkh = TW::p2pkhPrefix(coin);
@@ -301,16 +303,23 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             data.reserve(Address::size - 1);
             std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToPublicKeyHash(data);
-        } else if (p2sh == address.bytes[0]) {
+        }
+        if (p2sh == address.bytes[0]) {
             // address starts with 3/M
             auto data = Data();
             data.reserve(Address::size - 1);
             std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToScriptHash(data);
         }
-    } else if (SegwitAddress::isValid(string)) {
-        const auto result = SegwitAddress::decode(string);
-        // address starts with bc/ltc
+        return {};
+    }
+
+    // Second, try Segwit address, for all coins; also check HRP
+    if (const auto result = SegwitAddress::decode(string);
+        std::get<2>(result) &&
+        (std::get<1>(result) == stringForHRP(TW::hrp(coin)) || (coin == TWCoinTypeBitcoin && std::get<1>(result) == SegwitAddress::TestnetPrefix))
+    ) {
+        // address starts with bc/ltc/...
         const auto address = std::get<0>(result);
         if (address.witnessVersion == 0) {
             return buildPayToV0WitnessProgram(address.witnessProgram);
@@ -318,45 +327,71 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
         if (address.witnessVersion == 1 && address.witnessProgram.size() == 32) {
             return buildPayToV1WitnessProgram(address.witnessProgram);
         }
-    } else if (BitcoinCashAddress::isValid(string)) {
-        auto address = BitcoinCashAddress(string);
-        auto bitcoinAddress = address.legacyAddress();
-        return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
-    } else if (Decred::Address::isValid(string)) {
-        auto bytes = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
-        if (bytes[1] == TW::p2pkhPrefix(TWCoinTypeDecred)) {
-            return buildPayToPublicKeyHash(Data(bytes.begin() + 2, bytes.end()));
-        }
-        if (bytes[1] == TW::p2shPrefix(TWCoinTypeDecred)) {
-            return buildPayToScriptHash(Data(bytes.begin() + 2, bytes.end()));
-        }
-    } else if (ECashAddress::isValid(string)) {
-        auto address = ECashAddress(string);
-        auto bitcoinAddress = address.legacyAddress();
-        return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeECash);
-    } else if (Groestlcoin::Address::isValid(string)) {
-        auto address = Groestlcoin::Address(string);
-        auto data = Data();
-        data.reserve(Address::size - 1);
-        std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
-        if (address.bytes[0] == TW::p2pkhPrefix(TWCoinTypeGroestlcoin)) {
-            return buildPayToPublicKeyHash(data);
-        }
-        if (address.bytes[0] == TW::p2shPrefix(TWCoinTypeGroestlcoin)) {
-            return buildPayToScriptHash(data);
-        }
-    } else if (Zcash::TAddress::isValid(string)) {
-        auto address = Zcash::TAddress(string);
-        auto data = Data();
-        data.reserve(Address::size - 2);
-        std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
-        if (address.bytes[1] == TW::p2pkhPrefix(TWCoinTypeZcash)) {
-            return buildPayToPublicKeyHash(data);
-        } else if (address.bytes[1] == TW::p2shPrefix(TWCoinTypeZcash)) {
-            return buildPayToScriptHash(data);
-        }
+        return {};
     }
-    return {};
+
+    // Thirdly, coin-specific address formats
+    switch (coin) {
+        case TWCoinTypeBitcoinCash:
+            if (BitcoinCashAddress::isValid(string)) {
+                auto address = BitcoinCashAddress(string);
+                auto bitcoinAddress = address.legacyAddress();
+                return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
+            }
+            return {};
+
+        case TWCoinTypeDecred:
+            if (Decred::Address::isValid(string)) {
+                auto bytes = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
+                if (bytes[1] == TW::p2pkhPrefix(TWCoinTypeDecred)) {
+                    return buildPayToPublicKeyHash(Data(bytes.begin() + 2, bytes.end()));
+                }
+                if (bytes[1] == TW::p2shPrefix(TWCoinTypeDecred)) {
+                    return buildPayToScriptHash(Data(bytes.begin() + 2, bytes.end()));
+                }
+            }
+            return {};
+
+        case TWCoinTypeECash:
+            if (ECashAddress::isValid(string)) {
+                auto address = ECashAddress(string);
+                auto bitcoinAddress = address.legacyAddress();
+                return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeECash);
+            }
+            return {};
+
+        case TWCoinTypeGroestlcoin:
+            if (Groestlcoin::Address::isValid(string)) {
+                auto address = Groestlcoin::Address(string);
+                auto data = Data();
+                data.reserve(Address::size - 1);
+                std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
+                if (address.bytes[0] == TW::p2pkhPrefix(TWCoinTypeGroestlcoin)) {
+                    return buildPayToPublicKeyHash(data);
+                }
+                if (address.bytes[0] == TW::p2shPrefix(TWCoinTypeGroestlcoin)) {
+                    return buildPayToScriptHash(data);
+                }
+            }
+            return {};
+
+        case TWCoinTypeZcash:
+            if (Zcash::TAddress::isValid(string)) {
+                auto address = Zcash::TAddress(string);
+                auto data = Data();
+                data.reserve(Address::size - 2);
+                std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
+                if (address.bytes[1] == TW::p2pkhPrefix(TWCoinTypeZcash)) {
+                    return buildPayToPublicKeyHash(data);
+                } else if (address.bytes[1] == TW::p2shPrefix(TWCoinTypeZcash)) {
+                    return buildPayToScriptHash(data);
+                }
+            }
+            return {};
+
+        default:
+            return {};
+    }
 }
 
 } // namespace TW::Bitcoin
