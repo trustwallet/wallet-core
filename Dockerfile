@@ -39,6 +39,10 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
+# Install rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 # ↑ Setup build environment
 # ↓ Build and compile wallet core
 
