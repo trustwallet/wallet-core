@@ -62,6 +62,6 @@ message SigningInput {
 
 // Transaction signing output.
 message SigningOutput {
-    // Signed and encoded transaction bytes.
-    bytes encoded = 1;
+    // Signed and base64 encoded BOC message
+    string encoded = 1;
 }

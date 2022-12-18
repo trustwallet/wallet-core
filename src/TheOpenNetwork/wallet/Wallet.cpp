@@ -46,10 +46,10 @@ Cell::Ref Wallet::createSigningMessage(
     TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(header);
 
     CellBuilder bodyBuilder;
-    if (comment.size() > 0) {
+    if (!comment.empty()) {
         const auto& data = Data(comment.begin(), comment.end());
         bodyBuilder.appendU32(0);
-        bodyBuilder.appendRaw(data, data.size() * 8);
+        bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
     }
     internalMessage.setBody(bodyBuilder.intoCell());
 

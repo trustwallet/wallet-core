@@ -31,7 +31,7 @@ Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey&
         Address(transfer.dest()),
         transfer.amount(),
         transfer.seqno(),
-        transfer.mode(),
+        static_cast<uint8_t>(transfer.mode()),
         transfer.expired_at(),
         transfer.comment()
     );
