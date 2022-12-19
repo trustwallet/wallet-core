@@ -59,6 +59,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeOptimism:
         case TWCoinTypeZksync:
         case TWCoinTypeOKXChain:
+        case TWCoinTypeBTCIXNetwork:
         case TWCoinTypePOANetwork:
         case TWCoinTypePolygon:
         case TWCoinTypeSmartBitcoinCash:

@@ -2880,5 +2880,33 @@
       "source": "https://github.com/hashgraph",
       "documentation": "https://docs.hedera.com"
     }
+  },
+  {
+    "id": "btcix",
+    "name": "BTCIX Network",
+    "coinId": 10019845,
+    "chainId": "19845",
+    "symbol": "BTCIX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://btcixscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x2d37bf22d9562e2ab3d912d156bd530fbe147c382bfe233d9804e09166c5133d",
+      "sampleAccount": "0x23d89651c16f0eee68239af64ea476183c5238be"
+    },
+    "info": {
+      "url": "https://bitcolojix.org/",
+      "rpc": "https://seed.btcix.org/rpc"
+    }
   }
 ]
