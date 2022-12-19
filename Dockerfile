@@ -43,6 +43,8 @@ ENV CXX=/usr/bin/clang++-14
 RUN wget "https://sh.rustup.rs" -O rustup.sh \
     && sh rustup.sh -y
 ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install --force cbindgen \
+    && rustup target add wasm32-unknown-emscripten
 
 # ↑ Setup build environment
 # ↓ Build and compile wallet core
