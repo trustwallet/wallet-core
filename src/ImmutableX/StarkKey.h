@@ -21,9 +21,9 @@ PrivateKey getPrivateKeyFromSeed(const std::string& seed, const DerivationPath& 
 
 PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey);
 
-PrivateKey getPrivateKeyFromRawSignature(const std::string& signature, const DerivationPath& derivationPath);
+PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const DerivationPath& derivationPath);
 
-std::string getPublicKeyFromPrivateKey(const std::string& privateKey);
+Data getPublicKeyFromPrivateKey(const Data& privateKey);
 
 Data sign(const Data &privateKey, const Data& digest);
 

@@ -24,9 +24,10 @@
 
 namespace TW {
 
+template<size_t seedSize = 64>
 class HDWallet {
   public:
-    static constexpr size_t seedSize = 64;
+    static constexpr size_t mSeedSize = seedSize;
     static constexpr size_t maxMnemomincSize = 240;
     static constexpr size_t maxExtendedKeySize = 128;
 
@@ -43,13 +44,16 @@ class HDWallet {
     /// Entropy is the binary 1-to-1 representation of the mnemonic (11 bits from each word)
     TW::Data entropy;
 
-  public:
+public:
     const std::array<byte, seedSize>& getSeed() const { return seed; }
     const std::string& getMnemonic() const { return mnemonic; }
     const std::string& getPassphrase() const { return passphrase; }
     const TW::Data& getEntropy() const { return entropy; }
 
   public:
+    /// Initializes an HDWallet from given seed.
+    HDWallet(const Data& seed);
+
     /// Initializes a new random HDWallet with the provided strength in bits.  
     /// Throws on invalid strength.
     HDWallet(int strength, const std::string& passphrase);
@@ -143,5 +147,5 @@ class HDWallet {
 
 /// Wrapper for C interface.
 struct TWHDWallet {
-    TW::HDWallet impl;
+    TW::HDWallet<> impl;
 };

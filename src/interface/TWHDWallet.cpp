@@ -51,7 +51,7 @@ void TWHDWalletDelete(struct TWHDWallet *wallet) {
 }
 
 TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet) {
-    return TWDataCreateWithBytes(wallet->impl.getSeed().data(), HDWallet::seedSize);
+    return TWDataCreateWithBytes(wallet->impl.getSeed().data(), HDWallet<>::mSeedSize);
 }
 
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
@@ -129,7 +129,7 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKeyDerivation(struct TWHDWallet *w
 
 TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
     const auto derivationPathObject = DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), coin, derivationPathObject);
+    auto publicKey = HDWallet<>::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), coin, derivationPathObject);
     if (!publicKey) {
         return nullptr;
     }

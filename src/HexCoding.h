@@ -11,6 +11,7 @@
 #include <boost/algorithm/hex.hpp>
 
 #include <array>
+#include <sstream>
 #include <string>
 #include <tuple>
 
@@ -133,11 +134,11 @@ inline const char* hex_char_to_bin(char c) {
 }
 
 inline std::string hex_str_to_bin_str(const std::string& hex) {
-    std::string bin;
+    std::stringstream ss;
     for (auto&& c: hex) {
-        bin += hex_char_to_bin(c);
+        ss << hex_char_to_bin(c);
     }
-    return bin;
+    return ss.str();
 }
 
 } // namespace TW

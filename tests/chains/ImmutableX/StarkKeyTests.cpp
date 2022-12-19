@@ -25,8 +25,8 @@ TEST(ImmutableX, ExtraGrinding) {
     std::string address = "0xa4864d977b944315389d1765ffa7e66F74ee8cd7";
     auto data = parse_hex(signature);
     auto path = DerivationPath(Ethereum::accountPathFromAddress(address, gLayer, gApplication, gIndex));
-    auto privKey = ImmutableX::getPrivateKeyFromRawSignature(signature, path);
-    auto pubKey = hexEncoded(parse_hex(getPublicKeyFromPrivateKey(hex(privKey.bytes)), true));
+    auto privKey = ImmutableX::getPrivateKeyFromRawSignature(parse_hex(signature), path);
+    auto pubKey = hexEncoded(getPublicKeyFromPrivateKey(privKey.bytes));
     ASSERT_EQ(pubKey, "0x035919acd61e97b3ecdc75ff8beed8d1803f7ea3cad2937926ae59cc3f8070d4");
 }
 
@@ -50,14 +50,15 @@ TEST(ImmutableX, GetPrivateKeyFromSignature) {
     std::string address = "0xa76e3eeb2f7143165618ab8feaabcd395b6fac7f";
     std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
     auto path = DerivationPath(Ethereum::accountPathFromAddress(address, gLayer, gApplication, gIndex));
-    auto privKey = ImmutableX::getPrivateKeyFromRawSignature(signature, path);
+    auto privKey = ImmutableX::getPrivateKeyFromRawSignature(parse_hex(signature), path);
     ASSERT_EQ(hex(privKey.bytes), "058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
     ASSERT_TRUE(PrivateKey::isValid(privKey.bytes));
 }
 
 TEST(ImmutableX, GetPublicKeyFromPrivateKey) {
-    auto pubKey = getPublicKeyFromPrivateKey("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe");
-    ASSERT_EQ(pubKey, "0x2a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd");
+    auto privKey = parse_hex("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe", true);
+    auto pubKey = hexEncoded(getPublicKeyFromPrivateKey(privKey));
+    ASSERT_EQ(pubKey, "0x02a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd");
 
     {
         auto priv = PrivateKey(parse_hex("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe"));

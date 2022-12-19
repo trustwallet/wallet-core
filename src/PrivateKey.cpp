@@ -162,8 +162,7 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     }
 
     case TWPublicKeyTypeStarkex: {
-        auto pubkeyStr = ImmutableX::getPublicKeyFromPrivateKey(hex(this->bytes));
-        result = parse_hex(pubkeyStr, true);
+        result = ImmutableX::getPublicKeyFromPrivateKey(this->bytes);
         if (result.size() == PublicKey::starkexSize - 1) {
             result.insert(result.begin(), 0);
         }

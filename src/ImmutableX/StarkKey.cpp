@@ -36,7 +36,7 @@ std::string grindKey(const Data& seed) {
 }
 
 PrivateKey getPrivateKeyFromSeed(const Data& seed, const DerivationPath& path) {
-    auto key = HDWallet::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, path);
+    auto key = HDWallet<32>::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, path);
     auto data = parse_hex(grindKey(key.bytes), true);
     return PrivateKey(data);
 }
@@ -45,19 +45,19 @@ PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
     return PrivateKey(parse_hex(ImmutableX::grindKey(ethPrivKey.bytes), true));
 }
 
-PrivateKey getPrivateKeyFromRawSignature(const std::string& signature, const DerivationPath& derivationPath) {
+PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const DerivationPath& derivationPath) {
     using namespace internal;
-    auto data = parse_hex(signature);
-    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
+    //auto data = parse_hex(signature);
+    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(signature);
     auto seed = store(ethSignature.s);
     return getPrivateKeyFromSeed(seed, derivationPath);
 }
 
-std::string getPublicKeyFromPrivateKey(const std::string& privateKey) {
-    auto pubKey = starknet_pubkey_from_private(privateKey.c_str());
+Data getPublicKeyFromPrivateKey(const Data& privateKey) {
+    auto pubKey = starknet_pubkey_from_private(hex(privateKey).c_str());
     std::string pubKeyStr = pubKey;
     free_string(pubKey);
-    return pubKeyStr;
+    return parse_hex(pubKeyStr, true);
 }
 
 Data sign(const Data& privateKey, const Data& digest) {
