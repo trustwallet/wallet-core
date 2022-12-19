@@ -13,7 +13,7 @@
 
 namespace TW::TheOpenNetwork {
 
-Data Address::decodeUserFriendlyAddress(const std::string& string) {
+static Data decodeUserFriendlyAddress(const std::string& string) {
     Data decoded;
     if (string.find('-') != std::string::npos || string.find('_') != std::string::npos) {
         decoded = Base64::decodeBase64Url(string);

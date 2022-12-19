@@ -49,9 +49,6 @@ public:
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const override;
     [[nodiscard]] std::string string(bool userFriendly, bool bounceable = true, bool testOnly = false) const;
-
-private:
-    static Data decodeUserFriendlyAddress(const std::string& string);
 };
 
 } // namespace TW::TheOpenNetwork
