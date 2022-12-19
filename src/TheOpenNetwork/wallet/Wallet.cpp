@@ -39,7 +39,7 @@ Cell::Ref Wallet::createSigningMessage(
     uint64_t amount,
     uint32_t seqno,
     uint8_t mode,
-    uint64_t expireAt,
+    uint32_t expireAt,
     const std::string& comment
 ) const {
     const auto header = std::make_shared<Everscale::InternalMessageHeader>(true, dest.isBounceable, dest, amount);
@@ -66,7 +66,7 @@ Cell::Ref Wallet::createTransferMessage(
     uint64_t amount,
     uint32_t seqno,
     uint8_t mode,
-    uint64_t expireAt,
+    uint32_t expireAt,
     const std::string& comment
 ) const {
     const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, seqno, mode, expireAt, comment);

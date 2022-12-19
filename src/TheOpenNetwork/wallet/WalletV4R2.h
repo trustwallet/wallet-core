@@ -16,7 +16,7 @@ public:
 
 private:
     [[nodiscard]] Cell::Ref createDataCell() const override;
-    void writeSigningPayload(CellBuilder& builder, uint32_t seqno = 0, uint64_t expireAt = 0) const override;
+    void writeSigningPayload(CellBuilder& builder, uint32_t seqno = 0, uint32_t expireAt = 0) const override;
 };
 
 } // namespace TW::TheOpenNetwork

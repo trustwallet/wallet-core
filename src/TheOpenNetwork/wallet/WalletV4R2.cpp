@@ -30,17 +30,17 @@ Cell::Ref WalletV4R2::createDataCell() const {
     return builder.intoCell();
 }
 
-void WalletV4R2::writeSigningPayload(CellBuilder& builder, uint32_t seqno, uint64_t expireAt) const {
+void WalletV4R2::writeSigningPayload(CellBuilder& builder, uint32_t seqno, uint32_t expireAt) const {
     builder.appendU32(walletId);
     if (seqno == 0) {
         builder.appendU32(0xffffffff);
     } else {
         if (expireAt == 0) {
-            expireAt = duration_cast<std::chrono::seconds>(
+            expireAt = (uint32_t) duration_cast<std::chrono::seconds>(
                 std::chrono::system_clock::now().time_since_epoch()
-            ).count() + 60;
+            ).count() + 60; // TON v4 wallet requires uint32 for now
         }
-        builder.appendU32(static_cast<uint32_t>(expireAt)); // TON v4 wallet requires uint32 for now
+        builder.appendU32(expireAt);
     }
     builder.appendU32(seqno);
     builder.appendU8(0);
