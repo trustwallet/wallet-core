@@ -24,7 +24,7 @@ std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std:
     return Address(address).string(true, true, false);
 }
 
-std::string Entry::deriveAddress([[maybe_unused]]TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return WalletV4R2(publicKey, Everscale::WorkchainType::Basechain).getAddress().string();
 }
 
