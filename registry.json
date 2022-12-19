@@ -2951,7 +2951,7 @@
     "blockchain": "TON",
     "derivation": [
       {
-        "path": "m/44'/607'/0'/0/0"
+        "path": "m/44'/607'/0'"
       }
     ],
     "curve": "ed25519",

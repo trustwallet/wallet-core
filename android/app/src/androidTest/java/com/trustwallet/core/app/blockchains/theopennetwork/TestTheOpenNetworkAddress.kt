@@ -19,15 +19,32 @@ class TestTheOpenNetworkAddress {
     }
 
     @Test
-    fun testAddress() {
-        // TODO: Check and finalize implementation
+    fun testAddressFromPrivateKey() {
+        val privateKey = PrivateKey("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8".toHexByteArray())
+        val publicKey = privateKey.getPublicKeyEd25519()
+        val address = AnyAddress(publicKey, CoinType.THEOPENNETWORK)
+        assertEquals(publicKey.data().toHex(), "0xf42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41")
+        assertEquals(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+    }
 
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
-        val pubkey = key.publicKeyEd25519
-        val address = AnyAddress(pubkey, CoinType.THEOPENNETWORK)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.THEOPENNETWORK)
+    @Test
+    fun testAddressFromPublicKey() {
+        val publicKey = PublicKey("f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41".toHexByteArray(), PublicKeyType.ED25519)
+        val address = AnyAddress(publicKey, CoinType.THEOPENNETWORK)
+        assertEquals(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+    }
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
-        assertEquals(address.description(), expected.description())
+    @Test
+    fun testAddressFromRawString() {
+        val addressString = "0:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"
+        val address = AnyAddress(addressString, CoinType.THEOPENNETWORK)
+        assertEquals(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
+    }
+
+    @Test
+    fun testAddressFromUserFriendlyString() {
+        val addressString = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
+        val address = AnyAddress(addressString, CoinType.THEOPENNETWORK)
+        assertEquals(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
     }
 }

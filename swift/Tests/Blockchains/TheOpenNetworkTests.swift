@@ -44,7 +44,7 @@ class TheOpenNetworkTests: XCTestCase {
             $0.amount = 10
             $0.seqno = 6
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
-            $0.expiredAt = 1671132440
+            $0.expireAt = 1671132440
         }
 
         let input = TheOpenNetworkSigningInput.with {

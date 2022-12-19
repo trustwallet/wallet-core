@@ -39,14 +39,14 @@ message Transfer {
     // Learn more: https://ton.org/docs/develop/smart-contracts/guidelines/external-messages
     uint32 seqno = 4;
 
-    // Send mode (optional)
+    // Send mode (optional, 0 by default)
     // Learn more: https://ton.org/docs/develop/func/stdlib#send_raw_message
     uint32 mode = 5;
 
     // Expiration UNIX timestamp (optional, now() + 60 by default)
-    uint32 expired_at = 6;
+    uint64 expire_at = 6;
 
-    // Transfer comment message (optional)
+    // Transfer comment message (optional, empty by default)
     string comment = 7;
 }
 

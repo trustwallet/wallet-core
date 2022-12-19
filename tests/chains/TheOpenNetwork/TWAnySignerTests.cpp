@@ -22,7 +22,7 @@ TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWallet) {
     transfer.set_dest("EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
     transfer.set_amount(10);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
-    transfer.set_expired_at(1671135440);
+    transfer.set_expire_at(1671135440);
 
     const auto privateKey = parse_hex("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8");
     input.set_private_key(privateKey.data(), privateKey.size());

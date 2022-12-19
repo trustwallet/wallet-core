@@ -19,7 +19,7 @@ Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey&
 
     switch (transfer.wallet_version()) {
     case Proto::WalletVersion::WalletV4R2: {
-        wallet.reset(new WalletV4R2(publicKey, workchainId));
+        wallet = std::make_unique<WalletV4R2>(publicKey, workchainId);
         break;
     }
     default:
@@ -32,7 +32,7 @@ Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey&
         transfer.amount(),
         transfer.seqno(),
         static_cast<uint8_t>(transfer.mode()),
-        transfer.expired_at(),
+        transfer.expire_at(),
         transfer.comment()
     );
 
