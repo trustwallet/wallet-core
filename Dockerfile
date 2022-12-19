@@ -40,7 +40,8 @@ ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
 # Install rust
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+RUN wget "https://sh.rustup.rs" -O rustup.sh \
+    && sh rustup.sh -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # ↑ Setup build environment
