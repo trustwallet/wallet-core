@@ -11,9 +11,9 @@
 namespace TW::TheOpenNetwork {
 
 Wallet::Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode)
-    : publicKey(publicKey)
+    : publicKey(std::move(publicKey))
     , workchainId(workchainId)
-    , walletCode(walletCode)
+    , walletCode(std::move(walletCode))
     , walletId(698983191 + workchainId) {
 }
 
