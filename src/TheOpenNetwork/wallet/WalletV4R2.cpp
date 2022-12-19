@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-
 #include "WalletV4R2.h"
 
 #include "HexCoding.h"

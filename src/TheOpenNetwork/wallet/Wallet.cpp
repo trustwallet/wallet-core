@@ -42,21 +42,25 @@ Cell::Ref Wallet::createSigningMessage(
     uint32_t expireAt,
     const std::string& comment
 ) const {
-    const auto header = std::make_shared<Everscale::InternalMessageHeader>(true, dest.isBounceable, dest, amount);
-    TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(header);
-
-    CellBuilder bodyBuilder;
-    if (!comment.empty()) {
-        const auto& data = Data(comment.begin(), comment.end());
-        bodyBuilder.appendU32(0);
-        bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
-    }
-    internalMessage.setBody(bodyBuilder.intoCell());
-
     CellBuilder builder;
     this->writeSigningPayload(builder, seqno, expireAt);
     builder.appendU8(mode);
-    builder.appendReferenceCell(internalMessage.intoCell());
+
+    { // Add internal message as a reference cell
+        const auto header = std::make_shared<Everscale::InternalMessageHeader>(true, dest.isBounceable, dest, amount);
+        TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(header);
+
+        CellBuilder bodyBuilder;
+        if (!comment.empty()) {
+            const auto& data = Data(comment.begin(), comment.end());
+            bodyBuilder.appendU32(0);
+            bodyBuilder.appendRaw(data, static_cast<uint16_t>(data.size()) * 8);
+        }
+        internalMessage.setBody(bodyBuilder.intoCell());
+
+        builder.appendReferenceCell(internalMessage.intoCell());
+    }
+
     return builder.intoCell();
 }
 
@@ -69,22 +73,24 @@ Cell::Ref Wallet::createTransferMessage(
     uint32_t expireAt,
     const std::string& comment
 ) const {
-    const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, seqno, mode, expireAt, comment);
-
-    Data data(signingMessage->hash.begin(), signingMessage->hash.end());
-    const auto signature = privateKey.sign(data, TWCurveED25519);
-
-    CellBuilder bodyBuilder;
-    bodyBuilder.appendRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
-    bodyBuilder.appendCellSlice(CellSlice(signingMessage.get()));
-
     const auto transferMessageHeader = std::make_shared<ExternalInboundMessageHeader>(this->getAddress());
     Message transferMessage = Message(transferMessageHeader);
     if (seqno == 0) {
         const auto stateInit = this->createStateInit();
         transferMessage.setStateInit(stateInit);
     }
-    transferMessage.setBody(bodyBuilder.intoCell());
+
+    { // Set body of transfer message
+        CellBuilder bodyBuilder;
+        const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, seqno, mode, expireAt, comment);
+        Data data(signingMessage->hash.begin(), signingMessage->hash.end());
+        const auto signature = privateKey.sign(data, TWCurveED25519);
+
+        bodyBuilder.appendRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
+        bodyBuilder.appendCellSlice(CellSlice(signingMessage.get()));
+
+        transferMessage.setBody(bodyBuilder.intoCell());
+    }
 
     return transferMessage.intoCell();
 }
