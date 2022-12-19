@@ -134,7 +134,10 @@ Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfe
     // call index
     append(data, encodeCallIndex(transfer.module_index(), transfer.method_index()));
     // asset id
-    append(data, encodeCompact(transfer.asset_id()));
+    if (transfer.asset_id() > 0) {
+        // For native token transfer, should ignore asset id
+        append(data, encodeCompact(transfer.asset_id()));
+    }
     // destination
     append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
     // value
@@ -185,7 +188,6 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) {
             this->feeAssetId.push_back(0x00);
         }
         
-
         // init call array
         auto calls = std::vector<Data>();
         auto batchTransfer = balance.batch_asset_transfer().transfers();

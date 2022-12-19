@@ -235,4 +235,66 @@ TEST(SubstrateSigner, Statemint_encodeTransaction_batch_transfer_keep_alive) {
     ASSERT_EQ(hex(encoded), "f502840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100e1d541271965858ff2ba1a1296f0b4d28c8cbcaddf0ea06a9866869caeca3d16eff1265591d11b46d66882493079fde9e425cd941f166260135e9d81f7daf60c85020c00002800083206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a06003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
+TEST(SubstrateSigner, Statemint_encodeTransaction_dot_transfer_keep_alive) {
+    // tx on mainnet
+    // https://statemint.subscan.io/extrinsic/2789245-2
+
+    Substrate::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+    auto blockHash = parse_hex("68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f");
+    auto genesisHash = parse_hex("68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f");
+    input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
+    input.set_genesis_hash(std::string(genesisHash.begin(), genesisHash.end()));
+    input.set_nonce(7ul);
+    input.set_spec_version(9320u);
+    input.set_transaction_version(9u);
+
+    auto* transfer = input.mutable_balance_call()->mutable_asset_transfer();
+    transfer->set_module_index(0x0a);
+    transfer->set_method_index(0x03);
+    transfer->set_to_address("12q4hq1dgqHZVGzHbwZmqq1cFwatN15Visfd7YmUiMB5ZWkH");
+
+    auto value = store(100000);
+    transfer->set_value(std::string(value.begin(), value.end()));
+    transfer->set_asset_id(0x00);
+    transfer->set_fee_asset_id(0x00); // native token
+
+    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto signature = parse_hex("c4f7cb46605986ff6dd1a192736feddd8ae468a10b1b458eadfa855ed6b59ad442a96c18e7109ad594d11ba2fd52920545f8a450234e9b03ee3e8f59a8f06f00");
+    auto encoded = Signer::encodeTransaction(input, publicKey, signature);
+    ASSERT_EQ(hex(encoded), "3902840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100c4f7cb46605986ff6dd1a192736feddd8ae468a10b1b458eadfa855ed6b59ad442a96c18e7109ad594d11ba2fd52920545f8a450234e9b03ee3e8f59a8f06f00001c00000a030050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
+}
+
+TEST(SubstrateSigner, Statemint_encodeTransaction_usdt_transfer_keep_alive) {
+    // tx on mainnet
+    // https://statemint.subscan.io/extrinsic/2789377-2
+
+    Substrate::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+    auto blockHash = parse_hex("68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f");
+    auto genesisHash = parse_hex("68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f");
+    input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
+    input.set_genesis_hash(std::string(genesisHash.begin(), genesisHash.end()));
+    input.set_nonce(8ul);
+    input.set_spec_version(9320u);
+    input.set_transaction_version(9u);
+
+    auto* transfer = input.mutable_balance_call()->mutable_asset_transfer();
+    transfer->set_module_index(0x32);
+    transfer->set_method_index(0x06);
+    transfer->set_to_address("12q4hq1dgqHZVGzHbwZmqq1cFwatN15Visfd7YmUiMB5ZWkH");
+
+    auto value = store(100000);
+    transfer->set_value(std::string(value.begin(), value.end()));
+    transfer->set_asset_id(1984);
+    transfer->set_fee_asset_id(1984);
+
+    auto publicKey = parse_hex("81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91");
+    auto signature = parse_hex("d22583408806c005a24caf16f2084691f4c6dcb6015e6645adc86fc1474369b0e0b7dbcc0ef25b17eae43844aff6fb42a0b279a19e822c76043cac015be5e40a");
+    auto encoded = Signer::encodeTransaction(input, publicKey, signature);
+    ASSERT_EQ(hex(encoded), "5102840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100d22583408806c005a24caf16f2084691f4c6dcb6015e6645adc86fc1474369b0e0b7dbcc0ef25b17eae43844aff6fb42a0b279a19e822c76043cac015be5e40a00200001c00700003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
+}
+
 } // namespace TW::Substrate::tests
