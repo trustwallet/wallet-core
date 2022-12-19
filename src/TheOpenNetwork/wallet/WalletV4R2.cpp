@@ -8,6 +8,8 @@
 
 #include "HexCoding.h"
 
+#include <chrono>
+
 namespace TW::TheOpenNetwork {
 
 WalletV4R2::WalletV4R2(PublicKey publicKey, int8_t workchainId)
