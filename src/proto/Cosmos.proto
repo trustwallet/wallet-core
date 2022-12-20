@@ -136,6 +136,26 @@ message Message {
         repeated Amount amounts = 3;
     }
 
+    message Asset {
+        string chain = 1;
+        string symbol = 2;
+        string ticker = 3;
+        bool synth = 4;
+    }
+
+    message Coin {
+        Asset asset = 1 ;
+        string amount = 2;
+        int64 decimals = 3;
+    }
+
+    // thorchain/MsgDeposit
+    message THORChainDeposit {
+        repeated Coin coins = 1;
+        string memo = 2;
+        bytes signer = 3;
+    }
+
     // execute within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractGeneric {
         // sender address
@@ -311,6 +331,7 @@ message Message {
         AuthGrant  auth_grant = 16;
         AuthRevoke auth_revoke = 17;
         MsgVote msg_vote = 18;
+        THORChainDeposit thorchain_deposit_message = 19;
     }
 }
 

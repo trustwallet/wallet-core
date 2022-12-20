@@ -52,6 +52,7 @@ class SwapBuilder {
     SwapBundled buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain);
     SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
     SwapBundled buildEth(uint64_t amount, const std::string& memo);
+    SwapBundled buildRune(uint64_t amount, const std::string& memo);;
     SwapBundled buildAtom(uint64_t amount, const std::string& memo);
 
 public:

@@ -124,6 +124,8 @@ SwapBundled SwapBuilder::build(bool shortened) {
     case Chain::ETH:
     case Chain::AVAX:
         return buildEth(fromAmountNum, memo);
+    case Chain::THOR:
+        return buildRune(fromAmountNum, memo);
     }
     default:
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Unsupported_from_chain), .error = "Unsupported from chain: " + std::to_string(fromChain)};
@@ -289,6 +291,37 @@ SwapBundled SwapBuilder::buildAtom(uint64_t amount, const std::string& memo) {
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uatom");
     amountOfTx->set_amount(std::to_string(amount));
+
+    auto serialized = input.SerializeAsString();
+    out.insert(out.end(), serialized.begin(), serialized.end());
+
+    return {.out = std::move(out)};
+}
+
+
+SwapBundled SwapBuilder::buildRune(uint64_t amount, const std::string& memo) {
+    if (!Cosmos::Address::isValid(mVaultAddress, "thor")) {
+        return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
+    }
+    Data out;
+
+    auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id("thorchain-mainnet-v1");
+    input.set_memo(memo);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_thorchain_deposit_message();
+    message.set_memo(memo);
+    Bech32Address fromAddress("thor");
+    Bech32Address::decode(mFromAddress, fromAddress, "thor");
+    message.set_signer(std::string(fromAddress.getKeyHash().begin(), fromAddress.getKeyHash().end()));
+    auto coin = message.add_coins();
+    auto asset = coin->mutable_asset();
+    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain())));
+    asset->set_symbol(mFromAsset.symbol());
+    coin->set_amount(std::to_string(amount));
+    coin->set_decimals(0);
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());
