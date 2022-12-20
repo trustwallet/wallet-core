@@ -31,7 +31,7 @@ class TestTheOpenNetworkSigner {
             .setDest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
             .setAmount(10)
             .setSequenceNumber(6)
-            .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY | TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS)
+            .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
             .setExpireAt(1671132440)
             .build()
 
