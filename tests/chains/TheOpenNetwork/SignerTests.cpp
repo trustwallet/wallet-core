@@ -17,7 +17,7 @@ TEST(TheOpenNetworkSigner, TransferAndDeploy) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
     transfer.set_amount(10);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
@@ -38,10 +38,10 @@ TEST(TheOpenNetworkSigner, TransferOrdinary) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
     transfer.set_amount(10);
-    transfer.set_seqno(6);
+    transfer.set_sequence_number(6);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1671132440);
 
@@ -60,10 +60,10 @@ TEST(TheOpenNetworkSigner, TransferAllBalance) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
     transfer.set_amount(0);
-    transfer.set_seqno(7);
+    transfer.set_sequence_number(7);
     transfer.set_mode(Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
 
@@ -82,10 +82,10 @@ TEST(TheOpenNetworkSigner, TransferAllBalanceNonBounceable) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("UQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts4DV");
     transfer.set_amount(0);
-    transfer.set_seqno(8);
+    transfer.set_sequence_number(8);
     transfer.set_mode(Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
 
@@ -104,10 +104,10 @@ TEST(TheOpenNetworkSigner, TransferWithASCIIComment) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
     transfer.set_amount(10);
-    transfer.set_seqno(10);
+    transfer.set_sequence_number(10);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
     transfer.set_comment("test comment");
@@ -127,10 +127,10 @@ TEST(TheOpenNetworkSigner, TransferWithUTF8Comment) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
     transfer.set_amount(10);
-    transfer.set_seqno(11);
+    transfer.set_sequence_number(11);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
     transfer.set_comment("тестовый комментарий");

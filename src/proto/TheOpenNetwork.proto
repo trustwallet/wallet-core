@@ -10,9 +10,9 @@ package TW.TheOpenNetwork.Proto;
 option java_package = "wallet.core.jni.proto";
 
 enum WalletVersion {
-    WalletV3R1 = 0;
-    WalletV3R2 = 1;
-    WalletV4R2 = 2;
+    WALLET_V3_R1 = 0;
+    WALLET_V3_R2 = 1;
+    WALLET_V4_R2 = 2;
 };
 
 enum SendMode {
@@ -37,7 +37,7 @@ message Transfer {
     // Message counter (optional, 0 by default used for the first deploy)
     // This field is required, because we need to protect the smart contract against "replay attacks"
     // Learn more: https://ton.org/docs/develop/smart-contracts/guidelines/external-messages
-    uint32 seqno = 4;
+    uint32 sequence_number = 4;
 
     // Send mode (optional, 0 by default)
     // Learn more: https://ton.org/docs/develop/func/stdlib#send_raw_message

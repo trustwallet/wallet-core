@@ -37,7 +37,7 @@ public:
         const PrivateKey& privateKey,
         const Address& dest,
         uint64_t amount,
-        uint32_t seqno,
+        uint32_t sequence_number,
         uint8_t mode,
         uint32_t expireAt = 0,
         const std::string& comment = ""
@@ -45,13 +45,13 @@ public:
 
 protected:
     [[nodiscard]] virtual Cell::Ref createDataCell() const = 0;
-    virtual void writeSigningPayload(CellBuilder& builder, uint32_t seqno = 0, uint32_t expireAt = 0) const = 0;
+    virtual void writeSigningPayload(CellBuilder& builder, uint32_t sequence_number = 0, uint32_t expireAt = 0) const = 0;
 
 private:
     [[nodiscard]] Cell::Ref createSigningMessage(
         const Address& dest,
         uint64_t amount,
-        uint32_t seqno,
+        uint32_t sequence_number,
         uint8_t mode,
         uint32_t expireAt = 0,
         const std::string& comment = ""

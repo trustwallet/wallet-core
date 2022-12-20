@@ -42,7 +42,7 @@ class TheOpenNetworkTests: XCTestCase {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
             $0.amount = 10
-            $0.seqno = 6
+            $0.sequenceNumber = 6
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
             $0.expireAt = 1671132440
         }

@@ -18,7 +18,7 @@ Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey&
     const int8_t workchainId = Everscale::WorkchainType::Basechain;
 
     switch (transfer.wallet_version()) {
-    case Proto::WalletVersion::WalletV4R2: {
+    case Proto::WalletVersion::WALLET_V4_R2: {
         wallet = std::make_unique<WalletV4R2>(publicKey, workchainId);
         break;
     }
@@ -30,7 +30,7 @@ Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey&
         privateKey,
         Address(transfer.dest()),
         transfer.amount(),
-        transfer.seqno(),
+        transfer.sequence_number(),
         static_cast<uint8_t>(transfer.mode()),
         transfer.expire_at(),
         transfer.comment()

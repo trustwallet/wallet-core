@@ -18,7 +18,7 @@ TEST(TWAnySignerTheOpenNetwork, SingMessageToTransferAndDeployWallet) {
     Proto::SigningInput input;
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_wallet_version(Proto::WalletV4R2);
+    transfer.set_wallet_version(Proto::WALLET_V4_R2);
     transfer.set_dest("EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
     transfer.set_amount(10);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);

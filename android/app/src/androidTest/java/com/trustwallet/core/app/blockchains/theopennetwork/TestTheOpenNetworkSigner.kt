@@ -27,11 +27,11 @@ class TestTheOpenNetworkSigner {
         val privateKey = PrivateKey("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0".toHexByteArray())
 
         val transfer = TheOpenNetwork.Transfer.newBuilder()
-            .setWalletVersion(TheOpenNetwork.WalletVersion.WalletV4R2)
+            .setWalletVersion(TheOpenNetwork.WalletVersion.WALLET_V4_R2)
             .setDest("EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q")
             .setAmount(10)
-            .setSeqno(6)
-            .setMode(3)//TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS)
+            .setSequenceNumber(6)
+            .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY | TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS)
             .setExpireAt(1671132440)
             .build()
 

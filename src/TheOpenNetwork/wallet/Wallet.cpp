@@ -37,13 +37,13 @@ Everscale::StateInit Wallet::createStateInit() const {
 Cell::Ref Wallet::createSigningMessage(
     const Address& dest,
     uint64_t amount,
-    uint32_t seqno,
+    uint32_t sequence_number,
     uint8_t mode,
     uint32_t expireAt,
     const std::string& comment
 ) const {
     CellBuilder builder;
-    this->writeSigningPayload(builder, seqno, expireAt);
+    this->writeSigningPayload(builder, sequence_number, expireAt);
     builder.appendU8(mode);
 
     { // Add internal message as a reference cell
@@ -68,21 +68,21 @@ Cell::Ref Wallet::createTransferMessage(
     const PrivateKey& privateKey,
     const Address& dest,
     uint64_t amount,
-    uint32_t seqno,
+    uint32_t sequence_number,
     uint8_t mode,
     uint32_t expireAt,
     const std::string& comment
 ) const {
     const auto transferMessageHeader = std::make_shared<ExternalInboundMessageHeader>(this->getAddress());
     Message transferMessage = Message(transferMessageHeader);
-    if (seqno == 0) {
+    if (sequence_number == 0) {
         const auto stateInit = this->createStateInit();
         transferMessage.setStateInit(stateInit);
     }
 
     { // Set body of transfer message
         CellBuilder bodyBuilder;
-        const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, seqno, mode, expireAt, comment);
+        const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, sequence_number, mode, expireAt, comment);
         Data data(signingMessage->hash.begin(), signingMessage->hash.end());
         const auto signature = privateKey.sign(data, TWCurveED25519);
 
