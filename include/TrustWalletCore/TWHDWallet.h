@@ -11,6 +11,7 @@
 #include "TWCurve.h"
 #include "TWData.h"
 #include "TWDerivation.h"
+#include "TWDerivationPath.h"
 #include "TWHDVersion.h"
 #include "TWPrivateKey.h"
 #include "TWPublicKey.h"

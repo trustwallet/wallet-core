@@ -6,6 +6,7 @@
 
 #include "PrivateKey.h"
 
+#include "HexCoding.h"
 #include "PublicKey.h"
 
 #include <TrezorCrypto/bignum.h>
@@ -18,6 +19,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/zilliqa.h>
+#include <ImmutableX/StarkKey.h>
 
 #include <iterator>
 
@@ -152,11 +154,20 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         append(result, secondChainCode());
     } break;
 
-    case TWPublicKeyTypeCURVE25519:
+    case TWPublicKeyTypeCURVE25519: {
         result.resize(PublicKey::ed25519Size);
         PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
         ed25519_pk_to_curve25519(result.data(), ed25519PublicKey.bytes.data());
         break;
+    }
+
+    case TWPublicKeyTypeStarkex: {
+        result = ImmutableX::getPublicKeyFromPrivateKey(this->bytes);
+        if (result.size() == PublicKey::starkexSize - 1) {
+            result.insert(result.begin(), 0);
+        }
+        break;
+    }
     }
     return PublicKey(result, type);
 }
@@ -223,6 +234,11 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result.resize(65);
         success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
     } break;
+    case TWCurveStarkex: {
+        result = ImmutableX::sign(this->bytes, digest);
+        success = true;
+        break;
+    }
     case TWCurveNone:
     default:
         break;

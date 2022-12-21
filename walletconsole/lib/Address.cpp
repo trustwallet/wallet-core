@@ -29,7 +29,7 @@ bool Address::addrPub(const string& coinid, const string& pubkey_in, string& res
         pubDat = parse_hex(pubkey_in);
     } catch (exception& ex) {
         _out << "Error: could not parse public key data" << endl;
-        return false; 
+        return false;
     }
     auto ctype = (TWCoinType)coin.c;
     PublicKey pubKey = PublicKey(pubDat, (TWPublicKeyType)coin.pubKeyType);
@@ -45,7 +45,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
         priDat = parse_hex(prikey_in);
     } catch (exception& ex) {
         _out << "Error: could not parse private key data" << endl;
-        return false; 
+        return false;
     }
     auto ctype = (TWCoinType)coin.c;
     PrivateKey priKey = PrivateKey(priDat);
@@ -108,7 +108,7 @@ bool Address::deriveFromXpubIndex(const string& coinid, const string& xpub, cons
     dp.setChange(0);
     dp.setAddress(index);
 
-    const auto publicKey = HDWallet::getPublicKeyFromExtended(xpub, ctype, dp);
+    const auto publicKey = HDWallet<>::getPublicKeyFromExtended(xpub, ctype, dp);
     if (!publicKey) { return false; }
     res = TW::deriveAddress(ctype, publicKey.value());
     return true;
