@@ -46,7 +46,7 @@ describe("TheOpenNetwork", () => {
     assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
   });
 
-  it("test address from public key TheOpenNetwork", () => {
+  it("test sign TheOpenNetwork", () => {
     const { PrivateKey, HexCoding, CoinType, AnySigner } = globalThis.core;
 
     let privateKeyData = HexCoding.decode("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");

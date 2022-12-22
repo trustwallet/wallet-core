@@ -10,11 +10,13 @@
 
 namespace TW::TheOpenNetwork {
 
+static const uint32_t standard_wallet_id = 698983191;
+
 Wallet::Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode)
     : publicKey(std::move(publicKey))
     , workchainId(workchainId)
     , walletCode(std::move(walletCode))
-    , walletId(698983191 + workchainId) {
+    , walletId(standard_wallet_id + workchainId) {
 }
 
 Address Wallet::getAddress() const {
