@@ -8,19 +8,13 @@ package com.trustwallet.core.app.utils
 
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHex
-import wallet.core.jni.CoinType
-import wallet.core.jni.Curve
-import wallet.core.jni.Derivation
-import wallet.core.jni.HDVersion
-import wallet.core.jni.HDWallet
-import wallet.core.jni.Mnemonic
-import wallet.core.jni.Purpose
 import java.security.InvalidParameterException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
+import wallet.core.jni.*
 
 class TestHDWallet {
     init {
@@ -30,6 +24,39 @@ class TestHDWallet {
     val words =
         "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal"
     val password = "TREZOR"
+
+    @Test
+    fun testCreateFromMnemonicImmutableXMainnetFromSignature() {
+        // Successfully register: https://api.x.immutable.com/v1/users/0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37
+        val hd = HDWallet("obscure opera favorite shuffle mail tip age debate dirt pact cement loyal", "")
+        val derivationPath = EthereumEip2645.getPath("0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37", "starkex", "immutablex", "1")
+        assertEquals(derivationPath, "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1")
+
+        // Retrieve eth private key
+        val ethPrivateKey = hd.getKeyForCoin(CoinType.ETHEREUM)
+        assertEquals(Numeric.toHexString(ethPrivateKey.data()), "0x03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
+
+        // Retrieve StarkKey DerivationPath
+        val starkDerivationPath = DerivationPath(derivationPath)
+
+        // Retrieve Stark Private key part
+        val ethMsg = "Only sign this request if you’ve initiated an action with Immutable X."
+        val ethSignature = EthereumMessageSigner.signMessage(ethPrivateKey, ethMsg)
+        assertEquals(ethSignature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001")
+        val starkPrivateKey = StarkWare.getStarkKeyFromSignature(starkDerivationPath, ethSignature)
+        val starkPublicKey = starkPrivateKey.getPublicKeyByType(PublicKeyType.STARKEX)
+        assertEquals(Numeric.toHexString(starkPrivateKey.data()), "0x04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de")
+        assertEquals(Numeric.toHexString(starkPublicKey.data()), "0x00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095")
+
+        // Account register
+        val ethMsgToRegister = "Only sign this key linking request from Immutable X"
+        val ethSignatureToRegister = EthereumMessageSigner.signMessage(ethPrivateKey, ethMsgToRegister)
+        assertEquals(ethSignatureToRegister, "646da4160f7fc9205e6f502fb7691a0bf63ecbb74bbb653465cd62388dd9f56325ab1e4a9aba99b1661e3e6251b42822855a71e60017b310b9f90e990a12e1dc01")
+        val starkMsg = "463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf"
+        val starkSignature = StarkExMessageSigner.signMessage(starkPrivateKey, starkMsg)
+        assertEquals(starkSignature, "04cf5f21333dd189ada3c0f2a51430d733501a9b1d5e07905273c1938cfb261e05b6013d74adde403e8953743a338c8d414bb96bf69d2ca1a91a85ed2700a528")
+        assertTrue(StarkExMessageSigner.verifyMessage(starkPublicKey, starkMsg, starkSignature))
+    }
 
     @Test
     fun testCreateFromMnemonic() {

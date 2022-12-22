@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,6 +7,7 @@
 #include "Ethereum/Address.h"
 #include "Ethereum/RLP.h"
 #include "Ethereum/Signer.h"
+#include "Ethereum/EIP191.h"
 #include "Ethereum/Transaction.h"
 #include "HexCoding.h"
 
@@ -15,7 +16,6 @@
 namespace TW::Ethereum {
 
 using boost::multiprecision::uint256_t;
-
 
 TEST(EthereumTransaction, encodeTransactionNonTyped) {
     const auto transaction = TransactionNonTyped::buildERC20Transfer(

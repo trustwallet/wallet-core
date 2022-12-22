@@ -17,6 +17,10 @@
 #include <TrustWalletCore/TWBase58.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
+#include <TrustWalletCore/TWEthereumEip2645.h>
+#include <TrustWalletCore/TWEthereumMessageSigner.h>
+#include <TrustWalletCore/TWStarkExMessageSigner.h>
+#include <TrustWalletCore/TWStarkWare.h>
 #include <proto/Stellar.pb.h>
 
 #include "HexCoding.h"
@@ -496,6 +500,47 @@ TEST(HDWallet, GetKeyByCurve) {
     const auto privateKey2 = WRAP(TWPrivateKey, TWHDWalletGetKeyByCurve(wallet.get(), TWCurveNIST256p1, derivPath.get()));
     const auto privateKeyData2 = WRAPD(TWPrivateKeyData(privateKey2.get()));
     assertHexEqual(privateKeyData2, "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86");
+}
+
+TEST(TWHDWallet, FromMnemonicImmutableXMainnetFromSignature) {
+    // Successfully register: https://api.x.immutable.com/v1/users/0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37
+    const auto mnemonic = STRING("obscure opera favorite shuffle mail tip age debate dirt pact cement loyal");
+    const auto ethAddress = STRING("0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37");
+    const auto layer = STRING("starkex");
+    const auto application = STRING("immutablex");
+    const auto index = STRING("1");
+    const auto ethDerivationPath = STRING("m/44'/60'/0'/0/0");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(mnemonic.get(), STRING("").get()));
+    auto derivationPath = WRAPS(TWEthereumEip2645GetPath(ethAddress.get(), layer.get(), application.get(), index.get()));
+    assertStringsEqual(derivationPath, "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1");
+
+    // Retrieve eth private key
+    auto ethPrivateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeEthereum, ethDerivationPath.get()));
+    const auto ethPrivateKeyData = WRAPD(TWPrivateKeyData(ethPrivateKey.get()));
+    assertHexEqual(ethPrivateKeyData, "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d");
+
+    // StarkKey Derivation Path
+    const auto starkDerivationPath = WRAP(TWDerivationPath, TWDerivationPathCreateWithString(derivationPath.get()));
+
+    // Retrieve Stark Private key part
+    const auto ethMsg = STRING("Only sign this request if you’ve initiated an action with Immutable X.");
+    const auto ethSignature = WRAPS(TWEthereumMessageSignerSignMessage(ethPrivateKey.get(), ethMsg.get()));
+    assertStringsEqual(ethSignature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001");
+    const auto starkPrivateKey = WRAP(TWPrivateKey, TWStarkWareGetStarkKeyFromSignature(starkDerivationPath.get(), ethSignature.get()));
+    const auto starkPrivateKeyData = WRAPD(TWPrivateKeyData(starkPrivateKey.get()));
+    const auto starkPubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyByType(starkPrivateKey.get(), TWPublicKeyTypeStarkex));
+    const auto starkPublicKeyData = WRAPD(TWPublicKeyData(starkPubKey.get()));
+    assertHexEqual(starkPrivateKeyData, "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de");
+    assertHexEqual(starkPublicKeyData, "00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095");
+
+    // Account register
+    const auto ethMsgToRegister = STRING("Only sign this key linking request from Immutable X");
+    const auto ethSignatureToRegister = WRAPS(TWEthereumMessageSignerSignMessage(ethPrivateKey.get(), ethMsgToRegister.get()));
+    assertStringsEqual(ethSignatureToRegister, "646da4160f7fc9205e6f502fb7691a0bf63ecbb74bbb653465cd62388dd9f56325ab1e4a9aba99b1661e3e6251b42822855a71e60017b310b9f90e990a12e1dc01");
+    const auto starkMsg = STRING("463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf");
+    const auto starkSignature = WRAPS(TWStarkExMessageSignerSignMessage(starkPrivateKey.get(), starkMsg.get()));
+    assertStringsEqual(starkSignature, "04cf5f21333dd189ada3c0f2a51430d733501a9b1d5e07905273c1938cfb261e05b6013d74adde403e8953743a338c8d414bb96bf69d2ca1a91a85ed2700a528");
+    ASSERT_TRUE(TWStarkExMessageSignerVerifyMessage(starkPubKey.get(), starkMsg.get(), starkSignature.get()));
 }
 
 TEST(TWHDWallet, Derive_XpubPub_vs_PrivPub) {

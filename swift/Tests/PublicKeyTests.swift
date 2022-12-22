@@ -35,4 +35,14 @@ class PublicKeyTests: XCTestCase {
         XCTAssertTrue(result2)
         XCTAssertTrue(result3)
     }
+    
+    func testVerifyStarkey() {
+        let data = Data(hexString: "02c5dbad71c92a45cc4b40573ae661f8147869a91d57b8d9b8f48c8af7f83159")!
+        let publicKey = PublicKey(data: data, type: .starkex)!
+        let signature = Data(hexString: "061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a")!
+        let hash = Data(hexString: "06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76")!
+        XCTAssertTrue(publicKey.verify(signature: signature, message: hash))
+        let invalidSignature = Data(hexString: "061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9b")!
+        XCTAssertFalse(publicKey.verify(signature: invalidSignature, message: hash))
+    }
 }

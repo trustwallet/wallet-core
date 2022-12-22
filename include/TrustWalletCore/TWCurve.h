@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,6 +19,7 @@ enum TWCurve {
     TWCurveCurve25519             /* "curve25519" */,
     TWCurveNIST256p1              /* "nist256p1" */,
     TWCurveED25519ExtendedCardano /* "ed25519-cardano-seed" */,
+    TWCurveStarkex                /* "starkex" */,
     TWCurveNone
 };
 

@@ -4,20 +4,25 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HDWallet.h"
-#include "Mnemonic.h"
+#include "Base58.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
-#include "Ethereum/Address.h"
-#include "Hedera/DER.h"
-#include "NEAR/Address.h"
-#include "HexCoding.h"
-#include "PublicKey.h"
-#include "Hash.h"
-#include "Base58.h"
 #include "Coin.h"
+#include "Ethereum/Address.h"
+#include "Ethereum/Signer.h"
+#include "Ethereum/EIP191.h"
+#include "Ethereum/EIP2645.h"
+#include "HDWallet.h"
+#include "Hash.h"
+#include "Hedera/DER.h"
+#include "HexCoding.h"
+#include "ImmutableX/StarkKey.h"
+#include "Mnemonic.h"
+#include "NEAR/Address.h"
+#include "PublicKey.h"
 #include "TestUtilities.h"
+#include "StarkEx/MessageSigner.h"
 
 #include <gtest/gtest.h>
 
@@ -57,7 +62,7 @@ TEST(HDWallet, createFromMnemonic) {
         EXPECT_EQ(hex(wallet.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         EXPECT_EQ(hex(wallet.getSeed()), "143cd5fc27ae46eb423efebc41610473f5e24a80f2ca2e2fa7bf167e537f58f4c68310ae487fce82e25bad29bab2530cf77fd724a5ebfc05a45872773d7ee2d6");
     }
-    {   // empty passphrase
+    { // empty passphrase
         HDWallet wallet = HDWallet(mnemonic1, "");
         EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
         EXPECT_EQ(wallet.getPassphrase(), "");
@@ -67,37 +72,37 @@ TEST(HDWallet, createFromMnemonic) {
 }
 
 TEST(HDWallet, entropyLength_createFromMnemonic) {
-    {   // 12 words
+    { // 12 words
         HDWallet wallet = HDWallet("oil oil oil oil oil oil oil oil oil oil oil oil", "");
         EXPECT_EQ(wallet.getEntropy().size(), 16ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "99d33a674ce99d33a674ce99d33a674c");
     }
-    {   // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+    { // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
         HDWallet wallet = HDWallet("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "");
         EXPECT_EQ(wallet.getEntropy().size(), 16ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "00000000000000000000000000000000");
     }
-    {   // 15 words
+    { // 15 words
         HDWallet wallet = HDWallet("history step cheap card humble screen raise seek robot slot coral roof spoil wreck caution", "");
         EXPECT_EQ(wallet.getEntropy().size(), 20ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "6c3aac9b9146ef832c4e18bb3980c0dddd25fc49");
     }
-    {   // 18 words
+    { // 18 words
         HDWallet wallet = HDWallet("caught hockey split gun symbol code payment copy broccoli silly shed secret stove tell citizen staff photo high", "");
         EXPECT_EQ(wallet.getEntropy().size(), 24ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "246d8f48b3fdc65a2869801c791715614d6bbd8a56a0a3ad");
     }
-    {   // 21 words
+    { // 21 words
         HDWallet wallet = HDWallet("diary shine country alpha bridge coast loan hungry hip media sell crucial swarm share gospel lake visa coin dizzy physical basket", "");
         EXPECT_EQ(wallet.getEntropy().size(), 28ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "3d58bcc40381bc59a0c37a6bf14f0d9a3db78a5933e5f4a5ad00d1f1");
     }
-    {   // 24 words
+    { // 24 words
         HDWallet wallet = HDWallet("poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp", "");
         EXPECT_EQ(wallet.getEntropy().size(), 32ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "a73a3732edebbb49f5fdfe68c7b5c0f6e9de3a1d5760faa8c771e384bf4229b6");
     }
-    {   // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+    { // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
         HDWallet wallet = HDWallet("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "");
         EXPECT_EQ(wallet.getEntropy().size(), 32ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "8080808080808080808080808080808080808080808080808080808080808080");
@@ -151,7 +156,7 @@ TEST(HDWallet, recreateFromEntropy) {
 
 TEST(HDWallet, privateKeyFromXPRV) {
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
     ASSERT_TRUE(privateKey);
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::BitcoinCashAddress(publicKey);
@@ -162,7 +167,7 @@ TEST(HDWallet, privateKeyFromXPRV) {
 
 TEST(HDWallet, privateKeyFromXPRV_Invalid) {
     const std::string xprv = "xprv9y0000";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
     ASSERT_FALSE(privateKey);
 }
 
@@ -170,13 +175,13 @@ TEST(HDWallet, privateKeyFromXPRV_InvalidVersion) {
     {
         // Version bytes (first 4) are invalid, 0x00000000
         const std::string xprv = "11117pE7xwz2GARukXY8Vj2ge4ozfX4HLgy5ztnJXjr5btzJE8EbtPhZwrcPWAodW2aFeYiXkXjSxJYm5QrnhSKFXDgACcFdMqGns9VLqESCq3";
-        auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
+        auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
         ASSERT_FALSE(privateKey);
     }
     {
         // Version bytes (first 4) are invalid, 0xdeadbeef
         const std::string xprv = "pGoh3VZXR4mTkT4bfqj4paog12KmHkAWkdLY8HNsZagD1ihVccygLr1ioLBhVQsny47uEh5swP3KScFc4JJrazx1Y7xvzmH2y5AseLgVMwomBTg2";
-        auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
+        auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
         ASSERT_FALSE(privateKey);
     }
 }
@@ -184,20 +189,20 @@ TEST(HDWallet, privateKeyFromXPRV_InvalidVersion) {
 TEST(HDWallet, privateKeyFromExtended_InvalidCurve) {
     // invalid coin & curve, should fail
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinType(123456), DerivationPath(TWPurposeBIP44, 123456, 0, 0, 0));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprv, TWCoinType(123456), DerivationPath(TWPurposeBIP44, 123456, 0, 0, 0));
     ASSERT_FALSE(privateKey);
 }
 
 TEST(HDWallet, privateKeyFromXPRV_Invalid45) {
     // 45th byte is not 0
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbhw2dJ8QexahgVSfkjxU4FgmN4GLGN3Ui8oLqC6433CeyPUNVHHh";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
     ASSERT_FALSE(privateKey);
 }
 
 TEST(HDWallet, privateKeyFromMptv) {
     const std::string mptv = "Mtpv7SkyM349Svcf1WiRtB5hC91ZZkVsGuv3kz1V7tThGxBFBzBLFnw6LpaSvwpHHuy8dAfMBqpBvaSAHzbffvhj2TwfojQxM7Ppm3CzW67AFL5";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(mptv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 4));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(mptv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 4));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
 
     auto witness = Data{0x00, 0x14};
@@ -216,7 +221,7 @@ TEST(HDWallet, privateKeyFromMptv) {
 
 TEST(HDWallet, privateKeyFromZprv) {
     const std::string zprv = "zprvAdzGEQ44z4WPLNCRpDaup2RumWxLGgR8PQ9UVsSmJigXsHVDaHK1b6qGM2u9PmxB2Gx264ctAz4yRoN3Xwf1HZmKcn6vmjqwsawF4WqQjfd";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(zprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoin), 0, 0, 5));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(zprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoin), 0, 0, 5));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::SegwitAddress(publicKey, "bc");
 
@@ -226,7 +231,7 @@ TEST(HDWallet, privateKeyFromZprv) {
 
 TEST(HDWallet, privateKeyFromDGRV) {
     const std::string dgpv = "dgpv595jAJYGBLanByCJXRzrWBZFVXdNisfuPmKRDquCQcwBbwKbeR21AtkETf4EpjBsfsK3kDZgMqhcuky1B9PrT5nxiEcjghxpUVYviHXuCmc";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(dgpv, TWCoinTypeDogecoin, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeDogecoin), 0, 0, 1));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(dgpv, TWCoinTypeDogecoin, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeDogecoin), 0, 0, 1));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::Address(publicKey, TW::p2pkhPrefix(TWCoinTypeDogecoin));
 
@@ -236,7 +241,7 @@ TEST(HDWallet, privateKeyFromDGRV) {
 
 TEST(HDWallet, privateKeyFromXPRVForDGB) {
     const std::string xprvForDgb = "xprv9ynLofyuR3uCqCMJADwzBaPnXB53EVe5oLujvPfdvCxae3NzgEpYjZMgcUeS8EUeYfYVLG61ZgPXm9TZWiwBnLVCgd551vCwpXC19hX3mFJ";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprvForDgb, TWCoinTypeDigiByte, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeDigiByte), 0, 0, 1));
+    auto privateKey = HDWallet<>::getPrivateKeyFromExtended(xprvForDgb, TWCoinTypeDigiByte, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeDigiByte), 0, 0, 1));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::Address(publicKey, TW::p2pkhPrefix(TWCoinTypeDigiByte));
 
@@ -264,7 +269,7 @@ TEST(HDWallet, Bip39Vectors) {
     // BIP39 test vectors, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
     const auto passphrase = "TREZOR";
     const auto vectors = getVectors();
-    for (const auto& v: vectors) {
+    for (const auto& v : vectors) {
         const std::string entropy = v[0];
         const std::string mnemonic = v[1];
         const std::string seed = v[2];
@@ -293,7 +298,7 @@ TEST(HDWallet, getExtendedPrivateKey) {
     const auto purpose = TWPurposeBIP44;
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPRV;
-    
+
     // default
     const auto extPubKey1 = wallet.getExtendedPrivateKey(purpose, coin, hdVersion);
     EXPECT_EQ(extPubKey1, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
@@ -313,7 +318,7 @@ TEST(HDWallet, getExtendedPublicKey) {
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPUB;
     const auto derivation = TWDerivationDefault;
-    
+
     // default
     const auto extPubKey1 = wallet.getExtendedPublicKey(purpose, coin, hdVersion);
     EXPECT_EQ(extPubKey1, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
@@ -457,6 +462,137 @@ TEST(HDWallet, HederaKey) {
     }
 }
 
+TEST(HDWallet, FromSeedStark) {
+    std::string signature = "0x5a263fad6f17f23e7c7ea833d058f3656d3fe464baf13f6f5ccba9a2466ba2ce4c4a250231bcac7beb165aec4c9b049b4ba40ad8dd287dc79b92b1ffcf20cdcf1b";
+    auto data = parse_hex(signature);
+    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
+    auto seed = store(ethSignature.s);
+    ASSERT_EQ(ethSignature.s, uint256_t("34506778598894488719068064129252410649539581100963007245393949841529394744783"));
+    auto derivationPath = DerivationPath("m/2645'/579218131'/211006541'/1534045311'/1431804530'/1");
+    auto key = HDWallet<32>::bip32DeriveRawSeed(TWCoinTypeEthereum, seed, derivationPath);
+    ASSERT_EQ(hex(key.bytes), "57384e99059bb1c0e51d70f0fca22d18d7191398dd39d6b9b4e0521174b2377a");
+    auto addr = Ethereum::Address(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+    ASSERT_EQ(addr, "0x47bbe762944B089315ac50c9ca762F4B4884B965");
+}
+
+TEST(HDWallet, FromMnemonicStark) {
+    // https://github.com/starkware-libs/starkware-crypto-utils/blob/d3a1e655105afd66ebc07f88a179a3042407cc7b/test/js/key_derivation.spec.js#L20
+    const auto mnemonic = "range mountain blast problem vibrant void vivid doctor cluster enough melody salt layer language laptop boat major space monkey unit glimpse pause change vibrant";
+    const auto ethAddress = "0xA4864D977b944315389d1765Ffa7E66F74eE8cD7";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "starkdeployement", "0"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/891216374'/1961790679'/2135936222'/0");
+
+    // ETH
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+    }
+
+    // Stark
+    {
+        auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
+        auto starkPubKey  = hex(starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex).bytes);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "06cf0a8bf113352eb863157a45c5e5567abb34f8d32cddafd2c22aa803f4892c");
+        ASSERT_EQ(starkPubKey, "02d2bbdc1adaf887b0027cdde2113cfd81c60493aa6dc15d7887ddf1a82bc831");
+    }
+}
+
+TEST(HDWallet, FromMnemonicImmutableX) {
+    // Successfully register the user: https://api.sandbox.x.immutable.com/v1/users/0x1A817D0cC495C8157E4C734c48a1e840473CBCa1
+    const auto mnemonic = "owner erupt swamp room swift final allow unaware hint identify figure cotton";
+    const auto ethAddress = "0x1A817D0cC495C8157E4C734c48a1e840473CBCa1";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "immutablex", "1"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/1195162785'/289656960'/1");
+
+    // ETH
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        ASSERT_EQ(hex(ethPrivKey.bytes), "a84f129929f6effe3fd541bcaa8a13d80714cd93c205682bea8b9e0cfc28a2ad");
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+    }
+
+    // Stark
+    {
+        auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
+        auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "02d037bb9c1302295c2f9fa66bcc4ab8e353a3140600a390598777d69c1bc71a");
+        ASSERT_EQ(hex(starkPubKey.bytes), "006c061ea4195769058e0e2e14cd747619a866954a412e15fa2241fdf49438cf");
+
+        auto starkMsg = "28419a504c5b1c83df4fdcbf7f5f36a7d5cfa8148aff2d33aed2f40a64e7ea0";
+        auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);
+        ASSERT_EQ(starkSignature, "077cae8f00327a2072d3ca8b31725263f61303dc0142a631561d33cb2b4cb221008d659541d59f1589b0e714ddc0a5bee77faddf093f96d529b6c55c0bffd45d");
+        ASSERT_TRUE(StarkEx::MessageSigner::verifyMessage(starkPubKey, starkMsg, starkSignature));
+    }
+}
+
+TEST(HDWallet, FromMnemonicImmutableXMainnet) {
+    const auto mnemonic = "ocean seven canyon push fiscal banana music guess arrange edit glance school";
+    const auto ethAddress = "0x39E652fE9458D391737058b0dd5eCC6ec910A7dd";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "immutablex", "1"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/1225828317'/985503965'/1");
+
+    // ETH
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        ASSERT_EQ(hex(ethPrivKey.bytes), "3b0a61f46fdae924007146eacb6db6642de7a5603ad843ec58e10331d89d4b84");
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+
+        std::string tosign = "Only sign this request if you’ve initiated an action with Immutable X.\n\nFor internal use:\nbd717ba31dca6e0f3f136f7c4197babce5f09a9f25176044c0b3112b1b6017a3";
+        auto hexEthSignature = Ethereum::MessageSigner::signMessage(ethPrivKey, tosign);
+
+        ASSERT_EQ(hexEthSignature, "32cd5a58f3419fc5db672e3d57f76199b853eda0856d491b38f557b629b0a0814ace689412bf354a1af81126d2749207dffae8ae8845160f33948a6b787e17ee01");
+    }
+
+    // Stark
+    {
+        auto starkPrivKey = wallet.getKeyByCurve(TWCurveStarkex, DerivationPath(derivationPath));
+        auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "070128376c2cfd21e7475708049d00c83d7ab65f15368e28730bf1684dee8370");
+        ASSERT_EQ(hex(starkPubKey.bytes), "00453ca02b347f80e5ddfc4caf254852fc05b172b37bca8f7e28600631d12dfe");
+
+        auto starkMsg = "76b66c453cd1b812032ff206a28df59f6abe41e805b9f1c48a1c4afe780756c";
+        auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);
+        ASSERT_EQ(starkSignature, "070ad88f79650fbdc152affd738d4ec29888bed554ea74f9ad8ca7031ef300b50597f4a62752336db06e6d37dfc18047fdd40804f5fd19cebfda8cac91e4f178");
+        ASSERT_TRUE(StarkEx::MessageSigner::verifyMessage(starkPubKey, starkMsg, starkSignature));
+    }
+}
+
+TEST(HDWallet, FromMnemonicImmutableXMainnetFromSignature) {
+    // Successfully register: https://api.x.immutable.com/v1/users/0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37
+    const auto mnemonic = "obscure opera favorite shuffle mail tip age debate dirt pact cement loyal";
+    const auto ethAddress = "0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37";
+    HDWallet wallet = HDWallet(mnemonic, "");
+    auto derivationPath = DerivationPath(Ethereum::accountPathFromAddress(ethAddress, "starkex", "immutablex", "1"));
+    ASSERT_EQ(derivationPath.string(), "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1");
+
+    // ETH + stark
+    {
+        auto ethPrivKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0"));
+        ASSERT_EQ(hex(ethPrivKey.bytes), "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d");
+        auto ethAddressFromPub = Ethereum::Address(ethPrivKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended)).string();
+        ASSERT_EQ(ethAddressFromPub, ethAddress);
+        auto signature = Ethereum::MessageSigner::signMessage(ethPrivKey, "Only sign this request if you’ve initiated an action with Immutable X.");
+        ASSERT_EQ(signature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001");
+        auto starkPrivKey = ImmutableX::getPrivateKeyFromRawSignature(parse_hex(signature), DerivationPath(derivationPath));
+        auto starkPubKey  = starkPrivKey.getPublicKey(TWPublicKeyTypeStarkex);
+        ASSERT_EQ(hex(starkPrivKey.bytes), "04be51a04e718c202e4dca60c2b72958252024cfc1070c090dd0f170298249de");
+        ASSERT_EQ(hex(starkPubKey.bytes), "00e5b9b11f8372610ef35d647a1dcaba1a4010716588d591189b27bf3c2d5095");
+        auto signatureToSend = Ethereum::MessageSigner::signMessage(ethPrivKey, "Only sign this key linking request from Immutable X");
+        ASSERT_EQ(signatureToSend, "646da4160f7fc9205e6f502fb7691a0bf63ecbb74bbb653465cd62388dd9f56325ab1e4a9aba99b1661e3e6251b42822855a71e60017b310b9f90e990a12e1dc01");
+
+        auto starkMsg = "463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf";
+        auto starkSignature = StarkEx::MessageSigner::signMessage(starkPrivKey, starkMsg);
+        ASSERT_EQ(starkSignature, "04cf5f21333dd189ada3c0f2a51430d733501a9b1d5e07905273c1938cfb261e05b6013d74adde403e8953743a338c8d414bb96bf69d2ca1a91a85ed2700a528");
+        ASSERT_TRUE(StarkEx::MessageSigner::verifyMessage(starkPubKey, starkMsg, starkSignature));
+    }
+}
+
 TEST(HDWallet, NearKey) {
     const auto derivPath = "m/44'/397'/0'";
     HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");
@@ -469,4 +605,4 @@ TEST(HDWallet, NearKey) {
     }
 }
 
-} // namespace
+} // namespace TW::HDWalletTests
