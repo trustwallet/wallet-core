@@ -14,22 +14,18 @@ RUN apt-get update \
         software-properties-common \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN echo "deb http://security.ubuntu.com/ubuntu focal-security main" | tee /etc/apt/sources.list.d/focal-security.list
-RUN apt-get update
-RUN apt-get install libssl1.1 -y
-
 # Add latest cmake/boost
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
+RUN wget -q -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
 
 ARG ARCH=amd64
 RUN if [ ${ARCH} == amd64 ] ; \
     then \
-    wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb ; \
+    wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb ; \
     else \ 
-    wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_arm64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_arm64.deb ; \
+    wget -q http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_arm64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_arm64.deb ; \
     fi
 
 # Install required packages for dev
@@ -56,11 +52,9 @@ COPY . /wallet-core
 WORKDIR /wallet-core
 RUN git clean -xdf
 
-# Install dependencies
-RUN tools/install-dependencies
-
 # Build: generate, cmake, and make lib
-RUN tools/generate-files \
+RUN tools/install-dependencies \
+    && tools/generate-files \
     && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
     && make -Cbuild -j12 TrustWalletCore
 
@@ -71,7 +65,7 @@ RUN make -Cbuild -j12 tests
 ENV GO_VERSION=1.16.12
 ARG ARCH=amd64
 ENV GO_ARCH=${ARCH}
-RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+RUN wget -q "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && chown -R root:root ./go \
     && mv -v ./go /usr/local \

@@ -17,6 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Lint Dockerfile
+      run: |
+        curl -L https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint && chmod +x hadolint
+        ./hadolint Dockerfile
 
     - name: Build Dockerfile
       uses: docker/build-push-action@v1.1.0
