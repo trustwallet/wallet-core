@@ -8,6 +8,7 @@
 #include <Hash.h>
 #include <HexCoding.h>
 
+#include <optional>
 #include <sstream>
 
 namespace TW::Ethereum::internal {
