@@ -18,7 +18,7 @@ TW_EXTERN_C_BEGIN
 /// Bitcoin Core and some other wallets support a message signing & verification format, to create a proof (a signature)
 /// that someone has access to the private keys of a specific address.
 /// This feature currently works on old legacy addresses only.
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWBitcoinMessageSigner;
 
 /// Sign a message.

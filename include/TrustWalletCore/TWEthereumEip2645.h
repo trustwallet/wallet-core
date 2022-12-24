@@ -11,7 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWEthereumEip2645;
 
 /// Generate a layer 2 eip2645 derivation path from eth address, layer, application and given index.

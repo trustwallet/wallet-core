@@ -13,7 +13,7 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWStarkWare;
 
 /// Generates the private stark key at the given derivation path from a valid eth signature
