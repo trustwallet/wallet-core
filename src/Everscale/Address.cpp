@@ -16,18 +16,40 @@ using namespace TW;
 
 namespace TW::Everscale {
 
+
+static std::optional<long> parse_long(char const *s)
+{
+    char *end;
+    auto previous_errno = errno;
+    errno = 0;
+    long l = strtol(s, &end, 10);
+    if (errno == ERANGE && l == LONG_MAX) {
+        errno = previous_errno;
+        return {}; // Overflow
+    }
+    if (errno == ERANGE && l == LONG_MIN) {
+        errno = previous_errno;
+        return {}; // Underflow
+    }
+    if (*s == '\0' || *end != '\0') {
+        errno = previous_errno;
+        return {}; // Inconvertible
+    }
+    errno = previous_errno;
+    return l;
+}
+
+
 using MaybeWorkchain = std::optional<std::pair<int8_t, std::string::size_type>>;
 
 MaybeWorkchain parseWorkchainId(const std::string& string) {
     if (auto pos = string.find(':'); pos != std::string::npos) {
-        try {
-            auto workchainId = static_cast<int8_t>(std::stoi(string.substr(0, pos)));
-            return std::make_pair(workchainId, pos + 1);
-        } catch (...) {
-            // Do nothing and return empty value later
+        std::string workchain_string = string.substr(0, pos);
+        auto workchain_id = parse_long(workchain_string.c_str());
+        if (workchain_id.has_value()) {
+            return std::make_pair(workchain_id.value(), pos + 1);
         }
     }
-
     return {};
 }
 

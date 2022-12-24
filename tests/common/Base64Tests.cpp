@@ -61,4 +61,15 @@ TEST(Base64, UrlFormat) {
     EXPECT_EQ(const1, hex(decoded));
 }
 
+TEST(Base64, isBase64) {
+    EXPECT_TRUE(isBase64orBase64Url("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"));
+    EXPECT_TRUE(isBase64orBase64Url("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSk="));
+    EXPECT_TRUE(isBase64orBase64Url("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODS=="));
+    EXPECT_TRUE(isBase64orBase64Url("EQA_qoVWKJl17JkayZlN-2E6vsTqAA1QlOY3kID1lOVZszC4"));
+    EXPECT_FALSE(isBase64orBase64Url("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcOD==="));
+    EXPECT_FALSE(isBase64orBase64Url("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb="));
+    EXPECT_FALSE(isBase64orBase64Url("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSk"));
+    EXPECT_FALSE(isBase64orBase64Url("MwCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsors=#"));
+}
+
 } // namespace TW::Base64::tests

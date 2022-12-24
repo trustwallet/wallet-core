@@ -32,12 +32,10 @@ bool Address::isValid(const std::string& string) noexcept {
         return false;
     }
 
-    Data decoded;
-    try {
-        decoded = decodeUserFriendlyAddress(string);
-    } catch (...) {
+    if (!Base64::isBase64orBase64Url(string)) {
         return false;
     }
+    Data decoded = decodeUserFriendlyAddress(string);
 
     if (decoded.size() != userFriendlyAddressLen) {
         return false;

@@ -38,12 +38,26 @@ describe("TheOpenNetwork", () => {
     let address = AnyAddress.createWithString(addressString, CoinType.theOpenNetwork);
     assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
   });
+
+  it("test address invalid workchain id TheOpenNetwork", () => {
+    const { AnyAddress, CoinType } = globalThis.core;
+    let addressString = "a:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3";
+    let valid = AnyAddress.isValid(addressString, CoinType.theOpenNetwork);
+    assert.isFalse(valid);
+  });
   
   it("test address from user friendly string TheOpenNetwork", () => {
     const { AnyAddress, CoinType } = globalThis.core;
     let addressString = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q";
     let address = AnyAddress.createWithString(addressString, CoinType.theOpenNetwork);
     assert.equal(address.description(), "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q");
+  });
+
+  it("test address from user friendly invalid base64 decoding TheOpenNetwork", () => {
+    const { AnyAddress, CoinType } = globalThis.core;
+    let addressString = "MwCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsors=#";
+    let valid = AnyAddress.isValid(addressString, CoinType.theOpenNetwork);
+    assert.isFalse(valid);
   });
 
   it("test sign TheOpenNetwork", () => {
