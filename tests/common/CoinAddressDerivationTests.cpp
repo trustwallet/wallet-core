@@ -259,7 +259,7 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "secret1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0m7t23a");
             break;
         case TWCoinTypeAgoric:
-            EXPECT_EQ(address, "agoric18zvvgk6j3eq5wd7mqxccgt20gz2w94cy88aek5");
+            EXPECT_EQ(address, "agoric1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0txauuh");
             break;
             // no default branch here, intentionally, to better notice any missing coins
         }
