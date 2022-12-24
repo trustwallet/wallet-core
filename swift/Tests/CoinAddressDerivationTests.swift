@@ -264,7 +264,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .agoric:
                     let expectedResult = "agoric18zvvgk6j3eq5wd7mqxccgt20gz2w94cy88aek5"
-                    assertCoinDerivation(coin, expectedResult, deriveAddress, address)
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
