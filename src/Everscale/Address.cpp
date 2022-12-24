@@ -70,6 +70,9 @@ bool Address::isValid(const std::string& string) noexcept {
     }
 
     std::string addr = string.substr(pos);
+    if (!is_hex_encoded(addr)) {
+        return false;
+    }
     return parse_hex(addr).size() == size;
 }
 
