@@ -2884,7 +2884,6 @@
   {
     "id": "agoric",
     "name": "Agoric",
-    "displayName": "Agoric",
     "coinId": 564,
     "symbol": "BLD",
     "decimals": 6,
