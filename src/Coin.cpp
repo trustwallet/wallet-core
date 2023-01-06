@@ -158,7 +158,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainEverscale: entry = &EverscaleDP; break;
         case TWBlockchainAptos: entry = &AptosDP; break;
         case TWBlockchainHedera: entry = &HederaDP; break;
-        case TWBlockchainTON: entry = &tonDP; break;
+        case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

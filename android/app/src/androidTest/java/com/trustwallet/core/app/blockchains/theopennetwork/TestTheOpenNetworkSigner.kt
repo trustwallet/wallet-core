@@ -40,7 +40,7 @@ class TestTheOpenNetworkSigner {
             .setPrivateKey(ByteString.copyFrom(privateKey.data()))
             .build()
 
-        val output = AnySigner.sign(input, CoinType.THEOPENNETWORK, SigningOutput.parser())
+        val output = AnySigner.sign(input, CoinType.TON, SigningOutput.parser())
 
         // tx: https://tonscan.org/tx/3Z4tHpXNLyprecgu5aTQHWtY7dpHXEoo11MAX61Xyg0=
         val expectedString = "te6ccgICAAQAAQAAALAAAAFFiAGwt/q8k4SrjbFbQCjJZfQr64ExRxcUMsWqaQODqTUijgwAAQGcEUPkil2aZ4s8KKparSep/OKHMC8vuXafFbW2HGp/9AcTRv0J5T4dwyW1G0JpHw+g5Ov6QI3Xo0O9RFr3KidICimpoxdjm3UYAAAABgADAAIBYmIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmIUAAAAAAAAAAAAAAAAAEAAwAA"

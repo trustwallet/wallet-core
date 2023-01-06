@@ -2944,11 +2944,11 @@
   },
   {
     "id": "ton",
-    "name": "The Open Network",
+    "name": "TON",
     "coinId": 607,
     "symbol": "TON",
     "decimals": 9,
-    "blockchain": "TON",
+    "blockchain": "The Open Network",
     "derivation": [
       {
         "path": "m/44'/607'/0'"

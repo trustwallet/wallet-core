@@ -22,9 +22,9 @@ TEST(TWTheOpenNetwork, Address) {
 
     const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(mnemonic.get(), passphrase.get()));
 
-    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTheOpenNetwork, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeTheOpenNetwork)).get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTON, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeTON)).get()));
     const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
-    const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeTheOpenNetwork));
+    const auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeTON));
     const auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressStr, "EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");

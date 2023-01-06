@@ -14,8 +14,8 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWTheOpenNetworkCoinType, TWCoinType) {
-    const auto coin = TWCoinTypeTheOpenNetwork;
+TEST(TWTONCoinType, TWCoinType) {
+    const auto coin = TWCoinTypeTON;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
@@ -25,10 +25,10 @@ TEST(TWTheOpenNetworkCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "ton");
-    assertStringsEqual(name, "The Open Network");
+    assertStringsEqual(name, "TON");
     assertStringsEqual(symbol, "TON");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
-    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainTON);
+    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainTheOpenNetwork);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(txUrl, "https://tonscan.org/tx/fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs=");

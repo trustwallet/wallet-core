@@ -153,7 +153,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeEverscale:
             EXPECT_EQ(address, "0:ef64d51f95ef17973b737277cfecbd2a8d551141be2f58f5fb362575fc3eb5b0");
             break;
-        case TWCoinTypeTheOpenNetwork:
+        case TWCoinTypeTON:
             EXPECT_EQ(address, "EQAoYT8nMLfeNh6h0uIoK_wLm9JkvxiGxJDr6GRXJGu2ZhpY");
             break;
         case TWCoinTypeFIO:
