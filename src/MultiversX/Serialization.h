@@ -10,7 +10,7 @@
 #include "Transaction.h"
 #include <nlohmann/json.hpp>
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 using string = std::string;
 using json = nlohmann::json;
@@ -18,4 +18,4 @@ using json = nlohmann::json;
 string serializeTransaction(const Transaction& transaction);
 string serializeSignedTransaction(const Transaction& transaction, string encodedSignature);
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

@@ -8,11 +8,11 @@
 
 #include "Data.h"
 #include "../PrivateKey.h"
-#include "../proto/Elrond.pb.h"
+#include "../proto/MultiversX.pb.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
-/// Helper class that performs Elrond transaction signing.
+/// Helper class that performs MultiversX transaction signing.
 class Signer {
 public:
     /// Hide default constructor
@@ -25,4 +25,4 @@ public:
     static std::string signJSON(const std::string& json, const Data& key);
 };
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

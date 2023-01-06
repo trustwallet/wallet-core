@@ -8,9 +8,9 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "Elrond/Address.h"
-#include "Elrond/Signer.h"
-#include "Elrond/Codec.h"
+#include "MultiversX/Address.h"
+#include "MultiversX/Codec.h"
+#include "MultiversX/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -19,9 +19,9 @@
 
 using namespace TW;
 
-namespace TW::Elrond::tests {
+namespace TW::MultiversX::tests {
 
-TEST(ElrondSigner, SignGenericAction) {
+TEST(MultiversXSigner, SignGenericAction) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -46,7 +46,7 @@ TEST(ElrondSigner, SignGenericAction) {
     ASSERT_EQ(expectedSignature, signature);
 }
 
-TEST(ElrondSigner, SignGenericActionUnDelegate) {
+TEST(MultiversXSigner, SignGenericActionUnDelegate) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -55,7 +55,7 @@ TEST(ElrondSigner, SignGenericActionUnDelegate) {
     input.mutable_generic_action()->mutable_accounts()->set_sender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa");
     input.mutable_generic_action()->mutable_accounts()->set_receiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r");
     input.mutable_generic_action()->set_value("0");
-    input.mutable_generic_action()->set_data("unDelegate@" + TW::Elrond::Codec::encodeBigInt("1000000000000000000"));
+    input.mutable_generic_action()->set_data("unDelegate@" + TW::MultiversX::Codec::encodeBigInt("1000000000000000000"));
     input.mutable_generic_action()->set_version(1);
     input.set_gas_price(1000000000);
     input.set_gas_limit(12000000);
@@ -80,10 +80,10 @@ TEST(ElrondSigner, SignGenericActionUnDelegate) {
                                     })"_json;
     assertJSONEqual(expected, nlohmann::json::parse(encoded));
     ASSERT_EQ(expectedSignature, signature);
-    // Successfully broadcasted https://explorer.elrond.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
+    // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
 }
 
-TEST(ElrondSigner, SignGenericActionRedelegateRewards) {
+TEST(MultiversXSigner, SignGenericActionRedelegateRewards) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -119,7 +119,7 @@ TEST(ElrondSigner, SignGenericActionRedelegateRewards) {
     ASSERT_EQ(expectedSignature, signature);
 }
 
-TEST(ElrondSigner, SignGenericActionClaimRewards) {
+TEST(MultiversXSigner, SignGenericActionClaimRewards) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -155,7 +155,7 @@ TEST(ElrondSigner, SignGenericActionClaimRewards) {
     ASSERT_EQ(expectedSignature, signature);
 }
 
-TEST(ElrondSigner, SignGenericActionWithdrawStake) {
+TEST(MultiversXSigner, SignGenericActionWithdrawStake) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -192,7 +192,7 @@ TEST(ElrondSigner, SignGenericActionWithdrawStake) {
     // Need to wait 9 days for broadcasting
 }
 
-TEST(ElrondSigner, SignGenericActionDelegate) {
+TEST(MultiversXSigner, SignGenericActionDelegate) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -226,10 +226,10 @@ TEST(ElrondSigner, SignGenericActionDelegate) {
                                     })"_json;
     assertJSONEqual(expected, nlohmann::json::parse(encoded));
     ASSERT_EQ(expectedSignature, signature);
-    // Successfully broadcasted https://explorer.elrond.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
+    // Successfully broadcasted https://explorer.multiversx.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
 }
 
-TEST(ElrondSigner, SignGenericActionJSON) {
+TEST(MultiversXSigner, SignGenericActionJSON) {
     // Shuffle some fields, assume arbitrary order in the input
     auto input = (boost::format(R"({"genericAction" : {"accounts": {"senderNonce": 7, "receiver": "%1%", "sender": "%2%"}, "data": "foo", "value": "0", "version": 1}, "gasPrice": 1000000000, "gasLimit": 50000, "chainId": "1"})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
@@ -241,7 +241,7 @@ TEST(ElrondSigner, SignGenericActionJSON) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(ElrondSigner, SignWithoutData) {
+TEST(MultiversXSigner, SignWithoutData) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -266,7 +266,7 @@ TEST(ElrondSigner, SignWithoutData) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(ElrondSigner, SignJSONWithoutData) {
+TEST(MultiversXSigner, SignJSONWithoutData) {
     // Shuffle some fields, assume arbitrary order in the input
     auto input = (boost::format(R"({"genericAction" : {"accounts": {"senderNonce": 0, "receiver": "%1%", "sender": "%2%"}, "value": "0", "version": 1}, "gasPrice": 1000000000, "gasLimit": 50000, "chainId": "1"})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
@@ -278,8 +278,8 @@ TEST(ElrondSigner, SignJSONWithoutData) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(ElrondSigner, SignWithUsernames) {
-    // https://github.com/ElrondNetwork/elrond-go/blob/master/examples/construction_test.go, scenario "TestConstructTransaction_Usernames".
+TEST(MultiversXSigner, SignWithUsernames) {
+    // https://github.com/multiversx/mx-chain-go/blob/master/examples/construction_test.go, scenario "TestConstructTransaction_Usernames".
 
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
@@ -313,7 +313,7 @@ TEST(ElrondSigner, SignWithUsernames) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(ElrondSigner, SignWithOptions) {
+TEST(MultiversXSigner, SignWithOptions) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -327,7 +327,6 @@ TEST(ElrondSigner, SignWithOptions) {
     // We'll set a dummy value on the "options" field (merely an example).
     // Currently, the "options" field should be ignored (not set) by applications using TW Core.
     // In the future, TW Core will handle specific transaction options
-    // (such as the "SignedWithHash" flag, as seen in https://github.com/ElrondNetwork/elrond-go-core/blob/main/core/versioning/txVersionChecker.go)
     // when building and signing transactions.
     input.mutable_generic_action()->set_options(42);
     input.set_gas_price(1000000000);
@@ -345,7 +344,7 @@ TEST(ElrondSigner, SignWithOptions) {
     ASSERT_EQ(expectedSignature, signature);
 }
 
-TEST(ElrondSigner, SignEGLDTransfer) {
+TEST(MultiversXSigner, SignEGLDTransfer) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -366,7 +365,7 @@ TEST(ElrondSigner, SignEGLDTransfer) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(ElrondSigner, SignESDTTransfer) {
+TEST(MultiversXSigner, SignESDTTransfer) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -391,7 +390,7 @@ TEST(ElrondSigner, SignESDTTransfer) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(ElrondSigner, SignESDTNFTTransfer) {
+TEST(MultiversXSigner, SignESDTNFTTransfer) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -417,4 +416,4 @@ TEST(ElrondSigner, SignESDTNFTTransfer) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-} // namespace TW::Elrond::tests
+} // namespace TW::MultiversX::tests

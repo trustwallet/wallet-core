@@ -8,7 +8,7 @@
 
 #include <chrono>
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 NetworkConfig::NetworkConfig()
     : chainId("1") /* Mainnet */ {
@@ -82,4 +82,4 @@ NetworkConfig NetworkConfig::GetByTimestamp(uint64_t timestamp) {
     return networkConfig;
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

@@ -8,7 +8,7 @@
 
 #include "Codec.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 const int TX_VERSION = 1;
 
@@ -148,4 +148,4 @@ std::string TransactionFactory::prepareFunctionCall(const std::string& function,
     return result;
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

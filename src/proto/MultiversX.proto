@@ -6,7 +6,7 @@
 
 syntax = "proto3";
 
-package TW.Elrond.Proto;
+package TW.MultiversX.Proto;
 option java_package = "wallet.core.jni.proto";
 
 // Generic action. Using one of the more specific actions (e.g. transfers, see below) is recommended.
@@ -24,8 +24,7 @@ message GenericAction {
     uint32      version = 4;
 
     // Currently, the "options" field should be ignored (not set) by applications using TW Core.
-    // In the future, TW Core will handle specific transaction options 
-    // (such as the "SignedWithHash" flag, as seen in https://github.com/ElrondNetwork/elrond-go-core/blob/main/core/versioning/txVersionChecker.go)
+    // In the future, TW Core will handle specific transaction options
     // when building and signing transactions.
     uint32      options = 5;
 }

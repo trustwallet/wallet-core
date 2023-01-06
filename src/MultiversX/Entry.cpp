@@ -12,7 +12,7 @@
 using namespace TW;
 using namespace std;
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
@@ -25,7 +25,7 @@ std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicK
 
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     Address addr;
-    if (!Elrond::Address::decode(address, addr)) {
+    if (!MultiversX::Address::decode(address, addr)) {
         return Data();
     }
     return addr.getKeyHash();
@@ -39,4 +39,4 @@ string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json
     return Signer::signJSON(json, key);
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

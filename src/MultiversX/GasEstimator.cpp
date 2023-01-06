@@ -6,7 +6,7 @@
 
 #include "GasEstimator.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 // Additional gas to account for eventual increases in gas requirements (thus avoid breaking changes in clients of TW-core).
 const uint64_t ADDITIONAL_GAS_FOR_ESDT_TRANSFER = 100000;
@@ -47,4 +47,4 @@ uint64_t GasEstimator::forESDTNFTTransfer(size_t dataLength) const {
     return gasLimit;
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

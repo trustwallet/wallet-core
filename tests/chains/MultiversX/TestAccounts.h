@@ -7,7 +7,7 @@
 #pragma once
 
 // Well-known accounts on Testnet & Devnet,
-// https://github.com/ElrondNetwork/elrond-sdk-erdpy/tree/main/erdpy/testnet/wallets/users:
+// https://github.com/multiversx/mx-sdk-testwallets:
 const auto ALICE_BECH32 = "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th";
 const auto ALICE_PUBKEY_HEX = "0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1";
 const auto ALICE_SEED_HEX = "413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9";
