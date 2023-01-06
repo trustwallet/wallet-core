@@ -2880,5 +2880,36 @@
       "source": "https://github.com/hashgraph",
       "documentation": "https://docs.hedera.com"
     }
+  },
+  {
+    "id": "agoric",
+    "name": "Agoric",
+    "coinId": 564,
+    "symbol": "BLD",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/564'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "agoric",
+    "chainId": "agoric-3",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://atomscan.com/agoric",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "576224B1A0F3D56BA23C5350C2A0E3CEA86F40005B828793E5ACBC2F4813152E",
+      "sampleAccount": "agoric1cqvwa8jr6pmt45jndanc8lqmdsxjkhw0yertc0"
+    },
+    "info": {
+      "url": "https://agoric.com",
+      "source": "https://github.com/Agoric/agoric-sdk",
+      "rpc": "https://agoric-rpc.polkachu.com",
+      "documentation": "https://docs.agoric.com"
+    }
   }
 ]
