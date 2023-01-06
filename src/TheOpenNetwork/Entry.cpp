@@ -14,8 +14,6 @@
 
 namespace TW::TheOpenNetwork {
 
-// Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
-
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return Address::isValid(address);
 }

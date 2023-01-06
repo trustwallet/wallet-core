@@ -21,13 +21,7 @@ Wallet::Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode)
 
 Address Wallet::getAddress() const {
     const auto stateInit = this->createStateInit();
-    auto address = Address(workchainId, stateInit.writeTo().intoCell()->hash);
-
-    address.isUserFriendly = true;
-    address.isBounceable = true;
-    address.isTestOnly = false;
-
-    return address;
+    return Address(workchainId, stateInit.writeTo().intoCell()->hash);
 }
 
 Everscale::StateInit Wallet::createStateInit() const {

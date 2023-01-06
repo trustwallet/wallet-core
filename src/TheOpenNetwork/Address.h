@@ -43,8 +43,14 @@ public:
     explicit Address(const std::string& string);
 
     /// Initializes an address with its parts
-    explicit Address(int8_t workchainId, std::array<byte, size> hash)
-        : Everscale::Address(workchainId, hash) { }
+    explicit Address(
+        int8_t workchainId, std::array<byte, size> hash,
+        bool userFriendly = true, bool bounceable = true, bool testOnly = false
+    ) : Everscale::Address(workchainId, hash) {
+        this->isUserFriendly = userFriendly;
+        this->isBounceable = bounceable;
+        this->isTestOnly = testOnly;
+    }
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const override;
