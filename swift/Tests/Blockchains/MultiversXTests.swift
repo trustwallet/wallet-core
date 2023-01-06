@@ -53,7 +53,7 @@ class MultiversXTests: XCTestCase {
     }
     
     func testSignGenericActionUndelegate() {
-        // Successfully broadcasted https://explorer.MultiversX.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
+        // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
         let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
 
         let input = MultiversXSigningInput.with {
