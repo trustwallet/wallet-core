@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-package com.trustwallet.core.app.blockchains.elrond
+package com.trustwallet.core.app.blockchains.multiversx
 
 import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
@@ -12,7 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 
-class TestElrondAddress {
+class TestMultiversXAddress {
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -26,7 +26,7 @@ class TestElrondAddress {
     fun testAddressFromPrivateKey() {
         val key = PrivateKey(aliceSeedHex.toHexByteArray())
         val pubKey = key.publicKeyEd25519
-        val address = AnyAddress(pubKey, CoinType.ELROND)
+        val address = AnyAddress(pubKey, CoinType.MULTIVERSX)
 
         assertEquals(alicePubKeyHex, pubKey.data().toHex())
         assertEquals(aliceBech32, address.description())
@@ -35,14 +35,14 @@ class TestElrondAddress {
     @Test
     fun testAddressFromPublicKey() {
         val pubKey = PublicKey(alicePubKeyHex.toHexByteArray(), PublicKeyType.ED25519)
-        val address = AnyAddress(pubKey, CoinType.ELROND)
+        val address = AnyAddress(pubKey, CoinType.MULTIVERSX)
 
         assertEquals(aliceBech32, address.description())
     }
 
     @Test
     fun testAddressFromString() {
-        val address = AnyAddress(aliceBech32, CoinType.ELROND)
+        val address = AnyAddress(aliceBech32, CoinType.MULTIVERSX)
         
         assertEquals(aliceBech32, address.description())
     }

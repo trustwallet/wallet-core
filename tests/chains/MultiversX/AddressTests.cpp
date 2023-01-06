@@ -7,7 +7,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "Elrond/Address.h"
+#include "MultiversX/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -15,14 +15,14 @@
 
 using namespace TW;
 
-namespace TW::Elrond::tests {
+namespace TW::MultiversX::tests {
 
-TEST(ElrondAddress, Valid) {
+TEST(MultiversXAddress, Valid) {
     ASSERT_TRUE(Address::isValid(ALICE_BECH32));
     ASSERT_TRUE(Address::isValid(BOB_BECH32));
 }
 
-TEST(ElrondAddress, Invalid) {
+TEST(MultiversXAddress, Invalid) {
     ASSERT_FALSE(Address::isValid(""));
     ASSERT_FALSE(Address::isValid("foo"));
     ASSERT_FALSE(Address::isValid("10z9xdugayn528ksaesdwlhf006fw5sg2qmmm0h52fvxczwgesyvq5pwemr"));
@@ -31,7 +31,7 @@ TEST(ElrondAddress, Invalid) {
     ASSERT_FALSE(Address::isValid(ALICE_PUBKEY_HEX));
 }
 
-TEST(ElrondAddress, FromString) {
+TEST(MultiversXAddress, FromString) {
     Address alice, bob, carol;
     ASSERT_TRUE(Address::decode(ALICE_BECH32, alice));
     ASSERT_TRUE(Address::decode(BOB_BECH32, bob));
@@ -40,7 +40,7 @@ TEST(ElrondAddress, FromString) {
     ASSERT_EQ(BOB_PUBKEY_HEX, hex(bob.getKeyHash()));
 }
 
-TEST(ElrondAddress, FromData) {
+TEST(MultiversXAddress, FromData) {
     const auto alice = Address(parse_hex(ALICE_PUBKEY_HEX));
     const auto bob = Address(parse_hex(BOB_PUBKEY_HEX));
 
@@ -48,7 +48,7 @@ TEST(ElrondAddress, FromData) {
     ASSERT_EQ(BOB_BECH32, bob.string());
 }
 
-TEST(ElrondAddress, FromPrivateKey) {
+TEST(MultiversXAddress, FromPrivateKey) {
     auto aliceKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     auto alice = Address(aliceKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(ALICE_BECH32, alice.string());
@@ -58,7 +58,7 @@ TEST(ElrondAddress, FromPrivateKey) {
     ASSERT_EQ(BOB_BECH32, bob.string());
 }
 
-TEST(ElrondAddress, FromPublicKey) {
+TEST(MultiversXAddress, FromPublicKey) {
     auto alice = PublicKey(parse_hex(ALICE_PUBKEY_HEX), TWPublicKeyTypeED25519);
     ASSERT_EQ(ALICE_BECH32, Address(alice).string());
 
@@ -66,4 +66,4 @@ TEST(ElrondAddress, FromPublicKey) {
     ASSERT_EQ(BOB_BECH32, Address(bob).string());
 }
 
-} // namespace TW::Elrond::tests
+} // namespace TW::MultiversX::tests

@@ -36,7 +36,7 @@ template <class Key, class T, class Compare, class Allocator>
 using sorted_map = std::map<Key, T, FieldsSorter, Allocator>;
 using sorted_json = nlohmann::basic_json<sorted_map>;
 
-sorted_json preparePayload(const Elrond::Transaction& transaction) {
+sorted_json preparePayload(const MultiversX::Transaction& transaction) {
     using namespace nlohmann;
     sorted_json payload{
         {"nonce", json(transaction.nonce)},
@@ -69,12 +69,12 @@ sorted_json preparePayload(const Elrond::Transaction& transaction) {
     return payload;
 }
 
-std::string Elrond::serializeTransaction(const Elrond::Transaction& transaction) {
+std::string MultiversX::serializeTransaction(const MultiversX::Transaction& transaction) {
     sorted_json payload = preparePayload(transaction);
     return payload.dump();
 }
 
-std::string Elrond::serializeSignedTransaction(const Elrond::Transaction& transaction, std::string signature) {
+std::string MultiversX::serializeSignedTransaction(const MultiversX::Transaction& transaction, std::string signature) {
     sorted_json payload = preparePayload(transaction);
     payload["signature"] = nlohmann::json(signature);
     return payload.dump();

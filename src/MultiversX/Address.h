@@ -7,32 +7,35 @@
 #pragma once
 
 #include "Data.h"
-#include "../PublicKey.h"
 #include "../Bech32Address.h"
+#include "../PublicKey.h"
 
 #include <string>
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 class Address : public Bech32Address {
-  public:
+public:
     /// The human-readable part of the address, as defined in "registry.json"
-    static const std::string hrp; // HRP_ELROND
+    static const std::string hrp; // HRP_MULTIVERSX
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    Address() : Bech32Address(hrp) {}
+    Address()
+        : Bech32Address(hrp) {}
 
     /// Initializes an address with a key hash.
-    Address(Data keyHash) : Bech32Address(hrp, keyHash) {}
+    Address(Data keyHash)
+        : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey) : Bech32Address(hrp, publicKey.bytes) {}
+    Address(const PublicKey& publicKey)
+        : Bech32Address(hrp, publicKey.bytes) {}
 
     static bool decode(const std::string& addr, Address& obj_out) {
         return Bech32Address::decode(addr, obj_out, hrp);
     }
 };
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

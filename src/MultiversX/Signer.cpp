@@ -12,7 +12,7 @@
 
 #include <google/protobuf/util/json_util.h>
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     TransactionFactory factory;
@@ -39,4 +39,4 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.encoded();
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

@@ -9,7 +9,7 @@
 #include <string>
 #include "NetworkConfig.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 class GasEstimator {
     NetworkConfig networkConfig;

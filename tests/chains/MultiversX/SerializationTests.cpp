@@ -8,15 +8,15 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "Elrond/Serialization.h"
+#include "MultiversX/Serialization.h"
 #include "HexCoding.h"
 #include "TestAccounts.h"
 
 using namespace TW;
 
-namespace TW::Elrond::tests {
+namespace TW::MultiversX::tests {
 
-TEST(ElrondSerialization, SignableString) {
+TEST(MultiversXSerialization, SignableString) {
     Transaction transaction;
     transaction.nonce = 42;
     transaction.value = "43";
@@ -30,7 +30,7 @@ TEST(ElrondSerialization, SignableString) {
     ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"bob","sender":"alice","gasPrice":0,"gasLimit":0,"data":"Zm9v","chainID":"1","version":1})", jsonString);
 }
 
-TEST(ElrondSerialization, SignableStringWithRealData) {
+TEST(MultiversXSerialization, SignableStringWithRealData) {
     Transaction transaction;
     transaction.nonce = 15;
     transaction.value = "100";
@@ -47,7 +47,7 @@ TEST(ElrondSerialization, SignableStringWithRealData) {
     ASSERT_EQ(expected, actual);
 }
 
-TEST(ElrondSerialization, SignableStringWithoutData) {
+TEST(MultiversXSerialization, SignableStringWithoutData) {
     Transaction transaction;
     transaction.nonce = 42;
     transaction.value = "43";
@@ -60,4 +60,4 @@ TEST(ElrondSerialization, SignableStringWithoutData) {
     ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"abba","sender":"feed","gasPrice":0,"gasLimit":0,"chainID":"1","version":1})", jsonString);
 }
 
-} // namespace TW::Elrond::tests
+} // namespace TW::MultiversX::tests

@@ -8,7 +8,7 @@
 
 #include <string>
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 class Transaction {
 public:
@@ -28,4 +28,4 @@ public:
     Transaction();
 };
 
-} // namespace
+} // namespace TW::MultiversX

@@ -8,9 +8,9 @@
 
 #include "../CoinEntry.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
-/// Entry point for implementation of Elrond coin.
+/// Entry point for implementation of MultiversX coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry final : public CoinEntry {
 public:
@@ -22,4 +22,4 @@ public:
     std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
 };
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

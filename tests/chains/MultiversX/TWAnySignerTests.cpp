@@ -7,7 +7,7 @@
 #include "boost/format.hpp"
 #include <gtest/gtest.h>
 
-#include "Elrond/Signer.h"
+#include "MultiversX/Signer.h"
 #include "HexCoding.h"
 #include "TestAccounts.h"
 #include "TestUtilities.h"
@@ -15,9 +15,9 @@
 
 using namespace TW;
 
-namespace TW::Elrond::tests {
+namespace TW::MultiversX::tests {
 
-TEST(TWAnySignerElrond, Sign) {
+TEST(TWAnySignerMultiversX, Sign) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -33,7 +33,7 @@ TEST(TWAnySignerElrond, Sign) {
     input.set_chain_id("1");
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeElrond);
+    ANY_SIGN(input, TWCoinTypeMultiversX);
 
     auto signature = output.signature();
     auto encoded = output.encoded();
@@ -44,16 +44,16 @@ TEST(TWAnySignerElrond, Sign) {
     ASSERT_EQ(expectedEncoded, encoded);
 }
 
-TEST(TWAnySignerElrond, SignJSON) {
+TEST(TWAnySignerMultiversX, SignJSON) {
     // Shuffle some fields, assume arbitrary order in the input
     auto input = STRING((boost::format(R"({"genericAction" : {"accounts": {"senderNonce": 7, "receiver": "%1%", "sender": "%2%"}, "data": "foo", "value": "0", "version": 1}, "gasPrice": 1000000000, "gasLimit": 50000, "chainId": "1"})") % BOB_BECH32 % ALICE_BECH32).str().c_str());
     auto privateKey = DATA(ALICE_SEED_HEX);
-    auto encoded = WRAPS(TWAnySignerSignJSON(input.get(), privateKey.get(), TWCoinTypeElrond));
+    auto encoded = WRAPS(TWAnySignerSignJSON(input.get(), privateKey.get(), TWCoinTypeMultiversX));
     auto expectedSignature = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";
     auto expectedEncoded = (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
-    ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeElrond));
+    ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeMultiversX));
     assertStringsEqual(encoded, expectedEncoded.c_str());
 }
 
-} // namespace TW::Elrond::tests
+} // namespace TW::MultiversX::tests

@@ -7,12 +7,12 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "Elrond/TransactionFactory.h"
+#include "MultiversX/TransactionFactory.h"
 #include "TestAccounts.h"
 
-namespace TW::Elrond::tests {
+namespace TW::MultiversX::tests {
 
-TEST(ElrondTransactionFactory, fromEGLDTransfer) {
+TEST(MultiversXTransactionFactory, fromEGLDTransfer) {
     auto input = Proto::SigningInput();
     input.mutable_egld_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
     input.mutable_egld_transfer()->mutable_accounts()->set_receiver(BOB_BECH32);
@@ -31,7 +31,7 @@ TEST(ElrondTransactionFactory, fromEGLDTransfer) {
     ASSERT_EQ(1ul, transaction.version);
 }
 
-TEST(ElrondTransactionFactory, fromESDTTransfer) {
+TEST(MultiversXTransactionFactory, fromESDTTransfer) {
     auto input = Proto::SigningInput();
     input.mutable_esdt_transfer()->mutable_accounts()->set_sender_nonce(7);
     input.mutable_esdt_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
@@ -52,7 +52,7 @@ TEST(ElrondTransactionFactory, fromESDTTransfer) {
     ASSERT_EQ(1ul, transaction.version);
 }
 
-TEST(ElrondTransactionFactory, fromESDTNFTTransfer) {
+TEST(MultiversXTransactionFactory, fromESDTNFTTransfer) {
     auto input = Proto::SigningInput();
     input.mutable_esdtnft_transfer()->mutable_accounts()->set_sender_nonce(7);
     input.mutable_esdtnft_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
@@ -74,7 +74,7 @@ TEST(ElrondTransactionFactory, fromESDTNFTTransfer) {
     ASSERT_EQ(1ul, transaction.version);
 }
 
-TEST(ElrondTransactionFactory, createTransfersWithProvidedNetworkConfig) {
+TEST(MultiversXTransactionFactory, createTransfersWithProvidedNetworkConfig) {
     NetworkConfig networkConfig;
 
     // Set dummy values:
@@ -121,7 +121,7 @@ TEST(ElrondTransactionFactory, createTransfersWithProvidedNetworkConfig) {
     ASSERT_EQ("T", tx3.chainID);
 }
 
-TEST(ElrondTransactionFactory, createTransfersWithOverriddenNetworkParameters) {
+TEST(MultiversXTransactionFactory, createTransfersWithOverriddenNetworkParameters) {
     Proto::SigningInput signingInputWithEGLDTransfer;
     signingInputWithEGLDTransfer.set_gas_limit(50500);
     signingInputWithEGLDTransfer.set_gas_price(1000000001);
@@ -155,7 +155,7 @@ TEST(ElrondTransactionFactory, createTransfersWithOverriddenNetworkParameters) {
     ASSERT_EQ("C", tx3.chainID);
 }
 
-TEST(ElrondTransactionFactory, create) {
+TEST(MultiversXTransactionFactory, create) {
     Proto::SigningInput signingInputWithGenericAction;
     signingInputWithGenericAction.mutable_generic_action()->set_data("hello");
 
@@ -189,4 +189,4 @@ TEST(ElrondTransactionFactory, create) {
     ASSERT_EQ("ESDTNFTTransfer@4c4b4d45582d616162393130@04@028ec3dfa01ac000@8049d639e5a6980d1cd2392abcce41029cda74a1563523a202f09641cc2618f8", tx4.data);
 }
 
-} // namespace TW::Elrond::tests
+} // namespace TW::MultiversX::tests

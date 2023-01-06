@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "uint256.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
 std::string Codec::encodeString(const std::string& value) {
     std::string encoded = hex(TW::data(value));
@@ -25,7 +25,7 @@ std::string Codec::encodeBigInt(const std::string& value) {
     return encodeBigInt(uint256_t(value));
 }
 
-// For reference, see https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/#arbitrary-width-big-numbers.
+// For reference, see https://docs.multiversx.com
 std::string Codec::encodeBigInt(uint256_t value) {
     std::string encoded = hex(store(value));
     return encoded;
@@ -42,4 +42,4 @@ std::string Codec::encodeAddress(const Address& address) {
     return encoded;
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

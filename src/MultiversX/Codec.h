@@ -9,13 +9,13 @@
 #include "Address.h"
 #include "uint256.h"
 
-namespace TW::Elrond {
+namespace TW::MultiversX {
 
-/// A stripped-down variant of the Elrond codec.
+/// A stripped-down variant of the MultiversX codec.
 /// For reference, see:
-/// - https://docs.elrond.com/developers/developer-reference/elrond-serialization-format
-/// - https://github.com/ElrondNetwork/elrond-sdk-erdjs/tree/main/src/smartcontracts/codec
-/// - https://github.com/ElrondNetwork/elrond-wasm-rs/tree/master/elrond-codec
+/// - https://docs.multiversx.com
+/// - https://github.com/MultiversX/mx-sdk-erdjs
+/// - https://github.com/MultiversX/mx-sdk-rs
 class Codec {
 public:
     static std::string encodeString(const std::string& value);
@@ -26,4 +26,4 @@ public:
     static std::string encodeAddress(const Address& address);
 };
 
-} // namespace
+} // namespace TW::MultiversX
