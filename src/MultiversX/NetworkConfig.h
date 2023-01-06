@@ -19,7 +19,7 @@ class NetworkConfig {
     uint32_t minGasLimit;
     uint64_t minGasPrice;
 
-    /// GasSchedule entries of interest (only one at this moment), according to: https://github.com/ElrondNetwork/elrond-config-mainnet/blob/master/gasSchedules.
+    /// GasSchedule entries of interest (only one at this moment), according to: https://github.com/multiversx/mx-chain-mainnet-config/blob/master/gasSchedules.
     /// Here, for the sake of simplicity, we define the gas costs of interest directly in the class "NetworkConfig"
     /// (that is, without defining extra nested structures such as "GasSchedule" and "BuiltInCosts").
     uint32_t gasCostESDTTransfer;
