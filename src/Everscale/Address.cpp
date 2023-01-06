@@ -6,6 +6,7 @@
 
 #include <charconv>
 #include <system_error>
+#include <limits>
 
 #include "Address.h"
 #include "HexCoding.h"
@@ -39,13 +40,25 @@ static std::optional<long> parse_long(char const *s)
     return l;
 }
 
+static std::optional<int8_t> parse_int8(char const *s) {
+    auto value = parse_long(s);
+    if (!value.has_value()) {
+        return std::nullopt;
+    }
+    if (value.value() <= static_cast<long>(std::numeric_limits<int8_t>::max()) && value.value() >= static_cast<long>(std::numeric_limits<int8_t>::min())) {
+        return value;
+    } else {
+        return std::nullopt;
+    }
+}
+
 
 using MaybeWorkchain = std::optional<std::pair<int8_t, std::string::size_type>>;
 
 MaybeWorkchain parseWorkchainId(const std::string& string) {
     if (auto pos = string.find(':'); pos != std::string::npos) {
         std::string workchain_string = string.substr(0, pos);
-        auto workchain_id = parse_long(workchain_string.c_str());
+        auto workchain_id = parse_int8(workchain_string.c_str());
         if (workchain_id.has_value()) {
             return std::make_pair(workchain_id.value(), pos + 1);
         }
