@@ -127,6 +127,7 @@ enum TWCoinType {
     TWCoinTypeHedera = 3030,
     TWCoinTypeSecret = 529,
     TWCoinTypeNativeInjective = 10000060,
+    TWCoinTypeAgoric = 564,
 };
 
 /// Returns the blockchain for a coin type.
