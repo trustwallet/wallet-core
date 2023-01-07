@@ -10,8 +10,6 @@
 
 namespace TW::TheOpenNetwork {
 
-using ExternalInboundMessageHeader = CommonTON::ExternalInboundMessageHeader;
-
 static const uint32_t standard_wallet_id = 698983191;
 
 Wallet::Wallet(PublicKey publicKey, int8_t workchainId, Data walletCode)
@@ -26,7 +24,7 @@ Address Wallet::getAddress() const {
     return Address(workchainId, stateInit.writeTo().intoCell()->hash);
 }
 
-Everscale::StateInit Wallet::createStateInit() const {
+CommonTON::StateInit Wallet::createStateInit() const {
     Cell::Ref code = Cell::deserialize(walletCode.data(), walletCode.size());
     Cell::Ref data = this->createDataCell();
     return StateInit{code, data};
@@ -71,7 +69,7 @@ Cell::Ref Wallet::createTransferMessage(
     uint32_t expireAt,
     const std::string& comment
 ) const {
-    const auto transferMessageHeader = std::make_shared<ExternalInboundMessageHeader>(this->getAddress().addressData);
+    const auto transferMessageHeader = std::make_shared<CommonTON::ExternalInboundMessageHeader>(this->getAddress().addressData);
     Message transferMessage = Message(MessageData(transferMessageHeader));
     if (sequence_number == 0) {
         const auto stateInit = this->createStateInit();

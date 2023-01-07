@@ -12,10 +12,7 @@
 #include "TheOpenNetwork/Address.h"
 #include "TheOpenNetwork/Message.h"
 
-#include "Everscale/Cell.h"
-#include "Everscale/CellBuilder.h"
-
-using namespace TW::Everscale;
+#include "Everscale/CommonTON/Messages.h"
 
 namespace TW::TheOpenNetwork {
 
@@ -56,7 +53,7 @@ private:
         uint32_t expireAt = 0,
         const std::string& comment = ""
     ) const;
-    [[nodiscard]] Everscale::StateInit createStateInit() const;
+    [[nodiscard]] CommonTON::StateInit createStateInit() const;
 };
 
 } // namespace TW::TheOpenNetwork

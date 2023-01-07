@@ -8,11 +8,11 @@
 
 #include <cassert>
 
-#include "../BinaryCoding.h"
+#include "BinaryCoding.h"
 
 using namespace TW;
 
-namespace TW::Everscale {
+namespace TW::CommonTON {
 
 uint32_t CellSlice::getNextU32() {
     const auto bytes = getNextBytes(sizeof(uint32_t));
@@ -56,4 +56,4 @@ void CellSlice::require(uint16_t bits) const {
     }
 }
 
-} // namespace TW::Everscale
+} // namespace TW::CommonTON

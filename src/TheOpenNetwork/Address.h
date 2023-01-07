@@ -9,7 +9,7 @@
 #include "Data.h"
 #include "PublicKey.h"
 
-#include "Everscale/Address.h"
+#include "Everscale/CommonTON/RawAddress.h"
 
 #include <string>
 
@@ -22,7 +22,6 @@ enum AddressTag : uint8_t {
 };
 
 using AddressData = CommonTON::AddressData;
-using AddressImpl = TW::CommonTON::Address;
 
 class Address {
 public:
@@ -51,7 +50,10 @@ public:
     explicit Address(
         int8_t workchainId, std::array<byte, AddressData::size> hash,
         bool userFriendly = true, bool bounceable = true, bool testOnly = false
-    );
+    ) : addressData(workchainId, hash),
+        isUserFriendly(userFriendly),
+        isBounceable(bounceable),
+        isTestOnly(testOnly) {}
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;

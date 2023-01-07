@@ -7,8 +7,9 @@
 #pragma once
 
 #include "Data.h"
-#include "../PublicKey.h"
-#include "CommonTON/Address.h"
+#include "PublicKey.h"
+
+#include "CommonTON/RawAddress.h"
 
 #include <optional>
 #include <string>
@@ -35,7 +36,8 @@ public:
         : addressData(workchainId, hash) {}
 
     /// Initializes an Everscale address with AddressData
-    explicit Address(AddressData addressData) : addressData(addressData) {}
+    explicit Address(AddressData addressData)
+        : addressData(addressData) {}
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;

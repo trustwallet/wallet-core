@@ -9,17 +9,14 @@
 #include <optional>
 #include <utility>
 
-#include "Address.h"
-#include "../CellBuilder.h"
-#include "../CellSlice.h"
-#include "../Wallet.h"
+#include "Cell.h"
+#include "CellBuilder.h"
+#include "CellSlice.h"
+#include "RawAddress.h"
 
-#include "../../PrivateKey.h"
+#include "PrivateKey.h"
 
 namespace TW::CommonTON {
-using CellBuilder = Everscale::CellBuilder;
-using StateInit = Everscale::StateInit;
-using Cell = Everscale::Cell;
 
 using uint128_t = CellBuilder::uint128_t;
 
@@ -60,6 +57,14 @@ public:
     void writeTo(CellBuilder& builder) const override;
 };
 
+class StateInit {
+public:
+    Cell::Ref code;
+    Cell::Ref data;
+
+    [[nodiscard]] CellBuilder writeTo() const;
+};
+
 struct MessageData {
     std::shared_ptr<CommonMsgInfo> header;
     std::optional<StateInit> init{};
@@ -67,11 +72,7 @@ struct MessageData {
 
     using HeaderRef = std::shared_ptr<CommonMsgInfo>;
 
-
     explicit MessageData(HeaderRef header) : header(std::move(header)) { }
 };
-
-MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount,
-                         uint32_t expiredAt, AddressData destination, const Cell::Ref& contractData);
 
 } // namespace TW::CommonTON

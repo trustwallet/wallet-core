@@ -5,12 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Wallet.h"
-#include "CellBuilder.h"
 #include "Messages.h"
 
 #include "HexCoding.h"
-
-using namespace TW;
 
 namespace TW::Everscale {
 
@@ -55,7 +52,7 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     payload.appendU32(_seqno);
 
     // create internal message
-    MessageData::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to, gift.amount);
+    MessageData::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to.addressData, gift.amount);
     auto message = Message(MessageData(header));
 
     // append it to the body
@@ -63,20 +60,6 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     payload.appendReferenceCell(message.intoCell());
 
     return payload;
-}
-
-CellBuilder StateInit::writeTo() const {
-    CellBuilder builder;
-
-    builder.appendBitZero(); // split_depth
-    builder.appendBitZero(); // special
-    builder.appendBitOne();  // code
-    builder.appendReferenceCell(code);
-    builder.appendBitOne(); // data
-    builder.appendReferenceCell(data);
-    builder.appendBitZero(); // library
-
-    return builder;
 }
 
 } // namespace TW::Everscale

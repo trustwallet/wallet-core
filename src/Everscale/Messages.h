@@ -6,23 +6,23 @@
 
 #pragma once
 
+#include "Address.h"
 #include "CommonTON/Messages.h"
 
-namespace TW::Everscale {
+using namespace TW::CommonTON;
 
-using MessageData = CommonTON::MessageData;
-using InternalMessageHeader = CommonTON::InternalMessageHeader;
+namespace TW::Everscale {
 
 class Message {
 private:
     MessageData _messageData;
+
 public:
-    explicit Message(const MessageData& messageData) : _messageData(messageData) {}
+    explicit Message(MessageData messageData) : _messageData(std::move(messageData)) {}
     [[nodiscard]] Cell::Ref intoCell() const;
-    inline void setBody(const Cell::Ref& body) { _messageData.body = body; }
-    inline void setStateInit(const StateInit& stateInit) { _messageData.init = stateInit; }
 };
 
-static auto createSignedMessage = CommonTON::createSignedMessage;
+MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount,
+                                uint32_t expiredAt, Address destination, const Cell::Ref& contractData);
 
 } // namespace TW::Everscale

@@ -10,7 +10,7 @@
 
 #include "TheOpenNetwork/Address.h"
 #include "TheOpenNetwork/wallet/WalletV4R2.h"
-#include "Everscale/WorkchainType.h"
+#include "TheOpenNetwork/WorkchainType.h"
 
 #include <gtest/gtest.h>
 

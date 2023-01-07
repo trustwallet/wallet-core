@@ -6,18 +6,16 @@
 
 #include <charconv>
 #include <system_error>
-#include <limits>
 
 #include "Address.h"
 #include "HexCoding.h"
 #include "Wallet.h"
-#include "CommonTON/Address.h"
 
 using namespace TW;
 
 namespace TW::Everscale {
 
-using AddressImpl = TW::CommonTON::Address;
+using AddressImpl = TW::CommonTON::RawAddress;
 
 bool Address::isValid(const std::string& string) noexcept {
     return AddressImpl::isValid(string);

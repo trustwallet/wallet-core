@@ -13,6 +13,8 @@
 
 namespace TW::TheOpenNetwork {
 
+using AddressImpl = TW::CommonTON::RawAddress;
+
 static inline Data decodeUserFriendlyAddress(const std::string& string) {
     Data decoded;
     if (string.find('-') != std::string::npos || string.find('_') != std::string::npos) {
@@ -24,7 +26,7 @@ static inline Data decodeUserFriendlyAddress(const std::string& string) {
 }
 
 bool Address::isValid(const std::string& string) noexcept {
-    if (Everscale::Address::isValid(string)) {  // raw address
+    if (AddressImpl::isValid(string)) {
         return true;
     }
 
@@ -67,16 +69,6 @@ bool Address::isValid(const std::string& string) noexcept {
 
     return true;
 }
-
-Address::Address(
-        int8_t workchainId, std::array<byte, AddressData::size> hash,
-        bool userFriendly, bool bounceable, bool testOnly
-    ) : 
-        addressData(workchainId, hash), 
-        isUserFriendly(userFriendly), 
-        isBounceable(bounceable), 
-        isTestOnly(testOnly) {
-    }
 
 Address::Address(const std::string& string) {
     if (!Address::isValid(string)) {

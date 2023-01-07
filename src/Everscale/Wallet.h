@@ -9,14 +9,17 @@
 #include <boost/integer.hpp>
 #include <utility>
 
-#include "../PublicKey.h"
+#include "PublicKey.h"
 
 #include "Address.h"
-#include "Cell.h"
-#include "CellBuilder.h"
-#include "CellSlice.h"
+#include "CommonTON/Cell.h"
+#include "CommonTON/CellBuilder.h"
+#include "CommonTON/CellSlice.h"
+#include "CommonTON/Messages.h"
 
 const uint32_t WALLET_ID = 0x4BA92D8A;
+
+using namespace TW::CommonTON;
 
 namespace TW::Everscale {
 
@@ -37,7 +40,7 @@ public:
     struct Gift {
         bool bounce;
         uint64_t amount;
-        AddressData to;
+        Address to;
         uint8_t flags;
     };
 
@@ -47,14 +50,6 @@ public:
         MessageFlags::AttachAllBalance | MessageFlags::IgnoreActionPhaseErrors;
 
     static const Data code;
-};
-
-class StateInit {
-public:
-    Cell::Ref code;
-    Cell::Ref data;
-
-    [[nodiscard]] CellBuilder writeTo() const;
 };
 
 class InitData {

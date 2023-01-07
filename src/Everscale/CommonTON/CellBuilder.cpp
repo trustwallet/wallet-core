@@ -11,11 +11,11 @@
 #include <cassert>
 #include <vector>
 
-#include "../BinaryCoding.h"
+#include "BinaryCoding.h"
 
 using namespace TW;
 
-namespace TW::Everscale {
+namespace TW::CommonTON {
 
 CellBuilder::CellBuilder(Data& appendedData, uint16_t bits) {
     assert(bits <= appendedData.size() * 8);
@@ -257,4 +257,4 @@ void CellBuilder::encode128BE(const uint128_t& val, Data& data) {
     data.emplace_back(static_cast<uint8_t>(val));
 }
 
-} // namespace TW::Everscale
+} // namespace TW::CommonTON

@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Address.h"
+#include "RawAddress.h"
 
 #include "HexCoding.h"
 #include "WorkchainType.h"
 
+using MaybeWorkchain = std::optional<std::pair<int8_t, std::string::size_type>>;
 
 namespace TW::CommonTON {
 
@@ -46,8 +47,7 @@ static std::optional<int8_t> parse_int8(char const *s) {
     }
 }
 
-
-Address::MaybeWorkchain Address::parseWorkchainId(const std::string& string) {
+static MaybeWorkchain parseWorkchainId(const std::string& string) {
     if (auto pos = string.find(':'); pos != std::string::npos) {
         std::string workchain_string = string.substr(0, pos);
         auto workchain_id = parse_int8(workchain_string.c_str());
@@ -58,22 +58,8 @@ Address::MaybeWorkchain Address::parseWorkchainId(const std::string& string) {
     return {};
 }
 
-AddressData Address::splitAddress(const std::string& address) {
-    auto parsed = TW::CommonTON::Address::parseWorkchainId(address);
-    auto [parsedWorkchainId, pos] = *parsed;
-
-    auto workchainId = parsedWorkchainId;
-
-    const auto parsedHash = parse_hex(address.substr(pos));
-
-    std::array<byte, AddressData::size> hash{};
-    std::copy(begin(parsedHash), end(parsedHash), begin(hash));
-
-    return AddressData(workchainId, hash);
-}
-
-bool Address::isValid(const std::string& string) {
-    auto parsed = Address::parseWorkchainId(string);
+bool RawAddress::isValid(const std::string& string) {
+    auto parsed = parseWorkchainId(string);
     if (!parsed.has_value()) {
         return false;
     }
@@ -95,7 +81,21 @@ bool Address::isValid(const std::string& string) {
     return parse_hex(addr).size() == AddressData::size;
 }
 
-std::string Address::to_string(const AddressData& addressData) {
+AddressData RawAddress::splitAddress(const std::string& address) {
+    auto parsed = parseWorkchainId(address);
+    auto [parsedWorkchainId, pos] = *parsed;
+
+    auto workchainId = parsedWorkchainId;
+
+    const auto parsedHash = parse_hex(address.substr(pos));
+
+    std::array<byte, AddressData::size> hash{};
+    std::copy(begin(parsedHash), end(parsedHash), begin(hash));
+
+    return AddressData(workchainId, hash);
+}
+
+std::string RawAddress::to_string(const AddressData& addressData) {
     std::string address = std::to_string(addressData.workchainId) + ":" + hex(addressData.hash);
     return address;
 }

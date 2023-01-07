@@ -8,24 +8,21 @@
 
 #include "Everscale/CommonTON/Messages.h"
 
-using namespace TW::Everscale;
+using namespace TW::CommonTON;
 
 namespace TW::TheOpenNetwork {
-
-using MessageData = CommonTON::MessageData;
-using InternalMessageHeader = CommonTON::InternalMessageHeader;
 
 class Message {
 private:
     MessageData _messageData;
 
 public:
-    explicit Message(const MessageData& messageData) : _messageData(messageData) {}
+    explicit Message(MessageData messageData) : _messageData(std::move(messageData)) {}
+
     [[nodiscard]] Cell::Ref intoCell() const;
+
     inline void setBody(const Cell::Ref& body) { _messageData.body = body; }
     inline void setStateInit(const StateInit& stateInit) { _messageData.init = stateInit; }
 };
-
-static auto createSignedMessage = CommonTON::createSignedMessage;
 
 } // namespace TW::TheOpenNetwork

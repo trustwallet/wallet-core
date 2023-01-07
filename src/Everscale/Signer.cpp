@@ -7,11 +7,9 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Messages.h"
+#include "Wallet.h"
 
-#include "../Base64.h"
-
-using namespace TW;
-using namespace std::chrono;
+#include "Base64.h"
 
 namespace TW::Everscale {
 
@@ -54,7 +52,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             flags,
             transfer.amount(),
             transfer.expired_at(),
-            Address(transfer.to()).addressData,
+            Address(transfer.to()),
             contractData);
         Data result{};
         Message(signedMessage).intoCell()->serialize(result);

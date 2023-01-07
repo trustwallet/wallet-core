@@ -1,11 +1,6 @@
 #include "Messages.h"
-#include "WorkchainType.h"
 
 namespace TW::CommonTON {
-
-using CellSlice = Everscale::CellSlice;
-using InitData = Everscale::InitData;
-using Wallet = Everscale::Wallet;
 
 void ExternalInboundMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendBitOne();
@@ -64,45 +59,18 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendU32(_createdAt);
 }
 
-MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount, uint32_t expiredAt,
-                         AddressData to, const Cell::Ref& contractData) {
-    auto getInitData = [](const PublicKey& publicKey, const Cell::Ref& contractData) {
-        if (contractData != nullptr) {
-            auto cellSlice = CellSlice(contractData.get());
-            return std::make_pair(InitData(cellSlice), /* withInitState */ false);
-        } else {
-            return std::make_pair(InitData(publicKey), /* withInitState */ true);
-        }
-    };
+CellBuilder StateInit::writeTo() const {
+    CellBuilder builder;
 
-    auto [initData, withInitState] = getInitData(publicKey, contractData);
+    builder.appendBitZero(); // split_depth
+    builder.appendBitZero(); // special
+    builder.appendBitOne();  // code
+    builder.appendReferenceCell(code);
+    builder.appendBitOne(); // data
+    builder.appendReferenceCell(data);
+    builder.appendBitZero(); // library
 
-    auto gift = Wallet::Gift{
-        .bounce = bounce,
-        .amount = amount,
-        .to = to,
-        .flags = static_cast<uint8_t>(flags),
-    };
-
-    auto payload = initData.makeTransferPayload(expiredAt, gift);
-
-    auto payloadCopy = payload;
-    auto payloadCell = payloadCopy.intoCell();
-
-    Data data(payloadCell->hash.begin(), payloadCell->hash.end());
-    auto signature = key.sign(data, TWCurveED25519);
-    payload.prependRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
-
-    auto header = std::make_shared<ExternalInboundMessageHeader>(InitData(publicKey).computeAddr(WorkchainType::Basechain));
-    auto message = MessageData(header);
-
-    if (withInitState) {
-        message.init = initData.makeStateInit();
-    }
-
-    message.body = payload.intoCell();
-
-    return message;
+    return builder;
 }
 
 } // namespace TW::CommonTON

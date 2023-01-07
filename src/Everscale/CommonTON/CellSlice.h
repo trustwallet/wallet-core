@@ -12,7 +12,7 @@
 
 #include "Cell.h"
 
-namespace TW::Everscale {
+namespace TW::CommonTON {
 
 class CellSlice {
 public:
@@ -29,4 +29,4 @@ private:
     void require(uint16_t bits) const;
 };
 
-} // namespace TW::Everscale
+} // namespace TW::CommonTON

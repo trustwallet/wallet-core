@@ -22,29 +22,21 @@ struct AddressData {
     static const size_t hexAddrLen = size * 2;
 
     /// Workchain ID (-1 for masterchain, 0 for base workchain)
-    std::int8_t workchainId;
+    std::int8_t workchainId{};
+
     /// StateInit hash
     std::array<byte, AddressData::size> hash{};
 
     explicit AddressData(int8_t workchainId, std::array<byte, size> hash)
         : workchainId(workchainId), hash(hash) {}
 
-    explicit AddressData() {}
+    explicit AddressData() = default;
 };
 
-class Address {
-public:
-
-    using MaybeWorkchain = std::optional<std::pair<int8_t, std::string::size_type>>;
-    static MaybeWorkchain parseWorkchainId(const std::string& string);
-
+struct RawAddress {
     static bool isValid(const std::string& string);
-
-    static std::string to_string(const AddressData& addressData);
-
     static AddressData splitAddress(const std::string& address);
+    static std::string to_string(const AddressData& addressData);
 };
-
-
 
 } // namespace TW::CommonTON
