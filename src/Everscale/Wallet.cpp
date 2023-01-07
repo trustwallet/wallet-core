@@ -27,14 +27,14 @@ CellBuilder InitData::writeTo() const {
     return builder;
 }
 
-Address InitData::computeAddr(int8_t workchainId) const {
+AddressData InitData::computeAddr(int8_t workchainId) const {
     auto builder = this->writeTo();
 
     StateInit stateInit{
         .code = Cell::deserialize(Wallet::code.data(), Wallet::code.size()),
         .data = builder.intoCell(),
     };
-    return Address(workchainId, stateInit.writeTo().intoCell()->hash);
+    return AddressData(workchainId, stateInit.writeTo().intoCell()->hash);
 }
 
 StateInit InitData::makeStateInit() const {
@@ -55,7 +55,7 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     payload.appendU32(_seqno);
 
     // create internal message
-    Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to, gift.amount);
+    Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to.addressData, gift.amount);
     auto message = Message(header);
 
     // append it to the body

@@ -10,7 +10,7 @@
 #include "Signer.h"
 
 #include "TheOpenNetwork/wallet/WalletV4R2.h"
-#include "Everscale/WorkchainType.h"
+#include "WorkchainType.h"
 
 namespace TW::TheOpenNetwork {
 
@@ -23,7 +23,7 @@ std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std:
 }
 
 std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return WalletV4R2(publicKey, Everscale::WorkchainType::Basechain).getAddress().string();
+    return WalletV4R2(publicKey, WorkchainType::Basechain).getAddress().string();
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

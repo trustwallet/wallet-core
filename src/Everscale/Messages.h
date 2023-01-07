@@ -28,11 +28,11 @@ public:
 };
 
 class ExternalInboundMessageHeader : public CommonMsgInfo {
-    Address _dst;
+    AddressData _dst;
     uint128_t _importFee{};
 
 public:
-    explicit ExternalInboundMessageHeader(Address dst)
+    explicit ExternalInboundMessageHeader(AddressData dst)
         : _dst(dst) {}
 
     void writeTo(CellBuilder& builder) const override;
@@ -41,7 +41,7 @@ public:
 class InternalMessageHeader : public CommonMsgInfo {
     bool _ihrDisabled;
     bool _bounce;
-    Address _dst;
+    AddressData _dst;
     uint128_t _value;
 
     bool _bounced{};
@@ -51,7 +51,7 @@ class InternalMessageHeader : public CommonMsgInfo {
     uint32_t _createdAt{};
 
 public:
-    InternalMessageHeader(bool ihrDisabled, bool bounce, Address dst, uint64_t value)
+    InternalMessageHeader(bool ihrDisabled, bool bounce, AddressData dst, uint64_t value)
         : _ihrDisabled(ihrDisabled), _bounce(bounce), _dst(dst), _value(static_cast<uint128_t>(value)) {}
 
     void writeTo(CellBuilder& builder) const override;

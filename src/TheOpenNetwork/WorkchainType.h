@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "CommonTON/WorkchainType.h"
+#include "Everscale/CommonTON/WorkchainType.h"
 
-namespace TW::Everscale {
+namespace TW::TheOpenNetwork {
     using WorkchainType = CommonTON::WorkchainType;
-} // namespace TW::Everscale
+} // namespace TW::TheOpenNetwork

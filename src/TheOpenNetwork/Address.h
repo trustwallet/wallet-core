@@ -21,8 +21,13 @@ enum AddressTag : uint8_t {
     TEST_ONLY = 0x80,
 };
 
-class Address : public Everscale::Address {
+using AddressData = CommonTON::AddressData;
+using AddressImpl = TW::CommonTON::Address;
+
+class Address {
 public:
+    AddressData addressData;
+
     /// User-friendly address lens
     static const size_t b64UserFriendlyAddressLen = 48;
     static const size_t userFriendlyAddressLen = 36;
@@ -44,16 +49,12 @@ public:
 
     /// Initializes an address with its parts
     explicit Address(
-        int8_t workchainId, std::array<byte, size> hash,
+        int8_t workchainId, std::array<byte, AddressData::size> hash,
         bool userFriendly = true, bool bounceable = true, bool testOnly = false
-    ) : Everscale::Address(workchainId, hash) {
-        this->isUserFriendly = userFriendly;
-        this->isBounceable = bounceable;
-        this->isTestOnly = testOnly;
-    }
+    );
 
     /// Returns a string representation of the address.
-    [[nodiscard]] std::string string() const override;
+    [[nodiscard]] std::string string() const;
     [[nodiscard]] std::string string(bool userFriendly, bool bounceable = true, bool testOnly = false) const;
 };
 

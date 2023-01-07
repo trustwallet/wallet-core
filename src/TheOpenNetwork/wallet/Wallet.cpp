@@ -43,7 +43,7 @@ Cell::Ref Wallet::createSigningMessage(
     builder.appendU8(mode);
 
     { // Add internal message as a reference cell
-        const auto header = std::make_shared<Everscale::InternalMessageHeader>(true, dest.isBounceable, dest, amount);
+        const auto header = std::make_shared<Everscale::InternalMessageHeader>(true, dest.isBounceable, dest.addressData, amount);
         TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(header);
 
         CellBuilder bodyBuilder;
@@ -69,7 +69,7 @@ Cell::Ref Wallet::createTransferMessage(
     uint32_t expireAt,
     const std::string& comment
 ) const {
-    const auto transferMessageHeader = std::make_shared<ExternalInboundMessageHeader>(this->getAddress());
+    const auto transferMessageHeader = std::make_shared<ExternalInboundMessageHeader>(this->getAddress().addressData);
     Message transferMessage = Message(transferMessageHeader);
     if (sequence_number == 0) {
         const auto stateInit = this->createStateInit();

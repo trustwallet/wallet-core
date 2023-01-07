@@ -9,13 +9,13 @@
 #include "Base64.h"
 
 #include "TheOpenNetwork/wallet/WalletV4R2.h"
-#include "Everscale/WorkchainType.h"
+#include "WorkchainType.h"
 
 namespace TW::TheOpenNetwork {
 
 Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
     std::unique_ptr<Wallet> wallet;
-    const int8_t workchainId = Everscale::WorkchainType::Basechain;
+    const int8_t workchainId = WorkchainType::Basechain;
 
     switch (transfer.wallet_version()) {
     case Proto::WalletVersion::WALLET_V4_R2: {

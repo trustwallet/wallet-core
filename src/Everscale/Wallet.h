@@ -70,7 +70,7 @@ public:
 
     [[nodiscard]] CellBuilder writeTo() const;
     [[nodiscard]] StateInit makeStateInit() const;
-    [[nodiscard]] Address computeAddr(int8_t workchainId) const;
+    [[nodiscard]] AddressData computeAddr(int8_t workchainId) const;
     [[nodiscard]] CellBuilder makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const;
 };
 

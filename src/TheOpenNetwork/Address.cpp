@@ -9,7 +9,7 @@
 #include "Base64.h"
 #include "Crc.h"
 
-#include "Everscale/WorkchainType.h"
+#include "WorkchainType.h"
 
 namespace TW::TheOpenNetwork {
 
@@ -51,7 +51,7 @@ bool Address::isValid(const std::string& string) noexcept {
     }
 
     int8_t workchainId = decoded[1];
-    if (workchainId != Everscale::WorkchainType::Basechain && workchainId != Everscale::WorkchainType::Masterchain) {
+    if (workchainId != WorkchainType::Basechain && workchainId != WorkchainType::Masterchain) {
         return false;
     }
 
@@ -68,21 +68,28 @@ bool Address::isValid(const std::string& string) noexcept {
     return true;
 }
 
+Address::Address(
+        int8_t workchainId, std::array<byte, AddressData::size> hash,
+        bool userFriendly, bool bounceable, bool testOnly
+    ) : 
+        addressData(workchainId, hash), 
+        isUserFriendly(userFriendly), 
+        isBounceable(bounceable), 
+        isTestOnly(testOnly) {
+    }
+
 Address::Address(const std::string& string) {
     if (!Address::isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
 
     if (string.find(':') != std::string::npos) {
-        const auto rawAddress = Everscale::Address(string);
-
-        workchainId = rawAddress.workchainId;
-        hash = rawAddress.hash;
+        addressData = AddressImpl::splitAddress(string);
     } else {
         isUserFriendly = true;
 
         Data decoded = decodeUserFriendlyAddress(string);
-        workchainId = decoded[1];
+        addressData.workchainId = decoded[1];
 
         byte tag = decoded[0];
         if (tag & AddressTag::TEST_ONLY) {
@@ -91,7 +98,7 @@ Address::Address(const std::string& string) {
         }
         isBounceable = (tag == AddressTag::BOUNCEABLE);
 
-        std::copy(decoded.begin() + 2, decoded.end() - 2, hash.begin());
+        std::copy(decoded.begin() + 2, decoded.end() - 2, addressData.hash.begin());
     }
 }
 
@@ -101,11 +108,11 @@ std::string Address::string() const {
 
 std::string Address::string(bool userFriendly, bool bounceable, bool testOnly)  const {
     if (!userFriendly) {
-        return Everscale::Address::string();
+        return AddressImpl::to_string(addressData);
     }
 
     Data data;
-    Data hashData(hash.begin(), hash.end());
+    Data hashData(addressData.hash.begin(), addressData.hash.end());
 
     byte tag = bounceable ? AddressTag::BOUNCEABLE : AddressTag::NON_BOUNCEABLE;
     if (testOnly) {
@@ -113,7 +120,7 @@ std::string Address::string(bool userFriendly, bool bounceable, bool testOnly)  
     }
 
     append(data, tag);
-    append(data, workchainId);
+    append(data, addressData.workchainId);
     append(data, hashData);
 
     const uint16_t crc16 = Crc::crc16(data.data(), (uint32_t) data.size());
