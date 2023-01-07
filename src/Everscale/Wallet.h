@@ -37,7 +37,7 @@ public:
     struct Gift {
         bool bounce;
         uint64_t amount;
-        Address to;
+        AddressData to;
         uint8_t flags;
     };
 

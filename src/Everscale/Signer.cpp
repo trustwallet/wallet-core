@@ -54,9 +54,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             flags,
             transfer.amount(),
             transfer.expired_at(),
-            Address(transfer.to()),
+            Address(transfer.to()).addressData,
             contractData);
-        protoOutput.set_encoded(TW::Base64::encode(signedMessage));
+        Data result{};
+        Message(signedMessage).intoCell()->serialize(result);
+
+        protoOutput.set_encoded(TW::Base64::encode(result));
         break;
     }
     default:

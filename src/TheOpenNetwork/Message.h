@@ -6,16 +6,26 @@
 
 #pragma once
 
-#include "Everscale/Messages.h"
+#include "Everscale/CommonTON/Messages.h"
 
 using namespace TW::Everscale;
 
 namespace TW::TheOpenNetwork {
 
-class Message : public Everscale::Message {
+using MessageData = CommonTON::MessageData;
+using InternalMessageHeader = CommonTON::InternalMessageHeader;
+
+class Message {
+private:
+    MessageData _messageData;
+
 public:
-    explicit Message(HeaderRef header) : Everscale::Message(std::move(header)) { }
-    [[nodiscard]] Cell::Ref intoCell() const override;
+    explicit Message(const MessageData& messageData) : _messageData(messageData) {}
+    [[nodiscard]] Cell::Ref intoCell() const;
+    inline void setBody(const Cell::Ref& body) { _messageData.body = body; }
+    inline void setStateInit(const StateInit& stateInit) { _messageData.init = stateInit; }
 };
+
+static auto createSignedMessage = CommonTON::createSignedMessage;
 
 } // namespace TW::TheOpenNetwork

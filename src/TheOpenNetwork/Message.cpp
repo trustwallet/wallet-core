@@ -12,22 +12,22 @@ Cell::Ref Message::intoCell() const {
     CellBuilder builder;
 
     // info:CommonMsgInfo
-    _header->writeTo(builder);
+    _messageData.header->writeTo(builder);
 
     // init:(Maybe (Either StateInit ^StateInit))
-    if (_init.has_value()) {
+    if (_messageData.init.has_value()) {
         builder.appendBitOne(); // Maybe
 
         builder.appendBitOne(); // Either as ^X
-        builder.appendReferenceCell(_init.value().writeTo().intoCell());
+        builder.appendReferenceCell(_messageData.init.value().writeTo().intoCell());
     } else {
         builder.appendBitZero();
     }
 
     // body:(Either X ^X)
-    if (_body.has_value()) {
+    if (_messageData.body.has_value()) {
         builder.appendBitOne(); // Either as ^X
-        builder.appendReferenceCell(_body.value());
+        builder.appendReferenceCell(_messageData.body.value());
     } else {
         builder.appendBitZero();
     }

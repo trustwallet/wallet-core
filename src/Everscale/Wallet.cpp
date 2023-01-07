@@ -55,8 +55,8 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     payload.appendU32(_seqno);
 
     // create internal message
-    Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to.addressData, gift.amount);
-    auto message = Message(header);
+    MessageData::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to, gift.amount);
+    auto message = Message(MessageData(header));
 
     // append it to the body
     payload.appendU8(gift.flags);
