@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.TheOpenNetwork.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 enum WalletVersion {
     WALLET_V3_R1 = 0;
     WALLET_V3_R2 = 1;
@@ -64,4 +66,10 @@ message SigningInput {
 message SigningOutput {
     // Signed and base64 encoded BOC message
     string encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

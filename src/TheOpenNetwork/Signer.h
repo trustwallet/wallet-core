@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "PrivateKey.h"
+#include "wallet/Wallet.h"
 
 #include "proto/TheOpenNetwork.pb.h"
 
@@ -20,7 +21,7 @@ public:
     Signer() = delete;
 
     /// Creates a signed transfer message
-    static Data createTransferMessage(const PublicKey& publicKey, const PrivateKey& privateKey, const Proto::Transfer& transfer);
+    static Data createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer);
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;

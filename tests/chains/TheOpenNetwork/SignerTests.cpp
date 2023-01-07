@@ -146,4 +146,21 @@ TEST(TheOpenNetworkSigner, TransferWithUTF8Comment) {
     ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAANsAAAFFiAGwt/q8k4SrjbFbQCjJZfQr64ExRxcUMsWqaQODqTUijgwAAQGchoDa7EdGQuPuehHy3+0X9WNVEvYxdBtaEWn15oYUX8PEKyzztYy94Xq0T2XdhVvj2H7PTSQ+D/Ny1IBRCxk0BimpoxdkM5WOAAAACwADAAIBYmIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmIUAAAAAAAAAAAAAAAAAEAAwBWAAAAANGC0LXRgdGC0L7QstGL0Lkg0LrQvtC80LzQtdC90YLQsNGA0LjQuQ==");
 }
 
+TEST(TheOpenNetworkSigner, InvalidWalletVersion) {
+    auto input = Proto::SigningInput();
+
+    auto& transfer = *input.mutable_transfer();
+    transfer.set_wallet_version(Proto::WALLET_V3_R2);
+    transfer.set_dest("EQDYW_1eScJVxtitoBRksvoV9cCYo4uKGWLVNIHB1JqRR3n0");
+    transfer.set_amount(10);
+    transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
+    transfer.set_expire_at(1671135440);
+
+    const auto privateKey = parse_hex("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+    ASSERT_EQ(output.error(), 22);
+}
+
 } // namespace TW::TheOpenNetwork::tests

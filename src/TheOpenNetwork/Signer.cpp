@@ -13,19 +13,7 @@
 
 namespace TW::TheOpenNetwork {
 
-Data Signer::createTransferMessage(const PublicKey& publicKey, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
-    std::unique_ptr<Wallet> wallet;
-    const int8_t workchainId = WorkchainType::Basechain;
-
-    switch (transfer.wallet_version()) {
-    case Proto::WalletVersion::WALLET_V4_R2: {
-        wallet = std::make_unique<WalletV4R2>(publicKey, workchainId);
-        break;
-    }
-    default:
-        throw std::invalid_argument("Unsupported wallet version");
-    }
-
+Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
     const auto msg = wallet->createTransferMessage(
         privateKey,
         Address(transfer.dest()),
@@ -52,8 +40,19 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         const auto& transfer = input.transfer();
 
         try {
-            const auto& transferMessage = Signer::createTransferMessage(publicKey, privateKey, transfer);
-            protoOutput.set_encoded(TW::Base64::encode(transferMessage));
+            switch (transfer.wallet_version()) {
+            case Proto::WalletVersion::WALLET_V4_R2: {
+                const int8_t workchainId = WorkchainType::Basechain;
+                auto wallet = std::make_shared<WalletV4R2>(publicKey, workchainId);
+                const auto& transferMessage = Signer::createTransferMessage(wallet, privateKey, transfer);
+                protoOutput.set_encoded(TW::Base64::encode(transferMessage));
+                break;
+            }
+            default:
+                protoOutput.set_error(Common::Proto::Error_invalid_params);
+                protoOutput.set_error_message("Unsupported wallet version");
+                break;
+            }
         } catch (...) { }
         break;
     }
