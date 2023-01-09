@@ -108,6 +108,7 @@ class CoinAddressDerivationTests {
         APTOS -> assertEquals("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", address)
         HEDERA -> assertEquals("0.0.302a300506032b657003210049eba62f64d0d941045595d9433e65d84ecc46bcdb1421de55e05fcf2d8357d5", address)
         SECRET -> assertEquals("secret1f69sk5033zcdr2p2yf3xjehn7xvgdeq09d2llh", address)
+        NATIVEINJECTIVE -> assertEquals("inj13u6g7vqgw074mgmf2ze2cadzvkz9snlwcrtq8a", address)
         AGORIC -> assertEquals("agoric18zvvgk6j3eq5wd7mqxccgt20gz2w94cy88aek5", address)
     }
 }

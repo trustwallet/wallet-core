@@ -2911,5 +2911,35 @@
       "rpc": "https://agoric-rpc.polkachu.com",
       "documentation": "https://docs.agoric.com"
     }
+  },
+  {
+    "id": "nativeinjective",
+    "name": "NativeInjective",
+    "displayName": "Native Injective",
+    "coinId": 10000060,
+    "symbol": "INJ",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "hrp": "inj",
+    "addressHasher": "keccak256",
+    "chainId": "injective-1",
+    "explorer": {
+      "url": "https://www.mintscan.io/injective",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "C5F6A4FF9DF1AE9FF543D2CEBD8E3E9B04290B2445F9D91D7707EDBF4B7EE16B",
+      "sampleAccount": "inj1xmpkmxr4as00em23tc2zgmuyy2gr4h3wgcl6vd"
+    },
+    "info": {
+      "url": "https://injective.com",
+      "documentation": "https://docs.injective.network"
+    }
   }
 ]

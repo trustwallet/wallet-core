@@ -258,6 +258,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeSecret:
             EXPECT_EQ(address, "secret1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0m7t23a");
             break;
+        case TWCoinTypeNativeInjective:
+            EXPECT_EQ(address, "inj1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0knl55v");
+            break;
         case TWCoinTypeAgoric:
             EXPECT_EQ(address, "agoric1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0txauuh");
             break;
