@@ -22,6 +22,7 @@ namespace TW::Bitcoin {
 
 TEST(GroestlcoinSigning, SignP2WPKH) {
     Proto::SigningInput input;
+    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);
@@ -64,6 +65,7 @@ TEST(GroestlcoinSigning, SignP2WPKH) {
 
 TEST(GroestlcoinSigning, SignP2PKH) {
     Proto::SigningInput input;
+    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);
@@ -107,6 +109,7 @@ TEST(GroestlcoinSigning, SignP2PKH) {
 TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
     // TX outputs
     Proto::SigningInput input;
+    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(5'000);
     input.set_byte_fee(1);
@@ -159,6 +162,7 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
 
 TEST(GroestlcoinSigning, PlanP2WPKH) {
     Proto::SigningInput input;
+    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);
