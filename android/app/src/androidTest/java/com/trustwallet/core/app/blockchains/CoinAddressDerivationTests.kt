@@ -75,6 +75,7 @@ class CoinAddressDerivationTests {
         QTUM -> assertEquals("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
         NULS -> assertEquals("NULSd6HgU8MoRnNjBgvJpa9tqvGxYdv5ne4en", address)
         EOS -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)
+        WAX -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)
         IOTEX -> assertEquals("io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk", address)
         ZILLIQA -> assertEquals("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6", address)
         ZELCASH -> assertEquals("t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf", address)
