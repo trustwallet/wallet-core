@@ -12,8 +12,8 @@ namespace TW::Elrond {
 
 /// A "NetworkConfig" object holds the network parameters relevant to creating transactions (e.g. minimum gas limit, minimum gas price).
 class NetworkConfig {
-    /// The following fields can (should) be fetched from https://api.elrond.com/network/config.
-    /// However, a "NetworkConfig" object is initialized with proper default values for Elrond Mainnet (as of December 2021).
+    /// The following fields can (should) be fetched from https://api.multiversx.com/network/config.
+    /// However, a "NetworkConfig" object is initialized with proper default values for Mainnet (as of December 2021).
     std::string chainId;
     uint32_t gasPerDataByte;
     uint32_t minGasLimit;

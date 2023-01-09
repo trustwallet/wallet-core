@@ -80,7 +80,7 @@ TEST(ElrondSigner, SignGenericActionUnDelegate) {
                                     })"_json;
     assertJSONEqual(expected, nlohmann::json::parse(encoded));
     ASSERT_EQ(expectedSignature, signature);
-    // Successfully broadcasted https://explorer.elrond.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
+    // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
 }
 
 TEST(ElrondSigner, SignGenericActionRedelegateRewards) {
@@ -226,7 +226,7 @@ TEST(ElrondSigner, SignGenericActionDelegate) {
                                     })"_json;
     assertJSONEqual(expected, nlohmann::json::parse(encoded));
     ASSERT_EQ(expectedSignature, signature);
-    // Successfully broadcasted https://explorer.elrond.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
+    // Successfully broadcasted https://explorer.multiversx.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
 }
 
 TEST(ElrondSigner, SignGenericActionJSON) {
