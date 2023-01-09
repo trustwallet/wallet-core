@@ -71,10 +71,10 @@ This list is generated from [./registry.json](../registry.json)
 | 3030    | Hedera           | HBAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hedera/info/logo.png" width="32" />       | <https://hedera.com/>         |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nuls/info/logo.png" width="32" />         | <https://nuls.io>             |
+| 14001   | WAX              | WAXP   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wax/info/logo.png" width="32" />          | <http://wax.io>               |
 | 18000   | Meter            | MTR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/meter/info/logo.png" width="32" />        | <https://meter.io/>           |
 | 19167   | Flux             | FLUX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://runonflux.io>        |
 | 52752   | Celo             | CELO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/celo/info/logo.png" width="32" />         | <https://celo.org>            |
-| 194001  | WAX              | WAXP   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wax/info/logo.png" width="32" />          | <http://wax.io>               |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
 | 10000025 | Cronos Chain     | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cronos/info/logo.png" width="32" />       | <https://cronos.org>          |

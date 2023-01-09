@@ -29,7 +29,7 @@ TEST(TWAnySignerWAX, Sign) {
 
     auto& asset = *input.mutable_asset();
     asset.set_amount(100000000);
-    asset.set_decimals(8);
+    asset.set_decimals(4);
     asset.set_symbol("WAX");
 
     input.set_chain_id(chainId.data(), chainId.size());
@@ -48,7 +48,8 @@ TEST(TWAnySignerWAX, Sign) {
         ANY_SIGN(input, TWCoinTypeEOS);
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
-        EXPECT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"3aed9163daae68398c5b000000000100a6823403ea3055000000572d3ccdcd012019682ad940458100000000a8ed3232362019682ad9404581201938fdef7aa34000e1f5050000000008574158000000001573656e742066726f6d2077616c6c65742d636f726500","signatures":["SIG_K1_KZoLDz11BeqFTojsifxZkxwP2zX2G3PAJvXm4bfjtkHHXtNv6hioALVa3ntoKJw5wLG4KdE5gaE4BHgmqoEf89f5YECS6T"]})");
+        auto expected = R"({"compression":"none","packed_context_free_data":"","packed_trx":"3aed9163daae68398c5b000000000100a6823403ea3055000000572d3ccdcd012019682ad940458100000000a8ed3232362019682ad9404581201938fdef7aa34000e1f5050000000004574158000000001573656e742066726f6d2077616c6c65742d636f726500","signatures":["SIG_K1_KAroa9t89dpujjfBgBMgDcZrVhML5yP7iFk5sGNnNqbT4SxTCLqjQwwLZDi1ryx4W7Hy9DE9p1MqUSFVKeY8NtKyiySFjE"]})";
+        EXPECT_EQ(output.json_encoded(), expected);
     }
 }
 
