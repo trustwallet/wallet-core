@@ -9,6 +9,9 @@
 #include "Coin.h"
 #include <TrustWalletCore/TWCoinType.h>
 
+// ATOM
+#include "Cosmos/Address.h"
+#include "../proto/Cosmos.pb.h"
 // BTC
 #include "Bitcoin/SigHashType.h"
 #include "../proto/Bitcoin.pb.h"
@@ -56,6 +59,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeBitcoinCash;
     case Chain::LTC:
         return TWCoinTypeLitecoin;
+    case Chain::ATOM:
+        return TWCoinTypeCosmos;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -76,6 +81,8 @@ std::string chainName(Chain chain) {
         return "BCH";
     case Chain::LTC:
         return "LTC";
+    case Chain::ATOM:
+        return "ATOM";
     case Chain::THOR:
     default:
         return "THOR";
@@ -108,6 +115,8 @@ SwapBundled SwapBuilder::build(bool shortened) {
         return buildBitcoin(fromAmountNum, memo, fromChain);
     case Chain::BNB:
         return buildBinance(mFromAsset, fromAmountNum, memo);
+    case Chain::ATOM:
+        return buildAtom(fromAmountNum, memo);
     case Chain::ETH:
         return buildEth(fromAmountNum, memo);
     }
@@ -254,4 +263,32 @@ SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     out.insert(out.end(), serialized.begin(), serialized.end());
     return {.out = std::move(out)};
 }
+
+SwapBundled SwapBuilder::buildAtom(uint64_t amount, const std::string& memo) {
+    if (!Cosmos::Address::isValid(mVaultAddress, "cosmos")) {
+        return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
+    }
+    Data out;
+
+    auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo(memo);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_send_coins_message();
+
+    message.set_from_address(mFromAddress);
+    message.set_to_address(mVaultAddress);
+
+    auto amountOfTx = message.add_amounts();
+    amountOfTx->set_denom("uatom");
+    amountOfTx->set_amount(std::to_string(amount));
+
+    auto serialized = input.SerializeAsString();
+    out.insert(out.end(), serialized.begin(), serialized.end());
+
+    return {.out = std::move(out)};
+}
+
 } // namespace TW::THORChainSwap

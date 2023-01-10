@@ -13,6 +13,7 @@
 #include "Ethereum/Address.h"
 #include "THORChain/Swap.h"
 #include "proto/Binance.pb.h"
+#include "proto/Cosmos.pb.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/THORChainSwap.pb.h"
@@ -371,6 +372,56 @@ TEST(THORChainSwap, SwapBtcBnb) {
     // https://blockchair.com/bitcoin/transaction/1cd9056b212b85d9d7d34d0795a746dd8691b8cd34ef56df0aa9622fbdec5f88
     // https://viewblock.io/thorchain/tx/1CD9056B212B85D9D7D34D0795A746DD8691B8CD34EF56DF0AA9622FBDEC5F88
     // https://explorer.binance.org/tx/8D78469069118E9B9546696214CCD46E63D3FA0D7E854C094D63C8F6061278B7
+}
+
+TEST(THORChainSwap, SwapAtomBnb) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ATOM));
+    fromAsset.set_symbol("ATOM");
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+
+    auto && [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress("cosmos1v4e6vpehwrfez2dqepnw9g6t4fl83xzegd5ac9")
+                                         .toAddress("bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2")
+                                         .vault("cosmos154t5ycejlr7ax3ynmed9z05yg5a27y9u6pj5hq")
+                                         .fromAmount("300000")
+                                         .toAmountLimit("819391")
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "08011a0b636f736d6f736875622d342a3f3d3a424e422e424e423a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872323a3831393339313a743a3042710a6f0a2d636f736d6f73317634653676706568777266657a32647165706e773967367434666c3833787a65676435616339122d636f736d6f7331353474357963656a6c7237617833796e6d6564397a303579673561323779397536706a3568711a0f0a057561746f6d1206333030303030");
+
+    auto tx = Cosmos::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+    ASSERT_EQ(tx.memo(), "=:BNB.BNB:bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2:819391:t:0");
+
+    auto& fee = *tx.mutable_fee();
+    fee.set_gas(200000);
+    auto& fee_amount = *fee.add_amounts();
+    fee_amount.set_denom("uatom");
+    fee_amount.set_amount("500");
+
+
+    tx.set_account_number(1483163);
+    tx.set_sequence(1);
+
+    auto privKey = parse_hex("3eed3f32b8ba90e579ba46f37e7445fb4b34558306aa5bc32c525a93dff486e7");
+    tx.set_private_key(privKey.data(), privKey.size());
+
+    Cosmos::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeCosmos);
+    EXPECT_EQ(output.error(), "");
+    ASSERT_EQ(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"CtMBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczF2NGU2dnBlaHdyZmV6MmRxZXBudzlnNnQ0Zmw4M3h6ZWdkNWFjORItY29zbW9zMTU0dDV5Y2VqbHI3YXgzeW5tZWQ5ejA1eWc1YTI3eTl1NnBqNWhxGg8KBXVhdG9tEgYzMDAwMDASPz06Qk5CLkJOQjpibmIxczRrYWxseG5ncHlzcHptNm5yZXprbWw5cmd5dzZreHB3NGZocjI6ODE5MzkxOnQ6MBJmClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDmmNIYBvR9bnOloFEMOWdk9DHYIGe7naW0T19y+/k1SUSBAoCCAEYARISCgwKBXVhdG9tEgM1MDAQwJoMGkCFqUWtDu0pn1P/cnVQnIJIWF8HFJn/xkJh55Mc7ZLVPF60uXYUOg8nNkt0IQPuTFREw32/yff6lmA5w6KwPen/\"}");
+
+    // https://viewblock.io/thorchain/tx/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50
+    // https://www.mintscan.io/cosmos/txs/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50
+    // https://binance.mintscan.io/txs/2C97061737B16B234990B9B18A2BF65F7C7418FF9E39A68E634C832E4E4C59CE
 }
 
 Data SwapTest_ethAddressStringToData(const std::string& asString) {
