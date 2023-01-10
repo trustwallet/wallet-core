@@ -1368,7 +1368,7 @@
     "explorer": {
       "url": "https://explorer.multiversx.com",
       "txPath": "/transactions/",
-      "accountPath": "/address/"
+      "accountPath": "/accounts/"
     },
     "info": {
       "url": "https://multiversx.com/",
