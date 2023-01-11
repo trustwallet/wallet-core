@@ -49,6 +49,8 @@ TWCoinType chainCoinType(Chain chain) {
     switch (chain) {
     case Chain::ETH:
         return TWCoinTypeEthereum;
+    case Chain::AVAX:
+        return TWCoinTypeAvalancheCChain;
     case Chain::BNB:
         return TWCoinTypeBinance;
     case Chain::BTC:
@@ -69,6 +71,8 @@ TWCoinType chainCoinType(Chain chain) {
 
 std::string chainName(Chain chain) {
     switch (chain) {
+    case Chain::AVAX:
+        return "AVAX";
     case Chain::ETH:
         return "ETH";
     case Chain::BNB:
@@ -118,6 +122,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
     case Chain::ATOM:
         return buildAtom(fromAmountNum, memo);
     case Chain::ETH:
+    case Chain::AVAX:
         return buildEth(fromAmountNum, memo);
     }
     default:
