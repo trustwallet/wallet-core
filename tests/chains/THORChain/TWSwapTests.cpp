@@ -144,7 +144,7 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     // invoke swap
     const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
     const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
-    EXPECT_EQ(outputData.size(), 79ul);
+    EXPECT_EQ(outputData.size(), 141ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -171,7 +171,7 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     // sign and encode resulting input
     Ethereum::Proto::SigningOutput output;
     ANY_SIGN(txInput, TWCoinTypeEthereum);
-    EXPECT_EQ(hex(output.encoded()), "02f86a0103808083013880941091c4de6a3cf09cda00abdaed42c7c3b69c83ec87b1a2bc2ec5000080c001a0034ad8fc5077a456c6fa8089e2797f76c149be9e325f74230c6f5c67255863c3a02d599b13813e34dd736d2e0509499746d5244048525231d8c92fe2b2458da794");
+    EXPECT_EQ(hex(output.encoded()), "02f8a60103808083013880941091c4de6a3cf09cda00abdaed42c7c3b69c83ec87b1a2bc2ec50000b83b3d3a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a363030303033c080a00d605807f983650fafbfdcf0c33bdf0c524c7185eae8c1501ae24892faf16b1ba03b51b0a35e4754ab21d1e48fed635d8486048df50c253ba9af4cebdb6a92a450");
 }
 
 TEST(TWTHORChainSwap, SwapBnbBtc) {

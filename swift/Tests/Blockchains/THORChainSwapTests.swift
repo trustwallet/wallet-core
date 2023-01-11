@@ -36,7 +36,7 @@ class THORSwapTests: XCTestCase {
 
         // invoke swap
         let outputData = THORChainSwap.buildSwap(input: inputSerialized)
-        XCTAssertEqual(outputData.count, 79)
+        XCTAssertEqual(outputData.count, 192)
 
         // parse result in proto
         let outputProto = try THORChainSwapSwapOutput(serializedData: outputData)
@@ -55,7 +55,7 @@ class THORSwapTests: XCTestCase {
         // sign and encode resulting input
         let output: EthereumSigningOutput = AnySigner.sign(input: txInput, coin: .ethereum)
 
-        XCTAssertEqual(output.encoded.hexString, "02f86a0103808083013880941091c4de6a3cf09cda00abdaed42c7c3b69c83ec87b1a2bc2ec5000080c001a0034ad8fc5077a456c6fa8089e2797f76c149be9e325f74230c6f5c67255863c3a02d599b13813e34dd736d2e0509499746d5244048525231d8c92fe2b2458da794")
+        XCTAssertEqual(output.encoded.hexString, "02f8d90103808083013880941091c4de6a3cf09cda00abdaed42c7c3b69c83ec87b1a2bc2ec50000b86e3d3a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3630303030333a7474686f7231716c3274637179727173676e716c32746371796a326e386b66646d74396c6830797a716c32746371793a3130c001a05c16871b66fd0fa8f658d6f171310bab332d09e0533d6c97329a59ddc93a9a11a05ed2be94e6dbb640e58920c8be4fa597cd5f0a918123245acb899042dd43777f")
     }
 
     func testSignerBnbBtc() throws {

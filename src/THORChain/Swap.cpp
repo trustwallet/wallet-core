@@ -7,6 +7,7 @@
 #include "Swap.h"
 
 #include "Coin.h"
+#include "HexCoding.h"
 #include <TrustWalletCore/TWCoinType.h>
 
 // ATOM
@@ -271,7 +272,7 @@ SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
         auto& transfer = *input.mutable_transaction()->mutable_transfer();
         Data amountData = store(uint256_t(amount));
         transfer.set_amount(amountData.data(), amountData.size());
-        transfer.set_data(Data().data(), 0);
+        transfer.set_data(memo.data(), memo.size());
     }
 
     auto serialized = input.SerializeAsString();
