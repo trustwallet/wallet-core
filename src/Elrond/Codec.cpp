@@ -25,7 +25,7 @@ std::string Codec::encodeBigInt(const std::string& value) {
     return encodeBigInt(uint256_t(value));
 }
 
-// For reference, see https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/#arbitrary-width-big-numbers.
+// For reference, see https://docs.multiversx.com/developers/developer-reference/elrond-serialization-format/#arbitrary-width-big-numbers.
 std::string Codec::encodeBigInt(uint256_t value) {
     std::string encoded = hex(store(value));
     return encoded;

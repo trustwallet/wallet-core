@@ -1352,6 +1352,7 @@
   {
     "id": "elrond",
     "name": "Elrond",
+    "displayName": "MultiversX",
     "coinId": 508,
     "symbol": "eGLD",
     "decimals": 18,
@@ -1365,15 +1366,15 @@
     "publicKeyType": "ed25519",
     "hrp": "erd",
     "explorer": {
-      "url": "https://explorer.elrond.com",
+      "url": "https://explorer.multiversx.com",
       "txPath": "/transactions/",
-      "accountPath": "/address/"
+      "accountPath": "/accounts/"
     },
     "info": {
-      "url": "https://elrond.com/",
-      "source": "https://github.com/ElrondNetwork/elrond-go",
-      "rpc": "https://api.elrond.com",
-      "documentation": "https://docs.elrond.com"
+      "url": "https://multiversx.com/",
+      "source": "https://github.com/multiversx/mx-chain-go",
+      "rpc": "https://api.multiversx.com",
+      "documentation": "https://docs.multiversx.com"
     }
   },
   {

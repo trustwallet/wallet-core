@@ -15,9 +15,9 @@
 
 TEST(TWElrondCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeElrond));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("1fc9785cb8bea0129a16cf7bddc97630c176a556ea566f0e72923c882b5cb3c8"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("163b46551a74626415074b626d2f37d3c78aef0f6ccb628db434ee65a35ea127"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeElrond, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("erd12yne790km8ezwetkz7m3hmqy9utdc6vdkgsunfzpwguec6v04p2qtk9uqj"));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeElrond, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeElrond));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeElrond));
@@ -27,8 +27,8 @@ TEST(TWElrondCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeElrond));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeElrond));
     assertStringsEqual(symbol, "eGLD");
-    assertStringsEqual(txUrl, "https://explorer.elrond.com/transactions/1fc9785cb8bea0129a16cf7bddc97630c176a556ea566f0e72923c882b5cb3c8");
-    assertStringsEqual(accUrl, "https://explorer.elrond.com/address/erd12yne790km8ezwetkz7m3hmqy9utdc6vdkgsunfzpwguec6v04p2qtk9uqj");
+    assertStringsEqual(txUrl, "https://explorer.multiversx.com/transactions/163b46551a74626415074b626d2f37d3c78aef0f6ccb628db434ee65a35ea127");
+    assertStringsEqual(accUrl, "https://explorer.multiversx.com/accounts/erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     assertStringsEqual(id, "elrond");
-    assertStringsEqual(name, "Elrond");
+    assertStringsEqual(name, "MultiversX");
 }
