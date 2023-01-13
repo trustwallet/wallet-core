@@ -8,27 +8,53 @@
 #include <HexCoding.h>
 #include <Ethereum/EIP1014.h>
 #include <Ethereum/AddressChecksum.h>
+#include <TrustWalletCore/TWEthereumEip1014.h>
+#include <TrustWalletCore/TWHash.h>
 #include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
 namespace TW::Ethereum::tests {
     TEST(EthereumEip1014, Example0) {
-        const std::string& from = "0x0000000000000000000000000000000000000000";
-        const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
-        Data initCodeHash = Hash::keccak256(parse_hex("0x00"));
-        const auto& addressData = Ethereum::create2Address(from, salt, initCodeHash);
-        ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38");
-        ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38");
+        // C++
+        {
+            const std::string& from = "0x0000000000000000000000000000000000000000";
+            const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
+            Data initCodeHash = Hash::keccak256(parse_hex("0x00"));
+            const auto& addressData = Ethereum::create2Address(from, salt, initCodeHash);
+            ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38");
+            ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38");
+        }
+
+        // C
+        {
+            const auto from = STRING("0x0000000000000000000000000000000000000000");
+            const auto salt = DATA("0x0000000000000000000000000000000000000000000000000000000000000000");
+            const auto initCodeHash = WRAPD(TWHashKeccak256(DATA("0x00").get()));
+            const auto& result = WRAPS(TWEthereumEip1014Create2Address(from.get(), salt.get(), initCodeHash.get()));
+            assertStringsEqual(result, "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38");
+        }
     }
 
     TEST(EthereumEip1014, Example1) {
-        const std::string& from = "0xdeadbeef00000000000000000000000000000000";
-        const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
-        Data initCodeHash = Hash::keccak256(parse_hex("0x00"));
-        const auto& addressData = Ethereum::create2Address(from, salt, initCodeHash);
-        ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0xB928f69Bb1D91Cd65274e3c79d8986362984fDA3");
-        ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0xB928f69Bb1D91Cd65274e3c79d8986362984fDA3");
+        // C++
+        {
+            const std::string& from = "0xdeadbeef00000000000000000000000000000000";
+            const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
+            Data initCodeHash = Hash::keccak256(parse_hex("0x00"));
+            const auto& addressData = Ethereum::create2Address(from, salt, initCodeHash);
+            ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0xB928f69Bb1D91Cd65274e3c79d8986362984fDA3");
+            ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0xB928f69Bb1D91Cd65274e3c79d8986362984fDA3");
+        }
+
+        // C
+        {
+            const auto from = STRING("0xdeadbeef00000000000000000000000000000000");
+            const auto salt = DATA("0x0000000000000000000000000000000000000000000000000000000000000000");
+            const auto initCodeHash = WRAPD(TWHashKeccak256(DATA("0x00").get()));
+            const auto& result = WRAPS(TWEthereumEip1014Create2Address(from.get(), salt.get(), initCodeHash.get()));
+            assertStringsEqual(result, "0xB928f69Bb1D91Cd65274e3c79d8986362984fDA3");
+        }
     }
 
     TEST(EthereumEip1014, Example2) {
