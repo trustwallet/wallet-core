@@ -10,7 +10,7 @@
 
 #include <string>
 
-TWString* TWEthereumEip1014Create2Address(TWString* _Nonnull fromEthAddress, TWData* _Nonnull salt, TWData* _Nonnull initCodeHash) {
+TWString* TWEthereumEip1014AddressCreate2(TWString* _Nonnull fromEthAddress, TWData* _Nonnull salt, TWData* _Nonnull initCodeHash) {
     const auto& ethAddressStr = *reinterpret_cast<const std::string*>(fromEthAddress);
     const auto& saltData = *reinterpret_cast<const TW::Data*>(salt);
     const auto& initCodeHashData = *reinterpret_cast<const TW::Data*>(initCodeHash);

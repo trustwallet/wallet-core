@@ -31,7 +31,7 @@ namespace TW::Ethereum::tests {
             const auto from = STRING("0x0000000000000000000000000000000000000000");
             const auto salt = DATA("0x0000000000000000000000000000000000000000000000000000000000000000");
             const auto initCodeHash = WRAPD(TWHashKeccak256(DATA("0x00").get()));
-            const auto& result = WRAPS(TWEthereumEip1014Create2Address(from.get(), salt.get(), initCodeHash.get()));
+            const auto& result = WRAPS(TWEthereumEip1014AddressCreate2(from.get(), salt.get(), initCodeHash.get()));
             assertStringsEqual(result, "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38");
         }
     }
@@ -52,7 +52,7 @@ namespace TW::Ethereum::tests {
             const auto from = STRING("0xdeadbeef00000000000000000000000000000000");
             const auto salt = DATA("0x0000000000000000000000000000000000000000000000000000000000000000");
             const auto initCodeHash = WRAPD(TWHashKeccak256(DATA("0x00").get()));
-            const auto& result = WRAPS(TWEthereumEip1014Create2Address(from.get(), salt.get(), initCodeHash.get()));
+            const auto& result = WRAPS(TWEthereumEip1014AddressCreate2(from.get(), salt.get(), initCodeHash.get()));
             assertStringsEqual(result, "0xB928f69Bb1D91Cd65274e3c79d8986362984fDA3");
         }
     }
