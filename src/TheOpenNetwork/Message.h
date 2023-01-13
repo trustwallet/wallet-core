@@ -6,12 +6,11 @@
 
 #pragma once
 
-#include "Address.h"
-#include "CommonTON/Messages.h"
+#include "Everscale/CommonTON/Messages.h"
 
 using namespace TW::CommonTON;
 
-namespace TW::Everscale {
+namespace TW::TheOpenNetwork {
 
 class Message {
 private:
@@ -19,10 +18,11 @@ private:
 
 public:
     explicit Message(MessageData messageData) : _messageData(std::move(messageData)) {}
+
     [[nodiscard]] Cell::Ref intoCell() const;
+
+    inline void setBody(const Cell::Ref& body) { _messageData.body = body; }
+    inline void setStateInit(const StateInit& stateInit) { _messageData.init = stateInit; }
 };
 
-MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount,
-                                uint32_t expiredAt, Address destination, const Cell::Ref& contractData);
-
-} // namespace TW::Everscale
+} // namespace TW::TheOpenNetwork

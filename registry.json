@@ -2942,5 +2942,33 @@
       "url": "https://injective.com",
       "documentation": "https://docs.injective.network"
     }
+  },
+  {
+    "id": "ton",
+    "name": "TON",
+    "coinId": 607,
+    "symbol": "TON",
+    "decimals": 9,
+    "blockchain": "The Open Network",
+    "derivation": [
+      {
+        "path": "m/44'/607'/0'"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://tonscan.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs=",
+      "sampleAccount": "EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N"
+    },
+    "info": {
+      "url": "https://ton.org",
+      "source": "https://github.com/ton-blockchain",
+      "rpc": "https://toncenter.com/api/v2/jsonRPC",
+      "documentation": "https://ton.org/docs"
+    }
   }
 ]

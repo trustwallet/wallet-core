@@ -13,9 +13,9 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include "Data.h"
-#include "../Hash.h"
+#include "Hash.h"
 
-namespace TW::Everscale {
+namespace TW::CommonTON {
 
 class Cell {
 public:
@@ -63,4 +63,4 @@ public:
     }
 };
 
-} // namespace TW::Everscale
+} // namespace TW::CommonTON

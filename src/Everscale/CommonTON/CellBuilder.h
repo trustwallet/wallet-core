@@ -13,7 +13,7 @@
 #include "Cell.h"
 #include "CellSlice.h"
 
-namespace TW::Everscale {
+namespace TW::CommonTON {
 
 class CellBuilder {
     uint16_t bitLen = 0;
@@ -52,4 +52,4 @@ private:
     static void encode128BE(const uint128_t& value, Data& data);
 };
 
-} // namespace TW::Everscale
+} // namespace TW::CommonTON

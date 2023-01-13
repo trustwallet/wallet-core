@@ -5,15 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Base64.h"
-#include "Everscale/Cell.h"
-#include "Everscale/Wallet.h"
 #include "HexCoding.h"
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
+
+#include "Everscale/CommonTON/Cell.h"
+#include "Everscale/Wallet.h"
+
 #include <gtest/gtest.h>
 #include <vector>
-
-using namespace TW;
 
 namespace TW::Everscale {
 

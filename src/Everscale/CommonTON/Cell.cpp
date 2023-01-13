@@ -11,14 +11,14 @@
 #include <optional>
 #include <unordered_map>
 
-#include "../BinaryCoding.h"
+#include "BinaryCoding.h"
 
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
 
 using namespace TW;
 
-namespace TW::Everscale {
+namespace TW::CommonTON {
 
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
@@ -397,4 +397,4 @@ void Cell::finalize() {
     finalized = true;
 }
 
-} // namespace TW::Everscale
+} // namespace TW::CommonTON

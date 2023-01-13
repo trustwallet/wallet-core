@@ -409,4 +409,11 @@ TEST(Coin, ValidateAddressEverscale) {
     ASSERT_EQ(normalizeAddress(TWCoinTypeEverscale, "0:83A0352908060FA87839195D8A763A8D9AB28F8FA41468832B398A719CC6469A"), "0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
 }
 
+TEST(Coin, ValidateAddressTheOpenNetwork) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeTON, "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeTON, "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"), "EQCKhieGGl3ZbJ2zzggHsSLaXtRzk0znVopbSxw2HLsorkdl");
+}
+
 } // namespace TW

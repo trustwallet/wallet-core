@@ -10,6 +10,9 @@
 
 namespace TW::Base64 {
 
+// Checks if as string is in Base64-format or Base64Url-format
+bool isBase64orBase64Url(const std::string& val);
+
 // Decode a Base64-format string
 Data decode(const std::string& val);
 

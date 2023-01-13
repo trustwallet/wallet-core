@@ -7,25 +7,20 @@
 #pragma once
 
 #include "Data.h"
-#include "../PublicKey.h"
+#include "PublicKey.h"
+
+#include "CommonTON/RawAddress.h"
 
 #include <optional>
 #include <string>
 
 namespace TW::Everscale {
 
+using AddressData = CommonTON::AddressData;
+
 class Address {
 public:
-    /// Number of bytes in an address
-    static const size_t size = Hash::sha256Size;
-
-    /// Hex address length
-    static const size_t hexAddrLen = size * 2;
-
-    /// Workchain ID (-1 for masterchain, 0 for base workchain)
-    std::int8_t workchainId;
-    /// StateInit hash
-    std::array<byte, size> hash{};
+    AddressData addressData;
 
     /// Determines whether a string makes a valid address.
     [[nodiscard]] static bool isValid(const std::string& string) noexcept;
@@ -37,15 +32,19 @@ public:
     explicit Address(const PublicKey& publicKey, int8_t workchainId);
 
     /// Initializes an Everscale address with its parts
-    explicit Address(int8_t workchainId, std::array<byte, size> hash)
-        : workchainId(workchainId), hash(hash) {}
+    explicit Address(int8_t workchainId, std::array<byte, AddressData::size> hash)
+        : addressData(workchainId, hash) {}
+
+    /// Initializes an Everscale address with AddressData
+    explicit Address(AddressData addressData)
+        : addressData(addressData) {}
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.workchainId == rhs.workchainId && lhs.hash == rhs.hash;
+    return lhs.addressData.workchainId == rhs.addressData.workchainId && lhs.addressData.hash == rhs.addressData.hash;
 }
 
 } // namespace TW::Everscale

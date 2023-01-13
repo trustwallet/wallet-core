@@ -8,13 +8,12 @@
 #include "HexCoding.h"
 #include "PublicKey.h"
 
-#include "Everscale/Cell.h"
-#include "Everscale/CellBuilder.h"
+#include "Everscale/CommonTON/Cell.h"
+#include "Everscale/CommonTON/CellBuilder.h"
 #include "Everscale/Wallet.h"
 
 #include <gtest/gtest.h>
 
-using namespace TW;
 using boost::multiprecision::uint128_t;
 
 namespace TW::Everscale {

@@ -17,6 +17,15 @@
 
 namespace TW {
 
+inline bool is_hex_encoded(const std::string& s)
+{
+    bool with_0x = s.compare(0, 2, "0x") == 0
+           && s.size() > 2
+           && s.find_first_not_of("0123456789abcdefABCDEF", 2) == std::string::npos;
+    bool without_0x = s.find_first_not_of("0123456789abcdefABCDEF") == std::string::npos;
+    return with_0x || without_0x;
+}
+
 std::tuple<uint8_t, bool> value(uint8_t c);
 
 /// Converts a range of bytes to a hexadecimal string representation.
