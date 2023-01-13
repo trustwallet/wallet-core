@@ -8,7 +8,6 @@
 #include "AddressChecksum.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include <iostream>
 
 namespace TW::Ethereum {
 
