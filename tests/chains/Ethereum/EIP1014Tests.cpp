@@ -101,7 +101,7 @@ namespace TW::Ethereum::tests {
         ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0xE33C0C7F7df4809055C3ebA6c09CFe4BaF1BD9e0");
         ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0xE33C0C7F7df4809055C3ebA6c09CFe4BaF1BD9e0");
     }
-    
+
     TEST(EthereumEip1014, Example7) {
         const std::string& from = "0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47";
         const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
