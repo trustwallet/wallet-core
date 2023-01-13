@@ -760,6 +760,32 @@
     }
   },
   {
+    "id": "wax",
+    "name": "WAX",
+    "coinId": 14001,
+    "symbol": "WAXP",
+    "decimals": 4,
+    "blockchain": "EOS",
+    "derivation": [
+      {
+        "path": "m/44'/194'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "explorer": {
+      "url": "https://wax.bloks.io",
+      "txPath": "/transaction/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "http://wax.io",
+      "source": "https://github.com/worldwide-asset-exchange/wax-blockchain",
+      "rpc": "https://wax.blacklusion.io",
+      "documentation": "https://https://developer.wax.io"
+    }
+  },
+  {
     "id": "tron",
     "name": "Tron",
     "coinId": 195,

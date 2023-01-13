@@ -145,6 +145,7 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "ecash:qz7eyzytkl5z6cg6nw20hd62pyyp22mcfuywezks2y");
             break;
         case TWCoinTypeEOS:
+        case TWCoinTypeWAX:
             EXPECT_EQ(address, "EOS5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
             break;
         case TWCoinTypeElrond:
