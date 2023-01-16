@@ -20,7 +20,7 @@ class TestEthereumMessageSigner {
         val privateKey = PrivateKey(data)
         val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
         val msg = "Only sign this request if you’ve initiated an action with Immutable X.\n\nFor internal use:\nbd717ba31dca6e0f3f136f7c4197babce5f09a9f25176044c0b3112b1b6017a3"
-        val signature = EthereumMessageSigner.signMessage(privateKey, msg)
+        val signature = EthereumMessageSigner.signMessageImmutableX(privateKey, msg)
         assertEquals(signature, "32cd5a58f3419fc5db672e3d57f76199b853eda0856d491b38f557b629b0a0814ace689412bf354a1af81126d2749207dffae8ae8845160f33948a6b787e17ee01");
         assertTrue(EthereumMessageSigner.verifyMessage(publicKey, msg, signature))
     }

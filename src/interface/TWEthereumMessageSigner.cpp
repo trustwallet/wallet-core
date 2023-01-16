@@ -8,13 +8,29 @@
 
 #include "Ethereum/EIP191.h"
 
-TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message) {
+namespace TW::internal {
+
+TWString* _Nonnull TWEthereumMessageSignerSignCommon(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message, Ethereum::MessageType msgType = Ethereum::MessageType::Legacy, Ethereum::MessageSigner::MaybeChainId chainId = std::nullopt) {
     try {
-        const auto signature = TW::Ethereum::MessageSigner::signMessage(privateKey->impl, TWStringUTF8Bytes(message));
+        const auto signature = TW::Ethereum::MessageSigner::signMessage(privateKey->impl, TWStringUTF8Bytes(message), msgType, chainId);
         return TWStringCreateWithUTF8Bytes(signature.c_str());
     } catch (...) {
         return TWStringCreateWithUTF8Bytes("");
     }
+}
+
+} // namespace TW::internal
+
+TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message) {
+    return TW::internal::TWEthereumMessageSignerSignCommon(privateKey, message);
+}
+
+TWString* _Nonnull TWEthereumMessageSignerSignMessageImmutableX(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message) {
+    return TW::internal::TWEthereumMessageSignerSignCommon(privateKey, message, TW::Ethereum::MessageType::ImmutableX);
+}
+
+TWString* _Nonnull TWEthereumMessageSignerSignMessageEip155(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message, int chainId) {
+    return TW::internal::TWEthereumMessageSignerSignCommon(privateKey, message, TW::Ethereum::MessageType::Eip155, static_cast<std::size_t>(chainId));
 }
 
 bool TWEthereumMessageSignerVerifyMessage(const struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull message, TWString* _Nonnull signature) {

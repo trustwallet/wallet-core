@@ -23,9 +23,21 @@ Data generateMessage(const std::string& message) {
 
 namespace TW::Ethereum {
 
-std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message) {
+std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType, MaybeChainId chainId) {
     auto signableMessage = internal::generateMessage(message);
-    return hex(privateKey.sign(signableMessage, TWCurveSECP256k1));
+    auto data = privateKey.sign(signableMessage, TWCurveSECP256k1);
+    switch (msgType) {
+    case MessageType::ImmutableX:
+        break;
+    case MessageType::Legacy:
+        data[64] += 27;
+        break;
+    case MessageType::Eip155:
+        auto id = chainId.value_or(0);
+        data[64] += 35 + id * 2;
+        break;
+    }
+    return hex(data);
 }
 
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {
