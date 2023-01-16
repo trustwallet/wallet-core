@@ -13,7 +13,7 @@ class EthereumTests: XCTestCase {
         let address = "0x0000000000000000000000000000000000000000"
         let salt = Data(hexString: "0x0000000000000000000000000000000000000000000000000000000000000000")!
         let initCodeHash = Hash.keccak256(data: Data(hexString: "0x00")!)
-        let result = EthereumEip1014.addressCreate2(fromEthAddress: address, salt: salt, initCodeHash: initCodeHash)
+        let result = Ethereum.eip1014AddressCreate2(fromEthAddress: address, salt: salt, initCodeHash: initCodeHash)
         XCTAssertEqual(result, "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38")
     }
     

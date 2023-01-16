@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <PrivateKey.h>
-#include <HexCoding.h>
-#include <Ethereum/EIP1014.h>
-#include <Ethereum/AddressChecksum.h>
-#include <TrustWalletCore/TWEthereumEip1014.h>
-#include <TrustWalletCore/TWHash.h>
 #include "TestUtilities.h"
+#include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/TWHash.h>
+#include <Ethereum/AddressChecksum.h>
+#include <Ethereum/EIP1014.h>
+#include <HexCoding.h>
+#include <PrivateKey.h>
 
 #include <gtest/gtest.h>
 

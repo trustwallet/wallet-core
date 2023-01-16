@@ -6,7 +6,7 @@ import org.junit.Test
 import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType
 import org.junit.Assert.assertFalse
-import wallet.core.jni.EthereumEip1014
+import wallet.core.jni.Ethereum
 import wallet.core.jni.Hash
 
 class TestEthereumAddress {
@@ -20,7 +20,7 @@ class TestEthereumAddress {
         val from = "0x0000000000000000000000000000000000000000"
         val salt = Numeric.hexStringToByteArray("0x0000000000000000000000000000000000000000000000000000000000000000")
         val initCodeHash = Hash.keccak256(Numeric.hexStringToByteArray("0x0"))
-        val result = EthereumEip1014.addressCreate2(from, salt, initCodeHash)
+        val result = Ethereum.eip1014AddressCreate2(from, salt, initCodeHash)
         assertEquals(result, "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38")
     }
 
