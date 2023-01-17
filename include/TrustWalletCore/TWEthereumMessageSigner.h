@@ -21,6 +21,23 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_STRUCT
 struct TWEthereumMessageSigner;
 
+/// Sign a typed message EIP-712 V4.
+///
+/// \param privateKey: the private key used for signing
+/// \param messageJson: A custom typed data message in json
+/// \returns the signature, Hex-encoded. On invalid input empty string is returned. Returned object needs to be deleted after use.
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumMessageSignerSignTypedMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull messageJson);
+
+/// Sign a typed message EIP-712 V4 with EIP-155 replay attack protection.
+///
+/// \param privateKey: the private key used for signing
+/// \param messageJson: A custom typed data message in json
+/// \param chainId: chainId for eip-155 protection
+/// \returns the signature, Hex-encoded. On invalid input empty string is returned or invalid chainId error message. Returned object needs to be deleted after use.
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumMessageSignerSignTypedMessageEip155(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull messageJson, int chainId);
+
 /// Sign a message.
 ///
 /// \param privateKey: the private key used for signing

@@ -309,4 +309,74 @@ class EthereumTests: XCTestCase {
         let pubKey = privateKey.getPublicKey(coinType: .ethereum)
         XCTAssertTrue(EthereumMessageSigner.verifyMessage(pubKey: pubKey, message: msg, signature: signature))
     }
+    
+    func testMessageAndVerifySigner712Legacy() {
+        let privateKey = PrivateKey(data: Data(hexString: "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")!)!
+        let msg = """
+         {
+                        "types": {
+                            "EIP712Domain": [
+                                {"name": "name", "type": "string"},
+                                {"name": "version", "type": "string"},
+                                {"name": "chainId", "type": "uint256"},
+                                {"name": "verifyingContract", "type": "address"}
+                            ],
+                            "Person": [
+                                {"name": "name", "type": "string"},
+                                {"name": "wallet", "type": "address"}
+                            ]
+                        },
+                        "primaryType": "Person",
+                        "domain": {
+                            "name": "Ether Person",
+                            "version": "1",
+                            "chainId": 0,
+                            "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                        },
+                        "message": {
+                            "name": "Cow",
+                            "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                        }
+                    }
+        """
+        let signature = EthereumMessageSigner.signTypedMessage(privateKey: privateKey, messageJson: msg)
+        XCTAssertEqual(signature, "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf3761c")
+        let pubKey = privateKey.getPublicKey(coinType: .ethereum)
+        XCTAssertTrue(EthereumMessageSigner.verifyMessage(pubKey: pubKey, message: msg, signature: signature))
+    }
+    
+    func testMessageAndVerifySigner712Eip155() {
+        let privateKey = PrivateKey(data: Data(hexString: "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")!)!
+        let msg = """
+         {
+                        "types": {
+                            "EIP712Domain": [
+                                {"name": "name", "type": "string"},
+                                {"name": "version", "type": "string"},
+                                {"name": "chainId", "type": "uint256"},
+                                {"name": "verifyingContract", "type": "address"}
+                            ],
+                            "Person": [
+                                {"name": "name", "type": "string"},
+                                {"name": "wallet", "type": "address"}
+                            ]
+                        },
+                        "primaryType": "Person",
+                        "domain": {
+                            "name": "Ether Person",
+                            "version": "1",
+                            "chainId": 0,
+                            "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                        },
+                        "message": {
+                            "name": "Cow",
+                            "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                        }
+                    }
+        """
+        let signature = EthereumMessageSigner.signTypedMessageEip155(privateKey: privateKey, messageJson: msg, chainId: 0)
+        XCTAssertEqual(signature, "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf37624")
+        let pubKey = privateKey.getPublicKey(coinType: .ethereum)
+        XCTAssertTrue(EthereumMessageSigner.verifyMessage(pubKey: pubKey, message: msg, signature: signature))
+    }
 }
