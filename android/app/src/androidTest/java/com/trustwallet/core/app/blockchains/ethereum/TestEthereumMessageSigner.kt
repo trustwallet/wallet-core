@@ -37,6 +37,80 @@ class TestEthereumMessageSigner {
     }
 
     @Test
+    fun testEthereumSignAndVerifyMessage712Legacy() {
+        val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
+        val privateKey = PrivateKey(data)
+        val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
+        val msg = """
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 0,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            }
+        """.trimIndent()
+        val signature = EthereumMessageSigner.signTypedMessage(privateKey, msg)
+        assertEquals(signature, "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf3761c");
+        assertTrue(EthereumMessageSigner.verifyMessage(publicKey, msg, signature))
+    }
+
+    @Test
+    fun testEthereumSignAndVerifyMessage712Eip155() {
+        val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
+        val privateKey = PrivateKey(data)
+        val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
+        val msg = """
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 0,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            }
+        """.trimIndent()
+        val signature = EthereumMessageSigner.signTypedMessageEip155(privateKey, msg, 0)
+        assertEquals(signature, "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf37624");
+        assertTrue(EthereumMessageSigner.verifyMessage(publicKey, msg, signature))
+    }
+
+    @Test
     fun testEthereumSignAndVerifyMessageEip155() {
         val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
         val privateKey = PrivateKey(data)
