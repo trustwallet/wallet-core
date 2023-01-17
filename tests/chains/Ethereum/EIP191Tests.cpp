@@ -14,6 +14,106 @@
 #include <gtest/gtest.h>
 
 namespace TW::Ethereum {
+    TEST(EthereumEip712, SignMessageAndVerifyLegacy) {
+        PrivateKey ethKey(parse_hex("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d"));
+        auto msg = R"(
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 0,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            })";
+        auto signature = Ethereum::MessageSigner::signTypedData(ethKey, msg, MessageType::Legacy);
+        ASSERT_EQ(signature, "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf3761c");
+        auto pubKey = ethKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        ASSERT_TRUE(Ethereum::MessageSigner::verifyMessage(pubKey, msg, signature));
+    }
+
+    TEST(EthereumEip712, SignMessageAndVerifyEip155) {
+        PrivateKey ethKey(parse_hex("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d"));
+        auto msg = R"(
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 0,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            })";
+        auto signature = Ethereum::MessageSigner::signTypedData(ethKey, msg, MessageType::Eip155, 0);
+        ASSERT_EQ(signature, "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf37624");
+        auto pubKey = ethKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        ASSERT_TRUE(Ethereum::MessageSigner::verifyMessage(pubKey, msg, signature));
+    }
+
+    TEST(EthereumEip712, SignMessageAndVerifyInvalidEip155) {
+        PrivateKey ethKey(parse_hex("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d"));
+        auto msg = R"(
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 1,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            })";
+        auto signature = Ethereum::MessageSigner::signTypedData(ethKey, msg, MessageType::Eip155, 0);
+        ASSERT_EQ(signature, "EIP712 chainId is different than the current chainID.");
+    }
+
     TEST(EthereumEip191, SignMessageAndVerifyLegacy) {
         PrivateKey ethKey(parse_hex("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d"));
         auto msg = "Foo";

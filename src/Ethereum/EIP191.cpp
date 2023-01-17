@@ -6,7 +6,8 @@
 
 #include "EIP191.h"
 #include "HexCoding.h"
-#include <iostream>
+#include <Ethereum/ABI/ParamStruct.h>
+#include <nlohmann/json.hpp>
 #include <sstream>
 
 namespace TW::Ethereum::internal {
@@ -19,12 +20,7 @@ Data generateMessage(const std::string& message) {
     return signableMessage;
 }
 
-} // namespace TW::Ethereum::internal
-
-namespace TW::Ethereum {
-
-std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType, MaybeChainId chainId) {
-    auto signableMessage = internal::generateMessage(message);
+std::string commonSign(const PrivateKey& privateKey, const Data& signableMessage, MessageType msgType, TW::Ethereum::MessageSigner::MaybeChainId chainId) {
     auto data = privateKey.sign(signableMessage, TWCurveSECP256k1);
     switch (msgType) {
     case MessageType::ImmutableX:
@@ -40,8 +36,37 @@ std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::
     return hex(data);
 }
 
+} // namespace TW::Ethereum::internal
+
+namespace TW::Ethereum {
+
+std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType, MaybeChainId chainId) {
+    auto signableMessage = internal::generateMessage(message);
+    return internal::commonSign(privateKey, signableMessage, msgType, chainId);
+}
+
+std::string MessageSigner::signTypedData(const PrivateKey& privateKey, const std::string& data, MessageType msgType, MessageSigner::MaybeChainId chainId) {
+    if (msgType == MessageType::Eip155 && nlohmann::json::accept(data)) {
+        auto json = nlohmann::json::parse(data);
+        if (json.contains("types") && json.at("types").contains("EIP712Domain")) {
+            if (json.at("domain").at("chainId").get<std::size_t>() != *chainId) {
+                return "EIP712 chainId is different than the current chainID.";
+            }
+        }
+    }
+    auto signableMessage = ABI::ParamStruct::hashStructJson(data);
+    return internal::commonSign(privateKey, signableMessage, msgType, chainId);
+}
+
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {
-    auto msg = internal::generateMessage(message);
+    Data msg = internal::generateMessage(message);
+    //! If it's json && EIP712Domain then we hash the struct
+    if (nlohmann::json::accept(message)) {
+        auto json = nlohmann::json::parse(message);
+        if (json.contains("types") && json.at("types").contains("EIP712Domain")) {
+            msg = ABI::ParamStruct::hashStructJson(message);
+        }
+    }
     auto rawSignature = parse_hex(signature);
     auto recovered = publicKey.recover(rawSignature, msg);
     return recovered == publicKey && publicKey.verify(rawSignature, msg);
