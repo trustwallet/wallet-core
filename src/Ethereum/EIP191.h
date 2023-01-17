@@ -32,8 +32,6 @@ public:
     /// \param publicKey publickey to verify the signed message
     /// \param message message to be verified as a string
     /// \param signature signature to verify the message against
-    /// \param msgType message type to sign
-    /// \param chainId optional chainId if msgType is eip155
     /// \return true if the message match the signature, false otherwise
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
     static constexpr auto MessagePrefix = "Ethereum Signed Message:\n";
