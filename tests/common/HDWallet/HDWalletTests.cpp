@@ -10,9 +10,9 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
 #include "Ethereum/Address.h"
-#include "Ethereum/Signer.h"
-#include "Ethereum/EIP191.h"
 #include "Ethereum/EIP2645.h"
+#include "Ethereum/MessageSigner.h"
+#include "Ethereum/Signer.h"
 #include "HDWallet.h"
 #include "Hash.h"
 #include "Hedera/DER.h"
@@ -21,8 +21,8 @@
 #include "Mnemonic.h"
 #include "NEAR/Address.h"
 #include "PublicKey.h"
-#include "TestUtilities.h"
 #include "StarkEx/MessageSigner.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 

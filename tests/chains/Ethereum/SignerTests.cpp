@@ -5,9 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Ethereum/Address.h"
+#include "Ethereum/MessageSigner.h"
 #include "Ethereum/RLP.h"
 #include "Ethereum/Signer.h"
-#include "Ethereum/EIP191.h"
 #include "Ethereum/Transaction.h"
 #include "HexCoding.h"
 

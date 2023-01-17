@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWEthereumMessageSigner.h>
 
-#include "Ethereum/EIP191.h"
+#include "Ethereum/MessageSigner.h"
 
 namespace TW::internal {
 

@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <PrivateKey.h>
-#include <HexCoding.h>
-#include <Ethereum/EIP191.h>
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWEthereumMessageSigner.h>
 #include <TrustWalletCore/TWPrivateKey.h>
-#include "TestUtilities.h"
+#include <Ethereum/MessageSigner.h>
+#include <HexCoding.h>
+#include <PrivateKey.h>
 
 #include <gtest/gtest.h>
 
@@ -174,6 +174,78 @@ namespace TW::Ethereum {
         const auto signature = WRAPS(TWEthereumMessageSignerSignMessageEip155(privateKey.get(), message.get(), 0));
         EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "21a779d499957e7fd39392d49a079679009e60e492d9654a148829be43d2490736ec72bc4a5644047d979c3cf4ebe2c1c514044cf436b063cb89fc6676be711023");
         EXPECT_TRUE(TWEthereumMessageSignerVerifyMessage(pubKey, message.get(), signature.get()));
+        delete pubKey;
+    }
+
+    TEST(TWEthereumEip712, SignMessageAndVerifyLegacy) {
+        const auto privKeyData = "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d";
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        auto msg = STRING(R"(
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 0,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            })");
+        const auto pubKey = TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeEthereum);
+        const auto signature = WRAPS(TWEthereumMessageSignerSignTypedMessage(privateKey.get(), msg.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf3761c");
+        EXPECT_TRUE(TWEthereumMessageSignerVerifyMessage(pubKey, msg.get(), signature.get()));
+        delete pubKey;
+    }
+
+    TEST(TWEthereumEip712, SignMessageAndVerifyEip155) {
+        const auto privKeyData = "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d";
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        auto msg = STRING(R"(
+            {
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 0,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            })");
+        const auto pubKey = TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeEthereum);
+        const auto signature = WRAPS(TWEthereumMessageSignerSignTypedMessageEip155(privateKey.get(), msg.get(), 0));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf37624");
+        EXPECT_TRUE(TWEthereumMessageSignerVerifyMessage(pubKey, msg.get(), signature.get()));
         delete pubKey;
     }
 }

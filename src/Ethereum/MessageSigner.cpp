@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "EIP191.h"
 #include "HexCoding.h"
+#include "MessageSigner.h"
 #include <Ethereum/ABI/ParamStruct.h>
 #include <nlohmann/json.hpp>
 #include <sstream>
