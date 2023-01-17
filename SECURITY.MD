@@ -8,7 +8,7 @@ If you believe you have found a security vulnerability in our wallet, please con
 
 ## Responsible Disclosure
 
-We ask that you do not publicly disclose the vulnerability until we have had a chance to patch it. This gives us time to fix the problem and protect our users' assets.
+IMPORTANT: Do not file public issues on GitHub for security vulnerabilities. Do not publicly disclose the vulnerability until we have had a chance to patch it. This gives us time to fix the problem and protect our users’ assets.
 
 ## Encryption
 
