@@ -7,6 +7,7 @@
 #include "Swap.h"
 
 #include "Coin.h"
+#include "HexCoding.h"
 #include <TrustWalletCore/TWCoinType.h>
 
 // ATOM
@@ -228,13 +229,15 @@ SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint64_t amount, c
 SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     Data out;
     auto input = Ethereum::Proto::SigningInput();
+    // EIP-1559
+    input.set_tx_mode(Ethereum::Proto::Enveloped);
     const auto& toTokenId = mFromAsset.token_id();
     // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(mVaultAddress);
     if (!Ethereum::Address::isValid(mVaultAddress) || vaultAddressBin.size() != Ethereum::Address::size) {
         return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
     }
-    if (!Ethereum::Address::isValid(*mRouterAddress)) {
+    if (!toTokenId.empty() && !Ethereum::Address::isValid(*mRouterAddress)) {
         return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_router_address), .error = "Invalid router address: " + *mRouterAddress};
     }
     Data toAssetAddressBin = ethAddressStringToData(toTokenId);
@@ -252,17 +255,25 @@ SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     // ... end
 
     input.set_to_address(*mRouterAddress);
-    auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
-    auto func = Ethereum::ABI::Function("deposit", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
-                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
-                                                       std::make_shared<Ethereum::ABI::ParamString>(memo)});
-    Data payload;
-    func.encode(payload);
-    transfer.set_data(payload.data(), payload.size());
-    Data amountData = store(toTokenId.empty() ? uint256_t(amount) : uint256_t(0));
-    transfer.set_amount(amountData.data(), amountData.size());
+    if (!toTokenId.empty()) {
+        auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
+        auto func = Ethereum::ABI::Function("deposit", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
+                                                           std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
+                                                           std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
+                                                           std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
+                                                           std::make_shared<Ethereum::ABI::ParamString>(memo)});
+        Data payload;
+        func.encode(payload);
+        transfer.set_data(payload.data(), payload.size());
+        Data amountData = store(uint256_t(0));
+        transfer.set_amount(amountData.data(), amountData.size());
+    } else {
+        input.set_to_address(mVaultAddress);
+        auto& transfer = *input.mutable_transaction()->mutable_transfer();
+        Data amountData = store(uint256_t(amount));
+        transfer.set_amount(amountData.data(), amountData.size());
+        transfer.set_data(memo.data(), memo.size());
+    }
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());
