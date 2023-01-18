@@ -9,6 +9,14 @@ import WalletCore
 
 class EthereumTests: XCTestCase {
 
+    func testCreate2Address() {
+        let address = "0x0000000000000000000000000000000000000000"
+        let salt = Data(hexString: "0x0000000000000000000000000000000000000000000000000000000000000000")!
+        let initCodeHash = Hash.keccak256(data: Data(hexString: "0x00")!)
+        let result = Ethereum.eip1014AddressCreate2(fromEthAddress: address, salt: salt, initCodeHash: initCodeHash)
+        XCTAssertEqual(result, "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38")
+    }
+    
     func testAddress() {
         let anyAddress = AnyAddress(string: "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1", coin: .ethereum)
 

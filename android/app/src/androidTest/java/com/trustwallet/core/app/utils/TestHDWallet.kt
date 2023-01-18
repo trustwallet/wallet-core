@@ -29,7 +29,7 @@ class TestHDWallet {
     fun testCreateFromMnemonicImmutableXMainnetFromSignature() {
         // Successfully register: https://api.x.immutable.com/v1/users/0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37
         val hd = HDWallet("obscure opera favorite shuffle mail tip age debate dirt pact cement loyal", "")
-        val derivationPath = EthereumEip2645.getPath("0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37", "starkex", "immutablex", "1")
+        val derivationPath = Ethereum.eip2645GetPath("0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37", "starkex", "immutablex", "1")
         assertEquals(derivationPath, "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1")
 
         // Retrieve eth private key

@@ -15,7 +15,7 @@ class HDWalletTests: XCTestCase {
     
     func testFromMnemonicImmutableXMainnetFromSignature() {
         let wallet = HDWallet(mnemonic: "obscure opera favorite shuffle mail tip age debate dirt pact cement loyal", passphrase: "")!
-        let starkDerivationPath = EthereumEip2645.getPath(ethAddress: "0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37", layer: "starkex", application: "immutablex", index: "1")
+        let starkDerivationPath = Ethereum.eip2645GetPath(ethAddress: "0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37", layer: "starkex", application: "immutablex", index: "1")
         XCTAssertEqual(starkDerivationPath, "m/2645'/579218131'/211006541'/2124474935'/1609799702'/1")
         
         // Retrieve eth private key
