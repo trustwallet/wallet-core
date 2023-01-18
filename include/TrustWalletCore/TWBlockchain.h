@@ -59,6 +59,7 @@ enum TWBlockchain {
     TWBlockchainNervos = 44,
     TWBlockchainEverscale = 45,
     TWBlockchainAptos = 46, // Aptos
+    TWBlockchainNebl = 47, // Bitcoin
 };
 
 TW_EXTERN_C_END

@@ -3127,5 +3127,39 @@
       "rpc": "",
       "documentation": "https://academy.stratisplatform.com/index.html"
     }
+  },
+  {
+    "id": "Nebl",
+    "name": "Nebl",
+    "coinId": 146,
+    "symbol": "NEBL",
+    "decimals": 8,
+    "blockchain": "Nebl",
+    "derivation": [
+      {
+        "path": "m/44'/146'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 53,
+    "p2shPrefix": 112,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.nebl.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "1e56c745ab87d702c98eddc6bc2475b2eb292ed4af92d170b2362c8a089272a4",
+      "sampleAccount": "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc"
+    },
+    "info": {
+      "url": "https://nebl.io",
+      "source": "https://github.com/NeblioTeam",
+      "rpc": "",
+      "documentation": "https://github.com/NeblioTeam"
+    }
   }
 ]

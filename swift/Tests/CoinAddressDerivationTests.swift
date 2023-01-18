@@ -280,6 +280,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .aptos:
                     let expectedResult = "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .nebl:
+                    let expectedResult = "NMcN1J7AL8LRv33YDaT4RLxAYTx8ZMtWuo";
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }

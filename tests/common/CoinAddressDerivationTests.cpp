@@ -277,6 +277,8 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeAptos:
             EXPECT_EQ(address, "0xce2fd04ac9efa74f17595e5785e847a2399d7e637f5e8179244f76191f653276");
             break;
+        case TWCoinTypeNebl:
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
