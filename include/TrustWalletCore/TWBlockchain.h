@@ -57,6 +57,7 @@ enum TWBlockchain {
     TWBlockchainAptos = 43, // Aptos
     TWBlockchainHedera = 44, // Hedera
     TWBlockchainTheOpenNetwork = 45,
+    TWBlockchainSui = 46,  // TODO remove if the blockchain already exists, or just remove this comment if not
 };
 
 TW_EXTERN_C_END
