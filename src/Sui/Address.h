@@ -8,30 +8,32 @@
 
 #include "Data.h"
 #include "PublicKey.h"
+#include "Move/Address.h"
 
 #include <string>
 
 namespace TW::Sui {
 
-class Address {
-  public:
-    static constexpr size_t size = 20;
-    std::array<byte, size> bytes;
+class Address : public Move::Address<Address, 20> {
+public:
+    using SuiAddress = Move::Address<Address, 20>;
+    using SuiAddress::size;
+    using SuiAddress::bytes;
 
-    /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
-
-    /// Determines whether a collection of bytes makes a valid address.
-    static bool isValid(const Data& data) { return data.size() == size; }
-
-    /// Initializes a Sui address with a string representation.
+    /// Initializes an Aptos address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes a Sui address with a public key.
+    /// Initializes an Aptos address with a public key.
     explicit Address(const PublicKey& publicKey);
 
-    /// Returns a string representation of the address.
-    [[nodiscard]] std::string string(bool withPrefix = true) const;
+    /// Constructor that allow factory programming;
+    Address() noexcept = default;
+
+    Data getDigest(const PublicKey& publicKey);
 };
+
+constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcept {
+    return lhs.bytes == rhs.bytes;
+}
 
 } // namespace TW::Sui
