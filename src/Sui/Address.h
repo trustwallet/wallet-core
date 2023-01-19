@@ -20,10 +20,10 @@ public:
     using SuiAddress::size;
     using SuiAddress::bytes;
 
-    /// Initializes an Aptos address with a string representation.
+    /// Initializes an Sui address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an Aptos address with a public key.
+    /// Initializes an Sui address with a public key.
     explicit Address(const PublicKey& publicKey);
 
     /// Constructor that allow factory programming;
