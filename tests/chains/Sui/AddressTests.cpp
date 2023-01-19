@@ -14,36 +14,40 @@
 namespace TW::Sui::tests {
 
 TEST(SuiAddress, Valid) {
-    ASSERT_TRUE(Address::isValid("__ADD_VALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
+    ASSERT_TRUE(Address::isValid("0x1"));
+    // Address 20 are valid in SUI
+    ASSERT_TRUE(Address::isValid("0xb1dc06bd64d4e179a482b97bb68243f6c02c1b92"));
+    ASSERT_TRUE(Address::isValid("b1dc06bd64d4e179a482b97bb68243f6c02c1b92"));
 }
 
 TEST(SuiAddress, Invalid) {
-    ASSERT_FALSE(Address::isValid("__ADD_INVALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
-}
-
-TEST(SuiAddress, FromPrivateKey) {
-    // TODO: Check public key type, finalize implementation
-
-    auto privateKey = PrivateKey(parse_hex("__PRIVATE_KEY_DATA__"));
-    auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
-    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
-}
-
-TEST(SuiAddress, FromPublicKey) {
-    // TODO: Check public key type, finalize implementation
-    
-    auto publicKey = PublicKey(parse_hex("__PUBLIC_KEY_DATA__"), TWPublicKeyTypeED25519);
-    auto address = Address(publicKey);
-    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
+    // Address 32 are invalid in SUI
+    ASSERT_FALSE(Address::isValid("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
+    ASSERT_FALSE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
+    ASSERT_FALSE(Address::isValid("19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c"));
+    // Too long
+    ASSERT_FALSE(Address::isValid("b1dc06bd64d4e179a482b97bb68243f6c02c1b921"));
+    // Too short
+    ASSERT_FALSE(Address::isValid("b1dc06bd64d4e179a482b97bb68243f6c02c1b9"));
+    // Invalid Hex
+    ASSERT_FALSE(Address::isValid("0xS1dc06bd64d4e179a482b97bb68243f6c02c1b92"));
 }
 
 TEST(SuiAddress, FromString) {
-    auto address = Address("__ADD_VALID_ADDRESS_HERE__");
-    ASSERT_EQ(address.string(), "__ADD_SAME_VALID_ADDRESS_HERE__");
+    auto address = Address("b1dc06bd64d4e179a482b97bb68243f6c02c1b92");
+    ASSERT_EQ(address.string(), "0xb1dc06bd64d4e179a482b97bb68243f6c02c1b92");
+}
+
+TEST(SuiAddress, FromPrivateKey) {
+    auto privateKey = PrivateKey(parse_hex("088baa019f081d6eab8dff5c447f9ce2f83c1babf3d03686299eaf6a1e89156e"));
+    auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
+    ASSERT_EQ(address.string(), "0xe9c4d0b6fe32a5cc8ebd1e9ad5b54a0276a57f2d");
+}
+
+TEST(SuiAddress, FromPublicKey) {
+    auto publicKey = PublicKey(parse_hex("ad0e293a56c9fc648d1872a00521d97e6b65724519a2676c2c47cb95d131cf5a"), TWPublicKeyTypeED25519);
+    auto address = Address(publicKey);
+    ASSERT_EQ(address.string(), "0xe9c4d0b6fe32a5cc8ebd1e9ad5b54a0276a57f2d");
 }
 
 } // namespace TW::Sui::tests

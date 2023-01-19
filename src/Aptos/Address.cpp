@@ -8,15 +8,15 @@
 #include "Address.h"
 #include "HexCoding.h"
 
-namespace {
+    namespace {
 
-std::string normalize(const std::string& string, std::size_t hexLen) {
-    std::string hexStr((TW::Aptos::Address::size * 2) - hexLen, '0');
-    hexStr.append(string);
-    return hexStr;
-}
+    std::string normalize(const std::string& string, std::size_t hexLen) {
+        std::string hexStr((TW::Aptos::Address::size * 2) - hexLen, '0');
+        hexStr.append(string);
+        return hexStr;
+    }
 
-} // namespace
+    } // namespace
 
 namespace TW::Aptos {
 
@@ -66,7 +66,7 @@ Address::Address(const PublicKey& publicKey) {
     auto key_data = publicKey.bytes;
     append(key_data, 0x00);
     const auto data = Hash::sha3_256(key_data);
-    std::copy(data.begin(), data.end(), bytes.begin());
+    std::copy_n(data.begin(), Address::size, bytes.begin());
 }
 
 std::string Address::string(bool withPrefix) const {

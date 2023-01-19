@@ -8,6 +8,7 @@
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "Sui/Address.h"
 #include "Coin.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/Signer.h"
@@ -437,6 +438,18 @@ TEST(HDWallet, AptosKey) {
         const auto privateKey = wallet.getKey(TWCoinTypeAptos, DerivationPath(derivPath));
         EXPECT_EQ(hex(privateKey.bytes), "7f2634c0e2414a621e96e39c41d09021700cee12ee43328ed094c5580cd0bd6f");
         EXPECT_EQ(hex(privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes), "633e5c7e355bdd484706436ce1f06fdf280bd7c2229a7f9b6489684412c6967c");
+    }
+}
+
+TEST(HDWallet, SuiKey) {
+    const auto derivPath = "m/44'/784'/0'/0'/0'";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeSui, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "108f893465ea731331d29ac1e8d26fc0fd3d658060d638af07595913d902ed6e");
+        auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        EXPECT_EQ(hex(pubkey.bytes), "682464d69fd6d654df8157ff34706228f7991dd3207578b6e14c00c4cc27ade1");
+        EXPECT_EQ(TW::Sui::Address(pubkey).string(), "0x3bf50284481a68de826826df3cbc163757e0be2b");
     }
 }
 

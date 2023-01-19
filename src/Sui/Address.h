@@ -15,10 +15,14 @@ namespace TW::Sui {
 
 class Address {
   public:
-    // TODO: Complete class definition
+    static constexpr size_t size = 20;
+    std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
+
+    /// Determines whether a collection of bytes makes a valid address.
+    static bool isValid(const Data& data) { return data.size() == size; }
 
     /// Initializes a Sui address with a string representation.
     explicit Address(const std::string& string);
@@ -27,12 +31,7 @@ class Address {
     explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
-    std::string string() const;
+    [[nodiscard]] std::string string(bool withPrefix = true) const;
 };
-
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    // TODO: Complete equality operator
-    return true;
-}
 
 } // namespace TW::Sui
