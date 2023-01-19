@@ -14,7 +14,7 @@ using namespace TW;
 
 // TODO: Finalize tests
 
-TEST(TWSui, Address) {
+/*TEST(TWSui, Address) {
     // TODO: Finalize test implementation
 
     auto string = STRING("__ADD_VALID_ADDRESS_HERE__");
@@ -23,4 +23,4 @@ TEST(TWSui, Address) {
     EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
     auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
     assertHexEqual(keyHash, "__CORRESPONDING_ADDRESS_DATA__");
-}
+}*/

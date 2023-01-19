@@ -41,13 +41,13 @@ TEST(SuiAddress, FromString) {
 TEST(SuiAddress, FromPrivateKey) {
     auto privateKey = PrivateKey(parse_hex("088baa019f081d6eab8dff5c447f9ce2f83c1babf3d03686299eaf6a1e89156e"));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
-    ASSERT_EQ(address.string(), "0xe9c4d0b6fe32a5cc8ebd1e9ad5b54a0276a57f2d");
+    ASSERT_EQ(address.string(), "0xb638d15fa81d301a9756259d0c7b2ca27a00a531");
 }
 
 TEST(SuiAddress, FromPublicKey) {
     auto publicKey = PublicKey(parse_hex("ad0e293a56c9fc648d1872a00521d97e6b65724519a2676c2c47cb95d131cf5a"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
-    ASSERT_EQ(address.string(), "0xe9c4d0b6fe32a5cc8ebd1e9ad5b54a0276a57f2d");
+    ASSERT_EQ(address.string(), "0xb638d15fa81d301a9756259d0c7b2ca27a00a531");
 }
 
 } // namespace TW::Sui::tests

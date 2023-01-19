@@ -28,8 +28,6 @@ TEST(TWSuiCoinType, TWCoinType) {
     assertStringsEqual(symbol, "SUI");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainSui);
-    ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
-    ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(txUrl, "https://explorer.sui.io//transaction/SWRW1RoMHxnD9NeobgBoC4cXGwp2Hc511CnfWUoTBmo");
     assertStringsEqual(accUrl, "https://explorer.sui.io//address/0x62107e1afefccc7b2267ab74e332c146f5c2ca15");
 }

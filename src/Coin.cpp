@@ -108,7 +108,7 @@ Nervos::Entry NervosDP;
 Everscale::Entry EverscaleDP;
 Hedera::Entry HederaDP;
 TheOpenNetwork::Entry tonDP;
-Sui::Entry SuiDP; // TODO remove if the blockchain already exists, or just remove this comment if not
+Sui::Entry SuiDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -161,7 +161,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainAptos: entry = &AptosDP; break;
         case TWBlockchainHedera: entry = &HederaDP; break;
         case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
-        case TWBlockchainSui: entry = &SuiDP; break; // TODO remove if the blockchain already exists, or just remove this comment if not
+        case TWBlockchainSui: entry = &SuiDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
