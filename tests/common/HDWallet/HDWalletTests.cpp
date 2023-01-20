@@ -443,13 +443,13 @@ TEST(HDWallet, AptosKey) {
 
 TEST(HDWallet, SuiKey) {
     const auto derivPath = "m/44'/784'/0'/0'/0'";
-    HDWallet wallet = HDWallet(mnemonic1, "");
+    HDWallet wallet = HDWallet("cost add execute system fault long raccoon stone paddle column ketchup smile debate wood marble please jar can goddess magnet axis celery rough gold", "");
     {
         const auto privateKey = wallet.getKey(TWCoinTypeSui, DerivationPath(derivPath));
-        EXPECT_EQ(hex(privateKey.bytes), "108f893465ea731331d29ac1e8d26fc0fd3d658060d638af07595913d902ed6e");
+        EXPECT_EQ(hex(privateKey.bytes), "3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266");
         auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-        EXPECT_EQ(hex(pubkey.bytes), "682464d69fd6d654df8157ff34706228f7991dd3207578b6e14c00c4cc27ade1");
-        EXPECT_EQ(TW::Sui::Address(pubkey).string(), "0x3bf50284481a68de826826df3cbc163757e0be2b");
+        EXPECT_EQ(hex(pubkey.bytes), "6a7cdeec16a75c0ff6787bc2356109469033022bb10e826c9d443a9f1fc0bd8e");
+        EXPECT_EQ(TW::Sui::Address(pubkey).string(), "0x2db500ac919cdde351ac36e3711d832c6db97669");
     }
 }
 

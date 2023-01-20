@@ -14,7 +14,7 @@ namespace TW::Base64 {
 bool isBase64orBase64Url(const std::string& val);
 
 // Decode a Base64-format string
-Data decode(const std::string& val);
+Data decode(const std::string& val, bool trim_right = true);
 
 // Encode bytes into Base64 string
 std::string encode(const Data& val);

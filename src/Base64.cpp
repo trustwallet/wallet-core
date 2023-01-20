@@ -36,11 +36,15 @@ bool isBase64orBase64Url(const string& val) {
     return isBase64Any(val, base64_chars) || isBase64Any(val, base64_url_chars);
 }
 
-Data decode(const string& val) {
+Data decode(const string& val, bool trim_right) {
     using namespace boost::archive::iterators;
     using It = transform_width<binary_from_base64<string::const_iterator>, 8, 6>;
-    return boost::algorithm::trim_right_copy_if(Data(It(begin(val)), It(end(val))),
-                                                [](char c) { return c == '\0'; });
+    if (trim_right)
+        return boost::algorithm::trim_right_copy_if(Data(It(begin(val)), It(end(val))),
+                                                    [](char c) { return c == '\0'; });
+    else {
+        return Data(It(begin(val)), It(end(val)));
+    }
 }
 
 string encode(const Data& val) {
