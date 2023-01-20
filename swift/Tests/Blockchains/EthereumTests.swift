@@ -21,7 +21,7 @@ class EthereumTests: XCTestCase {
         let factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
         let logicAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
         let ownerAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
-        let result = Ethereum.eip4337GetDeploymentAddress(factoryAddress, logicAddress, ownerAddress)
+        let result = Ethereum.eip4337GetDeploymentAddress(factoryAddress: factoryAddress, logicAddress: logicAddress, ownerAddress: ownerAddress)
         XCTAssertEqual(result, "0xbEaA87cEEaC906C21aaacd258FbFB87CfA3c90a8")
     }
     
