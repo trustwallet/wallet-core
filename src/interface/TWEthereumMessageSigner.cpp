@@ -10,7 +10,7 @@
 
 namespace TW::internal {
 
-TWString* _Nonnull TWEthereumMessageSignerSignCommon(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message, Ethereum::MessageType msgType = Ethereum::MessageType::Legacy, Ethereum::MessageSigner::MaybeChainId chainId = std::nullopt) {
+TWString* _Nonnull TWEthereumMessageSignerSignCommon(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message, Ethereum::MessageType msgType, Ethereum::MessageSigner::MaybeChainId chainId = std::nullopt) {
     try {
         const auto signature = TW::Ethereum::MessageSigner::signMessage(privateKey->impl, TWStringUTF8Bytes(message), msgType, chainId);
         return TWStringCreateWithUTF8Bytes(signature.c_str());
@@ -19,7 +19,7 @@ TWString* _Nonnull TWEthereumMessageSignerSignCommon(const struct TWPrivateKey* 
     }
 }
 
-TWString* _Nonnull TWEthereumMessageSignerSignTypedCommon(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message, Ethereum::MessageType msgType = Ethereum::MessageType::Legacy, Ethereum::MessageSigner::MaybeChainId chainId = std::nullopt) {
+TWString* _Nonnull TWEthereumMessageSignerSignTypedCommon(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message, Ethereum::MessageType msgType, Ethereum::MessageSigner::MaybeChainId chainId = std::nullopt) {
     try {
         const auto signature = TW::Ethereum::MessageSigner::signTypedData(privateKey->impl, TWStringUTF8Bytes(message), msgType, chainId);
         return TWStringCreateWithUTF8Bytes(signature.c_str());
@@ -31,7 +31,7 @@ TWString* _Nonnull TWEthereumMessageSignerSignTypedCommon(const struct TWPrivate
 } // namespace TW::internal
 
 TWString* _Nonnull TWEthereumMessageSignerSignTypedMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull messageJson) {
-    return TW::internal::TWEthereumMessageSignerSignTypedCommon(privateKey, messageJson);
+    return TW::internal::TWEthereumMessageSignerSignTypedCommon(privateKey, messageJson, TW::Ethereum::MessageType::Legacy);
 }
 
 TWString* _Nonnull TWEthereumMessageSignerSignTypedMessageEip155(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull messageJson, int chainId) {
@@ -39,7 +39,7 @@ TWString* _Nonnull TWEthereumMessageSignerSignTypedMessageEip155(const struct TW
 }
 
 TWString* _Nonnull TWEthereumMessageSignerSignMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message) {
-    return TW::internal::TWEthereumMessageSignerSignCommon(privateKey, message);
+    return TW::internal::TWEthereumMessageSignerSignCommon(privateKey, message, TW::Ethereum::MessageType::Legacy);
 }
 
 TWString* _Nonnull TWEthereumMessageSignerSignMessageImmutableX(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message) {

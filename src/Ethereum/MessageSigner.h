@@ -13,9 +13,9 @@
 namespace TW::Ethereum {
 
 enum class MessageType {
-    ImmutableX = 0,
     Legacy = 1,
-    Eip155 = 2
+    Eip155 = 2,
+    ImmutableX = 3
 };
 
 class MessageSigner {
@@ -27,7 +27,7 @@ public:
     /// \param msgType message type to sign
     /// \param chainId optional chainId if msgType is eip155
     /// \return hex signed message
-    static std::string signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType = MessageType::Legacy, MaybeChainId chainId = std::nullopt);
+    static std::string signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType, MaybeChainId chainId = std::nullopt);
 
     /// Sign typed data according to EIP-712 V4
     /// \param privateKey the private key to sign with
@@ -35,7 +35,7 @@ public:
     /// \param msgType message type to sign
     /// \param chainId optional chainId if msgType is eip155
     /// \return hex signed message
-    static std::string signTypedData(const PrivateKey& privateKey, const std::string& data, MessageType msgType = MessageType::Legacy, MaybeChainId chainId = std::nullopt);
+    static std::string signTypedData(const PrivateKey& privateKey, const std::string& data, MessageType msgType, MaybeChainId chainId = std::nullopt);
 
     /// Verify a message following EIP-191
     /// \param publicKey publickey to verify the signed message
