@@ -42,5 +42,5 @@ TWString* _Nonnull TWEthereumEip2645GetPath(TWString* _Nonnull ethAddress, TWStr
 /// \param ownerAddress  non-null address of the signing key that controls the smart contract wallet
 /// \return Ethereum resulting address
 TW_EXPORT_STATIC_METHOD
-TWString* TWEthereumEip4337GetDeploymentAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull logicAddress, TWString* _Nonnull ownerAddress);
+TWString* _Nonnull TWEthereumEip4337GetDeploymentAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull logicAddress, TWString* _Nonnull ownerAddress);
 TW_EXTERN_C_END
