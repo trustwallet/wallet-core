@@ -589,7 +589,7 @@ void sha1_Update(SHA1_CTX* context, const sha2_byte *data, size_t len) {
 	usedspace = freespace = 0;
 }
 
-void sha1_Final(SHA1_CTX* context, sha2_byte digest[]) {
+void sha1_Final(SHA1_CTX* context, sha2_byte digest[SHA1_DIGEST_LENGTH]) {
 	unsigned int	usedspace = 0;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
@@ -896,7 +896,7 @@ void sha256_Update(SHA256_CTX* context, const sha2_byte *data, size_t len) {
 	usedspace = freespace = 0;
 }
 
-void sha256_Final(SHA256_CTX* context, sha2_byte digest[]) {
+void sha256_Final(SHA256_CTX* context, sha2_byte digest[SHA256_DIGEST_LENGTH]) {
 	unsigned int	usedspace = 0;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
@@ -1250,7 +1250,7 @@ static void sha512_Last(SHA512_CTX* context) {
 	sha512_Transform(context->state, context->buffer, context->state);
 }
 
-void sha512_Final(SHA512_CTX* context, sha2_byte digest[]) {
+void sha512_Final(SHA512_CTX* context, sha2_byte digest[SHA512_DIGEST_LENGTH]) {
 	/* If no digest buffer is passed, we don't bother doing this: */
 	if (digest != (sha2_byte*)0) {
 		sha512_Last(context);
