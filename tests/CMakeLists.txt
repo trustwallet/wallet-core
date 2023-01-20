@@ -22,7 +22,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/build/local/src/gtest/googletest-release-1.
 
 # Test executable
 file(GLOB_RECURSE test_sources *.cpp **/*.cpp **/*.cc)
-add_executable(tests ${test_sources})
+add_executable(tests ${test_sources} chains/Ethereum/EIP1967Tests.cpp chains/Ethereum/EIP4337Tests.cpp)
 target_link_libraries(tests gtest_main TrezorCrypto TrustWalletCore walletconsolelib protobuf Boost::boost)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/tests/common)
