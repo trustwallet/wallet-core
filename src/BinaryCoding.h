@@ -13,6 +13,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <string_view>
 
 namespace TW {
 
@@ -106,9 +107,9 @@ void encode64BE(uint64_t val, std::vector<uint8_t>& data);
 uint64_t decode64BE(const uint8_t* _Nonnull src);
 
 /// Encodes an ASCII string prefixed by the length (varInt)
-void encodeString(const std::string& str, std::vector<uint8_t>& data);
+void encodeString(std::string_view str, std::vector<uint8_t>& data);
 
-/// Decodes an ASCII string prefixed by its length (varInt) 
+/// Decodes an ASCII string prefixed by its length (varInt)
 /// \returns a tuple with a success indicator and the decoded string.
 std::tuple<bool, std::string> decodeString(const Data& in, size_t& indexInOut);
 

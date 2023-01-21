@@ -11,6 +11,7 @@
 #include "CoinEntry.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace TW {
@@ -19,9 +20,9 @@ namespace TW {
 class TransactionCompiler {
 public:
     /// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
-    static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
+    static Data buildInput(TWCoinType coinType, std::string_view from, std::string_view to, std::string_view amount, std::string_view asset, std::string_view memo, std::string_view chainId);
 
-    /// Obtain pre-signing hash of a transaction. 
+    /// Obtain pre-signing hash of a transaction.
     /// It will return a proto object named `PreSigningOutput` which will include hash.
     /// We provide a default `PreSigningOutput` in TransactionCompiler.proto.
     /// For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.

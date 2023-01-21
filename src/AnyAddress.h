@@ -10,10 +10,10 @@
 #include "PublicKey.h"
 
 #include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include <CoinEntry.h>
-#include <string>
+#include <string_view>
 
 namespace TW {
 
@@ -24,7 +24,7 @@ public:
     enum TWCoinType coin;
 
     // Create address from string address and optional prefix; also normalizes the address.
-    static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin, const PrefixVariant& prefix = std::monostate());
+    static AnyAddress* createAddress(std::string_view address, enum TWCoinType coin, const PrefixVariant& prefix = std::monostate());
     // Create address from private key, with optional non-standard derivation and prefix
     static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, TWDerivation derivation = TWDerivationDefault, const PrefixVariant& prefix = std::monostate());
 

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <string_view>
 
 namespace TW::Bech32 {
 
@@ -25,7 +26,7 @@ enum ChecksumVariant {
 /// Encodes a Bech32 string.
 ///
 /// \returns the encoded string, or an empty string in case of failure.
-std::string encode(const std::string& hrp, const Data& values, ChecksumVariant variant);
+std::string encode(std::string_view hrp, const Data& values, ChecksumVariant variant);
 
 /// Decodes a Bech32 string.
 ///
@@ -34,7 +35,7 @@ std::string encode(const std::string& hrp, const Data& values, ChecksumVariant v
 /// - data, or a pair or
 /// - ChecksumVariant used
 /// or empty values on failure.
-std::tuple<std::string, Data, ChecksumVariant> decode(const std::string& str);
+std::tuple<std::string, Data, ChecksumVariant> decode(std::string_view str);
 
 /// Converts from one power-of-2 number base to another.
 template <int frombits, int tobits, bool pad>

@@ -11,11 +11,11 @@
 
 using namespace TW;
 
-bool Bech32Address::isValid(const std::string& addr) {
+bool Bech32Address::isValid(std::string_view addr) {
     return isValid(addr, "");
 }
 
-bool Bech32Address::isValid(const std::string& addr, const std::string& hrp) {
+bool Bech32Address::isValid(std::string_view addr, std::string_view hrp) {
     auto dec = Bech32::decode(addr);
     // check hrp prefix (if given)
     if (hrp.length() > 0 && std::get<0>(dec).compare(0, hrp.length(), hrp) != 0) {
@@ -34,7 +34,7 @@ bool Bech32Address::isValid(const std::string& addr, const std::string& hrp) {
     return true;
 }
 
-bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, const std::string& hrp) {
+bool Bech32Address::decode(std::string_view addr, Bech32Address& obj_out, std::string_view hrp) {
     auto dec = Bech32::decode(addr);
     // check hrp prefix (if given)
     if (hrp.length() > 0 && std::get<0>(dec).compare(0, hrp.length(), hrp) != 0) {
@@ -55,7 +55,7 @@ bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, cons
     return true;
 }
 
-Bech32Address::Bech32Address(const std::string& hrp, Hash::Hasher hasher, const PublicKey& publicKey)
+Bech32Address::Bech32Address(std::string_view hrp, Hash::Hasher hasher, const PublicKey& publicKey)
 : hrp(hrp) {
     bool skipTypeByte = false;
     // Extended-key / keccak-hash skips first byte (Evmos)

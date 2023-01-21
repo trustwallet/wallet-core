@@ -11,7 +11,7 @@
 using namespace TW;
 
 
-Data TransactionCompiler::buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
+Data TransactionCompiler::buildInput(TWCoinType coinType, std::string_view from, std::string_view to, std::string_view amount, std::string_view asset, std::string_view memo, std::string_view chainId) {
     // parse amount
     uint256_t amount256 { amount };
     return anyCoinBuildTransactionInput(coinType, from, to, amount256, asset, memo, chainId);

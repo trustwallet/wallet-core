@@ -10,6 +10,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
+#include <string_view>
 
 namespace TW {
 
@@ -44,7 +45,7 @@ inline uint256_t loadWithOffset(const Data& data, size_t offset) {
 
 /// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as
 /// std::string).
-inline uint256_t load(const std::string& data) {
+inline uint256_t load(std::string_view data) {
     using boost::multiprecision::cpp_int;
     if (data.empty()) {
         return uint256_t(0);

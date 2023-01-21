@@ -22,6 +22,7 @@
 #include <TrustWalletCore/TWDerivation.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace TW {
@@ -30,14 +31,14 @@ namespace TW {
 std::vector<TWCoinType> getCoinTypes();
 
 /// Validates an address for a particular coin.
-bool validateAddress(TWCoinType coin, const std::string& address);
+bool validateAddress(TWCoinType coin, std::string_view address);
 
 /// Validates an address for a particular coin.
-bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix);
+bool validateAddress(TWCoinType coin, std::string_view address, const PrefixVariant& prefix);
 
 /// Validates and normalizes an address for a particular coin.
-std::string normalizeAddress(TWCoinType coin, const std::string& address);
-std::string normalizeAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix);
+std::string normalizeAddress(TWCoinType coin, std::string_view address);
+std::string normalizeAddress(TWCoinType coin, std::string_view address, const PrefixVariant& prefix);
 
 /// Returns the blockchain for a coin type.
 TWBlockchain blockchain(TWCoinType coin);
@@ -82,7 +83,7 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDeriv
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation = TWDerivationDefault, const PrefixVariant& addressPrefix = std::monostate());
 
 /// Returns the binary representation of a string address
-Data addressToData(TWCoinType coin, const std::string& address);
+Data addressToData(TWCoinType coin, std::string_view address);
 
 /// Hasher for deriving the extended public key
 Hash::Hasher publicKeyHasher(TWCoinType coin);
@@ -116,7 +117,7 @@ void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 uint32_t slip44Id(TWCoinType coin);
 
-std::string anySignJSON(TWCoinType coinType, const std::string& json, const Data& key);
+std::string anySignJSON(TWCoinType coinType, std::string_view json, const Data& key);
 
 bool supportsJSONSigning(TWCoinType coinType);
 
@@ -126,7 +127,7 @@ Data anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
 
 void anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut);
 
-Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
+Data anyCoinBuildTransactionInput(TWCoinType coinType, std::string_view from, std::string_view to, const uint256_t& amount, std::string_view asset, std::string_view memo, std::string_view chainId);
 
 // Describes a derivation: path + optional format + optional name
 struct Derivation {

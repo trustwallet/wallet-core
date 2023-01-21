@@ -21,6 +21,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace TW {
 
@@ -46,25 +47,25 @@ class HDWallet {
 
 public:
     const std::array<byte, seedSize>& getSeed() const { return seed; }
-    const std::string& getMnemonic() const { return mnemonic; }
-    const std::string& getPassphrase() const { return passphrase; }
+	std::string_view getMnemonic() const { return mnemonic; }
+    std::string_view getPassphrase() const { return passphrase; }
     const TW::Data& getEntropy() const { return entropy; }
 
   public:
     /// Initializes an HDWallet from given seed.
     HDWallet(const Data& seed);
 
-    /// Initializes a new random HDWallet with the provided strength in bits.  
+    /// Initializes a new random HDWallet with the provided strength in bits.
     /// Throws on invalid strength.
-    HDWallet(int strength, const std::string& passphrase);
+    HDWallet(int strength, std::string_view passphrase);
 
     /// Initializes an HDWallet from a BIP39 mnemonic and a passphrase, check English dict by default.
     /// Throws on invalid mnemonic.
-    HDWallet(const std::string& mnemonic, const std::string& passphrase, const bool check = true);
+    HDWallet(std::string_view mnemonic, std::string_view passphrase, const bool check = true);
 
     /// Initializes an HDWallet from an entropy.
     /// Throws on invalid data.
-    HDWallet(const Data& entropy, const std::string& passphrase);
+    HDWallet(const Data& entropy, std::string_view passphrase);
 
     HDWallet(const HDWallet& other) = default;
     HDWallet(HDWallet&& other) = default;
@@ -124,10 +125,10 @@ public:
     std::string getRootKey(TWCoinType coin, TWHDVersion version) const;
 
     /// Computes the public key from an extended public key representation.
-    static std::optional<PublicKey> getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
+    static std::optional<PublicKey> getPublicKeyFromExtended(std::string_view extended, TWCoinType coin, const DerivationPath& path);
 
     /// Computes the private key from an extended private key representation.
-    static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
+    static std::optional<PrivateKey> getPrivateKeyFromExtended(std::string_view extended, TWCoinType coin, const DerivationPath& path);
 
     /// Derive the given seed for the given coin, with the given Derivation path
     /// \param coin Coin to be used in order to retrieve the curve type

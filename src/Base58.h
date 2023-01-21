@@ -11,18 +11,19 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 namespace TW {
 
 class Base58 {
-  public:
+public:
     /// Base58 coder with Bitcoin character map.
     static Base58 bitcoin;
 
     /// Base58 coder with Ripple character map.
     static Base58 ripple;
 
-  public:
+public:
     /// Ordered list of valid characters.
     const std::array<char, 58> digits;
 
@@ -34,7 +35,7 @@ class Base58 {
         : digits(digits), characterMap(characterMap) {}
 
     /// Decodes a base 58 string verifying the checksum, returns empty on failure.
-    Data decodeCheck(const std::string& string, Hash::Hasher hasher = Hash::HasherSha256d) const {
+    Data decodeCheck(std::string_view string, Hash::Hasher hasher = Hash::HasherSha256d) const {
         return decodeCheck(string.data(), string.data() + string.size(), hasher);
     }
 
@@ -42,12 +43,12 @@ class Base58 {
     Data decodeCheck(const char* begin, const char* end, Hash::Hasher hasher = Hash::HasherSha256d) const;
 
     /// Decodes a base 58 string into `result`, returns `false` on failure.
-    Data decode(const std::string& string) const {
+    Data decode(std::string_view string) const {
         return decode(string.data(), string.data() + string.size());
     }
 
     /// Decodes a base 58 string into `result`, returns `false` on failure.
-    Data decode(const char* begin, const char* end) const;
+    Data decode(std::string_view begin, std::string_view end) const;
 
     /// Encodes data as a base 58 string with a checksum.
     template <typename T>

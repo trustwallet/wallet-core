@@ -12,14 +12,15 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 namespace TW {
 
 template <std::size_t S>
 class Base58Address {
-  public:
+public:
     /// Number of bytes in an address.
-    static const size_t size = S;
+    static constexpr size_t size = S;
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
@@ -32,7 +33,7 @@ class Base58Address {
     }
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string) {
+    static bool isValid(std::string_view string) {
         const auto decoded = Base58::bitcoin.decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
             return false;
@@ -42,7 +43,7 @@ class Base58Address {
 
     /// Determines whether a string makes a valid address, and the prefix is
     /// within the valid set.
-    static bool isValid(const std::string& string, const std::vector<Data>& validPrefixes) {
+    static bool isValid(std::string_view string, const std::vector<Data>& validPrefixes) {
         const auto decoded = Base58::bitcoin.decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
             return false;
@@ -58,7 +59,7 @@ class Base58Address {
     Base58Address() = default;
 
     /// Initializes an address with a string representation.
-    explicit Base58Address(const std::string& string) {
+    explicit Base58Address(std::string_view string) {
         const auto decoded = Base58::bitcoin.decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
             throw std::invalid_argument("Invalid address string");

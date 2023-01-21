@@ -7,11 +7,12 @@
 #pragma once
 
 #include "Data.h"
-#include "PublicKey.h"
 #include "Hash.h"
+#include "PublicKey.h"
 
-#include <string>
 #include <memory>
+#include <string>
+#include <string_view>
 
 namespace TW {
 
@@ -27,30 +28,32 @@ private:
 
 public:
     /// Determines whether a string makes a valid Bech32 address.
-    static bool isValid(const std::string& addr);
+    static bool isValid(std::string_view addr);
 
     /// Determines whether a string makes a valid Bech32 address, and the HRP matches.
-    static bool isValid(const std::string& addr, const std::string& hrp);
+    static bool isValid(std::string_view addr, std::string_view hrp);
 
-    /// Decodes an address and create an address object out of it.  
+    /// Decodes an address and create an address object out of it.
     /// obj_out:  Pass-by-ref, result is initialized here if possible, it can be a derived address type.
     /// hrp: the expected hrp prefix (if missing ("") no prefix check is done).
     /// \returns true if success.
-    static bool decode(const std::string& addr, Bech32Address& obj_out, const std::string& hrp);
+    static bool decode(std::string_view addr, Bech32Address& obj_out, std::string_view hrp);
 
     /// Initializes an empty address.
-    Bech32Address(const std::string& hrp_in) : hrp(std::move(hrp_in)) {}
+    Bech32Address(std::string hrp_in)
+        : hrp(std::move(hrp_in)) {}
 
     /// Initializes an address with a key hash.
-    Bech32Address(const std::string& hrp, const Data& keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
+    Bech32Address(std::string hrp, const Data& keyHash)
+        : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
 
     /// Initialization from public key --> chain specific hash methods
-    Bech32Address(const std::string& hrp, Hash::Hasher hasher, const PublicKey& publicKey);
+    Bech32Address(std::string_view hrp, Hash::Hasher hasher, const PublicKey& publicKey);
 
-    void setHrp(const std::string& hrp_in) { hrp = std::move(hrp_in); }
+    void setHrp(std::string_view hrp_in) { hrp = std::move(hrp_in); }
     void setKey(const Data& keyHash_in) { keyHash = std::move(keyHash_in); }
 
-    inline const std::string& getHrp() const { return hrp; }
+    inline std::string_view getHrp() const { return hrp; }
 
     inline const Data& getKeyHash() const { return keyHash; }
 

@@ -11,7 +11,7 @@
 
 using namespace TW;
 
-DerivationPath::DerivationPath(const std::string& string) {
+DerivationPath::DerivationPath(std::string_view string) {
     const auto* it = string.data();
     const auto* end = string.data() + string.size();
 

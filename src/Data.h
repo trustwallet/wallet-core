@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <array>
 
 namespace TW {
@@ -20,7 +21,7 @@ inline void pad_left(Data& data, const uint32_t size) {
     data.insert(data.begin(), size - data.size(), 0);
 }
 
-inline Data data(const std::string& data) {
+inline Data data(std::string_view data) {
     return Data(data.begin(), data.end());
 }
 

@@ -179,14 +179,14 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     return Derivation();
 }
 
-bool TW::validateAddress(TWCoinType coin, const string& address, const PrefixVariant& prefix) {
+bool TW::validateAddress(TWCoinType coin, std::string_view address, const PrefixVariant& prefix) {
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->validateAddress(coin, address, prefix);
 }
 
-bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+bool TW::validateAddress(TWCoinType coin, std::string_view string) {
     const auto* hrp = stringForHRP(TW::hrp(coin));
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
@@ -211,7 +211,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 }
 
 namespace TW::internal {
-    inline std::string normalizeAddress(TWCoinType coin, const string& address) {
+    inline std::string normalizeAddress(TWCoinType coin, std::string_view address) {
         // dispatch
         auto* dispatcher = coinDispatcher(coin);
         assert(dispatcher != nullptr);
@@ -219,7 +219,7 @@ namespace TW::internal {
     }
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
+std::string TW::normalizeAddress(TWCoinType coin, std::string_view address) {;
     if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";
@@ -228,7 +228,7 @@ std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
     return internal::normalizeAddress(coin, address);
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix) {
+std::string TW::normalizeAddress(TWCoinType coin, std::string_view address, const PrefixVariant& prefix) {
     if (!TW::validateAddress(coin, address, prefix)) {
         // invalid address, not normalizing
         return "";
@@ -252,7 +252,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDer
     return dispatcher->deriveAddress(coin, publicKey, derivation, addressPrefix);
 }
 
-Data TW::addressToData(TWCoinType coin, const std::string& address) {
+Data TW::addressToData(TWCoinType coin, std::string_view address) {
     const auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->addressToData(coin, address);
@@ -264,7 +264,7 @@ void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     dispatcher->sign(coinType, dataIn, dataOut);
 }
 
-std::string TW::anySignJSON(TWCoinType coinType, const std::string& json, const Data& key) {
+std::string TW::anySignJSON(TWCoinType coinType, std::string_view json, const Data& key) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->signJSON(coinType, json, key);
@@ -294,7 +294,7 @@ void TW::anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputDa
     dispatcher->compile(coinType, txInputData, signatures, publicKeys, txOutputOut);
 }
 
-Data TW::anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
+Data TW::anyCoinBuildTransactionInput(TWCoinType coinType, std::string_view from, std::string_view to, const uint256_t& amount, std::string_view asset, std::string_view memo, std::string_view chainId) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->buildTransactionInput(coinType, from, to, amount, asset, memo, chainId);

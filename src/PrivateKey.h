@@ -11,6 +11,7 @@
 
 #include <TrustWalletCore/TWPrivateKeyType.h>
 #include <TrustWalletCore/TWCurve.h>
+#include <string_view>
 
 namespace TW {
 
@@ -47,7 +48,7 @@ class PrivateKey {
     explicit PrivateKey(const Data& data);
 
     /// Initializes a private key from a string of bytes.
-    explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
+    explicit PrivateKey(std::string_view data) : PrivateKey(TW::data(data)) {}
 
     /// Initializes a Cardano style key
     explicit PrivateKey(

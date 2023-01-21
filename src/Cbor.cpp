@@ -34,7 +34,7 @@ Encode Encode::negInt(uint64_t value) {
     return Encode().appendValue(Decode::MT_negint, value - 1);
 }
 
-Encode Encode::string(const std::string& str) {
+Encode Encode::string(std::string_view str) {
     return Encode().appendValue(Decode::MT_string, str.size()).append(TW::data(str));
 }
 
@@ -251,7 +251,7 @@ uint64_t Decode::getValue() const {
 
 std::string Decode::getString() const {
     Data strData = getBytes();
-    return std::string((const char*)strData.data(), strData.size()); 
+    return std::string((const char*)strData.data(), strData.size());
 }
 
 Data Decode::getBytes() const {
@@ -264,7 +264,7 @@ Data Decode::getBytes() const {
         throw std::invalid_argument("CBOR bytes/string data too short");
     }
     assert(subStart + typeDesc.byteCount + len <= data->origData.size());
-    return TW::data(data->origData.data() + (subStart + typeDesc.byteCount), len); 
+    return TW::data(data->origData.data() + (subStart + typeDesc.byteCount), len);
 }
 
 bool Decode::isBreak() const {

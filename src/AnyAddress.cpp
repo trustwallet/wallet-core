@@ -6,8 +6,8 @@
 
 #include "AnyAddress.h"
 
-#include <utility>
 #include "Coin.h"
+#include <utility>
 
 namespace TW {
 
@@ -15,7 +15,7 @@ Data AnyAddress::getData() const {
     return TW::addressToData(coin, address);
 }
 
-AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinType coin, const PrefixVariant& prefix) {
+AnyAddress* AnyAddress::createAddress(std::string_view address, enum TWCoinType coin, const PrefixVariant& prefix) {
     const bool hasPrefix = !std::holds_alternative<std::monostate>(prefix);
     auto normalized = hasPrefix ? TW::normalizeAddress(coin, address, prefix) : TW::normalizeAddress(coin, address);
     if (normalized.empty()) {

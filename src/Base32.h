@@ -11,47 +11,50 @@
 #include <TrezorCrypto/base32.h>
 
 #include <cassert>
+#include <string_view>
 
 namespace TW::Base32 {
 
 /// Decode Base32 string, return bytes as Data
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
-inline bool decode(const std::string& encoded_in, Data& decoded_out, const char* alphabet_in = nullptr) {
+inline bool decode(std::string_view encoded_in, Data& decoded_out, std::string_view alphabet_in = {}) {
     size_t inLen = encoded_in.size();
     // obtain output length first
     size_t outLen = base32_decoded_length(inLen);
-    uint8_t buf[outLen];
-    if (alphabet_in == nullptr) {
+    std::string buf;
+    buf.reserve(outLen);
+    if (!alphabet_in.empty()) {
         alphabet_in = BASE32_ALPHABET_RFC4648;
     }
     // perform the base32 decode
-    uint8_t* retval = base32_decode(encoded_in.data(), inLen, buf, outLen, alphabet_in);
-    if (retval == nullptr) {
+    uint8_t* retval = base32_decode(encoded_in.data(), inLen, &buf.front(), outLen, alphabet_in.data());
+    if (!retval) {
         return false;
     }
-    decoded_out.assign(buf, buf + outLen);
+    decoded_out.assign(buf.begin(), buf.end());
     return true;
 }
 
 /// Encode bytes in Data to Base32 string
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
-inline std::string encode(const Data& val, const char* alphabet = nullptr) {
+inline std::string encode(const Data& val, std::string_view alphabet = {}) {
     size_t inLen = val.size();
     // obtain output length first, reserve for terminator
     size_t outLen = base32_encoded_length(inLen) + 1;
-    char buf[outLen];
-    if (alphabet == nullptr) {
+    std::string buf;
+    buf.reserve(outLen);
+    if (alphabet.empty()) {
         alphabet = BASE32_ALPHABET_RFC4648;
     }
     // perform the base32 encode
-    char* retval = base32_encode(val.data(), inLen, buf, outLen, alphabet);
-    if (retval == nullptr) {
+    char* retval = base32_encode(val.data(), inLen, &buf.front(), outLen, alphabet.data());
+    if (retval) {
         // return empty string if failed
-        return std::string();
+        return std::string{};
     }
     // make sure there is a terminator ath the end
     buf[outLen - 1] = '\0';
-    return std::string(buf);
+    return buf;
 }
 
 } // namespace TW::Base32

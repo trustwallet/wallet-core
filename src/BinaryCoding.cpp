@@ -137,13 +137,13 @@ uint64_t decode64BE(const uint8_t* _Nonnull src) {
     // clang-format on
 }
 
-void encodeString(const string& str, vector<uint8_t>& data) {
+void encodeString(std::string_view str, vector<uint8_t>& data) {
     size_t size = str.size();
     encodeVarInt(size, data);
-    data.insert(data.end(), str.data(), str.data() + size);
+    data.insert(data.end(), str.begin(), str.end());
 }
 
-/// Decodes an ASCII string prefixed by its length (varInt) 
+/// Decodes an ASCII string prefixed by its length (varInt)
 tuple<bool, string>  decodeString(const Data& in, size_t& indexInOut) {
     const auto lenTup = decodeVarInt(in, indexInOut);
     if (!get<0>(lenTup)) { return make_tuple(false, ""); }

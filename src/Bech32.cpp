@@ -33,8 +33,8 @@ constexpr std::array<int8_t, 128> charset_rev = {
     6, 4, 2, -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9, 8, 23, -1, 18, 22, 31, 27,
     19, -1, 1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1};
 
-const uint32_t BECH32_XOR_CONST = 0x01;
-const uint32_t BECH32M_XOR_CONST = 0x2bc830a3;
+constexpr uint32_t BECH32_XOR_CONST = 0x01;
+constexpr uint32_t BECH32M_XOR_CONST = 0x2bc830a3;
 
 /** Find the polynomial with value coefficients mod the generator as 30-bit. */
 uint32_t polymod(const Data& values) {
@@ -54,7 +54,7 @@ unsigned char lc(unsigned char c) {
 }
 
 /** Expand a HRP for use in checksum computation. */
-Data expand_hrp(const std::string& hrp) {
+Data expand_hrp(std::string_view hrp) {
     Data ret;
     ret.resize(hrp.size() * 2 + 1);
     for (size_t i = 0; i < hrp.size(); ++i) {
@@ -75,7 +75,7 @@ inline uint32_t xorConstant(ChecksumVariant variant) {
 }
 
 /** Verify a checksum. */
-ChecksumVariant verify_checksum(const std::string& hrp, const Data& values) {
+ChecksumVariant verify_checksum(std::string_view hrp, const Data& values) {
     Data enc = expand_hrp(hrp);
     append(enc, values);
     auto poly = polymod(enc);
@@ -89,7 +89,7 @@ ChecksumVariant verify_checksum(const std::string& hrp, const Data& values) {
 }
 
 /** Create a checksum. */
-Data create_checksum(const std::string& hrp, const Data& values, ChecksumVariant variant) {
+Data create_checksum(std::string_view hrp, const Data& values, ChecksumVariant variant) {
     Data enc = expand_hrp(hrp);
     append(enc, values);
     enc.resize(enc.size() + 6);
@@ -106,7 +106,7 @@ Data create_checksum(const std::string& hrp, const Data& values, ChecksumVariant
 } // namespace
 
 /** Encode a Bech32 string. */
-std::string encode(const std::string& hrp, const Data& values, ChecksumVariant variant) {
+std::string encode(std::string_view hrp, const Data& values, ChecksumVariant variant) {
     Data checksum = create_checksum(hrp, values, variant);
     Data combined = values;
     append(combined, checksum);
@@ -119,7 +119,7 @@ std::string encode(const std::string& hrp, const Data& values, ChecksumVariant v
 }
 
 /** Decode a Bech32 string. */
-std::tuple<std::string, Data, ChecksumVariant> decode(const std::string& str) {
+std::tuple<std::string, Data, ChecksumVariant> decode(std::string_view str) {
     if (str.length() > 120 || str.length() < 2) {
         // too long or too short
         return std::make_tuple(std::string(), Data(), None);

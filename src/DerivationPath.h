@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace TW {
@@ -137,7 +138,7 @@ struct DerivationPath {
     ///
     /// \throws std::invalid_argument if the string is not a valid derivation
     /// path.
-    explicit DerivationPath(const std::string& string);
+    explicit DerivationPath(std::string_view string);
 
     /// String representation.
     std::string string() const noexcept;

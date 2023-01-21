@@ -10,6 +10,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <memory>
 #include <vector>
 #include <map>
@@ -34,7 +35,7 @@ public:
     /// encode a negative int (positive is given)
     static Encode negInt(uint64_t value);
     /// encode a string
-    static Encode string(const std::string& str);
+    static Encode string(std::string_view str);
     /// encode a byte array
     static Encode bytes(const Data& str);
     /// encode an array of elements (of different types)
@@ -118,7 +119,7 @@ public: // decoding
         MT_tag = 6,
         MT_special = 7,
     };
-    
+
 private:
     /// Struct used to keep reference to original data
     struct OrigDataRef {

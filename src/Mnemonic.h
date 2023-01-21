@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 namespace TW {
 
@@ -23,7 +24,7 @@ public:
     static bool isValid(const std::string& mnemonic);
 
     /// Determines whether word is a valid BIP39 English menemonic word.
-    static bool isValidWord(const std::string& word);
+    static bool isValidWord(std::string_view word);
 
     /// Return BIP39 English words that match the given prefix.
     // - A single string is returned, with space-separated list of words (or single word or empty string)
@@ -38,7 +39,7 @@ public:
     // - 'ai' -> 'aim air airport aisle'
     // - 'an' -> 'analyst anchor ancient anger angle angry animal ankle announce annual'
     // - 'a'-> 'abandon ability able about above absent absorb abstract absurd abuse'
-    static std::string suggest(const std::string& prefix);
+    static std::string suggest(std::string_view prefix);
 
     static const int SuggestMaxCount;
 };

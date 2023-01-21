@@ -25,8 +25,8 @@ bool Mnemonic::isValid(const std::string& mnemonic) {
 
 inline const char* const* mnemonicWordlist() { return wordlist; }
 
-bool Mnemonic::isValidWord(const std::string& word) {
-    const char* wordC = word.c_str();
+bool Mnemonic::isValidWord(std::string_view word) {
+    const char* wordC = word.data();
     const auto len = word.length();
     // Although this operation is not security-critical, we aim for constant-time operation here as well
     // (i.e., no early exit on match)
@@ -39,7 +39,7 @@ bool Mnemonic::isValidWord(const std::string& word) {
     return found;
 }
 
-std::string Mnemonic::suggest(const std::string& prefix) {
+std::string Mnemonic::suggest(std::string_view prefix) {
     if (prefix.size() == 0) {
         return "";
     }

@@ -34,7 +34,7 @@ namespace {
 
 uint32_t fingerprint(HDNode* node, Hash::Hasher hasher);
 std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher);
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node);
+bool deserialize(std::string_view extended, TWCurve curve, Hash::Hasher hasher, HDNode* node);
 const char* curveName(TWCurve curve);
 } // namespace
 
@@ -62,7 +62,7 @@ void HDWallet<seedSize>::updateSeedAndEntropy(bool check) {
 }
 
 template <std::size_t seedSize>
-HDWallet<seedSize>::HDWallet(int strength, const std::string& passphrase)
+HDWallet<seedSize>::HDWallet(int strength, std::string_view passphrase)
     : passphrase(passphrase) {
     char buf[MnemonicBufLength];
     const char* mnemonic_chars = mnemonic_generate(strength, buf, MnemonicBufLength);
@@ -75,7 +75,7 @@ HDWallet<seedSize>::HDWallet(int strength, const std::string& passphrase)
 }
 
 template <std::size_t seedSize>
-HDWallet<seedSize>::HDWallet(const std::string& mnemonic, const std::string& passphrase, const bool check)
+HDWallet<seedSize>::HDWallet(std::string_view mnemonic, std::string_view passphrase, const bool check)
     : mnemonic(mnemonic), passphrase(passphrase) {
     if (mnemonic.length() == 0 ||
         (check && !Mnemonic::isValid(mnemonic))) {
@@ -85,7 +85,7 @@ HDWallet<seedSize>::HDWallet(const std::string& mnemonic, const std::string& pas
 }
 
 template <std::size_t seedSize>
-HDWallet<seedSize>::HDWallet(const Data& entropy, const std::string& passphrase)
+HDWallet<seedSize>::HDWallet(const Data& entropy, std::string_view passphrase)
     : passphrase(passphrase) {
     char buf[MnemonicBufLength];
     const char* mnemonic_chars = mnemonic_from_data(entropy.data(), static_cast<int>(entropy.size()), buf, MnemonicBufLength);
@@ -266,7 +266,7 @@ std::string HDWallet<seedSize>::getExtendedPublicKeyAccount(TWPurpose purpose, T
 }
 
 template <std::size_t seedSize>
-std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
+std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(std::string_view extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
 
@@ -303,7 +303,7 @@ std::optional<PublicKey> HDWallet<seedSize>::getPublicKeyFromExtended(const std:
 }
 
 template <std::size_t seedSize>
-std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
+std::optional<PrivateKey> HDWallet<seedSize>::getPrivateKeyFromExtended(std::string_view extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
 
@@ -351,7 +351,7 @@ std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version
     return Base58::bitcoin.encodeCheck(node_data, hasher);
 }
 
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
+bool deserialize(std::string_view extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
     TW::memzero(node);
     const char* curveNameStr = curveName(curve);
     if (curveNameStr == nullptr || std::string(curveNameStr).empty()) {
