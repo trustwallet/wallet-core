@@ -13,6 +13,8 @@ import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType
 import wallet.core.jni.proto.Sui
 
 class TestSuiSigner {
@@ -23,22 +25,17 @@ class TestSuiSigner {
 
     @Test
     fun SuiTransactionSigning() {
-        // TODO: Finalize implementation
-
-        //val transfer = Sui.TransferMessage.newBuilder()
-        //    .setTo("...")
-        //    .setAmount(...)
-        //    ...
-        //    .build()
-        //val signingInput = Sui.SigningInput.newBuilder()
-        //    ...
-        //    .build()
-
-        //val output: Sui.SigningOutput = SuiSigner.sign(signingInput)
-
-        //assertEquals(
-        //    "__EXPECTED_RESULT_DATA__",
-        //    Numeric.toHexString(output.encoded.toByteArray())
-        //)
+        // Successfully broadcasted https://explorer.sui.io/transaction/rxLgxcAqgMg8gphp6eCsSGQcdZnwFYx2SRdwEhnAUC4
+        val txBytes = """
+            AAUCLiNiMy/EzosKCk5EZr5QQZmMVLnvAAAAAAAAACDqj/OT+1+qyLZKV4YLw8kpK3/bTZKspTUmh1pBuUfHPLb0crwkV1LQcBARaxER8XhTNJmK7wAAAAAAAAAgaQEguOdXa+m16IM536nsveakQ4u/GYJAc1fpYGGKEvgBQUP35yxF+cEL5qm153kw18dVeuYB6AMAAAAAAAAttQCskZzd41GsNuNxHYMsbbl2aS4jYjMvxM6LCgpORGa+UEGZjFS57wAAAAAAAAAg6o/zk/tfqsi2SleGC8PJKSt/202SrKU1JodaQblHxzwBAAAAAAAAAOgDAAAAAAAA
+        """.trimIndent()
+        val key =
+            "3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266".toHexBytesInByteString()
+        val signingInput =
+            Sui.SigningInput.newBuilder().setUnsignedTx(txBytes).setPrivateKey(key).build()
+        val result = AnySigner.sign(signingInput, CoinType.SUI, Sui.SigningOutput.parser())
+        val expectedSignature = "AIYRmHDpQesfAx3iWBCMwInf3MZ56ZQGnPWNtECFjcSq0ssAgjRW6GLnFCX24tfDNjSm9gjYgoLmn1No15iFJAtqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg=="
+        assertEquals(result.unsignedTx, txBytes);
+        assertEquals(result.encoded, expectedSignature)
     }
 }
