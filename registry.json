@@ -432,7 +432,6 @@
   {
     "id": "sui",
     "name": "Sui",
-    "displayName": "Sui",
     "coinId": 784,
     "symbol": "SUI",
     "decimals": 9,
