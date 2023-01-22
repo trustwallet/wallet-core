@@ -22,11 +22,11 @@ inline void pad_left(Data& data, const uint32_t size) {
 }
 
 inline Data data(std::string_view data) {
-    return Data(data.begin(), data.end());
+    return Data{data.begin(), data.end()};
 }
 
 inline Data data(const byte* data, size_t size) {
-    return Data(data, data + size);
+    return Data{data, data + size};
 }
 
 inline void append(Data& data, const Data& suffix) {

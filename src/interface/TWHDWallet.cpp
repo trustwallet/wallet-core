@@ -55,7 +55,7 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet) {
 }
 
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
-    return TWStringCreateWithUTF8Bytes(wallet->impl.getMnemonic().c_str());
+    return TWStringCreateWithUTF8Bytes(wallet->impl.getMnemonic().data());
 }
 
 TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
@@ -78,7 +78,7 @@ TWString *_Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet *wallet, TWC
     auto derivationPath = TW::derivationPath(coin, derivation);
     PrivateKey privateKey = wallet->impl.getKey(coin, derivationPath);
     std::string address = deriveAddress(coin, privateKey, derivation);
-    return TWStringCreateWithUTF8Bytes(address.c_str());
+    return TWStringCreateWithUTF8Bytes(address.data());
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath) {

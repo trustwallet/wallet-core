@@ -11,7 +11,9 @@
 #include <TrezorCrypto/base32.h>
 
 #include <cassert>
+#include <cstdint>
 #include <string_view>
+#include <vector>
 
 namespace TW::Base32 {
 
@@ -21,13 +23,12 @@ inline bool decode(std::string_view encoded_in, Data& decoded_out, std::string_v
     size_t inLen = encoded_in.size();
     // obtain output length first
     size_t outLen = base32_decoded_length(inLen);
-    std::string buf;
-    buf.reserve(outLen);
+	std::vector<uint8_t> buf(outLen);
     if (!alphabet_in.empty()) {
         alphabet_in = BASE32_ALPHABET_RFC4648;
     }
     // perform the base32 decode
-    uint8_t* retval = base32_decode(encoded_in.data(), inLen, &buf.front(), outLen, alphabet_in.data());
+    uint8_t* retval = base32_decode(encoded_in.data(), inLen, buf.data(), outLen, alphabet_in.data());
     if (!retval) {
         return false;
     }
