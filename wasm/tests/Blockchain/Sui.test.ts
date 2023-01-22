@@ -19,7 +19,7 @@ describe("Sui", () => {
           )
     });
     const input = TW.Sui.Proto.SigningInput.encode(txDataInput).finish();
-    const outputData = AnySigner.sign(input, CoinType.Sui);
+    const outputData = AnySigner.sign(input, CoinType.sui);
     const output = TW.Sui.Proto.SigningOutput.decode(outputData);
     assert.equal(output.encoded, "AIYRmHDpQesfAx3iWBCMwInf3MZ56ZQGnPWNtECFjcSq0ssAgjRW6GLnFCX24tfDNjSm9gjYgoLmn1No15iFJAtqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==")
   });
