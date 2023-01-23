@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "Data.h"
 
 #include "gtest/gtest.h"
 
@@ -14,3 +15,13 @@ TEST(RustBindgen, MoveParseFunctionArgument) {
     ASSERT_EQ(std::string(result), "8096980000000000");
     free_string(result);
 }
+
+
+/*TEST(RustBindgen, Base64) {
+    auto v = TW::data("hello world!");
+    auto encoded = encode(v);
+    ASSERT_EQ(encoded, "aGVsbG8gd29ybGQh");
+    auto decoded = decode(encoded);
+    std::string str(decoded.begin(), decoded.end());
+    ASSERT_EQ(str, "hello world!");
+}*/

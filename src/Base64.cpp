@@ -10,6 +10,7 @@
 #include <boost/archive/iterators/base64_from_binary.hpp>
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 namespace TW::Base64 {
 
@@ -99,6 +100,23 @@ string encodeBase64Url(const Data& val) {
     encoded.append((3 - val.size() % 3) % 3, '=');
     convertToBase64Url(encoded);
     return encoded;
+}
+
+std::string encode_rust(const Data& val) {
+    char* encoded = encode_base64(val.data(), val.size());
+    std::string encoded_str(encoded);
+    free_string(encoded);
+    return encoded_str;
+}
+
+Data decode_rust(const string& val) {
+    if (val.empty()) {
+        return Data();
+    }
+    auto decoded = decode_base64(val.c_str());
+    std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
+    std::free(decoded.data);
+    return decoded_vec;
 }
 
 } // namespace TW::Base64

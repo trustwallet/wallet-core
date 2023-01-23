@@ -46,6 +46,48 @@ TEST(Base64, decode) {
     EXPECT_EQ("11ff8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d291b", hex(decoded));
 }
 
+TEST(Base64, decodeRust) {
+    auto decoded = decode_rust("SGVsbG8sIHdvcmxkIQ==");
+    EXPECT_EQ(hex(data("Hello, world!")), hex(decoded));
+    decoded = decode_rust("MQ==");
+    EXPECT_EQ(hex(data("1")), hex(decoded));
+    decoded = decode_rust("MTI=");
+    EXPECT_EQ(hex(data("12")), hex(decoded));
+    decoded = decode_rust("MTIz");
+    EXPECT_EQ(hex(data("123")), hex(decoded));
+    decoded = decode_rust("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
+    EXPECT_EQ("11ff8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d291b", hex(decoded));
+    decoded = decode_rust("");
+    EXPECT_EQ("", hex(decoded));
+}
+
+TEST(Base64, EncodeDecodeSui) {
+    auto v = "AAIAAAAAAAAAAAAAAAAAAAAAAAAAAgEAAAAAAAAAINaXMihjlCd4CQVFRPjcNb7QfYP4wGgQyl1xbplvEKUCA3N1aQh0cmFuc2ZlcgACAQCDlY9/fBVEt0yclyDF8RrjSRBfRRsAAAAAAAAAIJttZrU/26Bim7ku4dwY8d3fdabngn0B6dY/hLKgb6+xABQv0f6HrJCZ/1cuDVuxh1BL12XMeC21AKyRnN3jUaw243EdgyxtuXZpG62iKzFvYdk6RMGXxnoWd8RcfwkUAQAAAAAAACDi9GYNIZ0FXpPPi+zdDUuzHfs6MDoxzPuXGPZJq8ZfOAEAAAAAAAAA0AcAAAAAAAA=";
+    auto decoded = decode_rust(v);
+    auto encoded = encode_rust(decoded);
+    ASSERT_EQ(encoded, v);
+}
+
+
+TEST(Base64, encodeRust) {
+    auto encoded = encode_rust(data("Hello, world!"));
+    EXPECT_EQ("SGVsbG8sIHdvcmxkIQ==", encoded);
+    encoded = encode_rust(data("1"));
+    EXPECT_EQ("MQ==", encoded);
+    encoded = encode_rust(data("12"));
+    EXPECT_EQ("MTI=", encoded);
+    encoded = encode_rust(data("123"));
+    EXPECT_EQ("MTIz", encoded);
+    encoded = encode_rust(data("1234"));
+    EXPECT_EQ("MTIzNA==", encoded);
+    encoded = encode_rust(data(""));
+    EXPECT_EQ("", encoded);
+    encoded = encode_rust(data("Lorem ipsum dolor sit amet, consectetur adipiscing elit"));
+    EXPECT_EQ("TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdA==", encoded);
+    encoded = encode_rust(parse_hex("11ff8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d291b"));
+    EXPECT_EQ("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb", encoded);
+}
+
 TEST(Base64, UrlFormat) {
     const std::string const1 = "11003faa8556289975ec991ac9994dfb613abec4ea000d5094e6379080f594e559b330b8";
 

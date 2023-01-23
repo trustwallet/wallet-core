@@ -37,4 +37,16 @@ TEST(SuiSigner, TransferNFT) {
     ASSERT_EQ(result.encoded(), "AIjbyuyg9YX0f8/DXB5XZBnUCOqhUrPDbU9/E/FlzwGtDS57cOL/gZwN3vTV1KiOuN0cr0kxypgJpVLKlhd8hgdqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
 }
 
+TEST(SuiSigner, MoveCall) {
+    // Successfully broadcasted on: https://explorer.sui.io/transaction/3Gg8AcEfokDnA8m7W58ANmeCr8vkSaPWjXMp9sLMScTj
+    Proto::SigningInput input;
+    std::string unsigned_tx = R"(AAIAAAAAAAAAAAAAAAAAAAAAAAAAAgEAAAAAAAAAINaXMihjlCd4CQVFRPjcNb7QfYP4wGgQyl1xbplvEKUCA3N1aQh0cmFuc2ZlcgACAQCdB6Mav5rHiXD0rAWTCxS+ENwxMBsAAAAAAAAAINqDfrJUZebPjUi7xcyR3QcQSA9tOLwxThgYaZ1vMfgfABQU2gJ3ToaOYd1F/R6mXryOZdvpRi21AKyRnN3jUaw243EdgyxtuXZppM+mSjYYEQWDcV/7hFRrAE0VtRwbAAAAAAAAACC5nJxYaYJfa9rfbxSikaEFVmHGuXyCIZoZbMpxMwLebAEAAAAAAAAA0AcAAAAAAAA=)";
+    input.set_unsigned_tx(unsigned_tx);
+    auto privateKey = PrivateKey(parse_hex("3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(result.unsigned_tx(), unsigned_tx);
+    ASSERT_EQ(result.encoded(), "AE8394w/+KOodhLjnKgu21iW0xZur6MA4ajPh31f2xaOI7vs6JHLAHLk5ED3bfJfc5ZehmC6D4DMyrH4F0dA3A1qfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
+}
+
 } // namespace TW::Sui::tests
