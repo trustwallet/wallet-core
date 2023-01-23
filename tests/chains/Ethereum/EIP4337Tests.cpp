@@ -23,23 +23,24 @@ TEST(EthereumEip4337, GetEIP4337LogicInitializeBytecode) {
     }
 }
 
+// https://goerli.etherscan.io/address/0x5a87209b755781cf65feeedd3855ade0317f4a92#readContract
 TEST(EthereumEip4337, GetEIP4337DeploymentAddress) {
     // C++
     {
-        const std::string& factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
-        const std::string& logicAddress = "0x5C9eb5D6a6C2c1B3EFc52255C0b356f116f6f66D";
-        const std::string& ownerAddress = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988";
+        const std::string& factoryAddress = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
+        const std::string& logicAddress = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
+        const std::string& ownerAddress = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
         const std::string& deploymentAddress = Ethereum::getEIP4337DeploymentAddress(factoryAddress, logicAddress, ownerAddress);
-        ASSERT_EQ(deploymentAddress, "0xbEaA87cEEaC906C21aaacd258FbFB87CfA3c90a8");
+        ASSERT_EQ(deploymentAddress, "0x8cE23B8769ac01d0df0d5f47Be1A38FeA97F3879");
     }
 
     // C
     {
-        const auto factoryAddress = STRING("0xd9145CCE52D386f254917e481eB44e9943F39138");
-        const auto logicAddress = STRING("0x5C9eb5D6a6C2c1B3EFc52255C0b356f116f6f66D");
-        const auto ownerAddress = STRING("0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988");
+        const auto factoryAddress = STRING("0x5A87209b755781cF65fEeEdd3855ade0317f4a92");
+        const auto logicAddress = STRING("0x21cc27d7db4fa19857a3702653a7a67ee30ca620");
+        const auto ownerAddress = STRING("0x78d9C32b96Bb872D66D51818227563f44e67E238");
         const auto& result = WRAPS(TWEthereumEip4337GetDeploymentAddress(factoryAddress.get(), logicAddress.get(), ownerAddress.get()));
-        assertStringsEqual(result, "0xbEaA87cEEaC906C21aaacd258FbFB87CfA3c90a8");
+        assertStringsEqual(result, "0x8cE23B8769ac01d0df0d5f47Be1A38FeA97F3879");
     }
 }
 
