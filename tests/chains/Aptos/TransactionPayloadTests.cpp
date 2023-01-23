@@ -10,6 +10,34 @@
 
 namespace TW::Aptos::tests {
 
+TEST(AptosTransactionPayload, PancakeSwapPayload) {
+    auto pancakeSwapPayload=R"(
+    {
+"arguments": [
+  "0xc95db29a67a848940829b3df6119b5e67b788ff0248676e4484c7c6f29c0f5e6"
+],
+"function": "0xc23c3b70956ce8d88fb18ad9ed3b463fe873cb045db3f6d2e2fb15b9aab71d50::IFO::release",
+"type": "entry_function_payload",
+"type_arguments": [
+  "0x48e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced90517::coins::BUSD",
+  "0x48e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced90517::coins::DAI",
+  "0x9936836587ca33240d3d3f91844651b16cb07802faf5e34514ed6f78580deb0a::uints::U1"
+]
+}
+)"_json;
+
+    TransactionPayload payload = EntryFunction::from_json(pancakeSwapPayload);
+    BCS::Serializer serializer;
+    Address sender("0x2ce519d8cd60e0870e874e8000e8cbc87c8172e6acdbec83662b4c8cc3fc3de9");
+    std::uint64_t sequenceNumber{75};
+    std::uint64_t gasAmount{488130};
+    std::uint64_t gasPrice{100};
+    std::uint64_t expirationTime{199940521552};
+    std::uint8_t chainId{1};
+    serializer << sender << sequenceNumber << payload << gasAmount << gasPrice << expirationTime << chainId;
+    ASSERT_EQ(hex(serializer.bytes), "2ce519d8cd60e0870e874e8000e8cbc87c8172e6acdbec83662b4c8cc3fc3de94b0000000000000002c23c3b70956ce8d88fb18ad9ed3b463fe873cb045db3f6d2e2fb15b9aab71d500349464f0772656c65617365030748e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced9051705636f696e730442555344000748e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced9051705636f696e730344414900079936836587ca33240d3d3f91844651b16cb07802faf5e34514ed6f78580deb0a0575696e747302553100012120c95db29a67a848940829b3df6119b5e67b788ff0248676e4484c7c6f29c0f5e6c2720700000000006400000000000000503e628d2e00000001");
+}
+
 TEST(AptosTransactionPayload, PayLoadBasis) {
     ModuleId module(Address::one(), "coin");
     std::uint64_t amount{1000};
