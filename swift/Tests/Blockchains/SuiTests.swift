@@ -27,12 +27,14 @@ class SuiTests: XCTestCase {
 AAUCLiNiMy/EzosKCk5EZr5QQZmMVLnvAAAAAAAAACDqj/OT+1+qyLZKV4YLw8kpK3/bTZKspTUmh1pBuUfHPLb0crwkV1LQcBARaxER8XhTNJmK7wAAAAAAAAAgaQEguOdXa+m16IM536nsveakQ4u/GYJAc1fpYGGKEvgBQUP35yxF+cEL5qm153kw18dVeuYB6AMAAAAAAAAttQCskZzd41GsNuNxHYMsbbl2aS4jYjMvxM6LCgpORGa+UEGZjFS57wAAAAAAAAAg6o/zk/tfqsi2SleGC8PJKSt/202SrKU1JodaQblHxzwBAAAAAAAAAOgDAAAAAAAA
 """
         let input = SuiSigningInput.with {
-            $0.unsignedTx = txBytes
+            $0.signDirectMessage = SuiSignDirect.with {
+                $0.unsignedTxMsg = txBytes
+            }
             $0.privateKey = privateKeyData
         }
         let output: SuiSigningOutput = AnySigner.sign(input: input, coin: .sui)
         XCTAssertEqual(output.unsignedTx, txBytes)
         let expectedSignature = "AIYRmHDpQesfAx3iWBCMwInf3MZ56ZQGnPWNtECFjcSq0ssAgjRW6GLnFCX24tfDNjSm9gjYgoLmn1No15iFJAtqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg=="
-        XCTAssertEqual(output.encoded, expectedSignature)
+        XCTAssertEqual(output.signature, expectedSignature)
     }
 }
