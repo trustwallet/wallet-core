@@ -60,19 +60,21 @@ namespace TW::Ethereum::tests {
     TEST(EthereumEip1014, Example2) {
         const std::string& from = "0xdeadbeef00000000000000000000000000000000";
         const Data salt = parse_hex("0x000000000000000000000000feed000000000000000000000000000000000000");
-        Data initCodeHash = Hash::keccak256(parse_hex("0x00"));
-        const auto& addressData = Ethereum::create2Address(from, salt, initCodeHash);
-        ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0xD04116cDd17beBE565EB2422F2497E06cC1C9833");
-        ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0xD04116cDd17beBE565EB2422F2497E06cC1C9833");
+        Data initCode = parse_hex("0x00");
+        initCode.resize(32);
+        const auto& addressData = Ethereum::create2Address(from, salt, initCode);
+        ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0x2DB27D1d6BE32C9abfA484BA3d591101881D4B9f");
+        ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCode), "0x2DB27D1d6BE32C9abfA484BA3d591101881D4B9f");
     }
 
     TEST(EthereumEip1014, Example3) {
         const std::string& from = "0x0000000000000000000000000000000000000000";
         const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
-        Data initCodeHash = Hash::keccak256(parse_hex("0xdeadbeef"));
-        const auto& addressData = Ethereum::create2Address(from, salt, initCodeHash);
-        ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0x70f2b2914A2a4b783FaEFb75f459A580616Fcb5e");
-        ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0x70f2b2914A2a4b783FaEFb75f459A580616Fcb5e");
+        Data initCode = parse_hex("0xdeadbeef");
+        initCode.resize(32);
+        const auto& addressData = Ethereum::create2Address(from, salt, initCode);
+        ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0x219438aC82230Cb9A9C13Cd99D324fA1d66CF018");
+        ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCode), "0x219438aC82230Cb9A9C13Cd99D324fA1d66CF018");
     }
 
     TEST(EthereumEip1014, Example4) {
@@ -101,7 +103,7 @@ namespace TW::Ethereum::tests {
         ASSERT_EQ(Ethereum::checksumed(Ethereum::Address(hexEncoded(addressData))), "0xE33C0C7F7df4809055C3ebA6c09CFe4BaF1BD9e0");
         ASSERT_EQ(Ethereum::create2AddressString(from, salt, initCodeHash), "0xE33C0C7F7df4809055C3ebA6c09CFe4BaF1BD9e0");
     }
-    
+
     TEST(EthereumEip1014, Example7) {
         const std::string& from = "0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47";
         const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");

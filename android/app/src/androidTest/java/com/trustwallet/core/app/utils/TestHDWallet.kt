@@ -41,7 +41,7 @@ class TestHDWallet {
 
         // Retrieve Stark Private key part
         val ethMsg = "Only sign this request if you’ve initiated an action with Immutable X."
-        val ethSignature = EthereumMessageSigner.signMessage(ethPrivateKey, ethMsg)
+        val ethSignature = EthereumMessageSigner.signMessageImmutableX(ethPrivateKey, ethMsg)
         assertEquals(ethSignature, "18b1be8b78807d3326e28bc286d7ee3d068dcd90b1949ce1d25c1f99825f26e70992c5eb7f44f76b202aceded00d74f771ed751f2fe538eec01e338164914fe001")
         val starkPrivateKey = StarkWare.getStarkKeyFromSignature(starkDerivationPath, ethSignature)
         val starkPublicKey = starkPrivateKey.getPublicKeyByType(PublicKeyType.STARKEX)
@@ -50,7 +50,7 @@ class TestHDWallet {
 
         // Account register
         val ethMsgToRegister = "Only sign this key linking request from Immutable X"
-        val ethSignatureToRegister = EthereumMessageSigner.signMessage(ethPrivateKey, ethMsgToRegister)
+        val ethSignatureToRegister = EthereumMessageSigner.signMessageImmutableX(ethPrivateKey, ethMsgToRegister)
         assertEquals(ethSignatureToRegister, "646da4160f7fc9205e6f502fb7691a0bf63ecbb74bbb653465cd62388dd9f56325ab1e4a9aba99b1661e3e6251b42822855a71e60017b310b9f90e990a12e1dc01")
         val starkMsg = "463a2240432264a3aa71a5713f2a4e4c1b9e12bbb56083cd56af6d878217cf"
         val starkSignature = StarkExMessageSigner.signMessage(starkPrivateKey, starkMsg)
