@@ -57,7 +57,7 @@ pub extern fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_c
         TransactionArgument::U8(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::U64(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::U128(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
-        TransactionArgument::Address(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
+        TransactionArgument::Address(v) => hex::encode(bcs::to_bytes(&bcs::to_bytes(&v).unwrap()).unwrap()),
         TransactionArgument::U8Vector(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::Bool(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
     };
@@ -83,5 +83,14 @@ mod tests {
 
         let str = unsafe { CStr::from_ptr(parse_function_argument_to_bcs("5047445908\0".as_ptr() as *const c_char)).to_str().unwrap() };
         assert_eq!(str, "94e9d92c01000000");
+    }
+
+    #[test]
+    fn tests_function_argument_to_bcs_another() {
+        let str = unsafe { CStr::from_ptr(parse_function_argument_to_bcs("0xc95db29a67a848940829b3df6119b5e67b788ff0248676e4484c7c6f29c0f5e6\0".as_ptr() as *const c_char)).to_str().unwrap() };
+        let decoded = hex::decode(str).unwrap();
+        let v = vec![decoded];
+        let t = hex::encode(bcs::to_bytes(&v).unwrap());
+        assert_eq!(t, "012120c95db29a67a848940829b3df6119b5e67b788ff0248676e4484c7c6f29c0f5e6");
     }
 }
