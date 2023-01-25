@@ -108,6 +108,7 @@ public:
 enum TransactionType: uint8_t {
     TxType_OptionalAccessList = 0x01,
     TxType_Eip1559 = 0x02,
+    TxType_Eip4337 = 0x03,
 };
 
 /// Base class for various typed transactions.
@@ -167,6 +168,61 @@ public:
         , gasLimit(std::move(gasLimit))
         , to(std::move(to))
         , amount(std::move(amount)) {}
+};
+
+/// EIP4337 UserOperation
+// https://github.com/ethereum/EIPs/blob/3fd65b1a782912bfc18cb975c62c55f733c7c96e/EIPS/eip-4337.md#specification
+class TransactionEip4337: public TransactionTyped {
+public:
+    Data sender;
+    Data initCode;
+    uint256_t gasLimit;
+    uint256_t verificationGasLimit;
+    uint256_t maxFeePerGas;
+    uint256_t maxInclusionFeePerGas;
+    uint256_t preVerificationGas;
+    Data paymasterAndData;
+
+    // Factory methods
+    // Create a native transfer transaction
+    static std::shared_ptr<TransactionEip4337> buildNativeTransfer(const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                   const uint256_t& nonce,
+                                                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                   const Data& toAddress, const uint256_t& amount, const Data& paymasterAndData = {});
+//    // Create an ERC20 token transfer transaction
+//    static std::shared_ptr<TransactionEip4337> buildERC20Transfer(const uint256_t& nonce,
+//                                                                  const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+//                                                                  const Data& tokenContract, const Data& toAddress, const uint256_t& amount);
+//    // Create an ERC20 approve transaction
+//    static std::shared_ptr<TransactionEip4337> buildERC20Approve(const uint256_t& nonce,
+//                                                                 const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+//                                                                 const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount);
+//    // Create an ERC721 NFT transfer transaction
+//    static std::shared_ptr<TransactionEip4337> buildERC721Transfer(const uint256_t& nonce,
+//                                                                   const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+//                                                                   const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId);
+//    // Create an ERC1155 NFT transfer transaction
+//    static std::shared_ptr<TransactionEip4337> buildERC1155Transfer(const uint256_t& nonce,
+//                                                                    const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+//                                                                    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
+
+    virtual Data preHash(const uint256_t chainID) const;
+    virtual Data serialize() const;
+    virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
+
+public:
+    TransactionEip4337(const Data& sender, const uint256_t& nonce, const Data& initCode,
+                       const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                       const Data& payload = {}, const Data& paymasterAndData = {})
+        : TransactionTyped(TxType_Eip4337, nonce, payload)
+        , sender(std::move(sender))
+        , initCode(std::move(initCode))
+        , gasLimit(std::move(gasLimit))
+        , verificationGasLimit(std::move(verificationGasLimit))
+        , maxFeePerGas(std::move(maxFeePerGas))
+        , maxInclusionFeePerGas(std::move(maxInclusionFeePerGas))
+        , preVerificationGas(std::move(preVerificationGas))
+        , paymasterAndData(std::move(paymasterAndData)) {}
 };
 
 } // namespace TW::Ethereum

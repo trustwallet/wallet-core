@@ -15,6 +15,15 @@
 
 namespace TW::Ethereum::tests {
 
+TEST(EthereumEip4337, GetEIP4337AccountInitializeBytecode) {
+    {
+        const std::string& ownerAddress = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+        const std::string& factoryAddress = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
+        const auto& initializeEncoded = Ethereum::getEIP4337AccountInitializeBytecode(ownerAddress, factoryAddress);
+        ASSERT_EQ(hexEncoded(initializeEncoded), "0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000");
+    }
+}
+
 TEST(EthereumEip4337, GetEIP4337LogicInitializeBytecode) {
     {
         const std::string& ownerAddress = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988";

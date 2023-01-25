@@ -11,13 +11,28 @@
 #include "HexCoding.h"
 #include <iostream>
 #include "ABI.h"
+#include "RLP.h"
 
 namespace TW::Ethereum {
+
+Data getEIP4337AccountInitializeBytecode(const std::string& ownerAddress, const std::string& factoryAddress) {
+    auto createAccountFunc = ABI::Function("createAccount", std::vector<std::shared_ptr<ABI::ParamBase>>{
+                                                          std::make_shared<ABI::ParamAddress>(parse_hex(ownerAddress)),
+                                                              std::make_shared<ABI::ParamUInt256>(0)
+    });
+    Data createAccountFuncEncoded;
+    createAccountFunc.encode(createAccountFuncEncoded);
+
+    Data envelope;
+    append(envelope, parse_hex(factoryAddress));
+    append(envelope, createAccountFuncEncoded);
+    return envelope;
+}
 
 Data getEIP4337LogicInitializeBytecode(const std::string& ownerAddress) {
     auto initializeFunc = ABI::Function("initialize", std::vector<std::shared_ptr<ABI::ParamBase>>{
                                                           std::make_shared<ABI::ParamAddress>(parse_hex(ownerAddress))
-                                                      });
+    });
     Data initializeFuncEncoded;
     initializeFunc.encode(initializeFuncEncoded);
     return initializeFuncEncoded;
