@@ -30,7 +30,7 @@ namespace TW::Sui {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto protoOutput = Proto::SigningOutput();
     auto unsignedTx = input.sign_direct_message().unsigned_tx_msg();
-    auto unsignedTxData = TW::Base64::decode_rust(unsignedTx);
+    auto unsignedTxData = TW::Base64::decode(unsignedTx);
     Data toSign{TransactionData, V0, IntentAppId::Sui};
     append(toSign, unsignedTxData);
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -38,7 +38,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     append(signatureScheme, privateKey.sign(toSign, TWCurveED25519));
     append(signatureScheme, privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes);
     protoOutput.set_unsigned_tx(unsignedTx);
-    protoOutput.set_signature(TW::Base64::encode_rust(signatureScheme));
+    protoOutput.set_signature(TW::Base64::encode(signatureScheme));
     return protoOutput;
 }
 
