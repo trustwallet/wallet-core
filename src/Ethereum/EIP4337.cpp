@@ -11,7 +11,6 @@
 #include "HexCoding.h"
 #include <iostream>
 #include "ABI.h"
-#include "RLP.h"
 
 namespace TW::Ethereum {
 
