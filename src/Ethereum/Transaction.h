@@ -186,9 +186,9 @@ public:
     // Factory methods
     // Create a native transfer transaction
     static std::shared_ptr<TransactionEip4337> buildNativeTransfer(const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                   const uint256_t& nonce,
+                                                                   const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
                                                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                   const Data& toAddress, const uint256_t& amount, const Data& paymasterAndData = {});
+                                                                   const Data& paymasterAndData = {});
 //    // Create an ERC20 token transfer transaction
 //    static std::shared_ptr<TransactionEip4337> buildERC20Transfer(const uint256_t& nonce,
 //                                                                  const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
@@ -207,7 +207,7 @@ public:
 //                                                                    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     virtual Data preHash(const uint256_t chainID) const;
-    virtual Data serialize() const;
+    virtual Data serialize(const uint256_t chainID) const;
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
 
 public:

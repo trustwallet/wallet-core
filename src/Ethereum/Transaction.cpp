@@ -215,10 +215,10 @@ TransactionEip1559::buildERC1155Transfer(const uint256_t& nonce,
 
 /// TransactionEip4337
 Data TransactionEip4337::preHash(const uint256_t chainID) const {
-    return Hash::keccak256(serialize());
+    return Hash::keccak256(serialize(chainID));
 }
 
-Data TransactionEip4337::serialize() const {
+Data TransactionEip4337::serialize(const uint256_t chainID) const {
     auto p = ABI::ParamTuple(std::vector<std::shared_ptr<ABI::ParamBase>>{
         std::make_shared<ABI::ParamAddress>(sender),
         std::make_shared<ABI::ParamUInt256>(nonce),
@@ -226,16 +226,16 @@ Data TransactionEip4337::serialize() const {
         std::make_shared<ABI::ParamByteArray>(payload),
         std::make_shared<ABI::ParamUInt256>(gasLimit),
         std::make_shared<ABI::ParamUInt256>(verificationGasLimit),
+        std::make_shared<ABI::ParamUInt256>(preVerificationGas),
         std::make_shared<ABI::ParamUInt256>(maxFeePerGas),
         std::make_shared<ABI::ParamUInt256>(maxInclusionFeePerGas),
-        std::make_shared<ABI::ParamUInt256>(preVerificationGas),
         std::make_shared<ABI::ParamByteArray>(paymasterAndData),
         std::make_shared<ABI::ParamByteArray>(parse_hex("0x"))
     });
     Data encoded;
     p.encode(encoded);
 
-    return encoded;
+    return Data(encoded.begin(), encoded.end() - 32); // remove trailing word (zero-length signature)
 }
 
 Data TransactionEip4337::encoded(const Signature& signature, const uint256_t chainID) const {
@@ -259,11 +259,11 @@ Data TransactionEip4337::encoded(const Signature& signature, const uint256_t cha
 
 std::shared_ptr<TransactionEip4337>
 TransactionEip4337::buildNativeTransfer(const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                        const uint256_t& nonce,
+                                        const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
                                         const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                        const Data& toAddress, const uint256_t& amount, const Data& paymasterAndData) {
+                                        const Data& paymasterAndData) {
     return std::make_shared<TransactionEip4337>(
-        Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress)),
+        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
         nonce,
         Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress)),
         gasLimit,
@@ -271,7 +271,7 @@ TransactionEip4337::buildNativeTransfer(const Data& factoryAddress, const Data& 
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        paymasterAndData,
+        Ethereum::getEIP4337ExecuteBytecode(toAddress, amount, {}),
         paymasterAndData
         );
 }
