@@ -89,7 +89,10 @@ enum TransactionMode {
     Legacy = 0;
 
     // Enveloped transaction EIP2718 (with type 0x2), fee is according to EIP1559 (base fee, inclusion fee, ...) 
-    Enveloped = 1; 
+    Enveloped = 1;
+
+    // EIP4337-compatible UserOperation
+    EIP4337 = 2;
 }
 
 // Input data necessary to create a signed transaction.
@@ -101,33 +104,54 @@ message SigningInput {
     // Nonce (uint256, serialized little endian)
     bytes nonce = 2;
 
+    // [EIP4337] Entry point contract address
+    string entry_point = 3;
+
+    // [EIP4337] Account factory contract address
+    string account_factory = 4;
+
+    // [EIP4337] Account logic contract address
+    string account_logic = 5;
+
+    // [EIP4337] The initCode of the account (needed if and only if the account is not yet on-chain and needs to be created)
+    string sender = 6;
+
+    // [EIP4337] Whether the smart contract for this address has already been deployed
+    bool is_account_deployed = 7;
+
     // Transaction version selector: Legacy or enveloped, has impact on fee structure.
     // Default is Legacy (value 0)
-    TransactionMode tx_mode = 3;
+    TransactionMode tx_mode = 8;
 
     // Gas price (uint256, serialized little endian)
     // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
-    bytes gas_price = 4;
+    bytes gas_price = 9;
 
     // Gas limit (uint256, serialized little endian)
-    bytes gas_limit = 5;
-
-    // Maximum optional inclusion fee (aka tip) (uint256, serialized little endian)
-    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
-    bytes max_inclusion_fee_per_gas = 6;
+    bytes gas_limit = 10;
 
     // Maximum fee (uint256, serialized little endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
-    bytes max_fee_per_gas = 7;
+    bytes max_fee_per_gas = 11;
+
+    // Maximum optional inclusion fee (aka tip) (uint256, serialized little endian)
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_inclusion_fee_per_gas = 12;
+
+    // [EIP4337] The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
+    bytes pre_verification_gas = 13;
+
+    // [EIP4337] The amount of gas to allocate for the verification step
+    bytes verification_gas_limit = 14;
 
     // Recipient's address.
-    string to_address = 8;
+    string to_address = 15;
 
     // The secret private key used for signing (32 bytes).
-    bytes private_key = 9;
+    bytes private_key = 16;
 
     // The payload transaction
-    Transaction transaction = 10;
+    Transaction transaction = 17;
 }
 
 // Result containing the signed and encoded transaction.

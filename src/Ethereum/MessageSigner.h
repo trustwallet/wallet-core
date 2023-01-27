@@ -45,6 +45,7 @@ public:
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
     static constexpr auto MessagePrefix = "Ethereum Signed Message:\n";
     static constexpr std::uint8_t EthereumPrefix{0x19};
+    static Data generateMessage(const std::string& message);
 };
 
 } // namespace TW::Ethereum

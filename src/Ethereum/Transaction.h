@@ -22,6 +22,7 @@ namespace TW::Ethereum {
 /// R-S-V Signature values
 struct Signature {
 public:
+    Data full;
     uint256_t r, s, v;
 };
 
@@ -174,6 +175,7 @@ public:
 // https://github.com/ethereum/EIPs/blob/3fd65b1a782912bfc18cb975c62c55f733c7c96e/EIPS/eip-4337.md#specification
 class TransactionEip4337: public TransactionTyped {
 public:
+    Data entryPoint;
     Data sender;
     Data initCode;
     uint256_t gasLimit;
@@ -185,8 +187,8 @@ public:
 
     // Factory methods
     // Create a native transfer transaction
-    static std::shared_ptr<TransactionEip4337> buildNativeTransfer(const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                   const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
+    static std::shared_ptr<TransactionEip4337> buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                   const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
                                                                    const Data& paymasterAndData = {});
 //    // Create an ERC20 token transfer transaction
@@ -211,10 +213,11 @@ public:
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
 
 public:
-    TransactionEip4337(const Data& sender, const uint256_t& nonce, const Data& initCode,
+    TransactionEip4337(const Data& entryPoint, const Data& sender, const uint256_t& nonce, const Data& initCode,
                        const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
                        const Data& payload = {}, const Data& paymasterAndData = {})
         : TransactionTyped(TxType_Eip4337, nonce, payload)
+        , entryPoint(std::move(entryPoint))
         , sender(std::move(sender))
         , initCode(std::move(initCode))
         , gasLimit(std::move(gasLimit))

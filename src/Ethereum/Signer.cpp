@@ -87,7 +87,7 @@ Signature Signer::signatureDataToStructSimple(const Data& signature) noexcept {
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
     import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    return Signature{r, s, v};
+    return Signature{signature, r, s, v};
 }
 
 Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, const Data& signature) noexcept {
@@ -125,6 +125,16 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     uint256_t gasLimit = load(input.gas_limit());
     uint256_t maxInclusionFeePerGas = load(input.max_inclusion_fee_per_gas());
     uint256_t maxFeePerGas = load(input.max_fee_per_gas());
+
+    // EIP4337
+    Data entryPointAddress = addressStringToData(input.entry_point());
+    Data accountFactoryAddress = addressStringToData(input.account_factory());
+    Data accountLogicAddress = addressStringToData(input.account_logic());
+    Data senderAddress = addressStringToData(input.sender());
+    bool isAccountDeployed = input.is_account_deployed();
+    uint256_t preVerificationGas = load(input.pre_verification_gas());
+    uint256_t verificationGasLimit = load(input.verification_gas_limit());
+
     switch (input.transaction().transaction_oneof_case()) {
     case Proto::Transaction::kTransfer: {
         switch (input.tx_mode()) {
@@ -142,6 +152,11 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* to: */ toAddress,
                 /* amount: */ load(input.transaction().transfer().amount()),
                 /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
+        case Proto::TransactionMode::EIP4337:
+            return TransactionEip4337::buildNativeTransfer(entryPointAddress, accountFactoryAddress, accountLogicAddress, senderAddress,
+                /* to: */ toAddress,
+                /* amount: */ load(input.transaction().transfer().amount()),
+                nonce, isAccountDeployed, gasLimit, verificationGasLimit, maxFeePerGas, maxInclusionFeePerGas, preVerificationGas);
         }
     }
 
