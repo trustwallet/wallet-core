@@ -453,7 +453,7 @@
     "info": {
       "url": "https://sui.io/",
       "source": "https://github.com/MystenLabs/sui",
-      "rpc": "https://fullnode.devnet.sui.io",
+      "rpc": "https://fullnode.testnet.sui.io",
       "documentation": "https://docs.sui.io/"
     }
   },
