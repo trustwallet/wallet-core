@@ -343,14 +343,31 @@ TransactionEip4337::buildERC20Approve(const Data& entryPointAddress, const Data&
         paymasterAndData
     );
 }
-//
-//std::shared_ptr<TransactionEip4337>
-//TransactionEip4337::buildERC721Transfer(const uint256_t& nonce,
-//                                        const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
-//                                        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId) {
-//    return std::make_shared<TransactionEip4337>(nonce, maxInclusionFeePerGas, maxFeePerGas, gasPrice, tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId));
-//}
-//
+
+std::shared_ptr<TransactionEip4337>
+TransactionEip4337::buildERC721Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce, const bool& isAccountDeployed,
+                                        const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                        const Data& paymasterAndData) {
+    Data initCode = {};
+    if (!isAccountDeployed) {
+        initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
+    }
+    return std::make_shared<TransactionEip4337>(
+        entryPointAddress,
+        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
+        nonce,
+        initCode,
+        gasLimit,
+        verificationGasLimit,
+        maxFeePerGas,
+        maxInclusionFeePerGas,
+        preVerificationGas,
+        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId)),
+        paymasterAndData
+    );
+}
+
 //std::shared_ptr<TransactionEip4337>
 //TransactionEip4337::buildERC1155Transfer(const uint256_t& nonce,
 //                                         const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,

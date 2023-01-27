@@ -201,10 +201,11 @@ public:
                                                                  const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                                                  const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
                                                                  const Data& paymasterAndData = {});
-//    // Create an ERC721 NFT transfer transaction
-//    static std::shared_ptr<TransactionEip4337> buildERC721Transfer(const uint256_t& nonce,
-//                                                                   const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
-//                                                                   const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId);
+    // Create an ERC721 NFT transfer transaction
+    static std::shared_ptr<TransactionEip4337> buildERC721Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                   const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                   const Data& paymasterAndData = {});
 //    // Create an ERC1155 NFT transfer transaction
 //    static std::shared_ptr<TransactionEip4337> buildERC1155Transfer(const uint256_t& nonce,
 //                                                                    const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
