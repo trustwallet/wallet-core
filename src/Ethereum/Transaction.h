@@ -191,10 +191,11 @@ public:
                                                                    const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
                                                                    const Data& paymasterAndData = {});
-//    // Create an ERC20 token transfer transaction
-//    static std::shared_ptr<TransactionEip4337> buildERC20Transfer(const uint256_t& nonce,
-//                                                                  const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
-//                                                                  const Data& tokenContract, const Data& toAddress, const uint256_t& amount);
+    // Create an ERC20 token transfer transaction
+    static std::shared_ptr<TransactionEip4337> buildERC20Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                  const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                  const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                  const Data& paymasterAndData = {});
 //    // Create an ERC20 approve transaction
 //    static std::shared_ptr<TransactionEip4337> buildERC20Approve(const uint256_t& nonce,
 //                                                                 const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
