@@ -113,8 +113,8 @@ message SigningInput {
     // [EIP4337] Account logic contract address
     string account_logic = 5;
 
-    // [EIP4337] The initCode of the account (needed if and only if the account is not yet on-chain and needs to be created)
-    string sender = 6;
+    // [EIP4337] Public address of the account signer
+    string owner = 6;
 
     // [EIP4337] Whether the smart contract for this address has already been deployed
     bool is_account_deployed = 7;

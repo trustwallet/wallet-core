@@ -190,7 +190,7 @@ public:
     static std::shared_ptr<TransactionEip4337> buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                                                    const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                   const Data& paymasterAndData = {});
+                                                                   const Data& paymasterAndData = {}, const Data& payload = {});
     // Create an ERC20 token transfer transaction
     static std::shared_ptr<TransactionEip4337> buildERC20Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                                                   const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,

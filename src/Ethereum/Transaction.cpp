@@ -276,7 +276,7 @@ std::shared_ptr<TransactionEip4337>
 TransactionEip4337::buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                         const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                         const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                        const Data& paymasterAndData) {
+                                        const Data& paymasterAndData, const Data& payload) {
     Data initCode = {};
     if (!isAccountDeployed) {
         initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
@@ -291,7 +291,7 @@ TransactionEip4337::buildNativeTransfer(const Data& entryPointAddress, const Dat
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(toAddress, amount, {}),
+        Ethereum::getEIP4337ExecuteBytecode(toAddress, amount, payload),
         paymasterAndData
         );
 }
