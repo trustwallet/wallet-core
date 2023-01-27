@@ -194,4 +194,32 @@ TEST(EthereumSigner, EIP4337_ERC20_Transfer_Account_Deployed) {
     EXPECT_EQ(result, "{\"callData\":\"0xb61d27f600000000000000000000000098339d8c260052b7ad81c28c16c0b98420f2b46a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"63374\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"6\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"47888\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xd006c93d6a8753b5e7c1e6349de0dea34eab2e7a533106e0f2e1a3a3b013c8e97b007546dab9d7b8fc471ad14ff2e8aa351dc4f1ecb63bf20f33858dc7366cbe1c\",\"verificationGasLimit\":\"100000\"}");
 }
 
+TEST(EthereumSigner, EIP4337_ERC20_Approve_Account_Deployed) {
+    const uint256_t chainID = 5;
+    const auto transaction = TransactionEip4337::buildERC20Approve(
+        parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
+        parse_hex("0x5A87209b755781cF65fEeEdd3855ade0317f4a92"),
+        parse_hex("0x21cc27d7db4fa19857a3702653a7a67ee30ca620"),
+        parse_hex("0x78d9C32b96Bb872D66D51818227563f44e67E238"),
+        parse_hex("0x98339d8c260052b7ad81c28c16c0b98420f2b46a"),
+        parse_hex("0xce642355Fa553f408C34a2650Ad2F4A1634d033a"),
+        0x186a0,
+        0x9,
+        true,
+        0xf78e,
+        0x186a0,
+        0x168ad5950f,
+        0xf,
+        0xbb10);
+
+    const auto serialized = transaction->serialize(chainID);
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto signature = Signer::sign(key, chainID, transaction);
+    const auto encoded = transaction->encoded(signature, chainID);
+    const auto result = std::string(encoded.begin(), encoded.end());
+
+    // https://goerli.etherscan.io/tx/0xa267136c0a66534f86b04ef5ba0939e22b547d71ddc2e0ab31018696ef1c916f
+    EXPECT_EQ(result, "{\"callData\":\"0xb61d27f600000000000000000000000098339d8c260052b7ad81c28c16c0b98420f2b46a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"63374\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"9\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"47888\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x262a67dd8cf3d16a72b7809b3b5ed55e9f4c2b93eedd5a3c6be035fbbd7111164464ec933d0fdfa359e266e318f3ac22702ae428ce14fc142e4475603e6ec15e1c\",\"verificationGasLimit\":\"100000\"}");
+}
+
 } // namespace TW::Ethereum
