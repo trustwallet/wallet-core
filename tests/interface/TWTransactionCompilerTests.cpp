@@ -120,7 +120,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     ));
 
     // Check, by parsing
-    EXPECT_EQ((int)TWDataSize(txInputData0.get()), 61);
+    EXPECT_EQ((int)TWDataSize(txInputData0.get()), 62);
     Ethereum::Proto::SigningInput signingInput;
     ASSERT_TRUE(signingInput.ParseFromArray(TWDataBytes(txInputData0.get()), (int)TWDataSize(txInputData0.get())));
     EXPECT_EQ(hex(signingInput.chain_id()), "01");
@@ -140,7 +140,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     // Serialize back, this shows how to serialize SigningInput protobuf to byte array
     const auto txInputDataData = data(signingInput.SerializeAsString());
     const auto txInputData = WRAPD(TWDataCreateWithBytes(txInputDataData.data(), txInputDataData.size()));
-    EXPECT_EQ((int)TWDataSize(txInputData.get()), 75);
+    EXPECT_EQ((int)TWDataSize(txInputData.get()), 76);
 
     /// Step 2: Obtain preimage hash
     const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));

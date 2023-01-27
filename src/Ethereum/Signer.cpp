@@ -367,7 +367,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 maxInclusionFeePerGas,
                 preVerificationGas,
                 {},
-                Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end())));
+                Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
         }
     }
     }
