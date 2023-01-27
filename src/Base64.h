@@ -17,7 +17,7 @@ bool isBase64orBase64Url(const std::string& val);
 Data decode(const std::string& val);
 
 // Encode bytes into Base64 string
-std::string encode(const Data& val);
+std::string encode(const TW::Data& val);
 
 // Decode a Base64Url-format or a regular Base64 string.
 // Base64Url format uses '-' and '_' as the two special characters, Base64 uses '+'and '/'.

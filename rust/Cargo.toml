@@ -16,5 +16,6 @@ starknet-ff = "0.1.0"
 starknet-signers = "0.1.0"
 bcs = "0.1.4"
 hex = "0.4.3"
+base64 = "0.21.0"
 
 [dev-dependencies]

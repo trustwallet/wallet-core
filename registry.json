@@ -430,6 +430,34 @@
     }
   },
   {
+    "id": "sui",
+    "name": "Sui",
+    "coinId": 784,
+    "symbol": "SUI",
+    "decimals": 9,
+    "blockchain": "Sui",
+    "derivation": [
+      {
+        "path": "m/44'/784'/0'/0'/0'"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://explorer.sui.io/",
+      "txPath": "/transaction/",
+      "accountPath": "/address/",
+      "sampleTx": "SWRW1RoMHxnD9NeobgBoC4cXGwp2Hc511CnfWUoTBmo",
+      "sampleAccount": "0x62107e1afefccc7b2267ab74e332c146f5c2ca15"
+    },
+    "info": {
+      "url": "https://sui.io/",
+      "source": "https://github.com/MystenLabs/sui",
+      "rpc": "https://fullnode.testnet.sui.io",
+      "documentation": "https://docs.sui.io/"
+    }
+  },
+  {
     "id": "cosmos",
     "name": "Cosmos",
     "displayName": "Cosmos Hub",

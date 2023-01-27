@@ -55,6 +55,7 @@ This list is generated from [./registry.json](../registry.json)
 | 607     | TON              | TON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ton/info/logo.png" width="32" />          | <https://ton.org>             |
 | 637     | Aptos            | APT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png" width="32" />        | <https://aptoslabs.com/>      |
 | 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
+| 784     | Sui              | SUI    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sui/info/logo.png" width="32" />          | <https://sui.io/>             |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/callisto/info/logo.png" width="32" />     | <https://callisto.network>    |
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neo/info/logo.png" width="32" />          | <https://neo.org>             |

@@ -1,5 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
-// Author: Clement Doumergue
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,25 +6,24 @@
 
 #pragma once
 
-#include "BCS.h"
 #include "Data.h"
-#include "Move/Address.h"
 #include "PublicKey.h"
+#include "Move/Address.h"
 
 #include <string>
 
-namespace TW::Aptos {
+namespace TW::Sui {
 
-class Address : public Move::Address<Address, 32> {
+class Address : public Move::Address<Address, 20> {
 public:
-    using AptosAddress = Move::Address<Address, 32>;
-    using AptosAddress::size;
-    using AptosAddress::bytes;
+    using SuiAddress = Move::Address<Address, 20>;
+    using SuiAddress::size;
+    using SuiAddress::bytes;
 
-    /// Initializes an Aptos address with a string representation.
+    /// Initializes an Sui address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an Aptos address with a public key.
+    /// Initializes an Sui address with a public key.
     explicit Address(const PublicKey& publicKey);
 
     /// Constructor that allow factory programming;
@@ -38,6 +36,4 @@ constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcep
     return lhs.bytes == rhs.bytes;
 }
 
-BCS::Serializer& operator<<(BCS::Serializer& stream, Address) noexcept;
-
-} // namespace TW::Aptos
+} // namespace TW::Sui

@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "rust/bindgen/WalletCoreRSBindgen.h"
-
 #include "gtest/gtest.h"
 
 TEST(RustBindgen, MoveParseFunctionArgument) {
