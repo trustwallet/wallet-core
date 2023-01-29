@@ -131,6 +131,7 @@ enum TWCoinType {
     TWCoinTypeAgoric = 564,
     TWCoinTypeTON = 607,
     TWCoinTypeSui = 784,
+    TWCoinTypeBlockton = 8272,
 };
 
 /// Returns the blockchain for a coin type.
