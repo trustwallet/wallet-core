@@ -61,6 +61,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeOKXChain:
         case TWCoinTypePOANetwork:
         case TWCoinTypePolygon:
+        case TWCoinTypeBlockton:
         case TWCoinTypeSmartBitcoinCash:
         case TWCoinTypeSmartChain:
         case TWCoinTypeSmartChainLegacy:
