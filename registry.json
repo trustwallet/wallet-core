@@ -2065,6 +2065,36 @@
     }
   },
   {
+    "id": "blockton",
+    "name": "Blockton",
+    "coinId": 8272,
+    "symbol": "BTON",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "8272",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://blocktonscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x8542b6c2b64e39ad20d9ca442cea3c54f2541cfb4dff76be73d75ca8ba87f12e",
+      "sampleAccount": "0x2AA8CD1846042d59cDD9075A61403B4F4627d203"
+    },
+    "info": {
+      "url": "https://blocktoncoin.com",
+      "source": "https://github.com/blocktoncoin/blockton-network",
+      "rpc": "https://rpc.blocktonscan.com/",
+      "documentation": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
     "id": "thorchain",
     "name": "THORChain",
     "coinId": 931,
