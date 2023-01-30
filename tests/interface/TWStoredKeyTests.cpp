@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <TrustWalletCore/TWAccount.h>
 #include <TrustWalletCore/TWCoinType.h>
@@ -41,7 +41,7 @@ struct std::shared_ptr<TWStoredKey> createDefaultStoredKey() {
 }
 
 TEST(TWStoredKey, loadPBKDF2Key) {
-    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/Keystore/Data/pbkdf2.json").c_str()));
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/pbkdf2.json").c_str()));
     const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
     const auto keyId = WRAPS(TWStoredKeyIdentifier(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(keyId.get())), "3198bc9c-6672-5ab3-d995-4942343ae5b6");

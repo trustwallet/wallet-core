@@ -15,6 +15,7 @@
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
+#include "TWDerivation.h"
 
 TW_EXTERN_C_BEGIN
 

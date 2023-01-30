@@ -22,9 +22,6 @@ protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
 protobuf_dsyms_filename="SwiftProtobuf.xcframework.dSYM.zip"
 
 rm -rf ${core_zip_filename} ${core_dsyms_filename} ${protobuf_zip_filename} ${protobuf_dsyms_filename}
-protobuf_dsyms_filename="SwiftProtobuf.xcframework.dSYM.zip"
-
-rm -rf ${core_zip_filename} ${core_dsyms_filename} ${protobuf_zip_filename} ${protobuf_dsyms_filename}
 
 zip -r ${core_dsyms_filename} WalletCore.dSYMs
 

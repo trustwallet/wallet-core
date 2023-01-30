@@ -12,7 +12,6 @@
 #include "../HexCoding.h"
 
 using namespace TW;
-using namespace TW::NULS;
 
 namespace TW::NULS {
 

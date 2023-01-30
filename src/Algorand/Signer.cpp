@@ -39,7 +39,7 @@ Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transacti
     append(data, TRANSACTION_TAG);
     append(data, transaction.serialize());
     auto signature = privateKey.sign(data, TWCurveED25519);
-    return Data(signature.begin(), signature.end());
+    return {signature.begin(), signature.end()};
 }
 
 TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
@@ -80,7 +80,6 @@ TW::Data Signer::preImage(const TW::PublicKey& pubKey, const Proto::SigningInput
         transactionData = transaction.serialize();
     } else if (input.has_asset_opt_in()) {
         auto message = input.asset_opt_in();
-
         auto transaction = OptInAssetTransaction(from, fee, message.asset_id(),
                                                  firstRound, lastRound, note,
                                                  ASSET_TRANSACTION, genesisId, genesisHash);

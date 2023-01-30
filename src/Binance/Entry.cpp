@@ -58,7 +58,7 @@ std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data
     return Signer::signJSON(json, key, coin == TWCoinTypeTBinance);
 }
 
-Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
         txInputData, [=](const auto& input, auto& output) {
             Signer signer(input, coin == TWCoinTypeTBinance);
@@ -70,7 +70,7 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         });
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() == 0 || publicKeys.size() == 0) {
