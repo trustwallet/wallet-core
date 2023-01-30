@@ -48,7 +48,7 @@ class TestTHORChainSwap {
 
         // invoke swap
         val outputData = buildSwap(inputSerialized)
-        assertEquals(outputData.count(), 192)
+        assertEquals(outputData.count(), 193)
 
         // parse result in proto
         val outputProto = THORChainSwap.SwapOutput.newBuilder().mergeFrom(outputData)
