@@ -320,7 +320,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 toAddress,
                 tokenFromAddress,
                 tokenToAddress,
-                load(input.transaction().erc721_transfer().token_id()),
+                load(input.transaction().erc1155_transfer().token_id()),
                 load(input.transaction().erc1155_transfer().value()),
                 Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()),
                 nonce,
