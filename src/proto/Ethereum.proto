@@ -115,13 +115,13 @@ message SigningInput {
     // Gas limit (uint256, serialized little endian)
     bytes gas_limit = 5;
 
-    // Maximum fee (uint256, serialized little endian)
-    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
-    bytes max_fee_per_gas = 6;
-
     // Maximum optional inclusion fee (aka tip) (uint256, serialized little endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
-    bytes max_inclusion_fee_per_gas = 7;
+    bytes max_inclusion_fee_per_gas = 6;
+
+    // Maximum fee (uint256, serialized little endian)
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_fee_per_gas = 7;
 
     // Recipient's address.
     string to_address = 8;
