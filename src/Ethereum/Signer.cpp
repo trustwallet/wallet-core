@@ -227,14 +227,14 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* amount: */ load(input.transaction().erc20_approve().amount()));
 
         case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildERC20Transfer(
+            return TransactionEip4337::buildERC20Approve(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,
                 ownerAddress,
                 toAddress,
                 spenderAddress,
-                load(input.transaction().erc20_transfer().amount()),
+                load(input.transaction().erc20_approve().amount()),
                 nonce,
                 isAccountDeployed,
                 gasLimit,
