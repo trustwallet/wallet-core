@@ -104,54 +104,54 @@ message SigningInput {
     // Nonce (uint256, serialized little endian)
     bytes nonce = 2;
 
-    // [EIP4337] Entry point contract address
-    string entry_point = 3;
-
-    // [EIP4337] Account factory contract address
-    string account_factory = 4;
-
-    // [EIP4337] Account logic contract address
-    string account_logic = 5;
-
-    // [EIP4337] Public address of the account signer
-    string owner = 6;
-
-    // [EIP4337] Whether the smart contract for this address has already been deployed
-    bool is_account_deployed = 7;
-
     // Transaction version selector: Legacy or enveloped, has impact on fee structure.
     // Default is Legacy (value 0)
-    TransactionMode tx_mode = 8;
+    TransactionMode tx_mode = 3;
 
     // Gas price (uint256, serialized little endian)
     // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
-    bytes gas_price = 9;
+    bytes gas_price = 4;
 
     // Gas limit (uint256, serialized little endian)
-    bytes gas_limit = 10;
+    bytes gas_limit = 5;
 
     // Maximum fee (uint256, serialized little endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
-    bytes max_fee_per_gas = 11;
+    bytes max_fee_per_gas = 6;
 
     // Maximum optional inclusion fee (aka tip) (uint256, serialized little endian)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
-    bytes max_inclusion_fee_per_gas = 12;
-
-    // [EIP4337] The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
-    bytes pre_verification_gas = 13;
-
-    // [EIP4337] The amount of gas to allocate for the verification step
-    bytes verification_gas_limit = 14;
+    bytes max_inclusion_fee_per_gas = 7;
 
     // Recipient's address.
-    string to_address = 15;
+    string to_address = 8;
 
     // The secret private key used for signing (32 bytes).
-    bytes private_key = 16;
+    bytes private_key = 9;
 
     // The payload transaction
-    Transaction transaction = 17;
+    Transaction transaction = 10;
+
+    // [EIP4337] Entry point contract address
+    string entry_point = 11;
+
+    // [EIP4337] Account factory contract address
+    string account_factory = 12;
+
+    // [EIP4337] Account logic contract address
+    string account_logic = 13;
+
+    // [EIP4337] Public address of the account signer
+    string owner = 14;
+
+    // [EIP4337] Whether the smart contract for this address has already been deployed
+    bool is_account_deployed = 15;
+
+    // [EIP4337] The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
+    bytes pre_verification_gas = 16;
+
+    // [EIP4337] The amount of gas to allocate for the verification step
+    bytes verification_gas_limit = 17;
 }
 
 // Result containing the signed and encoded transaction.
