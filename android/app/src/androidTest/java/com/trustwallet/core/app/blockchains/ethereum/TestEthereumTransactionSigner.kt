@@ -229,4 +229,39 @@ class TestEthereumTransactionSigner {
 
         assertEquals("f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10", result)
     }
+
+    // EIP4337
+    @Test
+    fun testEIP4337TransactionSigningAccountNotDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            entryPoint = ByteString.copyFrom("0x1306b01bC3e4AD202612D3843387e94737673F53".toHexByteArray())
+            accountFactory = ByteString.copyFrom("0x5A87209b755781cF65fEeEdd3855ade0317f4a92".toHexByteArray())
+            accountLogic = ByteString.copyFrom("0x21cc27d7db4fa19857a3702653a7a67ee30ca620".toHexByteArray())
+            owner = ByteString.copyFrom("0x78d9C32b96Bb872D66D51818227563f44e67E238".toHexByteArray())
+            toAddress = ByteString.copyFrom("0xce642355Fa553f408C34a2650Ad2F4A1634d033a".toHexByteArray())
+            isAccountDeployed = false
+            txMode = TransactionMode.Eip4337
+
+            gasLimit = ByteString.copyFrom("0x5580".toHexByteArray())
+            verificationGasLimit = ByteString.copyFrom("0x073272".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x01952f1f85".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+            preVerificationGas = ByteString.copyFrom("0xbc18".toHexByteArray())
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                    amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(Numeric.toHexString(output.encoded.toString()), "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"21888\",\"initCode\":\"0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"6797860741\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"48152\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x1560b19d17613ec8580cb0feaf7ac2953771404c5bd7830f585e5062e6ddd4b82ae3bb8dbddb659c0300e8009857b5c77501e1cfd5bbab48d03de0ea7207d07c1b\",\"verificationGasLimit\":\"471666\"}"")
+    }
 }
