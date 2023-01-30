@@ -36,7 +36,7 @@ class THORSwapTests: XCTestCase {
 
         // invoke swap
         let outputData = THORChainSwap.buildSwap(input: inputSerialized)
-        XCTAssertEqual(outputData.count, 193)
+        XCTAssertEqual(outputData.count, 192)
 
         // parse result in proto
         let outputProto = try THORChainSwapSwapOutput(serializedData: outputData)
