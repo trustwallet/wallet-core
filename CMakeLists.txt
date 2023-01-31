@@ -48,7 +48,17 @@ include(cmake/Protobuf.cmake)
 # Source files
 if (${ANDROID})
     message("Configuring for JNI")
-    file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h jni/cpp/*.c)
+    if (${KOTLIN})
+        file(GLOB_RECURSE
+                sources
+                src/*.c src/*.cc src/*.cpp src/*.h
+                kotlin/TrustWalletCore/src/androidMain/cpp/*.c
+                kotlin/TrustWalletCore/src/androidMain/cpp/*.cpp
+                kotlin/TrustWalletCore/src/androidMain/cpp/*.h
+                )
+    else ()
+        file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
+    endif()
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_library(log-lib log)
     if (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
@@ -85,6 +95,7 @@ target_include_directories(TrustWalletCore
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/kotlin/TrustWalletCore/src/androidMain/cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
         )
 

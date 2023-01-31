@@ -96,7 +96,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments += "-DCMAKE_BUILD_TYPE=Release"
+                arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DKOTLIN=True")
             }
         }
     }
