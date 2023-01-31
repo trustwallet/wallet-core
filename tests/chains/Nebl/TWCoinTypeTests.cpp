@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
 //
-#include "../common/TestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,7 +16,7 @@
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWCoinType.h>
 
-#include "../common/TestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
