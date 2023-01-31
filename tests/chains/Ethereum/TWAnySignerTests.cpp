@@ -299,6 +299,54 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer) {
 
 // EIP4337
 
+TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
+    // https://goerli.etherscan.io/tx/0xf4e9c9899da7d083f260fd8d0d326a6a0e965f03444a32c73e30cd30ccc609f7
+    Proto::SigningInput input;
+    auto chainId = store(uint256_t(5));
+    auto nonce = store(uint256_t(0));
+    auto amount = store(uint256_t(0x2386f26fc10000));
+    auto gasLimit = store(uint256_t(0x5580));
+    auto verificationGasLimit = store(uint256_t(0x073272));
+    auto maxFeePerGas = store(uint256_t(0x01952f1f85));
+    auto maxInclusionFeePerGas = store(uint256_t(0x0f));
+    auto preVerificationGas = store(uint256_t(0xbc18));
+    auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
+    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
+    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
+    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+    auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
+
+    auto key = parse_hex("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8");
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    input.set_is_account_deployed(false);
+    input.set_entry_point(entryPoint);
+    input.set_account_factory(factory);
+    input.set_account_logic(logic);
+    input.set_owner(owner);
+    input.set_to_address(to);
+
+    input.set_private_key(key.data(), key.size());
+    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    transfer.set_amount(amount.data(), amount.size());
+
+    std::string expected = "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"21888\",\"initCode\":\"0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"6797860741\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"48152\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x1560b19d17613ec8580cb0feaf7ac2953771404c5bd7830f585e5062e6ddd4b82ae3bb8dbddb659c0300e8009857b5c77501e1cfd5bbab48d03de0ea7207d07c1b\",\"verificationGasLimit\":\"471666\"}";
+    {
+        // sign test
+        Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeEthereum);
+
+        ASSERT_EQ(std::string(output.encoded()), expected);
+    }
+}
+
 TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
     // https://goerli.etherscan.io/tx/0x707ee622b87a35eb2ffc3762553db8ba0efc5053cfdbeb44a841562df2a7c2bf
     Proto::SigningInput input;
@@ -339,54 +387,6 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
 
     std::string expected = "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"40277\",\"initCode\":\"0x\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"1\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xaed2011e5cf267de495b38ecf86ad6f1d4c05217a99e59f47e8d52ba3d41c10144785893fa3e7c116a054999e3902fc2771064d0545148bc49f6d7c827fc7a9a1c\",\"verificationGasLimit\":\"100000\"}";
 
-    {
-        // sign test
-        Proto::SigningOutput output;
-        ANY_SIGN(input, TWCoinTypeEthereum);
-
-        ASSERT_EQ(std::string(output.encoded()), expected);
-    }
-}
-
-TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
-    // https://goerli.etherscan.io/tx/0xf4e9c9899da7d083f260fd8d0d326a6a0e965f03444a32c73e30cd30ccc609f7
-    Proto::SigningInput input;
-    auto chainId = store(uint256_t(5));
-    auto nonce = store(uint256_t(0));
-    auto amount = store(uint256_t(0x2386f26fc10000));
-    auto gasLimit = store(uint256_t(0x5580));
-    auto verificationGasLimit = store(uint256_t(0x073272));
-    auto maxFeePerGas = store(uint256_t(0x01952f1f85));
-    auto maxInclusionFeePerGas = store(uint256_t(0x0f));
-    auto preVerificationGas = store(uint256_t(0xbc18));
-    auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
-    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
-    auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
-
-    auto key = parse_hex("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8");
-
-    input.set_chain_id(chainId.data(), chainId.size());
-    input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
-    input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
-    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
-    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(false);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
-    input.set_to_address(to);
-
-    input.set_private_key(key.data(), key.size());
-    auto& transfer = *input.mutable_transaction()->mutable_transfer();
-    transfer.set_amount(amount.data(), amount.size());
-
-    std::string expected = "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"21888\",\"initCode\":\"0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"6797860741\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"48152\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x1560b19d17613ec8580cb0feaf7ac2953771404c5bd7830f585e5062e6ddd4b82ae3bb8dbddb659c0300e8009857b5c77501e1cfd5bbab48d03de0ea7207d07c1b\",\"verificationGasLimit\":\"471666\"}";
     {
         // sign test
         Proto::SigningOutput output;
