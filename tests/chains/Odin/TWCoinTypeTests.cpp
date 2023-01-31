@@ -8,7 +8,7 @@
 // Generated one-time (codegen/bin/cointests)
 //
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 

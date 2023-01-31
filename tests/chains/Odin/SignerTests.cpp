@@ -5,25 +5,25 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cosmos/Address.h"
+#include "Cosmos/Signer.h"
 #include "HexCoding.h"
+#include "PrivateKey.h"
+#include "PublicKey.h"
+#include "TestUtilities.h"
 #include "proto/Cosmos.pb.h"
-#include <TrustWalletCore/TWAnySigner.h>
 
-#include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Cosmos;
 
-TEST(TWAnySignerOdin, Sign) {
-    auto privateKey = parse_hex("a39b28abca9b410e6f53d87a42229150cb176211996391c989336fbbcb9606cb");
-    Proto::SigningInput input;
+TEST(OdinSigner, SignTransfer_81B4) {
+    auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::Protobuf);
     input.set_account_number(124703);
     input.set_chain_id("odin-mainnet-freya");
     input.set_memo("");
     input.set_sequence(0);
-    input.set_private_key(privateKey.data(), privateKey.size());
 
     Address fromAddress;
     Address toAddress;
@@ -44,8 +44,10 @@ TEST(TWAnySignerOdin, Sign) {
     amountOfFee->set_denom("loki");
     amountOfFee->set_amount("200");
 
-    Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeOdin);
+    auto privateKey = parse_hex("a39b28abca9b410e6f53d87a42229150cb176211996391c989336fbbcb9606cb");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeOsmosis);
 
     assertJSONEqual(output.serialized(),
                     "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":"
@@ -60,6 +62,6 @@ TEST(TWAnySignerOdin, Sign) {
     EXPECT_EQ(hex(output.signature()),
               "7d796c22ed4a7be91a9510f1daf904f1a9ef72c6a396bbbc4444e5a81a84416603d8910dc92d1f9b14cd"
               "b0498dbb8d149e3b61ddcd0ef1a5056278f80f7f0fdc");
-    EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.json(), "");
 }

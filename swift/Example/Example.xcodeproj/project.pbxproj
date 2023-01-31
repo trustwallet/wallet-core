@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		24ED63DA1EB5B7F749EC81BE /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F758B5F96DA1A1E6EC7757D4 /* Pods_Example.framework */; };
-		459F00FA99B5877F70019273 /* Pods_Example_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CB7F4DE9A40E2AE6208BBA /* Pods_Example_ExampleTests.framework */; };
+		2C803187151A9C15AF60B2B8 /* Pods_Example_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CB7F4DE9A40E2AE6208BBA /* Pods_Example_ExampleTests.framework */; };
+		38342D0328E6DDA5002E675A /* WalletCore in Frameworks */ = {isa = PBXBuildFile; productRef = 38342D0228E6DDA5002E675A /* WalletCore */; };
+		385E19B228E6DBCD00B19335 /* WalletCore in Frameworks */ = {isa = PBXBuildFile; productRef = 385E19B128E6DBCD00B19335 /* WalletCore */; };
+		75916764E78C3CDC35A3FFE3 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F758B5F96DA1A1E6EC7757D4 /* Pods_Example.framework */; };
 		BBE2F11E2631644B00DB6574 /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE2F11D2631644A00DB6574 /* ExampleApp.swift */; };
 		BBE2F1202631644B00DB6574 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE2F11F2631644B00DB6574 /* ContentView.swift */; };
 		BBE2F1222631644C00DB6574 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBE2F1212631644C00DB6574 /* Assets.xcassets */; };
@@ -22,6 +24,48 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		385E199D28E6DB1000B19335 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4F9752FB3E4423440856F2EF;
+			remoteInfo = WalletCoreCommon_iOS;
+		};
+		385E199F28E6DB1000B19335 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9579E12F71FC3AE96D67691C;
+			remoteInfo = WalletCoreCommon_macOS;
+		};
+		385E19A128E6DB1000B19335 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 184016A838FCABBE263719A6;
+			remoteInfo = protobuf_iOS;
+		};
+		385E19A328E6DB1000B19335 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0390F83E27EDE67EC6556B25;
+			remoteInfo = protobuf_macOS;
+		};
+		385E19A528E6DB1000B19335 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BF9D8958EB703FDF3A914BA1;
+			remoteInfo = "trezor-crypto_iOS";
+		};
+		385E19A728E6DB1000B19335 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 673F02B8148A84D9BABF0853;
+			remoteInfo = "trezor-crypto_macOS";
+		};
 		BBE2F25326319CDF00DB6574 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BBE2F1122631644A00DB6574 /* Project object */;
@@ -32,13 +76,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0180311E7BFF4DE58A437BDC /* Pods-ExampleMac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleMac.release.xcconfig"; path = "Target Support Files/Pods-ExampleMac/Pods-ExampleMac.release.xcconfig"; sourceTree = "<group>"; };
 		14CB7F4DE9A40E2AE6208BBA /* Pods_Example_ExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example_ExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C467D24C04E908AF99EEE35 /* Pods_ExampleMac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleMac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3FDE48D44DDD8C10D3C2B964 /* Pods-ExampleMac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleMac.release.xcconfig"; path = "Target Support Files/Pods-ExampleMac/Pods-ExampleMac.release.xcconfig"; sourceTree = "<group>"; };
-		44B4C17F3E986107DE2B092A /* Pods-Example-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.release.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
-		8FBF29FDFEFBAC133B8185CD /* Pods-ExampleMac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleMac.debug.xcconfig"; path = "Target Support Files/Pods-ExampleMac/Pods-ExampleMac.debug.xcconfig"; sourceTree = "<group>"; };
-		931148B487383741A0690854 /* Pods-Example-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
-		A803A357B78589FF3DC50204 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
+		315E3D4F009DEDDF4E3E68C7 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
+		385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WalletCoreCommon.xcodeproj; path = ../WalletCoreCommon.xcodeproj; sourceTree = "<group>"; };
+		385E19AA28E6DBBD00B19335 /* wallet-core-odin */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "wallet-core-odin"; path = ../..; sourceTree = "<group>"; };
+		780B6D6B04FCF64715E8EF21 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
+		87C63724BF6D9C49D08E4A90 /* Pods-Example-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.release.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
+		9723F7E3DF272C700A5BC1CF /* Pods-ExampleMac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleMac.debug.xcconfig"; path = "Target Support Files/Pods-ExampleMac/Pods-ExampleMac.debug.xcconfig"; sourceTree = "<group>"; };
 		BBE2F11A2631644A00DB6574 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBE2F11D2631644A00DB6574 /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		BBE2F11F2631644B00DB6574 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,8 +102,8 @@
 		BBE2F2DF2633000A00DB6574 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BBE2F2E12633000A00DB6574 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BBE2F2E22633000A00DB6574 /* ExampleMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExampleMac.entitlements; sourceTree = "<group>"; };
+		D35F3A8340BDC4526769FA62 /* Pods-Example-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F758B5F96DA1A1E6EC7757D4 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FB1E40CD59FCDAF770FB6249 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +111,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24ED63DA1EB5B7F749EC81BE /* Pods_Example.framework in Frameworks */,
+				385E19B228E6DBCD00B19335 /* WalletCore in Frameworks */,
+				75916764E78C3CDC35A3FFE3 /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +120,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				459F00FA99B5877F70019273 /* Pods_Example_ExampleTests.framework in Frameworks */,
+				38342D0328E6DDA5002E675A /* WalletCore in Frameworks */,
+				2C803187151A9C15AF60B2B8 /* Pods_Example_ExampleTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,22 +136,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9845C6D5A8CC09964B3EBEC5 /* Pods */ = {
+		242742DEB03F7D58E7812BC1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				FB1E40CD59FCDAF770FB6249 /* Pods-Example.debug.xcconfig */,
-				A803A357B78589FF3DC50204 /* Pods-Example.release.xcconfig */,
-				931148B487383741A0690854 /* Pods-Example-ExampleTests.debug.xcconfig */,
-				44B4C17F3E986107DE2B092A /* Pods-Example-ExampleTests.release.xcconfig */,
-				8FBF29FDFEFBAC133B8185CD /* Pods-ExampleMac.debug.xcconfig */,
-				3FDE48D44DDD8C10D3C2B964 /* Pods-ExampleMac.release.xcconfig */,
+				780B6D6B04FCF64715E8EF21 /* Pods-Example.debug.xcconfig */,
+				315E3D4F009DEDDF4E3E68C7 /* Pods-Example.release.xcconfig */,
+				D35F3A8340BDC4526769FA62 /* Pods-Example-ExampleTests.debug.xcconfig */,
+				87C63724BF6D9C49D08E4A90 /* Pods-Example-ExampleTests.release.xcconfig */,
+				9723F7E3DF272C700A5BC1CF /* Pods-ExampleMac.debug.xcconfig */,
+				0180311E7BFF4DE58A437BDC /* Pods-ExampleMac.release.xcconfig */,
 			);
+			name = Pods;
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		385E199528E6DB1000B19335 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				385E199E28E6DB1000B19335 /* WalletCoreCommon.framework */,
+				385E19A028E6DB1000B19335 /* WalletCoreCommon.framework */,
+				385E19A228E6DB1000B19335 /* libprotobuf.a */,
+				385E19A428E6DB1000B19335 /* libprotobuf.a */,
+				385E19A628E6DB1000B19335 /* libtrezor-crypto.a */,
+				385E19A828E6DB1000B19335 /* libtrezor-crypto.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		B87B0CAB0FBD04860823F4D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				385E19AA28E6DBBD00B19335 /* wallet-core-odin */,
+				385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */,
 				F758B5F96DA1A1E6EC7757D4 /* Pods_Example.framework */,
 				14CB7F4DE9A40E2AE6208BBA /* Pods_Example_ExampleTests.framework */,
 				2C467D24C04E908AF99EEE35 /* Pods_ExampleMac.framework */,
@@ -118,8 +182,8 @@
 				BBE2F24F26319CDF00DB6574 /* ExampleTests */,
 				BBE2F2D72633000800DB6574 /* ExampleMac */,
 				BBE2F11B2631644A00DB6574 /* Products */,
-				9845C6D5A8CC09964B3EBEC5 /* Pods */,
 				B87B0CAB0FBD04860823F4D6 /* Frameworks */,
+				242742DEB03F7D58E7812BC1 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -201,6 +265,9 @@
 			dependencies = (
 			);
 			name = Example;
+			packageProductDependencies = (
+				385E19B128E6DBCD00B19335 /* WalletCore */,
+			);
 			productName = Example;
 			productReference = BBE2F11A2631644A00DB6574 /* Example.app */;
 			productType = "com.apple.product-type.application";
@@ -217,9 +284,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				38342CFB28E6DC6C002E675A /* PBXTargetDependency */,
 				BBE2F25426319CDF00DB6574 /* PBXTargetDependency */,
 			);
 			name = ExampleTests;
+			packageProductDependencies = (
+				38342D0228E6DDA5002E675A /* WalletCore */,
+			);
 			productName = ExampleTests;
 			productReference = BBE2F24E26319CDF00DB6574 /* ExampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -275,6 +346,12 @@
 			mainGroup = BBE2F1112631644A00DB6574;
 			productRefGroup = BBE2F11B2631644A00DB6574 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 385E199528E6DB1000B19335 /* Products */;
+					ProjectRef = 385E199428E6DB1000B19335 /* WalletCoreCommon.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				BBE2F1192631644A00DB6574 /* Example */,
@@ -283,6 +360,51 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		385E199E28E6DB1000B19335 /* WalletCoreCommon.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = WalletCoreCommon.framework;
+			remoteRef = 385E199D28E6DB1000B19335 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		385E19A028E6DB1000B19335 /* WalletCoreCommon.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = WalletCoreCommon.framework;
+			remoteRef = 385E199F28E6DB1000B19335 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		385E19A228E6DB1000B19335 /* libprotobuf.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprotobuf.a;
+			remoteRef = 385E19A128E6DB1000B19335 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		385E19A428E6DB1000B19335 /* libprotobuf.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprotobuf.a;
+			remoteRef = 385E19A328E6DB1000B19335 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		385E19A628E6DB1000B19335 /* libtrezor-crypto.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libtrezor-crypto.a";
+			remoteRef = 385E19A528E6DB1000B19335 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		385E19A828E6DB1000B19335 /* libtrezor-crypto.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libtrezor-crypto.a";
+			remoteRef = 385E19A728E6DB1000B19335 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BBE2F1182631644A00DB6574 /* Resources */ = {
@@ -428,6 +550,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		38342CFB28E6DC6C002E675A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 38342CFA28E6DC6C002E675A;
+		};
 		BBE2F25426319CDF00DB6574 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BBE2F1192631644A00DB6574 /* Example */;
@@ -554,7 +680,7 @@
 		};
 		BBE2F12A2631644C00DB6574 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FB1E40CD59FCDAF770FB6249 /* Pods-Example.debug.xcconfig */;
+			baseConfigurationReference = 780B6D6B04FCF64715E8EF21 /* Pods-Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -579,7 +705,7 @@
 		};
 		BBE2F12B2631644C00DB6574 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A803A357B78589FF3DC50204 /* Pods-Example.release.xcconfig */;
+			baseConfigurationReference = 315E3D4F009DEDDF4E3E68C7 /* Pods-Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -604,7 +730,7 @@
 		};
 		BBE2F25526319CE000DB6574 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 931148B487383741A0690854 /* Pods-Example-ExampleTests.debug.xcconfig */;
+			baseConfigurationReference = D35F3A8340BDC4526769FA62 /* Pods-Example-ExampleTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -625,7 +751,7 @@
 		};
 		BBE2F25626319CE000DB6574 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 44B4C17F3E986107DE2B092A /* Pods-Example-ExampleTests.release.xcconfig */;
+			baseConfigurationReference = 87C63724BF6D9C49D08E4A90 /* Pods-Example-ExampleTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -646,7 +772,7 @@
 		};
 		BBE2F2E32633000B00DB6574 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8FBF29FDFEFBAC133B8185CD /* Pods-ExampleMac.debug.xcconfig */;
+			baseConfigurationReference = 9723F7E3DF272C700A5BC1CF /* Pods-ExampleMac.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -670,7 +796,7 @@
 		};
 		BBE2F2E42633000B00DB6574 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3FDE48D44DDD8C10D3C2B964 /* Pods-ExampleMac.release.xcconfig */;
+			baseConfigurationReference = 0180311E7BFF4DE58A437BDC /* Pods-ExampleMac.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -732,6 +858,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		38342D0228E6DDA5002E675A /* WalletCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WalletCore;
+		};
+		385E19B128E6DBCD00B19335 /* WalletCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WalletCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BBE2F1122631644A00DB6574 /* Project object */;
 }
