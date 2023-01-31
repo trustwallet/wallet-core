@@ -37,7 +37,7 @@ TEST(NEOCompiler, CompileWithSignatures) {
     TW::NEO::Proto::SigningInput input;
     auto privateKey =
         PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
-    auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
+    auto publicKey = privateKey.getPublicKey(publicKeyType(coin));
     input.set_gas_asset_id(GAS_ASSET_ID);
     input.set_gas_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");
 
@@ -130,7 +130,7 @@ TEST(NEOCompiler, Nep5TokenCompileWithSignatures) {
         "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60";
 
     TW::NEO::Proto::SigningInput input;
-    auto publicKey = PublicKey(parse_hex("030ab39b99d8675cd9bd90aaec37cba964297cc817078d33e508ab11f1d245c068"), ::publicKeyType(coin));
+    auto publicKey = PublicKey(parse_hex("030ab39b99d8675cd9bd90aaec37cba964297cc817078d33e508ab11f1d245c068"), publicKeyType(coin));
     input.set_gas_asset_id(GAS_ASSET_ID);
     input.set_gas_change_address("AJzoeKrj7RHMwSrPQDPdv61ciVEYpmhkjk");
 
@@ -225,7 +225,7 @@ TEST(NEOCompiler, InvocationTransactionCompileWithSignatures) {
         "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60";
 
     TW::NEO::Proto::SigningInput input;
-    auto publicKey = PublicKey(parse_hex("02337b2d3982d71aa234a112cd8507260f480994d20129921f5a95c77f8bbe1bb3"), ::publicKeyType(coin));
+    auto publicKey = PublicKey(parse_hex("02337b2d3982d71aa234a112cd8507260f480994d20129921f5a95c77f8bbe1bb3"), publicKeyType(coin));
 
     auto amount = store(15000000000);
 
