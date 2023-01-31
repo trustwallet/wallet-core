@@ -8,6 +8,7 @@ require 'swift_helper'
 require 'wasm_cpp_helper'
 require 'ts_helper'
 require 'kotlin_helper'
+require 'kotlin_jni_helper'
 
 # Code generation
 class CodeGenerator
@@ -118,6 +119,14 @@ class CodeGenerator
 
   def render_kotlin_js
     render_template(header: nil, template: 'kotlin_js.erb', output_subfolder: 'kotlin/TrustWalletCore/src/jsMain/generated/com/trustwallet/core', extension: 'kt')
+  end
+
+  def render_kotlin_jni_h
+    render_template(header: 'copyright_header.erb', template: 'kotlin_jni_h.erb', output_subfolder: 'kotlin/TrustWalletCore/src/androidMain/cpp/generated', extension: 'h')
+  end
+
+  def render_kotlin_jni_c
+    render_template(header: 'copyright_header.erb', template: 'kotlin_jni_c.erb', output_subfolder: 'kotlin/TrustWalletCore/src/androidMain/cpp/generated', extension: 'c')
   end
 
   def render(file, locals = {})

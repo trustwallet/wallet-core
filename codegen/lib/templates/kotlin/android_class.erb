@@ -15,11 +15,13 @@ actual class <%= entity.name %> private constructor(
 <%  entity.properties.each do |property| -%>
 
     actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        @JvmName("<%= KotlinHelper.format_name(property.name) %>")
         external get
 <%  end -%>
 <%# Method declarations -%>
 <%  methods.each do |method| -%>
 
+    @JvmName("<%= KotlinHelper.format_name(method.name) %>")
     actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %>
 <%  end -%>
 <%  if entity.static_properties.any? || static_methods.any? || constructors.any? -%>
@@ -29,16 +31,24 @@ actual class <%= entity.name %> private constructor(
 <%  entity.static_properties.each do |property| -%>
 
         actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+            @JvmName("<%= KotlinHelper.format_name(property.name) %>")
             external get
 <% end -%>
 <%# Static method declarations -%>
 <%  static_methods.each do |method| -%>
 
+        @JvmStatic
+        @JvmName("<%= KotlinHelper.format_name(method.name) %>")
         actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %>
 <%  end -%>
+
+        @JvmStatic
+        @JvmName("createFromNative")
+        private fun createFromNative(nativeHandle: Long) = <%= entity.name %>(nativeHandle)
 <%- constructors.each do |constructor| -%>
 
         @JvmStatic
+        @JvmName("<%= KotlinHelper.format_name(constructor.name) %>")
         private external fun <%= KotlinHelper.format_name(constructor.name) %>(<%= KotlinHelper.parameters(constructor.parameters) %>): Long
 <%- end -%>
     }

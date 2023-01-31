@@ -2,6 +2,8 @@
 
 import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackOutput
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.incremental.createDirectory
 import org.jetbrains.kotlin.incremental.deleteDirectoryContents
 
 plugins {
@@ -16,7 +18,7 @@ kotlin {
         listOf(
             iosArm64(),
             iosSimulatorArm64(),
-            iosX64()
+            iosX64(),
         )
 
     js {
@@ -63,7 +65,8 @@ kotlin {
             kotlin.srcDir(projectDir.resolve("src/jsMain/generated"))
 
             dependencies {
-                implementation(npm(name = "@trustwallet/wallet-core", version = "3.1.9", generateExternals = false))
+                // TODO: Replace with local build
+                implementation(npm(name = "@trustwallet/wallet-core", version = "3.1.10", generateExternals = false))
             }
         }
     }
@@ -90,11 +93,43 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.sdk.min.get().toInt()
+
+        externalNativeBuild {
+            cmake {
+                arguments += "-DCMAKE_BUILD_TYPE=Release"
+            }
+        }
     }
 
     buildFeatures {
-        resValues = false
+        aidl = false
+        compose = false
         buildConfig = false
+        prefab = false
+        renderScript = false
+        resValues = false
+        shaders = false
+        viewBinding = false
+    }
+
+    androidComponents {
+        beforeVariants(selector().withBuildType("debug")) {
+            it.enable = false
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            version = "3.22.1"
+            path = rootDir.parentFile.resolve("CMakeLists.txt")
+        }
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        allWarningsAsErrors = true
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
 
@@ -157,7 +192,7 @@ val generateProtosTask = task<JavaExec>("generateProtos") {
     dependsOn(copyProtoTask)
 
     val sourceDir = projectDir.resolve("build/tmp/proto")
-    val destinationDir = projectDir.resolve("src/commonMain/proto")
+    val destinationDir = projectDir.resolve("src/commonMain/proto").also { it.createDirectory() }
 
     doFirst {
         destinationDir.deleteDirectoryContents()
