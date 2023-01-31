@@ -16,8 +16,7 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "HexCoding.h"
-
-#include "../interface/TWTestUtilities.h"
+#include "../common/TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

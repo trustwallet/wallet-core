@@ -40,7 +40,7 @@ TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txI
 
             auto preImage = Signer().buildUnsignedTx(operationList);
 
-            // get preImage hash 
+            // get preImage hash
             Data watermarkedData = Data();
             watermarkedData.push_back(0x03);
             append(watermarkedData, preImage);

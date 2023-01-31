@@ -7,8 +7,7 @@
 // This is a GENERATED FILE, changes made here MAY BE LOST.
 // Generated one-time (codegen/bin/cointests)
 //
-
-#include "../interface/TWTestUtilities.h"
+#include "../common/TestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 

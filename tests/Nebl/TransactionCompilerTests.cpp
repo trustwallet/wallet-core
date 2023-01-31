@@ -16,7 +16,7 @@
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWCoinType.h>
 
-#include "../interface/TWTestUtilities.h"
+#include "../common/TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

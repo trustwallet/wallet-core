@@ -18,7 +18,6 @@
 #include "../Zcash/Transaction.h"
 #include "../Nebl/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
-#include "../Nebl/Transaction.h"
 
 namespace TW::Bitcoin {
 

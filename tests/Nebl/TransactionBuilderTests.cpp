@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../common/TestUtilities.h"
 #include "Nebl/Transaction.h"
 #include "Nebl/TransactionBuilder.h"
 #include "Bitcoin/TransactionPlan.h"
