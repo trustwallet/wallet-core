@@ -1166,4 +1166,3 @@ TEST(THORChainSwap, EthInvalidVault) {
 }
 
 } // namespace TW::THORChainSwap
-    
