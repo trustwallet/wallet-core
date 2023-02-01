@@ -49,6 +49,8 @@ public:
     virtual Data addressToData([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& address) const { return {}; }
     // Signing
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const = 0;
+    // TANGEM
+    virtual void signExternally(TWCoinType coin, const Data& dataIn, Data& dataOut, std::function<Data(Data)> externalSigner) const { }
     virtual bool supportsJSONSigning() const { return false; }
     // It is optional, Signing JSON input with private key
     virtual std::string signJSON([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& json, [[maybe_unused]] const Data& key) const { return ""; }
@@ -76,6 +78,15 @@ void signTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     auto serializedOut = Signer::sign(input).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+}
+
+// TANGEM
+template <typename Signer, typename Input>
+void signTemplateExternally(const Data& dataIn, Data& dataOut, const std::function<Data(Data)> externalSigner) {
+    auto input = Input();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serializedOut = Signer::sign(input, externalSigner).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 

@@ -10,6 +10,14 @@ import SwiftProtobuf
 public typealias SigningInput = Message
 public typealias SigningOutput = Message
 
+// TANGEM
+public protocol Signer {
+    func sign(_ data: Data) -> Data
+}
+
+// TANGEM
+var externalSigner: Signer? = nil
+
 /// Represents a signer to sign transactions for any blockchain.
 public final class AnySigner {
 
@@ -22,6 +30,22 @@ public final class AnySigner {
     public static func sign<SigningOutput: Message>(input: SigningInput, coin: CoinType) -> SigningOutput {
         do {
             let outputData = nativeSign(data: try input.serializedData(), coin: coin)
+            return try SigningOutput(serializedData: outputData)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+    }
+    
+    // TANGEM
+    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) -> SigningOutput {
+        defer {
+            externalSigner = nil
+        }
+        
+        externalSigner = signer
+        
+        do {
+            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin)
             return try SigningOutput(serializedData: outputData)
         } catch let error {
             fatalError(error.localizedDescription)
@@ -40,6 +64,33 @@ public final class AnySigner {
             TWDataDelete(inputData)
         }
         return TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
+    }
+    
+    // TANGEM
+    public static func nativeSignExternally(data: Data, coin: CoinType) -> Data {
+        let inputData = TWDataCreateWithNSData(data)
+        defer {
+            TWDataDelete(inputData)
+        }
+        
+        return TWDataNSData(TWAnySignerSignExternally(inputData, TWCoinType(rawValue: coin.rawValue), { twDataToSign in
+            guard let externalSigner = externalSigner else {
+                fatalError("You must set external signer to sign asynchronously")
+            }
+            
+            let dataToSign = TWDataNSData(twDataToSign)
+
+            // TODO: remove debug output
+            print("Data to sign in swift")
+            print(dataToSign.hexString)
+            
+            let dataSigned = externalSigner.sign(dataToSign)
+            
+            print("Signed data in swift")
+            print(dataSigned.hexString)
+            
+            return TWDataCreateWithNSData(dataSigned)
+        }))
     }
 
     /// Check if AnySigner supports signing JSON representation of SigningInput for a given coin.

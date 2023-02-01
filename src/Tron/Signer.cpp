@@ -15,6 +15,7 @@
 
 #include <chrono>
 #include <cassert>
+#include <future>
 
 namespace TW::Tron {
 
@@ -202,6 +203,11 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    return Signer::sign(input, nullptr);
+}
+
+// TANGEM
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const std::function<Data(Data)> externalSigner) noexcept {
     auto internal = protocol::Transaction();
     auto output = Proto::SigningOutput();
 
@@ -310,7 +316,25 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto hash = Hash::sha256(Data(serialized.begin(), serialized.end()));
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    auto signature = Data();
+    
+    // TANGEM
+    if(externalSigner) {
+        // TODO: remove debug output
+        std::cout << "Data to sign in C++" << std::endl;
+        std::cout << hex(hash) << std::endl;
+        
+        std::future<Data> signedDataFuture = std::async(externalSigner, hash);
+        
+        const Data signedData = signedDataFuture.get();
+        signature = signedData;
+        
+        // TODO: remove debug output
+        std::cout << "Signed data in C++" << std::endl;
+        std::cout << hex(signedData) << std::endl;
+    } else {
+        signature = key.sign(hash, TWCurveSECP256k1);
+    }
 
     const auto json = transactionJSON(internal, hash, signature).dump();
 
