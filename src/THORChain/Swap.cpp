@@ -109,7 +109,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_to_address), .error = "Invalid to address"};
     }
 
-    uint64_t fromAmountNum = std::stoull(mFromAmount);
+    uint256_t fromAmountNum = uint256_t(mFromAmount);
     const auto memo = this->buildMemo(shortened);
 
     switch (fromChain) {
@@ -164,7 +164,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     return memo.str();
 }
 
-SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain) {
+SwapBundled SwapBuilder::buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain) {
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
@@ -187,7 +187,7 @@ SwapBundled SwapBuilder::buildBitcoin(uint64_t amount, const std::string& memo, 
     out.insert(out.end(), serialized.begin(), serialized.end());
     return {.out = std::move(out)};
 }
-SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo) {
     auto input = Binance::Proto::SigningInput();
     Data out;
 
@@ -205,7 +205,7 @@ SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint64_t amount, c
 
     auto token = Binance::Proto::SendOrder::Token();
     token.set_denom(fromAsset.token_id().empty() ? "BNB" : fromAsset.token_id());
-    token.set_amount(amount);
+    token.set_amount(static_cast<uint64_t>(amount));
     {
         Binance::Address fromAddressBin;
         Binance::Address::decode(mFromAddress, fromAddressBin);
@@ -226,7 +226,7 @@ SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint64_t amount, c
     return {.out = std::move(out)};
 }
 
-SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
     Data out;
     auto input = Ethereum::Proto::SigningInput();
     // EIP-1559
@@ -280,7 +280,7 @@ SwapBundled SwapBuilder::buildEth(uint64_t amount, const std::string& memo) {
     return {.out = std::move(out)};
 }
 
-SwapBundled SwapBuilder::buildAtom(uint64_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildAtom(uint256_t amount, const std::string& memo) {
     if (!Cosmos::Address::isValid(mVaultAddress, "cosmos")) {
         return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
     }
@@ -299,7 +299,7 @@ SwapBundled SwapBuilder::buildAtom(uint64_t amount, const std::string& memo) {
 
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uatom");
-    amountOfTx->set_amount(std::to_string(amount));
+    amountOfTx->set_amount(amount.str());
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());

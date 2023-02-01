@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "proto/THORChainSwap.pb.h"
+#include "uint256.h"
 
 #include <optional>
 #include <string>
@@ -49,10 +50,10 @@ class SwapBuilder {
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
 
-    SwapBundled buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain);
-    SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
-    SwapBundled buildEth(uint64_t amount, const std::string& memo);
-    SwapBundled buildAtom(uint64_t amount, const std::string& memo);
+    SwapBundled buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain);
+    SwapBundled buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo);
+    SwapBundled buildEth(uint256_t amount, const std::string& memo);
+    SwapBundled buildAtom(uint256_t amount, const std::string& memo);
 
 public:
     SwapBuilder() noexcept = default;
