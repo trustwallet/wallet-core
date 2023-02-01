@@ -1,35 +1,19 @@
 package com.trustwallet.core
 
-import com.squareup.wire.Message
-import com.squareup.wire.ProtoAdapter
+import WalletCore
 
-actual object AnySigner {
+internal actual fun signImpl(input: ByteArray, coin: CoinType): ByteArray =
+    WalletCore.Instance.AnySigner.sign(input.toUInt8Array(), coin._value)
+        .unsafeCast<UInt8Array>()
+        .toByteArray()
 
-    actual fun <T : Message<T, *>> sign(
-        input: Message<*, *>,
-        coin: CoinType,
-        adapter: ProtoAdapter<T>,
-    ): T =
-        adapter.decode(
-            WalletCore.Instance.AnySigner.sign(input.encode().toUInt8Array(), coin._value)
-                .unsafeCast<UInt8Array>()
-                .toByteArray(),
-        )
+internal actual fun supportsJsonImpl(coin: CoinType): Boolean =
+    WalletCore.Instance.AnySigner.supportsJSON(coin._value) as Boolean
 
-    actual fun supportsJSON(coin: CoinType): Boolean =
-        WalletCore.Instance.AnySigner.supportsJSON(coin._value) as Boolean
+internal actual fun signJsonImpl(json: String, key: ByteArray, coin: CoinType): String =
+    TODO()
 
-    actual fun signJSON(json: String, key: ByteArray, coin: CoinType): String =
-        TODO()
-
-    actual fun <T : Message<T, *>> plan(
-        input: Message<*, *>,
-        coin: CoinType,
-        adapter: ProtoAdapter<T>,
-    ): T =
-        adapter.decode(
-            WalletCore.Instance.AnySigner.plan(input.encode().toUInt8Array(), coin._value)
-                .unsafeCast<UInt8Array>()
-                .toByteArray(),
-        )
-}
+internal actual fun planImpl(input: ByteArray, coin: CoinType): ByteArray =
+    WalletCore.Instance.AnySigner.plan(input.toUInt8Array(), coin._value)
+        .unsafeCast<UInt8Array>()
+        .toByteArray()

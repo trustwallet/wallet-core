@@ -11,30 +11,45 @@
 #include "AnySigner.h"
 #include "TWJNI.h"
 
-jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_nativeSign(JNIEnv *env, jobject thisClass, jbyteArray input, uint32_t coin) {
+jbyteArray JNICALL Java_com_trustwallet_core_AnySignerKt_signImpl(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin) {
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
-    TWData *outputData = TWAnySignerSign(inputData, coin);
+    TWData *outputData = TWAnySignerSign(inputData, coinValue);
     jbyteArray resultData = TWDataJByteArray(outputData, env);
     TWDataDelete(inputData);
     return resultData;
 }
 
-jboolean JNICALL Java_com_trustwallet_core_AnySigner_supportsJSON(JNIEnv *env, jobject thisClass, uint32_t coin) {
-    return TWAnySignerSupportsJSON(coin);
+jboolean JNICALL Java_com_trustwallet_core_AnySignerKt_supportsJsonImpl(JNIEnv *env, jclass thisClass, jobject coin) {
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+    return TWAnySignerSupportsJSON(coinValue);
 }
 
-jstring JNICALL Java_com_trustwallet_core_AnySigner_signJSON(JNIEnv *env, jobject thisClass, jstring json, jbyteArray key, uint32_t coin) {
+jstring JNICALL Java_com_trustwallet_core_AnySignerKt_signJsonImpl(JNIEnv *env, jclass thisClass, jstring json, jbyteArray key, jobject coin) {
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+
     TWString *jsonString = TWStringCreateWithJString(env, json);
     TWData *keyData = TWDataCreateWithJByteArray(env, key);
-    TWString *result = TWAnySignerSignJSON(jsonString, keyData, coin);
+    TWString *result = TWAnySignerSignJSON(jsonString, keyData, coinValue);
     TWDataDelete(keyData);
     TWStringDelete(jsonString);
     return TWStringJString(result, env);
 }
 
-jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_nativePlan(JNIEnv *env, jobject thisClass, jbyteArray input, uint32_t coin) {
+jbyteArray JNICALL Java_com_trustwallet_core_AnySignerKt_planImpl(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin) {
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    uint32_t coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
-    TWData *outputData = TWAnySignerPlan(inputData, coin);
+    TWData *outputData = TWAnySignerPlan(inputData, coinValue);
     jbyteArray resultData = TWDataJByteArray(outputData, env);
     TWDataDelete(inputData);
     return resultData;

@@ -8,10 +8,17 @@ import org.jetbrains.kotlin.incremental.deleteDirectoryContents
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    `maven-publish`
 }
 
+group = "com.trustwallet"
+val moduleName = "wallet-core-kotlin"
+version = "0.0.1"
+
 kotlin {
-    android()
+    android {
+        publishLibraryVariants = listOf("release")
+    }
 
     val nativeTargets =
         listOf(
@@ -113,8 +120,8 @@ android {
     }
 
     androidComponents {
-        beforeVariants(selector().withBuildType("debug")) {
-            it.enable = false
+        beforeVariants {
+            it.enable = it.name == "release"
         }
     }
 
@@ -123,6 +130,13 @@ android {
             version = libs.versions.android.cmake.get()
             path = rootDir.parentFile.resolve("CMakeLists.txt")
         }
+    }
+}
+
+// Use afterEvaluate because of Android: org.jetbrains.kotlin.gradle.plugin.mpp.createTargetPublications
+project.afterEvaluate {
+    publishing.publications.withType<MavenPublication> {
+        artifactId = artifactId.replaceFirst(project.name, moduleName)
     }
 }
 
