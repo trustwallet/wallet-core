@@ -42,6 +42,25 @@ const auto VaultEth = "0x1091c4De6a3cF09CdA00AbDAeD42c7c3B69C83EC";
 const auto VaultBnb = "bnb1n9esxuw8ca7ts8l6w66kdh800s09msvul6vlse";
 const auto RouterEth = "0x42A5Ed456650a09Dc10EBc6361A7480fDd61f27B";
 
+TEST(THORChainSwap, OverflowFixEth) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    fromAsset.set_symbol("ETH");
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
+    toAsset.set_symbol("BTC");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(Address1Eth)
+                                         .toAddress(Address1Btc)
+                                         .vault(VaultEth)
+                                         .fromAmount("1234000000000000000000")
+                                         .toAmountLimit("5285656144")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+}
+
 TEST(THORChainSwap, SwapBtcEth) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
