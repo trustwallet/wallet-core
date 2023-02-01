@@ -2,6 +2,8 @@
 android-sdk-tools = "33.0.1"
 android-sdk-min = "24"
 android-sdk-compile = "33"
+android-cmake = "3.22.1"
+android-ndk = "25.2.9519653"
 
 ios-deployment-target = "12.0"
 

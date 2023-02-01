@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackOutput
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.incremental.createDirectory
 import org.jetbrains.kotlin.incremental.deleteDirectoryContents
 
@@ -93,6 +92,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.sdk.min.get().toInt()
+        ndkVersion = libs.versions.android.ndk.get()
 
         externalNativeBuild {
             cmake {
@@ -120,16 +120,9 @@ android {
 
     externalNativeBuild {
         cmake {
-            version = "3.22.1"
+            version = libs.versions.android.cmake.get()
             path = rootDir.parentFile.resolve("CMakeLists.txt")
         }
-    }
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        allWarningsAsErrors = true
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
 
@@ -192,9 +185,10 @@ val generateProtosTask = task<JavaExec>("generateProtos") {
     dependsOn(copyProtoTask)
 
     val sourceDir = projectDir.resolve("build/tmp/proto")
-    val destinationDir = projectDir.resolve("src/commonMain/proto").also { it.createDirectory() }
+    val destinationDir = projectDir.resolve("src/commonMain/proto")
 
     doFirst {
+        destinationDir.createDirectory()
         destinationDir.deleteDirectoryContents()
     }
 
