@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Data.h"
-#include "../uint256.h"
+#include "uint256.h"
 
 namespace TW::Ethereum {
 

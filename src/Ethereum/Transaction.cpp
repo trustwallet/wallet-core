@@ -6,15 +6,17 @@
 
 #include "Transaction.h"
 #include "Ethereum/ABI.h"
-#include <Ethereum/EIP4337.h>
-#include <Ethereum/MessageSigner.h>
 #include "HexCoding.h"
 #include "RLP.h"
+#include <Ethereum/EIP4337.h>
+#include <Ethereum/MessageSigner.h>
 #include <nlohmann/json.hpp>
 
 namespace TW::Ethereum {
 
 using json = nlohmann::json;
+using ParamBasePtr = std::shared_ptr<ABI::ParamBase>;
+using ParamCollection = std::vector<ParamBasePtr>;
 
 static const Data EmptyListEncoded = parse_hex("c0");
 
@@ -88,7 +90,7 @@ Data TransactionNonTyped::encoded(const Signature& signature, [[maybe_unused]] c
 
 Data TransactionNonTyped::buildERC20TransferCall(const Data& to, const uint256_t& amount) {
     // clang-format off
-    auto func = ABI::Function("transfer", std::vector<std::shared_ptr<ABI::ParamBase>>{
+    auto func = ABI::Function("transfer", ParamCollection{
         std::make_shared<ABI::ParamAddress>(to),
         std::make_shared<ABI::ParamUInt256>(amount)
     });
@@ -100,7 +102,7 @@ Data TransactionNonTyped::buildERC20TransferCall(const Data& to, const uint256_t
 
 Data TransactionNonTyped::buildERC20ApproveCall(const Data& spender, const uint256_t& amount) {
     // clang-format off
-    auto func = ABI::Function("approve", std::vector<std::shared_ptr<ABI::ParamBase>>{
+    auto func = ABI::Function("approve", ParamCollection{
         std::make_shared<ABI::ParamAddress>(spender),
         std::make_shared<ABI::ParamUInt256>(amount)
     });
@@ -112,7 +114,7 @@ Data TransactionNonTyped::buildERC20ApproveCall(const Data& spender, const uint2
 
 Data TransactionNonTyped::buildERC721TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId) {
     // clang-format off
-    auto func = ABI::Function("transferFrom", std::vector<std::shared_ptr<ABI::ParamBase>>{
+    auto func = ABI::Function("transferFrom", ParamCollection{
         std::make_shared<ABI::ParamAddress>(from),
         std::make_shared<ABI::ParamAddress>(to),
         std::make_shared<ABI::ParamUInt256>(tokenId)
@@ -125,7 +127,7 @@ Data TransactionNonTyped::buildERC721TransferFromCall(const Data& from, const Da
 
 Data TransactionNonTyped::buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data) {
     // clang-format off
-    auto func = ABI::Function("safeTransferFrom", std::vector<std::shared_ptr<ABI::ParamBase>>{
+    auto func = ABI::Function("safeTransferFrom", ParamCollection{
         std::make_shared<ABI::ParamAddress>(from),
         std::make_shared<ABI::ParamAddress>(to),
         std::make_shared<ABI::ParamUInt256>(tokenId),
@@ -219,11 +221,10 @@ TransactionEip1559::buildERC1155Transfer(const uint256_t& nonce,
 
 /// TransactionEip4337
 Data TransactionEip4337::preHash(const uint256_t chainID) const {
-    auto params = ABI::ParamTuple(std::vector<std::shared_ptr<ABI::ParamBase>>{
+    auto params = ABI::ParamTuple(ParamCollection{
         std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(serialize(chainID))),
         std::make_shared<ABI::ParamAddress>(entryPoint),
-        std::make_shared<ABI::ParamUInt256>(chainID)
-    });
+        std::make_shared<ABI::ParamUInt256>(chainID)});
     Data encoded;
     params.encode(encoded);
     const auto hash = Hash::keccak256(encoded);
@@ -232,7 +233,7 @@ Data TransactionEip4337::preHash(const uint256_t chainID) const {
 }
 
 Data TransactionEip4337::serialize(const uint256_t chainID) const {
-    auto params = ABI::ParamTuple(std::vector<std::shared_ptr<ABI::ParamBase>>{
+    auto params = ABI::ParamTuple(ParamCollection{
         std::make_shared<ABI::ParamAddress>(sender),
         std::make_shared<ABI::ParamUInt256>(nonce),
         std::make_shared<ABI::ParamByteArray>(initCode),
@@ -243,8 +244,7 @@ Data TransactionEip4337::serialize(const uint256_t chainID) const {
         std::make_shared<ABI::ParamUInt256>(maxFeePerGas),
         std::make_shared<ABI::ParamUInt256>(maxInclusionFeePerGas),
         std::make_shared<ABI::ParamByteArray>(paymasterAndData),
-        std::make_shared<ABI::ParamByteArray>(parse_hex("0x"))
-    });
+        std::make_shared<ABI::ParamByteArray>(parse_hex("0x"))});
     Data serialized;
     params.encode(serialized);
 
@@ -266,8 +266,7 @@ Data TransactionEip4337::encoded(const Signature& signature, const uint256_t cha
         {"maxPriorityFeePerGas", maxInclusionFeePerGas.str()},
         {"paymasterAndData", hexEncoded(paymasterAndData)},
         {"preVerificationGas", preVerificationGas.str()},
-        {"signature", hexEncoded(rawSignature)}
-    };
+        {"signature", hexEncoded(rawSignature)}};
     const auto txString = tx.dump();
     return Data(txString.begin(), txString.end());
 }
@@ -292,8 +291,7 @@ TransactionEip4337::buildNativeTransfer(const Data& entryPointAddress, const Dat
         maxInclusionFeePerGas,
         preVerificationGas,
         Ethereum::getEIP4337ExecuteBytecode(toAddress, amount, payload),
-        paymasterAndData
-        );
+        paymasterAndData);
 }
 
 std::shared_ptr<TransactionEip4337>
@@ -316,8 +314,7 @@ TransactionEip4337::buildERC20Transfer(const Data& entryPointAddress, const Data
         maxInclusionFeePerGas,
         preVerificationGas,
         Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20TransferCall(toAddress, amount)),
-        paymasterAndData
-    );
+        paymasterAndData);
 }
 
 std::shared_ptr<TransactionEip4337>
@@ -340,8 +337,7 @@ TransactionEip4337::buildERC20Approve(const Data& entryPointAddress, const Data&
         maxInclusionFeePerGas,
         preVerificationGas,
         Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20ApproveCall(spenderAddress, amount)),
-        paymasterAndData
-    );
+        paymasterAndData);
 }
 
 std::shared_ptr<TransactionEip4337>
@@ -364,8 +360,7 @@ TransactionEip4337::buildERC721Transfer(const Data& entryPointAddress, const Dat
         maxInclusionFeePerGas,
         preVerificationGas,
         Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId)),
-        paymasterAndData
-    );
+        paymasterAndData);
 }
 
 std::shared_ptr<TransactionEip4337>
@@ -388,8 +383,7 @@ TransactionEip4337::buildERC1155Transfer(const Data& entryPointAddress, const Da
         maxInclusionFeePerGas,
         preVerificationGas,
         Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC1155TransferFromCall(from, to, tokenId, value, data)),
-        paymasterAndData
-    );
+        paymasterAndData);
 }
 
 } // namespace TW::Ethereum
