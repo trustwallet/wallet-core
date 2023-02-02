@@ -1404,9 +1404,8 @@
     }
   },
   {
-    "id": "multiversx",
+    "id": "elrond",
     "name": "MultiversX",
-    "displayName": "MultiversX",
     "coinId": 508,
     "symbol": "eGLD",
     "decimals": 18,

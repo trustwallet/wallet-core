@@ -17,7 +17,7 @@ namespace TW::MultiversX {
 class Address : public Bech32Address {
 public:
     /// The human-readable part of the address, as defined in "registry.json"
-    static const std::string hrp; // HRP_MULTIVERSX
+    static const std::string hrp; // HRP_ELROND
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
