@@ -8,6 +8,7 @@
 #include "Ethereum/ABI.h"
 #include "HexCoding.h"
 #include "RLP.h"
+#include "Signer.h"
 #include <Ethereum/EIP4337.h>
 #include <Ethereum/MessageSigner.h>
 #include <nlohmann/json.hpp>
@@ -253,7 +254,7 @@ Data TransactionEip4337::serialize(const uint256_t chainID) const {
 }
 
 Data TransactionEip4337::encoded(const Signature& signature, const uint256_t chainID) const {
-    Data rawSignature = signature.full;
+    Data rawSignature = Signer::simpleStructToSignatureData(signature);
     rawSignature[64] += 27;
 
     const json tx = {

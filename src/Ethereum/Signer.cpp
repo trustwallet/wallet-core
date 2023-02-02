@@ -87,7 +87,20 @@ Signature Signer::signatureDataToStructSimple(const Data& signature) noexcept {
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
     import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    return Signature{signature, r, s, v};
+    return Signature{r, s, v};
+}
+
+Data Signer::simpleStructToSignatureData(const Signature& signature) noexcept {
+    Data fullSignature;
+
+    auto r = store(signature.r, 32);
+    append(fullSignature, r);
+    auto s = store(signature.s, 32);
+    append(fullSignature, s);
+    auto v = store(signature.v, 1);
+    append(fullSignature, v);
+
+    return fullSignature;
 }
 
 Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, const Data& signature) noexcept {
@@ -134,6 +147,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     bool isAccountDeployed = input.user_operation().is_account_deployed();
     uint256_t preVerificationGas = load(input.user_operation().pre_verification_gas());
     uint256_t verificationGasLimit = load(input.user_operation().verification_gas_limit());
+    Data paymasterAndData = Data(input.user_operation().paymaster_and_data().begin(), input.user_operation().paymaster_and_data().end());
 
     switch (input.transaction().transaction_oneof_case()) {
     case Proto::Transaction::kTransfer: {
@@ -167,7 +181,10 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
-                preVerificationGas);
+                preVerificationGas,
+                paymasterAndData,
+                Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end())
+                );
         }
     }
 
@@ -204,7 +221,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
-                preVerificationGas);
+                preVerificationGas,
+                paymasterAndData);
         }
     }
 
@@ -241,7 +259,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
-                preVerificationGas);
+                preVerificationGas,
+                paymasterAndData);
         }
     }
 
@@ -282,7 +301,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
-                preVerificationGas);
+                preVerificationGas,
+                paymasterAndData);
         }
     }
 
@@ -329,7 +349,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
-                preVerificationGas);
+                preVerificationGas,
+                paymasterAndData);
         }
     }
 
@@ -358,7 +379,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 accountLogicAddress,
                 ownerAddress,
                 toAddress,
-                load(input.transaction().transfer().amount()),
+                load(input.transaction().contract_generic().amount()),
                 nonce,
                 isAccountDeployed,
                 gasLimit,
@@ -366,7 +387,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
-                {},
+                paymasterAndData,
                 Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
         }
     }

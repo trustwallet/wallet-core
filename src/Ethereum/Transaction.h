@@ -22,7 +22,6 @@ namespace TW::Ethereum {
 /// R-S-V Signature values
 struct Signature {
 public:
-    Data full;
     uint256_t r, s, v;
 };
 

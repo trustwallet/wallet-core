@@ -27,7 +27,7 @@ TEST(EthereumTransaction, encodeTransactionNonTyped) {
         /* amount: */ 2000000000000000000
     );
     const uint256_t dummyChain = 0x34;
-    const auto dummySignature = Signature{{}, 0, 0, 0};
+    const auto dummySignature = Signature{0, 0, 0};
 
     const auto preHash = transaction->preHash(dummyChain);
     EXPECT_EQ(hex(preHash), "b3525019dc367d3ecac48905f9a95ff3550c25a24823db765f92cae2dec7ebfd");
@@ -280,6 +280,60 @@ TEST(EthereumSigner, EIP4337_ERC1155_Transfer_Account_Deployed) {
 
     // https://goerli.etherscan.io/tx/0x6e9875715f2e46dfb45f6d7ba15dc8bd1561abb3ae7d19e549929835fca5f6af
     EXPECT_EQ(result, "{\"callData\":\"0xb61d27f6000000000000000000000000428ce4b916332e1afccfddce08baecc97cb40b120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c4f242432a0000000000000000000000008c560e00680b973645900528ede71a99b8d4dca8000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"6337400\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"51000\",\"sender\":\"0x8c560e00680b973645900528ede71a99b8d4dca8\",\"signature\":\"0xaae38bcf9f946921541b44c2a66596968beecb9420471e2c9c531f758a2d652930ffdeeab95742e57e8520fb5c8ca4fee6a8e47e37336d4201fe104103f85e111c\",\"verificationGasLimit\":\"1500000\"}");
+}
+
+TEST(EthereumSigner, SignatureBreakdownNoEip155) {
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto signature = Signer::sign(key, hash, false, 5);
+
+    const auto r = store(signature.r);
+    EXPECT_EQ(hex(r), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47");
+
+    const auto v = store(signature.v);
+    EXPECT_EQ(hex(v), "00");
+
+    const auto s = store(signature.s);
+    EXPECT_EQ(hex(s), "786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a");
+
+    const auto converted = Signer::simpleStructToSignatureData(signature);
+    EXPECT_EQ(hex(converted), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a00");
+}
+
+TEST(EthereumSigner, SignatureBreakdownEip155Legacy) {
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto signature = Signer::sign(key, hash, true, 0);
+
+    const auto r = store(signature.r);
+    EXPECT_EQ(hex(r), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47");
+
+    const auto v = store(signature.v);
+    EXPECT_EQ(hex(v), "1b");
+
+    const auto s = store(signature.s);
+    EXPECT_EQ(hex(s), "786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a");
+
+    const auto converted = Signer::simpleStructToSignatureData(signature);
+    EXPECT_EQ(hex(converted), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a1b");
+}
+
+TEST(EthereumSigner, SignatureBreakdownEip155) {
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto signature = Signer::sign(key, hash, true, 1);
+
+    const auto r = store(signature.r);
+    EXPECT_EQ(hex(r), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47");
+
+    const auto v = store(signature.v);
+    EXPECT_EQ(hex(v), "25");
+
+    const auto s = store(signature.s);
+    EXPECT_EQ(hex(s), "786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a");
+
+    const auto converted = Signer::simpleStructToSignatureData(signature);
+    EXPECT_EQ(hex(converted), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a25");
 }
 
 } // namespace TW::Ethereum
