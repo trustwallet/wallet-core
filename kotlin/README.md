@@ -1,5 +1,5 @@
 ### Tasks:
 
-- `./gradlew :TrustWalletCore:generateProtos` – Generates Kotlin classes for Protos
-- `./gradlew :TrustWalletCore:generateCinterop` – Generates def file
-- `./gradlew :TrustWalletCore:generateFiles` – Generates all the above and Kotlin accessors to the library
+- `./gradlew :wallet-core-kotlin:generateProtos` – Generates Kotlin classes for Protos
+- `./gradlew :wallet-core-kotlin:generateCinterop` – Generates def file
+- `./gradlew :wallet-core-kotlin:generateFiles` – Generates all the above and Kotlin accessors to the library

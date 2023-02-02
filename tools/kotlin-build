@@ -3,6 +3,6 @@
 set -e
 
 pushd kotlin
-./gradlew :TrustWalletCore:generateFiles
-./gradlew :TrustWalletCore:assemble
+./gradlew :wallet-core-kotlin:generateFiles
+./gradlew :wallet-core-kotlin:assemble
 popd

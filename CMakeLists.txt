@@ -52,9 +52,9 @@ if (${ANDROID})
         file(GLOB_RECURSE
                 sources
                 src/*.c src/*.cc src/*.cpp src/*.h
-                kotlin/TrustWalletCore/src/androidMain/cpp/*.c
-                kotlin/TrustWalletCore/src/androidMain/cpp/*.cpp
-                kotlin/TrustWalletCore/src/androidMain/cpp/*.h
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/*.c
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/*.cpp
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/*.h
                 )
     else ()
         file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
@@ -87,7 +87,7 @@ if (TW_CLANG_ASAN)
 endif ()
 
 if (${KOTLIN})
-    set(JNI_PATH "kotlin/TrustWalletCore/src/androidMain/cpp")
+    set(JNI_PATH "kotlin/wallet-core-kotlin/src/androidMain/cpp")
 else ()
     set(JNI_PATH "jni/cpp")
 endif ()

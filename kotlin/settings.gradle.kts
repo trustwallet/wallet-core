@@ -19,9 +19,9 @@ dependencyResolutionManagement {
 }
 
 includeBuild(
-    "BuildLogic",
+    "build-logic",
 )
 
 include(
-    ":TrustWalletCore",
+    ":wallet-core-kotlin"
 )
