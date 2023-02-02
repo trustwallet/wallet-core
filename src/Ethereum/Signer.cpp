@@ -127,13 +127,13 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     uint256_t maxFeePerGas = load(input.max_fee_per_gas());
 
     // EIP4337
-    Data entryPointAddress = addressStringToData(input.entry_point());
-    Data accountFactoryAddress = addressStringToData(input.account_factory());
-    Data accountLogicAddress = addressStringToData(input.account_logic());
-    Data ownerAddress = addressStringToData(input.owner());
-    bool isAccountDeployed = input.is_account_deployed();
-    uint256_t preVerificationGas = load(input.pre_verification_gas());
-    uint256_t verificationGasLimit = load(input.verification_gas_limit());
+    Data entryPointAddress = addressStringToData(input.user_operation().entry_point());
+    Data accountFactoryAddress = addressStringToData(input.user_operation().account_factory());
+    Data accountLogicAddress = addressStringToData(input.user_operation().account_logic());
+    Data ownerAddress = addressStringToData(input.user_operation().owner());
+    bool isAccountDeployed = input.user_operation().is_account_deployed();
+    uint256_t preVerificationGas = load(input.user_operation().pre_verification_gas());
+    uint256_t verificationGasLimit = load(input.user_operation().verification_gas_limit());
 
     switch (input.transaction().transaction_oneof_case()) {
     case Proto::Transaction::kTransfer: {

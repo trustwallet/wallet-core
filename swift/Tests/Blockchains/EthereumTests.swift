@@ -395,19 +395,22 @@ class EthereumTests: XCTestCase {
             $0.txMode = .eip4337
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "00")!
-            $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             $0.toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
 
             $0.gasLimit = Data(hexString: "0x5580")!
-            $0.verificationGasLimit = Data(hexString: "0x073272")!
             $0.maxFeePerGas = Data(hexString: "0x01952f1f85")!
             $0.maxInclusionFeePerGas = Data(hexString: "0x0f")!
-            $0.preVerificationGas = Data(hexString: "0xbc18")!
 
-            $0.isAccountDeployed = false
+            $0.userOperation = EthereumUserOperation.with {
+                $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                $0.isAccountDeployed = false
+
+                $0.preVerificationGas = Data(hexString: "0xbc18")!
+                $0.verificationGasLimit = Data(hexString: "0x073272")!
+            }
 
             $0.privateKey = Data(hexString: "0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8")!
             $0.transaction = EthereumTransaction.with {
@@ -420,7 +423,7 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
-        XCTAssertEqual(try input.serializedData().hexString, "0a010512010018022a02558032010f3a0501952f1f85422a3078636536343233353546613535336634303843333461323635304164324634413136333464303333614a20f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8520b0a090a072386f26fc100005a2a307831333036623031624333653441443230323631324433383433333837653934373337363733463533622a3078354138373230396237353537383163463635664565456464333835356164653033313766346139326a2a307832316363323764376462346661313938353761333730323635336137613637656533306361363230722a307837386439433332623936426238373244363644353138313832323735363366343465363745323338820102bc188a0103073272")
+        XCTAssertEqual(try input.serializedData().hexString, "0a010512010018022a02558032010f3a0501952f1f85422a3078636536343233353546613535336634303843333461323635304164324634413136333464303333614a20f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8520b0a090a072386f26fc100005ab9010a2a307831333036623031624333653441443230323631324433383433333837653934373337363733463533122a3078354138373230396237353537383163463635664565456464333835356164653033313766346139321a2a307832316363323764376462346661313938353761333730323635336137613637656533306361363230222a3078373864394333326239364262383732443636443531383138323237353633663434653637453233383202bc183a03073272")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"21888\",\"initCode\":\"0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"6797860741\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"48152\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x1560b19d17613ec8580cb0feaf7ac2953771404c5bd7830f585e5062e6ddd4b82ae3bb8dbddb659c0300e8009857b5c77501e1cfd5bbab48d03de0ea7207d07c1b\",\"verificationGasLimit\":\"471666\"}");
     }
 
@@ -429,19 +432,22 @@ class EthereumTests: XCTestCase {
             $0.txMode = .eip4337
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "01")!
-            $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             $0.toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
 
             $0.gasLimit = Data(hexString: "0x9d55")!
-            $0.verificationGasLimit = Data(hexString: "0x0186a0")!
             $0.maxFeePerGas = Data(hexString: "0x01a339c9e9")!
             $0.maxInclusionFeePerGas = Data(hexString: "0x0f")!
-            $0.preVerificationGas = Data(hexString: "0xb708")!
 
-            $0.isAccountDeployed = true
+            $0.userOperation = EthereumUserOperation.with {
+                $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                $0.isAccountDeployed = true
+
+                $0.preVerificationGas = Data(hexString: "0xb708")!
+                $0.verificationGasLimit = Data(hexString: "0x0186a0")!
+            }
 
             $0.privateKey = Data(hexString: "0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8")!
             $0.transaction = EthereumTransaction.with {
@@ -454,7 +460,7 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
-        XCTAssertEqual(try input.serializedData().hexString, "0a010512010118022a029d5532010f3a0501a339c9e9422a3078636536343233353546613535336634303843333461323635304164324634413136333464303333614a20f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8520b0a090a072386f26fc100005a2a307831333036623031624333653441443230323631324433383433333837653934373337363733463533622a3078354138373230396237353537383163463635664565456464333835356164653033313766346139326a2a307832316363323764376462346661313938353761333730323635336137613637656533306361363230722a3078373864394333326239364262383732443636443531383138323237353633663434653637453233387801820102b7088a01030186a0")
+        XCTAssertEqual(try input.serializedData().hexString, "0a010512010118022a029d5532010f3a0501a339c9e9422a3078636536343233353546613535336634303843333461323635304164324634413136333464303333614a20f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8520b0a090a072386f26fc100005abb010a2a307831333036623031624333653441443230323631324433383433333837653934373337363733463533122a3078354138373230396237353537383163463635664565456464333835356164653033313766346139321a2a307832316363323764376462346661313938353761333730323635336137613637656533306361363230222a30783738643943333262393642623837324436364435313831383232373536336634346536374532333828013202b7083a030186a0")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"40277\",\"initCode\":\"0x\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"1\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xaed2011e5cf267de495b38ecf86ad6f1d4c05217a99e59f47e8d52ba3d41c10144785893fa3e7c116a054999e3902fc2771064d0545148bc49f6d7c827fc7a9a1c\",\"verificationGasLimit\":\"100000\"}");
     }
 
@@ -463,19 +469,23 @@ class EthereumTests: XCTestCase {
             $0.txMode = .eip4337
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "06")!
-            $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             $0.toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
 
             $0.gasLimit = Data(hexString: "0xf78e")!
-            $0.verificationGasLimit = Data(hexString: "0x0186a0")!
             $0.maxFeePerGas = Data(hexString: "0x168ad5950f")!
             $0.maxInclusionFeePerGas = Data(hexString: "0x0f")!
-            $0.preVerificationGas = Data(hexString: "0xbb10")!
 
-            $0.isAccountDeployed = true
+
+            $0.userOperation = EthereumUserOperation.with {
+                $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                $0.isAccountDeployed = true
+
+                $0.preVerificationGas = Data(hexString: "0xbb10")!
+                $0.verificationGasLimit = Data(hexString: "0x0186a0")!
+            }
 
             $0.privateKey = Data(hexString: "0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8")!
             $0.transaction = EthereumTransaction.with {
@@ -497,19 +507,22 @@ class EthereumTests: XCTestCase {
             $0.txMode = .eip4337
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "09")!
-            $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             $0.toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
 
             $0.gasLimit = Data(hexString: "0xf78e")!
-            $0.verificationGasLimit = Data(hexString: "0x0186a0")!
             $0.maxFeePerGas = Data(hexString: "0x168ad5950f")!
             $0.maxInclusionFeePerGas = Data(hexString: "0x0f")!
-            $0.preVerificationGas = Data(hexString: "0xbb10")!
 
-            $0.isAccountDeployed = true
+            $0.userOperation = EthereumUserOperation.with {
+                $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                $0.isAccountDeployed = true
+
+                $0.preVerificationGas = Data(hexString: "0xbb10")!
+                $0.verificationGasLimit = Data(hexString: "0x0186a0")!
+            }
 
             $0.privateKey = Data(hexString: "0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8")!
             $0.transaction = EthereumTransaction.with {
@@ -531,19 +544,22 @@ class EthereumTests: XCTestCase {
             $0.txMode = .eip4337
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "0x0C")!
-            $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             $0.toAddress = "0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b"
 
             $0.gasLimit = Data(hexString: "0x60B378")!
-            $0.verificationGasLimit = Data(hexString: "0x16E360")!
             $0.maxFeePerGas = Data(hexString: "0x168ad5950f")!
             $0.maxInclusionFeePerGas = Data(hexString: "0x0f")!
-            $0.preVerificationGas = Data(hexString: "0xC34F")!
 
-            $0.isAccountDeployed = true
+            $0.userOperation = EthereumUserOperation.with {
+                $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                $0.isAccountDeployed = true
+
+                $0.preVerificationGas = Data(hexString: "0xC34F")!
+                $0.verificationGasLimit = Data(hexString: "0x16E360")!
+            }
 
             $0.privateKey = Data(hexString: "0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8")!
             $0.transaction = EthereumTransaction.with {
@@ -566,19 +582,22 @@ class EthereumTests: XCTestCase {
             $0.txMode = .eip4337
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "0x")!
-            $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            $0.accountFactory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
-            $0.accountLogic = "0x510ab68bd111ce7115df797118b0334d727d564b"
-            $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             $0.toAddress = "0x428ce4b916332e1afccfddce08baecc97cb40b12"
 
             $0.gasLimit = Data(hexString: "0x60B378")!
-            $0.verificationGasLimit = Data(hexString: "0x16E360")!
             $0.maxFeePerGas = Data(hexString: "0x168ad5950f")!
             $0.maxInclusionFeePerGas = Data(hexString: "0x0f")!
-            $0.preVerificationGas = Data(hexString: "0xC738")!
 
-            $0.isAccountDeployed = true
+            $0.userOperation = EthereumUserOperation.with {
+                $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                $0.accountFactory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
+                $0.accountLogic = "0x510ab68bd111ce7115df797118b0334d727d564b"
+                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                $0.isAccountDeployed = true
+
+                $0.preVerificationGas = Data(hexString: "0xC738")!
+                $0.verificationGasLimit = Data(hexString: "0x16E360")!
+            }
 
             $0.privateKey = Data(hexString: "0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8")!
             $0.transaction = EthereumTransaction.with {

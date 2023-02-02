@@ -322,16 +322,18 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
     input.set_nonce(nonce.data(), nonce.size());
     input.set_tx_mode(Proto::TransactionMode::EIP4337);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(false);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
     input.set_to_address(to);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_is_account_deployed(false);
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_account_factory(factory);
+    user_operation.set_account_logic(logic);
+    user_operation.set_owner(owner);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
@@ -370,16 +372,18 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
     input.set_nonce(nonce.data(), nonce.size());
     input.set_tx_mode(Proto::TransactionMode::EIP4337);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(true);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
     input.set_to_address(to);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_is_account_deployed(true);
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_account_factory(factory);
+    user_operation.set_account_logic(logic);
+    user_operation.set_owner(owner);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
@@ -420,16 +424,18 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20TransferAccountDeployed) {
     input.set_nonce(nonce.data(), nonce.size());
     input.set_tx_mode(Proto::TransactionMode::EIP4337);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(true);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
     input.set_to_address(tokenContract);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_is_account_deployed(true);
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_account_factory(factory);
+    user_operation.set_account_logic(logic);
+    user_operation.set_owner(owner);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc20_transfer();
@@ -470,16 +476,18 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20ApproveAccountDeployed) {
     input.set_nonce(nonce.data(), nonce.size());
     input.set_tx_mode(Proto::TransactionMode::EIP4337);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(true);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
     input.set_to_address(tokenContract);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_is_account_deployed(true);
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_account_factory(factory);
+    user_operation.set_account_logic(logic);
+    user_operation.set_owner(owner);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc20_approve();
@@ -521,16 +529,18 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC721TransferAccountDeployed) {
     input.set_nonce(nonce.data(), nonce.size());
     input.set_tx_mode(Proto::TransactionMode::EIP4337);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(true);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
     input.set_to_address(tokenContract);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_is_account_deployed(true);
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_account_factory(factory);
+    user_operation.set_account_logic(logic);
+    user_operation.set_owner(owner);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc721_transfer();
@@ -573,16 +583,18 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC1155TransferAccountDeployed) {
     input.set_nonce(nonce.data(), nonce.size());
     input.set_tx_mode(Proto::TransactionMode::EIP4337);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
-    input.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    input.set_is_account_deployed(true);
-    input.set_entry_point(entryPoint);
-    input.set_account_factory(factory);
-    input.set_account_logic(logic);
-    input.set_owner(owner);
     input.set_to_address(tokenContract);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_is_account_deployed(true);
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_account_factory(factory);
+    user_operation.set_account_logic(logic);
+    user_operation.set_owner(owner);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc1155_transfer();

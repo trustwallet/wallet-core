@@ -238,19 +238,23 @@ class TestEthereumTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
-            entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
-            isAccountDeployed = false
             txMode = TransactionMode.EIP4337
 
             gasLimit = ByteString.copyFrom("0x5580".toHexByteArray())
-            verificationGasLimit = ByteString.copyFrom("0x073272".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x01952f1f85".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
-            preVerificationGas = ByteString.copyFrom("0xbc18".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = false
+
+                preVerificationGas = ByteString.copyFrom("0xbc18".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x073272".toHexByteArray())
+            }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
@@ -271,19 +275,24 @@ class TestEthereumTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x1".toHexByteArray())
-            entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+
             toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
-            isAccountDeployed = true
             txMode = TransactionMode.EIP4337
 
             gasLimit = ByteString.copyFrom("0x9d55".toHexByteArray())
-            verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x1a339c9e9".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
-            preVerificationGas = ByteString.copyFrom("0xb708".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xb708".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
+            }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
@@ -304,19 +313,23 @@ class TestEthereumTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x6".toHexByteArray())
-            entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
-            isAccountDeployed = true
             txMode = TransactionMode.EIP4337
 
             gasLimit = ByteString.copyFrom("0xf78e".toHexByteArray())
-            verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
-            preVerificationGas = ByteString.copyFrom("0xbb10".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xbb10".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
+            }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 erc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
@@ -338,19 +351,24 @@ class TestEthereumTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
-            entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+
             toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
-            isAccountDeployed = true
             txMode = TransactionMode.EIP4337
 
             gasLimit = ByteString.copyFrom("0xf78e".toHexByteArray())
-            verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
-            preVerificationGas = ByteString.copyFrom("0xbb10".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xbb10".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
+            }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 erc20Approve = Ethereum.Transaction.ERC20Approve.newBuilder().apply {
@@ -372,19 +390,23 @@ class TestEthereumTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0xc".toHexByteArray())
-            entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-            accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-            owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             toAddress = "0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b"
-            isAccountDeployed = true
             txMode = TransactionMode.EIP4337
 
             gasLimit = ByteString.copyFrom("0x60B378".toHexByteArray())
-            verificationGasLimit = ByteString.copyFrom("0x16E360".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
-            preVerificationGas = ByteString.copyFrom("0xC34F".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xC34F".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x16E360".toHexByteArray())
+            }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 erc721Transfer = Ethereum.Transaction.ERC721Transfer.newBuilder().apply {
@@ -407,19 +429,23 @@ class TestEthereumTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
-            entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-            accountFactory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
-            accountLogic = "0x510ab68bd111ce7115df797118b0334d727d564b"
-            owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
             toAddress = "0x428ce4b916332e1afccfddce08baecc97cb40b12"
-            isAccountDeployed = true
             txMode = TransactionMode.EIP4337
 
             gasLimit = ByteString.copyFrom("0x60B378".toHexByteArray())
-            verificationGasLimit = ByteString.copyFrom("0x16E360".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
             maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
-            preVerificationGas = ByteString.copyFrom("0xC738".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
+                accountLogic = "0x510ab68bd111ce7115df797118b0334d727d564b"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xC738".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x16E360".toHexByteArray())
+            }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 erc1155Transfer = Ethereum.Transaction.ERC1155Transfer.newBuilder().apply {

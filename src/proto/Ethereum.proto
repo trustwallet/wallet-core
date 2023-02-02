@@ -95,6 +95,33 @@ enum TransactionMode {
     EIP4337 = 2;
 }
 
+// ERC-4337 structure that describes a transaction to be sent on behalf of a user
+message UserOperation {
+    // Entry point contract address
+    string entry_point = 1;
+
+    // Account factory contract address
+    string account_factory = 2;
+
+    // Account logic contract address
+    string account_logic = 3;
+
+    // Public address of the account signer
+    string owner = 4;
+
+    // Whether the smart contract for this address has already been deployed
+    bool is_account_deployed = 5;
+
+    // The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
+    bytes pre_verification_gas = 6;
+
+    // The amount of gas to allocate for the verification step
+    bytes verification_gas_limit = 7;
+
+    // Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster (empty for self-sponsored transaction)
+    bytes paymaster_and_data = 8;
+}
+
 // Input data necessary to create a signed transaction.
 // Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
@@ -132,26 +159,8 @@ message SigningInput {
     // The payload transaction
     Transaction transaction = 10;
 
-    // [EIP4337] Entry point contract address
-    string entry_point = 11;
-
-    // [EIP4337] Account factory contract address
-    string account_factory = 12;
-
-    // [EIP4337] Account logic contract address
-    string account_logic = 13;
-
-    // [EIP4337] Public address of the account signer
-    string owner = 14;
-
-    // [EIP4337] Whether the smart contract for this address has already been deployed
-    bool is_account_deployed = 15;
-
-    // [EIP4337] The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
-    bytes pre_verification_gas = 16;
-
-    // [EIP4337] The amount of gas to allocate for the verification step
-    bytes verification_gas_limit = 17;
+    // UserOperation for ERC-4337 wallets
+    UserOperation user_operation = 11;
 }
 
 // Result containing the signed and encoded transaction.
