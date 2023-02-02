@@ -17,6 +17,7 @@ namespace TW::Ethereum {
 using json = nlohmann::json;
 using ParamBasePtr = std::shared_ptr<ABI::ParamBase>;
 using ParamCollection = std::vector<ParamBasePtr>;
+using TransactionEip4337Ptr = std::shared_ptr<TransactionEip4337>;
 
 static const Data EmptyListEncoded = parse_hex("c0");
 
@@ -271,7 +272,7 @@ Data TransactionEip4337::encoded(const Signature& signature, const uint256_t cha
     return Data(txString.begin(), txString.end());
 }
 
-std::shared_ptr<TransactionEip4337>
+TransactionEip4337Ptr
 TransactionEip4337::buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                         const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                         const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
@@ -294,7 +295,7 @@ TransactionEip4337::buildNativeTransfer(const Data& entryPointAddress, const Dat
         paymasterAndData);
 }
 
-std::shared_ptr<TransactionEip4337>
+TransactionEip4337Ptr
 TransactionEip4337::buildERC20Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                        const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                        const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
@@ -317,7 +318,7 @@ TransactionEip4337::buildERC20Transfer(const Data& entryPointAddress, const Data
         paymasterAndData);
 }
 
-std::shared_ptr<TransactionEip4337>
+TransactionEip4337Ptr
 TransactionEip4337::buildERC20Approve(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                       const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
                                       const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
@@ -340,7 +341,7 @@ TransactionEip4337::buildERC20Approve(const Data& entryPointAddress, const Data&
         paymasterAndData);
 }
 
-std::shared_ptr<TransactionEip4337>
+TransactionEip4337Ptr
 TransactionEip4337::buildERC721Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce, const bool& isAccountDeployed,
                                         const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
@@ -363,7 +364,7 @@ TransactionEip4337::buildERC721Transfer(const Data& entryPointAddress, const Dat
         paymasterAndData);
 }
 
-std::shared_ptr<TransactionEip4337>
+TransactionEip4337Ptr
 TransactionEip4337::buildERC1155Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
                                          const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data, const uint256_t& nonce, const bool& isAccountDeployed,
                                          const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
