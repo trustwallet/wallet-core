@@ -3134,7 +3134,7 @@
     "coinId": 146,
     "symbol": "NEBL",
     "decimals": 8,
-    "blockchain": "Nebl",
+    "blockchain": "Verge",
     "derivation": [
       {
         "path": "m/44'/146'/0'/0/0",

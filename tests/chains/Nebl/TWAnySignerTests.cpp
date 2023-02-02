@@ -16,6 +16,7 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "HexCoding.h"
+
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
 

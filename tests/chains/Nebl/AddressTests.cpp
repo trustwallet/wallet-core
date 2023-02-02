@@ -4,33 +4,52 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Nebl/TAddress.h"
+#include "Coin.h"
 #include "HexCoding.h"
+#include "Bitcoin/Address.h"
+#include "PublicKey.h"
 #include "PrivateKey.h"
-
 #include <gtest/gtest.h>
-#include <cstdio>
-#include <iostream>
-#include <string>
-using namespace std ;
-namespace TW::Nebl {
+#include <vector>
+
+#include <TrustWalletCore/TWCoinType.h>
+
+using namespace TW;
+using namespace TW::Bitcoin;
+
+TEST(NeblAddress, Valid) {
+    ASSERT_TRUE(Address::isValid(std::string("NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc")));
+    ASSERT_TRUE(TW::validateAddress(TWCoinTypeNebl, "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc"));
+}
+
+TEST(NeblAddress, Invalid) {
+    ASSERT_FALSE(Address::isValid(std::string("TZzJsL7VSUVeTcLb12LHr5tUW9bcx1T4G3")));
+}
 
 TEST(NeblAddress, FromPrivateKey) {
-    const auto privateKey =  PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
-    const auto pbkey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    const auto address = TAddress(pbkey);
-
-    EXPECT_EQ(address.string(), "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
-    EXPECT_EQ(address.bytes[0], 0x35);
+    auto privateKey = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeNebl));
+    ASSERT_EQ(address.string(), "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
 }
 
 TEST(NeblAddress, FromPublicKey) {
-    const auto privateKey = PrivateKey(parse_hex("BE88DF1D0BF30A923CB39C3BB953178BAAF3726E8D3CE81E7C8462E046E0D835"));
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    const auto address = TAddress(publicKey);
+    auto publicKey = PublicKey(parse_hex("03787a4c5ff72dce6d97f9b6360dc302b2d8a833e8c570dcc124a96e5f564bb524"), TWPublicKeyTypeSECP256k1);
+    auto address = Address(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeNebl));
+    ASSERT_EQ(address.string(), "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
 
-    EXPECT_EQ(address.string(), "NidLccuLD8J4oK25PwPg5ipLj5L9VVrwi5");
-    EXPECT_EQ(address.bytes[0], 0x35);
+    auto addr = TW::deriveAddress(TWCoinTypeNebl, publicKey, TWDerivationBitcoinLegacy);
+    ASSERT_EQ(addr, "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
 }
 
-} // namespace TW::Nebl
+TEST(NeblAddress, FromString) {
+    auto address = Address("NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
+    ASSERT_EQ(address.string(), "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
+
+    auto data = TW::addressToData(TWCoinTypeNebl, "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc");
+    EXPECT_EQ(hex(data), "ae40b2142aba5ddd10f74d9440bfda8a36cbad5b");
+
+    // invalid address
+    data = TW::addressToData(TWCoinTypeNebl, "xZW297yHHzSdiiwqE1eN4bfm5tJULjVZ");
+    EXPECT_EQ(data.size(), 0ul);
+}

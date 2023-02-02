@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Nebl/Signer.h"
-#include "Nebl/Transaction.h"
-#include "Nebl/TransactionBuilder.h"
+#include "Verge/Signer.h"
+#include "Verge/Transaction.h"
+#include "Verge/TransactionBuilder.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/TransactionPlan.h"
 #include "Bitcoin/TransactionSigner.h"
@@ -61,7 +61,7 @@ TEST(NeblSigner, Sign) {
     protoPlan = plan.proto();
 
     // Sign
-    auto result = Nebl::Signer::sign(input);
+    auto result = Verge::Signer::sign(input);
     
     ASSERT_EQ(hex(result.encoded()),
         "01000000d4cbbb62017d40b2c80adbb0f44cbec466ae30f0316e0c1bf98110fd6d3f1b0fda47e1a6a5000000006a47304402207f77f7ed50ec56447fd108b2a9a693b2ac9f62e99b59dfa914f242510943187602204618fd9195050c763eb93644e51344f6c00e4dd93aa41bb42bce42c9e4cc53b6012103787a4c5ff72dce6d97f9b6360dc302b2d8a833e8c570dcc124a96e5f564bb524feffffff02002f6859000000001976a914412033ed457c72ca70bab5fbfdc03256bd2ce07d88ac009d693a000000001976a914ae40b2142aba5ddd10f74d9440bfda8a36cbad5b88ac00000000"
@@ -120,7 +120,7 @@ TEST(NeblSigner, SignAnyoneCanPay) {
     protoPlan = plan.proto();
 
     // Sign
-    auto result = Bitcoin::TransactionSigner<Nebl::Transaction, Nebl::TransactionBuilder>::sign(input);
+    auto result = Bitcoin::TransactionSigner<Verge::Transaction, Verge::TransactionBuilder>::sign(input);
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
@@ -145,11 +145,12 @@ TEST(NeblSigner, SignWithError) {
     input.set_time(1656474580);
 
     // Sign
-    auto result = Nebl::Signer::sign(input);
+    auto result = Verge::Signer::sign(input);
 
     ASSERT_NE(result.error(), Common::Proto::OK);
 
     // PreImage
-    auto preResult = Nebl::Signer::preImageHashes(input);
+    auto preResult = Verge::Signer::preImageHashes(input);
     ASSERT_NE(preResult.error(), Common::Proto::OK);
 }
+

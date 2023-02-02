@@ -11,6 +11,7 @@
 #include "TransactionCompiler.h"
 
 #include "proto/Bitcoin.pb.h"
+#include "Bitcoin/Script.h"
 
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
@@ -29,8 +30,8 @@ TEST(NeblCompiler, CompileWithSignatures) {
     // tx on mainnet
     // https://Nebl-blockchain.info/tx/21314157b60ddacb842d2a749429c4112724b7a078adb9e77ba502ea2dd7c230
 
-    const int64_t amount = 9999995000000;
-    const int64_t fee = 120850;
+    const int64_t amount = 100000000;
+    const int64_t fee = 226;
     const std::string toAddress = "NRrKgiZfT7jUdS3geoEBproA7hzZnDQAdr";
 
     auto input = Bitcoin::Proto::SigningInput();
@@ -50,8 +51,8 @@ TEST(NeblCompiler, CompileWithSignatures) {
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(4294967295);
     utxo0->set_amount(20000000000000);
-
-    auto script0 = Bitcoin::Script::lockScriptForAddress("NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc", TWCoinTypeNebl);
+    
+    auto script0 = TW::Bitcoin::Script::lockScriptForAddress("NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc", TWCoinTypeNebl);
     ASSERT_EQ(hex(script0.bytes), "76a914ae40b2142aba5ddd10f74d9440bfda8a36cbad5b88ac");
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());
 
@@ -65,7 +66,7 @@ TEST(NeblCompiler, CompileWithSignatures) {
 
     plan.set_amount(amount);
     plan.set_fee(fee);
-    plan.set_change(10000004879150);
+    plan.set_change(19999899999774);
 
     // Extend input with accepted plan
     *input.mutable_plan() = plan;
@@ -81,7 +82,7 @@ TEST(NeblCompiler, CompileWithSignatures) {
 
     ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
     EXPECT_EQ(hex(preSigningOutput.hash_public_keys()[0].data_hash()),
-              "16351f27b04d06a642eaa48481048d3027353e430670edf72414a79d3f5987d9");
+              "e7d7c67a125a506d46fa75f86a575360239d301a19621f9f231c46d889fe1a3b");
 
     EXPECT_EQ(hex(preSigningOutput.hash_public_keys()[0].public_key_hash()), "ae40b2142aba5ddd10f74d9440bfda8a36cbad5b");
 
@@ -91,7 +92,7 @@ TEST(NeblCompiler, CompileWithSignatures) {
     auto publicKey = PublicKey(parse_hex(publicKeyHex), TWPublicKeyTypeSECP256k1);
 
     auto preImageHash = preSigningOutput.hash_public_keys()[0].data_hash();
-    auto signature = parse_hex("3045022100d7942270d9847065c5c2baf2c7fbc4d8f504746607b7b99adbab9d5386f6b50002206940a08a7e99d74a3eb110057d84f1c3f094ba01e8d4d3f57c2263fa54c193bd");
+    auto signature = parse_hex("3045022100a2dd4cbc8516a7b19516bce90fde7a3c4836c1277ddc61ca80d27d5711bcefc302200e049a3c2bdfd7ebacb7be48914a7cad8ea0db0695fb28ab645acdb12c413cb3");
 
     // get pubkey by pirvateKey
     // const auto privateKey = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
@@ -116,7 +117,7 @@ TEST(NeblCompiler, CompileWithSignatures) {
         TransactionCompiler::compileWithSignatures(coin, txInputData, signatureVec, pubkeyVec);
 
     const auto ExpectedTx =
-        "01000000bbd46a5e011212942d8539c0f23ab0419783006d01697b1ec5a1c9be0c623de9c8549783ee010000006b483045022100d7942270d9847065c5c2baf2c7fbc4d8f504746607b7b99adbab9d5386f6b50002206940a08a7e99d74a3eb110057d84f1c3f094ba01e8d4d3f57c2263fa54c193bd012103787a4c5ff72dce6d97f9b6360dc302b2d8a833e8c570dcc124a96e5f564bb524ffffffff02c054264e180900001976a914412033ed457c72ca70bab5fbfdc03256bd2ce07d88ac2e13bd4e180900001976a914ae40b2142aba5ddd10f74d9440bfda8a36cbad5b88ac00000000";
+        "01000000bbd46a5e011212942d8539c0f23ab0419783006d01697b1ec5a1c9be0c623de9c8549783ee010000006b483045022100a2dd4cbc8516a7b19516bce90fde7a3c4836c1277ddc61ca80d27d5711bcefc302200e049a3c2bdfd7ebacb7be48914a7cad8ea0db0695fb28ab645acdb12c413cb3012103787a4c5ff72dce6d97f9b6360dc302b2d8a833e8c570dcc124a96e5f564bb524ffffffff0200e1f505000000001976a914412033ed457c72ca70bab5fbfdc03256bd2ce07d88ac1e5eef96301200001976a914ae40b2142aba5ddd10f74d9440bfda8a36cbad5b88ac00000000";
     {
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));

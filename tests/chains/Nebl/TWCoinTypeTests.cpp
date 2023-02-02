@@ -22,7 +22,7 @@ TEST(TWNeblCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebl));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebl), 8);
-    ASSERT_EQ(TWBlockchainNebl, TWCoinTypeBlockchain(TWCoinTypeNebl));
+    ASSERT_EQ(TWBlockchainVerge, TWCoinTypeBlockchain(TWCoinTypeNebl));
     ASSERT_EQ(0x70, TWCoinTypeP2shPrefix(TWCoinTypeNebl));
     ASSERT_EQ(0x35, TWCoinTypeP2pkhPrefix(TWCoinTypeNebl));
     assertStringsEqual(symbol, "NEBL");

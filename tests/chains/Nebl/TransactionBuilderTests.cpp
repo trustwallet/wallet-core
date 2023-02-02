@@ -4,9 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TestUtilities.h"
-#include "Nebl/Transaction.h"
-#include "Nebl/TransactionBuilder.h"
+#include "Verge/Transaction.h"
+#include "Verge/TransactionBuilder.h"
 #include "Bitcoin/TransactionPlan.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -21,7 +20,7 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 TEST(NeblTransactionBuilder, BuildWithTime) {
-    const int64_t amount = 1500000000;
+ const int64_t amount = 1500000000;
     const int64_t fee = 2000000;
     const std::string toAddress = "NRrKgiZfT7jUdS3geoEBproA7hzZnDQAdr";
 
@@ -53,6 +52,6 @@ TEST(NeblTransactionBuilder, BuildWithTime) {
     plan.fee = fee;
     plan.change = 980000000;
 
-    auto tx = Nebl::TransactionBuilder::build<Nebl::Transaction>(plan, input);
+    auto tx = Verge::TransactionBuilder::build<Verge::Transaction>(plan, input);
     ASSERT_NE(tx.time, 0ul);
 }
