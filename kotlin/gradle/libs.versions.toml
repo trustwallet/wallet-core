@@ -5,20 +5,10 @@ android-sdk-compile = "33"
 android-cmake = "3.22.1"
 android-ndk = "25.2.9519653"
 
-ios-deployment-target = "12.0"
-
 kotlin = "1.8.0"
 agp = "7.4.0"
 wire = "4.4.3"
 
 [libraries]
-
-# Android
-android-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-
-# Kotlin
-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-
-# Wire
 wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
 wire-compiler = { module = "com.squareup.wire:wire-compiler", version.ref = "wire" }

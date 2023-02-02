@@ -86,6 +86,12 @@ if (TW_CLANG_ASAN)
     target_enable_asan(TrustWalletCore)
 endif ()
 
+if (${KOTLIN})
+    set(JNI_PATH "kotlin/TrustWalletCore/src/androidMain/cpp")
+else ()
+    set(JNI_PATH "jni/cpp")
+endif ()
+
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
 target_include_directories(TrustWalletCore
@@ -94,8 +100,7 @@ target_include_directories(TrustWalletCore
         $<INSTALL_INTERFACE:include>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/kotlin/TrustWalletCore/src/androidMain/cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/${JNI_PATH}
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
         )
 

@@ -18,6 +18,10 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild(
+    "BuildLogic",
+)
+
 include(
     ":TrustWalletCore",
 )

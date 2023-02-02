@@ -1,19 +1,13 @@
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackOutput
-import org.jetbrains.kotlin.incremental.createDirectory
-import org.jetbrains.kotlin.incremental.deleteDirectoryContents
 
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
-    `maven-publish`
+    id("convention.maven-publish")
+    id("convention.file-generation")
 }
-
-group = "com.trustwallet"
-val moduleName = "wallet-core-kotlin"
-version = "0.0.1"
 
 kotlin {
     android {
@@ -131,98 +125,4 @@ android {
             path = rootDir.parentFile.resolve("CMakeLists.txt")
         }
     }
-}
-
-// Use afterEvaluate because of Android: org.jetbrains.kotlin.gradle.plugin.mpp.createTargetPublications
-project.afterEvaluate {
-    publishing.publications.withType<MavenPublication> {
-        artifactId = artifactId.replaceFirst(project.name, moduleName)
-    }
-}
-
-// Use Composite builds
-val generateCinteropTask = task("generateCinterop") {
-    doFirst {
-        val headersDir = rootDir.parentFile.resolve("include/TrustWalletCore")
-        val headers = headersDir
-            .listFiles { file -> file.extension == "h" }
-            .orEmpty()
-            .sortedBy { it.name }
-            .joinToString(separator = " ") { it.name }
-
-        val defFile = projectDir.resolve("src/nativeInterop/cinterop/walletCore.def")
-        defFile.ensureParentDirsCreated()
-        defFile.writeText(
-            text =
-            """
-                headers = $headers
-                package = com.trustwallet.core
-
-            """.trimIndent(),
-        )
-    }
-}
-
-val copyProtoTask = task<Copy>("copyProtos") {
-    val sourceDir = rootDir.parentFile.resolve("src/proto")
-    val destinationDir = projectDir.resolve("build/tmp/proto")
-
-    doFirst {
-        destinationDir.deleteDirectoryContents()
-    }
-
-    from(sourceDir) {
-        include("*.proto")
-    }
-    into(destinationDir)
-
-    doLast {
-        destinationDir
-            .listFiles { file -> file.extension == "proto" }
-            .orEmpty()
-            .forEach { file ->
-                val packageName = file.nameWithoutExtension.toLowerCase()
-                file
-                    .readText()
-                    .replaceFirst(
-                        oldValue = """option java_package = "wallet.core.jni.proto";""",
-                        newValue = """option java_package = "com.trustwallet.core.$packageName";""",
-                    )
-                    .let { file.writeText(it) }
-            }
-    }
-}
-
-val wire: Configuration by configurations.creating
-
-val generateProtosTask = task<JavaExec>("generateProtos") {
-    dependsOn(copyProtoTask)
-
-    val sourceDir = projectDir.resolve("build/tmp/proto")
-    val destinationDir = projectDir.resolve("src/commonMain/proto")
-
-    doFirst {
-        destinationDir.createDirectory()
-        destinationDir.deleteDirectoryContents()
-    }
-
-    mainClass.set("com.squareup.wire.WireCompiler")
-    classpath = wire
-
-    args(
-        "--proto_path=$sourceDir",
-        "--kotlin_out=$destinationDir",
-    )
-}
-
-dependencies {
-    wire(libs.wire.compiler)
-}
-
-task<Exec>("generateFiles") {
-    dependsOn(generateCinteropTask)
-    dependsOn(generateProtosTask)
-
-    workingDir(rootDir.parentFile)
-    commandLine("./codegen/bin/codegen")
 }
