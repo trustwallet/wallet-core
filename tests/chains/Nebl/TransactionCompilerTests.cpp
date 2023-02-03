@@ -93,14 +93,6 @@ TEST(NeblCompiler, CompileWithSignatures) {
 
     auto preImageHash = preSigningOutput.hash_public_keys()[0].data_hash();
     auto signature = parse_hex("3045022100a2dd4cbc8516a7b19516bce90fde7a3c4836c1277ddc61ca80d27d5711bcefc302200e049a3c2bdfd7ebacb7be48914a7cad8ea0db0695fb28ab645acdb12c413cb3");
-
-    // get pubkey by pirvateKey
-    // const auto privateKey = PrivateKey(parse_hex("4222aae79af41eade7b07ce6fd44d926ea8e3f95e51a06e85f8bdec89680cbd9"));
-    // auto pk = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    // EXPECT_EQ(hex(pk.bytes), "03787a4c5ff72dce6d97f9b6360dc302b2d8a833e8c570dcc124a96e5f564bb524");
-    // const auto st = privateKey.signAsDER(TW::Data(preImageHash.begin(), preImageHash.end()));
-    // EXPECT_EQ(hex(st), "3045022100d7942270d9847065c5c2baf2c7fbc4d8f504746607b7b99adbab9d5386f6b50002206940a08a7e99d74a3eb110057d84f1c3f094ba01e8d4d3f57c2263fa54c193bd");
-
     
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(
