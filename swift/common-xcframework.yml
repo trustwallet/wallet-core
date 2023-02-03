@@ -45,7 +45,7 @@ targets:
       - framework: WalletCoreRs.xcframework
     settings:
       SKIP_INSTALL: false
-      SUPPORTS_MACCATALYST: true
+      SUPPORTS_MACCATALYST: false
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
       CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
