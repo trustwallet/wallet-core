@@ -5,9 +5,9 @@ import java.util.HashSet;
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
 <%= entity.comment %>
 <%  if !less.nil? && !equal.nil? -%>
-public class <%= entity.name %> implements Comparable<<%= entity.name %>> {
+public final class <%= entity.name %> implements Comparable<<%= entity.name %>> {
 <%  else -%>
-public class <%= entity.name %> {
+public final class <%= entity.name %> {
 <%  end -%>
     private long nativeHandle;
 
