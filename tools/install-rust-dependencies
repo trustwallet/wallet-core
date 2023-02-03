@@ -6,8 +6,8 @@ if [[ `uname` == "Darwin" ]]; then
   rustup update
   rustup toolchain install nightly
   rustup default nightly
-  rustup toolchain install nightly-x86_64-apple-darwin
-  rustup toolchain install nightly-aarch64-apple-darwin
+  rustup toolchain install nightly-x86_64-apple-darwin --force-non-host
+  rustup toolchain install nightly-aarch64-apple-darwin --force-non-host
   rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
   rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
 fi
@@ -17,7 +17,7 @@ rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-and
 # iOS
 rustup target add aarch64-apple-darwin x86_64-apple-darwin
 # macOS
-rustup target add x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios 
+rustup target add x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios
 # Wasm
 rustup target add wasm32-unknown-emscripten
 
