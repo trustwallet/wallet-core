@@ -223,6 +223,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeOsmosis:
             EXPECT_EQ(address, "osmo1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z03qvn6n");
             break;
+        case TWCoinTypePivx:
+            EXPECT_EQ(address, "DNRTC6GZ5evmM7BZWwPqF54fyDqUqULMyu");
+            break;
         case TWCoinTypePolkadot:
             EXPECT_EQ(address, "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
             break;

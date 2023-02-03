@@ -94,6 +94,7 @@ class CoinAddressDerivationTests {
         ALGORAND -> assertEquals("JTJWO524JXIHVPGBDWFLJE7XUIA32ECOZOBLF2QP3V5TQBT3NKZSCG67BQ", address)
         KUSAMA -> assertEquals("G9xV2EatmrjRC1FLPexc3ddqNRRzCsAdURU8RFiAAJX6ppY", address)
         POLKADOT -> assertEquals("13nN6BGAoJwd7Nw1XxeBCx5YcBXuYnL94Mh7i3xBprqVSsFk", address)
+        PIVX -> assertEquals("D81AqC8zKma3Cht4TbVuh4jyVVyLkZULCm", address)
         KAVA -> assertEquals("kava1drpa0x9ptz0fql3frv562rcrhj2nstuz3pas87", address)
         CARDANO -> assertEquals("addr1qyr8jjfnypp95eq74aqzn7ss687ehxclgj7mu6gratmg3mul2040vt35dypp042awzsjk5xm3zr3zm5qh7454uwdv08s84ray2", address)
         NEO -> assertEquals("AT6w7PJvwPcSqHvtbNBY2aHPDv12eW5Uuf", address)

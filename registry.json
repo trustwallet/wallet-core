@@ -534,6 +534,38 @@
     }
   },
   {
+    "id": "pivx",
+    "name": "Pivx",
+    "coinId": 119,
+    "symbol": "PIVX",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/44'/119'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 30,
+    "p2shPrefix": 13,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://pivx.ccore.online",
+      "txPath": "/transaction/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://pivx.org",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
     "id": "zen",
     "name": "Zen",
     "coinId": 121,

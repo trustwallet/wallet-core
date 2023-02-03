@@ -171,6 +171,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .poanetwork:
                     let expectedResult = "0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .pivx:
+                    let expectedResult = "D81AqC8zKma3Cht4TbVuh4jyVVyLkZULCm"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .polkadot:
                     let expectedResult = "13nN6BGAoJwd7Nw1XxeBCx5YcBXuYnL94Mh7i3xBprqVSsFk"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)

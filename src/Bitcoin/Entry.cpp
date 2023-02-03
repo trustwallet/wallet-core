@@ -35,6 +35,7 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, byte p2
 
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
+    case TWCoinTypePivx:
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:
     default:
@@ -97,6 +98,7 @@ std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeMonacoin:
+    case TWCoinTypePivx:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:

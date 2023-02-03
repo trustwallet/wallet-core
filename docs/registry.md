@@ -19,6 +19,7 @@ This list is generated from [./registry.json](../registry.json)
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/icon/info/logo.png" width="32" />         | <https://icon.foundation>     |
 | 77      | Verge            | XVG    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/verge/info/logo.png" width="32" />        | <https://vergecurrency.com>   |
 | 118     | Cosmos Hub       | ATOM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cosmos/info/logo.png" width="32" />       | <https://cosmos.network>      |
+| 119     | Pivx             | PIVX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/pivx/info/logo.png" width="32" />         | <https://pivx.org>            |
 | 121     | Zen              | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zen/info/logo.png" width="32" />          | <https://www.horizen.io>      |
 | 133     | Zcash            | ZEC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zcash/info/logo.png" width="32" />        | <https://z.cash>              |
 | 136     | Firo             | FIRO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/firo/info/logo.png" width="32" />         | <https://firo.org/>           |

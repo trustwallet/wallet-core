@@ -33,6 +33,7 @@ enum TWCoinType {
     TWCoinTypeCallisto = 820,
     TWCoinTypeCardano = 1815, // Note: Cardano Shelley testnet uses purpose 1852 (not 44) 1852/1815
     TWCoinTypeCosmos = 118,
+    TWCoinTypePivx = 119,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
     TWCoinTypeDigiByte = 20,
