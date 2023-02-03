@@ -1405,12 +1405,11 @@
   },
   {
     "id": "elrond",
-    "name": "Elrond",
-    "displayName": "MultiversX",
+    "name": "MultiversX",
     "coinId": 508,
     "symbol": "eGLD",
     "decimals": 18,
-    "blockchain": "ElrondNetwork",
+    "blockchain": "MultiversX",
     "derivation": [
       {
         "path": "m/44'/508'/0'/0'/0'"

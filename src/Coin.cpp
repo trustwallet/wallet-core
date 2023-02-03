@@ -23,7 +23,7 @@
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
 #include "EOS/Entry.h"
-#include "Elrond/Entry.h"
+#include "MultiversX/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Everscale/Entry.h"
 #include "FIO/Entry.h"
@@ -72,7 +72,7 @@ Binance::Entry binanceDP;
 Bitcoin::Entry bitcoinDP;
 Cardano::Entry cardanoDP;
 Cosmos::Entry cosmosDP;
-Elrond::Entry elrondDP;
+MultiversX::Entry multiversxDP;
 EOS::Entry eosDP;
 Ethereum::Entry ethereumDP;
 Decred::Entry decredDP;
@@ -148,7 +148,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainCardano: entry = &cardanoDP; break;
         case TWBlockchainNEO: entry = &neoDP; break;
         case TWBlockchainFilecoin: entry = &filecoinDP; break;
-        case TWBlockchainElrondNetwork: entry = &elrondDP; break;
+        case TWBlockchainMultiversX: entry = &multiversxDP; break;
         case TWBlockchainOasisNetwork: entry = &oasisDP; break;
         case TWBlockchainDecred: entry = &decredDP; break;
         case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
