@@ -239,7 +239,7 @@ class TestEthereumTransactionSigner {
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
             toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
-            txMode = TransactionMode.EIP4337
+            txMode = TransactionMode.UserOp
 
             gasLimit = ByteString.copyFrom("0x5580".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x01952f1f85".toHexByteArray())
@@ -277,7 +277,7 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x1".toHexByteArray())
 
             toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
-            txMode = TransactionMode.EIP4337
+            txMode = TransactionMode.UserOp
 
             gasLimit = ByteString.copyFrom("0x9d55".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x1a339c9e9".toHexByteArray())
@@ -314,7 +314,7 @@ class TestEthereumTransactionSigner {
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x6".toHexByteArray())
             toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
-            txMode = TransactionMode.EIP4337
+            txMode = TransactionMode.UserOp
 
             gasLimit = ByteString.copyFrom("0xf78e".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
@@ -353,7 +353,7 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
 
             toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
-            txMode = TransactionMode.EIP4337
+            txMode = TransactionMode.UserOp
 
             gasLimit = ByteString.copyFrom("0xf78e".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
@@ -391,7 +391,7 @@ class TestEthereumTransactionSigner {
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0xc".toHexByteArray())
             toAddress = "0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b"
-            txMode = TransactionMode.EIP4337
+            txMode = TransactionMode.UserOp
 
             gasLimit = ByteString.copyFrom("0x60B378".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
@@ -430,7 +430,7 @@ class TestEthereumTransactionSigner {
             chainId = ByteString.copyFrom("0x5".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
             toAddress = "0x428ce4b916332e1afccfddce08baecc97cb40b12"
-            txMode = TransactionMode.EIP4337
+            txMode = TransactionMode.UserOp
 
             gasLimit = ByteString.copyFrom("0x60B378".toHexByteArray())
             maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())

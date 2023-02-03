@@ -392,7 +392,7 @@ class EthereumTests: XCTestCase {
 
     func testEIP4337NativeTransferAccountNotDeployed() throws {
         let input = EthereumSigningInput.with {
-            $0.txMode = .eip4337
+            $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "00")!
             $0.toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
@@ -429,7 +429,7 @@ class EthereumTests: XCTestCase {
 
     func testEIP4337NativeTransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
-            $0.txMode = .eip4337
+            $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "01")!
             $0.toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
@@ -466,7 +466,7 @@ class EthereumTests: XCTestCase {
 
     func testEIP4337ERC20TransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
-            $0.txMode = .eip4337
+            $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "06")!
             $0.toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
@@ -504,7 +504,7 @@ class EthereumTests: XCTestCase {
 
     func testEIP4337ERC20ApproveAccountDeployed() throws {
         let input = EthereumSigningInput.with {
-            $0.txMode = .eip4337
+            $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "09")!
             $0.toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
@@ -541,7 +541,7 @@ class EthereumTests: XCTestCase {
 
     func testEIP4337ERC721TransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
-            $0.txMode = .eip4337
+            $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "0x0C")!
             $0.toAddress = "0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b"
@@ -579,7 +579,7 @@ class EthereumTests: XCTestCase {
 
     func testEIP4337ERC1155TransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
-            $0.txMode = .eip4337
+            $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
             $0.nonce = Data(hexString: "0x")!
             $0.toAddress = "0x428ce4b916332e1afccfddce08baecc97cb40b12"

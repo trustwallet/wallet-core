@@ -320,7 +320,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_tx_mode(Proto::TransactionMode::UserOp);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
@@ -370,7 +370,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_tx_mode(Proto::TransactionMode::UserOp);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
@@ -422,7 +422,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20TransferAccountDeployed) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_tx_mode(Proto::TransactionMode::UserOp);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
@@ -474,7 +474,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20ApproveAccountDeployed) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_tx_mode(Proto::TransactionMode::UserOp);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
@@ -527,7 +527,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC721TransferAccountDeployed) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_tx_mode(Proto::TransactionMode::UserOp);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
@@ -581,7 +581,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC1155TransferAccountDeployed) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::EIP4337);
+    input.set_tx_mode(Proto::TransactionMode::UserOp);
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());

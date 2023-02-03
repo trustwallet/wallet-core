@@ -167,8 +167,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* amount: */ load(input.transaction().transfer().amount()),
                 /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
 
-        case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildNativeTransfer(
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildNativeTransfer(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,
@@ -206,8 +206,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* toAddress */ tokenToAddress,
                 /* amount: */ load(input.transaction().erc20_transfer().amount()));
 
-        case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildERC20Transfer(
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC20Transfer(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,
@@ -244,8 +244,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* toAddress */ spenderAddress,
                 /* amount: */ load(input.transaction().erc20_approve().amount()));
 
-        case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildERC20Approve(
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC20Approve(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,
@@ -285,8 +285,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* toAddress */ tokenToAddress,
                 /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
 
-        case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildERC721Transfer(
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC721Transfer(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,
@@ -331,8 +331,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* value */ load(input.transaction().erc1155_transfer().value()),
                 /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()));
 
-        case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildERC1155Transfer(
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC1155Transfer(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,
@@ -372,8 +372,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* amount: */ load(input.transaction().contract_generic().amount()),
                 /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
 
-        case Proto::TransactionMode::EIP4337:
-            return TransactionEip4337::buildNativeTransfer(
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildNativeTransfer(
                 entryPointAddress,
                 accountFactoryAddress,
                 accountLogicAddress,

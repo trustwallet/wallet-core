@@ -111,7 +111,7 @@ TEST(EthereumSigner, EIP1559_1442) {
 
 TEST(EthereumSigner, EIP4337_NativeTransfer_Account_Not_Deployed) {
     const uint256_t chainID = 5;
-    const auto transaction = TransactionEip4337::buildNativeTransfer(
+    const auto transaction = UserOperation::buildNativeTransfer(
         parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
         parse_hex("0x5A87209b755781cF65fEeEdd3855ade0317f4a92"),
         parse_hex("0x21cc27d7db4fa19857a3702653a7a67ee30ca620"),
@@ -139,7 +139,7 @@ TEST(EthereumSigner, EIP4337_NativeTransfer_Account_Not_Deployed) {
 
 TEST(EthereumSigner, EIP4337_NativeTransfer_Account_Deployed) {
     const uint256_t chainID = 5;
-    const auto transaction = TransactionEip4337::buildNativeTransfer(
+    const auto transaction = UserOperation::buildNativeTransfer(
         parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
         parse_hex("0x5A87209b755781cF65fEeEdd3855ade0317f4a92"),
         parse_hex("0x21cc27d7db4fa19857a3702653a7a67ee30ca620"),
@@ -167,7 +167,7 @@ TEST(EthereumSigner, EIP4337_NativeTransfer_Account_Deployed) {
 
 TEST(EthereumSigner, EIP4337_ERC20_Transfer_Account_Deployed) {
     const uint256_t chainID = 5;
-    const auto transaction = TransactionEip4337::buildERC20Transfer(
+    const auto transaction = UserOperation::buildERC20Transfer(
         parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
         parse_hex("0x5A87209b755781cF65fEeEdd3855ade0317f4a92"),
         parse_hex("0x21cc27d7db4fa19857a3702653a7a67ee30ca620"),
@@ -196,7 +196,7 @@ TEST(EthereumSigner, EIP4337_ERC20_Transfer_Account_Deployed) {
 
 TEST(EthereumSigner, EIP4337_ERC20_Approve_Account_Deployed) {
     const uint256_t chainID = 5;
-    const auto transaction = TransactionEip4337::buildERC20Approve(
+    const auto transaction = UserOperation::buildERC20Approve(
         parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
         parse_hex("0x5A87209b755781cF65fEeEdd3855ade0317f4a92"),
         parse_hex("0x21cc27d7db4fa19857a3702653a7a67ee30ca620"),
@@ -224,7 +224,7 @@ TEST(EthereumSigner, EIP4337_ERC20_Approve_Account_Deployed) {
 
 TEST(EthereumSigner, EIP4337_ERC721_Transfer_Account_Deployed) {
     const uint256_t chainID = 5;
-    const auto transaction = TransactionEip4337::buildERC721Transfer(
+    const auto transaction = UserOperation::buildERC721Transfer(
         parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
         parse_hex("0x5A87209b755781cF65fEeEdd3855ade0317f4a92"),
         parse_hex("0x21cc27d7db4fa19857a3702653a7a67ee30ca620"),
@@ -253,7 +253,7 @@ TEST(EthereumSigner, EIP4337_ERC721_Transfer_Account_Deployed) {
 
 TEST(EthereumSigner, EIP4337_ERC1155_Transfer_Account_Deployed) {
     const uint256_t chainID = 5;
-    const auto transaction = TransactionEip4337::buildERC1155Transfer(
+    const auto transaction = UserOperation::buildERC1155Transfer(
         parse_hex("0x1306b01bC3e4AD202612D3843387e94737673F53"),
         parse_hex("0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"),
         parse_hex("0x510ab68bd111ce7115df797118b0334d727d564b"),

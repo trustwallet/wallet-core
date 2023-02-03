@@ -92,7 +92,7 @@ enum TransactionMode {
     Enveloped = 1;
 
     // EIP4337-compatible UserOperation
-    EIP4337 = 2;
+    UserOp = 2;
 }
 
 // ERC-4337 structure that describes a transaction to be sent on behalf of a user
