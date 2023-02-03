@@ -376,6 +376,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             return {};
 
         case TWCoinTypeZcash:
+        case TWCoinTypeZelcash:
             if (Zcash::TAddress::isValid(string)) {
                 auto address = Zcash::TAddress(string);
                 auto data = Data();
