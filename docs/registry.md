@@ -26,6 +26,7 @@ This list is generated from [./registry.json](../registry.json)
 | 141     | Komodo           | KMD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/komodo/info/logo.png" width="32" />       | <https://komodoplatform.com>  |
 | 144     | XRP              | XRP    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ripple/info/logo.png" width="32" />       | <https://ripple.com/xrp>      |
 | 145     | Bitcoin Cash     | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png" width="32" />  | <https://bitcoincash.org>     |
+| 146     | Nebl             | NEBL   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/Nebl/info/logo.png" width="32" />         | <https://nebl.io>             |
 | 148     | Stellar          | XLM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stellar/info/logo.png" width="32" />      | <https://stellar.org>         |
 | 156     | Bitcoin Gold     | BTG    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoingold/info/logo.png" width="32" />  | <https://bitcoingold.org>     |
 | 165     | Nano             | XNO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nano/info/logo.png" width="32" />         | <https://nano.org>            |

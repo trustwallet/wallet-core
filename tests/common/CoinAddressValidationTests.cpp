@@ -409,4 +409,9 @@ TEST(Coin, ValidateAddressEverscale) {
     ASSERT_EQ(normalizeAddress(TWCoinTypeEverscale, "0:83A0352908060FA87839195D8A763A8D9AB28F8FA41468832B398A719CC6469A"), "0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
 }
 
+TEST(Coin, ValidateAddressNebl) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeNebl, "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeNebl, "NidLccuLD8J4oK25PwPg5ipLj5L9VVrwi5"));
+}
+
 } // namespace TW
