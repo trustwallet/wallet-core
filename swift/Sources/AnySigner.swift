@@ -12,6 +12,8 @@ public typealias SigningOutput = Message
 
 // TANGEM
 public protocol Signer {
+    var error: Error? { get }
+    
     func sign(_ data: Data) -> Data
 }
 
