@@ -268,7 +268,7 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
                                                                      std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
                                                                      std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
                                                                      std::make_shared<Ethereum::ABI::ParamString>(memo),
-                                                                     std::make_shared<Ethereum::ABI::ParamUInt64>(*mExpirationPolicy)});
+                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(*mExpirationPolicy))});
         Data payload;
         func.encode(payload);
         transfer.set_data(payload.data(), payload.size());
