@@ -57,7 +57,7 @@ std::string getEIP4337DeploymentAddress(const std::string& factoryAddress, const
     const Data proxyInitCode = getEIP1967ProxyInitCode(logicAddress, logicInitializeBytecode);
     const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
     const Data initCodeHash = Hash::keccak256(proxyInitCode);
-    return create2AddressString(factoryAddress, salt, initCodeHash);
+    return Ethereum::checksumed(Address(hexEncoded(create2Address(factoryAddress, salt, initCodeHash))));
 }
 
 } // namespace TW::Ethereum

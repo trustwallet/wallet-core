@@ -26,9 +26,4 @@ Data create2Address(const std::string& from, const Data& salt, const Data& initC
     return Data(hash.end() - 20, hash.end());
 }
 
-std::string create2AddressString(const std::string& from, const Data& salt, const Data& initCodeHash) {
-    auto addressData = create2Address(from, salt, initCodeHash);
-    return Ethereum::checksumed(Address(hexEncoded(addressData)));
-}
-
 } // namespace TW::Ethereum

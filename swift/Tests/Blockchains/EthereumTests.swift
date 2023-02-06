@@ -374,14 +374,6 @@ class EthereumTests: XCTestCase {
 
     // EIP4337
 
-    func testCreate2Address() {
-        let address = "0x0000000000000000000000000000000000000000"
-        let salt = Data(hexString: "0x0000000000000000000000000000000000000000000000000000000000000000")!
-        let initCodeHash = Hash.keccak256(data: Data(hexString: "0x00")!)
-        let result = Ethereum.eip1014AddressCreate2(fromEthAddress: address, salt: salt, initCodeHash: initCodeHash)
-        XCTAssertEqual(result, "0x4D1A2e2bB4F88F0250f26Ffff098B0b30B26BF38")
-    }
-
     func testEIP4337DeploymentAddress() {
         let factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
         let logicAddress = "0x5C9eb5D6a6C2c1B3EFc52255C0b356f116f6f66D"

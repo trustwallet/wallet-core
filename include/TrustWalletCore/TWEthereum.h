@@ -7,22 +7,12 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWData.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_STRUCT
 struct TWEthereum;
-
-/// EIP-1014: Skinny CREATE2 (guess smart contract create2 address)
-///
-/// \param fromEthAddress valid eth address
-/// \param salt always 32 bytes stack item
-/// \param initCodeHash The init_code is the code that, when executed, produces the runtime bytecode that will be placed into the state, and which typically is used by high level languages to implement a ‘constructor’. Need to be provided hashed with keccak256
-/// \return Ethereum resulting address
-TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWEthereumEip1014AddressCreate2(TWString* _Nonnull fromEthAddress, TWData* _Nonnull salt, TWData* _Nonnull initCodeHash);
 
 /// Generate a layer 2 eip2645 derivation path from eth address, layer, application and given index.
 ///
