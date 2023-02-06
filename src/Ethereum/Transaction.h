@@ -108,6 +108,7 @@ public:
 enum TransactionType: uint8_t {
     TxType_OptionalAccessList = 0x01,
     TxType_Eip1559 = 0x02,
+    TxType_Eip4337 = 0x03,
 };
 
 /// Base class for various typed transactions.
@@ -167,6 +168,68 @@ public:
         , gasLimit(std::move(gasLimit))
         , to(std::move(to))
         , amount(std::move(amount)) {}
+};
+
+/// EIP4337 UserOperation
+// https://github.com/ethereum/EIPs/blob/3fd65b1a782912bfc18cb975c62c55f733c7c96e/EIPS/eip-4337.md#specification
+class UserOperation: public TransactionTyped {
+    using UserOperationPtr = std::shared_ptr<UserOperation>;
+public:
+    Data entryPoint;
+    Data sender;
+    Data initCode;
+    uint256_t gasLimit;
+    uint256_t verificationGasLimit;
+    uint256_t maxFeePerGas;
+    uint256_t maxInclusionFeePerGas;
+    uint256_t preVerificationGas;
+    Data paymasterAndData;
+
+    // Factory methods
+    // Create a native transfer transaction
+    static UserOperationPtr buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                   const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                   const Data& paymasterAndData = {}, const Data& payload = {});
+    // Create an ERC20 token transfer transaction
+    static UserOperationPtr buildERC20Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                  const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                  const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                  const Data& paymasterAndData = {});
+    // Create an ERC20 approve transaction
+    static UserOperationPtr buildERC20Approve(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                 const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                 const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                 const Data& paymasterAndData = {});
+    // Create an ERC721 NFT transfer transaction
+    static UserOperationPtr buildERC721Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                   const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                   const Data& paymasterAndData = {});
+    // Create an ERC1155 NFT transfer transaction
+    static UserOperationPtr buildERC1155Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
+                                                                    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data, const uint256_t& nonce, const bool& isAccountDeployed,
+                                                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                                    const Data& paymasterAndData = {});
+
+    virtual Data preHash(const uint256_t chainID) const;
+    virtual Data serialize(const uint256_t chainID) const;
+    virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
+
+public:
+    UserOperation(const Data& entryPoint, const Data& sender, const uint256_t& nonce, const Data& initCode,
+                       const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                       const Data& payload = {}, const Data& paymasterAndData = {})
+        : TransactionTyped(TxType_Eip4337, nonce, payload)
+        , entryPoint(std::move(entryPoint))
+        , sender(std::move(sender))
+        , initCode(std::move(initCode))
+        , gasLimit(std::move(gasLimit))
+        , verificationGasLimit(std::move(verificationGasLimit))
+        , maxFeePerGas(std::move(maxFeePerGas))
+        , maxInclusionFeePerGas(std::move(maxInclusionFeePerGas))
+        , preVerificationGas(std::move(preVerificationGas))
+        , paymasterAndData(std::move(paymasterAndData)) {}
 };
 
 } // namespace TW::Ethereum

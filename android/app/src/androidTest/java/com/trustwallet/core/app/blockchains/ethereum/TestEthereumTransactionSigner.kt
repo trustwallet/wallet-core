@@ -229,4 +229,235 @@ class TestEthereumTransactionSigner {
 
         assertEquals("f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10", result)
     }
+
+    // EIP4337
+    @Test
+    fun testEIP4337TransactionSigningAccountNotDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0x5580".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x01952f1f85".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = false
+
+                preVerificationGas = ByteString.copyFrom("0xbc18".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x073272".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                    amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"21888\",\"initCode\":\"0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"6797860741\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"48152\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x1560b19d17613ec8580cb0feaf7ac2953771404c5bd7830f585e5062e6ddd4b82ae3bb8dbddb659c0300e8009857b5c77501e1cfd5bbab48d03de0ea7207d07c1b\",\"verificationGasLimit\":\"471666\"}");
+    }
+
+    @Test
+    fun testEIP4337TransactionSigningAccountDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0x1".toHexByteArray())
+
+            toAddress = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0x9d55".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x1a339c9e9".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xb708".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                    amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"40277\",\"initCode\":\"0x\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"1\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xaed2011e5cf267de495b38ecf86ad6f1d4c05217a99e59f47e8d52ba3d41c10144785893fa3e7c116a054999e3902fc2771064d0545148bc49f6d7c827fc7a9a1c\",\"verificationGasLimit\":\"100000\"}");
+    }
+
+    @Test
+    fun testEIP4337ERC20TransferAccountDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0x6".toHexByteArray())
+            toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0xf78e".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xbb10".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
+                    amount = ByteString.copyFrom("0x186a0".toHexByteArray())
+                    to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f600000000000000000000000098339d8c260052b7ad81c28c16c0b98420f2b46a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"63374\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"6\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"47888\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xd006c93d6a8753b5e7c1e6349de0dea34eab2e7a533106e0f2e1a3a3b013c8e97b007546dab9d7b8fc471ad14ff2e8aa351dc4f1ecb63bf20f33858dc7366cbe1c\",\"verificationGasLimit\":\"100000\"}");
+    }
+
+    @Test
+    fun testEIP4337ERC20ApproveAccountDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0x9".toHexByteArray())
+
+            toAddress = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a"
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0xf78e".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xbb10".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x186a0".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc20Approve = Ethereum.Transaction.ERC20Approve.newBuilder().apply {
+                    amount = ByteString.copyFrom("0x186a0".toHexByteArray())
+                    spender = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f600000000000000000000000098339d8c260052b7ad81c28c16c0b98420f2b46a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"63374\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"9\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"47888\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x262a67dd8cf3d16a72b7809b3b5ed55e9f4c2b93eedd5a3c6be035fbbd7111164464ec933d0fdfa359e266e318f3ac22702ae428ce14fc142e4475603e6ec15e1c\",\"verificationGasLimit\":\"100000\"}");
+    }
+
+    @Test
+    fun testEIP4337ERC721TransferAccountDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0xc".toHexByteArray())
+            toAddress = "0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b"
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0x60B378".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xC34F".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x16E360".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc721Transfer = Ethereum.Transaction.ERC721Transfer.newBuilder().apply {
+                    tokenId = ByteString.copyFrom("0x2A8E57".toHexByteArray())
+                    from = "0x8cE23B8769ac01d0df0d5f47Be1A38FeA97F3879"
+                    to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f6000000000000000000000000f5de760f2e916647fd766b4ad9e85ff943ce3a2b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000006423b872dd0000000000000000000000008ce23b8769ac01d0df0d5f47be1a38fea97f3879000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000002a8e5700000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"6337400\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"12\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"49999\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x5951cc161a4d60d6b59503efb93e446f5d1a2e3a41d4503ba6393bcf2a2637340d0a865ed5d4d7650a68cbb95915eaa7ed54fd2c42b4bf7c83376f5c5d70691d1b\",\"verificationGasLimit\":\"1500000\"}");
+    }
+
+    @Test
+    fun testEIP4337ERC1155TransferAccountDeployed() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x5".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            toAddress = "0x428ce4b916332e1afccfddce08baecc97cb40b12"
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0x60B378".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x168ad5950f".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x0f".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
+                accountFactory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
+                accountLogic = "0x510ab68bd111ce7115df797118b0334d727d564b"
+                owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
+                isAccountDeployed = true
+
+                preVerificationGas = ByteString.copyFrom("0xC738".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x16E360".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc1155Transfer = Ethereum.Transaction.ERC1155Transfer.newBuilder().apply {
+                    tokenId = ByteString.copyFrom("0x01".toHexByteArray())
+                    from = "0x8c560E00680b973645900528EDe71a99b8d4dca8"
+                    to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a"
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f6000000000000000000000000428ce4b916332e1afccfddce08baecc97cb40b120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c4f242432a0000000000000000000000008c560e00680b973645900528ede71a99b8d4dca8000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"6337400\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"51000\",\"sender\":\"0x8c560e00680b973645900528ede71a99b8d4dca8\",\"signature\":\"0xaae38bcf9f946921541b44c2a66596968beecb9420471e2c9c531f758a2d652930ffdeeab95742e57e8520fb5c8ca4fee6a8e47e37336d4201fe104103f85e111c\",\"verificationGasLimit\":\"1500000\"}");
+    }
 }

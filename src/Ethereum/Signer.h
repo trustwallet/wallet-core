@@ -54,6 +54,10 @@ class Signer {
     /// \returns the r, s, and v values of the transaction signature
     static Signature signatureDataToStructSimple(const Data& signature) noexcept;
 
+    /// Converts R, S, and V values into the full signature, with no replay protection.
+    /// \returns the full signature bytes
+    static Data simpleStructToSignatureData(const Signature& signature) noexcept;
+
     /// Break up the signature into the R, S, and V values, and include chainID in V for replay protection (Eip155)
     /// \returns the r, s, and v values of the transaction signature
     static Signature signatureDataToStructWithEip155(const uint256_t& chainID, const Data& signature) noexcept;
