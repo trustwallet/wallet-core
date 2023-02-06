@@ -11,6 +11,9 @@ HEADER_NAME="WalletCoreRSBindgen.h"
 create_xc_framework() {
   rm -rf $TARGET_XCFRAMEWORK_NAME
   xcodebuild -create-xcframework -library $BUILD_FOLDER/$TARGET_NAME -library $BUILD_FOLDER/darwin_universal/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-ios/release/$TARGET_NAME -output $TARGET_XCFRAMEWORK_NAME
+  mkdir -p $TARGET_XCFRAMEWORK_NAME/ios-arm64_x86_64-maccatalyst
+  cp $BUILD_FOLDER/catalyst/$TARGET_NAME $TARGET_XCFRAMEWORK_NAME/ios-arm64_x86_64-maccatalyst
+  cp ../tools/Info.plist $TARGET_XCFRAMEWORK_NAME/
 }
 
 cd rust
