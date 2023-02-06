@@ -84,6 +84,9 @@ message SwapInput {
 
     // Optional extra custom memo, reserved for later use.
     string extra_memo = 11;
+
+    // Optional expirationTime, will be now() + 15 min if not set
+    uint64 expiration_time = 12;
 }
 
 // Result of the swap, a SigningInput struct for the specific chain

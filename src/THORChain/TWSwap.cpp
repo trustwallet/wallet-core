@@ -36,6 +36,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
                    .affFeeAddress(inputProto.affiliate_fee_address())
                    .affFeeRate(inputProto.affiliate_fee_rate_bp())
                    .extraMemo(inputProto.extra_memo())
+                   .expirationPolicy(inputProto.expiration_time())
                    .build();
 
     outputProto.set_from_chain(fromChain);
