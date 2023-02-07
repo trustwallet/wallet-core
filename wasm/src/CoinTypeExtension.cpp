@@ -1,5 +1,6 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include "WasmString.h"
+#include "generated/PrivateKey.h"
 #include <emscripten/bind.h>
 
 using namespace emscripten;
@@ -41,6 +42,14 @@ namespace TW::Wasm {
         auto derivationPath() {
             return TWStringToStd(TWCoinTypeDerivationPath(mValue));
         }
+
+        auto derivationPathWithDerivation(TWDerivation derivation) {
+            return TWStringToStd(TWCoinTypeDerivationPathWithDerivation(mValue, derivation));
+        }
+
+        auto deriveAddress(WasmPrivateKey* privateKey) {
+            return TWStringToStd(TWCoinTypeDeriveAddress(mValue, privateKey->instance));
+        }
     };
 
     EMSCRIPTEN_BINDINGS(Wasm_CoinTypeExtension) {
@@ -53,6 +62,8 @@ namespace TW::Wasm {
             .function("xprvVersion", &CoinTypeExtension::xprvVersion)
             .function("validate", &CoinTypeExtension::validate)
             .function("derivationPath", &CoinTypeExtension::derivationPath)
+            .function("derivationPathWithDerivation", &CoinTypeExtension::derivationPathWithDerivation)
+            .function("deriveAddress", &CoinTypeExtension::deriveAddress, allow_raw_pointers())
             .function("value", &CoinTypeExtension::value);
     }
 }

@@ -8,4 +8,6 @@ export class CoinTypeExtension {
     xprvVersion(): HDVersion
     validate(address: string): boolean
     derivationPath(): string
+    derivationPathWithDerivation(derivation: Derivation): string
+    deriveAddress(privateKey: PrivateKey): string
 }
