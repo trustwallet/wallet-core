@@ -14,6 +14,8 @@ public typealias SigningOutput = Message
 public protocol Signer {
     var error: Error? { get }
     
+    var publicKey: Data { get }
+    
     func sign(_ data: Data) -> Data
     func sign(_ data: [Data]) -> [Data]
 }
@@ -24,6 +26,11 @@ public struct PrivateKeySigner: Signer {
     
     public let privateKey: PrivateKey
     public let coin: CoinType
+    
+    
+    public var publicKey: Data {
+        privateKey.getPublicKey(coinType: coin).data
+    }
     
     public init(privateKey: PrivateKey, coin: CoinType) {
         self.privateKey = privateKey
@@ -61,7 +68,7 @@ public final class AnySigner {
     }
     
     // TANGEM
-    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, publicKey: Data, signer: Signer) -> SigningOutput {
+    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) -> SigningOutput {
         defer {
             externalSigner = nil
         }
@@ -69,7 +76,7 @@ public final class AnySigner {
         externalSigner = signer
         
         do {
-            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin, publicKey: publicKey)
+            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin, publicKey: signer.publicKey)
             return try SigningOutput(serializedData: outputData)
         } catch let error {
             fatalError(error.localizedDescription)

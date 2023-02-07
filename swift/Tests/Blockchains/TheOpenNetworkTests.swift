@@ -60,13 +60,11 @@ class TheOpenNetworkTests: XCTestCase {
         XCTAssertEqual(output.encoded, expectedString)
         
         // TANGEM
-        let privateKey = PrivateKey(data: input.privateKey)!
-        let publicKey = privateKey.getPublicKey(coinType: .ton).data
-        let signer = PrivateKeySigner(privateKey: privateKey, coin: .ton)
+        let signer = PrivateKeySigner(privateKey: PrivateKey(data: input.privateKey)!, coin: .ton)
         
         input.privateKey = Data(repeating: 1, count: 32)
         
-        let outputExternal: TheOpenNetworkSigningOutput = AnySigner.signExternally(input: input, coin: .ton, publicKey: publicKey, signer: signer)
+        let outputExternal: TheOpenNetworkSigningOutput = AnySigner.signExternally(input: input, coin: .ton, signer: signer)
 
         XCTAssertEqual(outputExternal.encoded, expectedString)
     }
