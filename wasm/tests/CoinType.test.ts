@@ -9,7 +9,7 @@ import { assert } from "chai";
 
 describe("CoinType", () => {
   it("test raw value", () => {
-    const { CoinType, CoinTypeExtension, Blockchain } = globalThis.core;
+    const { CoinType, CoinTypeExtension, Blockchain, Purpose } = globalThis.core;
 
     assert.equal(CoinType.bitcoin.value, 0);
     assert.equal(CoinType.litecoin.value, 2);
@@ -21,5 +21,6 @@ describe("CoinType", () => {
     let val = new CoinTypeExtension(CoinType.solana);
     assert.equal(val.blockchain(), Blockchain.solana);
     assert.equal(val.value(), CoinType.solana);
+    assert.equal(val.purpose(), Purpose.bip44)
   });
 });

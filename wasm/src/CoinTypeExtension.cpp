@@ -12,6 +12,10 @@ namespace TW::Wasm {
             return TWCoinTypeBlockchain(mValue);
         }
 
+        TWPurpose purpose() {
+            return TWCoinTypePurpose(mValue);
+        }
+
         TWCoinType value() {
             return mValue;
         }
@@ -21,6 +25,7 @@ namespace TW::Wasm {
         class_<CoinTypeExtension>("CoinTypeExtension")
             .constructor<TWCoinType>()
             .function("blockchain", &CoinTypeExtension::blockchain)
+            .function("purpose", &CoinTypeExtension::purpose)
             .function("value", &CoinTypeExtension::value);
     }
 }
