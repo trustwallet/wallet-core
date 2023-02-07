@@ -21,7 +21,7 @@ class TronTests: XCTestCase {
             $0.amount = 2000000
         }
 
-        let input = TronSigningInput.with {
+        var input = TronSigningInput.with {
             $0.transaction = TronTransaction.with {
                 $0.contractOneof = .transfer(contract)
                 $0.timestamp = 1539295479000
@@ -38,23 +38,7 @@ class TronTests: XCTestCase {
             $0.privateKey = Data(hexString: "ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764")!
         }
 
-        print("")
-        print("")
-        print("")
-        
-//        let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
-        
-        let signer = PrivateKeySigner(
-            privateKey: PrivateKey(data: input.privateKey)!,
-            coin: .tron
-        )
-
-        let output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
-        
-        print("")
-        print("")
-        print("")
-        
+        let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
         
         let expectedJSON = """
         {
@@ -80,5 +64,12 @@ class TronTests: XCTestCase {
         }
         """
         XCTAssertJSONEqual(output.json, expectedJSON)
+        
+        // TANGEM
+        let signer = PrivateKeySigner(privateKey: PrivateKey(data: input.privateKey)!, coin: .tron)
+        input.privateKey = Data(repeating: 1, count: 32)
+        let outputExternal: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
+        
+        XCTAssertJSONEqual(outputExternal.json, expectedJSON)
     }
 }
