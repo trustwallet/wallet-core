@@ -37,7 +37,7 @@ public struct PrivateKeySigner: Signer {
     }
     
     public func sign(_ data: Data) -> Data {
-        privateKey.sign(digest: data, curve: coin.curve)!
+        return privateKey.sign(digest: data, curve: coin.curve)!
     }
     
     public func sign(_ data: [Data]) -> [Data] {
@@ -46,6 +46,7 @@ public struct PrivateKeySigner: Signer {
 }
 
 // TANGEM
+// We can't capture a local variable in a closure we're passing to std::function. Global variables are fine.
 var externalSigner: Signer? = nil
 
 /// Represents a signer to sign transactions for any blockchain.
@@ -112,16 +113,7 @@ public final class AnySigner {
             }
             
             let dataToSign = TWDataNSData(twDataToSign)
-
-            // TODO: remove debug output
-            print("Data to sign in swift")
-            print(dataToSign.hexString)
-            
             let dataSigned = externalSigner.sign(dataToSign)
-            
-            print("Signed data in swift")
-            print(dataSigned.hexString)
-            
             return TWDataCreateWithNSData(dataSigned)
         }))
     }

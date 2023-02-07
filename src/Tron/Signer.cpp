@@ -320,18 +320,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const Data& 
     
     // TANGEM
     if(externalSigner) {
-        // TODO: remove debug output
-        std::cout << "Data to sign in C++" << std::endl;
-        std::cout << hex(hash) << std::endl;
-        
         std::future<Data> signedDataFuture = std::async(externalSigner, hash);
-        
-        const Data signedData = signedDataFuture.get();
-        signature = signedData;
-        
-        // TODO: remove debug output
-        std::cout << "Signed data in C++" << std::endl;
-        std::cout << hex(signedData) << std::endl;
+        signature = signedDataFuture.get();
     } else {
         signature = key.sign(hash, TWCurveSECP256k1);
     }

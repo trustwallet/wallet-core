@@ -39,7 +39,6 @@ class TronTests: XCTestCase {
         }
 
         let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
-        
         let expectedJSON = """
         {
             "raw_data": {
