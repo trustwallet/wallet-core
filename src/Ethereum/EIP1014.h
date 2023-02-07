@@ -11,6 +11,5 @@
 namespace TW::Ethereum {
 
 Data create2Address(const std::string& from, const Data& salt, const Data& initCodeHash);
-std::string create2AddressString(const std::string& from, const Data& salt, const Data& initCodeHash);
 
 }

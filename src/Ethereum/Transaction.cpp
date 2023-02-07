@@ -234,7 +234,7 @@ Data UserOperation::preHash(const uint256_t chainID) const {
     return MessageSigner::generateMessage(hashStr);
 }
 
-Data UserOperation::serialize(const uint256_t chainID) const {
+Data UserOperation::serialize([[maybe_unused]] const uint256_t chainID) const {
     auto params = ABI::ParamTuple(ParamCollection{
         std::make_shared<ABI::ParamAddress>(sender),
         std::make_shared<ABI::ParamUInt256>(nonce),
@@ -253,7 +253,7 @@ Data UserOperation::serialize(const uint256_t chainID) const {
     return Data(serialized.begin(), serialized.end() - 32); // remove trailing word (zero-length signature)
 }
 
-Data UserOperation::encoded(const Signature& signature, const uint256_t chainID) const {
+Data UserOperation::encoded(const Signature& signature, [[maybe_unused]] const uint256_t chainID) const {
     Data rawSignature = Signer::simpleStructToSignatureData(signature);
     rawSignature[64] += 27;
 
