@@ -14,8 +14,14 @@
 namespace TW::TheOpenNetwork {
 
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
+    return createTransferMessage(wallet, privateKey, transfer, nullptr);
+}
+
+// TANGEM
+Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer, const std::function<Data(Data)> externalSigner) {
     const auto msg = wallet->createTransferMessage(
         privateKey,
+        externalSigner,
         Address(transfer.dest()),
         transfer.amount(),
         transfer.sequence_number(),
@@ -30,6 +36,11 @@ Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const Private
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+    return Signer::sign(input, nullptr);
+}
+
+// TANGEM
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const std::function<Data(Data)> externalSigner) noexcept {
     const auto& privateKey = PrivateKey(input.private_key());
     const auto& publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
 
@@ -44,7 +55,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
             case Proto::WalletVersion::WALLET_V4_R2: {
                 const int8_t workchainId = WorkchainType::Basechain;
                 auto wallet = std::make_shared<WalletV4R2>(publicKey, workchainId);
-                const auto& transferMessage = Signer::createTransferMessage(wallet, privateKey, transfer);
+                const auto& transferMessage = Signer::createTransferMessage(wallet, privateKey, transfer, externalSigner);
                 protoOutput.set_encoded(TW::Base64::encode(transferMessage));
                 break;
             }

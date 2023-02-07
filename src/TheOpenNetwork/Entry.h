@@ -16,6 +16,8 @@ public:
     std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    // TANGEM
+    void signExternally(TWCoinType coin, const Data& dataIn, Data& dataOut, const std::function<Data(Data)> externalSigner) const;
 };
 
 } // namespace TW::TheOpenNetwork

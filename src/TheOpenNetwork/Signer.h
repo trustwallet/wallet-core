@@ -22,9 +22,15 @@ public:
 
     /// Creates a signed transfer message
     static Data createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer);
+    
+    // TANGEM
+    static Data createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer, const std::function<Data(Data)> externalSigner);
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    
+    // TANGEM
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, const std::function<Data(Data)> externalSigner) noexcept;
 };
 
 } // namespace TW::TheOpenNetwork
