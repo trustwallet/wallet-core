@@ -1,6 +1,11 @@
 export class CoinTypeExtension {
     constructor(CoinType)
+    value(): CoinType
     blockchain(): Blockchain
     purpose(): Purpose
-    value(): CoinType
+    curve(): Curve
+    xpubVersion(): HDVersion
+    xprvVersion(): HDVersion
+    validate(address: string): boolean
+    derivationPath(): string
 }

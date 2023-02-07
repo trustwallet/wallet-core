@@ -1,4 +1,5 @@
 #include <TrustWalletCore/TWCoinType.h>
+#include "WasmString.h"
 #include <emscripten/bind.h>
 
 using namespace emscripten;
@@ -8,16 +9,37 @@ namespace TW::Wasm {
     public:
         TWCoinType mValue;
         CoinTypeExtension(TWCoinType value): mValue(value) {}
-        TWBlockchain blockchain() {
+
+        auto value() {
+            return mValue;
+        }
+
+        auto blockchain() {
             return TWCoinTypeBlockchain(mValue);
         }
 
-        TWPurpose purpose() {
+        auto purpose() {
             return TWCoinTypePurpose(mValue);
         }
 
-        TWCoinType value() {
-            return mValue;
+        auto curve() {
+            return TWCoinTypeCurve(mValue);
+        }
+
+        auto xpubVersion() {
+            return TWCoinTypeXpubVersion(mValue);
+        }
+
+        auto xprvVersion() {
+            return TWCoinTypeXpubVersion(mValue);
+        }
+
+        auto validate(const std::string& address) {
+            return TWCoinTypeValidate(mValue, &address);
+        }
+
+        auto derivationPath() {
+            return TWStringToStd(TWCoinTypeDerivationPath(mValue));
         }
     };
 
@@ -26,6 +48,11 @@ namespace TW::Wasm {
             .constructor<TWCoinType>()
             .function("blockchain", &CoinTypeExtension::blockchain)
             .function("purpose", &CoinTypeExtension::purpose)
+            .function("curve", &CoinTypeExtension::curve)
+            .function("xpubVersion", &CoinTypeExtension::xpubVersion)
+            .function("xprvVersion", &CoinTypeExtension::xprvVersion)
+            .function("validate", &CoinTypeExtension::validate)
+            .function("derivationPath", &CoinTypeExtension::derivationPath)
             .function("value", &CoinTypeExtension::value);
     }
 }
