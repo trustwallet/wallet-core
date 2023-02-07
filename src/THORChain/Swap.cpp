@@ -256,12 +256,19 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
 
     input.set_to_address(*mRouterAddress);
     if (!toTokenId.empty()) {
+        if (!mExpirationPolicy) {
+            std::cout << "here"<< std::endl;
+            auto now = std::chrono::system_clock::now();
+            auto in_15_minutes = now + std::chrono::minutes(15);
+            mExpirationPolicy = std::chrono::duration_cast<std::chrono::seconds>(in_15_minutes.time_since_epoch()).count();
+        }
         auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
-        auto func = Ethereum::ABI::Function("deposit", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-                                                           std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                           std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
-                                                           std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
-                                                           std::make_shared<Ethereum::ABI::ParamString>(memo)});
+        auto func = Ethereum::ABI::Function("depositWithExpiry", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
+                                                                     std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
+                                                                     std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
+                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
+                                                                     std::make_shared<Ethereum::ABI::ParamString>(memo),
+                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(*mExpirationPolicy))});
         Data payload;
         func.encode(payload);
         transfer.set_data(payload.data(), payload.size());

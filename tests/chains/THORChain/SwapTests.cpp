@@ -455,66 +455,72 @@ Data SwapTest_ethAddressStringToData(const std::string& asString) {
 
 TEST(THORChainSwap, SwapErc20Rune) {
     Proto::Asset fromAsset;
-    fromAsset.set_token_id("0xdAC17F958D2ee523a2206206994597C13D831ec7");
-    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    fromAsset.set_token_id("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E");
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::AVAX));
     Proto::Asset toAsset;
     toAsset.set_chain(static_cast<Proto::Chain>(Chain::THOR));
     toAsset.set_symbol("RUNE");
     auto&& [out, errorCode, error] = SwapBuilder::builder()
                                          .from(fromAsset)
                                          .to(toAsset)
-                                         .fromAddress("0xd0972E2312518Ca15A2304D56ff9cc0b7ea0Ea37")
-                                         .toAddress("thor1du84c7fj5y7kphq7zfyp8ugwxgrmy6n07xm9yj")
-                                         .vault("0x97673DF37E718dF203A834Bd095F69F6b4F314FA")
-                                         .router("0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146")
-                                         .fromAmount("5000000")
-                                         .toAmountLimit("418410520")
+                                         .fromAddress("0xbe6523017422A983B900b614Baeac51Ef7C1d0A3")
+                                         .toAddress("thor1ad6hapypumu7su5ad9qry2d74yt9d56fssa774")
+                                         .vault("0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E")
+                                         .router("0x8f66c4ae756bebc49ec8b81966dd8bba9f127549")
+                                         .fromAmount("1000000")
+                                         .toAmountLimit("51638857")
+                                         .expirationPolicy(1775669796)
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
                                          .build();
     ASSERT_EQ(errorCode, 0);
     ASSERT_EQ(error, "");
-    EXPECT_EQ(hex(out), "0a010012010018012201002a0100422a307844333742624535373434443733306131643938643844433937633432463043613436614437313436528d02328a020a01001284021fece7b400000000000000000000000097673df37e718df203a834bd095f69f6b4f314fa000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec700000000000000000000000000000000000000000000000000000000004c4b40000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000413d3a54484f522e52554e453a74686f7231647538346337666a3579376b706871377a667970387567777867726d79366e3037786d39796a3a34313834313035323000000000000000000000000000000000000000000000000000000000000000");
+    EXPECT_EQ(hex(out), "0a010012010018012201002a0100422a30783866363663346165373536626562633439656338623831393636646438626261396631323735343952ad0232aa020a010012a40244bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000");
 
     auto tx = Ethereum::Proto::SigningInput();
     ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
 
     // check fields
-    EXPECT_EQ(tx.to_address(), "0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146");
+    EXPECT_EQ(tx.to_address(), "0x8f66c4ae756bebc49ec8b81966dd8bba9f127549");
     ASSERT_TRUE(tx.transaction().has_contract_generic());
 
-    Data vaultAddressBin = SwapTest_ethAddressStringToData("0x97673DF37E718dF203A834Bd095F69F6b4F314FA");
-    EXPECT_EQ(hex(vaultAddressBin), "97673df37e718df203a834bd095f69f6b4f314fa");
-    auto func = Ethereum::ABI::Function("deposit", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
+    Data vaultAddressBin = SwapTest_ethAddressStringToData("0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E");
+    EXPECT_EQ(hex(vaultAddressBin), "a56f6cb1d66cd80150b1ea79643b4c5900d6e36e");
+    auto func = Ethereum::ABI::Function("depositWithExpiry", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
                                                        std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex("0xdAC17F958D2ee523a2206206994597C13D831ec7")),
-                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(5000000)),
-                                                       std::make_shared<Ethereum::ABI::ParamString>("=:THOR.RUNE:thor1du84c7fj5y7kphq7zfyp8ugwxgrmy6n07xm9yj:418410520")});
+                                                       std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E")),
+                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(1000000)),
+                                                       std::make_shared<Ethereum::ABI::ParamString>("=:THOR.RUNE:thor1ad6hapypumu7su5ad9qry2d74yt9d56fssa774:51638857:t:0"),
+                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(1775669796))});
     Data payload;
     func.encode(payload);
-    EXPECT_EQ(hex(payload), "1fece7b400000000000000000000000097673df37e718df203a834bd095f69f6b4f314fa000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec700000000000000000000000000000000000000000000000000000000004c4b40000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000413d3a54484f522e52554e453a74686f7231647538346337666a3579376b706871377a667970387567777867726d79366e3037786d39796a3a34313834313035323000000000000000000000000000000000000000000000000000000000000000");
+    EXPECT_EQ(hex(payload), "44bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000");
     EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().amount())), "00");
     EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(payload));
 
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set few fields before signing
-    auto chainId = store(uint256_t(1));
+    auto chainId = store(uint256_t(43114));
     tx.set_chain_id(chainId.data(), chainId.size());
-    auto nonce = store(uint256_t(7));
+    auto nonce = store(uint256_t(6));
     tx.set_nonce(nonce.data(), nonce.size());
-    auto gasPrice = store(uint256_t(30000000000));
-    tx.set_gas_price(gasPrice.data(), gasPrice.size());
-    auto gasLimit = store(uint256_t(80000));
+    auto maxInclusionFeePerGas = store(uint256_t(2000000000));
+    auto maxFeePerGas = store(uint256_t(25000000000));
+    tx.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    tx.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+    auto gasLimit = store(uint256_t(108810));
     tx.set_gas_limit(gasLimit.data(), gasLimit.size());
-    auto privKey = parse_hex("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d");
+    auto privKey = parse_hex("6649ba1d931059e7b419f97ee41c3f98b8f8054dfeb4cb57b9898bc5b9bbe318");
     tx.set_private_key(privKey.data(), privKey.size());
 
     // sign and encode resulting input
     Ethereum::Proto::SigningOutput output;
-    ANY_SIGN(tx, TWCoinTypeEthereum);
-    EXPECT_EQ(hex(output.encoded()), "02f90169010780808301388094d37bbe5744d730a1d98d8dc97c42f0ca46ad714680b901041fece7b400000000000000000000000097673df37e718df203a834bd095f69f6b4f314fa000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec700000000000000000000000000000000000000000000000000000000004c4b40000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000413d3a54484f522e52554e453a74686f7231647538346337666a3579376b706871377a667970387567777867726d79366e3037786d39796a3a34313834313035323000000000000000000000000000000000000000000000000000000000000000c001a01ff085d06b39d6efeb6663b065758f463564a555e41070ca8a8398bb1fc3426ba018bd8c6897f86d6ca4af7fe4cfac92e3fcb6224f896df62376ac1df556744ac6");
-    // https://viewblock.io/thorchain/tx/56D2A63608E6EC09FA1D2934457CC09196683013905F69EDFC72B33EC68681AA
-    // https://etherscan.io/tx/0x56d2a63608e6ec09fa1d2934457cc09196683013905f69edfc72b33ec68681aa
-    // https://viewblock.io/thorchain/tx/BC1464CF3B56B07E40CF57985511814AEC9EAE2F1329CEE059A21529FDDFDB8C
+    ANY_SIGN(tx, TWCoinTypeAvalancheCChain);
+    EXPECT_EQ(hex(output.encoded()), "02f9019482a86a0684773594008505d21dba008301a90a948f66c4ae756bebc49ec8b81966dd8bba9f12754980b9012444bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000c080a04a3a01941906579f1c6888771fe0621d66ee78998bfbb87219c0b5970235fc5ca03aefe4bb0c074f90798e078270c380930f4ae75366217f85535dd9be196a4244");
+    // https://viewblock.io/thorchain/tx/B5E88D61157E7073995CA8729B75DAB2C1684A7B145DB711327CA4B8FF7DBDE7
+    // https://snowtrace.io/tx/0xb5e88d61157e7073995ca8729b75dab2c1684a7b145db711327ca4b8ff7dbde7
+    // https://thorchain.net/tx/B5E88D61157E7073995CA8729B75DAB2C1684A7B145DB711327CA4B8FF7DBDE7
 }
 
 TEST(THORChainSwap, SwapAvaxBnb) {

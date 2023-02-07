@@ -49,6 +49,7 @@ class SwapBuilder {
     std::optional<std::string> mAffFeeAddress{std::nullopt};
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
+    std::optional<std::size_t> mExpirationPolicy{std::nullopt};
 
     SwapBundled buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain);
     SwapBundled buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo);
@@ -126,6 +127,15 @@ public:
 
     SwapBuilder& toAmountLimit(std::string toAmountLimit) noexcept {
         mToAmountLimit = std::move(toAmountLimit);
+        return *this;
+    }
+
+    SwapBuilder& expirationPolicy(std::size_t expirationTime)  noexcept {
+        if (expirationTime > 0) {
+            mExpirationPolicy = expirationTime;
+        } else {
+            mExpirationPolicy = std::nullopt;
+        }
         return *this;
     }
 
