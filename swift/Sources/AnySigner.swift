@@ -24,13 +24,12 @@ public protocol Signer {
 public struct PrivateKeySigner: Signer {
     public var error: Error?
     
-    public let privateKey: PrivateKey
-    public let coin: CoinType
-    
-    
     public var publicKey: Data {
         privateKey.getPublicKey(coinType: coin).data
     }
+    
+    private let privateKey: PrivateKey
+    private let coin: CoinType
     
     public init(privateKey: PrivateKey, coin: CoinType) {
         self.privateKey = privateKey
