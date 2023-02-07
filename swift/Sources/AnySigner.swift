@@ -21,6 +21,7 @@ public protocol Signer {
 }
 
 // TANGEM
+// For auto tests only
 public struct PrivateKeySigner: Signer {
     public var error: Error?
     
