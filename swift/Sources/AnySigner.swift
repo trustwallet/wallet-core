@@ -15,6 +15,28 @@ public protocol Signer {
     var error: Error? { get }
     
     func sign(_ data: Data) -> Data
+    func sign(_ data: [Data]) -> [Data]
+}
+
+// TANGEM
+public struct PrivateKeySigner: Signer {
+    public var error: Error?
+    
+    public let privateKey: PrivateKey
+    public let coin: CoinType
+    
+    public init(privateKey: PrivateKey, coin: CoinType) {
+        self.privateKey = privateKey
+        self.coin = coin
+    }
+    
+    public func sign(_ data: Data) -> Data {
+        privateKey.sign(digest: data, curve: coin.curve)!
+    }
+    
+    public func sign(_ data: [Data]) -> [Data] {
+        return data.map { privateKey.sign(digest: $0, curve: coin.curve)! }
+    }
 }
 
 // TANGEM

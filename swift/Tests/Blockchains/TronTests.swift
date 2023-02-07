@@ -7,30 +7,6 @@
 import XCTest
 import WalletCore
 
-// TANGEM
-public struct PrivateKeySigner: Signer {
-    public let privateKey: PrivateKey
-    public let coin: CoinType
-    
-    public init(privateKey: PrivateKey, coin: CoinType) {
-        self.privateKey = privateKey
-        self.coin = coin
-    }
-    
-    public func sign(_ data: Data) -> Data {
-        usleep(2_000_000)
-        
-        // TODO: remove debug output
-        print("Trying to sign in swift")
-        print(data.hexString)
-        
-        let signedData = privateKey.sign(digest: data, curve: coin.curve)!
-        print("signed in swift")
-        print(signedData.hexString)
-        return signedData //+ Data(hexString: "abcd")!
-    }
-}
-
 class TronTests: XCTestCase {
 
     func testTronAddress() {
