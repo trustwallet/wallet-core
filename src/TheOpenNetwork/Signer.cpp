@@ -36,14 +36,16 @@ Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const Private
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
-    return Signer::sign(input, nullptr);
+    const auto& privateKey = PrivateKey(input.private_key());
+    const auto& publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    return Signer::sign(input, publicKey.bytes, nullptr);
 }
 
 // TANGEM
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const std::function<Data(Data)> externalSigner) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const Data& publicKeyData, const std::function<Data(Data)> externalSigner) noexcept {
     const auto& privateKey = PrivateKey(input.private_key());
-    const auto& publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-
+    const PublicKey publicKey(publicKeyData, TWPublicKeyTypeED25519);
+    
     auto protoOutput = Proto::SigningOutput();
 
     switch (input.action_oneof_case()) {

@@ -203,11 +203,11 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    return Signer::sign(input, nullptr);
+    return Signer::sign(input, Data(), nullptr);
 }
 
 // TANGEM
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const std::function<Data(Data)> externalSigner) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const Data& publicKey, const std::function<Data(Data)> externalSigner) noexcept {
     auto internal = protocol::Transaction();
     auto output = Proto::SigningOutput();
 

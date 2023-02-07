@@ -49,7 +49,7 @@ class TronTests: XCTestCase {
             coin: .tron
         )
 
-        let output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
+        let output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, publicKey: signer.privateKey.getPublicKey(coinType: .tron).data, signer: signer)
         
         print("")
         print("")

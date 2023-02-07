@@ -115,7 +115,7 @@ const char* chainId(TWCoinType coin);
 void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 // TANGEM
-void anyCoinSignExternally(TWCoinType coinType, const Data& dataIn, Data& dataOut, const std::function<Data(Data)> externalSigner);
+void anyCoinSignExternally(TWCoinType coinType, const Data& dataIn, Data& dataOut, const Data& publicKey, const std::function<Data(Data)> externalSigner);
 
 uint32_t slip44Id(TWCoinType coin);
 

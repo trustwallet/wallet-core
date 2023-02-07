@@ -47,7 +47,7 @@ class TheOpenNetworkTests: XCTestCase {
             $0.expireAt = 1671132440
         }
 
-        let input = TheOpenNetworkSigningInput.with {
+        var input = TheOpenNetworkSigningInput.with {
             $0.transfer = transfer
             $0.privateKey = privateKeyData
         }
@@ -58,5 +58,16 @@ class TheOpenNetworkTests: XCTestCase {
         let expectedString = "te6ccgICAAQAAQAAALAAAAFFiAGwt/q8k4SrjbFbQCjJZfQr64ExRxcUMsWqaQODqTUijgwAAQGcEUPkil2aZ4s8KKparSep/OKHMC8vuXafFbW2HGp/9AcTRv0J5T4dwyW1G0JpHw+g5Ov6QI3Xo0O9RFr3KidICimpoxdjm3UYAAAABgADAAIBYmIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmIUAAAAAAAAAAAAAAAAAEAAwAA"
 
         XCTAssertEqual(output.encoded, expectedString)
+        
+        // TANGEM
+        let privateKey = PrivateKey(data: input.privateKey)!
+        let publicKey = privateKey.getPublicKey(coinType: .ton).data
+        let signer = PrivateKeySigner(privateKey: privateKey, coin: .ton)
+        
+        input.privateKey = Data(repeating: 1, count: 32)
+        
+        let outputExternal: TheOpenNetworkSigningOutput = AnySigner.signExternally(input: input, coin: .ton, publicKey: publicKey, signer: signer)
+
+        XCTAssertEqual(outputExternal.encoded, expectedString)
     }
 }

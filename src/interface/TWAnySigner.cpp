@@ -18,7 +18,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
 }
 
 // TANGEM
-TWData* _Nonnull TWAnySignerSignExternally(TWData* _Nonnull data, enum TWCoinType coin, TWData* (*externalSigner)(TWData*)) {
+TWData* _Nonnull TWAnySignerSignExternally(TWData* _Nonnull data, enum TWCoinType coin, TWData *_Nonnull publicKey, TWData* (*externalSigner)(TWData*)) {
     // Just a conversion between TWData and TW::Data
     auto dataExternalSigner = [externalSigner](Data dataToSign) -> Data {
         const TWData* twDataToSign = TWDataCreateWithBytes(dataToSign.data(), dataToSign.size());
@@ -27,10 +27,12 @@ TWData* _Nonnull TWAnySignerSignExternally(TWData* _Nonnull data, enum TWCoinTyp
         const Data& dataSigned = *(reinterpret_cast<const Data*>(twDataSigned));
         return dataSigned;
     };
+
+    const Data& publicKeyData = *(reinterpret_cast<const Data*>(publicKey));
     
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));
     Data dataOut;
-    TW::anyCoinSignExternally(coin, dataIn, dataOut, dataExternalSigner);
+    TW::anyCoinSignExternally(coin, dataIn, dataOut, publicKeyData, dataExternalSigner);
     return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
 

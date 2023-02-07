@@ -31,8 +31,8 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 }
 
 // TANGEM
-void Entry::signExternally([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut, const std::function<Data(Data)> externalSigner) const {
-    signTemplateExternally<Signer, Proto::SigningInput>(dataIn, dataOut, externalSigner);
+void Entry::signExternally([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut, const Data& publicKey, const std::function<Data(Data)> externalSigner) const {
+    signTemplateExternally<Signer, Proto::SigningInput>(dataIn, dataOut, publicKey, externalSigner);
 }
 
 } // namespace TW::TheOpenNetwork

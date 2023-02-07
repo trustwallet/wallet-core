@@ -265,10 +265,10 @@ void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
 }
 
 // TANGEM
-void TW::anyCoinSignExternally(TWCoinType coinType, const Data& dataIn, Data& dataOut, std::function<Data(Data)> externalSigner) {
+void TW::anyCoinSignExternally(TWCoinType coinType, const Data& dataIn, Data& dataOut, const Data& publicKey, std::function<Data(Data)> externalSigner) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
-    dispatcher->signExternally(coinType, dataIn, dataOut, externalSigner);
+    dispatcher->signExternally(coinType, dataIn, dataOut, publicKey, externalSigner);
 }
 
 std::string TW::anySignJSON(TWCoinType coinType, const std::string& json, const Data& key) {

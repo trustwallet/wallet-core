@@ -61,7 +61,7 @@ public final class AnySigner {
     }
     
     // TANGEM
-    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) -> SigningOutput {
+    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, publicKey: Data, signer: Signer) -> SigningOutput {
         defer {
             externalSigner = nil
         }
@@ -69,7 +69,7 @@ public final class AnySigner {
         externalSigner = signer
         
         do {
-            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin)
+            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin, publicKey: publicKey)
             return try SigningOutput(serializedData: outputData)
         } catch let error {
             fatalError(error.localizedDescription)
@@ -91,13 +91,16 @@ public final class AnySigner {
     }
     
     // TANGEM
-    public static func nativeSignExternally(data: Data, coin: CoinType) -> Data {
+    public static func nativeSignExternally(data: Data, coin: CoinType, publicKey: Data) -> Data {
         let inputData = TWDataCreateWithNSData(data)
+        let publicKeyData = TWDataCreateWithNSData(publicKey)
+        
         defer {
             TWDataDelete(inputData)
+            TWDataDelete(publicKeyData)
         }
         
-        return TWDataNSData(TWAnySignerSignExternally(inputData, TWCoinType(rawValue: coin.rawValue), { twDataToSign in
+        return TWDataNSData(TWAnySignerSignExternally(inputData, TWCoinType(rawValue: coin.rawValue), publicKeyData, { twDataToSign in
             guard let externalSigner = externalSigner else {
                 fatalError("You must set external signer to sign asynchronously")
             }
