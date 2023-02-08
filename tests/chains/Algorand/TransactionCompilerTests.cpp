@@ -20,7 +20,7 @@
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
 
-using namespace TW;
+namespace TW::Algorand::tests {
 
 TEST(AlgorandCompiler, CompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
@@ -95,3 +95,5 @@ TEST(AlgorandCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
+
+} // namespace TW::Algorand::tests
