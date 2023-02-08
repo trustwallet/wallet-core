@@ -8,7 +8,7 @@ import Foundation
 
 extension Data {
     /// Initializes `Data` with a hex string representation.
-    public init?(hexString: String) {
+    init?(hexString: String) {
         let string: String
         if hexString.hasPrefix("0x") {
             string = String(hexString.dropFirst(2))
@@ -58,7 +58,7 @@ extension Data {
     }
 
     /// Returns the hex string representation of the data.
-    public var hexString: String {
+    var hexString: String {
         return map({ String(format: "%02x", $0) }).joined()
     }
 }
