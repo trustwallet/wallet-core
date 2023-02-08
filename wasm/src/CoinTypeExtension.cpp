@@ -66,6 +66,26 @@ namespace TW::Wasm {
         auto P2shPrefix() {
             return TWCoinTypeP2shPrefix(mValue);
         }
+
+        auto staticPrefix() {
+            return TWCoinTypeStaticPrefix(mValue);
+        }
+
+        auto chainID() {
+            return TWStringToStd(TWCoinTypeChainId(mValue));
+        }
+
+        auto slip44ID() {
+            return TWCoinTypeSlip44Id(mValue);
+        }
+
+        auto SS58Prefix() {
+            return TWCoinTypeSS58Prefix(mValue);
+        }
+
+        auto publicKeyType() {
+            return TWCoinTypePublicKeyType(mValue);
+        }
     };
 
     EMSCRIPTEN_BINDINGS(Wasm_CoinTypeExtension) {
@@ -84,6 +104,11 @@ namespace TW::Wasm {
             .function("hrp", &CoinTypeExtension::HRP)
             .function("P2pkhPrefix", &CoinTypeExtension::P2pkhPrefix)
             .function("P2shPrefix", &CoinTypeExtension::P2shPrefix)
+            .function("staticPrefix", &CoinTypeExtension::staticPrefix)
+            .function("chainID", &CoinTypeExtension::chainID)
+            .function("slip44ID", &CoinTypeExtension::slip44ID)
+            .function("SS58Prefix", &CoinTypeExtension::SS58Prefix)
+            .function("publicKeyType", &CoinTypeExtension::publicKeyType)
             .function("value", &CoinTypeExtension::value);
     }
 }
