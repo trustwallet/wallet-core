@@ -101,6 +101,7 @@ target_include_directories(TrustWalletCore
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/${JNI_PATH}
+        ${CMAKE_CURRENT_SOURCE_DIR}/kotlin/wallet-core-kotlin/src/androidMain/cpp/common
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
         )
 
