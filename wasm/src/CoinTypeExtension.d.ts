@@ -10,4 +10,8 @@ export class CoinTypeExtension {
     derivationPath(): string
     derivationPathWithDerivation(derivation: Derivation): string
     deriveAddress(privateKey: PrivateKey): string
+    deriveAddressFromPublicKey(publicKey: PublicKey): string
+    hrp(): HRP
+    P2pkhPrefix(): number
+    P2shPrefix(): number
 }

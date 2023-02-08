@@ -50,6 +50,22 @@ namespace TW::Wasm {
         auto deriveAddress(WasmPrivateKey* privateKey) {
             return TWStringToStd(TWCoinTypeDeriveAddress(mValue, privateKey->instance));
         }
+
+        auto deriveAddressFromPublicKey(WasmPublicKey* publicKey) {
+            return TWStringToStd(TWCoinTypeDeriveAddressFromPublicKey(mValue, publicKey->instance));
+        }
+
+        auto HRP() {
+            return TWCoinTypeHRP(mValue);
+        }
+
+        auto P2pkhPrefix() {
+            return TWCoinTypeP2pkhPrefix(mValue);
+        }
+
+        auto P2shPrefix() {
+            return TWCoinTypeP2shPrefix(mValue);
+        }
     };
 
     EMSCRIPTEN_BINDINGS(Wasm_CoinTypeExtension) {
@@ -64,6 +80,10 @@ namespace TW::Wasm {
             .function("derivationPath", &CoinTypeExtension::derivationPath)
             .function("derivationPathWithDerivation", &CoinTypeExtension::derivationPathWithDerivation)
             .function("deriveAddress", &CoinTypeExtension::deriveAddress, allow_raw_pointers())
+            .function("deriveAddressFromPublicKey", &CoinTypeExtension::deriveAddressFromPublicKey, allow_raw_pointers())
+            .function("hrp", &CoinTypeExtension::HRP)
+            .function("P2pkhPrefix", &CoinTypeExtension::P2pkhPrefix)
+            .function("P2shPrefix", &CoinTypeExtension::P2shPrefix)
             .function("value", &CoinTypeExtension::value);
     }
 }
