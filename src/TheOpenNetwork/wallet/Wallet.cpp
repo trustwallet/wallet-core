@@ -83,6 +83,7 @@ Cell::Ref Wallet::createTransferMessage(
     );
 }
     
+// TANGEM
 Cell::Ref Wallet::createTransferMessage(
     const PrivateKey& privateKey,
     const std::function<Data(Data)> externalSigner,
@@ -105,6 +106,7 @@ Cell::Ref Wallet::createTransferMessage(
         const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, sequence_number, mode, expireAt, comment);
         Data data(signingMessage->hash.begin(), signingMessage->hash.end());
         
+        // TANGEM        
         auto signature = Data();
         if(externalSigner) {
             std::future<Data> signedDataFuture = std::async(externalSigner, data);
