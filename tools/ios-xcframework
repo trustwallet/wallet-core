@@ -6,7 +6,7 @@
 set -e
 
 echo "Building Docc..."
-# tools/ios-doc
+tools/ios-doc
 
 echo "Building xcframework..."
 pushd swift
