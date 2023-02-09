@@ -1,0 +1,35 @@
+<%= render('kotlin/package.erb') %>
+
+import com.trustwallet.core.<%= "TW#{entity.name}" %>.*
+
+<%  type = ": TW#{entity.name}" -%>
+actual enum class <%= entity.name %>(
+    internal val value<%= type %>,
+) {
+<%# Cases -%>
+<%  entity.cases.each_with_index do |c, i| -%>
+    <%= c.name %>(TW<%= entity.name %><%= c.name %>),
+<%  end -%>
+    ;
+<%# Property declarations -%>
+<%- entity.properties.each do |property| -%>
+
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        get() = <%= KotlinHelper.convert_calling_return_type_ios(property.return_type, "TW#{entity.name}#{property.name}(value)") %>
+<%- end -%>
+<%# Method declarations -%>
+<%- entity.methods.each do |method| -%>
+<%-   next if method.name.start_with?('Delete') -%>
+
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
+        TW<%= entity.name %><%= method.name %>(value<%= ', ' if not method.parameters.one? %><%= KotlinHelper.calling_parameters_ios(method.parameters.drop(1)) %>)<%= KotlinHelper.convert_calling_return_type_ios(method.return_type) %>
+<%- end -%>
+<%# Value -%>
+<%  if entity.cases.any? { |e| !e.value.nil? } -%>
+
+    internal companion object {
+        internal fun fromValue(value<%= type %>): <%= entity.name %>? =
+            values().firstOrNull { it.value == value }
+    }
+<%  end -%>
+}

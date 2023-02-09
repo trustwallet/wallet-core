@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+"$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --verbose "cmake;3.22.1" "ndk;25.2.9519653"
+
+yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses

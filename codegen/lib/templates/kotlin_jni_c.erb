@@ -1,0 +1,90 @@
+#include <jni.h>
+#include <stdio.h>
+#include <string.h>
+
+<% require 'set' -%>
+<%  includes = Set.new([entity.name]) -%>
+<%  entity.static_methods.each do |method| -%>
+<%    includes << method.return_type.name if method.return_type.is_struct || method.return_type.is_class -%>
+<%    method.parameters.each do |param| -%>
+<%      includes << param.type.name if param.type.is_struct || param.type.is_class -%>
+<%    end -%>
+<%  end -%>
+<%  includes.each do |include| -%>
+#include <TrustWalletCore/TW<%= include %>.h>
+<%  end -%>
+
+#include "TWJNI.h"
+#include "<%= entity.name %>.h"
+
+<%# Constructors -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+jlong JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass<%= KotlinJniHelper.parameters(method.parameters) %>) {
+<%=   render('kotlin_jni/parameter_access.erb', { method: method }) -%>
+    struct TW<%= entity.name %> *instance = TW<%= entity.name %><%= method.name %>(<%= KotlinJniHelper.arguments(method.parameters).join(', ') %>);
+<%=   render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+    return (jlong) instance;
+}
+
+<%  end -%>
+<%# Destructors -%>
+<%  entity.methods.each do |method| -%>
+<%    next unless method.name.start_with?('Delete') -%>
+void JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass, jlong handle) {
+    TW<%= entity.name %>Delete((struct TW<%= entity.name %> *) handle);
+}
+
+<%  end -%>
+<%# Initializers -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Init') -%>
+jbyteArray JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, jclass thisClass<%= KotlinJniHelper.parameters(method.parameters.drop(1)) %>) {
+    jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TW<%= entity.name %>));
+    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
+    struct TW<%= entity.name %> *instance = (struct TW<%= entity.name %> *) bytesBuffer;
+<%=   render('kotlin_jni/parameter_access.erb', { method: method }) -%>
+<%  if method.return_type.name != :void -%>
+    <%= KotlinJniHelper.type(method.return_type) %> result = (<%= KotlinJniHelper.type(method.return_type) %>) TW<%= entity.name %><%= method.name %>(instance, <%= KotlinJniHelper.arguments(method.parameters.drop(1)).join(', ') %>);
+<%  else -%>
+    TW<%= entity.name %><%= method.name %>(instance, <%= KotlinJniHelper.arguments(method.parameters.drop(1)).join(', ') %>);
+<%  end -%>
+<%=   render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+    (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
+
+<%  if method.return_type.name != :void -%>
+    if (result) {
+        return array;
+    } else {
+        (*env)->DeleteLocalRef(env, array);
+        return NULL;
+    }
+<%  else -%>
+    return array;
+<%  end -%>
+}
+
+<%  end -%>
+<%# Static properties -%>
+<%  entity.static_properties.each do |method| -%>
+<%=   render('kotlin_jni/method.erb', { method: method }) %>
+<%  end -%>
+<%# Static methods -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
+<%=   render('kotlin_jni/method.erb', { method: method }) %>
+<%  end -%>
+<%# Properties -%>
+<% entity.properties.each do |method| -%>
+<%=  render('kotlin_jni/method.erb', { method: method }) %>
+<% end -%>
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+<%=  render('kotlin_jni/method.erb', { method: method }) %>
+<% end -%>
+<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
+<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
+<%  if !less.nil? && !equal.nil? -%>
+<%=   render('kotlin_jni/compare_to.erb', { less: less, equal: equal }) %>
+<%  end -%>

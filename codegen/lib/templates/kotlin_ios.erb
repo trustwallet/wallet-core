@@ -1,0 +1,7 @@
+<%-  if entity.is_a?(EnumDecl) -%>
+<%=   render('kotlin/ios_enum.erb') -%>
+<%-  elsif entity.is_struct -%>
+<%=   render('kotlin/ios_struct.erb') -%>
+<%- else -%>
+<%=   render('kotlin/ios_class.erb') -%>
+<%- end -%>

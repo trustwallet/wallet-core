@@ -1,0 +1,24 @@
+<%= render('kotlin/package.erb') %>
+
+expect enum class <%= entity.name %> {
+<%# Cases -%>
+<%  entity.cases.each_with_index do |c, i| -%>
+    <%= c.name %>,
+<%  end -%>
+    ;
+<%# Property declarations -%>
+<%- entity.properties.each do |property| -%>
+    val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+<%- end -%>
+<%# Method declarations -%>
+<%  if entity.methods.any? -%>
+
+<%  end -%>
+<%- entity.methods.each do |method| -%>
+<%-   next if method.name.start_with?('Delete') -%>
+    fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%- end -%>
+<%# Value -%>
+<%  if entity.cases.any? { |e| !e.value.nil? } -%>
+<%  end -%>
+}
