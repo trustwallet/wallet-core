@@ -9,6 +9,7 @@
 #include "Data.h"
 
 #include <boost/algorithm/hex.hpp>
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include <array>
 #include <sstream>
@@ -21,21 +22,17 @@ namespace TW::internal {
 ///
 /// \returns the array or parsed bytes or an empty array if the string is not
 /// valid hexadecimal.
-template <typename Iter>
-inline Data parse_hex(const Iter begin, const Iter end) {
-    auto it = begin;
-
-    // Skip `0x`
-    if (end - begin >= 2 && *begin == '0' && *(begin + 1) == 'x') {
-        it += 2;
+inline Data parse_hex(const std::string& input) {
+    if (input.empty()) {
+        return Data();
     }
-    try {
-        std::string temp;
-        boost::algorithm::unhex(it, end, std::back_inserter(temp));
-        return Data(temp.begin(), temp.end());
-    } catch (...) {
-        return {};
+    auto decoded = decode_hex(input.c_str());
+    if (decoded.data == nullptr || decoded.size == 0) {
+        return Data();
     }
+    std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
+    std::free(decoded.data);
+    return decoded_vec;
 }
 }
 
@@ -101,9 +98,9 @@ inline Data parse_hex(const std::string& string, bool padLeft = false) {
             temp.erase(0, 2);
         }
         temp.insert(0, 1, '0');
-        return internal::parse_hex(temp.begin(), temp.end());
+        return internal::parse_hex(temp);
     }
-    return internal::parse_hex(string.begin(), string.end());
+    return internal::parse_hex(string);
 }
 
 inline const char* hex_char_to_bin(char c) {
