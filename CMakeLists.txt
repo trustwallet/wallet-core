@@ -57,7 +57,14 @@ if (${ANDROID})
                 kotlin/wallet-core-kotlin/src/androidMain/cpp/*.h
                 )
     else ()
-        file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
+        file(GLOB_RECURSE
+                sources
+                src/*.c src/*.cc src/*.cpp src/*.h
+                jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/common/*.c
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/common/*.cpp
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/common/*.h
+                )
     endif()
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_library(log-lib log)
