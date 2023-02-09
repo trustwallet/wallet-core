@@ -15,6 +15,30 @@
 #include <string>
 #include <tuple>
 
+
+namespace TW::internal {
+/// Parses a string of hexadecimal values.
+///
+/// \returns the array or parsed bytes or an empty array if the string is not
+/// valid hexadecimal.
+template <typename Iter>
+inline Data parse_hex(const Iter begin, const Iter end) {
+    auto it = begin;
+
+    // Skip `0x`
+    if (end - begin >= 2 && *begin == '0' && *(begin + 1) == 'x') {
+        it += 2;
+    }
+    try {
+        std::string temp;
+        boost::algorithm::unhex(it, end, std::back_inserter(temp));
+        return Data(temp.begin(), temp.end());
+    } catch (...) {
+        return {};
+    }
+}
+}
+
 namespace TW {
 
 inline bool is_hex_encoded(const std::string& s)
@@ -70,27 +94,6 @@ inline std::string hex(uint64_t value) {
 ///
 /// \returns the array or parsed bytes or an empty array if the string is not
 /// valid hexadecimal.
-template <typename Iter>
-inline Data parse_hex(const Iter begin, const Iter end) {
-    auto it = begin;
-
-    // Skip `0x`
-    if (end - begin >= 2 && *begin == '0' && *(begin + 1) == 'x') {
-        it += 2;
-    }
-    try {
-        std::string temp;
-        boost::algorithm::unhex(it, end, std::back_inserter(temp));
-        return Data(temp.begin(), temp.end());
-    } catch (...) {
-        return {};
-    }
-}
-
-/// Parses a string of hexadecimal values.
-///
-/// \returns the array or parsed bytes or an empty array if the string is not
-/// valid hexadecimal.
 inline Data parse_hex(const std::string& string, bool padLeft = false) {
     if (string.size() % 2 != 0 && padLeft) {
         std::string temp = string;
@@ -98,9 +101,9 @@ inline Data parse_hex(const std::string& string, bool padLeft = false) {
             temp.erase(0, 2);
         }
         temp.insert(0, 1, '0');
-        return parse_hex(temp.begin(), temp.end());
+        return internal::parse_hex(temp.begin(), temp.end());
     }
-    return parse_hex(string.begin(), string.end());
+    return internal::parse_hex(string.begin(), string.end());
 }
 
 inline const char* hex_char_to_bin(char c) {

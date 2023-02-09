@@ -15,7 +15,7 @@ namespace TW::Ontology::tests {
 
 TEST(OntologyOep4, name) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
 
     uint32_t nonce = 0x1234;
@@ -26,7 +26,7 @@ TEST(OntologyOep4, name) {
 
 TEST(OntologyOep4, symbol) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
 
     uint32_t nonce = 0x1234;
@@ -37,7 +37,7 @@ TEST(OntologyOep4, symbol) {
 
 TEST(OntologyOep4, decimals) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
 
     uint32_t nonce = 0x1234;
@@ -48,7 +48,7 @@ TEST(OntologyOep4, decimals) {
 
 TEST(OntologyOep4, totalSupply) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
 
     uint32_t nonce = 0x1234;
@@ -59,7 +59,7 @@ TEST(OntologyOep4, totalSupply) {
 
 TEST(OntologyOep4, balanceOf) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
     auto user = Address("AeaThtPwh5kAYnjHavzwmvxPd725nVTvbM");
 
@@ -101,7 +101,7 @@ TEST(OntologyOep4, transfer) {
     uint64_t gasLimit = 50000;
 
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
 
     auto tx = wing.transfer(from, toAddress, amount, payer, gasPrice, gasLimit, nonce);
@@ -127,7 +127,7 @@ TEST(OntologyOep4, transferMainnet) {
 
     // wing oep4 mainnet address
     std::string wing_hex{"00c59fcd27a562d6397883eab1f2fff56e58ef80"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     Oep4 wing(wing_addr);
 
     auto tx = wing.transfer(from, toAddress, amount, payer, gasPrice, gasLimit, nonce);

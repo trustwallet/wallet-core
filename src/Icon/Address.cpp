@@ -39,7 +39,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address prefix");
     }
 
-    const auto data = parse_hex(string.begin() + 2, string.end());
+    const auto data = parse_hex(string.substr(2));
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
