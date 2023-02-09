@@ -48,24 +48,17 @@ include(cmake/Protobuf.cmake)
 # Source files
 if (${ANDROID})
     message("Configuring for JNI")
-    if (${KOTLIN})
-        file(GLOB_RECURSE
-                sources
-                src/*.c src/*.cc src/*.cpp src/*.h
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/*.c
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/*.cpp
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/*.h
-                )
-    else ()
-        file(GLOB_RECURSE
-                sources
+    file(GLOB_RECURSE
+                core_sources
                 src/*.c src/*.cc src/*.cpp src/*.h
                 jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/common/*.c
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/common/*.cpp
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/common/*.h
-                )
+        )
+    if (${KOTLIN})
+        file(GLOB_RECURSE specific_sources jni/kotlin/*.h jni/kotlin/*.c)
+    else ()
+        file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
     endif()
+    set(sources ${core_sources} ${specific_sources})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_library(log-lib log)
     if (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
@@ -93,12 +86,6 @@ if (TW_CLANG_ASAN)
     target_enable_asan(TrustWalletCore)
 endif ()
 
-if (${KOTLIN})
-    set(JNI_PATH "kotlin/wallet-core-kotlin/src/androidMain/cpp")
-else ()
-    set(JNI_PATH "jni/cpp")
-endif ()
-
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
 target_include_directories(TrustWalletCore
@@ -107,8 +94,7 @@ target_include_directories(TrustWalletCore
         $<INSTALL_INTERFACE:include>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/${JNI_PATH}
-        ${CMAKE_CURRENT_SOURCE_DIR}/kotlin/wallet-core-kotlin/src/androidMain/cpp/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
         )
 
