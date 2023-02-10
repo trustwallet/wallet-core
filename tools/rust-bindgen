@@ -24,19 +24,12 @@ if [[ "$1" != "android" ]]; then
 fi
 if [[ `uname` == "Darwin" ]]; then
   echo "Generating Android targets"
-  cargo build --target aarch64-linux-android --release
-  cargo build --target armv7-linux-androideabi --release
-  cargo build --target x86_64-linux-android --release
-  cargo build --target i686-linux-android --release
+  cargo build --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release
   if [[ "$1" != "android" ]]; then
     echo "Generating iOS targets"
-    cargo build --target aarch64-apple-ios --release
-    cargo build --target aarch64-apple-ios-sim --release
-    cargo build --target x86_64-apple-ios --release
-    cargo build --target aarch64-apple-darwin --release
-    cargo build --target x86_64-apple-darwin --release
-    cargo +nightly build -Z build-std --target aarch64-apple-ios-macabi --release
-    cargo +nightly build -Z build-std --target x86_64-apple-ios-macabi --release
+    cargo build --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --release &
+    cargo +nightly build -Z build-std --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release &
+    wait
     lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
     mkdir -p $BUILD_FOLDER/darwin_universal
     lipo $BUILD_FOLDER/x86_64-apple-darwin/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-darwin/release/$TARGET_NAME -create -output $BUILD_FOLDER/darwin_universal/$TARGET_NAME
