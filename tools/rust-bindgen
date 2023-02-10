@@ -17,30 +17,34 @@ create_xc_framework() {
 
 cd rust
 
-echo "Generating Native targets"
-cargo build --release
-cargo build --target wasm32-unknown-emscripten --release
+if [[ "$1" != "android" ]]; then
+  echo "Generating Native targets"
+  cargo build --release
+  cargo build --target wasm32-unknown-emscripten --release
+fi
 if [[ `uname` == "Darwin" ]]; then
   echo "Generating Android targets"
   cargo build --target aarch64-linux-android --release
   cargo build --target armv7-linux-androideabi --release
   cargo build --target x86_64-linux-android --release
   cargo build --target i686-linux-android --release
-  echo "Generating iOS targets"
-  cargo build --target aarch64-apple-ios --release
-  cargo build --target aarch64-apple-ios-sim --release
-  cargo build --target x86_64-apple-ios --release
-  cargo build --target aarch64-apple-darwin --release
-  cargo build --target x86_64-apple-darwin --release
-  cargo +nightly build -Z build-std --target aarch64-apple-ios-macabi --release
-  cargo +nightly build -Z build-std --target x86_64-apple-ios-macabi --release
-  lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
-  mkdir -p $BUILD_FOLDER/darwin_universal
-  lipo $BUILD_FOLDER/x86_64-apple-darwin/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-darwin/release/$TARGET_NAME -create -output $BUILD_FOLDER/darwin_universal/$TARGET_NAME
-  mkdir -p $BUILD_FOLDER/catalyst
-  lipo $BUILD_FOLDER/aarch64-apple-ios-macabi/release/$TARGET_NAME $BUILD_FOLDER/x86_64-apple-ios-macabi/release/$TARGET_NAME -create -output $BUILD_FOLDER/catalyst/$TARGET_NAME
+  if [[ "$1" != "android" ]]; then
+    echo "Generating iOS targets"
+    cargo build --target aarch64-apple-ios --release
+    cargo build --target aarch64-apple-ios-sim --release
+    cargo build --target x86_64-apple-ios --release
+    cargo build --target aarch64-apple-darwin --release
+    cargo build --target x86_64-apple-darwin --release
+    cargo +nightly build -Z build-std --target aarch64-apple-ios-macabi --release
+    cargo +nightly build -Z build-std --target x86_64-apple-ios-macabi --release
+    lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
+    mkdir -p $BUILD_FOLDER/darwin_universal
+    lipo $BUILD_FOLDER/x86_64-apple-darwin/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-darwin/release/$TARGET_NAME -create -output $BUILD_FOLDER/darwin_universal/$TARGET_NAME
+    mkdir -p $BUILD_FOLDER/catalyst
+    lipo $BUILD_FOLDER/aarch64-apple-ios-macabi/release/$TARGET_NAME $BUILD_FOLDER/x86_64-apple-ios-macabi/release/$TARGET_NAME -create -output $BUILD_FOLDER/catalyst/$TARGET_NAME
 
-  create_xc_framework
+    create_xc_framework
+  fi
 fi
 cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -

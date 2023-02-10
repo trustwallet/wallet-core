@@ -53,7 +53,7 @@ codegen/bin/codegen
 tools/doxygen_convert_comments
 
 # Generate rust bindgen
-tools/rust-bindgen
+tools/rust-bindgen $1
 
 # Generate Java, C++ and Swift Protobuf files
 if [ -x "$(command -v protoc-gen-swift)" ] && [ $# -eq 0 ]; then
