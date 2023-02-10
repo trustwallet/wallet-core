@@ -7,10 +7,9 @@
 #pragma once
 
 #include "Data.h"
-
-#include <iostream>
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
+#include <algorithm>
 #include <array>
 #include <sstream>
 #include <string>
