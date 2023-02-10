@@ -103,14 +103,14 @@ TEST(Bech32Address, FromPublicKey) {
     {
         auto privateKey = PrivateKey(parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832"));
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-        ASSERT_EQ(hex(publicKey.bytes.begin(), publicKey.bytes.end()), "026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
+        ASSERT_EQ(hex(publicKey.bytes), "026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
         auto address = Bech32Address("bnb", Hash::HasherSha256ripemd, publicKey);
         ASSERT_EQ("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address.string());
     }
     {
         auto privateKey = PrivateKey(parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"));
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-        ASSERT_EQ(hex(publicKey.bytes.begin(), publicKey.bytes.end()), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
+        ASSERT_EQ(hex(publicKey.bytes), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
         auto address = Bech32Address("cosmos", Hash::HasherSha256ripemd, publicKey);
         ASSERT_EQ(address.string(), "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     }
@@ -129,7 +129,7 @@ TEST(Bech32Address, FromPublicKey) {
     {
         const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-        ASSERT_EQ(hex(publicKey.bytes.begin(), publicKey.bytes.end()), "02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d");
+        ASSERT_EQ(hex(publicKey.bytes), "02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d");
         const auto address = Bech32Address("zil", Hash::HasherSha256, publicKey);
         ASSERT_EQ("zil", address.getHrp());
         ASSERT_EQ("zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg", address.string());
@@ -141,7 +141,7 @@ TEST(Bech32Address, Hashes) {
     const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
 
     auto publicKey1 = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey1.bytes.begin(), publicKey1.bytes.end()));
+    ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey1.bytes));
 
     const auto address1 = Bech32Address("hrp", Hash::HasherSha256ripemd, publicKey1);
     ASSERT_EQ("hrp186zwn9h0z9fyvwfqs4jl92cw3kexusm4xw6ptp", address1.string());
@@ -152,7 +152,7 @@ TEST(Bech32Address, Hashes) {
     auto publicKey2 = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     ASSERT_EQ(
         "04b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d83c307736082c09f1f22328e0fbeab40ddd198cf0f70fcdaa1e5969ca400c098",
-        hex(publicKey2.bytes.begin(), publicKey2.bytes.end()));
+        hex(publicKey2.bytes));
 
     const auto address3 = Bech32Address("hrp", Hash::HasherKeccak256, publicKey2);
     ASSERT_EQ("hrp17hff3s97m5uxpjcdq3nzqxxatt8cmumnsf03su", address3.string());
@@ -163,7 +163,7 @@ TEST(Bech32Address, Prefixes) {
     const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
 
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey.bytes.begin(), publicKey.bytes.end()));
+    ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey.bytes));
 
     const auto address1 = Bech32Address("hrpone", Hash::HasherSha256ripemd, publicKey);
     ASSERT_EQ("hrpone186zwn9h0z9fyvwfqs4jl92cw3kexusm47das6p", address1.string());

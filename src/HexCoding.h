@@ -8,7 +8,7 @@
 
 #include "Data.h"
 
-#include <boost/algorithm/hex.hpp>
+#include <iostream>
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include <array>
@@ -47,44 +47,39 @@ inline bool is_hex_encoded(const std::string& s)
     return with_0x || without_0x;
 }
 
-std::tuple<uint8_t, bool> value(uint8_t c);
-
-/// Converts a range of bytes to a hexadecimal string representation.
-template <typename Iter>
-inline std::string hex(const Iter begin, const Iter end) {
-    static constexpr std::array<char, 16> hexmap = {
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
-    std::string result;
-    result.reserve((end - begin) * 2);
-
-    for (auto it = begin; it < end; ++it) {
-        auto val = static_cast<uint8_t>(*it);
-        result.push_back(hexmap[val >> 4]);
-        result.push_back(hexmap[val & 0x0f]);
-    }
-
-    return result;
-}
-
 /// Converts a collection of bytes to a hexadecimal string representation.
 template <typename T>
-inline std::string hex(const T& collection) {
-    return hex(std::begin(collection), std::end(collection));
+inline std::string hex(const T& collection, bool prefixed = false) {
+    auto rust_functor = [prefixed](auto&& collection){
+        auto res = encode_hex(collection.data(), collection.size(), prefixed);
+        std::string encoded_str(res);
+        free_string(res);
+        return encoded_str;
+    };
+    if constexpr (std::is_same_v<T, Data>) {
+        return rust_functor(collection);
+    }
+    else if constexpr (std::is_same_v<T, std::string>) {
+        return rust_functor(data(collection));
+    }
+    else {
+        return rust_functor(data_from(collection));
+    }
 }
 
 /// same as hex, with 0x prefix
 template <typename T>
-inline std::string hexEncoded(const T& collection) {
-    return hex(std::begin(collection), std::end(collection)).insert(0, "0x");
+inline std::string hexEncoded(T&& collection) {
+    return hex(std::forward<T>(collection), true);
 }
 
 /// Converts a `uint64_t` value to a hexadecimal string.
 inline std::string hex(uint64_t value) {
-    auto bytes = reinterpret_cast<const uint8_t*>(&value);
-    return hex(std::reverse_iterator<const uint8_t*>(bytes + sizeof(value)),
-               std::reverse_iterator<const uint8_t*>(bytes));
+    const uint8_t* begin = reinterpret_cast<const uint8_t*>(&value);
+    const uint8_t* end = begin + sizeof(value);
+    Data v(begin, end);
+    std::reverse(v.begin(), v.end());
+    return hex(v);
 }
 
 /// Parses a string of hexadecimal values.

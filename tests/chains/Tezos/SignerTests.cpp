@@ -86,9 +86,9 @@ TEST(TezosSigner, SignOperationList) {
     std::string expectedSignedBytes = expectedForgedBytesToSign + expectedSignature;
 
     auto signedBytes = Signer().signOperationList(key, op_list);
-    auto signedBytesHex = hex(signedBytes.begin(), signedBytes.end());
+    auto signedBytesHex = hex(signedBytes);
 
-    ASSERT_EQ(hex(signedBytes.begin(), signedBytes.end()), expectedSignedBytes);
+    ASSERT_EQ(hex(signedBytes), expectedSignedBytes);
 }
 
 } // namespace TW::Tezos::tests

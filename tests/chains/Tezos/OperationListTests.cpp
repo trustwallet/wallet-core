@@ -43,7 +43,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionOnly) {
 
     auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
     auto forged = op_list.forge(key);
-    ASSERT_EQ(hex(forged.begin(), forged.end()), expected);
+    ASSERT_EQ(hex(forged), expected);
 }
 
 TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
@@ -68,7 +68,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
     auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto forged = op_list.forge(key);
 
-    ASSERT_EQ(hex(forged.begin(), forged.end()), expected);
+    ASSERT_EQ(hex(forged), expected);
 }
 
 TEST(TezosOperationList, ForgeOperationList_Delegation_ClearDelegate) {
@@ -112,7 +112,7 @@ TEST(TezosOperationList, ForgeOperationList_Delegation_AddDelegate) {
     op_list.addOperation(delegationOperation);
     auto expected = "7105102c032807994dd9b5edf219261896a559876ca16cbf9d31dbe3612b89f26e00315b1206ec00b1b1e64cc3b8b93059f58fa2fc39e90944904e00ff00c4650fd609f88c67356e5fe01e37cd3ff654b18c";
     auto forged = op_list.forge(key);
-    ASSERT_EQ(hex(forged.begin(), forged.end()), expected);
+    ASSERT_EQ(hex(forged), expected);
 }
 
 TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
@@ -152,7 +152,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b003e47f837f0467b4acde406ed5842f35e2414b1a8f80992f001f44e810200603247bbf52501498293686da89ad8b2aca85f83b90903d4521dd2aba66054eb6c003e47f837f0467b4acde406ed5842f35e2414b1a8f80993f001f44e8102010000e42504da69a7c8d5baeaaeebe157a02db6b22ed800";
     auto forged = op_list.forge(key);
 
-    ASSERT_EQ(hex(forged.begin(), forged.end()), expected);
+    ASSERT_EQ(hex(forged), expected);
 }
 
 TEST(TezosOperationList, ForgeOperationList_RevealWithoutPublicKey) {
@@ -176,7 +176,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealWithoutPublicKey) {
     auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b003e47f837f0467b4acde406ed5842f35e2414b1a8f80992f001f44e810200603247bbf52501498293686da89ad8b2aca85f83b90903d4521dd2aba66054eb";
     auto forged = op_list.forge(key);
 
-    ASSERT_EQ(hex(forged.begin(), forged.end()), expected);
+    ASSERT_EQ(hex(forged), expected);
 }
 
 } // namespace TW::Tezos::tests
