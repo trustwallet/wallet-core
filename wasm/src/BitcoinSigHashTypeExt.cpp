@@ -23,7 +23,7 @@ namespace TW::Wasm {
 
     EMSCRIPTEN_BINDINGS(Wasm_BitcoinSigHashTypeExt) {
         class_<BitcoinSigHashTypeExt>("BitcoinSigHashTypeExt")
-            .class_function("isSingle", &BitcoinSigHashTypeExt::isSingle, allow_raw_pointers())
-            .class_function("isNone", &BitcoinSigHashTypeExt::isNone, allow_raw_pointers());
+            .class_function("isSingle", &BitcoinSigHashTypeExt::isSingle)
+            .class_function("isNone", &BitcoinSigHashTypeExt::isNone);
     };
 }

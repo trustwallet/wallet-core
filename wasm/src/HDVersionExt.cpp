@@ -23,7 +23,7 @@ namespace TW::Wasm {
 
     EMSCRIPTEN_BINDINGS(Wasm_HDVersionExt) {
         class_<HDVersionExt>("HDVersionExt")
-            .class_function("isPublic", &HDVersionExt::isPublic, allow_raw_pointers())
-            .class_function("isPrivate", &HDVersionExt::isPrivate, allow_raw_pointers());
+            .class_function("isPublic", &HDVersionExt::isPublic)
+            .class_function("isPrivate", &HDVersionExt::isPrivate);
     };
 }
