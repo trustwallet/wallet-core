@@ -43,7 +43,7 @@ cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -
 [[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname` == "Darwin" ]] && [[ "$1" != "android" ]]; then
 cd rust
 cat > $TARGET_XCFRAMEWORK_NAME/Info.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
