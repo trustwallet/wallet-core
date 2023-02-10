@@ -65,11 +65,6 @@ kotlin {
         }
         val jsMain by getting {
             kotlin.srcDir(projectDir.resolve("src/jsMain/generated"))
-
-            dependencies {
-                // TODO: Replace with local build
-                implementation(npm(name = "@trustwallet/wallet-core", version = "3.1.10", generateExternals = false))
-            }
         }
     }
 
