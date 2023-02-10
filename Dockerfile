@@ -23,9 +23,9 @@ RUN wget -q -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-k
 ARG ARCH=amd64
 RUN if [ ${ARCH} == amd64 ] ; \
     then \
-    wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb ; \
+    wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb ; \
     else \ 
-    wget -q http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_arm64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_arm64.deb ; \
+    wget -q http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_arm64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.17_arm64.deb ; \
     fi
 
 # Install required packages for dev

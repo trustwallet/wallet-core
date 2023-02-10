@@ -42,6 +42,9 @@ message OutPoint {
 
     // Transaction version as defined by the sender.
     uint32 sequence = 3;
+
+    // The tree in utxo, only works for DCR
+    int32 tree = 4;
 }
 
 // Bitcoin transaction output.

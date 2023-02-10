@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Bitcoin/Script.h"
 #include "Coin.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -112,6 +113,51 @@ TEST(DecredCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.encoded().size(), 0ul);
         EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
+}
+
+TEST(DecredCompiler, UtxoWithTree) {
+    const auto coin = TWCoinTypeDecred;
+
+    const int64_t utxoValue = 10000000;
+    const int64_t amount = 1000000;
+
+    auto input = Bitcoin::Proto::SigningInput();
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(amount);
+    input.set_byte_fee(1);
+    input.set_to_address("Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx");
+    input.set_change_address("DskhnpQqQVgoSuKeyM6Unn2CEbfaenbcJBT");
+    input.set_coin_type(coin);
+
+    auto& utxo = *input.add_utxo();
+ 
+    auto script = Bitcoin::Script::lockScriptForAddress("DskhnpQqQVgoSuKeyM6Unn2CEbfaenbcJBT", coin);
+    auto hash = parse_hex("3f7b77a111634faa107c539b0c7db54e2cdbddc0c979568034aaa1ef56d2db90");
+    std::reverse(hash.begin(), hash.end());
+    utxo.set_amount(utxoValue);
+    utxo.set_script(script.bytes.data(), script.bytes.size());
+
+    auto& outpoint = *utxo.mutable_out_point();
+    outpoint.set_hash(hash.data(), hash.size());
+    outpoint.set_index(0);
+    outpoint.set_sequence(UINT32_MAX);
+    outpoint.set_tree(1);
+
+    // build preimage
+    const auto txInputData = data(input.SerializeAsString());
+    EXPECT_GT(txInputData.size(), 0ul);
+
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    ASSERT_GT(preImageHashes.size(), 0ul);
+
+    Bitcoin::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+    ASSERT_EQ(preSigningOutput.hash_public_keys().size(), 1);
+
+    auto preImageHash = data(preSigningOutput.hash_public_keys()[0].data_hash());
+    EXPECT_EQ(hex(preImageHash),
+              "cca7dcac2ac86f40037a51aeac7b6aaacf57e3304354449e140b698023b3fce7");
 }
 
 } // namespace TW::Decred::tests

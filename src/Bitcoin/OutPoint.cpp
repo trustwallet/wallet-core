@@ -14,6 +14,7 @@ void OutPoint::encode(Data& data) const noexcept {
     std::copy(std::begin(hash), std::end(hash), std::back_inserter(data));
     encode32LE(index, data);
     // sequence is encoded in TransactionInputs
+    // tree is only for DCR
 }
 
 } // namespace TW::Bitcoin
