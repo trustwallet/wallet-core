@@ -39,6 +39,13 @@ else ()
     message ("TrustWalletCore library found here: ${WALLET_CORE_LIB_FILE}")
 endif ()
 
+find_library(WALLET_CORE_RS_LIB_FILE wallet_core_rs PATH ${WALLET_CORE}/rust/target/release)
+if (NOT WALLET_CORE_RS_LIB_FILE)
+	message (FATAL_ERROR "wallet_core_rs library not found.  ${SETUP_MESSAGE}")
+else ()
+	message ("wallet_core_rs library found here: ${WALLET_CORE_RS_LIB_FILE}")
+endif ()
+
 # Create all libraries and executables in the root binary dir
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -71,4 +78,4 @@ SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINK_FLAGS}")
 add_executable (sample sample.cpp)
 
 # link with our library, and default platform libraries
-target_link_libraries (sample PUBLIC TrustWalletCore wallet_core_rs TrezorCrypto protobuf pthread ${PLATFORM_LIBS})
+target_link_libraries (sample PUBLIC TrustWalletCore ${WALLET_CORE_RS_LIB_FILE} TrezorCrypto protobuf pthread ${PLATFORM_LIBS})
