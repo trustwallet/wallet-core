@@ -12,14 +12,14 @@ actual enum class <%= entity.name %>(
 <%- entity.properties.each do |property| -%>
 
     actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
-        get() = <%= KotlinHelper.convert_calling_return_type_js(property.return_type, "_value.#{WasmCppHelper.function_name(entity: entity, function: property)}()") %>
+        get() = <%= KotlinHelper.convert_calling_return_type_js(property.return_type, "WalletCore.Instance.#{entity.name}Ext.#{WasmCppHelper.function_name(entity: entity, function: property)}(_value)") %>
 <%- end -%>
 <%# Method declarations -%>
 <%- entity.methods.each do |method| -%>
 <%-   next if method.name.start_with?('Delete') -%>
 
     actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
-        <%= KotlinHelper.convert_calling_return_type_js(method.return_type, "_value.#{WasmCppHelper.function_name(entity: entity, function: method)}(#{KotlinHelper.calling_parameters_js(method.parameters.drop(1))})") %>
+        <%= KotlinHelper.convert_calling_return_type_js(method.return_type, "WalletCore.Instance.#{entity.name}Ext.#{WasmCppHelper.function_name(entity: entity, function: method)}(_value#{', ' if not method.parameters.one?}#{KotlinHelper.calling_parameters_js(method.parameters.drop(1))})") %>
 <%- end -%>
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>
