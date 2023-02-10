@@ -1,0 +1,8 @@
+<% param = locals[:param] -%>
+<% name = param.name -%>
+<% type = param.type -%>
+    jclass <%= name %>Class = (*env)->GetObjectClass(env, <%= name %>);
+    jfieldID <%= name %>BytesFieldID = (*env)->GetFieldID(env, <%= name %>Class, "bytes", "[B");
+    jbyteArray <%= name %>BytesArray = (*env)->GetObjectField(env, <%= name %>, <%= name %>BytesFieldID);
+    jbyte* <%= name %>BytesBuffer = (*env)->GetByteArrayElements(env, <%= name %>BytesArray, NULL);
+    struct TW<%= type.name %> *<%= name %>Instance = (struct TW<%= type.name %> *) <%= name %>BytesBuffer;

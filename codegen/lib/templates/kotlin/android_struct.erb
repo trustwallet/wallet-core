@@ -1,0 +1,19 @@
+<%= render('kotlin/package.erb') %>
+
+actual object <%= entity.name %> {
+<%# Static property declarations -%>
+<%  entity.static_properties.each do |property| -%>
+
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        @JvmName("<%= KotlinHelper.format_name(property.name) %>")
+        external get
+<% end -%>
+<%# Static method declarations -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') -%>
+
+    @JvmStatic
+    @JvmName("<%= KotlinHelper.format_name(method.name) %>")
+    actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%  end -%>
+}

@@ -1,0 +1,7 @@
+<% param = locals[:param] -%>
+<% name = param.name -%>
+<% type = param.type -%>
+    jclass <%= name %>Class = (*env)->GetObjectClass(env, <%= name %>);
+    jmethodID <%= name %>ToByteArrayMethodID = (*env)->GetMethodID(env, <%= name %>Class, "toByteArray", "()[B");
+    jbyteArray <%= name %>ByteArray = (*env)->CallObjectMethod(env, <%= name %>, <%= name %>ToByteArrayMethodID);
+    TWData *<%= param.name %>Data = TWDataCreateWithJByteArray(env, <%= name %>ByteArray);

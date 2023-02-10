@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install system dependencies
       run: |
@@ -21,7 +21,7 @@ jobs:
 
     - name: Cache internal dependencies
       id: internal_cache
-      uses: actions/cache@v1.1.2
+      uses: actions/cache@v3
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}

@@ -1,0 +1,26 @@
+<%
+  method = locals[:method]
+  if method.static && !method.name.include?('Init')
+      parameters = method.parameters
+  else
+      parameters = method.parameters.drop(1)
+  end
+
+  parameters.each do |param|
+    if param.type.name == :data -%>
+    TWDataDelete(<%= param.name %>Data);
+<%  elsif param.type.name == :string -%>
+    TWStringDelete(<%= param.name %>String);
+<%  elsif param.type.is_struct -%>
+    (*env)->ReleaseByteArrayElements(env, <%= param.name %>BytesArray, <%= param.name %>BytesBuffer, JNI_ABORT);
+    (*env)->DeleteLocalRef(env, <%= param.name %>BytesArray);
+    (*env)->DeleteLocalRef(env, <%= param.name %>Class);
+<%  elsif param.type.is_class -%>
+    (*env)->DeleteLocalRef(env, <%= param.name %>Class);
+<%  elsif param.type.is_enum -%>
+    (*env)->DeleteLocalRef(env, <%= param.name %>Class);
+<%  elsif param.type.is_proto -%>
+    (*env)->DeleteLocalRef(env, <%= param.name %>ByteArray);
+    (*env)->DeleteLocalRef(env, <%= param.name %>Class);
+<%  end -%>
+<%end -%>
