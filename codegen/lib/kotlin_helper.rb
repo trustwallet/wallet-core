@@ -77,6 +77,12 @@ module KotlinHelper
     case t.name
     when :data
       "#{if t.is_nullable then '?' else '' end}.toUInt8Array()"
+    when :uint64
+      ".toUInt()"
+    when :int64
+      ".toInt()"
+    when :size
+      ".toUInt()"
     else
       if t.is_enum
         "#{if t.is_nullable then '?' else '' end}._value"
