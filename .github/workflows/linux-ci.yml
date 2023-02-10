@@ -28,6 +28,13 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
       if: steps.internal_cache.outputs.cache-hit != 'true'
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+
     - name: Code generation
       run: |
         tools/generate-files
