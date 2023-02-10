@@ -44,7 +44,7 @@ if [[ `uname` == "Darwin" ]]; then
 fi
 cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -
-cp build/local/release/${TARGET_NAME} build/local/lib/
+cp rust/target/release/${TARGET_NAME} build/local/lib/
 
 if [[ `uname` == "Darwin" ]]; then
 cd rust
