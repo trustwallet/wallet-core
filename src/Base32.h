@@ -8,6 +8,7 @@
 
 #include "Data.h"
 
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 #include <TrezorCrypto/base32.h>
 
 #include <cassert>
@@ -33,25 +34,14 @@ inline bool decode(const std::string& encoded_in, Data& decoded_out, const char*
     return true;
 }
 
+
 /// Encode bytes in Data to Base32 string
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
-inline std::string encode(const Data& val, const char* alphabet = nullptr) {
-    size_t inLen = val.size();
-    // obtain output length first, reserve for terminator
-    size_t outLen = base32_encoded_length(inLen) + 1;
-    char buf[outLen];
-    if (alphabet == nullptr) {
-        alphabet = BASE32_ALPHABET_RFC4648;
-    }
-    // perform the base32 encode
-    char* retval = base32_encode(val.data(), inLen, buf, outLen, alphabet);
-    if (retval == nullptr) {
-        // return empty string if failed
-        return std::string();
-    }
-    // make sure there is a terminator ath the end
-    buf[outLen - 1] = '\0';
-    return std::string(buf);
+inline std::string encode(const Data& val, const char* alphabet = nullptr, bool padding = false) {
+    auto* encoded = encode_base32(val.data(), val.size(), alphabet, padding);
+    std::string encoded_str(encoded);
+    free_string(encoded);
+    return encoded_str;
 }
 
 } // namespace TW::Base32
