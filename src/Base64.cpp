@@ -21,7 +21,7 @@ Data decode(const std::string& val, bool is_url) {
         return Data();
     }
     auto decoded = decode_base64(val.c_str(), is_url);
-    if (decoded.data == nullptr) {
+    if (decoded.data == nullptr || decoded.size == 0) {
         return Data();
     }
     std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);

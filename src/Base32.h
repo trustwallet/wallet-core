@@ -18,19 +18,16 @@ namespace TW::Base32 {
 /// Decode Base32 string, return bytes as Data
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
 inline bool decode(const std::string& encoded_in, Data& decoded_out, const char* alphabet_in = nullptr) {
-    size_t inLen = encoded_in.size();
-    // obtain output length first
-    size_t outLen = base32_decoded_length(inLen);
-    uint8_t buf[outLen];
-    if (alphabet_in == nullptr) {
-        alphabet_in = BASE32_ALPHABET_RFC4648;
+    if (encoded_in.empty()) {
+        return true;
     }
-    // perform the base32 decode
-    uint8_t* retval = base32_decode(encoded_in.data(), inLen, buf, outLen, alphabet_in);
-    if (retval == nullptr) {
+    auto decoded = decode_base32(encoded_in.c_str(), alphabet_in, false);
+    if (decoded.data == nullptr || decoded.size == 0) {
         return false;
     }
-    decoded_out.assign(buf, buf + outLen);
+    Data decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
+    std::free(decoded.data);
+    decoded_out = decoded_vec;
     return true;
 }
 
