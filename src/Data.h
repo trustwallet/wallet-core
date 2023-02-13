@@ -20,6 +20,21 @@ inline void pad_left(Data& data, const uint32_t size) {
     data.insert(data.begin(), size - data.size(), 0);
 }
 
+template<typename It>
+inline Data data(It&& begin, It&& end) {
+    return Data(begin, end);
+}
+
+template<typename Collection>
+inline Data data_from(const Collection& collection) {
+    Data out;
+    out.reserve(collection.size());
+    for (auto&& cur : collection) {
+        out.emplace_back(uint8_t(cur));
+    }
+    return out;
+}
+
 inline Data data(const std::string& data) {
     return Data(data.begin(), data.end());
 }

@@ -164,7 +164,7 @@ TEST(DecredSigner, SignP2SH) {
     auto redeemScript = Bitcoin::Script::buildPayToPublicKeyHash(keyhash);
     auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
     auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
-    (*input.mutable_scripts())[hex(scriptHash.begin(), scriptHash.end())] = scriptString;
+    (*input.mutable_scripts())[hex(scriptHash)] = scriptString;
 
     auto utxo0 = input.add_utxo();
     auto utxo0Script = Bitcoin::Script::buildPayToScriptHash(scriptHash);
@@ -401,7 +401,7 @@ TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
     auto scriptPub1 = Bitcoin::Script(parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
     auto scriptHash = std::vector<uint8_t>();
     scriptPub1.matchPayToWitnessPublicKeyHash(scriptHash);
-    auto scriptHashHex = hex(scriptHash.begin(), scriptHash.end());
+    auto scriptHashHex = hex(scriptHash);
     ASSERT_EQ(scriptHashHex, "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
 
     auto redeemScript = Bitcoin::Script::buildPayToPublicKeyHash(scriptHash);

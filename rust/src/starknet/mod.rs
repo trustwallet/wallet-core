@@ -5,7 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::ffi::{c_char, CStr};
-use starknet_crypto::{FieldElement, get_public_key, Signature};
+use starknet_crypto::{get_public_key, Signature};
+use starknet_ff::{FieldElement};
 use starknet_signers::{SigningKey, VerifyingKey};
 use crate::memory;
 

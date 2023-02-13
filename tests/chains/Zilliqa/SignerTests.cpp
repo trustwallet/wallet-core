@@ -42,7 +42,7 @@ TEST(ZilliqaSigner, PreImage) {
     auto preImage = Signer::getPreImage(input, address);
     auto signature = Signer::sign(input).signature();
 
-    ASSERT_EQ(hex(preImage.begin(), preImage.end()), "0881800410041a149ca91eb535fb92fda5094110fdaeb752edb9b03922230a21034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b2a120a10000000000000000000000da475abf00032120a100000000000000000000000003b9aca003801");
+    ASSERT_EQ(hex(preImage), "0881800410041a149ca91eb535fb92fda5094110fdaeb752edb9b03922230a21034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b2a120a10000000000000000000000da475abf00032120a100000000000000000000000003b9aca003801");
 
     ASSERT_TRUE(pubKey.verifyZilliqa(Data(signature.begin(), signature.end()), preImage));
 }
@@ -72,7 +72,7 @@ TEST(ZilliqaSigner, Signing) {
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.signature().begin(), output.signature().end()), "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268");
+    ASSERT_EQ(hex(output.signature()), "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268");
     ASSERT_EQ(output.json(), R"({"amount":"1000000000000","code":"","data":"","gasLimit":"1","gasPrice":"1000000000","nonce":2,"pubKey":"03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c","signature":"001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268","toAddr":"7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C","version":65537})");
 }
 
@@ -105,7 +105,7 @@ TEST(ZilliqaSigner, SigningData) {
 
     auto output = Signer::sign(input);
     ASSERT_EQ(output.json(), R"({"amount":"10000000000000","code":"","data":"{\"_tag\":\"DelegateStake\",\"params\":[{\"type\":\"ByStr20\",\"value\":\"0x122219cCeAb410901e96c3A0e55E46231480341b\",\"vname\":\"ssnaddr\"}]}","gasLimit":"5000","gasPrice":"2000000000","nonce":56,"pubKey":"03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c","signature":"437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d","toAddr":"43D459eC504C7432959c086B0ac7F7855E984306","version":65537})");
-    ASSERT_EQ(hex(output.signature().begin(), output.signature().end()), "437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d");
+    ASSERT_EQ(hex(output.signature()), "437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d");
 }
 
 } // namespace TW::Zilliqa::tests

@@ -23,6 +23,13 @@ TEST(AionAddress, FromString) {
     std::string aionAddress = "0xa0d2312facea71b740679c926d040c9056a65a4bfa2ddd18ec160064f82909e7";
     const auto address = Address(aionAddress);
     ASSERT_EQ(address.string(), aionAddress);
+    ASSERT_ANY_THROW(Address("0xffff"));
+}
+
+TEST(AionAddress, InvalidFromData) {
+    ASSERT_ANY_THROW(Address(parse_hex("0xffff")));
+    auto aionAddress = parse_hex("0xa0d2312facea71b740679c926d040c9056a65a4bfa2ddd18ec160064f82909e7");
+    [[maybe_unused]] auto res = Address(aionAddress);
 }
 
 TEST(AionAddress, isValid) {

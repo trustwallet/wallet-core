@@ -193,7 +193,7 @@ Data Signer::keyForPublicKeyHash(const Data& hash) const {
 }
 
 Data Signer::scriptForScriptHash(const Data& hash) const {
-    auto hashString = hex(hash.begin(), hash.end());
+    auto hashString = hex(hash);
     auto it = input.scripts().find(hashString);
     if (it == input.scripts().end()) {
         // Error: Missing redeem script

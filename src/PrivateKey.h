@@ -87,13 +87,6 @@ class PrivateKey {
     void cleanup();
 };
 
-inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
-inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) {
-    return lhs.bytes != rhs.bytes;
-}
-
 } // namespace TW
 
 /// Wrapper for C interface.

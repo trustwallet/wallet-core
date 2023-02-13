@@ -53,10 +53,10 @@ codegen/bin/codegen
 tools/doxygen_convert_comments
 
 # Generate rust bindgen
-tools/rust-bindgen
+tools/rust-bindgen $1
 
 # Generate Java, C++ and Swift Protobuf files
-if [ -x "$(command -v protoc-gen-swift)" ]; then
+if [ -x "$(command -v protoc-gen-swift)" ] && [ $# -eq 0 ]; then
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/java --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
 else
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/java src/proto/*.proto
@@ -74,11 +74,13 @@ fi
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
 
 # Generate Xcode project
-if [ -x "$(command -v xcodegen)" ]; then
+if [ -x "$(command -v xcodegen)" ] && [ $# -eq 0 ]; then
     pushd swift
     xcodegen
     pod install
     popd
+elif [ "$1" == "android" ]; then
+    echo -e "\nWARNING: Android detected, skipping xcodegen generation"
 else
     echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
 fi

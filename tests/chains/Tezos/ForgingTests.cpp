@@ -151,7 +151,7 @@ TEST(TezosTransaction, forgeTransaction) {
     auto expected = "6c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
     auto serialized = forgeOperation(transactionOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeTransactionFA12) {
@@ -222,7 +222,7 @@ TEST(TezosTransaction, forgeReveal) {
     auto expected = "6b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto serialized = forgeOperation(revealOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeDelegate) {
@@ -241,7 +241,7 @@ TEST(TezosTransaction, forgeDelegate) {
     auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102ff003e47f837f0467b4acde406ed5842f35e2414b1a8";
     auto serialized = forgeOperation(delegateOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeUndelegate) {
@@ -260,7 +260,7 @@ TEST(TezosTransaction, forgeUndelegate) {
     auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200";
     auto serialized = forgeOperation(delegateOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 } // namespace TW::Tezos::tests

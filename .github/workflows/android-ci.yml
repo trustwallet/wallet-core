@@ -41,8 +41,14 @@ jobs:
       run: tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+    
     - name: Generate files
-      run: tools/generate-files
+      run: tools/generate-files android
 
     - name: Build Kotlin doc
       run: tools/kotlin-doc

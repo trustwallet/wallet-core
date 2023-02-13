@@ -84,7 +84,7 @@ TEST(ParamsBuilder, transferInvokeCode) {
 
 TEST(ParamsBuilder, invokeOep4Code) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
 
     NeoVmParamValue::ParamArray args{};
     std::string method{"name"};
@@ -96,7 +96,7 @@ TEST(ParamsBuilder, invokeOep4Code) {
 
 TEST(ParamsBuilder, invokeOep4CodeBalanceOf) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     auto user_addr = Address("AeaThtPwh5kAYnjHavzwmvxPd725nVTvbM");
     Data d(std::begin(user_addr._data), std::end(user_addr._data));
 
@@ -110,7 +110,7 @@ TEST(ParamsBuilder, invokeOep4CodeBalanceOf) {
 
 TEST(OntologyOep4, invokeOep4CodeTransfer) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    auto wing_addr = Address(parse_hex(wing_hex));
     auto from = Address("APniYDGozkhUh8Tk7pe35aah2HGJ4fJfVd");
     auto to = Address("AVY6LfvxauVQAVHDV9hC3ZCv7cQqzfDotH");
     uint64_t amount = 253;

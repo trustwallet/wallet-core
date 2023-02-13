@@ -86,7 +86,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     auto scriptPub1 = Script(parse_hex("0014db746a75d9aae8995d135b1e19a04d7765242a8f"));
     auto scriptHash = std::vector<uint8_t>();
     scriptPub1.matchPayToWitnessPublicKeyHash(scriptHash);
-    auto scriptHashHex = hex(scriptHash.begin(), scriptHash.end());
+    auto scriptHashHex = hex(scriptHash);
 
     auto redeemScript = Script::buildPayToPublicKeyHash(scriptHash);
     auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());

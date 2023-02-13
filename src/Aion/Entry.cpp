@@ -24,11 +24,6 @@ string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& p
     return Address(publicKey).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    const auto addr = Address(address);
-    return {addr.bytes.begin(), addr.bytes.end()};
-}
-
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

@@ -34,8 +34,4 @@ class Address {
     static bool checkPayload(const std::string& payload);
 };
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
-
 } // namespace TW::Aeternity

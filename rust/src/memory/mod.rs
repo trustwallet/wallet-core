@@ -6,6 +6,12 @@
 
 use std::ffi::{c_char, CString};
 
+#[repr(C)]
+pub struct CByteArray {
+    pub data: *mut u8,
+    pub size: usize,
+}
+
 #[no_mangle]
 pub unsafe extern fn free_string(ptr: *const c_char) {
     // Take the ownership back to rust and drop the owner
