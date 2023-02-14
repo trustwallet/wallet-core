@@ -80,6 +80,39 @@ TEST(TronSigner, SignTransfer) {
     ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
 }
 
+// TODO do the real unit tests when tronscan update
+TEST(TronSigner, SignFreezeBalanceV2) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& freeze = *transaction.mutable_freeze_balance_v2();
+    freeze.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    freeze.set_frozen_balance(1000000);
+    freeze.set_resource("ENERGY");
+
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "301e281b4a4ab86be8c72bc6ca507a401d2d303fa651b98e4a562473707e753c");
+    ASSERT_EQ(hex(output.signature()), "9682b4444f443e25d549a817638cf15ed4db7e3c8de006f62e5d6a062f28f1f034d49314d0884e282028d9fcc4de5e4ab679920a69024c68eb4b71cfaa8d34ce01");
+}
+
 TEST(TronSigner, SignFreezeBalance) {
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();

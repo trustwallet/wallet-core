@@ -93,6 +93,14 @@ json valueJSON(const protocol::FreezeBalanceContract& contract) {
     return valueJSON;
 }
 
+json valueJSON(const protocol::FreezeBalanceV2Contract& contract) {
+    json valueJSON;
+    valueJSON["owner_address"] = hex(contract.owner_address());
+    valueJSON["frozen_balance"] = contract.frozen_balance();
+    valueJSON["resource"] = protocol::ResourceCode_Name(contract.resource());
+    return valueJSON;
+}
+
 json valueJSON(const protocol::UnfreezeBalanceContract& contract) {
     json valueJSON;
     valueJSON["owner_address"] = hex(contract.owner_address());
@@ -165,6 +173,12 @@ json parameterJSON(const google::protobuf::Any& parameter, const protocol::Trans
     }
     case protocol::Transaction::Contract::FreezeBalanceContract: {
         protocol::FreezeBalanceContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::FreezeBalanceV2Contract: {
+        protocol::FreezeBalanceV2Contract contract;
         parameter.UnpackTo(&contract);
         paramJSON["value"] = valueJSON(contract);
         break;

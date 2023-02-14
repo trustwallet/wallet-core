@@ -63,6 +63,18 @@ message FreezeBalanceContract {
     string receiver_address = 15;
 }
 
+// Freeze balance
+message FreezeBalanceV2Contract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+
+    // Amount of TRX to be staked, unit is sun, data type is uint256
+    int64 frozen_balance = 2;
+
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 3;
+}
+
 // Unfreeze balance
 message UnfreezeBalanceContract {
     // Sender address
@@ -185,6 +197,7 @@ message Transaction {
         VoteWitnessContract vote_witness = 17;
         TriggerSmartContract trigger_smart_contract = 18;
         TransferTRC20Contract transfer_trc20_contract = 19;
+        FreezeBalanceV2Contract freeze_balance_v2 = 20;
     }
 }
 

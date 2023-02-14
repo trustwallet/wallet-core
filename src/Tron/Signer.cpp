@@ -70,6 +70,20 @@ protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& 
     return internal;
 }
 
+protocol::FreezeBalanceV2Contract to_internal(const Proto::FreezeBalanceV2Contract& freezeContract) {
+    auto internal = protocol::FreezeBalanceV2Contract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(freezeContract.owner_address());
+
+    protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_frozen_balance(freezeContract.frozen_balance());
+
+    return internal;
+}
+
 protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContract& unfreezeContract) {
     auto internal = protocol::UnfreezeBalanceContract();
     auto resource = protocol::ResourceCode();
@@ -226,6 +240,14 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceContract);
 
         auto freeze_balance = to_internal(input.transaction().freeze_balance());
+        google::protobuf::Any any;
+        any.PackFrom(freeze_balance);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_freeze_balance_v2()) {
+        auto* contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceV2Contract);
+
+        auto freeze_balance = to_internal(input.transaction().freeze_balance_v2());
         google::protobuf::Any any;
         any.PackFrom(freeze_balance);
         *contract->mutable_parameter() = any;
