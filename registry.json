@@ -1574,7 +1574,7 @@
   },
   {
     "id": "thundertoken",
-    "name": "Thunder Token",
+    "name": "ThunderCore",
     "coinId": 1001,
     "symbol": "TT",
     "decimals": 18,
