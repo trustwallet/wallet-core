@@ -30,5 +30,5 @@ TEST(TWThunderTokenCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://scan.thundercore.com/transactions/t123");
     assertStringsEqual(accUrl, "https://scan.thundercore.com/address/a12");
     assertStringsEqual(id, "thundertoken");
-    assertStringsEqual(name, "Thunder Token");
+    assertStringsEqual(name, "ThunderCore");
 }
