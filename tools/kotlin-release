@@ -10,7 +10,7 @@ echo "Building $version"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 
 pushd kotlin
-./gradlew :wallet-core-kotlin:generateFiles
+./gradlew :wallet-core-kotlin:generateProtos
 ./gradlew :wallet-core-kotlin:assemble :wallet-core-kotlin:publish -Pversion="$version"
 popd
 
