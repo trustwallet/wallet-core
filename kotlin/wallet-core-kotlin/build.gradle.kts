@@ -6,7 +6,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("convention.maven-publish")
-    id("convention.file-generation")
+    id("convention.proto-generation")
 }
 
 kotlin {
@@ -71,8 +71,9 @@ kotlin {
     nativeTargets.forEach { nativeTarget ->
         nativeTarget.apply {
             val main by compilations.getting
-            val walletCore by main.cinterops.creating {
-                includeDirs.allHeaders(rootDir.parentFile.resolve("include/TrustWalletCore"))
+            main.cinterops.create("WalletCore") {
+                packageName = "com.trustwallet.core"
+                headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
             }
         }
     }
