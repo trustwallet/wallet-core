@@ -110,6 +110,40 @@ json valueJSON(const protocol::UnfreezeBalanceContract& contract) {
     return valueJSON;
 }
 
+json valueJSON(const protocol::UnfreezeBalanceV2Contract& contract) {
+    json valueJSON;
+    valueJSON["owner_address"] = hex(contract.owner_address());
+    valueJSON["resource"] = protocol::ResourceCode_Name(contract.resource());
+    valueJSON["unfreeze_balance"] = contract.unfreeze_balance();
+
+    return valueJSON;
+}
+
+json valueJSON(const protocol::DelegateResourceContract& contract) {
+    json valueJSON;
+    valueJSON["owner_address"] = hex(contract.owner_address());
+    valueJSON["receiver_address"] = hex(contract.receiver_address());
+    valueJSON["resource"] = protocol::ResourceCode_Name(contract.resource());
+    valueJSON["balance"] = contract.balance();
+    valueJSON["lock"] = contract.lock();
+    return valueJSON;
+}
+
+json valueJSON(const protocol::UnDelegateResourceContract& contract) {
+    json valueJSON;
+    valueJSON["owner_address"] = hex(contract.owner_address());
+    valueJSON["receiver_address"] = hex(contract.receiver_address());
+    valueJSON["resource"] = protocol::ResourceCode_Name(contract.resource());
+    valueJSON["balance"] = contract.balance();
+    return valueJSON;
+}
+
+json valueJSON(const protocol::WithdrawExpireUnfreezeContract& contract) {
+    json valueJSON;
+    valueJSON["owner_address"] = hex(contract.owner_address());
+    return valueJSON;
+}
+
 json valueJSON(const protocol::WithdrawBalanceContract& contract) {
     json valueJSON;
     valueJSON["owner_address"] = hex(contract.owner_address());
@@ -185,6 +219,30 @@ json parameterJSON(const google::protobuf::Any& parameter, const protocol::Trans
     }
     case protocol::Transaction::Contract::UnfreezeBalanceContract: {
         protocol::UnfreezeBalanceContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::UnfreezeBalanceV2Contract: {
+        protocol::UnfreezeBalanceV2Contract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::WithdrawExpireUnfreezeContract: {
+        protocol::WithdrawExpireUnfreezeContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::DelegateResourceContract: {
+        protocol::DelegateResourceContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::UnDelegateResourceContract: {
+        protocol::UnDelegateResourceContract contract;
         parameter.UnpackTo(&contract);
         paramJSON["value"] = valueJSON(contract);
         break;
