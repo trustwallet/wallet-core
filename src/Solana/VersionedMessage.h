@@ -8,9 +8,12 @@
 
 #include "Solana/V0Message.h"
 #include "Solana/LegacyMessage.h"
+#include "Solana/MessageHeader.h"
 
 namespace TW::Solana {
-    using VersionnedMessage = std::variant<V0Message, LegacyMessage>;
+    using VersionedMessage = std::variant<V0Message, LegacyMessage>;
 
-    Data serialize(const VersionnedMessage& message);
+    Data serialize(const VersionedMessage& message);
+    MessageHeader header(const VersionedMessage& message);
+    std::vector<Address> accountKeys(const VersionedMessage& message);
 }

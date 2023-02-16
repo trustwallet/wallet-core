@@ -10,8 +10,8 @@
 
 namespace TW::Solana {
 
-Data serialize(const VersionnedMessage& message) {
-    auto visit_functor = [](const VersionnedMessage& message) -> Data {
+Data serialize(const VersionedMessage& message) {
+    auto visit_functor = [](const VersionedMessage& message) -> Data {
         if (auto* msg = std::get_if<V0Message>(&message); msg) {
             Data out;
             append(out, MESSAGE_VERSION_PREFIX);
@@ -20,6 +20,34 @@ Data serialize(const VersionnedMessage& message) {
             return out;
         } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); msg) {
             return legacyMsg->serialize();
+        } else {
+            return {};
+        }
+    };
+
+    return std::visit(visit_functor, message);
+}
+
+MessageHeader header(const VersionedMessage& message) {
+    auto visit_functor = [](const VersionedMessage& message) -> MessageHeader {
+        if (auto* msg = std::get_if<V0Message>(&message); msg) {
+            return msg->msg.header;
+        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); msg) {
+            return legacyMsg->header;
+        } else {
+            return {};
+        }
+    };
+
+    return std::visit(visit_functor, message);
+}
+
+std::vector<Address> accountKeys(const VersionedMessage& message) {
+    auto visit_functor = [](const VersionedMessage& message) -> std::vector<Address> {
+        if (auto* msg = std::get_if<V0Message>(&message); msg) {
+            return msg->msg.accountKeys;
+        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); msg) {
+            return legacyMsg->accountKeys;
         } else {
             return {};
         }
