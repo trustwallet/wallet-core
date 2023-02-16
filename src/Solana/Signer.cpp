@@ -167,7 +167,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     default:
         assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
-    auto transaction = VersionedTransaction(VersionedMessage(message));
+    auto msg = VersionedMessage(message);
+    if (input.v0_msg()) {
+        msg = VersionedMessage(V0Message{.msg = message});
+    }
+    auto transaction = VersionedTransaction(msg);
 
     sign(signerKeys, transaction);
 

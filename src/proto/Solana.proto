@@ -138,17 +138,19 @@ message SigningInput {
     // Relatively recent block hash
     string recent_blockhash = 2;
 
+    bool v0_msg = 3;
+
     // Payload message
     oneof transaction_type {
-        Transfer transfer_transaction = 3;
-        DelegateStake delegate_stake_transaction = 4;
-        DeactivateStake deactivate_stake_transaction = 5;
-        DeactivateAllStake deactivate_all_stake_transaction = 6;
-        WithdrawStake withdraw_transaction = 7;
-        WithdrawAllStake withdraw_all_transaction = 8;
-        CreateTokenAccount create_token_account_transaction = 9;
-        TokenTransfer token_transfer_transaction = 10;
-        CreateAndTransferToken create_and_transfer_token_transaction = 11;
+        Transfer transfer_transaction = 4;
+        DelegateStake delegate_stake_transaction = 5;
+        DeactivateStake deactivate_stake_transaction = 6;
+        DeactivateAllStake deactivate_all_stake_transaction = 7;
+        WithdrawStake withdraw_transaction = 8;
+        WithdrawAllStake withdraw_all_transaction = 9;
+        CreateTokenAccount create_token_account_transaction = 10;
+        TokenTransfer token_transfer_transaction = 11;
+        CreateAndTransferToken create_and_transfer_token_transaction = 12;
     }
 }
 
