@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <variant>
 #include "Solana/V0Message.h"
 #include "Solana/LegacyMessage.h"
 #include "Solana/MessageHeader.h"
