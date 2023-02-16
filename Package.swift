@@ -12,8 +12,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "WalletCore",
-            url: "https://github.com/trustwallet/wallet-core/releases/download/3.2.1/WalletCore.xcframework.zip",
-            checksum: "b7f9fe6b5aa1fd216d43f676400c9db6999c6494e0120db73b2afb49dcc1f013"
+            url: "https://github.com/GeoDB-Limited/wallet-core-odin/releases/download/3.0.5/WalletCoreCommon.xcframework.zip",
         ),
         .binaryTarget(
             name: "SwiftProtobuf",
