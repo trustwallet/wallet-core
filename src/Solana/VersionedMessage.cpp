@@ -18,7 +18,7 @@ Data serialize(const VersionedMessage& message) {
             append(out, msg->msg.serialize());
             append(out, shortVecLength<AddressLookupTable>(msg->addressTableLookups));
             return out;
-        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); msg) {
+        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); legacyMsg) {
             return legacyMsg->serialize();
         } else {
             return {};
@@ -32,7 +32,7 @@ MessageHeader header(const VersionedMessage& message) {
     auto visit_functor = [](const VersionedMessage& message) -> MessageHeader {
         if (auto* msg = std::get_if<V0Message>(&message); msg) {
             return msg->msg.header;
-        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); msg) {
+        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); legacyMsg) {
             return legacyMsg->header;
         } else {
             return {};
@@ -46,7 +46,7 @@ std::vector<Address> accountKeys(const VersionedMessage& message) {
     auto visit_functor = [](const VersionedMessage& message) -> std::vector<Address> {
         if (auto* msg = std::get_if<V0Message>(&message); msg) {
             return msg->msg.accountKeys;
-        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); msg) {
+        } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); legacyMsg) {
             return legacyMsg->accountKeys;
         } else {
             return {};
@@ -54,6 +54,14 @@ std::vector<Address> accountKeys(const VersionedMessage& message) {
     };
 
     return std::visit(visit_functor, message);
+}
+
+void updateRecentHash(VersionedMessage& message, const Hash& recentHash) {
+    if (auto* msg = std::get_if<V0Message>(&message); msg) {
+        msg->msg.mRecentBlockHash = recentHash;
+    } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); legacyMsg) {
+        legacyMsg->mRecentBlockHash = recentHash;
+    }
 }
 
 } // namespace TW::Solana

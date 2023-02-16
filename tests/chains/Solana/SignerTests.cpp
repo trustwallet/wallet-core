@@ -93,7 +93,7 @@ TEST(SolanaSigner, SingleSignTransaction) {
     const auto from = Address(publicKey);
     auto to = Address("EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
@@ -133,7 +133,7 @@ TEST(SolanaSigner, SignTransactionToSelf) {
     const auto from = Address(publicKey);
     auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
@@ -185,7 +185,7 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     message.instructions = instructions;
     message.compileInstructions();
 
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     // Sign order should not matter
@@ -221,7 +221,7 @@ TEST(SolanaSigner, SignUpdateBlockhash) {
     const auto from = Address(publicKey);
     auto to = Address("4iSnyfDKaejniaPc2pBBckwQqV3mDS93go15NdxWJq2y");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
@@ -283,7 +283,7 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
     auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
 
     auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -311,7 +311,7 @@ TEST(SolanaSigner, SignDelegateStakeV1) {
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
     auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -338,7 +338,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
     auto message = LegacyMessage::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -368,7 +368,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
     Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
 
     auto message = LegacyMessage::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -396,7 +396,7 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
 
     auto message = LegacyMessage::createTokenTransfer(signer, token,
                                                 senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);

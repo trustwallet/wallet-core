@@ -8,6 +8,7 @@
 #include "Address.h"
 #include "Program.h"
 #include "Solana/Encoding.h"
+#include "Solana/VersionedTransaction.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -15,7 +16,7 @@
 
 namespace TW::Solana {
 
-void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction) {
+void Signer::sign(const std::vector<PrivateKey>& privateKeys, VersionedTransaction& transaction) {
     for (auto privateKey : privateKeys) {
         auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
         auto index = transaction.getAccountIndex(address);
@@ -166,7 +167,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     default:
         assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     sign(signerKeys, transaction);
 
@@ -181,8 +182,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
-                                 Transaction& transaction, Solana::Hash& recentBlockhash) {
-    transaction.message.mRecentBlockHash = recentBlockhash;
+                                 VersionedTransaction& transaction, Solana::Hash& recentBlockhash) {
+    updateRecentHash(transaction.message, recentBlockhash);
     Signer::sign(privateKeys, transaction);
 }
 
