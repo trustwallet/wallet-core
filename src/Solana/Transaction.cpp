@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
+#include "Solana/Encoding.h"
 
 #include "Hash.h"
 #include "Signer.h"
@@ -27,31 +28,7 @@ std::string Transaction::serialize() const {
 }
 
 Data Transaction::messageData() const {
-    Data buffer;
-
-    buffer.push_back(this->message.header.numRequiredSignatures);
-    buffer.push_back(this->message.header.numCreditOnlySignedAccounts);
-    buffer.push_back(this->message.header.numCreditOnlyUnsignedAccounts);
-    append(buffer, shortVecLength<Address>(this->message.accountKeys));
-    for (auto account_key : this->message.accountKeys) {
-        Data account_key_vec(account_key.bytes.begin(), account_key.bytes.end());
-        append(buffer, account_key_vec);
-    }
-    Data recentBlockhash(this->message.recentBlockhash.bytes.begin(),
-                         this->message.recentBlockhash.bytes.end());
-    append(buffer, recentBlockhash);
-
-    // apppend compiled instructions
-    append(buffer, shortVecLength<CompiledInstruction>(message.compiledInstructions));
-    for (auto instruction : message.compiledInstructions) {
-        buffer.push_back(instruction.programIdIndex);
-        append(buffer, shortVecLength<uint8_t>(instruction.accounts));
-        append(buffer, instruction.accounts);
-        append(buffer, shortVecLength<uint8_t>(instruction.data));
-        append(buffer, instruction.data);
-    }
-
-    return buffer;
+    return this->message.serialize();
 }
 
 uint8_t Transaction::getAccountIndex(Address publicKey) {

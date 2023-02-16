@@ -7,6 +7,7 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Program.h"
+#include "Solana/Encoding.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -181,7 +182,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
                                  Transaction& transaction, Solana::Hash& recentBlockhash) {
-    transaction.message.recentBlockhash = recentBlockhash;
+    transaction.message.mRecentBlockHash = recentBlockhash;
     Signer::sign(privateKeys, transaction);
 }
 

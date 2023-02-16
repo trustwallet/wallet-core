@@ -181,7 +181,7 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     LegacyMessage message;
     message.header = header;
     message.accountKeys = accountKeys;
-    message.recentBlockhash = recentBlockhash;
+    message.mRecentBlockHash = recentBlockhash;
     message.instructions = instructions;
     message.compileInstructions();
 

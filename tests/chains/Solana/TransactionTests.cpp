@@ -130,7 +130,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.accountKeys[4].string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
     EXPECT_EQ(message.accountKeys[5].string(), "SysvarRent111111111111111111111111111111111");
     EXPECT_EQ(message.accountKeys[6].string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    EXPECT_EQ(Base58::bitcoin.encode(message.recentBlockhash.bytes), "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    EXPECT_EQ(Base58::bitcoin.encode(message.mRecentBlockHash.bytes), "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
     ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
     ASSERT_EQ(message.instructions[0].accounts.size(), 7ul);

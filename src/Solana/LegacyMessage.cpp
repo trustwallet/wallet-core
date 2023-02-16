@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Solana/LegacyMessage.h"
+#include "Solana/Encoding.h"
 
 namespace TW::Solana {
 void LegacyMessage::addAccount(const AccountMeta& account) {
@@ -30,6 +31,34 @@ void LegacyMessage::addAccountKeys(const Address& account) {
     if (std::find(accountKeys.begin(), accountKeys.end(), account) == accountKeys.end()) {
         accountKeys.push_back(account);
     }
+}
+
+Data LegacyMessage::serialize() const {
+    Data buffer;
+
+    buffer.push_back(this->header.numRequiredSignatures);
+    buffer.push_back(this->header.numCreditOnlySignedAccounts);
+    buffer.push_back(this->header.numCreditOnlyUnsignedAccounts);
+    append(buffer, shortVecLength<Address>(this->accountKeys));
+    for (auto account_key : this->accountKeys) {
+        Data account_key_vec(account_key.bytes.begin(), account_key.bytes.end());
+        append(buffer, account_key_vec);
+    }
+    Data recentBlockhash(this->mRecentBlockHash.bytes.begin(),
+                         this->mRecentBlockHash.bytes.end());
+    append(buffer, recentBlockhash);
+
+    // apppend compiled instructions
+    append(buffer, shortVecLength<CompiledInstruction>(compiledInstructions));
+    for (auto instruction : compiledInstructions) {
+        buffer.push_back(instruction.programIdIndex);
+        append(buffer, shortVecLength<uint8_t>(instruction.accounts));
+        append(buffer, instruction.accounts);
+        append(buffer, shortVecLength<uint8_t>(instruction.data));
+        append(buffer, instruction.data);
+    }
+
+    return buffer;
 }
 
 void LegacyMessage::compileAccounts() {

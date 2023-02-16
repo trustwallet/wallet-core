@@ -24,7 +24,7 @@ public:
     // All the account keys used by this transaction
     std::vector<Address> accountKeys;
     // The id of a recent ledger entry.
-    Hash recentBlockhash;
+    Hash mRecentBlockHash;
     // Programs that will be executed in sequence and committed in one atomic
     // transaction if all succeed.
     std::vector<Instruction> instructions;
@@ -36,10 +36,10 @@ public:
     std::vector<CompiledInstruction> compiledInstructions;
 
     LegacyMessage()
-        : recentBlockhash(NULL_ID_ADDRESS){};
+        : mRecentBlockHash(NULL_ID_ADDRESS){};
 
-    LegacyMessage(Hash recentBlockhash, const std::vector<Instruction>& instructions)
-        : recentBlockhash(recentBlockhash)
+    LegacyMessage(Hash recentBlockHash, const std::vector<Instruction>& instructions)
+        : mRecentBlockHash(recentBlockHash)
         , instructions(instructions) {
         compileAccounts();
     }
@@ -53,6 +53,9 @@ public:
     // compile the instructions; replace instruction accounts with indices
     void compileInstructions();
 
+    // Serialize to msg data
+    Data serialize() const;
+
     static void appendReferences(std::vector<AccountMeta>& accountMetas, const std::vector<Address>& references) {
         for (auto&& reference : references) {
             accountMetas.emplace_back(reference, false, true);
@@ -60,7 +63,7 @@ public:
     }
 
     // This constructor creates a default single-signer Transfer message
-    static LegacyMessage createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash,
+    static LegacyMessage createTransfer(const Address& from, const Address& to, uint64_t value, Hash mRecentBlockHash,
                                   std::string memo = "", std::vector<Address> references = {}) {
         std::vector<Instruction> instructions;
         if (memo.length() > 0) {
@@ -73,12 +76,12 @@ public:
         };
         appendReferences(accountMetas, references);
         instructions.push_back(Instruction::createTransfer(accountMetas, value));
-        return LegacyMessage(recentBlockhash, instructions);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a create_account_with_seed_and_delegate_stake message
     // see delegate_stake() solana/programs/stake/src/stake_instruction.rs
-    static LegacyMessage createStake(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value, Hash recentBlockhash) {
+    static LegacyMessage createStake(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value, Hash mRecentBlockHash) {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto stakeConfigId = Address(STAKE_CONFIG_ID_ADDRESS);
@@ -87,7 +90,7 @@ public:
         std::vector<Instruction> instructions;
         instructions.reserve(3);
         // create_account_with_seed instruction
-        Address seed = Address(data(recentBlockhash.bytes.data(), recentBlockhash.bytes.size()));
+        Address seed = Address(data(mRecentBlockHash.bytes.data(), mRecentBlockHash.bytes.size()));
         auto createAccountInstruction = Instruction::createAccountWithSeed(std::vector<AccountMeta>{
                                                                                AccountMeta(signer, true, true),
                                                                                AccountMeta(stakeAddress, false, false),
@@ -112,22 +115,22 @@ public:
                                                                 AccountMeta(signer, true, true),                // 5. `[SIGNER]` Stake authority
                                                             });
         instructions.push_back(delegateInstruction);
-        return LegacyMessage(recentBlockhash, instructions);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a deactivate_stake message
-    static LegacyMessage createStakeDeactivate(const Address& signer, const Address& stakeAddress, Hash recentBlockhash) {
+    static LegacyMessage createStakeDeactivate(const Address& signer, const Address& stakeAddress, Hash mRecentBlockHash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto instruction = Instruction::createStake(Deactivate, std::vector<AccountMeta>{
                                                                     AccountMeta(stakeAddress, false, false), // 0. `[WRITE]` Delegated stake account
                                                                     AccountMeta(sysvarClockId, false, true), // 1. `[]` Clock sysvar
                                                                     AccountMeta(signer, true, false),        // 2. `[SIGNER]` Stake authority
                                                                 });
-        return LegacyMessage(recentBlockhash, {instruction});
+        return LegacyMessage(mRecentBlockHash, {instruction});
     }
 
     // This constructor creates a deactivate_stake message with multiple stake accounts
-    static LegacyMessage createStakeDeactivateAll(const Address& signer, const std::vector<Address>& stakeAddresses, Hash recentBlockhash) {
+    static LegacyMessage createStakeDeactivateAll(const Address& signer, const std::vector<Address>& stakeAddresses, Hash mRecentBlockHash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         std::vector<Instruction> instructions;
         for (auto& address : stakeAddresses) {
@@ -138,11 +141,11 @@ public:
                                                                     });
             instructions.push_back(instruction);
         }
-        return LegacyMessage(recentBlockhash, instructions);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a withdraw message, with the signer as the default recipient
-    static LegacyMessage createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, Hash recentBlockhash) {
+    static LegacyMessage createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, Hash mRecentBlockHash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction::createStakeWithdraw(std::vector<AccountMeta>{
@@ -153,11 +156,11 @@ public:
                                                                 AccountMeta(signer, true, false),               // 4. `[SIGNER]` Withdraw authority
                                                             },
                                                             value);
-        return LegacyMessage(recentBlockhash, {instruction});
+        return LegacyMessage(mRecentBlockHash, {instruction});
     }
 
     // This constructor creates a withdraw message, with multiple stake accounts
-    static LegacyMessage createStakeWithdrawAll(const Address& signer, const std::vector<std::pair<Address, uint64_t>>& stakes, Hash recentBlockhash) {
+    static LegacyMessage createStakeWithdrawAll(const Address& signer, const std::vector<std::pair<Address, uint64_t>>& stakes, Hash mRecentBlockHash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         std::vector<Instruction> instructions;
@@ -172,12 +175,12 @@ public:
                                                                 stake.second);
             instructions.push_back(instruction);
         }
-        return LegacyMessage(recentBlockhash, instructions);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a createAccount token message
     // see create_associated_token_account() solana-program-library/associated-token-account/program/src/lib.rs
-    static LegacyMessage createTokenCreateAccount(const Address& signer, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash) {
+    static LegacyMessage createTokenCreateAccount(const Address& signer, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Hash mRecentBlockHash) {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
@@ -190,13 +193,13 @@ public:
             AccountMeta(tokenProgramId, false, true),
             AccountMeta(sysvarRentId, false, true),
         });
-        return LegacyMessage(recentBlockhash, {instruction});
+        return LegacyMessage(mRecentBlockHash, {instruction});
     }
 
     // This constructor creates a transfer token message.
     // see transfer_checked() solana-program-library/token/program/src/instruction.rs
     static LegacyMessage createTokenTransfer(const Address& signer, const Address& tokenMintAddress,
-                                       const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash,
+                                       const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash mRecentBlockHash,
                                        std::string memo = "", std::vector<Address> references = {}) {
         std::vector<Instruction> instructions;
         if (memo.length() > 0) {
@@ -211,12 +214,12 @@ public:
         };
         appendReferences(accountMetas, references);
         instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
-        return LegacyMessage(recentBlockhash, instructions);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
     static LegacyMessage createTokenCreateAndTransfer(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
-                                                const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash,
+                                                const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash mRecentBlockHash,
                                                 std::string memo = "", std::vector<Address> references = {}) {
         const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
@@ -244,7 +247,7 @@ public:
         };
         appendReferences(accountMetas, references);
         instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
-        return LegacyMessage(recentBlockhash, instructions);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 };
 
