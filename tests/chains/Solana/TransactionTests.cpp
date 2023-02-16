@@ -85,7 +85,7 @@ TEST(SolanaTransaction, StakeSerializeTransactionV2) {
     auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
     Signature signature(
         "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
@@ -102,7 +102,7 @@ TEST(SolanaTransaction, StakeSerializeTransactionV1) {
     auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
     Signature signature(
         "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
@@ -118,7 +118,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
-    auto message = Message::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
+    auto message = LegacyMessage::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 5);
@@ -160,7 +160,7 @@ TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     uint64_t amount = 4000;
     uint8_t decimals = 6;
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
-    auto message = Message::createTokenTransfer(signer, token, senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
+    auto message = LegacyMessage::createTokenTransfer(signer, token, senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);

@@ -7,7 +7,7 @@
 #include "Solana/LegacyMessage.h"
 
 namespace TW::Solana {
-void Message::addAccount(const AccountMeta& account) {
+void LegacyMessage::addAccount(const AccountMeta& account) {
     bool inSigned = (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) != signedAccounts.end());
     bool inUnsigned = (std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) != unsignedAccounts.end());
     bool inReadOnly = (std::find(readOnlyAccounts.begin(), readOnlyAccounts.end(), account.account) != readOnlyAccounts.end());
@@ -26,13 +26,13 @@ void Message::addAccount(const AccountMeta& account) {
     }
 }
 
-void Message::addAccountKeys(const Address& account) {
+void LegacyMessage::addAccountKeys(const Address& account) {
     if (std::find(accountKeys.begin(), accountKeys.end(), account) == accountKeys.end()) {
         accountKeys.push_back(account);
     }
 }
 
-void Message::compileAccounts() {
+void LegacyMessage::compileAccounts() {
     for (auto& instr : instructions) {
         for (auto& address : instr.accounts) {
             addAccount(address);
@@ -63,7 +63,7 @@ void Message::compileAccounts() {
     compileInstructions();
 }
 
-void Message::compileInstructions() {
+void LegacyMessage::compileInstructions() {
     compiledInstructions.clear();
     for (auto instruction : instructions) {
         compiledInstructions.emplace_back(CompiledInstruction(instruction, accountKeys));

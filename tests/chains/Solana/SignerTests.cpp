@@ -178,7 +178,7 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     MessageHeader header = {2, 0, 1};
     std::vector<Address> accountKeys = {address0, address1, programId};
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    Message message;
+    LegacyMessage message;
     message.header = header;
     message.accountKeys = accountKeys;
     message.recentBlockhash = recentBlockhash;
@@ -282,7 +282,7 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
 
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -310,7 +310,7 @@ TEST(SolanaSigner, SignDelegateStakeV1) {
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -337,7 +337,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
+    auto message = LegacyMessage::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -367,7 +367,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
     auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
     Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
 
-    auto message = Message::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
+    auto message = LegacyMessage::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -394,7 +394,7 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     uint8_t decimals = 6;
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
-    auto message = Message::createTokenTransfer(signer, token,
+    auto message = LegacyMessage::createTokenTransfer(signer, token,
                                                 senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     auto transaction = Transaction(message);
 

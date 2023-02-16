@@ -48,15 +48,15 @@ class Transaction {
     // Signatures
     std::vector<Signature> signatures;
     // The message to sign
-    Message message;
+    LegacyMessage message;
 
-    Transaction(const Message& message) : message(message) {
+    Transaction(const LegacyMessage& message) : message(message) {
         this->signatures.resize(message.header.numRequiredSignatures, Signature(defaultSignature));
     }
 
     // Default basic transfer transaction
     Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "", std::vector<Address> references = {})
-        : message(Message::createTransfer(from, to, value, recentBlockhash, memo, references)) {
+        : message(LegacyMessage::createTransfer(from, to, value, recentBlockhash, memo, references)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 
