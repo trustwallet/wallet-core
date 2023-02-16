@@ -11,4 +11,6 @@
 
 namespace TW::Solana {
     using VersionnedMessage = std::variant<V0Message, LegacyMessage>;
+
+    Data serialize(const VersionnedMessage& message);
 }
