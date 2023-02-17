@@ -17,5 +17,5 @@ namespace TW::Solana {
     Data serialize(const VersionedMessage& message);
     MessageHeader header(const VersionedMessage& message);
     std::vector<Address> accountKeys(const VersionedMessage& message);
-    void updateRecentHash(VersionedMessage& message, const Hash& recentHash);
+    void updateRecentHash(VersionedMessage& message, const Data& recentHash);
 }

@@ -44,9 +44,7 @@ Data LegacyMessage::serialize() const {
         Data account_key_vec(account_key.bytes.begin(), account_key.bytes.end());
         append(buffer, account_key_vec);
     }
-    Data recentBlockhash(this->mRecentBlockHash.bytes.begin(),
-                         this->mRecentBlockHash.bytes.end());
-    append(buffer, recentBlockhash);
+    append(buffer, mRecentBlockHash);
 
     // apppend compiled instructions
     append(buffer, shortVecLength<CompiledInstruction>(compiledInstructions));

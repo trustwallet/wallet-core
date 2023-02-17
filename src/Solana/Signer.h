@@ -24,7 +24,7 @@ class Signer {
     static std::string signJSON(const std::string& json, const Data& key);
 
     static void signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
-                                    VersionedTransaction& transaction, Solana::Hash& recentBlockhash);
+                                    VersionedTransaction& transaction, Data& recentBlockhash);
     static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);
 
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;

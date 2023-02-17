@@ -56,7 +56,7 @@ std::vector<Address> accountKeys(const VersionedMessage& message) {
     return std::visit(visit_functor, message);
 }
 
-void updateRecentHash(VersionedMessage& message, const Hash& recentHash) {
+void updateRecentHash(VersionedMessage& message, const Data& recentHash) {
     if (auto* msg = std::get_if<V0Message>(&message); msg) {
         msg->msg.mRecentBlockHash = recentHash;
     } else if (auto* legacyMsg = std::get_if<LegacyMessage>(&message); legacyMsg) {

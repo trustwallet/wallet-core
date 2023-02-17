@@ -38,7 +38,7 @@ std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto blockhash = Solana::Hash(input.recent_blockhash());
+    auto blockhash = Base58::bitcoin.decode(input.recent_blockhash());
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     LegacyMessage message;
     std::vector<PrivateKey> signerKeys;
@@ -186,7 +186,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
-                                 VersionedTransaction& transaction, Solana::Hash& recentBlockhash) {
+                                 VersionedTransaction& transaction, Data& recentBlockhash) {
     updateRecentHash(transaction.message, recentBlockhash);
     Signer::sign(privateKeys, transaction);
 }

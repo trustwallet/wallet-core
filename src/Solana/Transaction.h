@@ -8,7 +8,6 @@
 
 #include "Solana/Address.h"
 #include "Solana/LegacyMessage.h"
-#include "Solana/Hash.h"
 #include "Solana/Signature.h"
 #include "Data.h"
 #include "BinaryCoding.h"
@@ -30,7 +29,7 @@ class Transaction {
     }
 
     // Default basic transfer transaction
-    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "", std::vector<Address> references = {})
+    Transaction(const Address& from, const Address& to, uint64_t value, Data recentBlockhash, std::string memo = "", std::vector<Address> references = {})
         : message(LegacyMessage::createTransfer(from, to, value, recentBlockhash, memo, references)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
