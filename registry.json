@@ -2126,8 +2126,8 @@
   {
     "id": "zksync",
     "name": "Zksync",
-    "displayName": "zkSync v2",
-    "coinId": 10000280,
+    "displayName": "zkSync Era",
+    "coinId": 10000324,
     "slip44": 60,
     "symbol": "ETH",
     "decimals": 18,
@@ -2139,18 +2139,18 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "280",
+    "chainId": "324",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://zksync2-testnet.zkscan.io",
+      "url": "https://explorer.zksync.io",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
       "url": "https://portal.zksync.io/",
       "source": "https://github.com/matter-labs/zksync",
-      "rpc": "https://zksync2-testnet.zksync.dev",
-      "documentation": "https://v2-docs.zksync.io"
+      "rpc": "https://zksync2-mainnet.zksync.io",
+      "documentation": "https://era.zksync.io/docs"
     }
   },
   {

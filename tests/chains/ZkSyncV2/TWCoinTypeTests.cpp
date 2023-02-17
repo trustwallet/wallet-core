@@ -16,21 +16,21 @@ TEST(TWZksyncCoinType, TWCoinType) {
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xb526861291c0335435e3c976e672a464b70762e54d7167409fb4f66e374ed708"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xae38d3ede1104d088b474da261d0eb4847952c3db24c21e820502f4c1b0c01f5"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x970978989a51790ee591b2a54f92c7cd9cdc2f88"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xeF86b2c8740518548ae449c4C3892B4be0475d8c"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "zksync");
-    assertStringsEqual(name, "zkSync v2");
+    assertStringsEqual(name, "zkSync Era");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "280");
-    assertStringsEqual(txUrl, "https://zksync2-testnet.zkscan.io/tx/0xb526861291c0335435e3c976e672a464b70762e54d7167409fb4f66e374ed708");
-    assertStringsEqual(accUrl, "https://zksync2-testnet.zkscan.io/address/0x970978989a51790ee591b2a54f92c7cd9cdc2f88");
+    assertStringsEqual(chainId, "324");
+    assertStringsEqual(txUrl, "https://explorer.zksync.io/tx/0xae38d3ede1104d088b474da261d0eb4847952c3db24c21e820502f4c1b0c01f5");
+    assertStringsEqual(accUrl, "https://explorer.zksync.io/address/0xeF86b2c8740518548ae449c4C3892B4be0475d8c");
 }
 
 } // namespace TW::TWZksync::tests
