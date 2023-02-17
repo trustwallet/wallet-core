@@ -13,10 +13,10 @@ struct MessageHeader {
     // valid. The signatures must match the first `numRequiredSignatures` of
     // `accountKeys`.
     uint8_t numRequiredSignatures = 0;
-    // The last numCreditOnlySignedAccounts of the signed keys are
-    // credit-only accounts.
-    uint8_t numCreditOnlySignedAccounts = 0;
-    // The last numCreditOnlyUnsignedAccounts of the unsigned keys are
-    // credit-only accounts.
-    uint8_t numCreditOnlyUnsignedAccounts = 0;
+    // The last numRequiredSignatures of the signed keys are
+    // read-only accounts.
+    uint8_t numReadOnlySignedAccounts = 0;
+    // The last numReadOnlyUnsignedAccounts of the unsigned keys are
+    // read-only accounts.
+    uint8_t numReadOnlyUnsignedAccounts = 0;
 };

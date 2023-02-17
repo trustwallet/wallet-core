@@ -120,8 +120,8 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     auto recentBlockhash = Base58::bitcoin.decode("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
     auto message = LegacyMessage::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
-    EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
-    EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 5);
+    EXPECT_EQ(message.header.numReadOnlySignedAccounts, 0);
+    EXPECT_EQ(message.header.numReadOnlyUnsignedAccounts, 5);
     ASSERT_EQ(message.accountKeys.size(), 7ul);
     EXPECT_EQ(message.accountKeys[0].string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     EXPECT_EQ(message.accountKeys[1].string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
@@ -162,8 +162,8 @@ TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     auto recentBlockhash = Base58::bitcoin.decode("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
     auto message = LegacyMessage::createTokenTransfer(signer, token, senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
-    EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
-    EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);
+    EXPECT_EQ(message.header.numReadOnlySignedAccounts, 0);
+    EXPECT_EQ(message.header.numReadOnlyUnsignedAccounts, 2);
     ASSERT_EQ(message.accountKeys.size(), 5ul);
     ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");

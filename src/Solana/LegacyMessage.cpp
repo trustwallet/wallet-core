@@ -37,8 +37,8 @@ Data LegacyMessage::serialize() const {
     Data buffer;
 
     buffer.push_back(this->header.numRequiredSignatures);
-    buffer.push_back(this->header.numCreditOnlySignedAccounts);
-    buffer.push_back(this->header.numCreditOnlyUnsignedAccounts);
+    buffer.push_back(this->header.numReadOnlySignedAccounts);
+    buffer.push_back(this->header.numReadOnlyUnsignedAccounts);
     append(buffer, shortVecLength<Address>(this->accountKeys));
     for (auto account_key : this->accountKeys) {
         Data account_key_vec(account_key.bytes.begin(), account_key.bytes.end());
