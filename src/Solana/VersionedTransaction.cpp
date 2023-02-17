@@ -23,11 +23,11 @@ std::string VersionedTransaction::serialize() const {
 }
 
 Data VersionedTransaction::messageData() const {
-    return TW::Solana::serialize(this->message);
+    return Solana::serialize(this->message);
 }
 
 uint8_t VersionedTransaction::getAccountIndex(Address publicKey) {
-    const auto accountKeys = TW::Solana::accountKeys(this->message);
+    const auto accountKeys = Solana::accountKeys(this->message);
     auto item = std::find(accountKeys.begin(), accountKeys.end(), publicKey);
     if (item == accountKeys.end()) {
         throw std::invalid_argument("publicKey not found in message.accountKeys");
