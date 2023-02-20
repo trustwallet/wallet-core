@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Solana/Address.h"
-#include "Solana/LegacyMessage.h"
+#include "Solana/VersionedMessage.h"
 #include "Solana/Signature.h"
 #include "Data.h"
 #include "BinaryCoding.h"
@@ -17,20 +17,20 @@
 
 namespace TW::Solana {
 
-class Transaction {
+class VersionedTransaction {
   public:
     // Signatures
     std::vector<Signature> signatures;
     // The message to sign
-    LegacyMessage message;
+    VersionedMessage message;
 
-    Transaction(const LegacyMessage& message) : message(message) {
-        this->signatures.resize(message.header.numRequiredSignatures, Signature(defaultSignature));
+    VersionedTransaction(const VersionedMessage& message) : message(message) {
+        this->signatures.resize(header(message).numRequiredSignatures, Signature(defaultSignature));
     }
 
     // Default basic transfer transaction
-    Transaction(const Address& from, const Address& to, uint64_t value, Data recentBlockhash, std::string memo = "", std::vector<Address> references = {})
-        : message(LegacyMessage::createTransfer(from, to, value, recentBlockhash, memo, references)) {
+    VersionedTransaction(const Address& from, const Address& to, uint64_t value, Data recentBlockhash, std::string memo = "", std::vector<Address> references = {})
+        : message(VersionedMessage(LegacyMessage::createTransfer(from, to, value, recentBlockhash, memo, references))) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 

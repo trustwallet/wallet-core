@@ -41,6 +41,24 @@ TEST(TWAnySignerSolana, SignTransfer) {
     ASSERT_EQ(output.unsigned_tx(), "87PYsiS4MUU1UqXrsDoCBmD5FcKsXhwEBD8hc4zbq78yePu7bLENmbnmjmVbsj4VvaxnZhy4bERndPFzjSRH5WpwKwMLSCKvn9eSDmPESNcdkqne2UdMfWiFoq8ZeQBnF9h98dP8GM9kfzWPjvLmhjwuwA1E2k5WCtfii7LKQ34v6AtmFQGZqgdKiNqygP7ZKusHWGT8ZkTZ");
 }
 
+TEST(TWAnySignerSolana, SignV0Transfer) {
+    // Successfully broadcasted: https://explorer.solana.com/tx/4ffBzXxLPYEEdCYpQGETkCTCCsH6iTdmKzwUZXZZgFemdhRpxQwboguFFoKCeGF3SsZPzuwwE7LbRwLgJbsyRqyP?cluster=testnet
+    auto privateKey = parse_hex("833a053c59e78138a3ed090459bc6743cca6a9cbc2809a7bf5dbc7939b8775c8");
+    auto input = Proto::SigningInput();
+
+    auto& message = *input.mutable_transfer_transaction();
+    message.set_recipient("6pEfiZjMycJY4VA2FtAbKgYvRwzXDpxY58Xp4b7FQCz9");
+    message.set_value((uint64_t)5000L);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("HxKwWFTHixCu8aw35J1uxAX6yUhLHkFCdJJdK4y98Gyj");
+    input.set_v0_msg(true);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    ASSERT_EQ(output.encoded(), "6NijVxwQoDjqt6A41HXCK9kXwNDp48uLgvRyE8uz6NY5dEzaEDLzjzuMnc5TGatHZZUXehKrzUGzbg9jPSdn6pVsMc9TXNH6JGe5RJLmHwWey3MC1p8Hs2zhjw5P439P57NToatraDX9ZwvBtK4EzZzRjWbyGdicheTPjeYKCzvPCLxDkTFtPCM9VZGGXSN2Bne92NLDvf6ntNm5pxsPkZGxPe4w9Eq26gkE83hZyrYXKaiDh8TbqbHatSkw");
+}
+
 TEST(TWAnySignerSolana, SignTransferToSelf) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Proto::SigningInput();

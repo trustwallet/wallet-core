@@ -92,8 +92,8 @@ TEST(SolanaSigner, SingleSignTransaction) {
 
     const auto from = Address(publicKey);
     auto to = Address("EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
@@ -132,8 +132,8 @@ TEST(SolanaSigner, SignTransactionToSelf) {
 
     const auto from = Address(publicKey);
     auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
@@ -177,15 +177,15 @@ TEST(SolanaSigner, MultipleSignTransaction) {
 
     MessageHeader header = {2, 0, 1};
     std::vector<Address> accountKeys = {address0, address1, programId};
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    Message message;
+    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    LegacyMessage message;
     message.header = header;
     message.accountKeys = accountKeys;
-    message.recentBlockhash = recentBlockhash;
+    message.mRecentBlockHash = recentBlockhash;
     message.instructions = instructions;
     message.compileInstructions();
 
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     // Sign order should not matter
@@ -220,14 +220,14 @@ TEST(SolanaSigner, SignUpdateBlockhash) {
 
     const auto from = Address(publicKey);
     auto to = Address("4iSnyfDKaejniaPc2pBBckwQqV3mDS93go15NdxWJq2y");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
     Signer::sign(signerKeys, transaction);
 
-    Solana::Hash newBlockhash("GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq");
+    auto newBlockhash = Base58::bitcoin.decode("GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq");
     Signer::signUpdateBlockhash(signerKeys, transaction, newBlockhash);
 
     std::vector<Signature> expectedSignatures;
@@ -279,11 +279,11 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
 
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
 
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -307,11 +307,11 @@ TEST(SolanaSigner, SignDelegateStakeV1) {
 
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -335,10 +335,10 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
 
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    auto recentBlockhash = Base58::bitcoin.decode("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto message = LegacyMessage::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -365,10 +365,10 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
     auto otherMainAddress = Address("3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft");
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
-    Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
+    auto recentBlockhash = Base58::bitcoin.decode("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
 
-    auto message = Message::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto message = LegacyMessage::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
@@ -392,11 +392,11 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     auto recipientTokenAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
     uint64_t amount = 4000;
     uint8_t decimals = 6;
-    Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
+    auto recentBlockhash = Base58::bitcoin.decode("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
-    auto message = Message::createTokenTransfer(signer, token,
+    auto message = LegacyMessage::createTokenTransfer(signer, token,
                                                 senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
-    auto transaction = Transaction(message);
+    auto transaction = VersionedTransaction(VersionedMessage(message));
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);

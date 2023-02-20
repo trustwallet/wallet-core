@@ -4,17 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Transaction.h"
+#include "Solana/VersionedTransaction.h"
 #include "Solana/Encoding.h"
-
-#include "Hash.h"
-#include "Signer.h"
-
-#include <vector>
 
 namespace TW::Solana {
 
-std::string Transaction::serialize() const {
+std::string VersionedTransaction::serialize() const {
     Data buffer;
 
     append(buffer, shortVecLength<Signature>(this->signatures));
@@ -27,17 +22,16 @@ std::string Transaction::serialize() const {
     return Base58::bitcoin.encode(buffer);
 }
 
-Data Transaction::messageData() const {
-    return this->message.serialize();
+Data VersionedTransaction::messageData() const {
+    return Solana::serialize(this->message);
 }
 
-uint8_t Transaction::getAccountIndex(Address publicKey) {
-    auto item =
-        std::find(this->message.accountKeys.begin(), this->message.accountKeys.end(), publicKey);
-    if (item == this->message.accountKeys.end()) {
+uint8_t VersionedTransaction::getAccountIndex(Address publicKey) {
+    const auto accountKeys = Solana::accountKeys(this->message);
+    auto item = std::find(accountKeys.begin(), accountKeys.end(), publicKey);
+    if (item == accountKeys.end()) {
         throw std::invalid_argument("publicKey not found in message.accountKeys");
     }
-    return (uint8_t)std::distance(this->message.accountKeys.begin(), item);
+    return (uint8_t)std::distance(accountKeys.begin(), item);
 }
-
 } // namespace TW::Solana

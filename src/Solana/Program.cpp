@@ -25,9 +25,9 @@ Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const
     return Address(hash);
 }
 
-Address StakeProgram::addressFromRecentBlockhash(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId) {
+Address StakeProgram::addressFromRecentBlockhash(const Address& fromAddress, const Data& recentBlockhash, const Address& programId) {
     Data extended = fromAddress.vector();
-    std::string seed = recentBlockhash.encoded();
+    std::string seed = Base58::bitcoin.encode(recentBlockhash);
     Data vecSeed(seed.begin(), seed.end());
     vecSeed.resize(32);
     Data additional = programId.vector();
