@@ -19,7 +19,7 @@ std::string VersionedTransaction::serialize() const {
     }
     append(buffer, this->messageData());
 
-    return base58::encode(buffer);
+    return Base58::encode(buffer);
 }
 
 Data VersionedTransaction::messageData() const {

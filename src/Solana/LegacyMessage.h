@@ -35,7 +35,7 @@ public:
     std::vector<CompiledInstruction> compiledInstructions;
 
     LegacyMessage()
-        : mRecentBlockHash(Base58::bitcoin.decode(NULL_ID_ADDRESS)){};
+        : mRecentBlockHash(Base58::decode(NULL_ID_ADDRESS)){};
 
     LegacyMessage(Data recentBlockHash, const std::vector<Instruction>& instructions)
         : mRecentBlockHash(recentBlockHash)

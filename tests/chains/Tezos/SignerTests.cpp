@@ -78,7 +78,7 @@ TEST(TezosSigner, SignOperationList) {
 
     op_list.addOperation(delegateOperation);
 
-    auto decodedPrivateKey = Base58::bitcoin.decodeCheck("edsk4bMQMM6HYtMazF3m7mYhQ6KQ1WCEcBuRwh6DTtdnoqAvC3nPCc");
+    auto decodedPrivateKey = Base58::decodeCheck("edsk4bMQMM6HYtMazF3m7mYhQ6KQ1WCEcBuRwh6DTtdnoqAvC3nPCc");
     auto key = PrivateKey(Data(decodedPrivateKey.begin() + 4, decodedPrivateKey.end()));
 
     std::string expectedForgedBytesToSign = hex(op_list.forge(key));

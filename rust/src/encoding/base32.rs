@@ -94,7 +94,7 @@ fn base32_decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<
     }
 
     if output == vec![0] {
-        return Ok(vec![])
+        return Ok(vec![]);
     }
     Ok(output)
 }
@@ -106,15 +106,11 @@ pub extern "C" fn decode_base32(input: *const c_char, alphabet: *const c_char, p
 
     match base32_decode(input, alphabet, padding) {
         Ok(decoded) => {
-            let size = decoded.len();
-            let mut decoded_vec = decoded.to_vec();
-            let ptr = decoded_vec.as_mut_ptr();
-            std::mem::forget(decoded_vec);
-            CByteArray { data: ptr, size }
-        },
+            decoded.into()
+        }
         Err(_) => {
             CByteArray { data: std::ptr::null_mut(), size: 0 }
-        },
+        }
     }
 }
 

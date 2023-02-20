@@ -17,17 +17,17 @@ namespace TW::Solana::tests {
 
 TEST(SolanaSigner, CompiledInstruction) {
     const auto privateKey0 =
-        PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
+        PrivateKey(Base58::decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
     const auto publicKey0 = privateKey0.getPublicKey(TWPublicKeyTypeED25519);
     const auto address0 = Address(publicKey0);
     ASSERT_EQ(Data(publicKey0.bytes.begin(), publicKey0.bytes.end()),
-              Base58::bitcoin.decode("GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3"));
+              Base58::decode("GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3"));
     const auto privateKey1 =
-        PrivateKey(Base58::bitcoin.decode("GvGmNPMQLZE2VNx3KG2GdiC4ndS8uCqd7PjioPgm9Qhi"));
+        PrivateKey(Base58::decode("GvGmNPMQLZE2VNx3KG2GdiC4ndS8uCqd7PjioPgm9Qhi"));
     const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeED25519);
     const auto address1 = Address(publicKey1);
     ASSERT_EQ(Data(publicKey1.bytes.begin(), publicKey1.bytes.end()),
-              Base58::bitcoin.decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
+              Base58::decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
     Address programId("11111111111111111111111111111111");
 
     std::vector<Address> addresses = {address0, address1, programId};
@@ -85,14 +85,14 @@ TEST(SolanaSigner, CompiledInstructionFindAccount) {
 
 TEST(SolanaSigner, SingleSignTransaction) {
     const auto privateKey =
-        PrivateKey(Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"));
+        PrivateKey(Base58::decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
-              Base58::bitcoin.decode("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"));
+              Base58::decode("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"));
 
     const auto from = Address(publicKey);
     auto to = Address("EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd");
-    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
@@ -113,7 +113,7 @@ TEST(SolanaSigner, SingleSignTransaction) {
     ASSERT_EQ(transaction.serialize(), expectedString);
 
     const auto additionalPrivateKey =
-        PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
+        PrivateKey(Base58::decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
     signerKeys.push_back(additionalPrivateKey);
     try {
         Signer::sign(signerKeys, transaction);
@@ -125,14 +125,14 @@ TEST(SolanaSigner, SingleSignTransaction) {
 
 TEST(SolanaSigner, SignTransactionToSelf) {
     const auto privateKey =
-        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+        PrivateKey(Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
-              Base58::bitcoin.decode("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu"));
+              Base58::decode("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu"));
 
     const auto from = Address(publicKey);
     auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
-    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
@@ -154,17 +154,17 @@ TEST(SolanaSigner, SignTransactionToSelf) {
 
 TEST(SolanaSigner, MultipleSignTransaction) {
     const auto privateKey0 =
-        PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
+        PrivateKey(Base58::decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
     const auto publicKey0 = privateKey0.getPublicKey(TWPublicKeyTypeED25519);
     const auto address0 = Address(publicKey0);
     ASSERT_EQ(Data(publicKey0.bytes.begin(), publicKey0.bytes.end()),
-              Base58::bitcoin.decode("GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3"));
+              Base58::decode("GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3"));
     const auto privateKey1 =
-        PrivateKey(Base58::bitcoin.decode("GvGmNPMQLZE2VNx3KG2GdiC4ndS8uCqd7PjioPgm9Qhi"));
+        PrivateKey(Base58::decode("GvGmNPMQLZE2VNx3KG2GdiC4ndS8uCqd7PjioPgm9Qhi"));
     const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeED25519);
     const auto address1 = Address(publicKey1);
     ASSERT_EQ(Data(publicKey1.bytes.begin(), publicKey1.bytes.end()),
-              Base58::bitcoin.decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
+              Base58::decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
 
     Data data = {0, 0, 0, 0};
     Address programId("11111111111111111111111111111111");
@@ -177,7 +177,7 @@ TEST(SolanaSigner, MultipleSignTransaction) {
 
     MessageHeader header = {2, 0, 1};
     std::vector<Address> accountKeys = {address0, address1, programId};
-    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     LegacyMessage message;
     message.header = header;
     message.accountKeys = accountKeys;
@@ -213,21 +213,21 @@ TEST(SolanaSigner, MultipleSignTransaction) {
 
 TEST(SolanaSigner, SignUpdateBlockhash) {
     const auto privateKey =
-        PrivateKey(Base58::bitcoin.decode("G4VSzrknPBWZ1z2YwUnWTxD1td7wmqR5jMPEJRN6wm8S"));
+        PrivateKey(Base58::decode("G4VSzrknPBWZ1z2YwUnWTxD1td7wmqR5jMPEJRN6wm8S"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
-              Base58::bitcoin.decode("41a5jYky56M6EWDsFfLaZRxoRtgAJSRWxJnxaJNJELn5"));
+              Base58::decode("41a5jYky56M6EWDsFfLaZRxoRtgAJSRWxJnxaJNJELn5"));
 
     const auto from = Address(publicKey);
     auto to = Address("4iSnyfDKaejniaPc2pBBckwQqV3mDS93go15NdxWJq2y");
-    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto transaction = VersionedTransaction(from, to, 42, recentBlockhash);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKey);
     Signer::sign(signerKeys, transaction);
 
-    auto newBlockhash = Base58::bitcoin.decode("GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq");
+    auto newBlockhash = Base58::decode("GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq");
     Signer::signUpdateBlockhash(signerKeys, transaction, newBlockhash);
 
     std::vector<Signature> expectedSignatures;
@@ -246,10 +246,10 @@ TEST(SolanaSigner, SignUpdateBlockhash) {
 
 TEST(SolanaSigner, SignRawMessage) {
     const auto privateKey =
-        PrivateKey(Base58::bitcoin.decode("GjXseuD8JavBjKMdd6GEsPYZPV7tMMa46GS2JRS5tHRq"));
+        PrivateKey(Base58::decode("GjXseuD8JavBjKMdd6GEsPYZPV7tMMa46GS2JRS5tHRq"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
-              Base58::bitcoin.decode("3BocAWPm1oNXN5qkAV4QeDUmAPpkTcN1rrmCMWAfsXJY"));
+              Base58::decode("3BocAWPm1oNXN5qkAV4QeDUmAPpkTcN1rrmCMWAfsXJY"));
 
     auto rawMessageData =
         "01000203207be13c43c4528592eaf3fd34e064c641c5be3cb6691877d7ade94dff36734108eaea30723c33b525"
@@ -272,14 +272,14 @@ TEST(SolanaSigner, SignRawMessage) {
 
 TEST(SolanaSigner, SignDelegateStakeV2) {
     const auto privateKeySigner =
-        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+        PrivateKey(Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
     ASSERT_EQ(signer.string(), "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
 
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
-    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
 
     auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
@@ -300,14 +300,14 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
 
 TEST(SolanaSigner, SignDelegateStakeV1) {
     const auto privateKeySigner =
-        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+        PrivateKey(Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
     ASSERT_EQ(signer.string(), "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
 
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
-    auto recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+    auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
     auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
@@ -328,14 +328,14 @@ TEST(SolanaSigner, SignDelegateStakeV1) {
 
 TEST(SolanaSigner, SignCreateTokenAccount) {
     const auto privateKeySigner =
-        PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
+        PrivateKey(Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
     EXPECT_EQ(signer.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    auto recentBlockhash = Base58::bitcoin.decode("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    auto recentBlockhash = Base58::decode("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
     auto message = LegacyMessage::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
     auto transaction = VersionedTransaction(VersionedMessage(message));
@@ -365,7 +365,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
     auto otherMainAddress = Address("3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft");
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
-    auto recentBlockhash = Base58::bitcoin.decode("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
+    auto recentBlockhash = Base58::decode("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
 
     auto message = LegacyMessage::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
     auto transaction = VersionedTransaction(VersionedMessage(message));
@@ -382,7 +382,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
 
 TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     const auto privateKeySigner =
-        PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
+        PrivateKey(Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
     EXPECT_EQ(signer.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
@@ -392,7 +392,7 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     auto recipientTokenAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
     uint64_t amount = 4000;
     uint8_t decimals = 6;
-    auto recentBlockhash = Base58::bitcoin.decode("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
+    auto recentBlockhash = Base58::decode("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
     auto message = LegacyMessage::createTokenTransfer(signer, token,
                                                 senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);

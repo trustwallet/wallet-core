@@ -16,7 +16,7 @@
 namespace TW::NEAR {
 
 TEST(NEARSigner, SignTx) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -30,10 +30,10 @@ TEST(NEARSigner, SignTx) {
     // uint128_t / little endian byte order
     transfer.set_deposit(deposit.data(), deposit.size());
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto output = Signer::sign(std::move(input));

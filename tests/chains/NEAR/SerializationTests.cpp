@@ -15,7 +15,7 @@
 namespace TW::NEAR {
 
 TEST(NEARSerialization, SerializeTransferTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -28,10 +28,10 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
     deposit[0] = 1;
     transfer.set_deposit(deposit.data(), deposit.size());
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -41,7 +41,7 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
 }
 
 TEST(NEARSerialization, SerializeFunctionCallTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -64,10 +64,10 @@ TEST(NEARSerialization, SerializeFunctionCallTransaction) {
     args[2] = 3;
     functionCall.set_args(args.data(), args.size());
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -77,7 +77,7 @@ TEST(NEARSerialization, SerializeFunctionCallTransaction) {
 }
 
 TEST(NEARSerialization, SerializeStakeTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -94,10 +94,10 @@ TEST(NEARSerialization, SerializeStakeTransaction) {
     pKey.set_data(publicKey.data(), publicKey.size());
     pKey.set_key_type(0);
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -107,7 +107,7 @@ TEST(NEARSerialization, SerializeStakeTransaction) {
 }
 
 TEST(NEARSerialization, SerializeStakeTransaction2) {
-    auto publicKey = Base58::bitcoin.decode("C2P7YcEmBv31vtCHLBcESteN4Yi4vSCkXEXMTANyB649");
+    auto publicKey = Base58::decode("C2P7YcEmBv31vtCHLBcESteN4Yi4vSCkXEXMTANyB649");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("vdx.testnet");
@@ -124,10 +124,10 @@ TEST(NEARSerialization, SerializeStakeTransaction2) {
     pKey.set_data(publicKey.data(), publicKey.size());
     pKey.set_key_type(0);
 
-    auto blockHash = Base58::bitcoin.decode("ByDnm7c25npQXwNUX5yivbYbpjFcNuNumF6BJjaK3vhJ");
+    auto blockHash = Base58::decode("ByDnm7c25npQXwNUX5yivbYbpjFcNuNumF6BJjaK3vhJ");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("5Cfk7QBnmDxxFxQk75FFq4ADrQS9gxHKe6vtuGH6JCCm8WV8aRPEGVqp579JHNmmHMUt49gkCVcH2t7NRnh2v7Qu");
+    auto privateKey = Base58::decode("5Cfk7QBnmDxxFxQk75FFq4ADrQS9gxHKe6vtuGH6JCCm8WV8aRPEGVqp579JHNmmHMUt49gkCVcH2t7NRnh2v7Qu");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -137,7 +137,7 @@ TEST(NEARSerialization, SerializeStakeTransaction2) {
 }
 
 TEST(NEARSerialization, SerializeAddKeyFunctionCallTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -157,10 +157,10 @@ TEST(NEARSerialization, SerializeAddKeyFunctionCallTransaction) {
     functionCallPermission.set_receiver_id("zzz");
     functionCallPermission.add_method_names("www");
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -170,7 +170,7 @@ TEST(NEARSerialization, SerializeAddKeyFunctionCallTransaction) {
 }
 
 TEST(NEARSerialization, SerializeAddKeyFullAccessTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -189,10 +189,10 @@ TEST(NEARSerialization, SerializeAddKeyFullAccessTransaction) {
 
     accessKey.mutable_full_access();
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -202,7 +202,7 @@ TEST(NEARSerialization, SerializeAddKeyFullAccessTransaction) {
 }
 
 TEST(NEARSerialization, SerializeDeleteKeyTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -216,10 +216,10 @@ TEST(NEARSerialization, SerializeDeleteKeyTransaction) {
     pKey.set_data(publicKey.data(), publicKey.size());
     pKey.set_key_type(0);
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -229,7 +229,7 @@ TEST(NEARSerialization, SerializeDeleteKeyTransaction) {
 }
 
 TEST(NEARSerialization, SerializeCreateAccountTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -239,10 +239,10 @@ TEST(NEARSerialization, SerializeCreateAccountTransaction) {
     input.add_actions();
     input.mutable_actions(0)->mutable_create_account();
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);
@@ -252,7 +252,7 @@ TEST(NEARSerialization, SerializeCreateAccountTransaction) {
 }
 
 TEST(NEARSerialization, SerializeDeleteAccountTransaction) {
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -263,10 +263,10 @@ TEST(NEARSerialization, SerializeDeleteAccountTransaction) {
     auto& deleteAccount = *input.mutable_actions(0)->mutable_delete_account();
     deleteAccount.set_beneficiary_id("123");
 
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
-    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
     auto serialized = transactionData(input);

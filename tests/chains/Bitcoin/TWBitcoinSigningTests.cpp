@@ -1497,7 +1497,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
 
 TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     auto wif = "L4BeKzm3AHDUMkxLRVKTSVxkp6Hz9FcMQPh18YCKU1uioXfovzwP";
-    auto decoded = Base58::bitcoin.decodeCheck(wif);
+    auto decoded = Base58::decodeCheck(wif);
     auto key = PrivateKey(Data(decoded.begin() + 1, decoded.begin() + 33));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     auto hash = Hash::sha256ripemd(pubkey.bytes.data(), pubkey.bytes.size());

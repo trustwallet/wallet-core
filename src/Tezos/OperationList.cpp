@@ -21,7 +21,7 @@ void Tezos::OperationList::addOperation(const Operation& operation) {
 // Forge the given branch to a hex encoded string.
 Data Tezos::OperationList::forgeBranch() const {
     std::array<byte, 2> prefix = {1, 52};
-    const auto decoded = Base58::bitcoin.decodeCheck(branch);
+    const auto decoded = Base58::decodeCheck(branch);
     if (decoded.size() != 34 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
         throw std::invalid_argument("Invalid branch for forge");
     }

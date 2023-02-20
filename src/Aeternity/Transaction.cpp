@@ -34,7 +34,7 @@ TW::Data Transaction::buildTag(const std::string& address) {
 
     auto data = Data();
     append(data, Identifiers::iDTagAccount);
-    append(data, Base58::bitcoin.decodeCheck(payload));
+    append(data, Base58::decodeCheck(payload));
 
     return data;
 }

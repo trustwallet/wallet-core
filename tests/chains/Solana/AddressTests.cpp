@@ -19,7 +19,7 @@ namespace TW::Solana::tests {
 
 TEST(SolanaAddress, FromPublicKey) {
     const auto addressString = "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST";
-    const auto publicKey = PublicKey(Base58::bitcoin.decode(addressString), TWPublicKeyTypeED25519);
+    const auto publicKey = PublicKey(Base58::decode(addressString), TWPublicKeyTypeED25519);
     const auto address = Address(publicKey);
     ASSERT_EQ(addressString, address.string());
 }
@@ -39,14 +39,14 @@ TEST(SolanaAddress, isValid) {
 }
 
 TEST(SolanaAddress, isValidOnCurve) {
-    EXPECT_TRUE(PublicKey(Base58::bitcoin.decode("HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_TRUE(PublicKey(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_TRUE(PublicKey(Base58::bitcoin.decode("Dra34QLFCjxnk8tUNcBwxs6pgb5spF4oseQYF2xn7ABZ"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_TRUE(PublicKey(Base58::decode("HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_TRUE(PublicKey(Base58::decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_TRUE(PublicKey(Base58::decode("Dra34QLFCjxnk8tUNcBwxs6pgb5spF4oseQYF2xn7ABZ"), TWPublicKeyTypeED25519).isValidED25519());
     // negative case
-    EXPECT_FALSE(PublicKey(Base58::bitcoin.decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_FALSE(PublicKey(Base58::bitcoin.decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_FALSE(PublicKey(Base58::bitcoin.decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"), TWPublicKeyTypeED25519).isValidED25519());
-    EXPECT_FALSE(PublicKey(Base58::bitcoin.decode("AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_FALSE(PublicKey(Base58::decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_FALSE(PublicKey(Base58::decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_FALSE(PublicKey(Base58::decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_FALSE(PublicKey(Base58::decode("AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"), TWPublicKeyTypeED25519).isValidED25519());
 }
 
 TEST(SolanaAddress, defaultTokenAddress) {

@@ -19,7 +19,7 @@ public:
     std::array<uint8_t, size> bytes;
 
     Signature(const std::string& string) {
-        const auto data = Base58::bitcoin.decode(string);
+        const auto data = Base58::decode(string);
         std::copy(data.begin(), data.end(), this->bytes.begin());
     }
     Signature(const std::array<uint8_t, 64>& bytes) { this->bytes = bytes; }
