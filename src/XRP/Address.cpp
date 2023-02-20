@@ -33,7 +33,8 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::ripple.encodeCheck(bytes);
+    return base58::encodeCheck(bytes, Base58Alphabet::Ripple);
+    //return Base58::ripple.encodeCheck(bytes);
 }
 
 } // namespace TW::Ripple

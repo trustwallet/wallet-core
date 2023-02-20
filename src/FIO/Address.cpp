@@ -94,7 +94,7 @@ Address::Address(const PublicKey& publicKey) {
 
 /// Returns a string representation of the FIO address.
 std::string Address::string() const {
-    return prefix() + Base58::bitcoin.encode(bytes);
+    return prefix() + base58::encode(bytes);
 }
 
 PublicKey Address::publicKey() const {

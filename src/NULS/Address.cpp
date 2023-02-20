@@ -69,7 +69,7 @@ uint8_t Address::type() const {
 }
 
 std::string Address::string() const {
-    return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
+    return prefix + base58::encode(bytes);
 }
 
 uint8_t Address::checksum(std::array<byte, size>& byteArray) const {

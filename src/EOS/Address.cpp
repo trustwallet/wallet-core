@@ -139,7 +139,7 @@ Address::Address(const PublicKey& publicKey, Type type)
 
 /// Returns a string representation of the EOS address.
 std::string Address::string() const {
-    return prefix() + Base58::bitcoin.encode(keyData);
+    return prefix() + base58::encode(keyData);
 }
 
 } // namespace TW::EOS

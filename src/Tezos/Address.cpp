@@ -59,7 +59,7 @@ std::string Address::deriveOriginatedAddress(const std::string& operationHash, i
     auto prefix = Data({2, 90, 121});
     prefix.insert(prefix.end(), hash.begin(), hash.end());
 
-    return Base58::bitcoin.encodeCheck(prefix);
+    return base58::encodeCheck(prefix);
 }
 
 Data Address::forge() const {

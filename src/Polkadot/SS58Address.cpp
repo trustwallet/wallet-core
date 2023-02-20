@@ -68,7 +68,7 @@ std::string SS58Address::string() const {
     auto result = Data(bytes.begin(), bytes.end());
     auto checksum = computeChecksum(bytes);
     append(result, checksum);
-    return Base58::bitcoin.encode(result);
+    return base58::encode(result);
 }
 
 /// Returns public key bytes

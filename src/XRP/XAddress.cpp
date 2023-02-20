@@ -57,7 +57,7 @@ std::string XAddress::string() const {
     append(result, byte(flag));
     encode32LE(tag, result);
     append(result, Data{0x00, 0x00, 0x00, 0x00});
-    return Base58::ripple.encodeCheck(result);
+    return base58::encodeCheck(result, Base58Alphabet::Ripple);
 }
 
 } // namespace TW::Ripple

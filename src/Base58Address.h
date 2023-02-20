@@ -86,7 +86,7 @@ class Base58Address {
 
     /// Returns a string representation of the address.
     std::string string() const {
-        return Base58::bitcoin.encodeCheck(bytes);
+        return base58::encodeCheck(bytes);
     }
 };
 

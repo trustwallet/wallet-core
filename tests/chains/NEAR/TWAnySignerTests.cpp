@@ -95,7 +95,7 @@ TEST(TWAnySignerNEAR, SignStakeMainnetReplication) {
     ANY_SIGN(input, TWCoinTypeNEAR);
 
     // https://explorer.near.org/transactions/kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq
-    ASSERT_EQ(Base58::bitcoin.encode(data(output.hash())), "kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq");
+    ASSERT_EQ(base58::encode(data(output.hash())), "kd7ajFw1CfXB8LiJXvhz5NDS7QpQXkuQraAbhb5MMMq");
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgEuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcueGgJlhJ7eg8/I0NQLkQvJDZsul95y3L4vG0N67Js4kAQAAAAIRAAAAZGVwb3NpdF9hbmRfc3Rha2UCAAAAe30A0JjUr3EAAAAAgPZK4ccCLRUAAAAAAAAALNrorr8qTL6u1nlxLpuPa45nFdYmjU96i7CmJP08mVHVzHUaw/bGN30Z3u3o1F2o2yefCBNqO9Ogn9fM25NGCg==");
 }
 
@@ -123,7 +123,7 @@ TEST(TWAnySignerNEAR, SignUnstakeMainnetReplication) {
     ANY_SIGN(input, TWCoinTypeNEAR);
 
     // https://explorer.near.org/transactions/DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P
-    ASSERT_EQ(Base58::bitcoin.encode(data(output.hash())), "DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P");
+    ASSERT_EQ(base58::encode(data(output.hash())), "DH6QAX3TkY6XtkteorvKBoGT5hA5ADkURZdzrbbKRs8P");
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgGuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcq0YnhRlt+TTtagkoy0qKn56zAfGhE+jkTJW6PR5k5r8AQAAAAILAAAAdW5zdGFrZV9hbGwCAAAAe30A0JjUr3EAAAAAAAAAAAAAAAAAAAAAAAAABaFP0EkfJU3VQZ4QAiTwq9ebWDJ7jx7TxbA+VGH4hwKX3gWnmDHVve+LK7/UbbffjF/y8vn0KrPxdh3ONAG0Ag==");
 }
 

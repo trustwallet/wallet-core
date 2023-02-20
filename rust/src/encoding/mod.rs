@@ -5,5 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 mod base32;
+mod base58;
 mod base64;
 mod hex;

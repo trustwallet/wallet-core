@@ -49,7 +49,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes, Hash::HasherBlake256d);
+    return base58::encodeCheck(bytes, Base58Alphabet::Bitcoin, Hash::HasherBlake256d);
 }
 
 } // namespace TW::Decred

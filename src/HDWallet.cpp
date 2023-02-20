@@ -348,7 +348,7 @@ std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version
         node_data.insert(node_data.end(), node->private_key, node->private_key + 32);
     }
 
-    return Base58::bitcoin.encodeCheck(node_data, hasher);
+    return base58::encodeCheck(node_data, Base58Alphabet::Bitcoin, hasher);
 }
 
 bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {

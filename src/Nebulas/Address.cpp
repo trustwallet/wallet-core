@@ -60,7 +60,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return base58::encode(bytes);
 }
 
 } // namespace TW::Nebulas

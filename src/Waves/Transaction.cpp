@@ -86,9 +86,9 @@ json jsonTransfer(const Data& signature, int64_t amount, const std::string& asse
     jsonTx["type"] = TransactionType::transfer;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
-    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
+    jsonTx["senderPublicKey"] = base58::encode(pub_key);
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
+    jsonTx["proofs"] = json::array({base58::encode(signature)});
     jsonTx["recipient"] = Address(to).string();
     if (asset != Transaction::WAVES) {
         jsonTx["assetId"] = asset;
@@ -97,7 +97,7 @@ json jsonTransfer(const Data& signature, int64_t amount, const std::string& asse
         jsonTx["feeAssetId"] = fee_asset;
     }
     jsonTx["amount"] = amount;
-    jsonTx["attachment"] = Base58::bitcoin.encode(attachment);
+    jsonTx["attachment"] = base58::encode(attachment);
 
     return jsonTx;
 }
@@ -108,9 +108,9 @@ json jsonLease(const Data& signature, int64_t amount, int64_t fee, Address to, i
     jsonTx["type"] = TransactionType::lease;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
-    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
+    jsonTx["senderPublicKey"] = base58::encode(pub_key);
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
+    jsonTx["proofs"] = json::array({base58::encode(signature)});
     jsonTx["recipient"] = Address(to).string();
     jsonTx["amount"] = amount;
 
@@ -123,11 +123,11 @@ json jsonCancelLease(const Data& signature, const Data& leaseId, int64_t fee, in
     jsonTx["type"] = TransactionType::cancelLease;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
-    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
-    jsonTx["leaseId"] = Base58::bitcoin.encode(leaseId);
+    jsonTx["senderPublicKey"] = base58::encode(pub_key);
+    jsonTx["leaseId"] = base58::encode(leaseId);
     jsonTx["chainId"] = 87; // mainnet
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
+    jsonTx["proofs"] = json::array({base58::encode(signature)});
 
     return jsonTx;
 }

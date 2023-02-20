@@ -43,7 +43,7 @@ Address::Address(const std::string& string) {
 
 /// Returns a string representation of the Aeternity address.
 std::string Address::string() const {
-    return Identifiers::prefixAccountPubkey + Base58::bitcoin.encodeCheck(bytes);
+    return Identifiers::prefixAccountPubkey + base58::encodeCheck(bytes);
 }
 
 bool Address::checkType(const std::string& type) {

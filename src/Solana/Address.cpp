@@ -48,7 +48,7 @@ Address::Address(const Data& publicKeyData) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return base58::encode(bytes);
 }
 
 Data Address::vector() const {

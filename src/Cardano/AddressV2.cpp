@@ -100,7 +100,7 @@ Data AddressV2::getCborData() const {
 
 std::string AddressV2::string() const {
     // Base58 encode the CBOR data
-    return Base58::bitcoin.encode(getCborData());
+    return base58::encode(getCborData());
 }
 
 Data AddressV2::keyHash(const TW::Data& xpub) {
