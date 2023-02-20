@@ -112,7 +112,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeStellar));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTezos));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTheta));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeThunderToken));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeThunderCore));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTomoChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTron));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeVeChain));

@@ -65,7 +65,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeSmartChain:
         case TWCoinTypeSmartChainLegacy:
         case TWCoinTypeTheta:
-        case TWCoinTypeThunderToken:
+        case TWCoinTypeThunderCore:
         case TWCoinTypeTomoChain:
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
