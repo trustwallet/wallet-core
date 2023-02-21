@@ -114,6 +114,39 @@ TEST(TronSigner, SignFreezeBalanceV2) {
     ASSERT_EQ(hex(output.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
 }
 
+TEST(TronSigner, SignUnFreezeBalanceV2) {
+    // Successfully broadcasted https://nile.tronscan.org/#/transaction/3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& freeze = *transaction.mutable_unfreeze_balance_v2();
+    freeze.set_owner_address("TWWb9EjUWai17YEVB7FR8hreupYJKG9sMR");
+    freeze.set_unfreeze_balance(510000000);
+    freeze.set_resource("ENERGY");
+
+    transaction.set_timestamp(1676992267490);
+    transaction.set_expiration(1676992326000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1676992212000);
+    const auto txTrieRoot = parse_hex("4b1edc58d14a5c60c083365d8b77771ba626394b445c7a7b8b5d67330bb6c92d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000020ce000354fbb346d676de268b3f83124381f8496835afe88da4a01");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(34398209);
+    const auto witnessAddress = parse_hex("4194a21bec5d0e1dde2151475f72ed158a87eb4817");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(26);
+
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb");
+    ASSERT_EQ(hex(output.signature()), "10bc05c47102f1db1a3a4c0b4a6aba028d5a35dda4e505563c3f0ccf95a562cf18b53f7f7053c485299cfc599a432d1f0ee5554a56cd5981ccfff31d79b9868b00");
+}
+
 TEST(TronSigner, DelegateResourceContract) {
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c
     auto input = Proto::SigningInput();
@@ -146,6 +179,40 @@ TEST(TronSigner, DelegateResourceContract) {
 
     ASSERT_EQ(hex(output.id()), "ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c");
     ASSERT_EQ(hex(output.signature()), "664500a76466497a442cecc0e9282a9234483f047c12a997b6206d7f6a9030c70b700c879d7948c4cbdfe339c2c81a29dea18e00e9916504196c1b20cf045ca300");
+}
+
+TEST(TronSigner, UnDelegateResourceContract) {
+    // Successfully broadcasted https://nile.tronscan.org/#/transaction/3609519cc700cf2446b5e048864abc4b45e2ba6b7f9f8890d471ba2876599d3b
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& freeze = *transaction.mutable_undelegate_resource();
+    freeze.set_owner_address("TWWb9EjUWai17YEVB7FR8hreupYJKG9sMR");
+    freeze.set_receiver_address("TPFfHr1CWfTcS9eugQXQmvqHNGufnjxjXP");
+    freeze.set_balance(68000000);
+    freeze.set_resource("ENERGY");
+
+    transaction.set_timestamp(1676992063012);
+    transaction.set_expiration(1676992122000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1676992008000);
+    const auto txTrieRoot = parse_hex("85a47017a4380e92d09bac0f8991031e8de13b8b65767a6f5372d3f0992eabcd");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000020cdfbe4d7f36fcbb3d96dd634987b897eaf885001dd62fd92eb263");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(34398143);
+    const auto witnessAddress = parse_hex("4196409f85790883057edf03286d08e4aa608c0d0a");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(26);
+
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "3609519cc700cf2446b5e048864abc4b45e2ba6b7f9f8890d471ba2876599d3b");
+    ASSERT_EQ(hex(output.signature()), "b08e32a704d5a366df499d283d407c428dd50e60665f54ecf967226b75bec37157e6bc23312af07fad9dd3551cd668ce027cc280932fd4772af89d6f0fecf11900");
 }
 
 TEST(TronSigner, SignFreezeBalance) {
