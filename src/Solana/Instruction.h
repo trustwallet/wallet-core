@@ -38,11 +38,9 @@ enum TokenInstruction {
 
 // An instruction to execute a program
 struct Instruction {
-    // Index into the transaction keys array indicating the program account that
-    // executes this instruction
+    // The address of the program account that executes this instruction
     Address programId;
-    // Ordered indices into the transaction keys array indicating which accounts
-    // to pass to the program
+    // List of accounts to pass to the program
     std::vector<AccountMeta> accounts;
     // The program input data
     Data data;
