@@ -82,7 +82,7 @@ TEST(TronSigner, SignTransfer) {
 }
 
 TEST(TronSigner, SignFreezeBalanceV2) {
-    // Successfully broadcasted
+    // Successfully broadcasted https://nile.tronscan.org/#/transaction/3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
@@ -112,6 +112,40 @@ TEST(TronSigner, SignFreezeBalanceV2) {
 
     ASSERT_EQ(hex(output.id()), "3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d");
     ASSERT_EQ(hex(output.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
+}
+
+TEST(TronSigner, DelegateResourceContract) {
+    // Successfully broadcasted https://nile.tronscan.org/#/transaction/ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& freeze = *transaction.mutable_delegate_resource();
+    freeze.set_owner_address("TWWb9EjUWai17YEVB7FR8hreupYJKG9sMR");
+    freeze.set_receiver_address("TPFfHr1CWfTcS9eugQXQmvqHNGufnjxjXP");
+    freeze.set_balance(68000000);
+    freeze.set_resource("ENERGY");
+
+    transaction.set_timestamp(1676991607274);
+    transaction.set_expiration(1676991660000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1676991546000);
+    const auto txTrieRoot = parse_hex("0000000000000000000000000000000000000000000000000000000000000000");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000020cdf260ff2357d814141106c375c101913c933c2b5c31a390db7fc");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(34397991);
+    const auto witnessAddress = parse_hex("417d3601dbd9d033b034c154868acc2904d9c45565");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(26);
+
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c");
+    ASSERT_EQ(hex(output.signature()), "664500a76466497a442cecc0e9282a9234483f047c12a997b6206d7f6a9030c70b700c879d7948c4cbdfe339c2c81a29dea18e00e9916504196c1b20cf045ca300");
 }
 
 TEST(TronSigner, SignFreezeBalance) {
