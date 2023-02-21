@@ -115,7 +115,7 @@ TEST(TronSigner, SignFreezeBalanceV2) {
 }
 
 TEST(TronSigner, SignUnFreezeBalanceV2) {
-    // Successfully broadcasted https://nile.tronscan.org/#/transaction/3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d
+    // Successfully broadcasted https://nile.tronscan.org/#/transaction/3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
