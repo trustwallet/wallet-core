@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bitcoin/Address.h"
+#include "Tron/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "uint256.h"
@@ -81,25 +82,26 @@ TEST(TronSigner, SignTransfer) {
 }
 
 TEST(TronSigner, SignFreezeBalanceV2) {
+    // Successfully broadcasted
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
 
     auto& freeze = *transaction.mutable_freeze_balance_v2();
     freeze.set_owner_address("TWWb9EjUWai17YEVB7FR8hreupYJKG9sMR");
-    freeze.set_frozen_balance(1000000);
-    freeze.set_resource("BANDWIDTH");
+    freeze.set_frozen_balance(10000000);
+    freeze.set_resource("ENERGY");
 
-    transaction.set_timestamp(1676384717246);
-    transaction.set_expiration(1676384775000);
+    transaction.set_timestamp(1676983541337);
+    transaction.set_expiration(1676983599000);
 
     auto& blockHeader = *transaction.mutable_block_header();
-    blockHeader.set_timestamp(1676384661000);
-    const auto txTrieRoot = parse_hex("0000000000000000000000000000000000000000000000000000000000000000");
+    blockHeader.set_timestamp(1676983485000);
+    const auto txTrieRoot = parse_hex("9b54db7f84bd19bbad9ff1fccef894c1aade6879450e9e9e2accec751eaa1f52");
     blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
-    const auto parentHash = parse_hex("000000000209d0d5f207c6293d79ff6065aa70038b35113af3ebafeff3c60312");
+    const auto parentHash = parse_hex("00000000020cd4c13a67497a3a433a3105bc5a73a041ee3da98407d5a2a2bf1b");
     blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
-    blockHeader.set_number(34197718);
-    const auto witnessAddress = parse_hex("4110cc4eed4e2365c4e57d3f60913c895d1187656e");
+    blockHeader.set_number(34395330);
+    const auto witnessAddress = parse_hex("4150d3765e4e670727ebac9d5b598f74b75a3d54a7");
     blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
     blockHeader.set_version(26);
 
@@ -108,8 +110,8 @@ TEST(TronSigner, SignFreezeBalanceV2) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "b18e7dbeaf8691a314c6e07885ad8f00cbc17ae90679e0f9155039f1f2d28fdd");
-    ASSERT_EQ(hex(output.signature()), "a801dc89683bf9a313e6559b4ac4979ba334e7324410b4998a915677622dcc3523875eb4174d2350ccacc3442c98cfab9cb663f2592880185abbe30a0592974301");
+    ASSERT_EQ(hex(output.id()), "3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d");
+    ASSERT_EQ(hex(output.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
 }
 
 TEST(TronSigner, SignFreezeBalance) {
