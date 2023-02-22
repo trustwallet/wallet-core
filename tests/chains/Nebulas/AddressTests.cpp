@@ -27,7 +27,7 @@ TEST(NebulasAddress, String) {
     ASSERT_THROW(Address("abc"), std::invalid_argument);
     ASSERT_EQ(Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").string(),
               "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
-    ASSERT_EQ(Address(Base58::bitcoin.decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
+    ASSERT_EQ(Address(Base58::decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
               "n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv");
 
     const auto address = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
@@ -37,7 +37,7 @@ TEST(NebulasAddress, String) {
 TEST(NebulasAddress, Data) {
     Data data;
     EXPECT_THROW(Address(data).string(), std::invalid_argument);
-    ASSERT_EQ(Address(Base58::bitcoin.decode("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")).string(),
+    ASSERT_EQ(Address(Base58::decode("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")).string(),
               "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
 

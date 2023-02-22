@@ -27,7 +27,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     std::string address = string.substr(prefix.length(), string.length() - prefix.length());
-    Data decoded = Base58::bitcoin.decode(address);
+    Data decoded = Base58::decode(address);
     if (decoded.size() != size) {
         return false;
     }
@@ -56,7 +56,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
     std::string address = string.substr(prefix.length(), string.length() - prefix.length());
-    const auto decoded = Base58::bitcoin.decode(address);
+    const auto decoded = Base58::decode(address);
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
@@ -69,7 +69,7 @@ uint8_t Address::type() const {
 }
 
 std::string Address::string() const {
-    return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
+    return prefix + Base58::encode(bytes);
 }
 
 uint8_t Address::checksum(std::array<byte, size>& byteArray) const {

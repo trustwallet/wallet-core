@@ -10,7 +10,7 @@ using namespace TW;
 using namespace std;
 
 bool SS58Address::isValid(const std::string& string, uint32_t network) {
-    const auto decoded = Base58::bitcoin.decode(string);
+    const auto decoded = Base58::decode(string);
     byte decodedNetworkSize = 0;
     uint32_t decodedNetwork = 0;
     if (!decodeNetwork(decoded, decodedNetworkSize, decodedNetwork)) {
@@ -47,7 +47,7 @@ SS58Address::SS58Address(const std::string& string, uint32_t network) {
     if (!isValid(string, network)) {
         throw std::invalid_argument("Invalid address string");
     }
-    const auto decoded = Base58::bitcoin.decode(string);
+    const auto decoded = Base58::decode(string);
     bytes.resize(decoded.size() - checksumSize);
     std::copy(decoded.begin(), decoded.end() - checksumSize, bytes.begin());
 }
@@ -68,7 +68,7 @@ std::string SS58Address::string() const {
     auto result = Data(bytes.begin(), bytes.end());
     auto checksum = computeChecksum(bytes);
     append(result, checksum);
-    return Base58::bitcoin.encode(result);
+    return Base58::encode(result);
 }
 
 /// Returns public key bytes

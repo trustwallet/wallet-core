@@ -20,12 +20,12 @@ using namespace TW;
 namespace TW::Solana {
 
 bool Address::isValid(const std::string& string) {
-    const auto data = Base58::bitcoin.decode(string);
+    const auto data = Base58::decode(string);
     return Address::isValid(data);
 }
 
 Address::Address(const std::string& string) {
-    const auto data = Base58::bitcoin.decode(string);
+    const auto data = Base58::decode(string);
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -48,7 +48,7 @@ Address::Address(const Data& publicKeyData) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return Base58::encode(bytes);
 }
 
 Data Address::vector() const {

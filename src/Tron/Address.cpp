@@ -15,7 +15,7 @@
 namespace TW::Tron {
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string);
     if (decoded.size() != Address::size) {
         return false;
     }

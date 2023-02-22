@@ -12,6 +12,16 @@ pub struct CByteArray {
     pub size: usize,
 }
 
+impl From<Vec<u8>> for CByteArray {
+    fn from(value: Vec<u8>) -> Self {
+        let size = value.len();
+        let mut mut_vec = value.to_vec();
+        let ptr = mut_vec.as_mut_ptr();
+        std::mem::forget(mut_vec);
+        CByteArray { data: ptr, size }
+    }
+}
+
 #[no_mangle]
 pub unsafe extern fn free_string(ptr: *const c_char) {
     // Take the ownership back to rust and drop the owner

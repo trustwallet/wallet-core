@@ -43,12 +43,12 @@ bool Address::isValid(const Data& decoded) {
 }
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decode(string);
+    const auto decoded = Base58::decode(string);
     return isValid(decoded);
 }
 
 Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decode(string);
+    const auto decoded = Base58::decode(string);
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address key data");
     }
@@ -79,7 +79,7 @@ Address::Address(const PublicKey &publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return Base58::encode(bytes);
 }
 
 } // namespace TW::Waves

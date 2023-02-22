@@ -25,7 +25,7 @@ const auto expectedString1 =
     "sW9kYUtRDW1UC2LgHr7npgq5W9TBmHf9hSmRgM9XXucjXLqubNWE7HUMhbKjuBqkirRM";
 
 TEST(TWAnySignerSolana, SignTransfer) {
-    auto privateKey = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
+    auto privateKey = Base58::decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
     auto input = Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
@@ -60,7 +60,7 @@ TEST(TWAnySignerSolana, SignV0Transfer) {
 }
 
 TEST(TWAnySignerSolana, SignTransferToSelf) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
@@ -80,7 +80,7 @@ TEST(TWAnySignerSolana, SignTransferToSelf) {
 }
 
 TEST(TWAnySignerSolana, SignTransferWithMemoAndReference) {
-    const auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    const auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
@@ -100,7 +100,7 @@ TEST(TWAnySignerSolana, SignTransferWithMemoAndReference) {
 }
 
 TEST(TWAnySignerSolana, SignDelegateStakeTransaction_noStakeAccount) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_delegate_stake_transaction();
@@ -118,7 +118,7 @@ TEST(TWAnySignerSolana, SignDelegateStakeTransaction_noStakeAccount) {
 }
 
 TEST(TWAnySignerSolana, SignDelegateStakeTransaction_withAccount) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_delegate_stake_transaction();
@@ -136,7 +136,7 @@ TEST(TWAnySignerSolana, SignDelegateStakeTransaction_withAccount) {
 }
 
 TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_stake_transaction();
@@ -152,7 +152,7 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignDeactivateAllStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_all_stake_transaction();
@@ -169,7 +169,7 @@ TEST(TWAnySignerSolana, SignDeactivateAllStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_transaction();
@@ -186,7 +186,7 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignWithdrawAllStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_all_transaction();
@@ -207,7 +207,7 @@ TEST(TWAnySignerSolana, SignWithdrawAllStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignDeactivateStakeTransaction_1) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_stake_transaction();
@@ -228,7 +228,7 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransaction_1) {
 }
 
 TEST(TWAnySignerSolana, SignWithdrawStakeTransaction_1) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_transaction();
@@ -245,7 +245,7 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction_1) {
 }
 
 TEST(TWAnySignerSolana, SignCreateTokenAccount1) {
-    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto input = Solana::Proto::SigningInput();
@@ -307,7 +307,7 @@ TEST(TWAnySignerSolana, SignCreateTokenAccountForOther_3E6UFV) {
 }
 
 TEST(TWAnySignerSolana, SignTokenTransfer1_3vZ67C) {
-    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto input = Solana::Proto::SigningInput();
@@ -330,7 +330,7 @@ TEST(TWAnySignerSolana, SignTokenTransfer1_3vZ67C) {
 }
 
 TEST(TWAnySignerSolana, SignTokenTransfer2_2pMvzp) {
-    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto input = Solana::Proto::SigningInput();
@@ -353,7 +353,7 @@ TEST(TWAnySignerSolana, SignTokenTransfer2_2pMvzp) {
 }
 
 TEST(TWAnySignerSolana, SignCreateAndTransferToken_449VaY) {
-    auto privateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    auto privateKeyData = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
 
     auto input = Solana::Proto::SigningInput();
@@ -377,7 +377,7 @@ TEST(TWAnySignerSolana, SignCreateAndTransferToken_449VaY) {
 }
 
 TEST(TWAnySignerSolana, SignCreateAndTransferTokenWithMemoReferences) {
-    const auto privateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    const auto privateKeyData = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
     EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
 
     auto input = Solana::Proto::SigningInput();
@@ -403,7 +403,7 @@ TEST(TWAnySignerSolana, SignCreateAndTransferTokenWithMemoReferences) {
 
 TEST(TWAnySignerSolana, SignJSON) {
     auto json = STRING(R"({"recentBlockhash":"11111111111111111111111111111111","transferTransaction":{"recipient":"EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd","value":"42"}})");
-    Data keyData = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
+    Data keyData = Base58::decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
     EXPECT_EQ(hex(keyData), "8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63");
     auto key = WRAPD(TWDataCreateWithBytes(keyData.data(), keyData.size()));
 

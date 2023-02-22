@@ -47,7 +47,7 @@ std::string Signer::signatureToBase58(const Data& sig) {
     Data hash = Hash::ripemd(sigWithSuffix);
     Data sigWithChecksum(sig);
     append(sigWithChecksum, TW::data(hash.data(), 4));
-    string s = SignaturePrefix + Base58::bitcoin.encode(sigWithChecksum);
+    string s = SignaturePrefix + Base58::encode(sigWithChecksum);
     return s;
 }
 

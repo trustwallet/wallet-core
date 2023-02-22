@@ -18,7 +18,7 @@ namespace {
 constexpr const char* gTezosContractAddressPrefix{"KT1"};
 
 void encodePrefix(const std::string& address, Data& forged) {
-    const auto decoded = Base58::bitcoin.decodeCheck(address);
+    const auto decoded = Base58::decodeCheck(address);
     constexpr auto prefixSize{3};
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
 }
@@ -114,7 +114,7 @@ Data forgePublicKey(PublicKey publicKey) {
     auto bytes = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     append(data, bytes);
 
-    auto pk = Base58::bitcoin.encodeCheck(data);
+    auto pk = Base58::encodeCheck(data);
     auto decoded = "00" + base58ToHex(pk, 4);
     return parse_hex(decoded);
 }

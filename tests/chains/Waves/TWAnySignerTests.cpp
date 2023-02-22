@@ -15,7 +15,7 @@ namespace TW::Waves::tests {
 
 TEST(TWAnySignerWaves, Sign) {
     auto input = Proto::SigningInput();
-    const auto privateKey = Base58::bitcoin.decode("83mqJpmgB5Mko1567sVAdqZxVKsT6jccXt3eFSi4G1zE");
+    const auto privateKey = Base58::decode("83mqJpmgB5Mko1567sVAdqZxVKsT6jccXt3eFSi4G1zE");
 
     input.set_timestamp(int64_t(1559146613));
     input.set_private_key(privateKey.data(), privateKey.size());

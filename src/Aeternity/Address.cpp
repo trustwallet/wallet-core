@@ -38,12 +38,12 @@ Address::Address(const std::string& string) {
     }
 
     auto payload = string.substr(Identifiers::prefixAccountPubkey.size(), string.size());
-    bytes = Base58::bitcoin.decodeCheck(payload);
+    bytes = Base58::decodeCheck(payload);
 }
 
 /// Returns a string representation of the Aeternity address.
 std::string Address::string() const {
-    return Identifiers::prefixAccountPubkey + Base58::bitcoin.encodeCheck(bytes);
+    return Identifiers::prefixAccountPubkey + Base58::encodeCheck(bytes);
 }
 
 bool Address::checkType(const std::string& type) {
@@ -51,7 +51,7 @@ bool Address::checkType(const std::string& type) {
 }
 
 bool Address::checkPayload(const std::string& payload) {
-    unsigned long base58 = Base58::bitcoin.decodeCheck(payload).size();
+    unsigned long base58 = Base58::decodeCheck(payload).size();
     return base58 == size;
 }
 

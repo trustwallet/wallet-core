@@ -34,13 +34,13 @@ Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::stri
         data.push_back(static_cast<uint8_t>(0));
     } else {
         data.push_back(static_cast<uint8_t>(1));
-        append(data, Base58::bitcoin.decode(asset));
+        append(data, Base58::decode(asset));
     }
     if (fee_asset == Transaction::WAVES) {
         data.push_back(static_cast<uint8_t>(0));
     } else {
         data.push_back(static_cast<uint8_t>(1));
-        append(data, Base58::bitcoin.decode(fee_asset));
+        append(data, Base58::decode(fee_asset));
     }
     encode64BE(timestamp, data);
     encode64BE(amount, data);
@@ -86,9 +86,9 @@ json jsonTransfer(const Data& signature, int64_t amount, const std::string& asse
     jsonTx["type"] = TransactionType::transfer;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
-    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
+    jsonTx["senderPublicKey"] = Base58::encode(pub_key);
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
+    jsonTx["proofs"] = json::array({Base58::encode(signature)});
     jsonTx["recipient"] = Address(to).string();
     if (asset != Transaction::WAVES) {
         jsonTx["assetId"] = asset;
@@ -97,7 +97,7 @@ json jsonTransfer(const Data& signature, int64_t amount, const std::string& asse
         jsonTx["feeAssetId"] = fee_asset;
     }
     jsonTx["amount"] = amount;
-    jsonTx["attachment"] = Base58::bitcoin.encode(attachment);
+    jsonTx["attachment"] = Base58::encode(attachment);
 
     return jsonTx;
 }
@@ -108,9 +108,9 @@ json jsonLease(const Data& signature, int64_t amount, int64_t fee, Address to, i
     jsonTx["type"] = TransactionType::lease;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
-    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
+    jsonTx["senderPublicKey"] = Base58::encode(pub_key);
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
+    jsonTx["proofs"] = json::array({Base58::encode(signature)});
     jsonTx["recipient"] = Address(to).string();
     jsonTx["amount"] = amount;
 
@@ -123,11 +123,11 @@ json jsonCancelLease(const Data& signature, const Data& leaseId, int64_t fee, in
     jsonTx["type"] = TransactionType::cancelLease;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
-    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
-    jsonTx["leaseId"] = Base58::bitcoin.encode(leaseId);
+    jsonTx["senderPublicKey"] = Base58::encode(pub_key);
+    jsonTx["leaseId"] = Base58::encode(leaseId);
     jsonTx["chainId"] = 87; // mainnet
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
+    jsonTx["proofs"] = json::array({Base58::encode(signature)});
 
     return jsonTx;
 }
@@ -152,7 +152,7 @@ Data Transaction::serializeToSign() const {
         return serializeLease(message.amount(), message.fee(), Address(message.to()), input.timestamp(), pub_key);
     } else if (input.has_cancel_lease_message()) {
         auto message = input.cancel_lease_message();
-        auto leaseId = Base58::bitcoin.decode(message.lease_id());
+        auto leaseId = Base58::decode(message.lease_id());
         return serializeCancelLease(leaseId, message.fee(), input.timestamp(), pub_key);
     }
 
@@ -184,7 +184,7 @@ json Transaction::buildJson(const Data& signature) const {
             pub_key);
     } else if (input.has_cancel_lease_message()) {
         auto message = input.cancel_lease_message();
-        auto leaseId = Base58::bitcoin.decode(message.lease_id());
+        auto leaseId = Base58::decode(message.lease_id());
         return jsonCancelLease(
             signature,
             leaseId,

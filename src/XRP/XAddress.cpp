@@ -15,7 +15,7 @@ namespace TW::Ripple {
 const Data prefixMainnet = {0x05, 0x44};
 
 bool XAddress::isValid(const std::string& string) {
-    const auto decoded = Base58::ripple.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Ripple);
     if (decoded.size() != XAddress::size) {
         return false;
     }
@@ -32,7 +32,7 @@ XAddress::XAddress(const std::string& string) {
     if (!XAddress::isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
-    const auto decoded = Base58::ripple.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Ripple);
     std::copy(decoded.begin() + prefixMainnet.size(), decoded.begin() + prefixMainnet.size() + XAddress::keyHashSize, bytes.begin());
     if (decoded[22] == byte(TagFlag::classic)) {
         tag = decode32LE(Data(decoded.end() - 8, decoded.end() - 4).data());
@@ -57,7 +57,7 @@ std::string XAddress::string() const {
     append(result, byte(flag));
     encode32LE(tag, result);
     append(result, Data{0x00, 0x00, 0x00, 0x00});
-    return Base58::ripple.encodeCheck(result);
+    return Base58::encodeCheck(result, Base58Alphabet::Ripple);
 }
 
 } // namespace TW::Ripple

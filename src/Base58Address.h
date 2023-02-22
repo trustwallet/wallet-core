@@ -33,7 +33,7 @@ class Base58Address {
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string) {
-        const auto decoded = Base58::bitcoin.decodeCheck(string);
+        const auto decoded = Base58::decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
             return false;
         }
@@ -43,7 +43,7 @@ class Base58Address {
     /// Determines whether a string makes a valid address, and the prefix is
     /// within the valid set.
     static bool isValid(const std::string& string, const std::vector<Data>& validPrefixes) {
-        const auto decoded = Base58::bitcoin.decodeCheck(string);
+        const auto decoded = Base58::decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
             return false;
         }
@@ -59,7 +59,7 @@ class Base58Address {
 
     /// Initializes an address with a string representation.
     explicit Base58Address(const std::string& string) {
-        const auto decoded = Base58::bitcoin.decodeCheck(string);
+        const auto decoded = Base58::decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
             throw std::invalid_argument("Invalid address string");
         }
@@ -86,7 +86,7 @@ class Base58Address {
 
     /// Returns a string representation of the address.
     std::string string() const {
-        return Base58::bitcoin.encodeCheck(bytes);
+        return Base58::encodeCheck(bytes);
     }
 };
 

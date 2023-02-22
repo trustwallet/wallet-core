@@ -11,7 +11,7 @@
 namespace TW::Ripple {
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::ripple.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Ripple);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -19,7 +19,7 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const std::string& string) {
-    const auto decoded = Base58::ripple.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Ripple);
     if (decoded.size() != Address::size) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -33,7 +33,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::ripple.encodeCheck(bytes);
+    return Base58::encodeCheck(bytes, Base58Alphabet::Ripple);
 }
 
 } // namespace TW::Ripple

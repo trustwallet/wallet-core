@@ -30,7 +30,7 @@ std::optional<Data> Address::decodeLegacyAddress(const std::string& string) {
         return {};
     }
 
-    const Data& decoded = Base58::bitcoin.decode(string.substr(prefix.size()));
+    const Data& decoded = Base58::decode(string.substr(prefix.size()));
     return Data(decoded.begin(), decoded.end() - 4);
 }
 

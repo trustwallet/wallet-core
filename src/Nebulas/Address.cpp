@@ -12,7 +12,7 @@
 namespace TW::Nebulas {
 
 bool Address::isValid(const std::string& string) {
-    auto data = Base58::bitcoin.decode(string);
+    auto data = Base58::decode(string);
     if (data.size() != (size_t)Address::size) {
         return false;
     }
@@ -35,7 +35,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    auto data = Base58::bitcoin.decode(string);
+    auto data = Base58::decode(string);
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
@@ -60,7 +60,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return Base58::encode(bytes);
 }
 
 } // namespace TW::Nebulas

@@ -8,64 +8,53 @@
 
 #include "Data.h"
 #include "Hash.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
-#include <array>
 #include <string>
 
-namespace TW {
-
-class Base58 {
-  public:
-    /// Base58 coder with Bitcoin character map.
-    static Base58 bitcoin;
-
-    /// Base58 coder with Ripple character map.
-    static Base58 ripple;
-
-  public:
-    /// Ordered list of valid characters.
-    const std::array<char, 58> digits;
-
-    /// Maps characters to base58 values.
-    const std::array<signed char, 128> characterMap;
-
-    /// Initializes a Base58 class with custom digit mapping.
-    Base58(const std::array<char, 58>& digits, const std::array<signed char, 128>& characterMap)
-        : digits(digits), characterMap(characterMap) {}
-
-    /// Decodes a base 58 string verifying the checksum, returns empty on failure.
-    Data decodeCheck(const std::string& string, Hash::Hasher hasher = Hash::HasherSha256d) const {
-        return decodeCheck(string.data(), string.data() + string.size(), hasher);
-    }
-
-    /// Decodes a base 58 string verifying the checksum, returns empty on failure.
-    Data decodeCheck(const char* begin, const char* end, Hash::Hasher hasher = Hash::HasherSha256d) const;
-
+namespace TW::Base58 {
     /// Decodes a base 58 string into `result`, returns `false` on failure.
-    Data decode(const std::string& string) const {
-        return decode(string.data(), string.data() + string.size());
+    static inline Data decode(const std::string& string, Base58Alphabet alphabet = Base58Alphabet::Bitcoin)  {
+        if (string.empty()) {
+            return {};
+        }
+        auto decoded = decode_base58(string.c_str(), alphabet);
+        if (decoded.data == nullptr || decoded.size == 0) {
+            return {};
+        }
+        Data decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
+        std::free(decoded.data);
+        return decoded_vec;
     }
 
-    /// Decodes a base 58 string into `result`, returns `false` on failure.
-    Data decode(const char* begin, const char* end) const;
+    static inline Data decodeCheck(const std::string& string, Base58Alphabet alphabet = Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {
+        auto result = decode(string, alphabet);
+        if (result.size() < 4) {
+            return {};
+        }
 
-    /// Encodes data as a base 58 string with a checksum.
+        // re-calculate the checksum, ensure it matches the included 4-byte checksum
+        auto hash = Hash::hash(hasher, result.data(), result.size() - 4);
+        if (!std::equal(hash.begin(), hash.begin() + 4, result.end() - 4)) {
+            return {};
+        }
+
+        return Data(result.begin(), result.end() - 4);
+    }
+
     template <typename T>
-    std::string encodeCheck(const T& data, Hash::Hasher hasher = Hash::HasherSha256d) const {
-        return encodeCheck(data.data(), data.data() + data.size(), hasher);
+    static inline std::string encode(const T& data, Base58Alphabet alphabet = Base58Alphabet::Bitcoin) {
+        auto encoded = encode_base58(data.data(), data.size(), alphabet);
+        std::string encoded_str(encoded);
+        free_string(encoded);
+        return encoded_str;
     }
 
-    /// Encodes data as a base 58 string with a checksum.
-    std::string encodeCheck(const byte* pbegin, const byte* pend, Hash::Hasher hasher = Hash::HasherSha256d) const;
-
-    /// Encodes data as a base 58 string.
     template <typename T>
-    std::string encode(const T& data) const {
-        return encode(data.data(), data.data() + data.size());
+    static inline std::string encodeCheck(const T& data, Base58Alphabet alphabet = Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {
+        auto hash = Hash::hash(hasher, data);
+        Data toBeEncoded(std::begin(data), std::end(data));
+        toBeEncoded.insert(toBeEncoded.end(), hash.begin(), hash.begin() + 4);
+        return encode(toBeEncoded, alphabet);
     }
-
-    /// Encodes data as a base 58 string.
-    std::string encode(const byte* pbegin, const byte* pend) const;
-};
-
-} // namespace TW
+}

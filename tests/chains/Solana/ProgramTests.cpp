@@ -27,14 +27,14 @@ TEST(SolanaStakeProgram, addressFromValidatorSeed) {
 TEST(SolanaStakeProgram, addressFromRecentBlockhash) {
     {
         auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
-        Data recentBlockhash = Base58::bitcoin.decode("11111111111111111111111111111111");
+        Data recentBlockhash = Base58::decode("11111111111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
         auto expected = Address("GQDDc5EVGJZFC7AvpEJ8eoCQ75Yy4gr7eu17frCjvQRQ");
         EXPECT_EQ(StakeProgram::addressFromRecentBlockhash(user, recentBlockhash, programId), expected);
     }
     {
         auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
-        Data recentBlockhash = Base58::bitcoin.decode("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+        Data recentBlockhash = Base58::decode("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
         auto programId = Address("Stake11111111111111111111111111111111111111");
         auto expected = Address("2Kos1xJRBq3Ae1GnVNBx7HgJhq8KvdUe2bXE4QGdNaXb");
         EXPECT_EQ(StakeProgram::addressFromRecentBlockhash(user, recentBlockhash, programId), expected);
@@ -49,9 +49,9 @@ TEST(SolanaTokenProgram, defaultTokenAddress) {
 
 TEST(SolanaTokenProgram, findProgramAddress) {
     std::vector<Data> seeds = {
-        Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
-        Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-        Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
+        Base58::decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
+        Base58::decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+        Base58::decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
     };
     {
         Address address = TokenProgram::findProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
@@ -65,9 +65,9 @@ TEST(SolanaTokenProgram, findProgramAddress) {
 
 TEST(SolanaTokenProgram, createProgramAddress) {
     std::vector<Data> seeds4 = {
-        Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
-        Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-        Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
+        Base58::decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
+        Base58::decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+        Base58::decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
         Data{255}};
     {
         Address address = TokenProgram::createProgramAddress(seeds4, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
@@ -89,7 +89,7 @@ TEST(SolanaTokenProgram, createProgramAddress) {
         EXPECT_EQ(address.string(), "HwRVBufQ4haG5XSgpspwKtNd3PC9GM9m1196uJW36vds");
     }
     {
-        std::vector<Data> seeds = {Base58::bitcoin.decode("SeedPubey1111111111111111111111111111111111")};
+        std::vector<Data> seeds = {Base58::decode("SeedPubey1111111111111111111111111111111111")};
         Address address = TokenProgram::createProgramAddress(seeds, Address("BPFLoader1111111111111111111111111111111111"));
         EXPECT_EQ(address.string(), "GUs5qLUfsEHkcMB9T38vjr18ypEhRuNWiePW2LoK4E3K");
     }

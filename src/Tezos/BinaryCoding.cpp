@@ -16,7 +16,7 @@
 namespace TW::Tezos {
 
 std::string base58ToHex(const std::string& string, size_t prefixLength) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string);
     if (decoded.size() < prefixLength) {
         return "";
     }
@@ -25,7 +25,7 @@ std::string base58ToHex(const std::string& string, size_t prefixLength) {
 }
 
 PublicKey parsePublicKey(const std::string& publicKey) {
-    const auto decoded = Base58::bitcoin.decodeCheck(publicKey);
+    const auto decoded = Base58::decodeCheck(publicKey);
 
     std::array<byte, 4> prefix = {13, 15, 37, 217};
     auto pk = Data();
@@ -39,7 +39,7 @@ PublicKey parsePublicKey(const std::string& publicKey) {
 }
 
 PrivateKey parsePrivateKey(const std::string& privateKey) {
-    const auto decoded = Base58::bitcoin.decodeCheck(privateKey);
+    const auto decoded = Base58::decodeCheck(privateKey);
     auto pk = Data();
     auto prefix_size = 4ul;
 

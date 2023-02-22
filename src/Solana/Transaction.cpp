@@ -24,7 +24,7 @@ std::string Transaction::serialize() const {
     }
     append(buffer, this->messageData());
 
-    return Base58::bitcoin.encode(buffer);
+    return Base58::encode(buffer);
 }
 
 Data Transaction::messageData() const {

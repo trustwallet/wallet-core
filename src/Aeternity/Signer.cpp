@@ -37,7 +37,7 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey& privateKey, Transaction&
 
     /// sign ed25519
     auto sigRaw = privateKey.sign(msg, TWCurveED25519);
-    auto signature = Identifiers::prefixSignature + Base58::bitcoin.encodeCheck(sigRaw);
+    auto signature = Identifiers::prefixSignature + Base58::encodeCheck(sigRaw);
 
     /// encode the message using rlp
     auto rlpTxRaw = buildRlpTxRaw(txRlp, sigRaw);

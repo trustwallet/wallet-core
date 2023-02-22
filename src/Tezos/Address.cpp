@@ -23,7 +23,7 @@ const std::array<TW::byte, 3> tz2Prefix{6, 161, 161};
 const std::array<TW::byte, 3> tz3Prefix{6, 161, 164};
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -50,7 +50,7 @@ Address::Address(const PublicKey& publicKey) {
 
 std::string Address::deriveOriginatedAddress(const std::string& operationHash, int operationIndex) {
     // Decode and remove 2 byte prefix.
-    auto decoded = Base58::bitcoin.decodeCheck(operationHash);
+    auto decoded = Base58::decodeCheck(operationHash);
     decoded.erase(decoded.begin(), decoded.begin() + 2);
     TW::encode32BE(operationIndex, decoded);
 
@@ -59,7 +59,7 @@ std::string Address::deriveOriginatedAddress(const std::string& operationHash, i
     auto prefix = Data({2, 90, 121});
     prefix.insert(prefix.end(), hash.begin(), hash.end());
 
-    return Base58::bitcoin.encodeCheck(prefix);
+    return Base58::encodeCheck(prefix);
 }
 
 Data Address::forge() const {

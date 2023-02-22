@@ -89,7 +89,7 @@ bool Address::extractKeyData(const std::string& string, Address* address) {
         return false;
     }
 
-    const Data& decodedBytes = Base58::bitcoin.decode(string.substr(prefixSize));
+    const Data& decodedBytes = Base58::decode(string.substr(prefixSize));
     if (decodedBytes.size() != KeyDataSize) {
         return false;
     }
@@ -139,7 +139,7 @@ Address::Address(const PublicKey& publicKey, Type type)
 
 /// Returns a string representation of the EOS address.
 std::string Address::string() const {
-    return prefix() + Base58::bitcoin.encode(keyData);
+    return prefix() + Base58::encode(keyData);
 }
 
 } // namespace TW::EOS

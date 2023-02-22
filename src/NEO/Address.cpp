@@ -17,7 +17,7 @@ using namespace TW;
 namespace TW::NEO {
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string);
     return !(decoded.size() != Address::size || decoded[0] != version);
 }
 

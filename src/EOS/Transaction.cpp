@@ -57,7 +57,7 @@ std::string Signature::string() const noexcept {
         buffer.push_back(hash[i]);
     }
 
-    return prefix + TW::Base58::bitcoin.encode(buffer);
+    return prefix + TW::Base58::encode(buffer);
 }
 
 void Extension::serialize(Data& os) const noexcept {
