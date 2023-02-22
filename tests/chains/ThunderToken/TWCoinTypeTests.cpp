@@ -14,21 +14,21 @@
 
 
 TEST(TWThunderTokenCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeThunderToken));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeThunderCore));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeThunderToken, txId.get()));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeThunderCore, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeThunderToken, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderToken));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderToken));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeThunderCore, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderCore));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderCore));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeThunderToken));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeThunderToken));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeThunderToken));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderCore), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeThunderCore));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeThunderCore));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeThunderCore));
     assertStringsEqual(symbol, "TT");
     assertStringsEqual(txUrl, "https://scan.thundercore.com/transactions/t123");
     assertStringsEqual(accUrl, "https://scan.thundercore.com/address/a12");
     assertStringsEqual(id, "thundertoken");
-    assertStringsEqual(name, "Thunder Token");
+    assertStringsEqual(name, "ThunderCore");
 }

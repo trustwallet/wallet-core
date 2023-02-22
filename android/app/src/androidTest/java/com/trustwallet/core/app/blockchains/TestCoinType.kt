@@ -21,7 +21,7 @@ class TestCoinType {
         assertEquals(CoinType.LITECOIN.value(), 2)
         assertEquals(CoinType.TRON.value(), 195)
         assertEquals(CoinType.ETHEREUM.value(), 60)
-        assertEquals(CoinType.THUNDERTOKEN.value(), 1001)
+        assertEquals(CoinType.THUNDERCORE.value(), 1001)
         assertEquals(CoinType.WANCHAIN.value(), 5718350)
         assertEquals(CoinType.CALLISTO.value(), 820)
         assertEquals(CoinType.ETHEREUMCLASSIC.value(), 61)

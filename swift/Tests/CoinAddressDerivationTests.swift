@@ -190,7 +190,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .theta:
                     let expectedResult = "0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .thunderToken:
+                case .thunderCore:
                     let expectedResult = "0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tomoChain:
