@@ -14,7 +14,7 @@ class CoinTypeTests: XCTestCase {
         XCTAssertEqual(CoinType.litecoin.rawValue, 2)
         XCTAssertEqual(CoinType.tron.rawValue, 195)
         XCTAssertEqual(CoinType.ethereum.rawValue, 60)
-        XCTAssertEqual(CoinType.thunderToken.rawValue, 1001)
+        XCTAssertEqual(CoinType.thunderCore.rawValue, 1001)
         XCTAssertEqual(CoinType.wanchain.rawValue, 5718350)
         XCTAssertEqual(CoinType.callisto.rawValue, 820)
         XCTAssertEqual(CoinType.ethereumClassic.rawValue, 61)

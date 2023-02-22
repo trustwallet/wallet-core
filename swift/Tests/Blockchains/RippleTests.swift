@@ -55,7 +55,7 @@ class RippleTests: XCTestCase {
             $0.lastLedgerSequence = 32268269
             $0.account = "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq"
             $0.privateKey = Data(hexString: "a5576c0f63da10e584568c8d134569ff44017b0a249eb70657127ae04f38cc77")!
-            $0.opPayment = operation
+            $0.opPayment = operation2
         }
         let output2: RippleSigningOutput = AnySigner.sign(input: input2, coin: .xrp)
         XCTAssertEqual(output2.encoded, output.encoded)
