@@ -194,12 +194,12 @@ void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
 // That order must be correct for the Transaction to succeed on Solana
 Data Signer::signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData) {
     std::vector<Data> signatures;
-    for (auto privateKey : privateKeys) {
+    for (auto &&privateKey : privateKeys) {
         signatures.emplace_back(privateKey.sign(messageData, TWCurveED25519));
     }
     Data buffer;
     append(buffer, shortVecLength<Data>(signatures));
-    for (auto signature : signatures) {
+    for (auto &&signature : signatures) {
         append(buffer, signature);
     }
     append(buffer, messageData);

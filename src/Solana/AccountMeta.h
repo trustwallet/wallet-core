@@ -14,7 +14,7 @@ struct AccountMeta {
     Address account;
     bool isSigner;
     bool isReadOnly;
-    AccountMeta(const Address& address, bool isSigner, bool isReadOnly): account(address), isSigner(isSigner), isReadOnly(isReadOnly) {}
+    AccountMeta(const Address& address, bool isSigner, bool isReadOnly) noexcept : account(address), isSigner(isSigner), isReadOnly(isReadOnly) {}
 };
 
 }

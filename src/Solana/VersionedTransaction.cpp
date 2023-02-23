@@ -13,7 +13,7 @@ std::string VersionedTransaction::serialize() const {
     Data buffer;
 
     append(buffer, shortVecLength<Data>(this->signatures));
-    for (auto signature : this->signatures) {
+    for (auto &&signature : this->signatures) {
         append(buffer, signature);
     }
     append(buffer, this->messageData());
