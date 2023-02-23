@@ -8,7 +8,6 @@
 
 #include "Solana/Address.h"
 #include "Solana/LegacyMessage.h"
-#include "Solana/Signature.h"
 #include "Data.h"
 #include "BinaryCoding.h"
 
@@ -20,18 +19,18 @@ namespace TW::Solana {
 class Transaction {
   public:
     // Signatures
-    std::vector<Signature> signatures;
+    std::vector<Data> signatures;
     // The message to sign
     LegacyMessage message;
 
     Transaction(const LegacyMessage& message) : message(message) {
-        this->signatures.resize(message.header.numRequiredSignatures, Signature(defaultSignature));
+        this->signatures.resize(message.header.numRequiredSignatures, defaultSignature);
     }
 
     // Default basic transfer transaction
     Transaction(const Address& from, const Address& to, uint64_t value, Data recentBlockhash, std::string memo = "", std::vector<Address> references = {})
         : message(LegacyMessage::createTransfer(from, to, value, recentBlockhash, memo, references)) {
-        this->signatures.resize(1, Signature(defaultSignature));
+        this->signatures.resize(1, defaultSignature);
     }
 
   public:

@@ -34,8 +34,7 @@ TEST(SolanaTransaction, TransferSerializeTransaction) {
     auto to = Address("4iSnyfDKaejniaPc2pBBckwQqV3mDS93go15NdxWJq2y");
     auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto transaction = Transaction(from, to, 42, recentBlockhash);
-    Signature signature(
-        "46SRiQGvtPb1iivDfnuC3dW1GzXkfQPTjdUyvFqF2sdPvFrsfx94fys2xpNKR6UiAj7RgKWdJG6mEfe85up6i1JT");
+    auto signature = Base58::decode("46SRiQGvtPb1iivDfnuC3dW1GzXkfQPTjdUyvFqF2sdPvFrsfx94fys2xpNKR6UiAj7RgKWdJG6mEfe85up6i1JT");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
 
@@ -52,7 +51,7 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
     auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     auto recentBlockhash = Base58::decode("11111111111111111111111111111111");
     auto transaction = Transaction(from, to, 42, recentBlockhash);
-    Signature signature(
+    auto signature = Base58::decode(
         "3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
@@ -71,7 +70,7 @@ TEST(SolanaTransaction, TransferWithMemoAndReferenceTransaction) {
     const auto memo = "HelloSolana73";
     std::vector<Address> references = {Address("GaeTAQZyhVEocTC7iY8GztSyY5cBAJTkAUUA1kLFLMV")};
     auto transaction = Transaction(from, to, 42, recentBlockhash, memo, references);
-    const Signature signature("3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
+    auto signature = Base58::decode("3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
 
@@ -87,7 +86,7 @@ TEST(SolanaTransaction, StakeSerializeTransactionV2) {
     auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
     auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
-    Signature signature(
+    auto signature = Base58::decode(
         "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
@@ -104,7 +103,7 @@ TEST(SolanaTransaction, StakeSerializeTransactionV1) {
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
     auto message = LegacyMessage::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
-    Signature signature(
+    auto signature = Base58::decode(
         "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
@@ -143,7 +142,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.instructions[0].accounts[6].account.string(), "SysvarRent111111111111111111111111111111111");
     auto transaction = Transaction(message);
     transaction.signatures.clear();
-    Signature signature("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
+    auto signature = Base58::decode("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
     transaction.signatures.push_back(signature);
 
     auto expectedString =
@@ -170,7 +169,7 @@ TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     ASSERT_EQ(message.instructions[0].accounts.size(), 4ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
-    Signature signature("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");
+    auto signature = Base58::decode("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");
     transaction.signatures.push_back(signature);
 
     auto expectedString =
