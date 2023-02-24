@@ -21,14 +21,14 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer();
     PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Data encoded;
-    if (input.blind_signing().empty()) {
+    if (input.encoded_operations().empty()) {
         auto operationList = Tezos::OperationList(input.operation_list().branch());
         for (Proto::Operation operation : input.operation_list().operations()) {
             operationList.addOperation(operation);
         }
         encoded = signer.signOperationList(key, operationList);
     } else {
-        encoded = signer.signData(key, parse_hex(input.blind_signing()));
+        encoded = signer.signData(key, TW::data(input.encoded_operations()));
     }
 
     auto output = Proto::SigningOutput();
