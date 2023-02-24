@@ -9,8 +9,11 @@ message SigningInput {
   // One or more operations
   OperationList operation_list = 1;
 
+  // Encoded operation bytes obtained with $RPC_URL/chains/main/blocks/head/helpers/forge/operations, operation_list will be ignored.
+  bytes encoded_operations = 2;
+
   // The secret private key used for signing (32 bytes).
-  bytes private_key = 2;
+  bytes private_key = 3;
 }
 
 // Result containing the signed and encoded transaction.
