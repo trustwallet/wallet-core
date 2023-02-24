@@ -11,6 +11,9 @@ message SigningInput {
 
   // The secret private key used for signing (32 bytes).
   bytes private_key = 2;
+
+  // Sign blind json bytes obtained with $RPC_URL/chains/main/blocks/head/helpers/forge/operations
+  string blind_signing = 3;
 }
 
 // Result containing the signed and encoded transaction.
