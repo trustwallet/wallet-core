@@ -23,6 +23,9 @@ kotlin {
         homepage = "Link to the Shared Module homepage"
         version = "1.0"
         ios.deploymentTarget = "14.1"
+        dependencies {
+            pod("TrustWalletCore", moduleName = "WalletCore")
+        }
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
@@ -32,8 +35,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.trustwallet:wallet-core-kotlin:3.1.15")
-//                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("com.trustwallet:wallet-core-kotlin:3.1.17")
             }
         }
         val commonTest by getting {
@@ -70,28 +72,5 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 33
-    }
-}
-
-allprojects {
-    val properties = Properties()
-    val localProps = project.rootProject.file("local.properties")
-    if (localProps.exists()) {
-        properties.load(localProps.inputStream())
-        println("Authenticating user: " + properties.getProperty("gpr.user"))
-    } else {
-        println("local.properties not found, please create it next to build.gradle and set gpr.user and gpr.key (Create a GitHub package read only + non expiration token at https://github.com/settings/tokens)\n" +
-                "Or set GITHUB_USER and GITHUB_TOKEN environment variables")
-    }
-    repositories {
-        google()
-        mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/trustwallet/wallet-core")
-            credentials {
-                username = properties["gpr.user"] as? String?: System.getenv("GITHUB_USER")
-                password = properties["gpr.key"] as? String?: System.getenv("GITHUB_TOKEN")
-            }
-        }
     }
 }

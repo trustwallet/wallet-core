@@ -91,7 +91,7 @@ Please check out the [Go integration sample](https://github.com/trustwallet/wall
 
 ## Kotlin Multipleplatform (beta)
 
-TBD
+Please check out the [Kotlin Multiplatform sample](https://github.com/trustwallet/wallet-core/tree/master/samples/kmp)
 
 # Projects
 
