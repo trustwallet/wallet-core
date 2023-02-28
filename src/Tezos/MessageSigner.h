@@ -6,14 +6,28 @@
 
 #pragma once
 
+#include "PrivateKey.h"
 #include "Data.h"
 
 namespace TW::Tezos {
     class MessageSigner {
     public:
-        // implement format input as described in https://tezostaquito.io/docs/signing/
+        /// implement format input as described in https://tezostaquito.io/docs/signing/
+        /// \param message message to format e.g: Hello, World
+        /// \param dAppUrl the app url, e.g: testUrl
+        /// \return the formatted message as a string
         static std::string formatMessage(const std::string& message, const std::string& dAppUrl);
-        // implement input to payload as described in: https://tezostaquito.io/docs/signing/
+
+        /// implement input to payload as described in: https://tezostaquito.io/docs/signing/
+        ///
+        /// \param input formated input to be turned into an hex payload
+        /// \return the hexpayload of the formated input as a hex string
         static std::string inputToPayload(const std::string& input);
+
+        /// implement signing as described in https://tezostaquito.io/docs/signing/
+        /// \param privateKey the private key to sign with
+        /// \param message message to sign
+        /// \return base58 signed message
+        static std::string signMessage(const PrivateKey& privateKey, const std::string& message);
     };
 }

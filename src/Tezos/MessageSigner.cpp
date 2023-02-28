@@ -10,10 +10,14 @@
 #include <iostream>
 #include <sstream>
 
+#include "Base58.h"
 #include "HexCoding.h"
 #include "Tezos/MessageSigner.h"
 
 namespace TW::Tezos {
+
+static const Data gEdSigPrefix{9, 245, 205, 134, 18};
+static const std::string gMsgPrefix{"Tezos Signed Message:"};
 
 std::string MessageSigner::inputToPayload(const std::string& input) {
     using namespace std::string_literals;
@@ -26,15 +30,19 @@ std::string MessageSigner::inputToPayload(const std::string& input) {
 }
 
 std::string MessageSigner::formatMessage(const std::string& message, const std::string& dAppUrl) {
-    const std::string prefix = "Tezos Signed Message:";
     auto now = std::chrono::system_clock::now();
     auto now_time = std::chrono::system_clock::to_time_t(now);
     auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
     std::ostringstream oss;
-    oss << prefix << " " << dAppUrl << " ";
+    oss << gMsgPrefix << " " << dAppUrl << " ";
     oss << std::put_time(std::gmtime(&now_time), "%FT%T.") << std::setw(3) << std::setfill('0') << now_ms.count() << "Z";
     oss << " " << message;
     return oss.str();
+}
+
+std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message) {
+    auto signature = privateKey.sign(Hash::blake2b(parse_hex(message), 32), TWCurveED25519);
+    return Base58::encodeCheck(concat(gEdSigPrefix, signature));
 }
 
 } // namespace TW::Tezos
