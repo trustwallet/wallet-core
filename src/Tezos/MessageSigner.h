@@ -9,8 +9,11 @@
 #include "Data.h"
 
 namespace TW::Tezos {
-    // implement format input as described in https://tezostaquito.io/docs/signing/
-    std::string formatMessage(const std::string& message, const std::string& dAppUrl);
-    // implement input to payload as described in: https://tezostaquito.io/docs/signing/
-    std::string inputToPayload(const std::string& input);
+    class MessageSigner {
+    public:
+        // implement format input as described in https://tezostaquito.io/docs/signing/
+        static std::string formatMessage(const std::string& message, const std::string& dAppUrl);
+        // implement input to payload as described in: https://tezostaquito.io/docs/signing/
+        static std::string inputToPayload(const std::string& input);
+    };
 }

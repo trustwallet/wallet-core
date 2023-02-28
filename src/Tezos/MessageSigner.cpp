@@ -15,7 +15,7 @@
 
 namespace TW::Tezos {
 
-std::string inputToPayload(const std::string& input) {
+std::string MessageSigner::inputToPayload(const std::string& input) {
     using namespace std::string_literals;
     auto bytes = data(input);
     size_t bytesLength = bytes.size();
@@ -25,7 +25,7 @@ std::string inputToPayload(const std::string& input) {
     return payloadBytes;
 }
 
-std::string formatMessage(const std::string& message, const std::string& dAppUrl) {
+std::string MessageSigner::formatMessage(const std::string& message, const std::string& dAppUrl) {
     const std::string prefix = "Tezos Signed Message:";
     auto now = std::chrono::system_clock::now();
     auto now_time = std::chrono::system_clock::to_time_t(now);
