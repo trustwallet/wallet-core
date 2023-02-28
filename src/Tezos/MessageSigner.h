@@ -29,5 +29,12 @@ namespace TW::Tezos {
         /// \param message message to sign
         /// \return base58 signed message
         static std::string signMessage(const PrivateKey& privateKey, const std::string& message);
+
+        /// implement verification as described in https://tezostaquito.io/docs/signing/
+        /// \param publicKey publickey to verify the signed message
+        /// \param message message to be verified as a string
+        /// \param signature signature to verify the message against
+        /// \return true if the message match the signature, false otherwise
+        static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;;
     };
 }

@@ -27,5 +27,6 @@ namespace TW::Tezos::tests {
         auto result = Tezos::MessageSigner::signMessage(privKey, payload);
         auto expected = "edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ";
         ASSERT_EQ(result, expected);
+        ASSERT_TRUE(Tezos::MessageSigner::verifyMessage(privKey.getPublicKey(TWPublicKeyTypeED25519), payload, result));
     }
 }
