@@ -114,6 +114,37 @@ TEST(TronSigner, SignFreezeBalanceV2) {
     ASSERT_EQ(hex(output.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
 }
 
+TEST(TronSigner, WithdrawExpireUnfreezeContract) {
+    // Successfully broadcasted https://nile.tronscan.org/#/transaction/65ff34192eebda9ba7013771ff2da1010615e348b70c046647f41afe865f00eb
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& freeze = *transaction.mutable_withdraw_expire_unfreeze();
+    freeze.set_owner_address("TWWb9EjUWai17YEVB7FR8hreupYJKG9sMR");
+
+    transaction.set_timestamp(1677574466457);
+    transaction.set_expiration(1677574524000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1677574410000);
+    const auto txTrieRoot = parse_hex("0000000000000000000000000000000000000000000000000000000000000000");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000020fce45738ef00be07c350c03d027851308bc19d61c32312c673d3d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(34590278);
+    const auto witnessAddress = parse_hex("41e7860196ad5b5718c1d6326babab039b70b8c1cd");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(27);
+
+    const auto privateKey = PrivateKey(parse_hex("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "65ff34192eebda9ba7013771ff2da1010615e348b70c046647f41afe865f00eb");
+    ASSERT_EQ(hex(output.signature()), "ef0361248c118b8afae9c4c8e6dfad1e63eec4fb6c182ae369fa3bbecc2ac29a292838949ad74300b2b7322a110ffd4458224e283181cf6d64df0324b068bb0001");
+}
+
 TEST(TronSigner, SignUnFreezeBalanceV2) {
     // Successfully broadcasted https://nile.tronscan.org/#/transaction/3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb
     auto input = Proto::SigningInput();

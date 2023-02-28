@@ -73,7 +73,7 @@ protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& 
 protocol::FreezeBalanceV2Contract to_internal(const Proto::FreezeBalanceV2Contract& freezeContract) {
     auto internal = protocol::FreezeBalanceV2Contract();
     auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::bitcoin.decodeCheck(freezeContract.owner_address());
+    const auto ownerAddress = Base58::decodeCheck(freezeContract.owner_address());
 
     protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
 
@@ -102,7 +102,7 @@ protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContra
 protocol::UnfreezeBalanceV2Contract to_internal(const Proto::UnfreezeBalanceV2Contract& unfreezeContract) {
     auto internal = protocol::UnfreezeBalanceV2Contract();
     auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::bitcoin.decodeCheck(unfreezeContract.owner_address());
+    const auto ownerAddress = Base58::decodeCheck(unfreezeContract.owner_address());
 
     protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
 
@@ -116,8 +116,8 @@ protocol::UnfreezeBalanceV2Contract to_internal(const Proto::UnfreezeBalanceV2Co
 protocol::DelegateResourceContract to_internal(const Proto::DelegateResourceContract& delegateContract) {
     auto internal = protocol::DelegateResourceContract();
     auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::bitcoin.decodeCheck(delegateContract.owner_address());
-    const auto receiverAddress = Base58::bitcoin.decodeCheck(delegateContract.receiver_address());
+    const auto ownerAddress = Base58::decodeCheck(delegateContract.owner_address());
+    const auto receiverAddress = Base58::decodeCheck(delegateContract.receiver_address());
 
     protocol::ResourceCode_Parse(delegateContract.resource(), &resource);
 
@@ -133,8 +133,8 @@ protocol::DelegateResourceContract to_internal(const Proto::DelegateResourceCont
 protocol::UnDelegateResourceContract to_internal(const Proto::UnDelegateResourceContract& undelegateContract) {
     auto internal = protocol::UnDelegateResourceContract();
     auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::bitcoin.decodeCheck(undelegateContract.owner_address());
-    const auto receiverAddress = Base58::bitcoin.decodeCheck(undelegateContract.receiver_address());
+    const auto ownerAddress = Base58::decodeCheck(undelegateContract.owner_address());
+    const auto receiverAddress = Base58::decodeCheck(undelegateContract.receiver_address());
 
     protocol::ResourceCode_Parse(undelegateContract.resource(), &resource);
 
@@ -148,7 +148,7 @@ protocol::UnDelegateResourceContract to_internal(const Proto::UnDelegateResource
 
 protocol::WithdrawExpireUnfreezeContract to_internal(const Proto::WithdrawExpireUnfreezeContract& withdrawExpireUnfreezeContract) {
     auto internal = protocol::WithdrawExpireUnfreezeContract();
-    const auto ownerAddress = Base58::bitcoin.decodeCheck(withdrawExpireUnfreezeContract.owner_address());
+    const auto ownerAddress = Base58::decodeCheck(withdrawExpireUnfreezeContract.owner_address());
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     return internal;
 }
