@@ -18,7 +18,7 @@ val copyProtoTask = task<Copy>("copyProtos") {
             .listFiles { file -> file.extension == "proto" }
             .orEmpty()
             .forEach { file ->
-                val packageName = file.nameWithoutExtension.toLowerCase()
+                val packageName = file.nameWithoutExtension.lowercase()
                 file
                     .readText()
                     .replaceFirst(

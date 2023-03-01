@@ -1,7 +1,7 @@
 <%= render('kotlin/package.erb') %>
 
 actual enum class <%= entity.name %>(
-    internal val _value: dynamic,
+    val jsValue: Js<%= entity.name %>,
 ) {
 <%# Cases -%>
 <%  entity.cases.each_with_index do |c, i| -%>
@@ -12,21 +12,21 @@ actual enum class <%= entity.name %>(
 <%- entity.properties.each do |property| -%>
 
     actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
-        get() = <%= KotlinHelper.convert_calling_return_type_js(property.return_type, "WalletCore.Instance.#{entity.name}Ext.#{WasmCppHelper.function_name(entity: entity, function: property)}(_value)") %>
+        get() = <%= KotlinHelper.convert_calling_return_type_js(property.return_type, "WalletCore.Instance.#{entity.name}Ext.#{WasmCppHelper.function_name(entity: entity, function: property)}(jsValue)") %>
 <%- end -%>
 <%# Method declarations -%>
 <%- entity.methods.each do |method| -%>
 <%-   next if method.name.start_with?('Delete') -%>
 
     actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
-        <%= KotlinHelper.convert_calling_return_type_js(method.return_type, "WalletCore.Instance.#{entity.name}Ext.#{WasmCppHelper.function_name(entity: entity, function: method)}(_value#{', ' if not method.parameters.one?}#{KotlinHelper.calling_parameters_js(method.parameters.drop(1))})") %>
+        <%= KotlinHelper.convert_calling_return_type_js(method.return_type, "WalletCore.Instance.#{entity.name}Ext.#{WasmCppHelper.function_name(entity: entity, function: method)}(jsValue#{', ' if not method.parameters.one?}#{KotlinHelper.calling_parameters_js(method.parameters.drop(1))})") %>
 <%- end -%>
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>
 
-    internal companion object {
-        internal fun fromValue(value: dynamic): <%= entity.name %>? =
-            values().firstOrNull { it._value == value }
+    companion object {
+        fun fromValue(jsValue: Js<%= entity.name %>): <%= entity.name %> =
+            values().first { it.jsValue.value == jsValue.value }
     }
 <%  end -%>
 }

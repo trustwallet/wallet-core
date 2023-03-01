@@ -97,6 +97,7 @@ if options.kotlin
   generator.render_kotlin_android
   generator.render_kotlin_ios
   generator.render_kotlin_js
+  generator.render_kotlin_js_accessors
   generator.render_kotlin_jni_h
   generator.render_kotlin_jni_c
 end
