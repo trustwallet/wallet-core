@@ -20,7 +20,7 @@ namespace TW::Tezos {
 
         /// implement input to payload as described in: https://tezostaquito.io/docs/signing/
         ///
-        /// \param input formated input to be turned into an hex payload
+        /// \param input formatted input to be turned into an hex payload
         /// \return the hexpayload of the formated input as a hex string
         static std::string inputToPayload(const std::string& input);
 
