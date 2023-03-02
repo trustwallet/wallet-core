@@ -70,6 +70,20 @@ protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& 
     return internal;
 }
 
+protocol::FreezeBalanceV2Contract to_internal(const Proto::FreezeBalanceV2Contract& freezeContract) {
+    auto internal = protocol::FreezeBalanceV2Contract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::decodeCheck(freezeContract.owner_address());
+
+    protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_frozen_balance(freezeContract.frozen_balance());
+
+    return internal;
+}
+
 protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContract& unfreezeContract) {
     auto internal = protocol::UnfreezeBalanceContract();
     auto resource = protocol::ResourceCode();
@@ -82,6 +96,60 @@ protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContra
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
 
+    return internal;
+}
+
+protocol::UnfreezeBalanceV2Contract to_internal(const Proto::UnfreezeBalanceV2Contract& unfreezeContract) {
+    auto internal = protocol::UnfreezeBalanceV2Contract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::decodeCheck(unfreezeContract.owner_address());
+
+    protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_unfreeze_balance(unfreezeContract.unfreeze_balance());
+
+    return internal;
+}
+
+protocol::DelegateResourceContract to_internal(const Proto::DelegateResourceContract& delegateContract) {
+    auto internal = protocol::DelegateResourceContract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::decodeCheck(delegateContract.owner_address());
+    const auto receiverAddress = Base58::decodeCheck(delegateContract.receiver_address());
+
+    protocol::ResourceCode_Parse(delegateContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
+    internal.set_balance(delegateContract.balance());
+    internal.set_lock(delegateContract.lock());
+
+    return internal;
+}
+
+protocol::UnDelegateResourceContract to_internal(const Proto::UnDelegateResourceContract& undelegateContract) {
+    auto internal = protocol::UnDelegateResourceContract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::decodeCheck(undelegateContract.owner_address());
+    const auto receiverAddress = Base58::decodeCheck(undelegateContract.receiver_address());
+
+    protocol::ResourceCode_Parse(undelegateContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
+    internal.set_balance(undelegateContract.balance());
+
+    return internal;
+}
+
+protocol::WithdrawExpireUnfreezeContract to_internal(const Proto::WithdrawExpireUnfreezeContract& withdrawExpireUnfreezeContract) {
+    auto internal = protocol::WithdrawExpireUnfreezeContract();
+    const auto ownerAddress = Base58::decodeCheck(withdrawExpireUnfreezeContract.owner_address());
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     return internal;
 }
 
@@ -229,13 +297,47 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         google::protobuf::Any any;
         any.PackFrom(freeze_balance);
         *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_freeze_balance_v2()) {
+        auto* contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceV2Contract);
+        auto freeze_balance = to_internal(input.transaction().freeze_balance_v2());
+        google::protobuf::Any any;
+        any.PackFrom(freeze_balance);
+        *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_balance()) {
         auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceContract);
-
         auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance());
         google::protobuf::Any any;
         any.PackFrom(unfreeze_balance);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_unfreeze_balance_v2()) {
+        auto* contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceV2Contract);
+        auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance_v2());
+        google::protobuf::Any any;
+        any.PackFrom(unfreeze_balance);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_withdraw_expire_unfreeze()) {
+        auto* contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_WithdrawExpireUnfreezeContract);
+        auto withdraw_expire_unfreeze = to_internal(input.transaction().withdraw_expire_unfreeze());
+        google::protobuf::Any any;
+        any.PackFrom(withdraw_expire_unfreeze);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_delegate_resource()) {
+        auto* contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_DelegateResourceContract);
+        auto delegate_resource = to_internal(input.transaction().delegate_resource());
+        google::protobuf::Any any;
+        any.PackFrom(delegate_resource);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_undelegate_resource()) {
+        auto* contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_UnDelegateResourceContract);
+        auto undelegate_resource = to_internal(input.transaction().undelegate_resource());
+        google::protobuf::Any any;
+        any.PackFrom(undelegate_resource);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_asset()) {
         auto* contract = internal.mutable_raw_data()->add_contract();

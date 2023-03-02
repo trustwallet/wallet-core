@@ -63,6 +63,62 @@ message FreezeBalanceContract {
     string receiver_address = 15;
 }
 
+// stake TRX to obtain TRON Power (voting rights) and bandwidth or energy.
+message FreezeBalanceV2Contract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+
+    // Amount of TRX to be staked, unit is sun, data type is uint256
+    int64 frozen_balance = 2;
+
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 3;
+}
+
+// Unstake TRX to release bandwidth and energy and at the same time TRON Power will be reduced and all corresponding votes will be canceled.
+message UnfreezeBalanceV2Contract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+    // Amount of TRX to be unstaked, unit is sun, data type is uint256
+    int64 unfreeze_balance = 2;
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 3;
+}
+
+// withdraw unfrozen balance
+message WithdrawExpireUnfreezeContract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+}
+
+// delegate resource
+message DelegateResourceContract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 2;
+    // Amount of TRX staked for resource to be delegated, unit is sun, data type is uint256
+    int64 balance = 3;
+    // Receiver address of resource to be delegated to
+    string receiver_address = 4;
+    // Whether it is locked, if it is set to true, the delegated resources cannot be undelegated within 3 days.
+    // When the lock time is not over, if the owner delegates the same resources using the lock to the same address,
+    // the lock time will be reset to 3 days
+    bool  lock = 5;
+}
+
+// undelegate resource
+message UnDelegateResourceContract {
+    // Address of transaction initiator, data type is string
+    string owner_address = 1;
+    // Resource type, "BANDWIDTH" or "ENERGY", data type is string
+    string resource = 2;
+    // Amount of TRX staked for resource to be undelegated, unit is sun, data type is uint256
+    int64 balance = 3;
+    // Receiver address of resource to be delegated to, data type is string
+    string receiver_address = 4;
+}
+
 // Unfreeze balance
 message UnfreezeBalanceContract {
     // Sender address
@@ -185,6 +241,11 @@ message Transaction {
         VoteWitnessContract vote_witness = 17;
         TriggerSmartContract trigger_smart_contract = 18;
         TransferTRC20Contract transfer_trc20_contract = 19;
+        FreezeBalanceV2Contract freeze_balance_v2 = 20;
+        UnfreezeBalanceV2Contract unfreeze_balance_v2 = 21;
+        WithdrawExpireUnfreezeContract withdraw_expire_unfreeze = 23;
+        DelegateResourceContract delegate_resource = 24;
+        UnDelegateResourceContract undelegate_resource = 25;
     }
 }
 
