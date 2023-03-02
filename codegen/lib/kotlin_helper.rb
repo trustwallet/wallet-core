@@ -20,6 +20,14 @@ module KotlinHelper
     names.join(', ')
   end
 
+  def self.js_parameters(params)
+    names = params.map do |param|
+      name = fix_name(param.name)
+      "#{name}: #{js_type(param.type)}"
+    end
+    names.join(', ')
+  end
+
   def self.calling_parameters_ios(params)
     names = params.map do |param|
       name = fix_name(param.name)
@@ -76,18 +84,24 @@ module KotlinHelper
   def self.convert_calling_type_js(t)
     case t.name
     when :data
-      "#{if t.is_nullable then '?' else '' end}.toUInt8Array()"
+      "#{if t.is_nullable then '?' else '' end}.asUInt8Array()"
+    when :uint8
+      ".toByte()"
+    when :uint16
+      ".toShort()"
+    when :uint32
+      ".toInt()"
     when :uint64
-      ".toUInt()"
+      ".toInt()"
     when :int64
       ".toInt()"
     when :size
-      ".toUInt()"
+      ".toInt()"
     else
       if t.is_enum
-        "#{if t.is_nullable then '?' else '' end}._value"
+        "#{if t.is_nullable then '?' else '' end}.jsValue"
       elsif t.is_class
-        "#{if t.is_nullable then '?' else '' end}._value"
+        "#{if t.is_nullable then '?' else '' end}.jsValue"
       else
         ''
       end
@@ -121,38 +135,38 @@ module KotlinHelper
     when :void
       expression
     when :data
-      "#{expression}.unsafeCast<UInt8Array#{nullable}>()#{nullable}.toByteArray()"
+      "#{expression}#{nullable}.asByteArray()"
     when :int
-      "#{expression}.unsafeCast<Number>().toInt()"
+      "#{expression}.toInt()"
     when :uint8
-      "#{expression}.unsafeCast<Number>().toByte().toUByte()"
+      "#{expression}.toByte().toUByte()"
     when :uint16
-      "#{expression}.unsafeCast<Number>().toShort().toUShort()"
+      "#{expression}.toShort().toUShort()"
     when :uint32
-      "#{expression}.unsafeCast<Number>().toInt().toUInt()"
+      "#{expression}.toInt().toUInt()"
     when :uint64
-      "#{expression}.unsafeCast<Number>().toLong().toULong()"
+      "#{expression}.toLong().toULong()"
     when :int8
-      "#{expression}.unsafeCast<Number>().toByte()"
+      "#{expression}.toByte()"
     when :int16
-      "#{expression}.unsafeCast<Number>().toShort()"
+      "#{expression}.toShort()"
     when :int32
-      "#{expression}.unsafeCast<Number>().toInt()"
+      "#{expression}.toInt()"
     when :int64
-      "#{expression}.unsafeCast<Number>().toLong()"
+      "#{expression}.toLong()"
     when :size
-      "#{expression}.unsafeCast<Number>().toLong().toULong()"
+      "#{expression}.toLong().toULong()"
     else
       if t.is_enum
-        "#{t.name}.fromValue(#{expression})#{if t.is_nullable then '' else '!!' end}"
+        "#{t.name}.fromValue(#{expression})"
       elsif t.is_class
         if t.is_nullable
-          "#{expression}.unsafeCast<Any?>()?.let { #{t.name}(it, Unit) }"
+          "#{expression}?.let { #{t.name}(it) }"
         else
-          "#{t.name}(#{expression}, Unit)"
+          "#{t.name}(#{expression})"
         end
       else
-        "#{expression} as #{type(t)}"
+        expression
       end
     end
   end
@@ -205,6 +219,33 @@ module KotlinHelper
       ""
     else
       ": #{type(t)}"
+    end
+  end
+
+  def self.js_type(t, is_constructor = false)
+    nullable = "#{if t.is_nullable && !is_constructor then '?' else '' end}"
+    case t.name
+    when :void
+      ""
+    when :bool
+      "Boolean#{nullable}"
+    when :int, :uint8, :int8, :uint16, :int16, :uint32, :int32, :uint64, :int64, :size
+      "Number#{nullable}"
+    when :data
+      "UInt8Array#{nullable}"
+    when :string
+      "String#{nullable}"
+    else
+      "Js#{t.name}#{nullable}"
+    end
+  end
+
+  def self.js_return_type(t, is_constructor = false)
+    case t.name
+    when :void
+      ""
+    else
+      ": #{js_type(t, is_constructor)}"
     end
   end
 

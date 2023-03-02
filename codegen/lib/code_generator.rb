@@ -49,7 +49,7 @@ class CodeGenerator
   end
 
   # Renders a template
-  def render_template(header:, template:, output_subfolder:, extension:)
+  def render_template(header:, template:, output_subfolder:, extension:, file_prefix: "")
     FileUtils.mkdir_p File.join(output_folder, output_subfolder)
     @entities.zip(files) do |entity, file|
       # Make current entity available to templates
@@ -65,7 +65,7 @@ class CodeGenerator
           code << "\n" unless header.nil?
           code << string
 
-          path = File.expand_path(File.join(output_folder, output_subfolder, "#{file}.#{extension}"))
+          path = File.expand_path(File.join(output_folder, output_subfolder, "#{file_prefix}#{file}.#{extension}"))
           File.write(path, code)
         end
       end
@@ -119,6 +119,10 @@ class CodeGenerator
 
   def render_kotlin_js
     render_template(header: nil, template: 'kotlin_js.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/jsMain/generated/com/trustwallet/core', extension: 'kt')
+  end
+
+  def render_kotlin_js_accessors
+    render_template(header: nil, template: 'kotlin_js_accessors.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/jsMain/generated/com/trustwallet/core', extension: 'kt', file_prefix: "Js")
   end
 
   def render_kotlin_jni_h
