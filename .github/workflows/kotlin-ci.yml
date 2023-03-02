@@ -46,3 +46,10 @@ jobs:
 
     - name: Build Kotlin Multiplatform
       run: tools/kotlin-build
+
+    - name: Build KMP Sample
+      run: ./gradlew assemble
+      working-directory: samples/kmp
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
