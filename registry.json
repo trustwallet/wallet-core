@@ -2124,6 +2124,36 @@
     }
   },
   {
+    "id": "polygonzkevm",
+    "name": "Polygon zkEVM",
+    "displayName": "Polygon zkEVM",
+    "coinId": 10001422,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1422",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.public.zkevm-test.net",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.polygon.technology/",
+      "source": "https://github.com/0xpolygonhermez",
+      "rpc": "https://rpc.public.zkevm-test.net",
+      "documentation": "https://wiki.polygon.technology/docs/zkEVM/introduction/"
+    }
+  },
+  {
     "id": "zksync",
     "name": "Zksync",
     "displayName": "zkSync Era",

@@ -58,6 +58,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeMoonriver:
         case TWCoinTypeOptimism:
         case TWCoinTypeZksync:
+        case TWCoinTypePolygonzkEVM:
         case TWCoinTypeOKXChain:
         case TWCoinTypePOANetwork:
         case TWCoinTypePolygon:
