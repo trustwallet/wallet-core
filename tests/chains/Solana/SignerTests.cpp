@@ -99,8 +99,8 @@ TEST(SolanaSigner, SingleSignTransaction) {
     signerKeys.push_back(privateKey);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature(
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode(
         "5T6uZBHnHFd8uWErDBTFRVkbKuhbcm94K5MJ2beTYDruzqv4FjS7EMKvC94ZfxNAiWUXZ6bZxS3WXUbhJwYNPWn");
     expectedSignatures.push_back(expectedSignature);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
@@ -139,8 +139,8 @@ TEST(SolanaSigner, SignTransactionToSelf) {
     signerKeys.push_back(privateKey);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature(
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode(
         "3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
     expectedSignatures.push_back(expectedSignature);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
@@ -193,11 +193,11 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     signerKeys.push_back(privateKey0);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature0(
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature0 = Base58::decode(
         "37beWPhNMfWUz75Tb24TX3PCS89FZscbCgwwLpFnzVfZYPqDpAWruvqzc9eeQYft35H23Vm9Tv1dPwEKWT3vAVPb");
     expectedSignatures.push_back(expectedSignature0);
-    Signature expectedSignature1(
+    auto expectedSignature1 = Base58::decode(
         "5NxQshVaAXtQ8YVdcBtCanT62KbxnRfhubjGndFvetgn9AiaoLVZvRGutR5D7FJebRxq8bd6nQXn59LFzavEUrdQ");
     expectedSignatures.push_back(expectedSignature1);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
@@ -230,8 +230,8 @@ TEST(SolanaSigner, SignUpdateBlockhash) {
     auto newBlockhash = Base58::decode("GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq");
     Signer::signUpdateBlockhash(signerKeys, transaction, newBlockhash);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature(
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode(
         "5AFhXjvGdENXCAe9MPvUA2qjoL4XtZwZKG7kK2HmZf1ibpxjx5kzogHZjN39uYB9J33UFJN15KhSggBZhzyNQmta");
     expectedSignatures.push_back(expectedSignature);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
@@ -289,8 +289,8 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
     signerKeys.push_back(privateKeySigner);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature("58iogHzSJZmvTxi71W8k2yZXSPVfGAgtgqrk1RaBtfVFewU9yiJCkvSF1Hhjyax5DuexzR7ryWZDAWKQ73pyqvMs");
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode("58iogHzSJZmvTxi71W8k2yZXSPVfGAgtgqrk1RaBtfVFewU9yiJCkvSF1Hhjyax5DuexzR7ryWZDAWKQ73pyqvMs");
     expectedSignatures.push_back(expectedSignature);
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 
@@ -317,8 +317,8 @@ TEST(SolanaSigner, SignDelegateStakeV1) {
     signerKeys.push_back(privateKeySigner);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature("gDPbnakbktrASmnUwKGpmftvQRbcyAvxyAyVXq3oVLfAdTPDqY8hhLPHTgidEZGWcmiaXnEyKg2GQLkkAh3JYr3");
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode("gDPbnakbktrASmnUwKGpmftvQRbcyAvxyAyVXq3oVLfAdTPDqY8hhLPHTgidEZGWcmiaXnEyKg2GQLkkAh3JYr3");
     expectedSignatures.push_back(expectedSignature);
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 
@@ -344,8 +344,8 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     signerKeys.push_back(privateKeySigner);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
     expectedSignatures.push_back(expectedSignature);
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 
@@ -402,8 +402,8 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     signerKeys.push_back(privateKeySigner);
     Signer::sign(signerKeys, transaction);
 
-    std::vector<Signature> expectedSignatures;
-    Signature expectedSignature("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");
+    std::vector<Data> expectedSignatures;
+    auto expectedSignature = Base58::decode("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");
     expectedSignatures.push_back(expectedSignature);
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 

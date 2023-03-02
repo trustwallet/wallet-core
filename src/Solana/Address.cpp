@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -52,8 +52,7 @@ std::string Address::string() const {
 }
 
 Data Address::vector() const {
-    Data vec(std::begin(bytes), std::end(bytes));
-    return vec;
+    return Data(begin(bytes), end(bytes));
 }
 
 Address Address::defaultTokenAddress(const Address& tokenMintAddress) {

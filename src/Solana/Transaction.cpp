@@ -17,10 +17,9 @@ namespace TW::Solana {
 std::string Transaction::serialize() const {
     Data buffer;
 
-    append(buffer, shortVecLength<Signature>(this->signatures));
-    for (auto signature : this->signatures) {
-        Data signature_vec(signature.bytes.begin(), signature.bytes.end());
-        append(buffer, signature_vec);
+    append(buffer, shortVecLength<Data>(this->signatures));
+    for (auto &&signature : this->signatures) {
+        append(buffer, signature);
     }
     append(buffer, this->messageData());
 
