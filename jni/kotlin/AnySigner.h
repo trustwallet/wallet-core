@@ -13,16 +13,16 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_trustwallet_core_AnySignerKt_signImpl(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin);
+jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_sign(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin);
 
 JNIEXPORT
-jboolean JNICALL Java_com_trustwallet_core_AnySignerKt_supportsJsonImpl(JNIEnv *env, jclass thisClass, jobject coin);
+jboolean JNICALL Java_com_trustwallet_core_AnySigner_supportsJson(JNIEnv *env, jclass thisClass, jobject coin);
 
 JNIEXPORT
-jstring JNICALL Java_com_trustwallet_core_AnySignerKt_signJsonImpl(JNIEnv *env, jclass thisClass, jstring json, jbyteArray key, jobject coin);
+jstring JNICALL Java_com_trustwallet_core_AnySigner_signJson(JNIEnv *env, jclass thisClass, jstring json, jbyteArray key, jobject coin);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_trustwallet_core_AnySignerKt_planImpl(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin);
+jbyteArray JNICALL Java_com_trustwallet_core_AnySigner_plan(JNIEnv *env, jclass thisClass, jbyteArray input, jobject coin);
 
 TW_EXTERN_C_END
 

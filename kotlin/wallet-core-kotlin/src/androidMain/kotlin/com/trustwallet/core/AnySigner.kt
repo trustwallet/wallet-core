@@ -6,10 +6,17 @@
 
 package com.trustwallet.core
 
-actual external fun signImpl(input: ByteArray, coin: CoinType): ByteArray
+actual object AnySigner {
 
-actual external fun supportsJsonImpl(coin: CoinType): Boolean
+    @JvmStatic
+    actual external fun sign(input: ByteArray, coin: CoinType): ByteArray
 
-actual external fun signJsonImpl(json: String, key: ByteArray, coin: CoinType): String
+    @JvmStatic
+    actual external fun supportsJson(coin: CoinType): Boolean
 
-actual external fun planImpl(input: ByteArray, coin: CoinType): ByteArray
+    @JvmStatic
+    actual external fun signJson(json: String, key: ByteArray, coin: CoinType): String
+
+    @JvmStatic
+    actual external fun plan(input: ByteArray, coin: CoinType): ByteArray
+}

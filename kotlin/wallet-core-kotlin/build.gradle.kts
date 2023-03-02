@@ -38,8 +38,6 @@ kotlin {
         }
 
         val androidMain by getting {
-            kotlin.srcDir(projectDir.resolve("../../jni/cpp"))
-            kotlin.srcDir(projectDir.resolve("../../jni/kotlin"))
             kotlin.srcDir(projectDir.resolve("src/androidMain/generated"))
         }
         val commonMain by getting {

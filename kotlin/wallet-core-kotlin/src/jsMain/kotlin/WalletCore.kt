@@ -4,24 +4,29 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+import com.trustwallet.core.*
 import kotlin.js.Promise
 
 @JsExport
 @JsName("WalletCoreKotlin")
 object WalletCore {
 
-    internal var Instance: dynamic = null
+    internal lateinit var Instance: JsWalletCore
 
-    fun init(): Promise<dynamic> =
-        WalletCoreExports.initWasm()
-            .then { walletCore: dynamic ->
-                Instance = walletCore
-                walletCore
-            }
+    fun init(): Promise<JsWalletCore> =
+        if (::Instance.isInitialized) {
+            Promise.resolve(Instance)
+        } else {
+            WalletCoreExports.initWasm()
+                .then { walletCore ->
+                    Instance = walletCore
+                    walletCore
+                }
+        }
 }
 
 @JsModule("@trustwallet/wallet-core")
 @JsNonModule
-internal external object WalletCoreExports {
-    fun initWasm(): Promise<dynamic>
+private external object WalletCoreExports {
+    fun initWasm(): Promise<JsWalletCore>
 }

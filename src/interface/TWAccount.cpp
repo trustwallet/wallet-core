@@ -10,7 +10,8 @@
 
 using namespace TW;
 
-struct TWAccount* _Nonnull TWAccountCreate(TWString* _Nonnull address, enum TWCoinType coin,
+struct TWAccount* _Nonnull TWAccountCreate(TWString* _Nonnull address,
+                                           enum TWCoinType coin,
                                            enum TWDerivation derivation, 
                                            TWString* _Nonnull derivationPath,
                                            TWString* _Nonnull publicKey,
@@ -33,6 +34,10 @@ TWString* _Nonnull TWAccountAddress(struct TWAccount* _Nonnull account) {
     return TWStringCreateWithUTF8Bytes(account->impl.address.c_str());
 }
 
+enum TWCoinType TWAccountCoin(struct TWAccount* _Nonnull account) {
+    return account->impl.coin;
+}
+
 enum TWDerivation TWAccountDerivation(struct TWAccount* _Nonnull account) {
     return account->impl.derivation;
 }
@@ -47,8 +52,4 @@ TWString* _Nonnull TWAccountPublicKey(struct TWAccount* _Nonnull account) {
 
 TWString* _Nonnull TWAccountExtendedPublicKey(struct TWAccount* _Nonnull account) {
     return TWStringCreateWithUTF8Bytes(account->impl.extendedPublicKey.c_str());
-}
-
-enum TWCoinType TWAccountCoin(struct TWAccount* _Nonnull account) {
-    return account->impl.coin;
 }
