@@ -13,7 +13,7 @@ platform :ios do
     create_xcframework(
       workspace: 'TrustWalletCore.xcworkspace',
       scheme: 'WalletCore',
-      destinations: ['iOS', 'macOS'],
+      destinations: ['iOS'],
       xcframework_output_directory: 'build',
       enable_bitcode: false
     )
@@ -24,7 +24,7 @@ platform :ios do
     create_xcframework(
       workspace: 'TrustWalletCore.xcworkspace',
       scheme: 'SwiftProtobuf',
-      destinations: ['iOS', 'macOS'],
+      destinations: ['iOS'],
       xcframework_output_directory: 'build',
       enable_bitcode: false
     )
