@@ -20,7 +20,8 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key 
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
 
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
+
 # Install required packages for dev
 RUN apt-get update \
     && apt-get install -y \
