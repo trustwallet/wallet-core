@@ -4,6 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod hash_wrapper;
-mod sha1;
-mod sha2;
+use digest::Digest;
+
+pub fn hash_wrapper<D: Digest>(input: &[u8]) -> Vec<u8> {
+    let mut hasher = D::new();
+    hasher.update(input);
+    let result = &hasher.finalize()[..];
+    result.to_vec()
+}
