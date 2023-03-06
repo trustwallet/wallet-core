@@ -7,6 +7,7 @@
 #include "Hash.h"
 #include "BinaryCoding.h"
 
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 #include <TrezorCrypto/blake256.h>
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/groestl.h>
@@ -42,8 +43,12 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
 }
 
 Data Hash::sha1(const byte* data, size_t size) {
-    Data result(sha1Size);
-    sha1_Raw(data, size, result.data());
+    auto raw_res = ::sha1(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha1Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
