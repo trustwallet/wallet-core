@@ -63,8 +63,12 @@ Data Hash::sha256(const byte* data, size_t size) {
 }
 
 Data Hash::sha512(const byte* data, size_t size) {
-    Data result(sha512Size);
-    sha512_Raw(data, size, result.data());
+    auto raw_res = ::sha512(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha512Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
