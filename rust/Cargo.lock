@@ -1074,6 +1074,7 @@ dependencies = [
  "move-core-types",
  "sha1",
  "sha2 0.10.6",
+ "sha3",
  "starknet-crypto",
  "starknet-ff",
  "starknet-signers",

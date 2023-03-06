@@ -13,7 +13,6 @@
 #include <TrezorCrypto/groestl.h>
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
-#include <TrezorCrypto/sha3.h>
 #include <TrezorCrypto/hmac.h>
 
 #include <string>
@@ -43,7 +42,7 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
 }
 
 Data Hash::sha1(const byte* data, size_t size) {
-    auto raw_res = ::sha1(data, size);
+    auto raw_res = Rust::sha1(data, size);
     if (raw_res.data == nullptr || raw_res.size == 0) {
         return Data(sha1Size);
     }
@@ -53,7 +52,7 @@ Data Hash::sha1(const byte* data, size_t size) {
 }
 
 Data Hash::sha256(const byte* data, size_t size) {
-    auto raw_res = ::sha256(data, size);
+    auto raw_res = Rust::sha256(data, size);
     if (raw_res.data == nullptr || raw_res.size == 0) {
         return Data(sha256Size);
     }
@@ -63,7 +62,7 @@ Data Hash::sha256(const byte* data, size_t size) {
 }
 
 Data Hash::sha512(const byte* data, size_t size) {
-    auto raw_res = ::sha512(data, size);
+    auto raw_res = Rust::sha512(data, size);
     if (raw_res.data == nullptr || raw_res.size == 0) {
         return Data(sha512Size);
     }
@@ -73,32 +72,52 @@ Data Hash::sha512(const byte* data, size_t size) {
 }
 
 Data Hash::sha512_256(const byte* data, size_t size) {
-    Data result(sha256Size);
-    sha512_256_Raw(data, size, result.data());
+    auto raw_res = Rust::sha512_256(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha256Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::keccak256(const byte* data, size_t size) {
-    Data result(sha256Size);
-    keccak_256(data, size, result.data());
+    auto raw_res = Rust::keccak256(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha256Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::keccak512(const byte* data, size_t size) {
-    Data result(sha512Size);
-    keccak_512(data, size, result.data());
+    auto raw_res = Rust::keccak512(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha512Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::sha3_256(const byte* data, size_t size) {
-    Data result(sha256Size);
-    ::sha3_256(data, size, result.data());
+    auto raw_res = Rust::sha3__256(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha256Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::sha3_512(const byte* data, size_t size) {
-    Data result(sha512Size);
-    ::sha3_512(data, size, result.data());
+    auto raw_res = Rust::sha3__512(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha512Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 

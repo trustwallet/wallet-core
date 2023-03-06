@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use sha2::{Sha256, Sha512};
+use sha2::{Sha256, Sha512, Sha512_256};
 use crate::hashes::hash_wrapper::hash_wrapper;
 use crate::memory::CByteArray;
 
@@ -18,6 +18,12 @@ pub extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {
 pub extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
     hash_wrapper::<Sha512>(input).into()
+}
+
+#[no_mangle]
+pub extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArray {
+    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+    hash_wrapper::<Sha512_256>(input).into()
 }
 
 #[cfg(test)]
@@ -45,6 +51,19 @@ mod tests {
         ];
         for test in tests {
             let result = sha512(test.0.as_ptr(), test.0.len());
+            let decoded_slice = unsafe { std::slice::from_raw_parts(result.data, result.size) };
+            assert_eq!(hex::encode(decoded_slice), test.1);
+        }
+    }
+
+    #[test]
+    fn test_sha512_256() {
+        let tests: Vec<(&[u8], String)> = vec![
+            (b"hello world", String::from("0ac561fac838104e3f2e4ad107b4bee3e938bf15f2b15f009ccccd61a913f017")),
+            (b"The quick brown fox jumps over the lazy dog", String::from("dd9d67b371519c339ed8dbd25af90e976a1eeefd4ad3d889005e532fc5bef04d")),
+        ];
+        for test in tests {
+            let result = sha512_256(test.0.as_ptr(), test.0.len());
             let decoded_slice = unsafe { std::slice::from_raw_parts(result.data, result.size) };
             assert_eq!(hex::encode(decoded_slice), test.1);
         }

@@ -7,3 +7,4 @@
 mod hash_wrapper;
 mod sha1;
 mod sha2;
+mod sha3;

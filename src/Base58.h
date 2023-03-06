@@ -14,7 +14,7 @@
 
 namespace TW::Base58 {
     /// Decodes a base 58 string into `result`, returns `false` on failure.
-    static inline Data decode(const std::string& string, Base58Alphabet alphabet = Base58Alphabet::Bitcoin)  {
+    static inline Data decode(const std::string& string, Rust::Base58Alphabet alphabet = Rust::Base58Alphabet::Bitcoin)  {
         if (string.empty()) {
             return {};
         }
@@ -27,7 +27,7 @@ namespace TW::Base58 {
         return decoded_vec;
     }
 
-    static inline Data decodeCheck(const std::string& string, Base58Alphabet alphabet = Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {
+    static inline Data decodeCheck(const std::string& string, Rust::Base58Alphabet alphabet = Rust::Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {
         auto result = decode(string, alphabet);
         if (result.size() < 4) {
             return {};
@@ -43,15 +43,15 @@ namespace TW::Base58 {
     }
 
     template <typename T>
-    static inline std::string encode(const T& data, Base58Alphabet alphabet = Base58Alphabet::Bitcoin) {
+    static inline std::string encode(const T& data, Rust::Base58Alphabet alphabet = Rust::Base58Alphabet::Bitcoin) {
         auto encoded = encode_base58(data.data(), data.size(), alphabet);
         std::string encoded_str(encoded);
-        free_string(encoded);
+        Rust::free_string(encoded);
         return encoded_str;
     }
 
     template <typename T>
-    static inline std::string encodeCheck(const T& data, Base58Alphabet alphabet = Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {
+    static inline std::string encodeCheck(const T& data, Rust::Base58Alphabet alphabet = Rust::Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {
         auto hash = Hash::hash(hasher, data);
         Data toBeEncoded(std::begin(data), std::end(data));
         toBeEncoded.insert(toBeEncoded.end(), hash.begin(), hash.begin() + 4);

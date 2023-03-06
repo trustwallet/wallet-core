@@ -19,7 +19,7 @@ inline bool decode(const std::string& encoded_in, Data& decoded_out, const char*
     if (encoded_in.empty()) {
         return true;
     }
-    auto decoded = decode_base32(encoded_in.c_str(), alphabet_in, false);
+    auto decoded = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
     if (decoded.data == nullptr || decoded.size == 0) {
         return false;
     }
@@ -33,9 +33,9 @@ inline bool decode(const std::string& encoded_in, Data& decoded_out, const char*
 /// Encode bytes in Data to Base32 string
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
 inline std::string encode(const Data& val, const char* alphabet = nullptr, bool padding = false) {
-    auto* encoded = encode_base32(val.data(), val.size(), alphabet, padding);
+    auto* encoded = Rust::encode_base32(val.data(), val.size(), alphabet, padding);
     std::string encoded_str(encoded);
-    free_string(encoded);
+    Rust::free_string(encoded);
     return encoded_str;
 }
 
