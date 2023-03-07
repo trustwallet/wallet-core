@@ -12,7 +12,6 @@
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/groestl.h>
 #include <TrezorCrypto/ripemd160.h>
-#include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/hmac.h>
 
 #include <string>
@@ -122,8 +121,12 @@ Data Hash::sha3_512(const byte* data, size_t size) {
 }
 
 Data Hash::ripemd(const byte* data, size_t size) {
-    Data result(ripemdSize);
-    ::ripemd160(data, static_cast<uint32_t>(size), result.data());
+    auto raw_res = Rust::ripemd_160(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(ripemdSize);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
