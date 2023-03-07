@@ -10,3 +10,4 @@ mod sha2;
 mod sha3;
 mod ripemd;
 mod blake2;
+mod groestl;
