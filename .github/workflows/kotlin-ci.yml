@@ -43,11 +43,11 @@ jobs:
       run: tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
-    # - name: Generate files
-    #   run: tools/generate-files
+    - name: Generate files
+      run: tools/generate-files
 
-    # - name: Build Kotlin Multiplatform
-    #   run: tools/kotlin-build
+    - name: Build Kotlin Multiplatform
+      run: tools/kotlin-build
 
     - name: Build KMP Sample
       run: ./gradlew assemble
