@@ -11,7 +11,6 @@
 #include <TrezorCrypto/blake256.h>
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/groestl.h>
-#include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/hmac.h>
 
 #include <string>
@@ -137,14 +136,22 @@ Data Hash::blake256(const byte* data, size_t size) {
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize) {
-    Data result(hashSize);
-    ::blake2b(data, static_cast<uint32_t>(dataSize), result.data(), hashSize);
+    auto raw_res = Rust::blake2_b(data, dataSize, hashSize);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(hashSize);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize, const Data& personal) {
-    Data result(hashSize);
-    ::blake2b_Personal(data, static_cast<uint32_t>(dataSize), personal.data(), personal.size(), result.data(), hashSize);
+    auto raw_res = Rust::blake2_b_personal(data, dataSize, hashSize, personal.data(), personal.size());
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(hashSize);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
