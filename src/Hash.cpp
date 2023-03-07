@@ -156,16 +156,21 @@ Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize, const Dat
 }
 
 Data Hash::groestl512(const byte* data, size_t size) {
-    GROESTL512_CTX ctx;
-    Data result(sha512Size);
-    groestl512_Init(&ctx);
-    groestl512_Update(&ctx, data, size);
-    groestl512_Final(&ctx, result.data());
+    auto raw_res = Rust::groestl_512(data, size);
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha512Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::hmac256(const Data& key, const Data& message) {
-    Data hmac(SHA256_DIGEST_LENGTH);
-    hmac_sha256(key.data(), static_cast<uint32_t>(key.size()), message.data(), static_cast<uint32_t>(message.size()), hmac.data());
-    return hmac;
+    auto raw_res = Rust::hmac__sha256(key.data(), key.size(), message.data(), message.size());
+    if (raw_res.data == nullptr || raw_res.size == 0) {
+        return Data(sha256Size);
+    }
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
+    return result;
 }

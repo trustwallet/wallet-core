@@ -11,3 +11,4 @@ mod sha3;
 mod ripemd;
 mod blake2;
 mod groestl;
+mod hmac;

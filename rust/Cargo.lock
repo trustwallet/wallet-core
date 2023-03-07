@@ -413,6 +413,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "hmac"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c49c37c09c17a53d937dfbb742eb3a961d65a994e6bcdcf37e7399d0cc8ab5e"
+dependencies = [
+ "digest 0.10.6",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -729,7 +738,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96ef608575f6392792f9ecf7890c00086591d29a83910939d430753f7c050525"
 dependencies = [
  "crypto-bigint",
- "hmac",
+ "hmac 0.11.0",
  "zeroize",
 ]
 
@@ -924,7 +933,7 @@ checksum = "92d5ba05430fcd7c107ad9e4433bb3958722b13d97a44fd07a18dcf0eb6da667"
 dependencies = [
  "crypto-bigint",
  "hex",
- "hmac",
+ "hmac 0.11.0",
  "num-bigint",
  "num-integer",
  "num-traits",
@@ -1108,6 +1117,7 @@ dependencies = [
  "digest 0.10.6",
  "groestl",
  "hex",
+ "hmac 0.12.1",
  "move-core-types",
  "ripemd",
  "sha1",
