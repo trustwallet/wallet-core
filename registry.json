@@ -1458,7 +1458,7 @@
       "url": "https://binance.org",
       "source": "https://github.com/binance-chain/node-binary",
       "rpc": "https://dex.binance.org",
-      "documentation": "https://docs.binance.org/api-reference/dex-api/paths.html"
+      "documentation": "https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/paths"
     }
   },
   {
