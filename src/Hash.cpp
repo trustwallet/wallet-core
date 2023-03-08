@@ -8,10 +8,6 @@
 #include "BinaryCoding.h"
 
 #include "rust/bindgen/WalletCoreRSBindgen.h"
-#include <TrezorCrypto/blake256.h>
-#include <TrezorCrypto/blake2b.h>
-#include <TrezorCrypto/groestl.h>
-#include <TrezorCrypto/hmac.h>
 
 #include <string>
 
@@ -41,9 +37,6 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
 
 Data Hash::sha1(const byte* data, size_t size) {
     auto raw_res = Rust::sha1(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha1Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -51,9 +44,6 @@ Data Hash::sha1(const byte* data, size_t size) {
 
 Data Hash::sha256(const byte* data, size_t size) {
     auto raw_res = Rust::sha256(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha256Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -61,9 +51,6 @@ Data Hash::sha256(const byte* data, size_t size) {
 
 Data Hash::sha512(const byte* data, size_t size) {
     auto raw_res = Rust::sha512(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha512Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -71,9 +58,6 @@ Data Hash::sha512(const byte* data, size_t size) {
 
 Data Hash::sha512_256(const byte* data, size_t size) {
     auto raw_res = Rust::sha512_256(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha256Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -81,9 +65,6 @@ Data Hash::sha512_256(const byte* data, size_t size) {
 
 Data Hash::keccak256(const byte* data, size_t size) {
     auto raw_res = Rust::keccak256(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha256Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -91,9 +72,6 @@ Data Hash::keccak256(const byte* data, size_t size) {
 
 Data Hash::keccak512(const byte* data, size_t size) {
     auto raw_res = Rust::keccak512(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha512Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -101,9 +79,6 @@ Data Hash::keccak512(const byte* data, size_t size) {
 
 Data Hash::sha3_256(const byte* data, size_t size) {
     auto raw_res = Rust::sha3__256(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha256Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -111,9 +86,6 @@ Data Hash::sha3_256(const byte* data, size_t size) {
 
 Data Hash::sha3_512(const byte* data, size_t size) {
     auto raw_res = Rust::sha3__512(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha512Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -121,25 +93,20 @@ Data Hash::sha3_512(const byte* data, size_t size) {
 
 Data Hash::ripemd(const byte* data, size_t size) {
     auto raw_res = Rust::ripemd_160(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(ripemdSize);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
 }
 
 Data Hash::blake256(const byte* data, size_t size) {
-    Data result(sha256Size);
-    ::blake256(data, size, result.data());
+    auto raw_res = Rust::blake_256(data, size);
+    Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
+    std::free(raw_res.data);
     return result;
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize) {
     auto raw_res = Rust::blake2_b(data, dataSize, hashSize);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(hashSize);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -147,9 +114,6 @@ Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize) {
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize, const Data& personal) {
     auto raw_res = Rust::blake2_b_personal(data, dataSize, hashSize, personal.data(), personal.size());
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(hashSize);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -157,9 +121,6 @@ Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize, const Dat
 
 Data Hash::groestl512(const byte* data, size_t size) {
     auto raw_res = Rust::groestl_512(data, size);
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha512Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;
@@ -167,9 +128,6 @@ Data Hash::groestl512(const byte* data, size_t size) {
 
 Data Hash::hmac256(const Data& key, const Data& message) {
     auto raw_res = Rust::hmac__sha256(key.data(), key.size(), message.data(), message.size());
-    if (raw_res.data == nullptr || raw_res.size == 0) {
-        return Data(sha256Size);
-    }
     Data result(&raw_res.data[0], &raw_res.data[raw_res.size]);
     std::free(raw_res.data);
     return result;

@@ -126,6 +126,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "blake-hash"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94d1988118c887f61418940e322d574e8a2dd67165f1f1556eaae22e4019c6af"
+dependencies = [
+ "block-buffer 0.9.0",
+ "digest 0.9.0",
+ "ppv-lite86",
+]
+
+[[package]]
 name = "blake2"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1111,6 +1122,7 @@ version = "0.1.0"
 dependencies = [
  "base64 0.21.0",
  "bcs",
+ "blake-hash",
  "blake2",
  "blake2b-ref",
  "bs58",

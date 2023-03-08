@@ -9,6 +9,7 @@ mod sha1;
 mod sha2;
 mod sha3;
 mod ripemd;
+mod blake;
 mod blake2;
 mod groestl;
 mod hmac;
