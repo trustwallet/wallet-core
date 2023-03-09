@@ -26,4 +26,9 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
+// TANGEM
+void Entry::signExternally([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut, const Data& publicKey, const std::function<Data(Data)> externalSigner) const {
+    signTemplateExternally<Signer, Proto::SigningInput>(dataIn, dataOut, publicKey, externalSigner);
+}
+
 } // namespace TW::Tron

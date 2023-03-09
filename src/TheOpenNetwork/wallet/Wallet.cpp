@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <future>
+
 #include "Wallet.h"
 
 #include "HexCoding.h"
@@ -69,6 +71,29 @@ Cell::Ref Wallet::createTransferMessage(
     uint32_t expireAt,
     const std::string& comment
 ) const {
+    return createTransferMessage(
+        privateKey,
+        nullptr,
+        dest,
+        amount,
+        sequence_number,
+        mode,
+        expireAt,
+        comment
+    );
+}
+    
+// TANGEM
+Cell::Ref Wallet::createTransferMessage(
+    const PrivateKey& privateKey,
+    const std::function<Data(Data)> externalSigner,
+    const Address& dest,
+    uint64_t amount,
+    uint32_t sequence_number,
+    uint8_t mode,
+    uint32_t expireAt,
+    const std::string& comment
+) const {
     const auto transferMessageHeader = std::make_shared<CommonTON::ExternalInboundMessageHeader>(this->getAddress().addressData);
     Message transferMessage = Message(MessageData(transferMessageHeader));
     if (sequence_number == 0) {
@@ -80,7 +105,15 @@ Cell::Ref Wallet::createTransferMessage(
         CellBuilder bodyBuilder;
         const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, sequence_number, mode, expireAt, comment);
         Data data(signingMessage->hash.begin(), signingMessage->hash.end());
-        const auto signature = privateKey.sign(data, TWCurveED25519);
+        
+        // TANGEM        
+        auto signature = Data();
+        if(externalSigner) {
+            std::future<Data> signedDataFuture = std::async(externalSigner, data);
+            signature = signedDataFuture.get();
+        } else {
+            signature = privateKey.sign(data, TWCurveED25519);
+        }
 
         bodyBuilder.appendRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
         bodyBuilder.appendCellSlice(CellSlice(signingMessage.get()));

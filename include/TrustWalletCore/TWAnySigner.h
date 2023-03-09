@@ -22,6 +22,9 @@ struct TWAnySigner;
 /// \return The serialized data of a `SigningOutput` proto object. (e.g. TW.Bitcoin.Proto.SigningOutput).
 extern TWData *_Nonnull TWAnySignerSign(TWData *_Nonnull input, enum TWCoinType coin);
 
+// TANGEM
+extern TWData *_Nonnull TWAnySignerSignExternally(TWData *_Nonnull input, enum TWCoinType coin, TWData *_Nonnull publicKey, TWData *_Nonnull (*_Nonnull externalSigner)(TWData *_Nonnull));
+
 /// Signs a transaction specified by the JSON representation of signing input, coin type and a private key, returning the JSON representation of the signing output.
 ///
 /// \param json JSON representation of a signing input

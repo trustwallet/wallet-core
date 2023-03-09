@@ -6,7 +6,7 @@
 
 @testable import WalletCore
 
-import WalletCore
+@testable import WalletCore
 import XCTest
 
 extension KeyStore {

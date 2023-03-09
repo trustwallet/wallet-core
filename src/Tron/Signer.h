@@ -19,6 +19,9 @@ class Signer {
 
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    
+    // TANGEM
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, const Data& publicKey, const std::function<Data(Data)> externalSigner) noexcept;
 };
 
 } // namespace TW::Tron

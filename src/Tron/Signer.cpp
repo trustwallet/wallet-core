@@ -15,6 +15,7 @@
 
 #include <chrono>
 #include <cassert>
+#include <future>
 
 namespace TW::Tron {
 
@@ -202,6 +203,11 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    return Signer::sign(input, Data(), nullptr);
+}
+
+// TANGEM
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const Data& publicKey, const std::function<Data(Data)> externalSigner) noexcept {
     auto internal = protocol::Transaction();
     auto output = Proto::SigningOutput();
 
@@ -310,7 +316,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto hash = Hash::sha256(Data(serialized.begin(), serialized.end()));
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    auto signature = Data();
+    
+    // TANGEM
+    if(externalSigner) {
+        std::future<Data> signedDataFuture = std::async(externalSigner, hash);
+        signature = signedDataFuture.get();
+    } else {
+        signature = key.sign(hash, TWCurveSECP256k1);
+    }
 
     const auto json = transactionJSON(internal, hash, signature).dump();
 

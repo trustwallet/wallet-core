@@ -17,6 +17,8 @@ public:
     bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
      std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const;
      void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    // TANGEM
+    void signExternally(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut, const Data& publicKey, const std::function<Data(Data)> externalSigner) const;
 };
 
 } // namespace TW::Tron

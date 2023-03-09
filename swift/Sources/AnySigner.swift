@@ -10,6 +10,46 @@ import SwiftProtobuf
 public typealias SigningInput = Message
 public typealias SigningOutput = Message
 
+// TANGEM
+public protocol Signer {
+    var error: Error? { get }
+    
+    var publicKey: Data { get }
+    
+    func sign(_ data: Data) -> Data
+    func sign(_ data: [Data]) -> [Data]
+}
+
+// TANGEM
+// For auto tests only
+public struct PrivateKeySigner: Signer {
+    public var error: Error?
+    
+    public var publicKey: Data {
+        privateKey.getPublicKey(coinType: coin).data
+    }
+    
+    private let privateKey: PrivateKey
+    private let coin: CoinType
+    
+    public init(privateKey: PrivateKey, coin: CoinType) {
+        self.privateKey = privateKey
+        self.coin = coin
+    }
+    
+    public func sign(_ data: Data) -> Data {
+        return privateKey.sign(digest: data, curve: coin.curve)!
+    }
+    
+    public func sign(_ data: [Data]) -> [Data] {
+        return data.map { privateKey.sign(digest: $0, curve: coin.curve)! }
+    }
+}
+
+// TANGEM
+// We can't capture a local variable in a closure we're passing to std::function. Global variables are fine.
+var externalSigner: Signer? = nil
+
 /// Represents a signer to sign transactions for any blockchain.
 public final class AnySigner {
 
@@ -22,6 +62,22 @@ public final class AnySigner {
     public static func sign<SigningOutput: Message>(input: SigningInput, coin: CoinType) -> SigningOutput {
         do {
             let outputData = nativeSign(data: try input.serializedData(), coin: coin)
+            return try SigningOutput(serializedData: outputData)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+    }
+    
+    // TANGEM
+    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) -> SigningOutput {
+        defer {
+            externalSigner = nil
+        }
+        
+        externalSigner = signer
+        
+        do {
+            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin, publicKey: signer.publicKey)
             return try SigningOutput(serializedData: outputData)
         } catch let error {
             fatalError(error.localizedDescription)
@@ -40,6 +96,27 @@ public final class AnySigner {
             TWDataDelete(inputData)
         }
         return TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
+    }
+    
+    // TANGEM
+    public static func nativeSignExternally(data: Data, coin: CoinType, publicKey: Data) -> Data {
+        let inputData = TWDataCreateWithNSData(data)
+        let publicKeyData = TWDataCreateWithNSData(publicKey)
+        
+        defer {
+            TWDataDelete(inputData)
+            TWDataDelete(publicKeyData)
+        }
+        
+        return TWDataNSData(TWAnySignerSignExternally(inputData, TWCoinType(rawValue: coin.rawValue), publicKeyData, { twDataToSign in
+            guard let externalSigner = externalSigner else {
+                fatalError("You must set external signer to sign asynchronously")
+            }
+            
+            let dataToSign = TWDataNSData(twDataToSign)
+            let dataSigned = externalSigner.sign(dataToSign)
+            return TWDataCreateWithNSData(dataSigned)
+        }))
     }
 
     /// Check if AnySigner supports signing JSON representation of SigningInput for a given coin.
