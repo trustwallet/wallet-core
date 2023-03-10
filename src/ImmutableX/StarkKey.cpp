@@ -54,18 +54,18 @@ PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const Derivation
 }
 
 Data getPublicKeyFromPrivateKey(const Data& privateKey) {
-    auto pubKey = starknet_pubkey_from_private(hex(privateKey).c_str());
+    auto pubKey = Rust::starknet_pubkey_from_private(hex(privateKey).c_str());
     std::string pubKeyStr = pubKey;
-    free_string(pubKey);
+    Rust::free_string(pubKey);
     return parse_hex(pubKeyStr, true);
 }
 
 Data sign(const Data& privateKey, const Data& digest) {
     auto privKeyStr = hex(privateKey);
     auto hexDigest = hex(digest);
-    auto resultSignature = starknet_sign(privKeyStr.c_str(), hexDigest.c_str());
+    auto resultSignature = Rust::starknet_sign(privKeyStr.c_str(), hexDigest.c_str());
     auto toReturn = parse_hex(resultSignature);
-    free_string(resultSignature);
+    Rust::free_string(resultSignature);
     return toReturn;
 }
 
@@ -77,7 +77,7 @@ bool verify(const Data& pubKey, const Data& signature, const Data& digest) {
     auto s = hex(subData(signature, 32));
     auto pubKeyStr = hex(pubKey);
     auto digestStr = hex(digest);
-    return starknet_verify(pubKeyStr.c_str(), digestStr.c_str(), r.c_str(), s.c_str());
+    return Rust::starknet_verify(pubKeyStr.c_str(), digestStr.c_str(), r.c_str(), s.c_str());
 }
 
 } // namespace TW::ImmutableX

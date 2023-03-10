@@ -12,16 +12,15 @@
 namespace TW::Groestlcoin {
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
+    const auto decoded = Base58::decodeCheck(string, Rust::Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
     if (decoded.size() != Address::size) {
         return false;
     }
     return true;
-    // return isValid(string, std::vector<byte>{36, 5});
 }
 
 bool Address::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
-    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
+    const auto decoded = Base58::decodeCheck(string, Rust::Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -32,7 +31,7 @@ bool Address::isValid(const std::string& string, const std::vector<byte>& validP
 }
 
 Address::Address(const std::string& string) {
-    const auto decoded = Base58::decodeCheck(string, Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
+    const auto decoded = Base58::decodeCheck(string, Rust::Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
     if (decoded.size() != Address::size) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -56,7 +55,7 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
 }
 
 std::string Address::string() const {
-    return Base58::encodeCheck(bytes, Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
+    return Base58::encodeCheck(bytes, Rust::Base58Alphabet::Bitcoin, Hash::HasherGroestl512d);
 }
 
 } // namespace TW::Groestlcoin

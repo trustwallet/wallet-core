@@ -25,7 +25,7 @@ inline Data parse_hex(const std::string& input) {
     if (input.empty()) {
         return Data();
     }
-    auto decoded = decode_hex(input.c_str());
+    auto decoded = Rust::decode_hex(input.c_str());
     if (decoded.data == nullptr || decoded.size == 0) {
         return Data();
     }
@@ -50,9 +50,9 @@ inline bool is_hex_encoded(const std::string& s)
 template <typename T>
 inline std::string hex(const T& collection, bool prefixed = false) {
     auto rust_functor = [prefixed](auto&& collection){
-        auto res = encode_hex(collection.data(), collection.size(), prefixed);
+        auto res = Rust::encode_hex(collection.data(), collection.size(), prefixed);
         std::string encoded_str(res);
-        free_string(res);
+        Rust::free_string(res);
         return encoded_str;
     };
     if constexpr (std::is_same_v<T, Data>) {
