@@ -5,31 +5,31 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use sha3::{Keccak256, Keccak512, Sha3_256, Sha3_512};
-use crate::hashes::hash_wrapper::hash_wrapper;
+use crate::hash::hash_wrapper::hasher;
 use crate::memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Keccak256>(input).into()
+    hasher::<Keccak256>(input).into()
 }
 
 #[no_mangle]
 pub extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Keccak512>(input).into()
+    hasher::<Keccak512>(input).into()
 }
 
 #[no_mangle]
 pub extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Sha3_256>(input).into()
+    hasher::<Sha3_256>(input).into()
 }
 
 #[no_mangle]
 pub extern "C" fn sha3__512(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Sha3_512>(input).into()
+    hasher::<Sha3_512>(input).into()
 }
 
 #[cfg(test)]

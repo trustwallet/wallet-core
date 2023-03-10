@@ -5,25 +5,25 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use sha2::{Sha256, Sha512, Sha512_256};
-use crate::hashes::hash_wrapper::hash_wrapper;
+use crate::hash::hash_wrapper::hasher;
 use crate::memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Sha256>(input).into()
+    hasher::<Sha256>(input).into()
 }
 
 #[no_mangle]
 pub extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Sha512>(input).into()
+    hasher::<Sha512>(input).into()
 }
 
 #[no_mangle]
 pub extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    hash_wrapper::<Sha512_256>(input).into()
+    hasher::<Sha512_256>(input).into()
 }
 
 #[cfg(test)]

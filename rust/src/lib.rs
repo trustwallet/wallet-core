@@ -7,7 +7,7 @@
 extern crate core;
 
 pub mod memory;
-pub mod hashes;
+pub mod hash;
 pub mod encoding;
 pub mod move_parser;
 pub mod starknet;

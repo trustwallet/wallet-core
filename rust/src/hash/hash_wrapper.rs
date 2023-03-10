@@ -6,7 +6,7 @@
 
 use digest::Digest;
 
-pub fn hash_wrapper<D: Digest>(input: &[u8]) -> Vec<u8> {
+pub fn hasher<D: Digest>(input: &[u8]) -> Vec<u8> {
     let mut hasher = D::new();
     hasher.update(input);
     let result = &hasher.finalize()[..];
