@@ -14,7 +14,7 @@ namespace TW::Binance {
 
 const std::string Address::_hrp = HRP_BINANCE;
 const std::string Address::hrpValidator = "bva";
-const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap"};
+const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap", "tbnb"};
 
 bool Address::isValid(const std::string& addr) {
     Address addrNotUsed;

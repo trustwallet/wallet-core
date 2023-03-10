@@ -27,6 +27,7 @@ public:
 
     /// Initializes an address with a public key.
     Address(const PublicKey& publicKey) : Bech32Address(_hrp, Hash::HasherSha256ripemd, publicKey) {}
+    Address(const PublicKey& publicKey, const std::string hrp) : Bech32Address(hrp, Hash::HasherSha256ripemd, publicKey) {}
 
     static bool decode(const std::string& addr, Address& obj_out);
 };
