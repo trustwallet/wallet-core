@@ -342,7 +342,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
 
         case TWCoinTypeDecred:
             if (Decred::Address::isValid(string)) {
-                auto bytes = Base58::decodeCheck(string, Base58Alphabet::Bitcoin, Hash::HasherBlake256d);
+                auto bytes = Base58::decodeCheck(string, Rust::Base58Alphabet::Bitcoin, Hash::HasherBlake256d);
                 if (bytes[1] == TW::p2pkhPrefix(TWCoinTypeDecred)) {
                     return buildPayToPublicKeyHash(Data(bytes.begin() + 2, bytes.end()));
                 }

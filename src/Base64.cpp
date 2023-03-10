@@ -10,9 +10,9 @@
 namespace TW::Base64::internal {
 
 std::string encode(const Data& val, bool is_url) {
-    char* encoded = encode_base64(val.data(), val.size(), is_url);
+    char* encoded = Rust::encode_base64(val.data(), val.size(), is_url);
     std::string encoded_str(encoded);
-    free_string(encoded);
+    Rust::free_string(encoded);
     return encoded_str;
 }
 
@@ -20,7 +20,7 @@ Data decode(const std::string& val, bool is_url) {
     if (val.empty()) {
         return Data();
     }
-    auto decoded = decode_base64(val.c_str(), is_url);
+    auto decoded = Rust::decode_base64(val.c_str(), is_url);
     if (decoded.data == nullptr || decoded.size == 0) {
         return Data();
     }

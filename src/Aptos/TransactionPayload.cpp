@@ -75,38 +75,38 @@ EntryFunction EntryFunction::from_json(const nlohmann::json& payload) noexcept {
     std::vector<Data> args;
     for (auto&& cur : payload.at("arguments")) {
         auto curStr = cur.get<std::string>();
-        auto* res = parse_function_argument_to_bcs(curStr.c_str());
+        auto* res = Rust::parse_function_argument_to_bcs(curStr.c_str());
         args.emplace_back(parse_hex(res));
-        free_string(res);
+        Rust::free_string(res);
     }
 
     std::vector<TypeTag> tags;
 
     for (auto&& cur : payload.at("type_arguments")) {
         auto curStr = cur.get<std::string>();
-        switch (parse_type_tag(curStr.c_str())) {
-        case ETypeTag::Bool:
+        switch (Rust::parse_type_tag(curStr.c_str())) {
+        case Rust::ETypeTag::Bool:
             break;
-        case ETypeTag::U8:
+        case Rust::ETypeTag::U8:
             break;
-        case ETypeTag::U64:
+        case Rust::ETypeTag::U64:
             break;
-        case ETypeTag::U128:
+        case Rust::ETypeTag::U128:
             break;
-        case ETypeTag::Address:
+        case Rust::ETypeTag::Address:
             break;
-        case ETypeTag::Signer:
+        case Rust::ETypeTag::Signer:
             break;
-        case ETypeTag::Vector:
+        case Rust::ETypeTag::Vector:
             break;
-        case ETypeTag::Struct: {
+        case Rust::ETypeTag::Struct: {
             auto structSplitted = splitFunctor(curStr, "::");
             auto addr = Address(structSplitted[0]);
             TypeTag tag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(addr, structSplitted[1], structSplitted[2], {})})};
             tags.emplace_back(tag);
             break;
         }
-        case ETypeTag::Error:
+        case Rust::ETypeTag::Error:
             break;
         default:
             break;
