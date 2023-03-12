@@ -2,7 +2,7 @@
 
 actual enum class <%= entity.name %>(
     @get:JvmName("value")
-    internal val value: UInt,
+    val value: UInt,
 ) {
 <%# Cases -%>
 <%  entity.cases.each_with_index do |c, i| -%>
@@ -26,10 +26,10 @@ actual enum class <%= entity.name %>(
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>
 
-    internal companion object {
+    companion object {
         @JvmStatic
         @JvmName("createFromValue")
-        internal fun fromValue(value: UInt): <%= entity.name %>? =
+        fun fromValue(value: UInt): <%= entity.name %>? =
             values().firstOrNull { it.value == value }
     }
 <%  end -%>
