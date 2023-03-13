@@ -427,7 +427,7 @@ TransactionPlan Signer::doPlan() const {
         const auto token = TokenAmount::fromProto(input.transfer_message().token_amount().token(i));
         requestedTokens.add(token);
     }
-    assert(plan.amount > 0 || maxAmount);
+    assert(plan.amount > 0 || maxAmount || input.transfer_message().token_amount().token_size() > 0);
     if (requestedTokens.size() > 1) {
         // We support transfer of only one coin (for simplicity; inputs may contain more coins which are preserved)
         plan.error = Common::Proto::Error_invalid_requested_token_amount;
