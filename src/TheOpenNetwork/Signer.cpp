@@ -32,7 +32,7 @@ Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const Private
 // TANGEM
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer, const std::function<Data(Data)> externalSigner) {
     const Address destinationAddress = Address(transfer.dest());
-    const bool isBounceable = TW::TheOpenNetwork::isTransactionBounceable(address, transfer.bounce_behavior());
+    const bool isBounceable = TW::TheOpenNetwork::isTransactionBounceable(destinationAddress, transfer.bounce_behavior());
     
     const auto msg = wallet->createTransferMessage(
         privateKey,
