@@ -15,7 +15,7 @@ namespace TW::TheOpenNetwork {
 
 static bool isBounceable(const Address& address, const Proto::BounceBehavior& bounceBehavior) {
     switch (bounceBehavior) {
-    case Proto::BounceBehavior::BOUNCEABLE:
+    case Proto::BOUNCEABLE:
         return true;
     case Proto::NON_BOUNCEABLE:
         return false;
