@@ -13,16 +13,32 @@
 
 namespace TW::TheOpenNetwork {
 
+static bool isBounceable(const Address& address, const Proto::BounceBehavior& bounceBehavior) {
+    switch (bounceBehavior) {
+    case Proto::BounceBehavior::BOUNCEABLE:
+        return true;
+    case Proto::NON_BOUNCEABLE:
+        return false;
+    case Proto::ADDRESS_DEFAULT:
+    default:
+        return address.isBounceable;
+    }
+}
+
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
     return createTransferMessage(wallet, privateKey, transfer, nullptr);
 }
 
 // TANGEM
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer, const std::function<Data(Data)> externalSigner) {
+    const Address address = Address(transfer.dest());
+    const bool isBounceable = TW::TheOpenNetwork::isBounceable(address, transfer.bounce_behavior());
+    
     const auto msg = wallet->createTransferMessage(
         privateKey,
         externalSigner,
-        Address(transfer.dest()),
+        address,
+        isBounceable,
         transfer.amount(),
         transfer.sequence_number(),
         static_cast<uint8_t>(transfer.mode()),

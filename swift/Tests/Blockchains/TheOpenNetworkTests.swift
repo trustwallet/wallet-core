@@ -38,7 +38,7 @@ class TheOpenNetworkTests: XCTestCase {
     func testSign() {
         let privateKeyData = Data(hexString: "c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0")!
 
-        let transfer = TheOpenNetworkTransfer.with {
+        var transfer = TheOpenNetworkTransfer.with {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
             $0.amount = 10
@@ -59,11 +59,19 @@ class TheOpenNetworkTests: XCTestCase {
 
         XCTAssertEqual(output.encoded, expectedString)
         
-        // TANGEM
+        // TANGEM external signer
         let signer = PrivateKeySigner(privateKey: PrivateKey(data: input.privateKey)!, coin: .ton)
         input.privateKey = Data(repeating: 1, count: 32)
         let outputExternal: TheOpenNetworkSigningOutput = AnySigner.signExternally(input: input, coin: .ton, signer: signer)
         
         XCTAssertEqual(outputExternal.encoded, expectedString)
+        
+        // TANGEM non-bounceable transaction
+        transfer.bounceBehavior = .nonBounceable
+        input.transfer = transfer
+        
+        let outputNonBounceable: TheOpenNetworkSigningOutput = AnySigner.sign(input: input, coin: .ton)
+        let expectedNonBounceableOutput = "te6ccgICAAQAAQAAALAAAAFFiAHfX+l1hEHxFl0x1js5/5lHf8ds3ZxjT62LEhphv69fSgwAAQGcz1eslDw8ruKHlVo6/xlbha/d6T9JWt62QCNGsm6Atm6OoBcj5dVQAA3sOmHIRdK/kKAyjgdw0U2jF1OfW4wFCimpoxdjm3UYAAAABgADAAIBYkIAM33x4uAd+uQTyXyCZPxflESlNVHpCeoOECtNsqVW9tmIUAAAAAAAAAAAAAAAAAEAAwAA"
+        XCTAssertEqual(outputNonBounceable.encoded, expectedNonBounceableOutput)
     }
 }
