@@ -26,6 +26,12 @@ enum SendMode {
     ATTACH_ALL_CONTRACT_BALANCE = 128;
 };
 
+enum BounceBehavior {
+    ADDRESS_DEFAULT = 0;
+    BOUNCEABLE = 1;
+    NON_BOUNCEABLE = 2;
+};
+
 message Transfer {
     // Wallet version
     WalletVersion wallet_version = 1;
@@ -50,6 +56,9 @@ message Transfer {
 
     // Transfer comment message (optional, empty by default)
     string comment = 7;
+
+    // Bounce behavior of the transaction
+    BounceBehavior bounce_behavior = 8;
 }
 
 message SigningInput {
