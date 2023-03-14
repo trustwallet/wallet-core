@@ -31,13 +31,13 @@ Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const Private
 
 // TANGEM
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer, const std::function<Data(Data)> externalSigner) {
-    const Address address = Address(transfer.dest());
+    const Address destinationAddress = Address(transfer.dest());
     const bool isBounceable = TW::TheOpenNetwork::isTransactionBounceable(address, transfer.bounce_behavior());
     
     const auto msg = wallet->createTransferMessage(
         privateKey,
         externalSigner,
-        address,
+        destinationAddress,
         isBounceable,
         transfer.amount(),
         transfer.sequence_number(),
