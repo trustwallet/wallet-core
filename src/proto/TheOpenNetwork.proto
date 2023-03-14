@@ -57,7 +57,7 @@ message Transfer {
     // Transfer comment message (optional, empty by default)
     string comment = 7;
 
-    // Bounce behavior of the transaction
+    // Bounce behavior of the transaction (optional, default is whatever is encoded in the address)
     BounceBehavior bounce_behavior = 8;
 }
 
