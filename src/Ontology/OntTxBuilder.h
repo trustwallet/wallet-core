@@ -25,7 +25,7 @@ class OntTxBuilder {
 
     static Data build(const Ontology::Proto::SigningInput& input);
 
-    static Transaction buildTransferTx(const Ontology::Proto::TransactionInput &input);
+    static Transaction buildTransferTx(const Ontology::Proto::SigningInput &input);
 };
 
 } // namespace TW::Ontology

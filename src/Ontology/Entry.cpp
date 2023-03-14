@@ -34,15 +34,14 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
         txInputData, [](const auto& input, auto& output) {
             auto contract = std::string(input.contract().begin(), input.contract().end());
-            auto txInput = Signer::signInput2TxInput(input);
             Data preImage, preImageHash; 
 
             if (contract == "ONT") {
-                auto tx = OntTxBuilder::buildTransferTx(txInput);
+                auto tx = OntTxBuilder::buildTransferTx(input);
                 preImage = tx.serializeUnsigned();
                 preImageHash = tx.txHash();
             } else if (contract == "ONG") {
-                auto tx = OngTxBuilder::buildTransferTx(txInput);
+                auto tx = OngTxBuilder::buildTransferTx(input);
                 preImage = tx.serializeUnsigned();
                 preImageHash = tx.txHash();
             } else {
@@ -64,13 +63,13 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
                 output.set_error_message("empty signatures or publickeys");
                 return;
             }
-            if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+            if (signatures.size() != publicKeys.size()) {
+                output.set_error(Common::Proto::Error_signatures_count);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
 
-            auto signedTx = Signer::encodeTransaction(input, signatures[0], publicKeys[0]);
+            auto signedTx = Signer::encodeTransaction(input, signatures, publicKeys);
             output.set_encoded(signedTx.data(), signedTx.size());
     });
 }

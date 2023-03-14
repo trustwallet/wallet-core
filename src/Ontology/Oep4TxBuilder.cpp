@@ -56,7 +56,8 @@ Transaction Oep4TxBuilder::buildTx(const Ontology::Proto::SigningInput &input) {
     if (method == "transfer") {
         auto fromAddress = Address(input.owner_address());
         auto toAddress = Address(input.to_address());
-        tx = oep4.unsignedTransfer(fromAddress, toAddress, input.amount(), input.gas_price(), input.gas_limit(), input.nonce());
+        auto payerAddress = Address(input.payer_address());
+        tx = oep4.unsignedTransfer(fromAddress, toAddress, input.amount(), payerAddress, input.gas_price(), input.gas_limit(), input.nonce());
     } else if (method == "balanceOf") {
         auto queryAddress = Address(input.query_address());
         tx = oep4.balanceOf(queryAddress, input.nonce());

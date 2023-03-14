@@ -21,10 +21,9 @@ class Signer {
 public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-    static Proto::TransactionInput signInput2TxInput(const Proto::SigningInput& input) noexcept;
-    static Data encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey);
+    static Data encodeTransaction(const Proto::SigningInput& input, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeyss);
   private:
-    Data publicKey;
+    Data publicKey; 
     TW::PrivateKey privKey;
     std::string address;
 

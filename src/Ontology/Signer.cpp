@@ -36,20 +36,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Proto::TransactionInput Signer::signInput2TxInput(const Proto::SigningInput& input) noexcept {
-    auto txInput = Proto::TransactionInput();
-    txInput.set_contract(input.contract());
-    txInput.set_method(input.method());
-    txInput.set_owner_address(input.owner_address());
-    txInput.set_to_address(input.to_address());
-    txInput.set_amount(input.amount());
-    txInput.set_gas_price(input.gas_price());
-    txInput.set_gas_limit(input.gas_limit());
-    txInput.set_nonce(input.nonce());
-
-    return txInput;
-}
-
 Signer::Signer(TW::PrivateKey priKey) : privKey(std::move(priKey)) {
     auto pubKey = privKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pubKey.bytes;
@@ -86,20 +72,23 @@ void Signer::addSign(Transaction& tx) const {
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
 
-Data Signer::encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey) {
-    auto txInput = Signer::signInput2TxInput(input);
+Data Signer::encodeTransaction(const Proto::SigningInput& input, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys) {
+    assert(signatures.size() > 0 && signatures.size() == publicKeys.size());
+
     auto contract = std::string(input.contract().begin(), input.contract().end());
     auto tx = Transaction();
 
     if (contract == "ONT") {
-            tx = OntTxBuilder::buildTransferTx(txInput);
+            tx = OntTxBuilder::buildTransferTx(input);
     } else if (contract == "ONG") {
-            tx = OngTxBuilder::buildTransferTx(txInput);
+            tx = OngTxBuilder::buildTransferTx(input);
     } else {
             tx = Oep4TxBuilder::buildTx(input);
     }
 
-    tx.sigVec.emplace_back(publicKey.bytes, signature, 1);
+    for (auto i = 0u; i < signatures.size(); ++i) {
+        tx.sigVec.emplace_back(publicKeys[i].bytes, signatures[i], 1);
+    }
 
     return tx.serialize();
 }

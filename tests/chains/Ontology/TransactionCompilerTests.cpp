@@ -28,6 +28,7 @@ TEST(OntologyCompiler, CompileWithSignatures) {
     input.set_method("transfer");
     input.set_owner_address("AaCTzuhEr6essEEKnSTuxD2GJkmGc4nuJp");
     input.set_to_address("AWBzyqpXcSpgrWyzR6qzUGWc9ZoYT3Bsvk");
+    input.set_payer_address("AaCTzuhEr6essEEKnSTuxD2GJkmGc4nuJp");
     input.set_amount(1);
     input.set_gas_price(3500);
     input.set_gas_limit(20000);
@@ -107,7 +108,7 @@ TEST(OntologyCompiler, CompileWithSignatures) {
         Ontology::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 
     { // Negative: empty signatures
@@ -124,6 +125,7 @@ TEST(OntologyCompiler, CompileWithSignatures) {
     input.set_contract("2f34b28eb98a1dd901d303f5294c87546fb37fe7");
     input.set_owner_address("Aa8QcHJ8tbRXyjpG6FHo7TysjKXxkd1Yf2");
     input.set_to_address("ARR6PsaBwRttzCmyxCMhL7NmFk1LqExD7L");
+    input.set_payer_address("Aa8QcHJ8tbRXyjpG6FHo7TysjKXxkd1Yf2");
     input.set_amount(1000);
     input.set_gas_price(2500);
     input.set_gas_limit(20000);

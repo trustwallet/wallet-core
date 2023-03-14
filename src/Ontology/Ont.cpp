@@ -44,14 +44,15 @@ Transaction Ont::transfer(const Signer& from, const Address& to, uint64_t amount
     return tx;
 }
 
-Transaction Ont::unsignedTransfer(const Address &from, const Address &to, uint64_t amount,
-                             uint64_t gasPrice, uint64_t gasLimit,uint32_t nonce) {
+Transaction Ont::unsignedTransfer(const Address& from, const Address& to, uint64_t amount,
+                                  const Address& payer, uint64_t gasPrice, uint64_t gasLimit, 
+                                  uint32_t nonce) {
     NeoVmParamValue::ParamList transferParam{from._data, to._data, amount};
     NeoVmParamValue::ParamArray args{transferParam};
     auto invokeCode =
-            ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", {args});
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", {args});
     auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit,
-                          from.string(), invokeCode);
+                          payer.string(), invokeCode);
     return tx;
 }
 
