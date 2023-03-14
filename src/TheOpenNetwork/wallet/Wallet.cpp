@@ -34,6 +34,7 @@ CommonTON::StateInit Wallet::createStateInit() const {
 
 Cell::Ref Wallet::createSigningMessage(
     const Address& dest,
+    bool isBounceable,
     uint64_t amount,
     uint32_t sequence_number,
     uint8_t mode,
@@ -45,7 +46,7 @@ Cell::Ref Wallet::createSigningMessage(
     builder.appendU8(mode);
 
     { // Add internal message as a reference cell
-        const auto header = std::make_shared<CommonTON::InternalMessageHeader>(true, dest.isBounceable, dest.addressData, amount);
+        const auto header = std::make_shared<CommonTON::InternalMessageHeader>(true, isBounceable, dest.addressData, amount);
         TheOpenNetwork::Message internalMessage = TheOpenNetwork::Message(MessageData(header));
 
         CellBuilder bodyBuilder;
@@ -65,6 +66,7 @@ Cell::Ref Wallet::createSigningMessage(
 Cell::Ref Wallet::createTransferMessage(
     const PrivateKey& privateKey,
     const Address& dest,
+    bool isBounceable,
     uint64_t amount,
     uint32_t sequence_number,
     uint8_t mode,
@@ -75,6 +77,7 @@ Cell::Ref Wallet::createTransferMessage(
         privateKey,
         nullptr,
         dest,
+        isBounceable,
         amount,
         sequence_number,
         mode,
@@ -88,6 +91,7 @@ Cell::Ref Wallet::createTransferMessage(
     const PrivateKey& privateKey,
     const std::function<Data(Data)> externalSigner,
     const Address& dest,
+    bool isBounceable,
     uint64_t amount,
     uint32_t sequence_number,
     uint8_t mode,
@@ -103,7 +107,7 @@ Cell::Ref Wallet::createTransferMessage(
 
     { // Set body of transfer message
         CellBuilder bodyBuilder;
-        const Cell::Ref signingMessage = this->createSigningMessage(dest, amount, sequence_number, mode, expireAt, comment);
+        const Cell::Ref signingMessage = this->createSigningMessage(dest, isBounceable, amount, sequence_number, mode, expireAt, comment);
         Data data(signingMessage->hash.begin(), signingMessage->hash.end());
         
         // TANGEM        
