@@ -10,16 +10,15 @@ use tw_memory::CByteArray;
 const ALPHABET_RFC4648: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 pub fn get_alphabet(alphabet: *const c_char) -> Option<&'static [u8]> {
-    let alphabet = match alphabet.is_null() {
-        false => {
-            let alphabet = unsafe { CStr::from_ptr(alphabet).to_str().unwrap().as_bytes() };
-            Some(alphabet)
-        }
-        true => None,
-    };
-    alphabet
+    if alphabet.is_null() {
+        return None;
+    }
+    let alphabet = unsafe { CStr::from_ptr(alphabet).to_str().unwrap().as_bytes() };
+    Some(alphabet)
 }
 
+/// TODO `base64_encode` requires for padding bytes to be present if `padding = true`.
+/// This leads to an inconsistent behaviour.
 fn base32_encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<String, String> {
     let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
     if alphabet.len() != 32 {
@@ -64,6 +63,7 @@ pub extern "C" fn encode_base32(input: *const u8, input_len: usize, alphabet: *c
     }
 }
 
+/// TODO `base32_decode` behaviour differs from `base64_decode`.
 fn base32_decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec<u8>, String> {
     let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
     let mut output = Vec::new();
@@ -99,6 +99,11 @@ fn base32_decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<
     Ok(output)
 }
 
+/// Decodes base64 `input` string.
+/// * `input` - *non-null* C-compatible, nul-terminated string.
+/// * `alphabet` - *optional* C-compatible, nul-terminated string.
+///                `ALPHABET_RFC4648` is used by default if `alphabet` is null.
+/// * `padding` - whether to trim padding bytes be present when decoding.
 #[no_mangle]
 pub extern "C" fn decode_base32(input: *const c_char, alphabet: *const c_char, padding: bool) -> CByteArray {
     let input = unsafe { CStr::from_ptr(input).to_str().unwrap() };
@@ -117,6 +122,34 @@ pub extern "C" fn decode_base32(input: *const c_char, alphabet: *const c_char, p
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Checks if the encoded `input` with the given `alphabet` and `padding` parameters
+    /// equals to `expected`.
+    #[track_caller]
+    fn test_base32_encode_ffi_helper(input: &str, expected: &str, alphabet: Option<&str>, padding: bool) {
+        let input = input.as_bytes();
+        let alphabet = alphabet
+            .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
+            .unwrap_or_else(std::ptr::null);
+
+        let result_ptr = encode_base32(input.as_ptr(), input.len(), alphabet_ptr, padding);
+        let result = unsafe { CString::from_raw(result_ptr) };
+        assert_eq!(result.to_str().unwrap(), expected);
+    }
+
+    /// Checks if the decoded `input` with the given `alphabet` and `padding` parameters
+    /// equals to `expected`.
+    #[track_caller]
+    fn test_base32_decode_ffi_helper(input: &str, expected: &str, alphabet: Option<&str>, padding: bool) {
+        let input = CString::new(input).unwrap();
+        let alphabet = alphabet
+            .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
+            .unwrap_or_else(std::ptr::null);
+
+        let decoded_ptr = decode_base32(input.as_ptr(), alphabet_ptr, padding);
+        let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
+        assert_eq!(decoded_slice, expected);
+    }
 
     #[test]
     fn test_base32_encode() {
@@ -147,32 +180,6 @@ mod tests {
         let invalid_alphabet = "invalidalphabet";
         let result = base32_encode(data, Some(invalid_alphabet.as_bytes()), false);
         assert_eq!(result.is_err(), true);
-    }
-
-    #[test]
-    fn test_base32_encode_ffi() {
-        let data = b"Hello, world!";
-        let expected_1 = "JBSWY3DPFQQHO33SNRSCC===";
-        let expected_2 = "JBSWY3DPFQQHO33SNRSCC";
-        let expected_3 = "jbswy3dpfqqho33snrscc===";
-        let expected_4 = "jbswy3dpfqqho33snrscc";
-
-        let result_ptr = encode_base32(data.as_ptr(), data.len(), std::ptr::null(), true);
-        let result = unsafe { CString::from_raw(result_ptr) };
-        assert_eq!(result.to_str().unwrap(), expected_1);
-
-        let result_ptr = encode_base32(data.as_ptr(), data.len(), std::ptr::null(), false);
-        let result = unsafe { CString::from_raw(result_ptr) };
-        assert_eq!(result.to_str().unwrap(), expected_2);
-
-        let alphabet = CString::new("abcdefghijklmnopqrstuvwxyz234567").unwrap();
-        let result_ptr = encode_base32(data.as_ptr(), data.len(), alphabet.as_ptr(), true);
-        let result = unsafe { CString::from_raw(result_ptr) };
-        assert_eq!(result.to_str().unwrap(), expected_3);
-
-        let result_ptr = encode_base32(data.as_ptr(), data.len(), alphabet.as_ptr(), false);
-        let result = unsafe { CString::from_raw(result_ptr) };
-        assert_eq!(result.to_str().unwrap(), expected_4);
     }
 
     #[test]
@@ -213,34 +220,24 @@ mod tests {
     }
 
     #[test]
+    fn test_base32_encode_ffi() {
+        let input = "Hello, world!";
+        let alphabet = "abcdefghijklmnopqrstuvwxyz234567";
+
+        test_base32_encode_ffi_helper(input, "JBSWY3DPFQQHO33SNRSCC===", None, true);
+        test_base32_encode_ffi_helper(input, "JBSWY3DPFQQHO33SNRSCC", None, false);
+        test_base32_encode_ffi_helper(input, "jbswy3dpfqqho33snrscc===", Some(alphabet), true);
+        test_base32_encode_ffi_helper(input, "jbswy3dpfqqho33snrscc", Some(alphabet), false);
+    }
+
+    #[test]
     fn test_base32_decode_ffi() {
-        let input_1 = "JBSWY3DPFQQHO33SNRSCC===";
-        let input_2 = "JBSWY3DPFQQHO33SNRSCC";
-        let input_3 = "jbswy3dpfqqho33snrscc===";
-        let input_4 = "jbswy3dpfqqho33snrscc";
-        let expected = b"Hello, world!";
+        let expected = "Hello, world!";
+        let alphabet = "abcdefghijklmnopqrstuvwxyz234567";
 
-
-        let input_1 = CString::new(input_1).unwrap();
-        let decoded_ptr = decode_base32(input_1.as_ptr(), std::ptr::null(), true);
-        let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-        assert_eq!(decoded_slice, expected);
-
-        let input_2 = CString::new(input_2).unwrap();
-        let decoded_ptr = decode_base32(input_2.as_ptr(), std::ptr::null(), false);
-        let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-        assert_eq!(decoded_slice, expected);
-
-
-        let alphabet = CString::new("abcdefghijklmnopqrstuvwxyz234567").unwrap();
-        let input_3 = CString::new(input_3).unwrap();
-        let decoded_ptr = decode_base32(input_3.as_ptr(), alphabet.as_ptr(), true);
-        let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-        assert_eq!(decoded_slice, expected);
-
-        let input_4 = CString::new(input_4).unwrap();
-        let decoded_ptr = decode_base32(input_4.as_ptr(), alphabet.as_ptr(), false);
-        let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-        assert_eq!(decoded_slice, expected);
+        test_base32_decode_ffi_helper("JBSWY3DPFQQHO33SNRSCC===", expected, None, true);
+        test_base32_decode_ffi_helper("JBSWY3DPFQQHO33SNRSCC", expected, None, false);
+        test_base32_decode_ffi_helper("jbswy3dpfqqho33snrscc===", expected, Some(alphabet), true);
+        test_base32_decode_ffi_helper("jbswy3dpfqqho33snrscc", expected, Some(alphabet), false);
     }
 }
