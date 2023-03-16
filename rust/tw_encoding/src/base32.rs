@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::ffi::{c_char, CStr, CString};
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 const ALPHABET_RFC4648: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 

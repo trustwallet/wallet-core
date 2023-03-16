@@ -23,7 +23,7 @@ impl From<Vec<u8>> for CByteArray {
 }
 
 #[no_mangle]
-pub unsafe extern fn free_string(ptr: *const c_char) {
+pub unsafe extern "C" fn free_string(ptr: *const c_char) {
     // Take the ownership back to rust and drop the owner
     let _ = CString::from_raw(ptr as *mut _);
 }
@@ -37,10 +37,12 @@ pub fn c_string_standalone(input: String) -> *const c_char {
 
 #[cfg(test)]
 mod tests {
-    use crate::memory::{c_string_standalone, free_string};
+    use super::*;
 
     #[test]
     fn tests_ffi_string() {
-        unsafe { free_string(c_string_standalone("foo".to_string())); }
+        unsafe {
+            free_string(c_string_standalone("foo".to_string()));
+        }
     }
 }

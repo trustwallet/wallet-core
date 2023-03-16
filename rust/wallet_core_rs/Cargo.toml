@@ -1,0 +1,13 @@
+[package]
+name = "wallet-core-rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "wallet_core_rs"
+crate-type = ["staticlib"] # Creates static lib
+
+[dependencies]
+tw_starknet = { path = "../tw_starknet" }
+
+[dev-dependencies]

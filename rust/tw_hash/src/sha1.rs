@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use sha1::{Sha1};
-use crate::hash::hash_wrapper::hasher;
-use crate::memory::CByteArray;
+use crate::hash_wrapper::hasher;
+use tw_memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArray {

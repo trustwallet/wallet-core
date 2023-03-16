@@ -11,7 +11,6 @@ use std::{
 use move_core_types::*;
 use move_core_types::language_storage::TypeTag;
 use move_core_types::transaction_argument::TransactionArgument;
-use crate::memory;
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -28,7 +27,7 @@ pub enum ETypeTag {
 }
 
 #[no_mangle]
-pub extern fn parse_type_tag(input: *const c_char) -> ETypeTag {
+pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
     let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };
     let transaction_argument = match parser::parse_type_tag(s) {
         Ok(v) => v,
@@ -47,7 +46,7 @@ pub extern fn parse_type_tag(input: *const c_char) -> ETypeTag {
 }
 
 #[no_mangle]
-pub extern fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
+pub extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
     let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };
     let transaction_argument = match parser::parse_transaction_argument(s) {
         Ok(v) => v,
@@ -61,14 +60,12 @@ pub extern fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_c
         TransactionArgument::U8Vector(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::Bool(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
     };
-    memory::c_string_standalone(v)
+    tw_memory::c_string_standalone(v)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::move_parser::{ETypeTag, parse_function_argument_to_bcs, parse_type_tag};
-    use std::ffi::CStr;
-    use std::ffi::c_char;
+    use super::*;
 
     #[test]
     fn tests_type_tag() {

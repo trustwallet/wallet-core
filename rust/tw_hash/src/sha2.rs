@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::hash_wrapper::hasher;
 use sha2::{Sha256, Sha512, Sha512_256};
-use crate::hash::hash_wrapper::hasher;
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {

@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::hash_wrapper::hasher;
 use groestl::{Groestl512};
-use crate::hash::hash_wrapper::hasher;
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn groestl_512(input: *const u8, input_len: usize) -> CByteArray {

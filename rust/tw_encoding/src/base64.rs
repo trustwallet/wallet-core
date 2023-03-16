@@ -5,10 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use base64::{Engine as _, engine::{general_purpose}};
-
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *mut c_char {
@@ -48,14 +47,13 @@ pub extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray
 
 #[cfg(test)]
 mod tests {
-    use std::ffi::CString;
-    use crate::encoding::base64::{decode_base64, encode_base64};
+    use super::*;
 
     #[test]
     fn test_encode_base64_ffi() {
         let data = b"hello world";
         let encoded = unsafe {
-            std::ffi::CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), false))
+            CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), false))
         };
         let expected = "aGVsbG8gd29ybGQ=";
         assert_eq!(encoded.to_str().unwrap(), expected);
@@ -65,7 +63,7 @@ mod tests {
     fn test_encode_base64_url_ffi() {
         let data = b"+'?ab";
         let encoded = unsafe {
-            std::ffi::CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), true))
+            CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), true))
         };
         let expected = "Kyc_YWI=";
         assert_eq!(encoded.to_str().unwrap(), expected);

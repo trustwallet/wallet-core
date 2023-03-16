@@ -6,7 +6,7 @@
 
 use sha2::Sha256;
 use hmac::{Hmac, Mac};
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 type HmacSha256 = Hmac<Sha256>;
 

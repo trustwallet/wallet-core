@@ -9,7 +9,7 @@ use blake2::{
     digest::{Update, VariableOutput}
 };
 use blake2b_ref::{Blake2bBuilder};
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn blake2_b(input: *const u8, input_len: usize, hash_size: usize) -> CByteArray {

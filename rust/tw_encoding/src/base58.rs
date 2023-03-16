@@ -6,7 +6,7 @@
 
 use std::ffi::{c_char, CStr, CString};
 use bs58::{encode, decode, Alphabet};
-use crate::memory::CByteArray;
+use tw_memory::CByteArray;
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]

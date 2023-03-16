@@ -5,8 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::ffi::{c_char, CStr, CString};
-use crate::memory::CByteArray;
-use hex;
+use tw_memory::CByteArray;
 
 #[no_mangle]
 pub extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
@@ -42,14 +41,13 @@ pub extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool) -> *mu
 
 #[cfg(test)]
 mod tests {
-    use std::ffi::CString;
-    use crate::encoding::hex::{encode_hex, decode_hex};
+    use super::*;
 
     #[test]
     fn test_encode_hex_without_prefix() {
         let data = b"hello world";
         let encoded = unsafe {
-            std::ffi::CStr::from_ptr(encode_hex(data.as_ptr(), data.len(), false))
+            CStr::from_ptr(encode_hex(data.as_ptr(), data.len(), false))
         };
         let expected = "68656c6c6f20776f726c64";
         assert_eq!(encoded.to_str().unwrap(), expected);
@@ -59,7 +57,7 @@ mod tests {
     fn test_encode_hex_with_prefix() {
         let data = b"hello world";
         let encoded = unsafe {
-            std::ffi::CStr::from_ptr(encode_hex(data.as_ptr(), data.len(), true))
+            CStr::from_ptr(encode_hex(data.as_ptr(), data.len(), true))
         };
         let expected = "0x68656c6c6f20776f726c64";
         assert_eq!(encoded.to_str().unwrap(), expected);

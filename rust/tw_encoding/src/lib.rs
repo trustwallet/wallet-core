@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod base32;
-mod base58;
-mod base64;
-mod hex;
+pub mod base32;
+pub mod base58;
+pub mod base64;
+pub mod hex;
