@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust.
+// Copyright © 2017-2023 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
