@@ -14,11 +14,16 @@ namespace TW::Binance {
 
 const std::string Address::_hrp = HRP_BINANCE;
 const std::string Address::hrpValidator = "bva";
-const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap", "tbnb"};
+const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap"};
 
 bool Address::isValid(const std::string& addr) {
     Address addrNotUsed;
     return decode(addr, addrNotUsed);
+}
+
+bool Address::isValid(const std::string& addr, const std::string& hrp) {
+    Address addrNotUsed;
+    return Bech32Address::decode(addr, addrNotUsed, hrp);
 }
 
 bool Address::decode(const std::string& addr, Address& obj_out) {

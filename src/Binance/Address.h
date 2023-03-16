@@ -19,6 +19,7 @@ public:
     static const std::string hrpValidator; // HRP_BINANCE
 
     static bool isValid(const std::string& addr);
+    static bool isValid(const std::string& addr, const std::string& hrp);
 
     Address() : Bech32Address(_hrp) {}
 

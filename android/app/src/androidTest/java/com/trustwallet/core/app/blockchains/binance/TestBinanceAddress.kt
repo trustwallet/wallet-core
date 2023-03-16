@@ -2,6 +2,8 @@ package com.trustwallet.core.app.blockchains.binance
 
 import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import wallet.core.jni.*
 import com.trustwallet.core.app.utils.toHex
@@ -20,6 +22,23 @@ class TestBinanceAddress {
         val address = AnyAddress(publicKey, CoinType.BINANCE)
 
         assertEquals("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address.description())
+    }
+
+    @Test
+    fun testIsValid() {
+        assertTrue(AnyAddress.isValid("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", CoinType.BINANCE));
+
+        assertFalse(AnyAddress.isValid("bad1devga6q804tx9fqrnx0vtu5r36kxgp9tqx8h9k", CoinType.BINANCE));
+        assertFalse(AnyAddress.isValid("tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2", CoinType.BINANCE));
+    }
+
+    @Test
+    fun testIsValidBech32() {
+        assertTrue(AnyAddress.isValidBech32("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", CoinType.BINANCE, "bnb"));
+        assertTrue(AnyAddress.isValidBech32("tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2", CoinType.BINANCE, "tbnb"));
+
+        assertFalse(AnyAddress.isValidBech32("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", CoinType.BINANCE, "tbnb"));
+        assertFalse(AnyAddress.isValidBech32("tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2", CoinType.BINANCE, "bnb"));
     }
 
     @Test

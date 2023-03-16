@@ -13,6 +13,13 @@
 namespace TW::Binance {
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+    if (std::holds_alternative<Bech32Prefix>(addressPrefix)) {
+        if (const auto hrp = std::get<Bech32Prefix>(addressPrefix); hrp) {
+            return Address::isValid(address, hrp);
+        }
+    }
+
+    // Use the default validation, which handles a specific set of valid HRPs.
     return Address::isValid(address);
 }
 
