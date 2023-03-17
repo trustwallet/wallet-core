@@ -48,9 +48,9 @@ pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
     }
 }
 
-/// Parses a Move function argument as a Binary Canonical Serialization (BCS).
+/// Parses `input` as a Move function argument.
 /// \param input *non-null* C-compatible, nul-terminated string.
-/// \return *non-null* C-compatible, nul-terminated string.
+/// \return *non-null* C-compatible, nul-terminated string, Binary Canonical Serialization (BCS).
 #[no_mangle]
 pub extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
     let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };

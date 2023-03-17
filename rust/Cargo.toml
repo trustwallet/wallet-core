@@ -7,5 +7,3 @@ members = [
     "tw_starknet",
     "wallet_core_rs",
 ]
-
-resolver = "2"

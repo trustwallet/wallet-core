@@ -1,8 +1,14 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 use std::ffi::{CStr, CString};
 use tw_encoding::ffi::{decode_base64, encode_base64};
 
 #[test]
-fn test_encode_base64_ffi() {
+fn test_encode_base64() {
     let data = b"hello world";
     let encoded = unsafe { CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), false)) };
     let expected = "aGVsbG8gd29ybGQ=";
@@ -10,7 +16,7 @@ fn test_encode_base64_ffi() {
 }
 
 #[test]
-fn test_encode_base64_url_ffi() {
+fn test_encode_base64_url() {
     let data = b"+'?ab";
     let encoded = unsafe { CStr::from_ptr(encode_base64(data.as_ptr(), data.len(), true)) };
     let expected = "Kyc_YWI=";

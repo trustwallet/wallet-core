@@ -1,3 +1,9 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 use tw_hash::ffi::{
     blake2_b, blake2_b_personal, blake_256, groestl_512, hmac__sha256, keccak256, keccak512,
     ripemd_160, sha1, sha256, sha3__256, sha3__512, sha512, sha512_256,

@@ -1,3 +1,9 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 use crate::{base32, base58, base64, hex};
 use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
