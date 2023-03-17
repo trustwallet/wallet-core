@@ -10,6 +10,12 @@ use tw_memory::CByteArray;
 
 type HmacSha256 = Hmac<Sha256>;
 
+/// Hash-based Message Authentication Code (HMAC) using the SHA-256 hash function.
+/// \param key *non-null* byte array.
+/// \param key_len the length of the `key` array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn hmac__sha256(key: *const u8, key_len: usize, input: *const u8, input_len: usize) -> CByteArray {
     let key = unsafe { std::slice::from_raw_parts(key, key_len) };

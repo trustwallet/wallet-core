@@ -9,6 +9,11 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use tw_memory::CByteArray;
 
+/// Encodes the `data` data as a padded, base64 string.
+/// \param data *non-null* byte array.
+/// \param len - the length of the `data` array.
+/// \param is_url whether to use the [URL safe alphabet](https://www.rfc-editor.org/rfc/rfc3548#section-4).
+/// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
 pub extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *mut c_char {
     let data = unsafe { std::slice::from_raw_parts(data, len) };
@@ -20,6 +25,10 @@ pub extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *m
     CString::new(encoded).unwrap().into_raw()
 }
 
+/// Decodes the base64 `data` string.
+/// \param data *non-null* C-compatible, nul-terminated string.
+/// \param is_url whether to use the [URL safe alphabet](https://www.rfc-editor.org/rfc/rfc3548#section-4).
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray {
     if data.is_null() {

@@ -30,6 +30,11 @@ fn base58_encode(input: &[u8], alphabet: Base58Alphabet) -> String {
         .into_string()
 }
 
+/// Encodes the `input` data as base58.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \param alphabet alphabet type.
+/// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
 pub extern "C" fn encode_base58(input: *const u8, input_len: usize, alphabet: Base58Alphabet) -> *mut c_char {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
@@ -40,6 +45,10 @@ fn base58_decode(input: &str, alphabet: Base58Alphabet) -> decode::Result<Vec<u8
     decode(input).with_alphabet(alphabet.into()).into_vec()
 }
 
+/// Decodes the base58 `input` string.
+/// \param input *non-null* C-compatible, nul-terminated string.
+/// \param alphabet alphabet type.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn decode_base58(input: *const c_char, alphabet: Base58Alphabet) -> CByteArray {
     let input = unsafe { CStr::from_ptr(input).to_str().unwrap() };

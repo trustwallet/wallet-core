@@ -11,6 +11,11 @@ use blake2::{
 use blake2b_ref::{Blake2bBuilder};
 use tw_memory::CByteArray;
 
+/// Computes the BLAKE2B hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \param hash_size the size of the output hash.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn blake2_b(input: *const u8, input_len: usize, hash_size: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
@@ -22,6 +27,13 @@ pub extern "C" fn blake2_b(input: *const u8, input_len: usize, hash_size: usize)
     buf.into()
 }
 
+/// Computes the personalized BLAKE2B hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \param hash_size the size of the output hash.
+/// \param personal_input *non-null* byte array.
+/// \param personal_len the length of the `personal_input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn blake2_b_personal(input: *const u8, input_len: usize, hash_size: usize, personal_input: *const u8, personal_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };

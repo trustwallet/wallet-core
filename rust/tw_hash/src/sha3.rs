@@ -8,24 +8,40 @@ use crate::hash_wrapper::hasher;
 use sha3::{Keccak256, Keccak512, Sha3_256, Sha3_512};
 use tw_memory::CByteArray;
 
+/// Computes the Keccak-256 hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
     hasher::<Keccak256>(input).into()
 }
 
+/// Computes the Keccak-512 hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
     hasher::<Keccak512>(input).into()
 }
 
+/// Computes the SHA-3-256 hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
     hasher::<Sha3_256>(input).into()
 }
 
+/// Computes the SHA-3-512 hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn sha3__512(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };

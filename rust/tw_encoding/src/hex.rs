@@ -7,6 +7,9 @@
 use std::ffi::{c_char, CStr, CString};
 use tw_memory::CByteArray;
 
+/// Decodes the hex `data` string.
+/// \param data *non-null* C-compatible, nul-terminated string.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
     if data.is_null() {
@@ -29,6 +32,11 @@ pub extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
     }
 }
 
+/// Encodes the octets `data` as a hex string using lowercase characters.
+/// \param data *non-null* byte array.
+/// \param len the length of the `data` array.
+/// \param prefixed whether to add `0x` prefix.
+/// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
 pub extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool) -> *mut c_char {
     let data = unsafe { std::slice::from_raw_parts(data, len) };

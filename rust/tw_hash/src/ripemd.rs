@@ -8,6 +8,10 @@ use crate::hash_wrapper::hasher;
 use ripemd::{Ripemd160};
 use tw_memory::CByteArray;
 
+/// Computes the RIPEMD-160 hash of the `input` byte array.
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByteArray {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };

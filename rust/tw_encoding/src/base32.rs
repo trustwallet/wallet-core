@@ -17,8 +17,6 @@ pub fn get_alphabet(alphabet: *const c_char) -> Option<&'static [u8]> {
     Some(alphabet)
 }
 
-/// TODO `base64_encode` requires for padding bytes to be present if `padding = true`.
-/// This leads to an inconsistent behaviour.
 fn base32_encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<String, String> {
     let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
     if alphabet.len() != 32 {
@@ -51,6 +49,12 @@ fn base32_encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result
     Ok(result)
 }
 
+/// Encodes the `input` data as base32.
+/// \param input *non-null* byte array.
+/// \param alphabet *optional* C-compatible, nul-terminated string.
+///                `ALPHABET_RFC4648` is used by default if `alphabet` is null.
+/// \param padding whether the padding bytes should be included.
+/// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
 pub extern "C" fn encode_base32(input: *const u8, input_len: usize, alphabet: *const c_char, padding: bool) -> *mut c_char {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
@@ -63,7 +67,8 @@ pub extern "C" fn encode_base32(input: *const u8, input_len: usize, alphabet: *c
     }
 }
 
-/// TODO `base32_decode` behaviour differs from `base64_decode`.
+/// TODO `base64_decode` requires for padding bytes to be present if `padding = true`.
+/// This leads to an inconsistent behaviour.
 fn base32_decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec<u8>, String> {
     let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
     let mut output = Vec::new();
@@ -99,11 +104,12 @@ fn base32_decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<
     Ok(output)
 }
 
-/// Decodes base64 `input` string.
-/// * `input` - *non-null* C-compatible, nul-terminated string.
-/// * `alphabet` - *optional* C-compatible, nul-terminated string.
+/// Decodes the base32 `input` string.
+/// \param input *non-null* C-compatible, nul-terminated string.
+/// \param alphabet *optional* C-compatible, nul-terminated string.
 ///                `ALPHABET_RFC4648` is used by default if `alphabet` is null.
-/// * `padding` - whether to trim padding bytes be present when decoding.
+/// \param padding whether the padding bytes should be trimmed when decoding.
+/// \return C-compatible byte array.
 #[no_mangle]
 pub extern "C" fn decode_base32(input: *const c_char, alphabet: *const c_char, padding: bool) -> CByteArray {
     let input = unsafe { CStr::from_ptr(input).to_str().unwrap() };
