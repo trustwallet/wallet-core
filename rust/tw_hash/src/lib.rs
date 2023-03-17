@@ -4,12 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+pub mod blake;
+pub mod blake2;
+pub mod ffi;
+pub mod groestl;
+pub mod hmac;
+pub mod ripemd;
+pub mod sha1;
+pub mod sha2;
+pub mod sha3;
+
 mod hash_wrapper;
-mod sha1;
-mod sha2;
-mod sha3;
-mod ripemd;
-mod blake;
-mod blake2;
-mod groestl;
-mod hmac;
