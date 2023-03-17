@@ -13,6 +13,18 @@ class TronTests: XCTestCase {
         let address = AnyAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3", coin: .tron)!
         XCTAssertEqual(address.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
     }
+    
+    func testSignDirect() {
+        let input = TronSigningInput.with {
+            $0.privateKey = Data(hexString: "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54")!
+            $0.txID = "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"
+        }
+        
+        let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
+        
+        XCTAssertEqual(output.id, Data(hexString: "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"))
+        XCTAssertEqual(output.signature, Data(hexString: "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00"))
+    }
 
     func testSign() {
         let contract = TronTransferContract.with {
