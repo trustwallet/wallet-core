@@ -1,7 +1,7 @@
 use crate::{base32, base58, base64, hex};
 use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
-use tw_memory::CByteArray;
+use tw_memory::ffi::CByteArray;
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -107,9 +107,6 @@ pub extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *m
 /// \param data *optional* C-compatible, nul-terminated string.
 /// \param is_url whether to use the [URL safe alphabet](https://www.rfc-editor.org/rfc/rfc3548#section-4).
 /// \return C-compatible byte array.
-///
-/// TODO an input `data` is non-null byte array in `decode_base32`, `decode_base58`.
-/// This leads to an inconsistent behaviour.
 #[no_mangle]
 pub extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray {
     if data.is_null() {

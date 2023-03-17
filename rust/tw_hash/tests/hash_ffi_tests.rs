@@ -2,7 +2,7 @@ use tw_hash::ffi::{
     blake2_b, blake2_b_personal, blake_256, groestl_512, hmac__sha256, keccak256, keccak512,
     ripemd_160, sha1, sha256, sha3__256, sha3__512, sha512, sha512_256,
 };
-use tw_memory::CByteArray;
+use tw_memory::ffi::CByteArray;
 
 type ExternFn = extern "C" fn(*const u8, usize) -> CByteArray;
 

@@ -1,5 +1,5 @@
 use crate::{blake, blake2, groestl, hmac, ripemd, sha1, sha2, sha3};
-use tw_memory::CByteArray;
+use tw_memory::ffi::CByteArray;
 
 /// Computes the Blake-256 hash of the `input` byte array.
 /// \param input *non-null* byte array.
