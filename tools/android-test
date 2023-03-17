@@ -9,7 +9,7 @@ PORT=5556
 
 # Make sure it builds before starting an emulator
 pushd android
-./gradlew assembleAndroidTest
+./gradlew assembleAndroidTest --info
 popd
 
 #Calculate the Serial Number of the emulator instance

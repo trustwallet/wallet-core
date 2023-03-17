@@ -24,6 +24,10 @@ jbyteArray JNICALL Java_wallet_core_java_AnySigner_signJSON(JNIEnv *env, jclass 
 JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativePlan(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin);
 
+// TANGEM
+JNIEXPORT
+jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSignExternally(JNIEnv *env, jclass thisClass, jbyteArray publicKey, jbyteArray input, jint coin, jobject signer);
+
 TW_EXTERN_C_END
 
 #endif // JNI_TW_ANYSIGNER_H

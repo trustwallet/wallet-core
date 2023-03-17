@@ -33,4 +33,14 @@ public class AnySigner {
         return output;
     }
     public static native byte[] nativePlan(byte[] data, int coin);
+
+    public static <T extends MessageLite> T signExternally(MessageLite input, CoinType coin, Parser<T> parser, Signer signer) throws Exception {
+        byte[] inputData = input.toByteArray();
+        byte[] outputData = nativeSignExternally(signer.getPublicKey().data(), inputData, coin.value(), signer);
+        T output = parser.parseFrom(outputData);
+        outputData = null;
+        return output;
+    }
+
+    public static native byte[] nativeSignExternally(byte[] publicKey, byte[] data, int coin, Signer signer);
 }
