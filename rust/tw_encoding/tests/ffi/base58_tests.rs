@@ -1,0 +1,23 @@
+use std::ffi::CString;
+use tw_encoding::ffi::{decode_base58, encode_base58, Base58Alphabet};
+
+#[test]
+fn test_base58_encode_ffi() {
+    let data = b"Hello, world!";
+    let expected = "72k1xXWG59wUsYv7h2";
+
+    let result_ptr = encode_base58(data.as_ptr(), data.len(), Base58Alphabet::Bitcoin);
+    let result = unsafe { CString::from_raw(result_ptr) };
+    assert_eq!(result.to_str().unwrap(), expected);
+}
+
+#[test]
+fn test_base58_decode_ffi() {
+    let data = "72k1xXWG59wUsYv7h2";
+    let expected = b"Hello, world!";
+
+    let input = CString::new(data).unwrap();
+    let decoded_ptr = decode_base58(input.as_ptr(), Base58Alphabet::Bitcoin);
+    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
+    assert_eq!(decoded_slice, expected);
+}
