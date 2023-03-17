@@ -19,6 +19,7 @@ public:
     static const std::string hrpValidator; // HRP_BINANCE
 
     static bool isValid(const std::string& addr);
+    static bool isValid(const std::string& addr, const std::string& hrp);
 
     Address() : Bech32Address(_hrp) {}
 
@@ -27,6 +28,7 @@ public:
 
     /// Initializes an address with a public key.
     Address(const PublicKey& publicKey) : Bech32Address(_hrp, Hash::HasherSha256ripemd, publicKey) {}
+    Address(const PublicKey& publicKey, const std::string hrp) : Bech32Address(hrp, Hash::HasherSha256ripemd, publicKey) {}
 
     static bool decode(const std::string& addr, Address& obj_out);
 };
