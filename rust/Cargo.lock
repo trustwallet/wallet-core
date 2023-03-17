@@ -1124,6 +1124,7 @@ dependencies = [
  "starknet-crypto",
  "starknet-ff",
  "starknet-signers",
+ "tw_encoding",
  "tw_memory",
 ]
 

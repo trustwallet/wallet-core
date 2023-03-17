@@ -7,7 +7,7 @@ use std::ffi::{c_char, CStr};
 #[no_mangle]
 pub unsafe extern "C" fn starknet_pubkey_from_private(priv_key: *const c_char) -> *const c_char {
     let priv_key = CStr::from_ptr(priv_key).to_str().unwrap();
-    let hex = key_pair::starknet_pubkey_from_private(priv_key);
+    let hex = key_pair::starknet_pubkey_from_private(priv_key).unwrap_or_default();
     tw_memory::c_string_standalone(hex)
 }
 
@@ -22,7 +22,7 @@ pub unsafe extern "C" fn starknet_sign(
 ) -> *const c_char {
     let priv_key = CStr::from_ptr(priv_key).to_str().unwrap();
     let hash = CStr::from_ptr(hash).to_str().unwrap();
-    let hex = key_pair::starknet_sign(priv_key, hash);
+    let hex = key_pair::starknet_sign(priv_key, hash).unwrap_or_default();
     tw_memory::c_string_standalone(hex)
 }
 
@@ -44,5 +44,5 @@ pub unsafe extern "C" fn starknet_verify(
     let r = CStr::from_ptr(r).to_str().unwrap();
     let s = CStr::from_ptr(s).to_str().unwrap();
 
-    key_pair::starknet_verify(pub_key, hash, r, s)
+    key_pair::starknet_verify(pub_key, hash, r, s).unwrap_or_default()
 }

@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use hex::FromHexError;
+pub use hex::FromHexError;
 
 pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
-    let hex_string = data.strip_prefix("0x").unwrap_or(data);
+    let hex_string = data.trim_start_matches("0x");
     hex::decode(hex_string)
 }
 

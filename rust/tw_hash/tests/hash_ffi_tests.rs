@@ -148,8 +148,6 @@ fn test_sha512_256() {
     );
 }
 
-// TODO
-
 #[test]
 fn test_keccak256() {
     test_hash_helper(
