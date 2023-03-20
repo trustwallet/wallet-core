@@ -10,12 +10,19 @@ val properties = java.util.Properties()
 val localProps = file("local.properties")
 if (localProps.exists()) {
     properties.load(localProps.inputStream())
-    println("Authenticating user: " + properties.getProperty("gpr.user"))
+    val user = properties.getProperty("gpr.user")
+    if (user != null) {
+        println("Authenticating user: $user")
+    } else {
+        println("local.properties found, but gpr.user property not set. ")
+    }
 } else {
-    println(
-        "local.properties not found, please create it next to settings.gradle.kts and set gpr.user and gpr.key (Create a GitHub package read only and non expiration token at https://github.com/settings/tokens)\n" +
-                "Or set GITHUB_USER and GITHUB_TOKEN environment variables"
-    )
+    val user = System.getenv("GITHUB_USER")
+    if (user != null) {
+        println("Authenticating user: $user")
+    } else {
+        println("local.properties not found, and GITHUB_USER environment variable not set. ")
+    }
 }
 
 dependencyResolutionManagement {

@@ -61,6 +61,6 @@ Open this folder in Android Studio then run
 
 ### iOS
 
-Open `iosApp/iosApp.xcworkspace` in Xcode, if you don't see it, please run `pod install` under `iosApp` folder.
+Open `iosApp/iosApp.xcworkspace` in Xcode, if you don't see it, please run `pod install --repo-update` under `iosApp` folder.
 
 <img src=https://user-images.githubusercontent.com/360470/221500890-4749e74a-b021-452b-85cd-7ba20749163a.png width=55% />
