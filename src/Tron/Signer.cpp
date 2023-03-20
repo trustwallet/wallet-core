@@ -269,7 +269,21 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
     internal.mutable_raw_data()->set_ref_block_bytes(heightData.data() + heightData.size() - 2, 2);
 }
 
+Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
+    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto hash = parse_hex(input.txid());
+    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    auto output = Proto::SigningOutput();
+    output.set_signature(signature.data(), signature.size());
+    output.set_id(input.txid());
+    output.set_id(hash.data(), hash.size());
+    return output;
+}
+
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    if (!input.txid().empty()) {
+        return signDirect(input);
+    }
     auto internal = protocol::Transaction();
     auto output = Proto::SigningOutput();
 
