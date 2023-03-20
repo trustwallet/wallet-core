@@ -1,5 +1,0 @@
-# Whether to add a `#pragma once` guard
-# default: doesn't emit a `#pragma once`
-pragma_once = true
-
-namespaces = ["TW", "Rust"]

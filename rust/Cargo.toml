@@ -1,32 +1,9 @@
-[package]
-name = "wallet-core-rs"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-name = "wallet_core_rs"
-crate-type = ["staticlib"] # Creates static lib
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-move-core-types = { git = "https://github.com/move-language/move", rev = "f7137eabc2046f76fdad3ded2c51e03a3b1fbd01", features = ["address32"] }
-starknet-crypto = "0.1.0"
-starknet-ff = "0.1.0"
-starknet-signers = "0.1.0"
-bcs = "0.1.4"
-hex = "0.4.3"
-base64 = "0.21.0"
-bs58 = "0.4.0"
-sha1 = "0.10.5"
-sha2 = "0.10.6"
-sha3 = "0.10.6"
-blake-hash = "0.4.1"
-blake2 = "0.10.6"
-blake2b-ref = "0.3.1"
-ripemd = "0.1.3"
-digest = "0.10.6"
-groestl = "0.10.1"
-hmac = "0.12.1"
-
-[dev-dependencies]
+[workspace]
+members = [
+    "tw_encoding",
+    "tw_hash",
+    "tw_memory",
+    "tw_move_parser",
+    "tw_starknet",
+    "wallet_core_rs",
+]

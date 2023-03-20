@@ -1075,6 +1075,60 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_encoding"
+version = "0.1.0"
+dependencies = [
+ "base64 0.21.0",
+ "bs58",
+ "hex",
+ "tw_memory",
+]
+
+[[package]]
+name = "tw_hash"
+version = "0.1.0"
+dependencies = [
+ "blake-hash",
+ "blake2",
+ "blake2b-ref",
+ "digest 0.10.6",
+ "groestl",
+ "hex",
+ "hmac 0.12.1",
+ "ripemd",
+ "sha1",
+ "sha2 0.10.6",
+ "sha3",
+ "tw_memory",
+]
+
+[[package]]
+name = "tw_memory"
+version = "0.1.0"
+
+[[package]]
+name = "tw_move_parser"
+version = "0.1.0"
+dependencies = [
+ "bcs",
+ "hex",
+ "move-core-types",
+ "tw_memory",
+]
+
+[[package]]
+name = "tw_starknet"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "starknet-crypto",
+ "starknet-ff",
+ "starknet-signers",
+ "tw_encoding",
+ "tw_memory",
+]
+
+[[package]]
 name = "typenum"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1120,24 +1174,11 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 name = "wallet-core-rs"
 version = "0.1.0"
 dependencies = [
- "base64 0.21.0",
- "bcs",
- "blake-hash",
- "blake2",
- "blake2b-ref",
- "bs58",
- "digest 0.10.6",
- "groestl",
- "hex",
- "hmac 0.12.1",
- "move-core-types",
- "ripemd",
- "sha1",
- "sha2 0.10.6",
- "sha3",
- "starknet-crypto",
- "starknet-ff",
- "starknet-signers",
+ "tw_encoding",
+ "tw_hash",
+ "tw_memory",
+ "tw_move_parser",
+ "tw_starknet",
 ]
 
 [[package]]
