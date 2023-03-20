@@ -256,6 +256,9 @@ message SigningInput {
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
+
+    // For direct sign in Tron, we just have to sign the txId returned by the DApp json payload.
+    string txId = 3;
 }
 
 // Result containing the signed and encoded transaction.
