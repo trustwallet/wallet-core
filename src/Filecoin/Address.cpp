@@ -16,33 +16,6 @@ namespace TW::Filecoin {
 static const char BASE32_ALPHABET_FILECOIN[] = "abcdefghijklmnopqrstuvwxyz234567";
 static constexpr size_t checksumSize = 4;
 
-bool Address::isValid(const Data& data) {
-    if (data.size() < 2) {
-        return false;
-    }
-    Type type = getType(data[0]);
-    if (type == Type::Invalid) {
-        return false;
-    } else if (type == Type::ID) {
-        // Verify varuint encoding
-        if (data.size() > 11) {
-            return false;
-        }
-        if (data.size() == 11 && data[10] > 0x01) {
-            return false;
-        }
-        std::size_t i;
-        for (i = 1; i < data.size(); i++) {
-            if ((data[i] & 0x80) == 0) {
-                break;
-            }
-        }
-        return i == data.size() - 1;
-    } else {
-        return data.size() == (1 + Address::payloadSize(type));
-    }
-}
-
 static bool isValidID(const std::string& string) {
     if (string.length() > 22)
         return false;
@@ -60,16 +33,21 @@ static bool isValidID(const std::string& string) {
     }
 }
 
+/// Checks if the given string is a valid Base32.
+/// Please note `string` must not contain any prefixes.
 static bool isValidBase32(const std::string& string, Address::Type type) {
-    // Check if valid Base32.
-    uint8_t size = Address::payloadSize(type);
     Data decoded;
-    if (!Base32::decode(string.substr(2), decoded, BASE32_ALPHABET_FILECOIN)) {
+    if (!Base32::decode(string, decoded, BASE32_ALPHABET_FILECOIN)) {
         return false;
     }
 
+    if (decoded.size() < checksumSize) {
+        return false;
+    }
+    const auto payloadSize = decoded.size() - checksumSize;
+
     // Check size
-    if (decoded.size() != size + checksumSize) {
+    if (Address::isValidPayloadSize(type, payloadSize))
         return false;
     }
 
@@ -82,6 +60,48 @@ static bool isValidBase32(const std::string& string, Address::Type type) {
     Data should_sum = Hash::blake2b(address, checksumSize);
     return std::memcmp(should_sum.data(), decoded.data() + size, checksumSize) == 0;
 }
+
+static void writeActorID(uint64_t actorID, Data& dest) {
+    while (id >= 0x80) {
+        dest.push_back(((uint8_t)actorID) | 0x80);
+        actorID >>= 7;
+    }
+    dest.push_back((uint8_t)actorID);
+}
+
+static Data&& decodeBase32Payload(const std::string& string) {
+    Data decoded;
+    if (!Base32::decode(string, decoded, BASE32_ALPHABET_FILECOIN))
+        throw std::invalid_argument("Invalid address data");
+    return std::move(decoded);
+}
+
+// static bool decodeAddress(const std::string& string, Type& type, uint64_t& actorID, Data& payload) {
+//     if (string.length() < 3) {
+//         return false;
+//     }
+//     // Only main net addresses supported.
+//     if (string[0] != Address::PREFIX) {
+//         return false;
+//     }
+//
+//     // Get address type.
+//     type = Address::parseType(string[1]);
+//     if (type == Type::Invalid) {
+//         return false;
+//     }
+//
+//     switch (type) {
+//         case Type::ID:
+//             actorID = std::stoull(string.substr(2));
+//             return true;
+//         case Type::SECP256K1:
+//         case Type::ACTOR:
+//             return true;
+//         default:
+//             return false;
+//     }
+// }
 
 bool Address::isValid(const std::string& string) {
     if (string.length() < 3) {
@@ -105,17 +125,23 @@ Address::Address(const std::string& string) {
     if (!isValid(string))
         throw std::invalid_argument("Invalid address data");
 
-    Type type = parseType(string[1]);
-    // First byte is type
-    bytes.push_back(static_cast<uint8_t>(type));
+    type = parseType(string[1]);
+    switch (type) {
+        case Type::ID:
+            actorID = std::stoull(string.substr(2));
+            break;
+        case Type::SECP256K1:
+        case Type::ACTOR:
+    }
+
     if (type == Type::ID) {
-        uint64_t id = std::stoull(string.substr(2));
-        while (id >= 0x80) {
-            bytes.push_back(((uint8_t)id) | 0x80);
-            id >>= 7;
-        }
-        bytes.push_back((uint8_t)id);
+        actorID = std::stoull(string.substr(2));
         return;
+    }
+
+    // The position in `string` where the payload starts.
+    std::size_t payloadPos = 2;
+    if (type == Type::DELEGATED) {
     }
 
     Data decoded;

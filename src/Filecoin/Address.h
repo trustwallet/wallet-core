@@ -22,14 +22,19 @@ class Address {
         SECP256K1 = 1,
         ACTOR = 2,
         BLS = 3,
+        DELEGATED = 4,
         Invalid,
     };
 
-    /// Address data with address type prefix.
-    Data bytes;
+    /// Type of the Address.
+    Type type = Type::Invalid;
 
-    /// Determines whether a collection of bytes makes a valid address.
-    static bool isValid(const Data& data);
+    /// Actor ID.
+    /// This is used if `type` is either `ID` or `DELEGATED`.
+    uint64_t actorID = 0;
+
+    /// Address data payload *only*.
+    Data bytes;
 
     /// Determines whether a string makes a valid encoded address.
     static bool isValid(const std::string& string);
@@ -64,6 +69,8 @@ class Address {
             return Type::ACTOR;
         case 3:
             return Type::BLS;
+        case 4:
+            return Type::DELEGATED;
         default:
             return Type::Invalid;
         }
@@ -71,7 +78,7 @@ class Address {
 
     /// Attempts to get the type by ASCII.
     static Type parseType(char c) {
-        if (c >= '0' && c <= '3') {
+        if (c >= '0' && c <= '4') {
             return static_cast<Type>(c - '0');
         } else {
             return Type::Invalid;
@@ -88,11 +95,27 @@ class Address {
         switch (t) {
         case Type::SECP256K1:
         case Type::ACTOR:
+        case Type::DELEGATED:
             return 20;
         case Type::BLS:
             return 48;
         default:
             return 0;
+        }
+    }
+
+    /// Validates if the payload size (excluding any prefixes) of an address type has an expected value.
+    static bool isValidPayloadSize(Type t, std::size_t payloadSize) {
+        switch (t) {
+            case Type::ID:
+                return payloadSize == 0;
+            case Type::SECP256K1:
+            case Type::ACTOR:
+                return payloadSize == 20;
+            case Type::DELEGATED:
+                return payloadSize <= 54;
+            default:
+                return false;
         }
     }
 };
