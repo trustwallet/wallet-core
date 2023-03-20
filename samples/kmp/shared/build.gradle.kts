@@ -1,5 +1,4 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
-import java.util.Properties
 
 plugins {
     kotlin("multiplatform")
@@ -36,7 +35,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.trustwallet:wallet-core-kotlin:3.1.19")
+                implementation("com.trustwallet:wallet-core-kotlin:3.1.20")
             }
         }
         val commonTest by getting {

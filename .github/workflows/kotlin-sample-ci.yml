@@ -23,7 +23,9 @@ jobs:
       run: tools/install-kotlin-dependencies
 
     - name: Build KMP Sample
-      run: ./gradlew assemble
+      run: |
+        ./gradlew --version
+        ./gradlew assemble
       working-directory: samples/kmp
       env:
         GITHUB_USER: ${{ github.actor }}
