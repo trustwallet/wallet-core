@@ -17,9 +17,9 @@ namespace TW::Filecoin {
 static const char BASE32_ALPHABET_FILECOIN[] = "abcdefghijklmnopqrstuvwxyz234567";
 static constexpr size_t checksumSize = 4;
 
-/// Decodes the given `string` as an ActorID.
+/// Parses the given `string` as an ActorID.
 /// Please note `string` must not contain any prefixes.
-static bool decodeActorID(const std::string& string, uint64_t& actorID) {
+static bool parseActorID(const std::string& string, uint64_t& actorID) {
     if (string.length() > 20) {
         return false;
     }
@@ -30,6 +30,34 @@ static bool decodeActorID(const std::string& string, uint64_t& actorID) {
     } catch (...) {
         return false;
     }
+}
+
+/// Decodes the given `string` as an ActorID.
+/// Please note `bytes` must not contain any prefixes.
+/// https://github.com/paritytech/unsigned-varint/blob/a3a5b8f2bee1f44270629e96541adf805a53d32c/src/decode.rs#L66-L86
+static bool decodeActorID(const Data& bytes, uint64_t& actorID, std::size_t& remainingPos) {
+    const std::size_t maxBytes = 9;
+
+    actorID = 0;
+    remainingPos = 0;
+    for (remainingPos = 0; remainingPos < bytes.size() && remainingPos <= maxBytes; ++remainingPos) {
+        auto byte = bytes[remainingPos];
+        auto k = byte & SCHAR_MAX;
+        actorID |= k << (remainingPos * 7);
+
+        // Check if last.
+        if ((byte & 0x80) == 0) {
+            if (byte == 0 && remainingPos > 0) {
+                // If last byte is zero, it could have been "more minimally" encoded by dropping that trailing zero.
+                return false;
+            }
+            ++remainingPos;
+            return true;
+        }
+    }
+
+    // Couldn't find a last byte so `(byte & 0x80) == 0`.
+    return false;
 }
 
 static void writeActorID(uint64_t actorID, Data& dest) {
@@ -59,9 +87,52 @@ static Data&& calculateChecksum(Address::Type type, uint64_t actorID, const Data
     return std::move(sum);
 }
 
-/// Decodes `string` as a Filecoin address and validates the checksum.
+static bool decodeValidateAddress(const Data& encoded, Address::Type& type, uint64_t& actorID, Data& payload) {
+    if (encoded.size() < 2) {
+        return false;
+    }
+
+    // Get address type.
+    type = Address::getType(encoded[0]);
+
+    Data withoutPrefix(encoded.begin() + 1, encoded.end());
+    switch (type) {
+        case Address::Type::ID: {
+            std::size_t remainingPos = 0;
+            if (!decodeActorID(withoutPrefix, actorID, remainingPos)) {
+                return false;
+            }
+            // Check if there are no remaining bytes.
+            return remainingPos == withoutPrefix.size();
+        }
+        case Address::Type::SECP256K1:
+        case Address::Type::ACTOR:
+        case Address::Type::BLS: {
+            if (!Address::isValidPayloadSize(type, withoutPrefix.size())) {
+                return false;
+            }
+            payload = std::move(withoutPrefix);
+            return true;
+        }
+        case Address::Type::DELEGATED: {
+            std::size_t remainingPos = 0;
+            if (!decodeActorID(withoutPrefix, actorID, remainingPos)) {
+                return false;
+            }
+            if (!Address::isValidPayloadSize(type, withoutPrefix.size() - remainingPos)) {
+                return false;
+            }
+            payload = subData(withoutPrefix, remainingPos);
+            return true;
+        }
+        default:
+            return false;
+    }
+}
+
+/// Parses `string` as a Filecoin address and validates the checksum.
 /// Returns `true` if `string` is valid address.
-static bool decodeValidateAddress(const std::string& string, Address::Type& type, uint64_t& actorID, Data& payload) {
+static bool parseValidateAddress(const std::string& string, Address::Type& type, uint64_t& actorID, Data& payload) {
     if (string.length() < 3) {
         return false;
     }
@@ -77,7 +148,7 @@ static bool decodeValidateAddress(const std::string& string, Address::Type& type
     }
 
     if (type == Address::Type::ID) {
-        return decodeActorID(string.substr(2), actorID);
+        return parseActorID(string.substr(2), actorID);
     }
 
     // For `SECP256K1`, `ACTOR`, `BLS`, the payload starts after the Protocol Type.
@@ -89,7 +160,7 @@ static bool decodeValidateAddress(const std::string& string, Address::Type& type
         if (actorIDEnd == std::string::npos || actorIDEnd <= 2) {
             return false;
         }
-        if (!decodeActorID(string.substr(2, actorIDEnd - 2), actorID)) {
+        if (!parseActorID(string.substr(2, actorIDEnd - 2), actorID)) {
             return false;
         }
         // Address payload starts after 'f'.
@@ -117,11 +188,17 @@ bool Address::isValid(const std::string& string) {
     Type type;
     uint64_t actorID;
     Data payload;
-    return decodeValidateAddress(string, type, actorID, payload);
+    return parseValidateAddress(string, type, actorID, payload);
 }
 
 Address::Address(const std::string& string) {
-    if (!decodeValidateAddress(string, type, actorID, payload)) {
+    if (!parseValidateAddress(string, type, actorID, payload)) {
+        throw std::invalid_argument("Invalid address data");
+    }
+}
+
+Address::Address(const Data& encoded) {
+    if (!decodeValidateAddress(encoded, type, actorID, payload)) {
         throw std::invalid_argument("Invalid address data");
     }
 }

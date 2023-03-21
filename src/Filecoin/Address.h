@@ -42,6 +42,9 @@ class Address {
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
+    /// Initializes an address from encoded bytes.
+    explicit Address(const Data& encoded);
+
     /// Initializes an address with a secp256k1 public key.
     explicit Address(const PublicKey& publicKey);
 
