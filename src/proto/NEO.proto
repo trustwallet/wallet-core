@@ -20,6 +20,15 @@ message TransactionInput {
     string asset_id = 4;
 }
 
+// extra address of Output
+message OutputAddress {
+    // Amount (as string)
+    sint64 amount = 1;
+
+    // destination address
+    string to_address = 2;
+}
+
 // Output of a transaction
 message TransactionOutput {
     // Asset
@@ -33,6 +42,9 @@ message TransactionOutput {
 
     // change address
     string change_address = 4;
+
+    // extra output
+    repeated OutputAddress extra_outputs = 5;
 }
 
 // Transaction
@@ -121,6 +133,9 @@ message TransactionOutputPlan {
 
     // Address for the change
     string change_address = 6;
+
+    // extra output
+    repeated OutputAddress extra_outputs = 7;
 };
 
 message TransactionAttributePlan {

@@ -61,6 +61,9 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
 
         for (int i = 0; i < input.outputs_size(); i++) {
             required[input.outputs(i).asset_id()] = input.outputs(i).amount();
+            for (int j = 0; j < input.outputs(i).extra_outputs_size(); j++) {
+                required[input.outputs(i).asset_id()] += input.outputs(i).extra_outputs(j).amount();
+            }
         }
 
         for (int i = 0; i < input.inputs_size(); i++) {
@@ -70,6 +73,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
                 continue;
             }
 
+            // if the required has been enough, not need to add input
             if (input.inputs(i).asset_id() != input.gas_asset_id() &&
                 required[input.inputs(i).asset_id()] < available[input.inputs(i).asset_id()]) {
                 continue;
@@ -84,7 +88,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             auto* outputPlan = plan.add_outputs();
 
             if (available.find(input.outputs(i).asset_id()) == available.end() ||
-                available[input.outputs(i).asset_id()] < input.outputs(i).amount()) {
+                available[input.outputs(i).asset_id()] < required[input.outputs(i).asset_id()]) {
                 throw Common::Proto::SigningError(Common::Proto::Error_low_balance);
             }
 
@@ -95,11 +99,20 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             int64_t availableAmount = available[input.outputs(i).asset_id()];
             outputPlan->set_available_amount(availableAmount);
             outputPlan->set_amount(input.outputs(i).amount());
-            outputPlan->set_change(availableAmount - input.outputs(i).amount());
 
             outputPlan->set_to_address(input.outputs(i).to_address());
             outputPlan->set_asset_id(input.outputs(i).asset_id());
             outputPlan->set_change_address(input.outputs(i).change_address());
+
+            auto changeAmount = availableAmount - input.outputs(i).amount();
+            for (int j = 0; j < input.outputs(i).extra_outputs_size(); j++) {
+                auto* extra_plan = outputPlan->add_extra_outputs();
+
+                extra_plan->set_to_address(input.outputs(i).extra_outputs(j).to_address());
+                extra_plan->set_amount(input.outputs(i).extra_outputs(j).amount());
+                changeAmount -= input.outputs(i).extra_outputs(j).amount();
+            }
+            outputPlan->set_change(changeAmount);
         }
 
         const int64_t SIGNATURE_SIZE = 103;
@@ -195,9 +208,14 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
 
         for (int i = 0; i < plan.outputs_size(); i++) {
             if (plan.outputs(i).asset_id() == input.gas_asset_id()) {
-                if (validate && plan.outputs(i).amount() + plan.outputs(i).change() + plan.fee() !=
-                                    plan.outputs(i).available_amount()) {
-                    throw Common::Proto::SigningError(Common::Proto::Error_wrong_fee);
+                if (validate) {
+                    auto sumAmount = plan.outputs(i).amount() + plan.outputs(i).change() + plan.fee();
+                    for (int j = 0; j < plan.outputs(i).extra_outputs_size(); j++) {
+                        sumAmount += plan.outputs(i).extra_outputs(j).amount();
+                    }
+                    if (sumAmount != plan.outputs(i).available_amount()) {
+                        throw Common::Proto::SigningError(Common::Proto::Error_wrong_fee);
+                    }
                 }
             }
 
@@ -208,6 +226,15 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
                 auto scriptHash = TW::NEO::Address(plan.outputs(i).to_address()).toScriptHash();
                 out.scriptHash = load(scriptHash);
                 transaction->outputs.push_back(out);
+
+                for (int j = 0; j < plan.outputs(i).extra_outputs_size(); j++) {
+                    TransactionOutput extraOut;
+                    extraOut.assetId = load(parse_hex(plan.outputs(i).asset_id()));
+                    extraOut.value = (int64_t)plan.outputs(i).extra_outputs(j).amount();
+                    auto extraScriptHash = TW::NEO::Address(plan.outputs(i).extra_outputs(j).to_address()).toScriptHash();
+                    extraOut.scriptHash = load(scriptHash);
+                    transaction->outputs.push_back(extraOut);
+                }
             }
 
             // change

@@ -11,6 +11,7 @@
 #include "TWData.h"
 
 typedef TWData *_Nonnull TW_NEO_Proto_TransactionInput;
+typedef TWData *_Nonnull TW_NEO_Proto_OutputAddress;
 typedef TWData *_Nonnull TW_NEO_Proto_TransactionOutput;
 typedef TWData *_Nonnull TW_NEO_Proto_Transaction;
 typedef TWData *_Nonnull TW_NEO_Proto_SigningInput;
