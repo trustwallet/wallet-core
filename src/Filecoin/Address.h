@@ -39,6 +39,9 @@ class Address {
     /// Determines whether a string makes a valid encoded address.
     static bool isValid(const std::string& string);
 
+    /// Determines whether a collection of bytes makes a valid address.
+    static bool isValid(const Data& encoded);
+
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
@@ -53,7 +56,7 @@ class Address {
 
     /// Returns encoded bytes of Address including the protocol byte and actorID (if required)
     /// without the checksum.
-    Data&& toBytes() const;
+    Data toBytes() const;
 
     /// Address prefix
     static constexpr char PREFIX = 'f';
@@ -97,6 +100,8 @@ class Address {
             case Type::SECP256K1:
             case Type::ACTOR:
                 return payloadSize == 20;
+            case Type::BLS:
+                return payloadSize == 48;
             case Type::DELEGATED:
                 return payloadSize <= 54;
             default:

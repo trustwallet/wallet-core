@@ -9,6 +9,7 @@
 #include <cstring>
 #include <climits>
 #include <optional>
+#include <iostream>
 
 #include "../Base32.h"
 
@@ -23,6 +24,15 @@ static bool parseActorID(const std::string& string, uint64_t& actorID) {
     if (string.length() > 20) {
         return false;
     }
+    const bool onlyDigits = std::all_of(
+        string.begin(),
+        string.end(),
+        [](char ch) { return '0' <= ch && ch <= '9'; }
+    );
+    if (!onlyDigits) {
+        return false;
+    }
+
     try {
         size_t chars;
         actorID = std::stoull(string, &chars);
@@ -70,24 +80,26 @@ static void writeActorID(uint64_t actorID, Data& dest) {
 
 /// Returns encoded bytes of Address including the protocol byte and actorID (if required)
 /// without the checksum.
-static Data&& addressToBytes(Address::Type type, uint64_t actorID, const Data& payload) {
+static Data addressToBytes(Address::Type type, uint64_t actorID, const Data& payload) {
     Data encoded;
     encoded.push_back(static_cast<uint8_t>(type));
     if (type == Address::Type::ID || type == Address::Type::DELEGATED) {
         writeActorID(actorID, encoded);
     }
     encoded.insert(std::end(encoded), std::begin(payload), std::end(payload));
-    return std::move(encoded);
+    return encoded;
 }
 
-static Data&& calculateChecksum(Address::Type type, uint64_t actorID, const Data& payload) {
+static Data calculateChecksum(Address::Type type, uint64_t actorID, const Data& payload) {
     Data bytesVec(addressToBytes(type, actorID, payload));
-    Data sum(Hash::blake2b(bytesVec, checksumSize));
+    Data sum = Hash::blake2b(bytesVec, checksumSize);
     assert(sum.size() == checksumSize);
-    return std::move(sum);
+    return sum;
 }
 
-static bool decodeValidateAddress(const Data& encoded, Address::Type& type, uint64_t& actorID, Data& payload) {
+/// Decodes `encoded` as a Filecoin address.
+/// Returns `true` if `encoded` on success.
+static bool decodeAddress(const Data& encoded, Address::Type& type, uint64_t& actorID, Data& payload) {
     if (encoded.size() < 2) {
         return false;
     }
@@ -191,6 +203,13 @@ bool Address::isValid(const std::string& string) {
     return parseValidateAddress(string, type, actorID, payload);
 }
 
+bool Address::isValid(const Data& encoded) {
+    Type type;
+    uint64_t actorID;
+    Data payload;
+    return decodeAddress(encoded, type, actorID, payload);
+}
+
 Address::Address(const std::string& string) {
     if (!parseValidateAddress(string, type, actorID, payload)) {
         throw std::invalid_argument("Invalid address data");
@@ -198,7 +217,7 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const Data& encoded) {
-    if (!decodeValidateAddress(encoded, type, actorID, payload)) {
+    if (!decodeAddress(encoded, type, actorID, payload)) {
         throw std::invalid_argument("Invalid address data");
     }
 }
@@ -209,8 +228,8 @@ Address::Address(const PublicKey &publicKey):
     payload(Hash::blake2b(publicKey.bytes, 20)) {
 }
 
-Data&& Address::toBytes() const {
-    return std::move(addressToBytes(type, actorID, payload));
+Data Address::toBytes() const {
+    return addressToBytes(type, actorID, payload);
 }
 
 std::string Address::string() const {
