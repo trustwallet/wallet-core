@@ -47,6 +47,12 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     }
     const auto toAddress = AddressV3(input.transfer_message().to_address());
     tx.outputs.emplace_back(toAddress.data(), plan.amount, plan.outputTokens);
+
+    for (auto& output: plan.extraOutputs) {
+        const auto extraToAddress = AddressV3(output.address);
+        tx.outputs.emplace_back(extraToAddress.data(), output.amount, output.tokenBundle);
+    }
+
     // Change
     bool hasChangeToken = any_of(plan.changeTokens.bundle.begin(), plan.changeTokens.bundle.end(), [](auto&& t) { return t.second.amount > 0; });
     if (plan.change > 0 || hasChangeToken) {
@@ -422,6 +428,12 @@ TransactionPlan Signer::doPlan() const {
 
     // Amounts requested
     plan.amount = input.transfer_message().amount();
+
+    for (auto& output: input.extra_outputs()) {
+        const auto extraToAddress = AddressV3(output.address());
+        plan.extraOutputs.emplace_back(extraToAddress.data(), output.amount());
+    }
+
     TokenBundle requestedTokens;
     for (auto i = 0; i < input.transfer_message().token_amount().token_size(); ++i) {
         const auto token = TokenAmount::fromProto(input.transfer_message().token_amount().token(i));
