@@ -6,10 +6,8 @@
 
 #include "Address.h"
 
-#include <cstring>
 #include <climits>
 #include <optional>
-#include <iostream>
 
 #include "../Base32.h"
 
@@ -167,7 +165,7 @@ static bool parseValidateAddress(const std::string& string, Address::Type& type,
     // For `DELEGATED`, the payload starts after the ActorID and 'f' separator.
     std::size_t payloadPos = 2;
     if (type == Address::Type::DELEGATED) {
-        std::size_t actorIDEnd = string.find('f');
+        std::size_t actorIDEnd = string.find('f', 2);
         // Delegated address must contain 'f' separator.
         if (actorIDEnd == std::string::npos || actorIDEnd <= 2) {
             return false;
@@ -242,6 +240,11 @@ std::string Address::string() const {
     if (type == Type::ID) {
         s.append(std::to_string(actorID));
         return s;
+    }
+
+    if (type == Type::DELEGATED) {
+        s.append(std::to_string(actorID));
+        s.push_back('f');
     }
 
     Data toEncode(payload.begin(), payload.end());
