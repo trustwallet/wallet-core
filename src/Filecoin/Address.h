@@ -33,8 +33,8 @@ class Address {
     /// This is used if `type` is either `ID` or `DELEGATED`.
     uint64_t actorID = 0;
 
-    /// Address data payload *only*.
-    Data bytes;
+    /// Address data payload (without prefixes and checksum).
+    Data payload;
 
     /// Determines whether a string makes a valid encoded address.
     static bool isValid(const std::string& string);
@@ -42,17 +42,15 @@ class Address {
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address with a collection of bytes.
-    explicit Address(const Data& data);
-
     /// Initializes an address with a secp256k1 public key.
     explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
 
-    /// Returns the type of an address.
-    Type type() const { return getType(bytes[0]); }
+    /// Returns encoded bytes of Address including the protocol byte and actorID (if required)
+    /// without the checksum.
+    Data&& toBytes() const;
 
     /// Address prefix
     static constexpr char PREFIX = 'f';
@@ -88,22 +86,6 @@ class Address {
     /// Returns ASCII character of type
     static char typeAscii(Type t) { return '0' + static_cast<char>(t); }
 
-    // Returns the payload size (excluding any prefixes) of an address type.
-    // If the payload size is undefined/variable (e.g. ID)
-    // or the type is unknown, it returns zero.
-    static uint8_t payloadSize(Type t) {
-        switch (t) {
-        case Type::SECP256K1:
-        case Type::ACTOR:
-        case Type::DELEGATED:
-            return 20;
-        case Type::BLS:
-            return 48;
-        default:
-            return 0;
-        }
-    }
-
     /// Validates if the payload size (excluding any prefixes) of an address type has an expected value.
     static bool isValidPayloadSize(Type t, std::size_t payloadSize) {
         switch (t) {
@@ -121,7 +103,9 @@ class Address {
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
+    return lhs.type == rhs.type
+           && lhs.actorID == rhs.actorID
+           && lhs.payload == rhs.payload;
 }
 
 } // namespace TW::Filecoin

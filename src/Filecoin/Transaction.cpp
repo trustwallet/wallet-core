@@ -40,8 +40,8 @@ Cbor::Encode Transaction::message() const {
                                               : Cbor::Encode::negInt((uint64_t)(-gasLimit - 1));
     return Cbor::Encode::array({
         Cbor::Encode::uint(0),                         // version
-        Cbor::Encode::bytes(to.bytes),                 // to address
-        Cbor::Encode::bytes(from.bytes),               // from address
+        Cbor::Encode::bytes(to.toBytes()),                 // to address
+        Cbor::Encode::bytes(from.toBytes()),               // from address
         Cbor::Encode::uint(nonce),                     // nonce
         Cbor::Encode::bytes(encodeBigInt(value)),      // value
         cborGasLimit,                                  // gas limit
