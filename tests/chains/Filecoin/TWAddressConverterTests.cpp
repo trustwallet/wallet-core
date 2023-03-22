@@ -27,7 +27,7 @@ TEST(TWFilecoinAddressConverter, ConvertToEth) {
         {"f15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq", ""},
         {"f24vg6ut43yw2h2jqydgbg2xq7x6f4kub3bg6as6i", ""},
         {"f3vvmn62lofvhjd2ugzca6sof2j2ubwok6cj4xxbfzz4yuxfkgobpihhd2thlanmsh3w2ptld2gqkn2jvlss4a", ""},
-        // Fails since `actorID != 10`. Expect an empty result.
+        // Should fail since `actorID != 10`. Expect an empty result.
         {"f432f77777777x32lpna", ""},
         {"f418446744073709551615ftnkyfaq", ""},
         // The following addresses are invalid. Expect an empty result.

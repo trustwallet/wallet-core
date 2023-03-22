@@ -32,7 +32,7 @@ static const address_test validAddresses[] = {
     {"f01024",                 "008008",                 1024,                  ""},
     {"f01729",                 "00c10d",                 1729,                  ""},
     {"f0999999",               "00bf843d",               999999,                ""},
-    {"f018446744073709551615", "00ffffffffffffffffff01", 18446744073709551615U, ""}, // TODO same for f4
+    {"f018446744073709551615", "00ffffffffffffffffff01", 18446744073709551615U, ""},
     // secp256k1 addresses
     {"f15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq", "01ea0f0ea039b291a0f08fd179e0556a8c3277c0d3",  0, "ea0f0ea039b291a0f08fd179e0556a8c3277c0d3"},
     {"f12fiakbhe2gwd5cnmrenekasyn6v5tnaxaqizq6a", "01d1500504e4d1ac3e89ac891a4502586fabd9b417", 0, "d1500504e4d1ac3e89ac891a4502586fabd9b417"},

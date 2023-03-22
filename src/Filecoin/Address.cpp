@@ -63,7 +63,7 @@ static bool decodeActorID(const Data& bytes, uint64_t& actorID, std::size_t& rem
         }
     }
 
-    // Couldn't find a last byte so `(byte & 0x80) == 0`.
+    // Couldn't find the last byte so `(byte & 0x80) == 0`.
     return false;
 }
 
@@ -95,7 +95,7 @@ static Data calculateChecksum(Address::Type type, uint64_t actorID, const Data& 
 }
 
 /// Decodes `encoded` as a Filecoin address.
-/// Returns `true` if `encoded` on success.
+/// Returns `true` on success.
 static bool decodeAddress(const Data& encoded, Address::Type& type, uint64_t& actorID, Data& payload) {
     if (encoded.size() < 2) {
         return false;
@@ -140,7 +140,7 @@ static bool decodeAddress(const Data& encoded, Address::Type& type, uint64_t& ac
 }
 
 /// Parses `string` as a Filecoin address and validates the checksum.
-/// Returns `true` if `string` is valid address.
+/// Returns `true` if `string` is a valid address.
 static bool parseValidateAddress(const std::string& string, Address::Type& type, uint64_t& actorID, Data& payload) {
     if (string.length() < 3) {
         return false;
@@ -161,11 +161,11 @@ static bool parseValidateAddress(const std::string& string, Address::Type& type,
     }
 
     // For `SECP256K1`, `ACTOR`, `BLS`, the payload starts after the Protocol Type.
-    // For `DELEGATED`, the payload starts after the ActorID and 'f' separator.
+    // For `DELEGATED`, the payload starts after an ActorID and the 'f' separator.
     std::size_t payloadPos = 2;
     if (type == Address::Type::DELEGATED) {
         std::size_t actorIDEnd = string.find('f', 2);
-        // Delegated address must contain 'f' separator.
+        // Delegated address must contain the 'f' separator.
         if (actorIDEnd == std::string::npos || actorIDEnd <= 2) {
             return false;
         }

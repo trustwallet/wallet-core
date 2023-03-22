@@ -45,7 +45,7 @@ class Address {
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address from encoded bytes.
+    /// Initializes an address with a collection of bytes.
     explicit Address(const Data& encoded);
 
     /// Initializes an address with a secp256k1 public key.
@@ -95,7 +95,7 @@ class Address {
     /// Returns ASCII character of type
     static char typeAscii(Type t) { return '0' + static_cast<char>(t); }
 
-    /// Validates if the payload size (excluding any prefixes) of an address type has an expected value.
+    /// Validates if the payload size (excluding any prefixes and checksum) of an address type has an expected value.
     static bool isValidPayloadSize(Type t, std::size_t payloadSize) {
         switch (t) {
             case Type::ID:
