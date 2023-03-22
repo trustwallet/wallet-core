@@ -64,6 +64,8 @@ static const std::string invalidAddresses[] = {
     "",
     "f0-1",                   // Negative :)
     "f018446744073709551616", // Greater than max uint64_t
+    "f418446744073709551615", // No "f" separator
+    "f4f77777777vnmsana",     // Empty Actor ID
     "f15ihq5ibzwki2b4ep2f46avlkr\0zhpqgtga7pdrq", // Embedded NUL
     "t15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq",  // Test net
     "a15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq",  // Unknown net
@@ -72,6 +74,7 @@ static const std::string invalidAddresses[] = {
     "f15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7rdrr",
     "f24vg6ut43yw2h2jqydgbg2xq7x6f4kub3bg6as66",
     "f3vvmn62lofvhjd2ugzca6sof2j2ubwok6cj4xxbfzz4yuxfkgobpihhd2thlanmsh3w2ptld2gqkn2jvlss44",
+    "f410f2oekwcmo2pueydmaq53eic2i62crtbeyuzx2gma",
 };
 
 TEST(FilecoinAddress, IsValid) {
