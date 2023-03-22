@@ -16,6 +16,14 @@ class FilecoinTests: XCTestCase {
         XCTAssertEqual(address.description, "f1z4a36sc7mfbv4z3qwutblp2flycdui3baffytbq")
     }
 
+    func testAddressConverter() {
+        let actualEth = FilecoinAddressConverter.convertToEthereum(filecoinAddress: "f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky")
+        XCTAssertEqual(actualEth, "0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0")
+        
+        let actualFilecoin = FilecoinAddressConverter.convertFromEthereum(ethAddress:"0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0")
+        XCTAssertEqual(actualFilecoin, "f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky")
+    }
+
     func testSigner() {
         let input = FilecoinSigningInput.with {
             $0.privateKey = Data(hexString: "1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe")!

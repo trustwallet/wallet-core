@@ -51,6 +51,9 @@ class Address {
     /// Initializes an address with a secp256k1 public key.
     explicit Address(const PublicKey& publicKey);
 
+    /// Initializes an address with a type, actorID and payload.
+    explicit Address(Type type_, uint64_t actorID_, const Data& payload_);
+
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
 

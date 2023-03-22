@@ -7,7 +7,6 @@
 #include "Address.h"
 
 #include <climits>
-#include <optional>
 
 #include "../Base32.h"
 
@@ -224,6 +223,15 @@ Address::Address(const PublicKey &publicKey):
     type(Type::SECP256K1),
     actorID(0),
     payload(Hash::blake2b(publicKey.bytes, 20)) {
+}
+
+Address::Address(Type type_, uint64_t actorID_, const Data& payload_):
+    type(type_),
+    actorID(actorID_),
+    payload(payload_) {
+    if (!isValidPayloadSize(type_, payload_.size())) {
+        throw std::invalid_argument("Invalid address data");
+    }
 }
 
 Data Address::toBytes() const {

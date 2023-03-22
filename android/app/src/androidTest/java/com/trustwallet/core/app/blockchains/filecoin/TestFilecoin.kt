@@ -9,6 +9,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.FILECOIN
+import wallet.core.jni.FilecoinAddressConverter
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Filecoin
 import wallet.core.jni.proto.Filecoin.SigningOutput
@@ -25,6 +26,15 @@ class TestFilecoin {
         val publicKey = privateKey.getPublicKeySecp256k1(false)
         val address = AnyAddress(publicKey, CoinType.FILECOIN)
         assertEquals("f1z4a36sc7mfbv4z3qwutblp2flycdui3baffytbq", address.description())
+    }
+
+    @Test
+    fun testAddressConverter() {
+        val ethereumAddress = FilecoinAddressConverter.convertToEthereum("f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky")
+        assertEquals(ethereumAddress, "0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0")
+
+        val filecoinAddress = FilecoinAddressConverter.convertFromEthereum("0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0")
+        assertEquals(filecoinAddress, "f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky")
     }
 
     @Test
