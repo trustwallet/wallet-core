@@ -35,7 +35,8 @@ TEST(FilecoinTransaction, Serialize) {
                    /*value*/ 1000,
                    /*gasLimit*/ 3333333333,
                    /*gasFeeCap*/ 11111111,
-                   /*gasPremium*/ 333333);
+                   /*gasPremium*/ 333333,
+                   /*method*/ Transaction::SEND_METHOD);
 
     ASSERT_EQ(hex(tx.message().encoded()),
               "8a0055013d403ac3911e9f806228326fa68619d36a4641d455013d413d4c3fe3d89f99495a48c6046224"

@@ -16,6 +16,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     Address from_address(pubkey);
     Address to_address(input.to());
+
+    // Transaction type; 0 for simple transfers.
+    uint64_t method = Transaction::SEND_METHOD;
+    if (to_address.type == Address::Type::DELEGATED) {
+        method = Transaction::INVOKE_EVM_METHOD;
+    }
+
     Transaction transaction(
         /* to */ to_address,
         /* from */ from_address,
@@ -23,7 +30,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* value */ load(input.value()),
         /* gasLimit */ input.gas_limit(),
         /* gasFeeCap */ load(input.gas_fee_cap()),
-        /* gasPremium */ load(input.gas_premium()));
+        /* gasPremium */ load(input.gas_premium()),
+        /* method */ method);
 
     // Sign transaction.
     auto signature = sign(key, transaction);

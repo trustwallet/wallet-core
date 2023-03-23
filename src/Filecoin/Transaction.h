@@ -18,6 +18,11 @@ Data encodeBigInt(const uint256_t& value);
 
 class Transaction {
   public:
+    /// Simple transfers.
+    static constexpr uint64_t SEND_METHOD = 0;
+    /// InvokeEVM method.
+    static constexpr uint64_t INVOKE_EVM_METHOD = 3844450837;
+
     // Transaction version
     uint64_t version;
     // Recipient address
@@ -32,13 +37,13 @@ class Transaction {
     int64_t gasLimit;
     uint256_t gasFeeCap;
     uint256_t gasPremium;
-    // Transaction type; 0 for simple transfers
+    // Transaction type
     uint64_t method;
     // Transaction data; empty for simple transfers
     Data params;
 
     Transaction(Address to, Address from, uint64_t nonce, uint256_t value, int64_t gasLimit,
-                uint256_t gasFeeCap, uint256_t gasPremium)
+                uint256_t gasFeeCap, uint256_t gasPremium, uint64_t method)
         : version(0)
         , to(std::move(to))
         , from(std::move(from))
@@ -47,7 +52,7 @@ class Transaction {
         , gasLimit(gasLimit)
         , gasFeeCap(std::move(gasFeeCap))
         , gasPremium(std::move(gasPremium))
-        , method(0) {}
+        , method(method) {}
 
   public:
     // message returns the CBOR encoding of the Filecoin Message to be signed.

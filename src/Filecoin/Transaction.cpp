@@ -47,7 +47,7 @@ Cbor::Encode Transaction::message() const {
         cborGasLimit,                                  // gas limit
         Cbor::Encode::bytes(encodeBigInt(gasFeeCap)),  // gas fee cap
         Cbor::Encode::bytes(encodeBigInt(gasPremium)), // gas premium
-        Cbor::Encode::uint(0),                         // abi.MethodNum (0 => send)
+        Cbor::Encode::uint(method),                         // abi.MethodNum
         Cbor::Encode::bytes(Data())                    // data (empty)
     });
 }
@@ -71,6 +71,7 @@ std::string Transaction::serialize(Data& signature) const {
                 {"GasPremium", toString(gasPremium)},
                 {"GasFeeCap", toString(gasFeeCap)},
                 {"GasLimit", gasLimit},
+                {"Method", method},
             }
         },
         {"Signature", json{
