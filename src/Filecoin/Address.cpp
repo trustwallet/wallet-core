@@ -194,15 +194,15 @@ static bool parseValidateAddress(const std::string& string, Address::Type& type,
 }
 
 bool Address::isValid(const std::string& string) {
-    Type type;
-    uint64_t actorID;
+    Type type = Type::Invalid;
+    uint64_t actorID = 0;
     Data payload;
     return parseValidateAddress(string, type, actorID, payload);
 }
 
 bool Address::isValid(const Data& encoded) {
-    Type type;
-    uint64_t actorID;
+    Type type = Type::Invalid;
+    uint64_t actorID = 0;
     Data payload;
     return decodeAddress(encoded, type, actorID, payload);
 }
