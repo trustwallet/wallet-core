@@ -10,20 +10,19 @@
 TWString* _Nonnull TWFilecoinAddressConverterConvertToEthereum(TWString* _Nonnull filecoinAddress) {
     const auto& address = *reinterpret_cast<const std::string*>(filecoinAddress);
     try {
-        std::string ethereumAddress;
-        if (!TW::Filecoin::AddressConverter::convertToEthereum(address, ethereumAddress)) {
-            return TWStringCreateWithUTF8Bytes("");
+        if (auto eth_opt = TW::Filecoin::AddressConverter::convertToEthereumString(address); eth_opt) {
+            return TWStringCreateWithUTF8Bytes(eth_opt->c_str());
         }
-        return TWStringCreateWithUTF8Bytes(ethereumAddress.c_str());
     } catch (...) {
-        return TWStringCreateWithUTF8Bytes("");
     }
+
+    return TWStringCreateWithUTF8Bytes("");
 }
 
 TWString* _Nonnull TWFilecoinAddressConverterConvertFromEthereum(TWString* _Nonnull ethAddress) {
     const auto& address = *reinterpret_cast<const std::string*>(ethAddress);
     try {
-        std::string filecoinAddress = TW::Filecoin::AddressConverter::convertFromEthereum(address);
+        std::string filecoinAddress = TW::Filecoin::AddressConverter::convertFromEthereumString(address);
         return TWStringCreateWithUTF8Bytes(filecoinAddress.c_str());
     } catch (...) {
         return TWStringCreateWithUTF8Bytes("");

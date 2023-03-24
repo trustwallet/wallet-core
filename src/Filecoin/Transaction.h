@@ -23,6 +23,11 @@ class Transaction {
     /// InvokeEVM method.
     static constexpr uint64_t INVOKE_EVM_METHOD = 3844450837;
 
+    enum class SignatureType: uint8_t {
+        SECP256K1 = 1,
+        DELEGATED = 3,
+    };
+
     // Transaction version
     uint64_t version;
     // Recipient address
@@ -39,11 +44,11 @@ class Transaction {
     uint256_t gasPremium;
     // Transaction type
     uint64_t method;
-    // Transaction data; empty for simple transfers
+    // Transaction data
     Data params;
 
     Transaction(Address to, Address from, uint64_t nonce, uint256_t value, int64_t gasLimit,
-                uint256_t gasFeeCap, uint256_t gasPremium, uint64_t method)
+                uint256_t gasFeeCap, uint256_t gasPremium, uint64_t method, Data params)
         : version(0)
         , to(std::move(to))
         , from(std::move(from))
@@ -52,7 +57,8 @@ class Transaction {
         , gasLimit(gasLimit)
         , gasFeeCap(std::move(gasFeeCap))
         , gasPremium(std::move(gasPremium))
-        , method(method) {}
+        , method(method)
+        , params(std::move(params)) {}
 
   public:
     // message returns the CBOR encoding of the Filecoin Message to be signed.
@@ -62,7 +68,7 @@ class Transaction {
     Data cid() const;
 
     // serialize returns json ready for MpoolPush rpc
-    std::string serialize(Data& signature) const;
+    std::string serialize(SignatureType signatureType, Data& signature) const;
 };
 
 } // namespace TW::Filecoin

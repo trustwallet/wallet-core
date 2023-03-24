@@ -94,70 +94,77 @@ static Data calculateChecksum(Address::Type type, uint64_t actorID, const Data& 
     return sum;
 }
 
-/// Decodes `encoded` as a Filecoin address.
-/// Returns `true` on success.
-static bool decodeAddress(const Data& encoded, Address::Type& type, uint64_t& actorID, Data& payload) {
+std::optional<Address> Address::fromBytes(const Data& encoded) {
     if (encoded.size() < 2) {
-        return false;
+        return std::nullopt;
     }
 
     // Get address type.
-    type = Address::getType(encoded[0]);
-
+    Type type = Address::getType(encoded[0]);
     Data withoutPrefix(encoded.begin() + 1, encoded.end());
+
     switch (type) {
         case Address::Type::ID: {
             std::size_t remainingPos = 0;
+            uint64_t actorID = 0;
+
             if (!decodeActorID(withoutPrefix, actorID, remainingPos)) {
-                return false;
+                return std::nullopt;
             }
             // Check if there are no remaining bytes.
-            return remainingPos == withoutPrefix.size();
+            if (remainingPos != withoutPrefix.size()) {
+                return std::nullopt;
+            }
+
+            return Address(type, actorID, Data());
         }
         case Address::Type::SECP256K1:
         case Address::Type::ACTOR:
         case Address::Type::BLS: {
             if (!Address::isValidPayloadSize(type, withoutPrefix.size())) {
-                return false;
+                return std::nullopt;
             }
-            payload = std::move(withoutPrefix);
-            return true;
+            return Address(type, 0, withoutPrefix);
         }
         case Address::Type::DELEGATED: {
             std::size_t remainingPos = 0;
+            uint64_t actorID = 0;
+
             if (!decodeActorID(withoutPrefix, actorID, remainingPos)) {
-                return false;
+                return std::nullopt;
             }
             if (!Address::isValidPayloadSize(type, withoutPrefix.size() - remainingPos)) {
-                return false;
+                return std::nullopt;
             }
-            payload = subData(withoutPrefix, remainingPos);
-            return true;
+
+            return Address(type, actorID, subData(withoutPrefix, remainingPos));
         }
         default:
-            return false;
+            return std::nullopt;
     }
 }
 
-/// Parses `string` as a Filecoin address and validates the checksum.
-/// Returns `true` if `string` is a valid address.
-static bool parseValidateAddress(const std::string& string, Address::Type& type, uint64_t& actorID, Data& payload) {
+std::optional<Address> Address::fromString(const std::string& string) {
     if (string.length() < 3) {
-        return false;
+        return std::nullopt;
     }
     // Only main net addresses supported.
     if (string[0] != Address::PREFIX) {
-        return false;
+        return std::nullopt;
     }
 
     // Get address type.
-    type = Address::parseType(string[1]);
+    Type type = Address::parseType(string[1]);
     if (type == Address::Type::Invalid) {
-        return false;
+        return std::nullopt;
     }
 
+    uint64_t actorID = 0;
     if (type == Address::Type::ID) {
-        return parseActorID(string.substr(2), actorID);
+        if (!parseActorID(string.substr(2), actorID)) {
+            return std::nullopt;
+        }
+        return Address(type, actorID, Data());
     }
 
     // For `SECP256K1`, `ACTOR`, `BLS`, the payload starts after the Protocol Type.
@@ -167,10 +174,10 @@ static bool parseValidateAddress(const std::string& string, Address::Type& type,
         std::size_t actorIDEnd = string.find('f', 2);
         // Delegated address must contain the 'f' separator.
         if (actorIDEnd == std::string::npos || actorIDEnd <= 2) {
-            return false;
+            return std::nullopt;
         }
         if (!parseActorID(string.substr(2, actorIDEnd - 2), actorID)) {
-            return false;
+            return std::nullopt;
         }
         // Address payload starts after 'f'.
         payloadPos = actorIDEnd + 1;
@@ -178,51 +185,74 @@ static bool parseValidateAddress(const std::string& string, Address::Type& type,
 
     Data decoded;
     if (!Base32::decode(string.substr(payloadPos), decoded, BASE32_ALPHABET_FILECOIN)) {
-        return false;
+        return std::nullopt;
     }
     if (decoded.size() < checksumSize) {
-        return false;
+        return std::nullopt;
     }
-    payload.assign(decoded.begin(), decoded.end() - checksumSize);
+
+    Data payload(decoded.begin(), decoded.end() - checksumSize);
     if (!Address::isValidPayloadSize(type, payload.size())) {
-        return false;
+        return std::nullopt;
     }
 
     Data actualChecksum(decoded.end() - checksumSize, decoded.end());
     Data expectedChecksum = calculateChecksum(type, actorID, payload);
-    return actualChecksum == expectedChecksum;
+    if (actualChecksum != expectedChecksum) {
+       return std::nullopt;
+    }
+
+    return Address(type, actorID, payload);
 }
 
 bool Address::isValid(const std::string& string) {
-    Type type = Type::Invalid;
-    uint64_t actorID = 0;
-    Data payload;
-    return parseValidateAddress(string, type, actorID, payload);
+    return Address::fromString(string).has_value();
 }
 
 bool Address::isValid(const Data& encoded) {
-    Type type = Type::Invalid;
-    uint64_t actorID = 0;
-    Data payload;
-    return decodeAddress(encoded, type, actorID, payload);
+    return Address::fromBytes(encoded).has_value();
+}
+
+Address Address::secp256k1Address(const PublicKey& publicKey) {
+    Data payload = Hash::blake2b(publicKey.bytes, 20);
+    return Address(Type::SECP256K1, 0, payload);
+}
+
+Address Address::delegatedAddress(const PublicKey& publicKey) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+        throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
+    }
+
+    const auto data = publicKey.hash({}, Hash::HasherKeccak256, true);
+    Data payload(data.end() - 20, data.end());
+
+    return Address(Type::DELEGATED, ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, payload);
+}
+
+Address Address::delegatedAddress(uint64_t actorID, const Data& payload) {
+    return Address(Type::DELEGATED, actorID, payload);
 }
 
 Address::Address(const std::string& string) {
-    if (!parseValidateAddress(string, type, actorID, payload)) {
+    auto addr = Address::fromString(string);
+    if (!addr) {
         throw std::invalid_argument("Invalid address data");
     }
+
+    type = addr->type;
+    actorID = addr->actorID;
+    payload = std::move(addr->payload);
 }
 
 Address::Address(const Data& encoded) {
-    if (!decodeAddress(encoded, type, actorID, payload)) {
+    auto addr = Address::fromBytes(encoded);
+    if (!addr) {
         throw std::invalid_argument("Invalid address data");
     }
-}
 
-Address::Address(const PublicKey &publicKey):
-    type(Type::SECP256K1),
-    actorID(0),
-    payload(Hash::blake2b(publicKey.bytes, 20)) {
+    type = addr->type;
+    actorID = addr->actorID;
+    payload = std::move(addr->payload);
 }
 
 Address::Address(Type type_, uint64_t actorID_, const Data& payload_):

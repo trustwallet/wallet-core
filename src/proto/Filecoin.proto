@@ -3,6 +3,15 @@ syntax = "proto3";
 package TW.Filecoin.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Defines the type of `from` address derivation.
+enum DerivationType {
+    // Defines a Secp256k1 (`f1`) derivation for the sender address.
+    // Default derivation type.
+    SECP256K1 = 0;
+    // Defines a Delegated (`f4`) derivation for the sender address.
+    DELEGATED = 1;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key of the sender account, used for signing (32 bytes).
@@ -25,10 +34,19 @@ message SigningInput {
 
     // Gas premium (uint256, serialized little endian)
     bytes gas_premium = 7;
+
+    // Message params.
+    bytes params = 8;
+
+    // Sender address derivation type.
+    DerivationType derivation = 9;
 }
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
     // Resulting transaction, in JSON.
     string json = 1;
+
+    // Error description.
+    string error_message = 2;
 }

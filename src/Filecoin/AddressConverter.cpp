@@ -10,9 +10,6 @@
 
 namespace TW::Filecoin {
 
-/// The actor ID of the Ethereum Address Manager singleton.
-static constexpr uint64_t ETHEREUM_ADDRESS_MANAGER_ACTOR_ID = 10;
-
 static byte toByte(uint64_t num) {
   return num & 0xFF;
 }
@@ -32,46 +29,55 @@ static void putBigEndian(Data& dest, std::size_t pos, uint64_t num) {
 }
 
 /// https://github.com/filecoin-project/lotus/blob/61f29a84b5a61060c4ac8aabe9b9360a2cdf5e7e/chain/types/ethtypes/eth_types.go#L279
-bool AddressConverter::convertToEthereum(const std::string& filecoinAddress, std::string& ethereumAddress) {
+std::optional<std::string> AddressConverter::convertToEthereumString(const std::string& filecoinAddress) {
     // This may throw an exception if the given address is invalid.
     Address addr(filecoinAddress);
+    if (auto eth_opt = convertToEthereum(addr); eth_opt) {
+        return eth_opt->string();
+    }
+    return std::nullopt;
+}
 
-    switch (addr.type) {
+std::optional<Ethereum::Address> AddressConverter::convertToEthereum(const Address& filecoinAddress) {
+    switch (filecoinAddress.type) {
         case Address::Type::ID: {
             Data payload(Ethereum::Address::size, 0);
             payload[0] = 0xFF;
-            putBigEndian(payload, 12, addr.actorID);
+            putBigEndian(payload, 12, filecoinAddress.actorID);
 
             Ethereum::Address ethAddr(payload);
-            ethereumAddress = ethAddr.string();
-            return true;
+            return ethAddr;
         }
         case Address::Type::DELEGATED: {
-            if (addr.actorID != ETHEREUM_ADDRESS_MANAGER_ACTOR_ID) {
-                return false;
+            if (filecoinAddress.actorID != Address::ETHEREUM_ADDRESS_MANAGER_ACTOR_ID) {
+                return std::nullopt;
             }
 
-            if (addr.payload.size() != Ethereum::Address::size) {
-                return false;
+            if (filecoinAddress.payload.size() != Ethereum::Address::size) {
+                return std::nullopt;
             }
 
-            Ethereum::Address ethAddr(addr.payload);
-            ethereumAddress = ethAddr.string();
-            return true;
+            Ethereum::Address ethAddr(filecoinAddress.payload);
+            return ethAddr;
         }
         default:
-            return false;
+            return std::nullopt;
     }
 }
 
-std::string AddressConverter::convertFromEthereum(const std::string& ethereumAddress) {
+std::string AddressConverter::convertFromEthereumString(const std::string& ethereumAddress) {
     // This may throw an exception if the given address is invalid.
     Ethereum::Address addr(ethereumAddress);
 
     Data addrPayload(addr.bytes.begin(), addr.bytes.end());
-    Address filecoinAddr(Address::Type::DELEGATED, ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, addrPayload);
+    Address filecoinAddr = Address::delegatedAddress(Address::ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, addrPayload);
 
     return filecoinAddr.string();
+}
+
+Address AddressConverter::convertFromEthereum(const Ethereum::Address& ethereumAddress) noexcept {
+    Data addrPayload(ethereumAddress.bytes.begin(), ethereumAddress.bytes.end());
+    return Address::delegatedAddress(Address::ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, addrPayload);
 }
 
 }

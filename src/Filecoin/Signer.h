@@ -28,6 +28,13 @@ class Signer {
 
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+
+private:
+    /// Signs a Proto::SigningInput transaction.
+    static Proto::SigningOutput signSecp256k1(const Proto::SigningInput& input);
+
+    /// Signs a Proto::SigningInput transaction.
+    static Proto::SigningOutput signDelegated(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Filecoin

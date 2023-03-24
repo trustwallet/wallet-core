@@ -6,17 +6,26 @@
 
 #pragma once
 
+#include <optional>
+
 #include "Address.h"
+#include "Ethereum/Address.h"
 
 namespace TW::Filecoin {
 
 class AddressConverter {
 public:
     /// Converts a Filecoin address to Ethereum.
-    static bool convertToEthereum(const std::string& filecoinAddress, std::string& ethereumAddress);
+    static std::optional<std::string> convertToEthereumString(const std::string& filecoinAddress);
+
+    /// Converts a Filecoin address to Ethereum.
+    static std::optional<Ethereum::Address> convertToEthereum(const Address& filecoinAddress);
 
     /// Converts an Ethereum address to Filecoin.
-    static std::string convertFromEthereum(const std::string& ethereumAddress);
+    static std::string convertFromEthereumString(const std::string& ethereumAddress);
+
+    /// Converts an Ethereum address to Filecoin.
+    static Address convertFromEthereum(const Ethereum::Address& ethereumAddress) noexcept;
 };
 
 }

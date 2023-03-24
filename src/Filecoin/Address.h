@@ -10,13 +10,17 @@
 
 #include <array>
 #include <cstdint>
-#include <string>
+#include <optional>
 #include <vector>
+#include <string>
 
 namespace TW::Filecoin {
 
 class Address {
   public:
+    /// The actor ID of the Ethereum Address Manager singleton.
+    static constexpr uint64_t ETHEREUM_ADDRESS_MANAGER_ACTOR_ID = 10;
+
     enum class Type : uint8_t {
         ID = 0,
         SECP256K1 = 1,
@@ -36,23 +40,34 @@ class Address {
     /// Address data payload (without prefixes and checksum).
     Data payload;
 
+    /// Decodes `encoded` as a Filecoin address.
+    /// Returns `std::nullopt` on fail.
+    static std::optional<Address> fromBytes(const Data& encoded);
+
+    /// Parses `string` as a Filecoin address and validates the checksum.
+    /// Returns `std::nullopt` if `string` is not a valid address.
+    static std::optional<Address> fromString(const std::string& string);
+
     /// Determines whether a string makes a valid encoded address.
     static bool isValid(const std::string& string);
 
     /// Determines whether a collection of bytes makes a valid address.
     static bool isValid(const Data& encoded);
 
+    /// Initializes a Secp256k1 address with a secp256k1 public key.
+    static Address secp256k1Address(const PublicKey& publicKey);
+
+    /// Initializes a Delegated address with a secp256k1 public key.
+    static Address delegatedAddress(const PublicKey& publicKey);
+
+    /// Initializes a Delegated address with a secp256k1 public key.
+    static Address delegatedAddress(uint64_t actorID, const Data& payload);
+
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
     /// Initializes an address with a collection of bytes.
     explicit Address(const Data& encoded);
-
-    /// Initializes an address with a secp256k1 public key.
-    explicit Address(const PublicKey& publicKey);
-
-    /// Initializes an address with a type, actorID and payload.
-    explicit Address(Type type_, uint64_t actorID_, const Data& payload_);
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
@@ -64,7 +79,10 @@ class Address {
     /// Address prefix
     static constexpr char PREFIX = 'f';
 
-  public:
+private:
+    /// Initializes an address with a type, actorID and payload.
+    explicit Address(Type type, uint64_t actorID, const Data& payload);
+
     /// Attempts to get the type by number.
     static Type getType(uint8_t raw) {
         switch (raw) {
