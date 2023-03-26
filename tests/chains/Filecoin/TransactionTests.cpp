@@ -36,7 +36,7 @@ TEST(FilecoinTransaction, Serialize) {
                    /*gasLimit*/ 3333333333,
                    /*gasFeeCap*/ 11111111,
                    /*gasPremium*/ 333333,
-                   /*method*/ Transaction::SEND_METHOD,
+                   /*method*/ Transaction::MethodType::SEND,
                    /*params*/ Data());
 
     ASSERT_EQ(hex(tx.message().encoded()),

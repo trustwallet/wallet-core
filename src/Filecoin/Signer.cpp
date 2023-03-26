@@ -61,10 +61,10 @@ Proto::SigningOutput Signer::signSecp256k1(const Proto::SigningInput& input) {
     // Load the transaction params.
     Data params(input.params().begin(), input.params().end());
 
-    // Transaction type; 0 for simple transfers.
-    uint64_t method = Transaction::SEND_METHOD;
+    // Simple transfer by default.
+    Transaction::MethodType method = Transaction::MethodType::SEND;
     if (to_address.type == Address::Type::DELEGATED) {
-        method = Transaction::INVOKE_EVM_METHOD;
+        method = Transaction::MethodType::INVOKE_EVM;
     }
 
     Transaction transaction(
@@ -131,7 +131,7 @@ Proto::SigningOutput Signer::signDelegated(const Proto::SigningInput& input) {
         /* gasLimit */   input.gas_limit(),
         /* gasFeeCap */  load(input.gas_fee_cap()),
         /* gasPremium */ load(input.gas_premium()),
-        /* method */     Transaction::INVOKE_EVM_METHOD,
+        /* method */     Transaction::MethodType::INVOKE_EVM,
         /* params */     params
     );
     const auto json = filecoinTransaction.serialize(Transaction::SignatureType::DELEGATED, signature);

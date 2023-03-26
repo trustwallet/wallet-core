@@ -34,7 +34,7 @@ TEST(FilecoinSigner, Sign) {
                    /*gasLimit*/ 23423423423423,
                    /*gasFeeCap*/ 456456456456445645,
                    /*gasPremium*/ 5675674564734345,
-                   /*method*/ Transaction::SEND_METHOD,
+                   /*method*/ Transaction::MethodType::SEND,
                    /*params*/ Data());
 
     Data signature = Signer::sign(privateKey, tx);
@@ -58,7 +58,7 @@ TEST(FilecoinSigner, SignToDelegated) {
         /*gasLimit*/ 6152567,
         /*gasFeeCap*/ 4435940585,
         /*gasPremium*/ 11597139,
-        /*method*/ Transaction::INVOKE_EVM_METHOD,
+        /*method*/ Transaction::MethodType::INVOKE_EVM,
         /*params*/ Data());
 
     Data signature = Signer::sign(privateKey, tx);
