@@ -69,10 +69,7 @@ std::string AddressConverter::convertFromEthereumString(const std::string& ether
     // This may throw an exception if the given address is invalid.
     Ethereum::Address addr(ethereumAddress);
 
-    Data addrPayload(addr.bytes.begin(), addr.bytes.end());
-    Address filecoinAddr = Address::delegatedAddress(Address::ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, addrPayload);
-
-    return filecoinAddr.string();
+    return convertFromEthereum(addr).string();
 }
 
 Address AddressConverter::convertFromEthereum(const Ethereum::Address& ethereumAddress) noexcept {
