@@ -8,6 +8,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWDerivation.h>
+#include <TrustWalletCore/TWFilecoinAddressType.h>
 
 #include "Data.h"
 #include "PublicKey.h"
@@ -32,7 +33,10 @@ struct Base58Prefix {
 using Bech32Prefix = const char *;
 using SS58Prefix = uint32_t;
 
-using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, std::monostate>;
+/// Declare a dummy prefix to notify the entry to derive a delegated address.
+struct DelegatedPrefix {};
+
+using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, DelegatedPrefix, std::monostate>;
 
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.

@@ -9,11 +9,18 @@ import WalletCore
 
 class FilecoinTests: XCTestCase {
 
-    func testAddress() {
+    func testCreateAddress() {
         let privateKey = PrivateKey(data: Data(hexString: "1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: publicKey, coin: .filecoin)
         XCTAssertEqual(address.description, "f1z4a36sc7mfbv4z3qwutblp2flycdui3baffytbq")
+    }
+
+    func testCreateDelegatedAddress() {
+        let privateKey = PrivateKey(data: Data(hexString: "825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a")!)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let address = AnyAddress(publicKey: publicKey, filecoinAddressType: .delegated)
+        XCTAssertEqual(address.description, "f410fvak24cyg3saddajborn6idt7rrtfj2ptauk5pbq")
     }
 
     func testAddressConverter() {
