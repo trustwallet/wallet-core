@@ -152,8 +152,8 @@ TxOutput TxOutput::fromProto(const Cardano::Proto::TxOutput& proto) {
 
 Proto::TxOutput TxOutput::toProto() const {
     Proto::TxOutput txOutput;
-    const auto ToAddress = AddressV3(address);
-    txOutput.set_address(ToAddress.string());
+    const auto toAddress = AddressV3(address);
+    txOutput.set_address(toAddress.string());
     txOutput.set_amount(amount);
     for (const auto& token : tokenBundle.bundle) {
         *txOutput.add_token_amount() = token.second.toProto();

@@ -145,6 +145,87 @@ TEST(CardanoSigning, Plan) {
     }
 }
 
+TEST(CardanoSigning, ExtraOutputPlan) {
+    auto input = createSampleInput(2000000, 10, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5", true);
+    // two output
+    Proto::TxOutput txOutput;
+    txOutput.set_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+    txOutput.set_amount(2000000);
+    *input.add_extra_outputs() = txOutput;
+    auto signer = Signer(input);
+    const auto plan = signer.doPlan();
+    EXPECT_EQ(plan.utxos.size(), 1ul);
+    EXPECT_EQ(plan.availableAmount, 6500000ul);
+    EXPECT_EQ(plan.amount, 2000000ul);
+    EXPECT_EQ(plan.fee, 171474ul);
+    uint64_t extraAmountSum = 0;
+    for (auto& output: plan.extraOutputs) {
+        extraAmountSum = extraAmountSum + output.amount;
+    }
+    EXPECT_EQ(plan.amount + plan.change + plan.fee + extraAmountSum, plan.availableAmount);
+
+    {
+        // also test proto fromProto / fromProto
+        Proto::TxOutput txOutputProto;
+        txOutputProto.set_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+        txOutputProto.set_amount(2000000);
+
+        auto* token = txOutputProto.add_token_amount();
+        token->set_policy_id(sundaeTokenPolicy);
+        token->set_asset_name("43554259");
+        const auto tokenAmount = store(uint256_t(3000000));
+        token->set_amount(tokenAmount.data(), tokenAmount.size());
+
+        const auto txOutput = TxOutput::fromProto(txOutputProto);
+        EXPECT_EQ(txOutput.amount, 2000000ul);
+        const auto toAddress = AddressV3(txOutput.address);
+        EXPECT_EQ(toAddress.string(), "addr1v9jxgu33wyunycmdddnh5a3edq6x2dt3xakkuun6wd6hsar8v9uhvee5w9erw7fnvauhswfhw44k673nv3n8sdmj89n82denweckuv34xvmnw6m9xeerq7rt8ymh5aesxaj8zu3e0y6k67tcd3nkzervxfenqer8ddjn27jkkrj");
+        EXPECT_EQ(txOutput.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].amount, 3000000);
+        EXPECT_EQ(txOutput.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].assetName, "43554259");
+        EXPECT_EQ(txOutput.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].policyId, sundaeTokenPolicy);
+    }
+    {
+        // also test proto toProto / toProto
+        const auto toAddress = AddressV3("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+        std::vector<TokenAmount> tokenAmount;
+        tokenAmount.emplace_back(sundaeTokenPolicy, "43554259", 3000000);
+        const Proto::TxOutput txOutputProto = TxOutput(toAddress.data(), 2000000, TokenBundle(tokenAmount)).toProto();
+        EXPECT_EQ(txOutputProto.amount(), 2000000);
+        EXPECT_EQ(txOutputProto.address(), "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+        const auto token = txOutputProto.token_amount(0);
+        EXPECT_EQ(token.policy_id(), sundaeTokenPolicy);
+        EXPECT_EQ(token.asset_name(), "43554259");
+        const auto amount = store(uint256_t(3000000));
+        EXPECT_EQ(data(token.amount()), amount);
+    }
+
+    {
+        // also test proto toProto / fromProto
+        const Proto::TransactionPlan planProto = Signer::plan(input);
+        const auto plan2 = TransactionPlan::fromProto(planProto);
+        EXPECT_EQ(plan2.amount, 2000000ul);
+        EXPECT_EQ(plan2.change, 2328526ul);
+    }
+}
+
+TEST(CardanoSigning, ErrorDoPlan) {
+    {
+        // Common::Proto::Error_missing_input_utxos
+        auto input = createSampleInput(2000000, 0, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5", true);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.error, Common::Proto::Error_missing_input_utxos);
+    }
+    {
+        // Common::Proto::Error_low_balance
+        auto input = createSampleInput(9000000, 1, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5", true);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.error, Common::Proto::Error_low_balance);
+
+    }
+}
+
 TEST(CardanoSigning, PlanForceFee) {
     auto requestedAmount = 6500000ul;
     auto availableAmount = 8000000ul;
