@@ -6,13 +6,10 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use std::{
-    ffi::c_char,
-    ffi::CStr
-};
-use move_core_types::*;
 use move_core_types::language_storage::TypeTag;
 use move_core_types::transaction_argument::TransactionArgument;
+use move_core_types::*;
+use std::{ffi::c_char, ffi::CStr};
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -25,7 +22,7 @@ pub enum ETypeTag {
     Signer = 6,
     Vector = 7,
     Struct = 8,
-    Error = 9
+    Error = 9,
 }
 
 /// Parses a Move type tag.
@@ -36,7 +33,7 @@ pub unsafe extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
     let s = CStr::from_ptr(input).to_str().unwrap();
     let transaction_argument = match parser::parse_type_tag(s) {
         Ok(v) => v,
-        Err(_) => return ETypeTag::Error
+        Err(_) => return ETypeTag::Error,
     };
     match transaction_argument {
         TypeTag::Bool => ETypeTag::Bool,
@@ -46,7 +43,7 @@ pub unsafe extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
         TypeTag::Address => ETypeTag::Address,
         TypeTag::Signer => ETypeTag::Signer,
         TypeTag::Vector(_) => ETypeTag::Vector,
-        TypeTag::Struct(_) => ETypeTag::Struct
+        TypeTag::Struct(_) => ETypeTag::Struct,
     }
 }
 
@@ -58,13 +55,15 @@ pub unsafe extern "C" fn parse_function_argument_to_bcs(input: *const c_char) ->
     let s = CStr::from_ptr(input).to_str().unwrap();
     let transaction_argument = match parser::parse_transaction_argument(s) {
         Ok(v) => v,
-        Err(_) => return "\0".as_ptr() as *const c_char
+        Err(_) => return "\0".as_ptr() as *const c_char,
     };
     let v = match transaction_argument {
         TransactionArgument::U8(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::U64(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::U128(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
-        TransactionArgument::Address(v) => hex::encode(bcs::to_bytes(&bcs::to_bytes(&v).unwrap()).unwrap()),
+        TransactionArgument::Address(v) => {
+            hex::encode(bcs::to_bytes(&bcs::to_bytes(&v).unwrap()).unwrap())
+        },
         TransactionArgument::U8Vector(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::Bool(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
     };

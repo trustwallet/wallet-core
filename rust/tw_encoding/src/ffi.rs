@@ -91,7 +91,10 @@ pub unsafe extern "C" fn encode_base58(
 /// \param alphabet alphabet type.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn decode_base58(input: *const c_char, alphabet: Base58Alphabet) -> CByteArray {
+pub unsafe extern "C" fn decode_base58(
+    input: *const c_char,
+    alphabet: Base58Alphabet,
+) -> CByteArray {
     let input = CStr::from_ptr(input).to_str().unwrap();
 
     base58::decode(input, alphabet.into())

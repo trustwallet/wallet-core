@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::collections::HashMap;
+
 const ALPHABET_RFC4648: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<String, String> {
@@ -21,13 +23,15 @@ pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<St
         buffer_size += 8;
 
         while buffer_size >= 5 {
-            result.push(char::from(alphabet[(buffer >> (buffer_size - 5)) as usize & 31]));
+            let value = alphabet[(buffer >> (buffer_size - 5)) as usize & 31];
+            result.push(char::from(value));
             buffer_size -= 5;
         }
     }
 
     if buffer_size > 0 {
-        result.push(char::from(alphabet[(buffer << (5 - buffer_size)) as usize & 31]));
+        let value = alphabet[(buffer << (5 - buffer_size)) as usize & 31];
+        result.push(char::from(value));
     }
 
     if padding {
@@ -45,7 +49,11 @@ pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec
     let mut output = Vec::new();
     let mut buffer: u32 = 0;
     let mut bits_left = 0;
-    let alphabet_map: std::collections::HashMap<u8, u32> = alphabet.iter().enumerate().map(|(i, &c)| (c, i as u32)).collect();
+    let alphabet_map: HashMap<u8, u32> = alphabet
+        .iter()
+        .enumerate()
+        .map(|(i, &c)| (c, i as u32))
+        .collect();
     let input = if padding {
         input.trim_end_matches('=')
     } else {

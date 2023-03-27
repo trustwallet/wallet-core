@@ -25,7 +25,11 @@ pub unsafe extern "C" fn blake_256(input: *const u8, input_len: usize) -> CByteA
 /// \param hash_size the size of the output hash.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn blake2_b(input: *const u8, input_len: usize, hash_size: usize) -> CByteArray {
+pub unsafe extern "C" fn blake2_b(
+    input: *const u8,
+    input_len: usize,
+    hash_size: usize,
+) -> CByteArray {
     let input = std::slice::from_raw_parts(input, input_len);
     blake2::blake2_b(input, hash_size).into()
 }
