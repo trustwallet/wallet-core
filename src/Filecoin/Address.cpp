@@ -250,9 +250,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address data");
     }
 
-    type = addr->type;
-    actorID = addr->actorID;
-    payload = std::move(addr->payload);
+    assign(std::move(*addr));
 }
 
 Address::Address(const Data& encoded) {
@@ -261,9 +259,7 @@ Address::Address(const Data& encoded) {
         throw std::invalid_argument("Invalid address data");
     }
 
-    type = addr->type;
-    actorID = addr->actorID;
-    payload = std::move(addr->payload);
+    assign(std::move(*addr));
 }
 
 Address::Address(Type type, uint64_t actorID, Data&& payload):
@@ -273,6 +269,12 @@ Address::Address(Type type, uint64_t actorID, Data&& payload):
     if (!isValidPayloadSize(this->type, this->payload.size())) {
         throw std::invalid_argument("Invalid address data");
     }
+}
+
+void Address::assign(Address&& other) {
+    type = other.type;
+    actorID = other.actorID;
+    payload = std::move(other.payload);
 }
 
 Data Address::toBytes() const {

@@ -90,6 +90,9 @@ private:
     /// Initializes an address with a type, actorID and payload.
     explicit Address(Type type, uint64_t actorID, Data&& payload);
 
+    /// Assigns the address to the `other` value.
+    void assign(Address&& other);
+
     /// Attempts to get the type by number.
     static Type getType(uint8_t raw) {
         switch (raw) {
