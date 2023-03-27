@@ -607,7 +607,6 @@ TEST(HDWallet, FromMnemonicImmutableXMainnetFromSignature) {
     }
 }
 
-// rude segment two fury you output manual volcano sugar draft elite fame
 TEST(HDWallet, StargazeKey) {
     const auto derivPath = "m/44'/118'/0'/0/0";
     HDWallet wallet = HDWallet("rude segment two fury you output manual volcano sugar draft elite fame", "");
