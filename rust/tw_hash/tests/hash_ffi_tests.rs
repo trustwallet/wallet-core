@@ -10,11 +10,11 @@ use tw_hash::ffi::{
 };
 use tw_memory::ffi::CByteArray;
 
-type ExternFn = extern "C" fn(*const u8, usize) -> CByteArray;
+type ExternFn = unsafe extern "C" fn(*const u8, usize) -> CByteArray;
 
 #[track_caller]
 pub fn test_hash_helper(hash: ExternFn, input: &[u8], expected: &str) {
-    let result = hash(input.as_ptr(), input.len());
+    let result = unsafe { hash(input.as_ptr(), input.len()) };
     let decoded_slice = unsafe { std::slice::from_raw_parts(result.data, result.size) };
     assert_eq!(hex::encode(decoded_slice), expected);
 }
@@ -24,7 +24,7 @@ fn test_blake2b() {
     const HASH_SIZE: usize = 64;
 
     /// Declare a `blake2_b` helper that forwards `HASH_SIZE`.
-    extern "C" fn blake2_b_hash(input: *const u8, input_len: usize) -> CByteArray {
+    unsafe extern "C" fn blake2_b_hash(input: *const u8, input_len: usize) -> CByteArray {
         blake2_b(input, input_len, HASH_SIZE)
     }
 
@@ -37,13 +37,15 @@ fn test_blake2b() {
 fn test_blake2b_personal() {
     let personal_data = b"MyApp Files Hash";
     let content = b"the same content";
-    let result = blake2_b_personal(
-        content.as_ptr(),
-        content.len(),
-        32,
-        personal_data.as_ptr(),
-        personal_data.len(),
-    );
+    let result = unsafe {
+        blake2_b_personal(
+            content.as_ptr(),
+            content.len(),
+            32,
+            personal_data.as_ptr(),
+            personal_data.len(),
+        )
+    };
     let result = unsafe { std::slice::from_raw_parts(result.data, result.size) };
     let expected = "20d9cd024d4fb086aae819a1432dd2466de12947831b75c5a30cf2676095d3b4";
     assert_eq!(hex::encode(result), expected);
@@ -77,7 +79,7 @@ fn test_hmac_sha256() {
     let data =
         hex::decode("f300888ca4f512cebdc0020ff0f7224c7f896315e90e172bed65d005138f224d").unwrap();
     let data = data.as_slice();
-    let result = hmac__sha256(key.as_ptr(), key.len(), data.as_ptr(), data.len());
+    let result = unsafe { hmac__sha256(key.as_ptr(), key.len(), data.as_ptr(), data.len()) };
     let result = unsafe { std::slice::from_raw_parts(result.data, result.size) };
     let expected = "a7301d5563614e3955750e4480aabf7753f44b4975308aeb8e23c31e114962ab".to_string();
     assert_eq!(hex::encode(result), expected);

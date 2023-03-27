@@ -30,7 +30,7 @@ fn test_decode_hex() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = decode_hex(encoded_ptr);
+    let decoded_ptr = unsafe { decode_hex(encoded_ptr) };
     let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
 
     assert_eq!(decoded_slice.is_empty(), false);
@@ -43,7 +43,7 @@ fn test_decode_hex_with_prefix() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = decode_hex(encoded_ptr);
+    let decoded_ptr = unsafe { decode_hex(encoded_ptr) };
     let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
 
     assert_eq!(decoded_slice.is_empty(), false);
