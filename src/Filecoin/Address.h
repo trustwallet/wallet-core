@@ -16,6 +16,10 @@
 
 namespace TW::Filecoin {
 
+class Address;
+
+using MaybeAddress = std::optional<Address>;
+
 class Address {
   public:
     /// The actor ID of the Ethereum Address Manager singleton.
@@ -31,22 +35,22 @@ class Address {
     };
 
     /// Type of the Address.
-    Type type = Type::Invalid;
+    Type type{Type::Invalid};
 
     /// Actor ID.
     /// This is used if `type` is either `ID` or `DELEGATED`.
-    uint64_t actorID = 0;
+    uint64_t actorID{0};
 
     /// Address data payload (without prefixes and checksum).
     Data payload;
 
     /// Decodes `encoded` as a Filecoin address.
     /// Returns `std::nullopt` on fail.
-    static std::optional<Address> fromBytes(const Data& encoded);
+    static MaybeAddress fromBytes(const Data& encoded);
 
     /// Parses `string` as a Filecoin address and validates the checksum.
     /// Returns `std::nullopt` if `string` is not a valid address.
-    static std::optional<Address> fromString(const std::string& string);
+    static MaybeAddress fromString(const std::string& string);
 
     /// Determines whether a string makes a valid encoded address.
     static bool isValid(const std::string& string);
@@ -61,7 +65,7 @@ class Address {
     static Address delegatedAddress(const PublicKey& publicKey);
 
     /// Initializes a Delegated address with a secp256k1 public key.
-    static Address delegatedAddress(uint64_t actorID, const Data& payload);
+    static Address delegatedAddress(uint64_t actorID, Data&& payload);
 
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
@@ -80,8 +84,11 @@ class Address {
     static constexpr char PREFIX = 'f';
 
 private:
+    static constexpr char F0_TYPE_CHAR = '0';
+    static constexpr char F4_TYPE_CHAR = '4';
+
     /// Initializes an address with a type, actorID and payload.
-    explicit Address(Type type, uint64_t actorID, const Data& payload);
+    explicit Address(Type type, uint64_t actorID, Data&& payload);
 
     /// Attempts to get the type by number.
     static Type getType(uint8_t raw) {
@@ -103,15 +110,15 @@ private:
 
     /// Attempts to get the type by ASCII.
     static Type parseType(char c) {
-        if (c >= '0' && c <= '4') {
-            return static_cast<Type>(c - '0');
+        if (c >= F0_TYPE_CHAR && c <= F4_TYPE_CHAR) {
+            return static_cast<Type>(c - F0_TYPE_CHAR);
         } else {
             return Type::Invalid;
         }
     }
 
     /// Returns ASCII character of type
-    static char typeAscii(Type t) { return '0' + static_cast<char>(t); }
+    static char typeAscii(Type t) { return F0_TYPE_CHAR + static_cast<char>(t); }
 
     /// Validates if the payload size (excluding any prefixes and checksum) of an address type has an expected value.
     static bool isValidPayloadSize(Type t, std::size_t payloadSize) {

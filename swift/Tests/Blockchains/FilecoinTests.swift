@@ -26,9 +26,11 @@ class FilecoinTests: XCTestCase {
     func testAddressConverter() {
         let actualEth = FilecoinAddressConverter.convertToEthereum(filecoinAddress: "f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky")
         XCTAssertEqual(actualEth, "0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0")
+        XCTAssert(AnyAddress.isValid(string: actualEth, coin: .ethereum))
         
         let actualFilecoin = FilecoinAddressConverter.convertFromEthereum(ethAddress:"0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0")
         XCTAssertEqual(actualFilecoin, "f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky")
+        XCTAssert(AnyAddress.isValid(string: actualFilecoin, coin: .filecoin))
     }
 
     func testSigner() {
@@ -65,6 +67,8 @@ class FilecoinTests: XCTestCase {
         XCTAssertJSONEqual(output.json, json)
     }
 
+    /// Successfully broadcasted:
+    /// https://filfox.info/en/message/bafy2bzaceczvto7d2af7cq3kuwlvmanlh5xica4apl3vwxu37yaeozq72mvgm
     func testSignerToDelegated() {
         let input = FilecoinSigningInput.with {
             $0.privateKey = Data(hexString: "d3d6ed8b97dcd4661f62a1162bee6949401fd3935f394e6eacf15b6d5005483c")!

@@ -78,7 +78,7 @@ static const std::string invalidAddresses[] = {
 };
 
 TEST(FilecoinAddress, IsValid) {
-    for (const auto& test : validAddresses) {
+    for (auto&& test : validAddresses) {
         ASSERT_TRUE(Address::isValid(test.string))
             << "isValid(string) != true: " << test.string;
 
@@ -89,7 +89,7 @@ TEST(FilecoinAddress, IsValid) {
 }
 
 TEST(FilecoinAddress, IsInvalid) {
-    for (const auto& address : invalidAddresses) {
+    for (auto&& address : invalidAddresses) {
         ASSERT_FALSE(Address::isValid(address))
             << "isValid(string) != false: " << address;
     }
@@ -103,7 +103,7 @@ TEST(FilecoinAddress, IsInvalid) {
 }
 
 TEST(FilecoinAddress, Equal) {
-    for (const auto& test : validAddresses) {
+    for (auto&& test : validAddresses) {
         const Data encodedBytes = parse_hex(test.encoded);
         const Address lhs(test.string), rhs(encodedBytes);
         ASSERT_EQ(lhs, rhs) << "Address(string) != Address(Data)";
@@ -111,7 +111,7 @@ TEST(FilecoinAddress, Equal) {
 }
 
 TEST(FilecoinAddress, ExpectedProperties) {
-    for (const auto& test : validAddresses) {
+    for (auto&& test : validAddresses) {
         const Data encodedBytes = parse_hex(test.encoded);
         const uint8_t expectedType = encodedBytes[0];
 
@@ -128,14 +128,14 @@ TEST(FilecoinAddress, ExpectedProperties) {
 }
 
 TEST(FilecoinAddress, ToString) {
-    for (const auto& test : validAddresses) {
+    for (auto&& test : validAddresses) {
         Address a(parse_hex(test.encoded));
         ASSERT_EQ(a.string(), test.string) << "Address(" << test.encoded << ")";
     }
 }
 
 TEST(FilecoinAddress, ToBytes) {
-    for (const auto& test : validAddresses) {
+    for (auto&& test : validAddresses) {
         Address a(test.string);
         ASSERT_EQ(hex(a.toBytes()), test.encoded) << "Address(" << test.string << ")";
     }

@@ -16,6 +16,7 @@ TWString* _Nonnull TWFilecoinAddressConverterConvertToEthereum(TWString* _Nonnul
     } catch (...) {
     }
 
+    // Return an empty string if an error occurs.
     return TWStringCreateWithUTF8Bytes("");
 }
 
@@ -25,6 +26,8 @@ TWString* _Nonnull TWFilecoinAddressConverterConvertFromEthereum(TWString* _Nonn
         std::string filecoinAddress = TW::Filecoin::AddressConverter::convertFromEthereumString(address);
         return TWStringCreateWithUTF8Bytes(filecoinAddress.c_str());
     } catch (...) {
-        return TWStringCreateWithUTF8Bytes("");
     }
+
+    // Return an empty string if an error occurs.
+    return TWStringCreateWithUTF8Bytes("");
 }

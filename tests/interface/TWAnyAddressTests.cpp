@@ -210,10 +210,14 @@ TEST(TWAnyAddress, createFromPubKeyFilecoinAddressType) {
 
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFilecoinAddressType(pubkey_obj.get(), TWFilecoinAddressTypeDefault));
-        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "f1syn25x7infncgfvodhriq2dudvmudabtavm3wyy");
+        const auto actual = WRAPS(TWAnyAddressDescription(addr.get()));
+        assertStringsEqual(actual, "f1syn25x7infncgfvodhriq2dudvmudabtavm3wyy");
+        ASSERT_TRUE(TWAnyAddressIsValid(actual.get(), TWCoinTypeFilecoin));
     }
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFilecoinAddressType(pubkey_obj.get(), TWFilecoinAddressTypeDelegated));
-        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "f410fvak24cyg3saddajborn6idt7rrtfj2ptauk5pbq");
+        const auto actual = WRAPS(TWAnyAddressDescription(addr.get()));
+        assertStringsEqual(actual, "f410fvak24cyg3saddajborn6idt7rrtfj2ptauk5pbq");
+        ASSERT_TRUE(TWAnyAddressIsValid(actual.get(), TWCoinTypeFilecoin));
     }
 }

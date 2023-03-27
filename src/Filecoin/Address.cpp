@@ -13,25 +13,30 @@
 namespace TW::Filecoin {
 
 static const char BASE32_ALPHABET_FILECOIN[] = "abcdefghijklmnopqrstuvwxyz234567";
-static constexpr size_t checksumSize = 4;
+static constexpr std::size_t checksumSize = 4;
+
+static constexpr uint64_t charMask = 0x80;
 
 /// Parses the given `string` as an ActorID.
 /// Please note `string` must not contain any prefixes.
 static bool parseActorID(const std::string& string, uint64_t& actorID) {
-    if (string.length() > 20) {
+    // `uint64_t` may contain up to 20 decimal digits.
+    static constexpr std::size_t maxDigits = 20;
+
+    if (string.length() > maxDigits) {
         return false;
     }
     const bool onlyDigits = std::all_of(
         string.begin(),
         string.end(),
-        [](char ch) { return '0' <= ch && ch <= '9'; }
+        [](unsigned char c)->bool { return std::isdigit(c); }
     );
     if (!onlyDigits) {
         return false;
     }
 
     try {
-        size_t chars;
+        std::size_t chars;
         actorID = std::stoull(string, &chars);
         return chars > 0;
     } catch (...) {
@@ -43,7 +48,7 @@ static bool parseActorID(const std::string& string, uint64_t& actorID) {
 /// Please note `bytes` must not contain any prefixes.
 /// https://github.com/paritytech/unsigned-varint/blob/a3a5b8f2bee1f44270629e96541adf805a53d32c/src/decode.rs#L66-L86
 static bool decodeActorID(const Data& bytes, uint64_t& actorID, std::size_t& remainingPos) {
-    const std::size_t maxBytes = 9;
+    static constexpr std::size_t maxBytes = 9;
 
     actorID = 0;
     remainingPos = 0;
@@ -53,7 +58,7 @@ static bool decodeActorID(const Data& bytes, uint64_t& actorID, std::size_t& rem
         actorID |= k << (remainingPos * 7);
 
         // Check if last.
-        if ((byte & 0x80) == 0) {
+        if ((byte & charMask) == 0) {
             if (byte == 0 && remainingPos > 0) {
                 // If last byte is zero, it could have been "more minimally" encoded by dropping that trailing zero.
                 return false;
@@ -68,11 +73,13 @@ static bool decodeActorID(const Data& bytes, uint64_t& actorID, std::size_t& rem
 }
 
 static void writeActorID(uint64_t actorID, Data& dest) {
-    while (actorID >= 0x80) {
-        dest.push_back(((uint8_t)actorID) | 0x80);
-        actorID >>= 7;
+    static constexpr uint64_t shift = 7;
+
+    while (actorID >= charMask) {
+        dest.emplace_back(actorID | charMask);
+        actorID >>= shift;
     }
-    dest.push_back((uint8_t)actorID);
+    dest.emplace_back(actorID);
 }
 
 /// Returns encoded bytes of Address including the protocol byte and actorID (if required)
@@ -83,7 +90,7 @@ static Data addressToBytes(Address::Type type, uint64_t actorID, const Data& pay
     if (type == Address::Type::ID || type == Address::Type::DELEGATED) {
         writeActorID(actorID, encoded);
     }
-    encoded.insert(std::end(encoded), std::begin(payload), std::end(payload));
+    append(encoded, payload);
     return encoded;
 }
 
@@ -94,8 +101,9 @@ static Data calculateChecksum(Address::Type type, uint64_t actorID, const Data& 
     return sum;
 }
 
-std::optional<Address> Address::fromBytes(const Data& encoded) {
-    if (encoded.size() < 2) {
+MaybeAddress Address::fromBytes(const Data& encoded) {
+    // Should contain at least one byte (address type).
+    if (encoded.empty()) {
         return std::nullopt;
     }
 
@@ -124,7 +132,7 @@ std::optional<Address> Address::fromBytes(const Data& encoded) {
             if (!Address::isValidPayloadSize(type, withoutPrefix.size())) {
                 return std::nullopt;
             }
-            return Address(type, 0, withoutPrefix);
+            return Address(type, 0, std::move(withoutPrefix));
         }
         case Address::Type::DELEGATED: {
             std::size_t remainingPos = 0;
@@ -144,8 +152,11 @@ std::optional<Address> Address::fromBytes(const Data& encoded) {
     }
 }
 
-std::optional<Address> Address::fromString(const std::string& string) {
-    if (string.length() < 3) {
+MaybeAddress Address::fromString(const std::string& string) {
+    // An address must contain at least 'f' prefix and the address type.
+    static constexpr std::size_t minLength = 2;
+
+    if (string.length() < minLength) {
         return std::nullopt;
     }
     // Only main net addresses supported.
@@ -202,7 +213,7 @@ std::optional<Address> Address::fromString(const std::string& string) {
        return std::nullopt;
     }
 
-    return Address(type, actorID, payload);
+    return Address(type, actorID, std::move(payload));
 }
 
 bool Address::isValid(const std::string& string) {
@@ -215,7 +226,7 @@ bool Address::isValid(const Data& encoded) {
 
 Address Address::secp256k1Address(const PublicKey& publicKey) {
     Data payload = Hash::blake2b(publicKey.bytes, 20);
-    return Address(Type::SECP256K1, 0, payload);
+    return Address(Type::SECP256K1, 0, std::move(payload));
 }
 
 Address Address::delegatedAddress(const PublicKey& publicKey) {
@@ -226,11 +237,11 @@ Address Address::delegatedAddress(const PublicKey& publicKey) {
     const auto data = publicKey.hash({}, Hash::HasherKeccak256, true);
     Data payload(data.end() - 20, data.end());
 
-    return Address(Type::DELEGATED, ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, payload);
+    return Address(Type::DELEGATED, ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, std::move(payload));
 }
 
-Address Address::delegatedAddress(uint64_t actorID, const Data& payload) {
-    return Address(Type::DELEGATED, actorID, payload);
+Address Address::delegatedAddress(uint64_t actorID, Data&& payload) {
+    return Address(Type::DELEGATED, actorID, std::move(payload));
 }
 
 Address::Address(const std::string& string) {
@@ -255,11 +266,11 @@ Address::Address(const Data& encoded) {
     payload = std::move(addr->payload);
 }
 
-Address::Address(Type type_, uint64_t actorID_, const Data& payload_):
-    type(type_),
-    actorID(actorID_),
-    payload(payload_) {
-    if (!isValidPayloadSize(type_, payload_.size())) {
+Address::Address(Type type, uint64_t actorID, Data&& payload):
+    type(type),
+    actorID(actorID),
+    payload(std::move(payload)) {
+    if (!isValidPayloadSize(this->type, this->payload.size())) {
         throw std::invalid_argument("Invalid address data");
     }
 }
@@ -285,11 +296,11 @@ std::string Address::string() const {
         s.push_back('f');
     }
 
-    Data toEncode(payload.begin(), payload.end());
-
     // Append Blake2b checksum
     Data checksum = calculateChecksum(type, actorID, payload);
-    toEncode.insert(toEncode.end(), checksum.begin(), checksum.end());
+
+    Data toEncode = payload;
+    append(toEncode, checksum);
 
     s.append(Base32::encode(toEncode, BASE32_ALPHABET_FILECOIN));
     return s;

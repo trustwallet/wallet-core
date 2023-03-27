@@ -45,6 +45,8 @@ TEST(FilecoinSigner, Sign) {
     );
 }
 
+/// Successfully broadcasted:
+/// https://filfox.info/en/message/bafy2bzaceczvto7d2af7cq3kuwlvmanlh5xica4apl3vwxu37yaeozq72mvgm
 TEST(FilecoinSigner, SignToDelegated) {
     Proto::SigningInput input;
 
@@ -70,6 +72,8 @@ TEST(FilecoinSigner, SignToDelegated) {
     ASSERT_EQ(output.json(), R"({"Message":{"From":"f1mzyorxlcvdoqn5cto7urefbucugrcxxghpjc5hi","GasFeeCap":"4435940585","GasLimit":6152567,"GasPremium":"11597139","Method":3844450837,"Nonce":0,"To":"f410frw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxyky","Value":"1000000000000000"},"Signature":{"Data":"bxZhnsOYjdArPa3W0SpggwqtXPgvfRSoM2dU5lXYar9lWhTGc6FvPWk2RTUGyA8UtzMIdOPSUKfzU1iA2eA3YwA=","Type":1}})");
 }
 
+/// Successfully broadcasted:
+/// https://filfox.info/en/message/bafy2bzacea3ioez23o7t2hae6t2qwwkow46nhc42ffm5lqyxzzvrzblofnleu
 TEST(FilecoinSigner, SignFromDelegated) {
     Proto::SigningInput input;
 

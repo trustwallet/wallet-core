@@ -13,13 +13,16 @@
 
 namespace TW::Filecoin {
 
+using MaybeAddressString = std::optional<std::string>;
+using MaybeEthAddress = std::optional<Ethereum::Address>;
+
 class AddressConverter {
 public:
     /// Converts a Filecoin address to Ethereum.
-    static std::optional<std::string> convertToEthereumString(const std::string& filecoinAddress);
+    static MaybeAddressString convertToEthereumString(const std::string& filecoinAddress);
 
     /// Converts a Filecoin address to Ethereum.
-    static std::optional<Ethereum::Address> convertToEthereum(const Address& filecoinAddress);
+    static MaybeEthAddress convertToEthereum(const Address& filecoinAddress);
 
     /// Converts an Ethereum address to Filecoin.
     static std::string convertFromEthereumString(const std::string& ethereumAddress);
