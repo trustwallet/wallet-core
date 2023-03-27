@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::key_pair;
 use std::ffi::{c_char, CStr};
 

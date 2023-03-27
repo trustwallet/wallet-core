@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use std::ffi::{c_char, CString};
 
 pub mod c_byte_array;

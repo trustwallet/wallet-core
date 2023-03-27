@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use std::{
     ffi::c_char,
     ffi::CStr
@@ -30,13 +32,13 @@ pub enum ETypeTag {
 /// \param input *non-null* C-compatible, nul-terminated string.
 /// \return `ETypeTag` enumeration.
 #[no_mangle]
-pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
-    let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };
+pub unsafe extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
+    let s = CStr::from_ptr(input).to_str().unwrap();
     let transaction_argument = match parser::parse_type_tag(s) {
         Ok(v) => v,
         Err(_) => return ETypeTag::Error
     };
-    return match transaction_argument {
+    match transaction_argument {
         TypeTag::Bool => ETypeTag::Bool,
         TypeTag::U8 => ETypeTag::U8,
         TypeTag::U64 => ETypeTag::U64,
@@ -52,8 +54,8 @@ pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
 /// \param input *non-null* C-compatible, nul-terminated string.
 /// \return *non-null* C-compatible, nul-terminated string, Binary Canonical Serialization (BCS).
 #[no_mangle]
-pub extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
-    let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };
+pub unsafe extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
+    let s = CStr::from_ptr(input).to_str().unwrap();
     let transaction_argument = match parser::parse_transaction_argument(s) {
         Ok(v) => v,
         Err(_) => return "\0".as_ptr() as *const c_char
