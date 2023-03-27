@@ -272,6 +272,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeAgoric:
             EXPECT_EQ(address, "agoric1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0txauuh");
             break;
+        case TWCoinTypeStargaze:
+            EXPECT_EQ(address, "stars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0d8g78s");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
