@@ -16,9 +16,9 @@ TEST(TWPolygonZkEVMCoinType, TWCoinType) {
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xfbe568183495ad2ec95f0232501e86018bff3e4ca52aaa804983b380dc39d523"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xc70fd1a45b3130f5515a27d96f01a7f508099fb0b8af52ef432d5e4b2373dccd"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xC5C39Ec2a271d84d67c0e66a68238102A2ec4b98"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x81d98c8fda0410ee3e9d7586cb949cd19fa4cf38"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "polygonzkevm");
@@ -28,9 +28,9 @@ TEST(TWPolygonZkEVMCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "1422");
-    assertStringsEqual(txUrl, "https://explorer.public.zkevm-test.net/tx/0xfbe568183495ad2ec95f0232501e86018bff3e4ca52aaa804983b380dc39d523");
-    assertStringsEqual(accUrl, "https://explorer.public.zkevm-test.net/address/0xC5C39Ec2a271d84d67c0e66a68238102A2ec4b98");
+    assertStringsEqual(chainId, "1101");
+    assertStringsEqual(txUrl, "https://zkevm.polygonscan.com/tx/0xc70fd1a45b3130f5515a27d96f01a7f508099fb0b8af52ef432d5e4b2373dccd");
+    assertStringsEqual(accUrl, "https://zkevm.polygonscan.com/address/0x81d98c8fda0410ee3e9d7586cb949cd19fa4cf38");
 }
 
 } // namespace TW::TWZksync::tests
