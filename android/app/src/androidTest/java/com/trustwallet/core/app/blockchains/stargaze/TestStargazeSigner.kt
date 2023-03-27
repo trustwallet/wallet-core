@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,10 +7,7 @@
 package com.trustwallet.core.app.blockchains.stargaze
 
 import com.google.protobuf.ByteString
-import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
-import com.trustwallet.core.app.utils.toHexBytes
-import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
@@ -26,7 +23,7 @@ class TestStargazeSigner {
     }
 
     @Test
-    fun StargazeTransactionCW721Signing() {
+    fun stargazeTransactionCW721Signing() {
         val key =
             PrivateKey("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433".toHexByteArray())
 
@@ -72,7 +69,7 @@ class TestStargazeSigner {
     }
 
     @Test
-    fun StargazeTransactionSigning() {
+    fun stargazeTransactionSigning() {
         val key =
             PrivateKey("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433".toHexByteArray())
         val publicKey = key.getPublicKeySecp256k1(true)
