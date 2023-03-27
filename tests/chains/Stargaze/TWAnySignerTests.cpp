@@ -27,18 +27,10 @@ TEST(TWAnySignerStargaze, SignNftTransferCW721) {
     auto msg = input.add_messages();
     auto& message = *msg->mutable_wasm_execute_contract_generic();
 
-    Address fromAddress;
-    ASSERT_TRUE(Address::decode("stars1mry47pkga5tdswtluy0m8teslpalkdq02a8nhy", fromAddress));
     const auto tokenContractAddress = "stars14gmjlyfz5mpv5d8zrksn0tjhz2wwvdc4yk06754alfasq9qen7fsknry42";
-    const auto txMessage = R"(
-    {
-        "transfer_nft": {
-            "recipient": "stars1kd5q7qejlqz94kpmd9pvr4v2gzgnca3lvt6xnp",
-            "token_id": "1209"
-            }
-    })";
+    const auto txMessage = R"({"transfer_nft": {"recipient": "stars1kd5q7qejlqz94kpmd9pvr4v2gzgnca3lvt6xnp","token_id": "1209"}})";
 
-    message.set_sender_address(fromAddress.string());
+    message.set_sender_address("stars1mry47pkga5tdswtluy0m8teslpalkdq02a8nhy");
     message.set_contract_address(tokenContractAddress);
     message.set_execute_msg(txMessage);
 
@@ -55,10 +47,10 @@ TEST(TWAnySignerStargaze, SignNftTransferCW721) {
     auto expectedJson = R"(
                 {
                     "mode":"BROADCAST_MODE_BLOCK",
-                    "tx_bytes":"CrsCCrgCCiQvY29zbXdhc20ud2FzbS52MS5Nc2dFeGVjdXRlQ29udHJhY3QSjwIKLHN0YXJzMW1yeTQ3cGtnYTV0ZHN3dGx1eTBtOHRlc2xwYWxrZHEwMmE4bmh5EkBzdGFyczE0Z21qbHlmejVtcHY1ZDh6cmtzbjB0amh6Mnd3dmRjNHlrMDY3NTRhbGZhc3E5cWVuN2Zza25yeTQyGpwBCiAgICB7CiAgICAgICAgInRyYW5zZmVyX25mdCI6IHsKICAgICAgICAgICAgInJlY2lwaWVudCI6ICJzdGFyczFrZDVxN3Flamxxejk0a3BtZDlwdnI0djJnemduY2EzbHZ0NnhucCIsCiAgICAgICAgICAgICJ0b2tlbl9pZCI6ICIxMjA5IgogICAgICAgICAgICB9CiAgICB9EmgKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQLL/bXkcokzIilOYM8Ig9Q99DHhCJ0p7LRHqebVUEWq5RIECgIIARgFEhQKDgoGdXN0YXJzEgQxMDAwEKrYKBpArTmNjlnBPo/kFjOvvfMLbXzKLvSj+nND2/fVBruWhW4bleMNz5V5LXIeS722iMDlzkcxc4jpQ3g89c3CPqZlpQ=="
+                    "tx_bytes":"CoACCv0BCiQvY29zbXdhc20ud2FzbS52MS5Nc2dFeGVjdXRlQ29udHJhY3QS1AEKLHN0YXJzMW1yeTQ3cGtnYTV0ZHN3dGx1eTBtOHRlc2xwYWxrZHEwMmE4bmh5EkBzdGFyczE0Z21qbHlmejVtcHY1ZDh6cmtzbjB0amh6Mnd3dmRjNHlrMDY3NTRhbGZhc3E5cWVuN2Zza25yeTQyGmJ7InRyYW5zZmVyX25mdCI6IHsicmVjaXBpZW50IjogInN0YXJzMWtkNXE3cWVqbHF6OTRrcG1kOXB2cjR2Mmd6Z25jYTNsdnQ2eG5wIiwidG9rZW5faWQiOiAiMTIwOSJ9fRJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECy/215HKJMyIpTmDPCIPUPfQx4QidKey0R6nm1VBFquUSBAoCCAEYBRIUCg4KBnVzdGFycxIEMTAwMBCq2CgaQMx+l2sdM5DAPbDyY1p173MLnjGyNWIcRmaFiVNphLuTV3tjhwPbsXEA0hyRxyWS3vN0/xUF/JEsO9wRspj2aJ4="
                 })";
     assertJSONEqual(output.serialized(), expectedJson);
-    EXPECT_EQ(hex(output.signature()), "ad398d8e59c13e8fe41633afbdf30b6d7cca2ef4a3fa7343dbf7d506bb96856e1b95e30dcf95792d721e4bbdb688c0e5ce47317388e943783cf5cdc23ea665a5");
+    EXPECT_EQ(hex(output.signature()), "cc7e976b1d3390c03db0f2635a75ef730b9e31b235621c46668589536984bb93577b638703dbb17100d21c91c72592def374ff1505fc912c3bdc11b298f6689e");
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
 }
