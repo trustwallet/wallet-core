@@ -2127,7 +2127,7 @@
     "id": "polygonzkevm",
     "name": "Polygon zkEVM",
     "displayName": "Polygon zkEVM",
-    "coinId": 10001422,
+    "coinId": 10001101,
     "slip44": 60,
     "symbol": "ETH",
     "decimals": 18,
@@ -2139,17 +2139,17 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "1422",
+    "chainId": "1101",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.public.zkevm-test.net",
+      "url": "https://zkevm.polygonscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
       "url": "https://www.polygon.technology/",
       "source": "https://github.com/0xpolygonhermez",
-      "rpc": "https://rpc.public.zkevm-test.net",
+      "rpc": "https://zkevm-rpc.com",
       "documentation": "https://wiki.polygon.technology/docs/zkEVM/introduction/"
     }
   },
