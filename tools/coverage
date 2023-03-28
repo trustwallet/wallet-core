@@ -54,17 +54,4 @@ if [[ "$1" == "html" ]]; then
         coverage.info
 fi
 
-lcov --summary coverage.info
-
-echo
-current=$(<coverage.stats)
-new=$(lcov --summary coverage.info | awk '/lines.*:/{sub("%", "", $2);print $2}')
-
-if (( $(echo "$current > $new" | bc -l) )); then
-    echo "Code coverage drops to ${new}% (current is ${current}%)"
-    exit -1
-else
-    echo "Update code coverage: ${current}% -> ${new}%"
-    echo -n $new > coverage.stats
-    # commit to master
-fi
+tools/check-coverage coverage.stats coverage.info

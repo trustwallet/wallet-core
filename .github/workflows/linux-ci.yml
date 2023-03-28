@@ -35,6 +35,18 @@ jobs:
         workspaces: |
           rust
 
+    - name: Rust lints
+      run: |
+        tools/rust-lints
+
+    - name: Rust test
+      run: |
+        tools/rust-test coverage
+
+    - name: Check Rust code coverage
+      run: |
+        tools/check-coverage rust/coverage.stats rust/coverage.info
+
     - name: Code generation
       run: |
         tools/generate-files
@@ -47,15 +59,21 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Build and test
+
+    - name: Build
       run: |
         ninja -Cbuild tests TrezorCryptoTests
-        build/trezor-crypto/crypto/tests/TrezorCryptoTests
-        build/tests/tests --gtest_output=xml
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+
+    - name: Test
+      run: |
+        build/trezor-crypto/crypto/tests/TrezorCryptoTests
+        build/tests/tests --gtest_output=xml
+      env:
         CK_TIMEOUT_MULTIPLIER: 4
+
     - name: Gather and check code coverage
       run: |
         sudo rm -rf coverage.info

@@ -14,30 +14,11 @@
 # Fail if any commands fails
 set -e
 
-pushd rust
-
 # Generate HTML report if requested
 if [[ "$1" == "html" ]]; then
-    cargo llvm-cov test --html
+    tools/rust-test html
     exit 0
 else
-    cargo llvm-cov --lcov --output-path coverage.info
+    tools/rust-test coverage
+    tools/check-coverage rust/coverage.stats rust/coverage.info
 fi
-
-# TODO move the following instructions to a separate script.
-lcov --summary coverage.info
-
-echo
-current=$(<coverage.stats)
-new=$(lcov --summary coverage.info | awk '/lines.*:/{sub("%", "", $2);print $2}')
-
-if (( $(echo "$current > $new" | bc -l) )); then
-    echo "Code coverage drops to ${new}% (current is ${current}%)"
-    exit -1
-else
-    echo "Update code coverage: ${current}% -> ${new}%"
-    echo -n $new > coverage.stats
-    # commit to master
-fi
-
-popd
