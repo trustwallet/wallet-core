@@ -84,6 +84,14 @@ struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* pub
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::SS58Prefix(ss58Prefix))};
 }
 
+struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFilecoinAddressType filecoinAddressType) {
+    TW::PrefixVariant prefix = std::monostate();
+    if (filecoinAddressType == TWFilecoinAddressTypeDelegated) {
+        prefix = TW::DelegatedPrefix();
+    }
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFilecoin, TWDerivationDefault, prefix)};
+}
+
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
     delete address->impl;
     delete address;
