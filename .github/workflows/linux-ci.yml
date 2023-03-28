@@ -48,9 +48,8 @@ jobs:
 #        tools/check-coverage rust/coverage.stats rust/coverage.info
 
     - uses: actions-rs/cargo@v1
+      working-directory: rust
       with:
-        workspaces: |
-          rust
         command: test
       env:
         CARGO_INCREMENTAL: '0'
@@ -58,6 +57,7 @@ jobs:
         RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
 
     - uses: actions-rs/grcov@v0.1
+      working-directory: rust
 
     - name: Code generation
       run: |
