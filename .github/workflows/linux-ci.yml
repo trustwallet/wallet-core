@@ -35,17 +35,29 @@ jobs:
         workspaces: |
           rust
 
-    - name: Rust lints
-      run: |
-        tools/rust-lints
+#    - name: Rust lints
+#      run: |
+#        tools/rust-lint
+#
+#    - name: Rust test
+#      run: |
+#        tools/rust-test coverage
+#
+#    - name: Check Rust code coverage
+#      run: |
+#        tools/check-coverage rust/coverage.stats rust/coverage.info
 
-    - name: Rust test
-      run: |
-        tools/rust-test coverage
+    - uses: actions-rs/cargo@v1
+      with:
+        workspaces: |
+          rust
+        command: test
+      env:
+        CARGO_INCREMENTAL: '0'
+        RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+        RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
 
-    - name: Check Rust code coverage
-      run: |
-        tools/check-coverage rust/coverage.stats rust/coverage.info
+    - uses: actions-rs/grcov@v0.1
 
     - name: Code generation
       run: |

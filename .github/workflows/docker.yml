@@ -8,6 +8,7 @@ on:
       - tools/install-dependencies
   pull_request:
     branches: [ master ]
+    types: [ready_for_review]
     paths: 
       - Dockerfile
       - tools/install-dependencies
