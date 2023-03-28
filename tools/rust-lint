@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Run Rust lints: fmt, clippy and udeps.
+
+set -e
+
+pushd rust
+
+echo "Check code formatting"
+cargo fmt --check
+
+echo "Check Clippy warnings"
+cargo clippy -- -D warnings
+
+echo "Check unused dependencies"
+cargo udeps
+
+popd
