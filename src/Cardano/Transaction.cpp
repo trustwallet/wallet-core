@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
+#include "AddressV3.h"
 
 #include "Cbor.h"
 #include "Hash.h"
@@ -138,6 +139,28 @@ Proto::TxInput TxInput::toProto() const {
     return txInput;
 }
 
+TxOutput TxOutput::fromProto(const Cardano::Proto::TxOutput& proto) {
+    auto ret = TxOutput();
+    ret.address = data(proto.address());
+    ret.amount = proto.amount();
+    for (auto i = 0; i < proto.token_amount_size(); ++i) {
+        auto ta = TokenAmount::fromProto(proto.token_amount(i));
+        ret.tokenBundle.add(ta);
+    }
+    return ret;
+}
+
+Proto::TxOutput TxOutput::toProto() const {
+    Proto::TxOutput txOutput;
+    const auto toAddress = AddressV3(address);
+    txOutput.set_address(toAddress.string());
+    txOutput.set_amount(amount);
+    for (const auto& token : tokenBundle.bundle) {
+        *txOutput.add_token_amount() = token.second.toProto();
+    }
+    return txOutput;
+}
+
 bool operator==(const TxInput& i1, const TxInput& i2) {
     return i1.outputIndex == i2.outputIndex && i1.txHash == i2.txHash;
 }
@@ -162,6 +185,9 @@ TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) 
     for (auto i = 0; i < proto.utxos_size(); ++i) {
         ret.utxos.emplace_back(TxInput::fromProto(proto.utxos(i)));
     }
+    for (auto i = 0; i < proto.extra_outputs_size(); ++i) {
+        ret.extraOutputs.emplace_back(TxOutput::fromProto(proto.extra_outputs(i)));
+    }
     ret.error = proto.error();
     return ret;
 }
@@ -185,6 +211,9 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
     }
     for (const auto& u : utxos) {
         *plan.add_utxos() = u.toProto();
+    }
+    for (const auto& u : extraOutputs) {
+        *plan.add_extra_outputs() = u.toProto();
     }
     plan.set_error(error);
     return plan;

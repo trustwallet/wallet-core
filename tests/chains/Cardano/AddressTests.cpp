@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cardano/AddressV3.h"
+//#include "Cardano/Entry.h"
 
 #include "Coin.h"
 #include "HDWallet.h"
@@ -157,6 +158,10 @@ TEST(CardanoAddress, MnemonicToAddressV3) {
         {
             string addr = wallet.deriveAddress(TWCoinType::TWCoinTypeCardano);
             EXPECT_EQ("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq", addr);
+        }
+        {
+            auto addressData = addressToData(TWCoinType::TWCoinTypeCardano, "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+            EXPECT_EQ(hex(addressData), "01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b");
         }
         {
             const auto privateKey = wallet.getKey(coin, derivPath);
