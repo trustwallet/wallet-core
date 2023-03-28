@@ -27,7 +27,7 @@ TEST(FilecoinTransaction, Serialize) {
     const PrivateKey privateKey(
         parse_hex("2f0f1d2c8de955c7c3fb4d9cae02539fadcb13fa998ccd9a1e871bed95f1941e"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
-    const Address fromAddress(publicKey);
+    const Address fromAddress = Address::secp256k1Address(publicKey);
     const Address toAddress("f1hvadvq4rd2pyayrigjx2nbqz2nvemqouslw4wxi");
 
     Transaction tx(toAddress, fromAddress,
@@ -35,7 +35,9 @@ TEST(FilecoinTransaction, Serialize) {
                    /*value*/ 1000,
                    /*gasLimit*/ 3333333333,
                    /*gasFeeCap*/ 11111111,
-                   /*gasPremium*/ 333333);
+                   /*gasPremium*/ 333333,
+                   /*method*/ Transaction::MethodType::SEND,
+                   /*params*/ Data());
 
     ASSERT_EQ(hex(tx.message().encoded()),
               "8a0055013d403ac3911e9f806228326fa68619d36a4641d455013d413d4c3fe3d89f99495a48c6046224"

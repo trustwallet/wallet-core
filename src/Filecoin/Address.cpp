@@ -6,7 +6,6 @@
 
 #include "Address.h"
 
-#include <cstring>
 #include <climits>
 
 #include "../Base32.h"
@@ -14,129 +13,272 @@
 namespace TW::Filecoin {
 
 static const char BASE32_ALPHABET_FILECOIN[] = "abcdefghijklmnopqrstuvwxyz234567";
-static constexpr size_t checksumSize = 4;
+static constexpr std::size_t checksumSize = 4;
 
-bool Address::isValid(const Data& data) {
-    if (data.size() < 2) {
-        return false;
-    }
-    Type type = getType(data[0]);
-    if (type == Type::Invalid) {
-        return false;
-    } else if (type == Type::ID) {
-        // Verify varuint encoding
-        if (data.size() > 11) {
-            return false;
-        }
-        if (data.size() == 11 && data[10] > 0x01) {
-            return false;
-        }
-        std::size_t i;
-        for (i = 1; i < data.size(); i++) {
-            if ((data[i] & 0x80) == 0) {
-                break;
-            }
-        }
-        return i == data.size() - 1;
-    } else {
-        return data.size() == (1 + Address::payloadSize(type));
-    }
-}
+static constexpr uint64_t charMask = 0x80;
 
-static bool isValidID(const std::string& string) {
-    if (string.length() > 22)
+/// Parses the given `string` as an ActorID.
+/// Please note `string` must not contain any prefixes.
+static bool parseActorID(const std::string& string, uint64_t& actorID) {
+    // `uint64_t` may contain up to 20 decimal digits.
+    static constexpr std::size_t maxDigits = 20;
+
+    if (string.length() > maxDigits) {
         return false;
-    for (auto i = 2ul; i < string.length(); i++) {
-        if (string[i] < '0' || string[i] > '9') {
-            return false;
-        }
     }
+    const bool onlyDigits = std::all_of(
+        string.begin(),
+        string.end(),
+        [](unsigned char c)->bool { return std::isdigit(c); }
+    );
+    if (!onlyDigits) {
+        return false;
+    }
+
     try {
-        size_t chars;
-        [[maybe_unused]] uint64_t id = std::stoull(string.substr(2), &chars);
+        std::size_t chars;
+        actorID = std::stoull(string, &chars);
         return chars > 0;
     } catch (...) {
         return false;
     }
 }
 
-static bool isValidBase32(const std::string& string, Address::Type type) {
-    // Check if valid Base32.
-    uint8_t size = Address::payloadSize(type);
+/// Decodes the given `string` as an ActorID.
+/// Please note `bytes` must not contain any prefixes.
+/// https://github.com/paritytech/unsigned-varint/blob/a3a5b8f2bee1f44270629e96541adf805a53d32c/src/decode.rs#L66-L86
+static bool decodeActorID(const Data& bytes, uint64_t& actorID, std::size_t& remainingPos) {
+    static constexpr std::size_t maxBytes = 9;
+
+    actorID = 0;
+    remainingPos = 0;
+    for (remainingPos = 0; remainingPos < bytes.size() && remainingPos <= maxBytes; ++remainingPos) {
+        auto byte = bytes[remainingPos];
+        auto k = byte & SCHAR_MAX;
+        actorID |= k << (remainingPos * 7);
+
+        // Check if last.
+        if ((byte & charMask) == 0) {
+            if (byte == 0 && remainingPos > 0) {
+                // If last byte is zero, it could have been "more minimally" encoded by dropping that trailing zero.
+                return false;
+            }
+            ++remainingPos;
+            return true;
+        }
+    }
+
+    // Couldn't find the last byte so `(byte & 0x80) == 0`.
+    return false;
+}
+
+static void writeActorID(uint64_t actorID, Data& dest) {
+    static constexpr uint64_t shift = 7;
+
+    while (actorID >= charMask) {
+        dest.emplace_back(actorID | charMask);
+        actorID >>= shift;
+    }
+    dest.emplace_back(actorID);
+}
+
+/// Returns encoded bytes of Address including the protocol byte and actorID (if required)
+/// without the checksum.
+static Data addressToBytes(Address::Type type, uint64_t actorID, const Data& payload) {
+    Data encoded;
+    encoded.push_back(static_cast<uint8_t>(type));
+    if (type == Address::Type::ID || type == Address::Type::DELEGATED) {
+        writeActorID(actorID, encoded);
+    }
+    append(encoded, payload);
+    return encoded;
+}
+
+static Data calculateChecksum(Address::Type type, uint64_t actorID, const Data& payload) {
+    Data bytesVec(addressToBytes(type, actorID, payload));
+    Data sum = Hash::blake2b(bytesVec, checksumSize);
+    assert(sum.size() == checksumSize);
+    return sum;
+}
+
+MaybeAddress Address::fromBytes(const Data& encoded) {
+    // Should contain at least one byte (address type).
+    if (encoded.empty()) {
+        return std::nullopt;
+    }
+
+    // Get address type.
+    Type type = Address::getType(encoded[0]);
+    Data withoutPrefix(encoded.begin() + 1, encoded.end());
+
+    switch (type) {
+        case Address::Type::ID: {
+            std::size_t remainingPos = 0;
+            uint64_t actorID = 0;
+
+            if (!decodeActorID(withoutPrefix, actorID, remainingPos)) {
+                return std::nullopt;
+            }
+            // Check if there are no remaining bytes.
+            if (remainingPos != withoutPrefix.size()) {
+                return std::nullopt;
+            }
+
+            return Address(type, actorID, Data());
+        }
+        case Address::Type::SECP256K1:
+        case Address::Type::ACTOR:
+        case Address::Type::BLS: {
+            if (!Address::isValidPayloadSize(type, withoutPrefix.size())) {
+                return std::nullopt;
+            }
+            return Address(type, 0, std::move(withoutPrefix));
+        }
+        case Address::Type::DELEGATED: {
+            std::size_t remainingPos = 0;
+            uint64_t actorID = 0;
+
+            if (!decodeActorID(withoutPrefix, actorID, remainingPos)) {
+                return std::nullopt;
+            }
+            if (!Address::isValidPayloadSize(type, withoutPrefix.size() - remainingPos)) {
+                return std::nullopt;
+            }
+
+            return Address(type, actorID, subData(withoutPrefix, remainingPos));
+        }
+        default:
+            return std::nullopt;
+    }
+}
+
+MaybeAddress Address::fromString(const std::string& string) {
+    // An address must contain at least 'f' prefix and the address type.
+    static constexpr std::size_t minLength = 2;
+
+    if (string.length() < minLength) {
+        return std::nullopt;
+    }
+    // Only main net addresses supported.
+    if (string[0] != Address::PREFIX) {
+        return std::nullopt;
+    }
+
+    // Get address type.
+    Type type = Address::parseType(string[1]);
+    if (type == Address::Type::Invalid) {
+        return std::nullopt;
+    }
+
+    uint64_t actorID = 0;
+    if (type == Address::Type::ID) {
+        if (!parseActorID(string.substr(2), actorID)) {
+            return std::nullopt;
+        }
+        return Address(type, actorID, Data());
+    }
+
+    // For `SECP256K1`, `ACTOR`, `BLS`, the payload starts after the Protocol Type.
+    // For `DELEGATED`, the payload starts after an ActorID and the 'f' separator.
+    std::size_t payloadPos = 2;
+    if (type == Address::Type::DELEGATED) {
+        std::size_t actorIDEnd = string.find('f', 2);
+        // Delegated address must contain the 'f' separator.
+        if (actorIDEnd == std::string::npos || actorIDEnd <= 2) {
+            return std::nullopt;
+        }
+        if (!parseActorID(string.substr(2, actorIDEnd - 2), actorID)) {
+            return std::nullopt;
+        }
+        // Address payload starts after 'f'.
+        payloadPos = actorIDEnd + 1;
+    }
+
     Data decoded;
-    if (!Base32::decode(string.substr(2), decoded, BASE32_ALPHABET_FILECOIN)) {
-        return false;
+    if (!Base32::decode(string.substr(payloadPos), decoded, BASE32_ALPHABET_FILECOIN)) {
+        return std::nullopt;
+    }
+    if (decoded.size() < checksumSize) {
+        return std::nullopt;
     }
 
-    // Check size
-    if (decoded.size() != size + checksumSize) {
-        return false;
+    Data payload(decoded.begin(), decoded.end() - checksumSize);
+    if (!Address::isValidPayloadSize(type, payload.size())) {
+        return std::nullopt;
     }
 
-    // Extract raw address.
-    Data address;
-    address.push_back(static_cast<uint8_t>(type));
-    address.insert(address.end(), decoded.data(), decoded.data() + size);
+    Data actualChecksum(decoded.end() - checksumSize, decoded.end());
+    Data expectedChecksum = calculateChecksum(type, actorID, payload);
+    if (actualChecksum != expectedChecksum) {
+       return std::nullopt;
+    }
 
-    // Verify checksum.
-    Data should_sum = Hash::blake2b(address, checksumSize);
-    return std::memcmp(should_sum.data(), decoded.data() + size, checksumSize) == 0;
+    return Address(type, actorID, std::move(payload));
 }
 
 bool Address::isValid(const std::string& string) {
-    if (string.length() < 3) {
-        return false;
-    }
-    // Only main net addresses supported.
-    if (string[0] != PREFIX) {
-        return false;
-    }
-    // Get address type.
-    auto type = parseType(string[1]);
-    if (type == Type::Invalid) {
-        return false;
+    return Address::fromString(string).has_value();
+}
+
+bool Address::isValid(const Data& encoded) {
+    return Address::fromBytes(encoded).has_value();
+}
+
+Address Address::secp256k1Address(const PublicKey& publicKey) {
+    Data payload = Hash::blake2b(publicKey.bytes, 20);
+    return Address(Type::SECP256K1, 0, std::move(payload));
+}
+
+Address Address::delegatedAddress(const PublicKey& publicKey) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+        throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
     }
 
-    // ID addresses are special, they are just numbers.
-    return type == Type::ID ? isValidID(string) : isValidBase32(string, type);
+    const auto data = publicKey.hash({}, Hash::HasherKeccak256, true);
+    Data payload(data.end() - 20, data.end());
+
+    return Address(Type::DELEGATED, ETHEREUM_ADDRESS_MANAGER_ACTOR_ID, std::move(payload));
+}
+
+Address Address::delegatedAddress(uint64_t actorID, Data&& payload) {
+    return Address(Type::DELEGATED, actorID, std::move(payload));
 }
 
 Address::Address(const std::string& string) {
-    if (!isValid(string))
-        throw std::invalid_argument("Invalid address data");
-
-    Type type = parseType(string[1]);
-    // First byte is type
-    bytes.push_back(static_cast<uint8_t>(type));
-    if (type == Type::ID) {
-        uint64_t id = std::stoull(string.substr(2));
-        while (id >= 0x80) {
-            bytes.push_back(((uint8_t)id) | 0x80);
-            id >>= 7;
-        }
-        bytes.push_back((uint8_t)id);
-        return;
-    }
-
-    Data decoded;
-    if (!Base32::decode(string.substr(2), decoded, BASE32_ALPHABET_FILECOIN))
-        throw std::invalid_argument("Invalid address data");
-    uint8_t payloadSize = Address::payloadSize(type);
-
-    bytes.insert(bytes.end(), decoded.data(), decoded.data() + payloadSize);
-}
-
-Address::Address(const Data& data) {
-    if (!isValid(data)) {
+    auto addr = Address::fromString(string);
+    if (!addr) {
         throw std::invalid_argument("Invalid address data");
     }
-    bytes = data;
+
+    assign(std::move(*addr));
 }
 
-Address::Address(const PublicKey& publicKey) {
-    bytes.push_back(static_cast<uint8_t>(Type::SECP256K1));
-    Data hash = Hash::blake2b(publicKey.bytes, payloadSize(Type::SECP256K1));
-    bytes.insert(bytes.end(), hash.begin(), hash.end());
+Address::Address(const Data& encoded) {
+    auto addr = Address::fromBytes(encoded);
+    if (!addr) {
+        throw std::invalid_argument("Invalid address data");
+    }
+
+    assign(std::move(*addr));
+}
+
+Address::Address(Type type, uint64_t actorID, Data&& payload):
+    type(type),
+    actorID(actorID),
+    payload(std::move(payload)) {
+    if (!isValidPayloadSize(this->type, this->payload.size())) {
+        throw std::invalid_argument("Invalid address data");
+    }
+}
+
+void Address::assign(Address&& other) {
+    type = other.type;
+    actorID = other.actorID;
+    payload = std::move(other.payload);
+}
+
+Data Address::toBytes() const {
+    return addressToBytes(type, actorID, payload);
 }
 
 std::string Address::string() const {
@@ -144,37 +286,25 @@ std::string Address::string() const {
     // Main net address prefix
     s.push_back(PREFIX);
     // Address type prefix
-    s.push_back(typeAscii(type()));
+    s.push_back(typeAscii(type));
 
-    if (type() == Type::ID) {
-        uint64_t id = 0;
-        unsigned shift = 0;
-        for (auto i = 1ul; i < bytes.size(); i++) {
-            if (bytes[i] <= SCHAR_MAX) {
-                id |= static_cast<uint64_t>(bytes[i]) << shift;
-                break;
-            } else {
-                id |= static_cast<uint64_t>(bytes[i] & SCHAR_MAX) << shift;
-                shift += 7;
-            }
-        }
-        s.append(std::to_string(id));
+    if (type == Type::ID) {
+        s.append(std::to_string(actorID));
         return s;
     }
 
-    uint8_t payloadSize = Address::payloadSize(type());
-    // Base32 encoded body
-    Data toEncode(payloadSize + checksumSize);
-    // Copy address payload without prefix
-    std::copy(bytes.data() + 1, bytes.data() + payloadSize + 1, toEncode.data());
-    // Append Blake2b checksum
-    Data bytesVec;
-    bytesVec.assign(std::begin(bytes), std::end(bytes));
-    Data sum = Hash::blake2b(bytesVec, checksumSize);
-    assert(sum.size() == checksumSize);
-    std::copy(sum.begin(), sum.end(), toEncode.data() + payloadSize);
-    s.append(Base32::encode(toEncode, BASE32_ALPHABET_FILECOIN));
+    if (type == Type::DELEGATED) {
+        s.append(std::to_string(actorID));
+        s.push_back('f');
+    }
 
+    // Append Blake2b checksum
+    Data checksum = calculateChecksum(type, actorID, payload);
+
+    Data toEncode = payload;
+    append(toEncode, checksum);
+
+    s.append(Base32::encode(toEncode, BASE32_ALPHABET_FILECOIN));
     return s;
 }
 

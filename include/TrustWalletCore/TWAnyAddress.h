@@ -9,6 +9,7 @@
 #include "TWBase.h"
 #include "TWCoinType.h"
 #include "TWData.h"
+#include "TWFilecoinAddressType.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -114,6 +115,14 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(struct TWPub
 /// \return TWAnyAddress pointer or nullptr if public key is invalid.
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, uint32_t ss58Prefix);
+
+/// Creates a Filecoin address from a public key and a given address type.
+///
+/// \param publicKey derivates the address from the public key.
+/// \param filecoinAddressType Filecoin address type.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFilecoinAddressType filecoinAddressType);
 
 /// Deletes an address.
 ///
