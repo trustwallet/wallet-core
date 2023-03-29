@@ -82,6 +82,13 @@ jobs:
       run: |
         tools/check-coverage rust/coverage.stats rust/coverage.info
 
+    - name: Upload Rust coverage to CodeCov
+      uses: codecov/codecov-action@v3
+      if: failure() # Upload if only code coverage has been dropped.
+      with:
+        files: rust/coverage.info
+        fail_ci_if_error: true
+
 #    - name: Code generation
 #      run: |
 #        tools/generate-files
