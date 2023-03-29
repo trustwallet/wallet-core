@@ -9,7 +9,7 @@ use tw_encoding::ffi::{decode_base58, encode_base58, Base58Alphabet};
 
 #[test]
 fn test_base58_encode() {
-    let data = b"Hello, world"; // TODO "Hello, world!"
+    let data = b"Hello, world!";
     let expected = "72k1xXWG59wUsYv7h2";
 
     let result_ptr = unsafe { encode_base58(data.as_ptr(), data.len(), Base58Alphabet::Bitcoin) };
