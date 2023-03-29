@@ -18,17 +18,31 @@ jobs:
         run: |
           tools/install-sys-dependencies-linux
 
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
+      - name: Check Rust dependencies cache
         id: rust_registry_cache
+        uses: actions/cache@v3
         with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
           key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
-          workspaces: |
-            rust
+
       - name: Install Rust dependencies
-        if: steps.rust_registry_cache.outputs.cache-hit != 'true'
+        if: steps.rust_registry_cache.outputs.cache-hit != 'true' # if only cache not found
         run: |
           tools/install-rust-dependencies dev
+
+      - name: Save Rust dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
 
       - name: Check code formatting
         run: |
