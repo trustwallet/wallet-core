@@ -48,16 +48,18 @@ jobs:
 #        tools/check-coverage rust/coverage.stats rust/coverage.info
 
     - uses: actions-rs/cargo@v1
-      working-directory: rust
       with:
         command: test
+        args: --all --manifest-path rust/Cargo.toml --target-dir target/llvm-cov
       env:
         CARGO_INCREMENTAL: '0'
         RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
         RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
 
-    - uses: actions-rs/grcov@v0.1
-      working-directory: rust
+    - name: Gather and check Rust code coverage
+      run: |
+        grcov target/llvm-cov -s . --ignore "*cargo*" --llvm --branch --guess-directory-when-missing --ignore-not-existing -t lcov -o coverage.info
+        tools/check-coverage rust/coverage.stats rust/coverage.info
 
     - name: Code generation
       run: |
