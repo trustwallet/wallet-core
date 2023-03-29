@@ -28,6 +28,7 @@ TEST(TWPolygonZkEVMCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
+    ASSERT_EQ(coin, 10001101ull);
     assertStringsEqual(chainId, "1101");
     assertStringsEqual(txUrl, "https://zkevm.polygonscan.com/tx/0xc70fd1a45b3130f5515a27d96f01a7f508099fb0b8af52ef432d5e4b2373dccd");
     assertStringsEqual(accUrl, "https://zkevm.polygonscan.com/address/0x81d98c8fda0410ee3e9d7586cb949cd19fa4cf38");
