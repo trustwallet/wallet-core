@@ -3,6 +3,7 @@
 set -e
 
 rustup toolchain install nightly
+rustup default nightly
 
 if [[ `uname` == "Darwin" ]]; then
   rustup default nightly
