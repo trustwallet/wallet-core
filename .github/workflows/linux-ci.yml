@@ -17,20 +17,28 @@ jobs:
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-linux
+
+    - name: Cache Rust dependencies
+      id: rust_registry_cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
+    - name: Install Rust dependencies
+      if: steps.rust_registry_cache.outputs.cache-hit != 'true'
+      run: |
         tools/install-rust-dependencies
+
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v3
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
-    - name: Cache Cargo registry
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-        key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
@@ -39,11 +47,11 @@ jobs:
         CXX: /usr/bin/clang++
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
-    - name: Cache Rust
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: |
-          rust
+#    - name: Cache Rust
+#      uses: Swatinem/rust-cache@v2
+#      with:
+#        workspaces: |
+#          rust
 
 #    - name: Rust lints
 #      run: |
@@ -57,12 +65,12 @@ jobs:
 #      run: |
 #        tools/check-coverage rust/coverage.stats rust/coverage.info
 
-    - name: Run Rust tests
+    - name: Rust Test
       run: |
         cargo llvm-cov nextest --profile ci --lcov --output-path coverage.info
       working-directory: rust
 
-    - name: Test Report
+    - name: Rust Test Report
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
@@ -73,7 +81,6 @@ jobs:
     - name: Gather and check Rust code coverage
       run: |
         tools/check-coverage rust/coverage.stats rust/coverage.info
-      working-directory: rust
 
     - name: Code generation
       run: |

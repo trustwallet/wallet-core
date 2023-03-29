@@ -3,9 +3,9 @@
 set -e
 
 rustup toolchain install nightly
+rustup component add llvm-tools-preview
 
 if [[ `uname` == "Darwin" ]]; then
-  rustup update
   rustup default nightly
   rustup toolchain install nightly-x86_64-apple-darwin --force-non-host
   rustup toolchain install nightly-aarch64-apple-darwin --force-non-host
