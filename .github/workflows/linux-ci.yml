@@ -21,6 +21,13 @@ jobs:
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+    - name: Cache Cargo registry
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+        key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
