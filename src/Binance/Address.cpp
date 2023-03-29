@@ -1,5 +1,5 @@
 // Copyright © 2017 Pieter Wuille
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,6 +19,11 @@ const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator
 bool Address::isValid(const std::string& addr) {
     Address addrNotUsed;
     return decode(addr, addrNotUsed);
+}
+
+bool Address::isValid(const std::string& addr, const std::string& hrp) {
+    Address addrNotUsed;
+    return Bech32Address::decode(addr, addrNotUsed, hrp);
 }
 
 bool Address::decode(const std::string& addr, Address& obj_out) {

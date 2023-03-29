@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -82,6 +82,14 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
 
 struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* publicKey, enum TWCoinType coin, uint32_t ss58Prefix) {
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::SS58Prefix(ss58Prefix))};
+}
+
+struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFilecoinAddressType filecoinAddressType) {
+    TW::PrefixVariant prefix = std::monostate();
+    if (filecoinAddressType == TWFilecoinAddressTypeDelegated) {
+        prefix = TW::DelegatedPrefix();
+    }
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFilecoin, TWDerivationDefault, prefix)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {

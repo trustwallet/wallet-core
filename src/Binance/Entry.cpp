@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,11 +13,19 @@
 namespace TW::Binance {
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+    if (std::holds_alternative<Bech32Prefix>(addressPrefix)) {
+        if (const auto hrp = std::get<Bech32Prefix>(addressPrefix); hrp) {
+            return Address::isValid(address, hrp);
+        }
+    }
+
+    // Use the default validation, which handles a specific set of valid HRPs.
     return Address::isValid(address);
 }
 
 std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return Address(publicKey).string();
+    const std::string hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
+    return Address(publicKey, hrp).string();
 }
 
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {

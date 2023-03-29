@@ -488,6 +488,36 @@
     }
   },
   {
+    "id": "stargaze",
+    "name": "Stargaze",
+    "displayName": "Stargaze",
+    "coinId": 20000118,
+    "symbol": "STARS",
+    "decimals": 6,
+    "chainId": "stargaze-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "stars",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/stargaze",
+      "txPath": "/txs/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://www.stargaze.zone/",
+      "source": "https://github.com/public-awesome/stargaze",
+      "rpc": "https://stargaze-rpc.polkachu.com/",
+      "documentation": "https://docs.stargaze.zone/guides/readme"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
@@ -2127,7 +2157,7 @@
     "id": "polygonzkevm",
     "name": "Polygon zkEVM",
     "displayName": "Polygon zkEVM",
-    "coinId": 10001422,
+    "coinId": 10001101,
     "slip44": 60,
     "symbol": "ETH",
     "decimals": 18,
@@ -2139,17 +2169,17 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "1422",
+    "chainId": "1101",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.public.zkevm-test.net",
+      "url": "https://zkevm.polygonscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
       "url": "https://www.polygon.technology/",
       "source": "https://github.com/0xpolygonhermez",
-      "rpc": "https://rpc.public.zkevm-test.net",
+      "rpc": "https://zkevm-rpc.com",
       "documentation": "https://wiki.polygon.technology/docs/zkEVM/introduction/"
     }
   },

@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -45,7 +45,10 @@ TEST(Coin, validateAddressBitcoin) {
 
 TEST(Coin, ValidateAddressBinance) {
     EXPECT_TRUE(validateAddress(TWCoinTypeBinance, "bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeBinance, "tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBinance, "tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2", "tbnb"));
+
+    EXPECT_FALSE(validateAddress(TWCoinTypeBinance, "tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeBinance, "bad1devga6q804tx9fqrnx0vtu5r36kxgp9tqx8h9k"));
 }
 
 TEST(Coin, ValidateAddressLitecoin) {

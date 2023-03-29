@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -199,5 +199,25 @@ TEST(TWAnyAddress, createFromPubKeyDerivation) {
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinTestnet));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
+    }
+}
+
+TEST(TWAnyAddress, createFromPubKeyFilecoinAddressType) {
+    constexpr auto pubkey = "0419bf99082cf2fcdaa812d6eba1eba9036ff3a3d84c1817c84954d4e8ae283fec5313e427a0f5f68dec3169b2eda876b1d9f97b1ede7f958baee6a2ce78f6e94a";
+    const auto pubkey_twstring = STRING(pubkey);
+    const auto pubkey_data = WRAPD(TWDataCreateWithHexString(pubkey_twstring.get()));
+    const auto pubkey_obj = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pubkey_data.get(), TWPublicKeyTypeSECP256k1Extended));
+
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFilecoinAddressType(pubkey_obj.get(), TWFilecoinAddressTypeDefault));
+        const auto actual = WRAPS(TWAnyAddressDescription(addr.get()));
+        assertStringsEqual(actual, "f1syn25x7infncgfvodhriq2dudvmudabtavm3wyy");
+        ASSERT_TRUE(TWAnyAddressIsValid(actual.get(), TWCoinTypeFilecoin));
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyFilecoinAddressType(pubkey_obj.get(), TWFilecoinAddressTypeDelegated));
+        const auto actual = WRAPS(TWAnyAddressDescription(addr.get()));
+        assertStringsEqual(actual, "f410fvak24cyg3saddajborn6idt7rrtfj2ptauk5pbq");
+        ASSERT_TRUE(TWAnyAddressIsValid(actual.get(), TWCoinTypeFilecoin));
     }
 }

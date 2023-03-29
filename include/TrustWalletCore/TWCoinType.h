@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -132,6 +132,7 @@ enum TWCoinType {
     TWCoinTypeTON = 607,
     TWCoinTypeSui = 784,
     TWCoinTypePolygonzkEVM = 10001422,
+    TWCoinTypeStargaze = 20000118,
 };
 
 /// Returns the blockchain for a coin type.
