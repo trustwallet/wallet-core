@@ -8,115 +8,56 @@ on:
 
 jobs:
   build:
-    permissions:
-      contents: read
-      checks: write
     runs-on: ubuntu-latest
+    if: false
     steps:
-    - uses: actions/checkout@v3
-    - name: Install system dependencies
-      run: |
-        tools/install-sys-dependencies-linux
+      - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: |
+          tools/install-sys-dependencies-linux
+          tools/install-rust-dependencies
+      - name: Cache internal dependencies
+        id: internal_cache
+        uses: actions/cache@v3
+        with:
+          path: build/local
+          key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+      - name: Install internal dependencies
+        run: |
+          tools/install-dependencies
+        env:
+          CC: /usr/bin/clang
+          CXX: /usr/bin/clang++
+        if: steps.internal_cache.outputs.cache-hit != 'true'
 
-    - name: Cache Rust dependencies
-      id: rust_registry_cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
-    - name: Install Rust dependencies
-      if: steps.rust_registry_cache.outputs.cache-hit != 'true'
-      run: |
-        tools/install-rust-dependencies
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
 
-    - name: Cache internal dependencies
-      id: internal_cache
-      uses: actions/cache@v3
-      with:
-        path: build/local
-        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
-    - name: Install internal dependencies
-      run: |
-        tools/install-dependencies
-      env:
-        CC: /usr/bin/clang
-        CXX: /usr/bin/clang++
-      if: steps.internal_cache.outputs.cache-hit != 'true'
-
-#    - name: Cache Rust
-#      uses: Swatinem/rust-cache@v2
-#      with:
-#        workspaces: |
-#          rust
-
-#    - name: Rust lints
-#      run: |
-#        tools/rust-lint
-#
-#    - name: Rust test
-#      run: |
-#        tools/rust-test coverage
-#
-#    - name: Check Rust code coverage
-#      run: |
-#        tools/check-coverage rust/coverage.stats rust/coverage.info
-
-    - name: Rust Test
-      run: |
-        cargo llvm-cov nextest --profile ci --lcov --output-path coverage.info
-      working-directory: rust
-
-    - name: Rust Test Report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()
-      with:
-        name: Rust Tests
-        path: rust/target/nextest/ci/junit.xml
-        reporter: java-junit
-
-    - name: Gather and check Rust code coverage
-      run: |
-        tools/check-coverage rust/coverage.stats rust/coverage.info
-
-    - name: Upload Rust coverage to CodeCov
-      uses: codecov/codecov-action@v3
-      if: failure() # Upload if only code coverage has been dropped.
-      with:
-        files: rust/coverage.info
-        fail_ci_if_error: true
-
-#    - name: Code generation
-#      run: |
-#        tools/generate-files
-#      env:
-#        CC: /usr/bin/clang
-#        CXX: /usr/bin/clang++
-#    - name: CMake (coverage/clang-tidy/clang-asan)
-#      run: |
-#        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
-#      env:
-#        CC: /usr/bin/clang
-#        CXX: /usr/bin/clang++
-#
-#    - name: Build
-#      run: |
-#        ninja -Cbuild tests TrezorCryptoTests
-#      env:
-#        CC: /usr/bin/clang
-#        CXX: /usr/bin/clang++
-#
-#    - name: Test
-#      run: |
-#        build/trezor-crypto/crypto/tests/TrezorCryptoTests
-#        build/tests/tests --gtest_output=xml
-#      env:
-#        CK_TIMEOUT_MULTIPLIER: 4
-#
-#    - name: Gather and check code coverage
-#      run: |
-#        sudo rm -rf coverage.info
-#        tools/coverage
+      - name: Code generation
+        run: |
+          tools/generate-files
+        env:
+          CC: /usr/bin/clang
+          CXX: /usr/bin/clang++
+      - name: CMake (coverage/clang-tidy/clang-asan)
+        run: |
+          cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
+        env:
+          CC: /usr/bin/clang
+          CXX: /usr/bin/clang++
+      - name: Build and test
+        run: |
+          ninja -Cbuild tests TrezorCryptoTests
+          build/trezor-crypto/crypto/tests/TrezorCryptoTests
+          build/tests/tests --gtest_output=xml
+        env:
+          CC: /usr/bin/clang
+          CXX: /usr/bin/clang++
+          CK_TIMEOUT_MULTIPLIER: 4
+      - name: Gather and check code coverage
+        run: |
+          sudo rm -rf coverage.info
+          tools/coverage

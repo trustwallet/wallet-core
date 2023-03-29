@@ -3,7 +3,6 @@
 set -e
 
 rustup toolchain install nightly
-rustup component add llvm-tools-preview
 
 if [[ `uname` == "Darwin" ]]; then
   rustup default nightly
@@ -22,4 +21,10 @@ rustup target add x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios
 # Wasm
 rustup target add wasm32-unknown-emscripten
 
-cargo install cbindgen cargo-llvm-cov cargo-nextest cargo-udeps
+cargo install cbindgen
+
+if [[ `$1` == "dev" ]]; then
+  rustup component add llvm-tools-preview
+
+  cargo install cargo-llvm-cov cargo-nextest cargo-udeps
+fi

@@ -1,2 +1,4 @@
 [profile.ci.junit]
 path = "junit.xml"
+store-success-output = false
+fail-fast = false
