@@ -54,20 +54,23 @@ jobs:
 #      run: |
 #        tools/check-coverage rust/coverage.stats rust/coverage.info
 
-    - uses: actions-rs/cargo@v1
+    - name: Run Rust tests
+      run: |
+        cargo llvm-cov nextest --profile ci --lcov --output-path coverage.info
+      working-directory: rust
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
       with:
-        command: test
-        toolchain: nightly
-        args: --all --manifest-path rust/Cargo.toml --target-dir target/llvm-cov
-      env:
-        CARGO_INCREMENTAL: '0'
-        RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-        RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+        name: JEST Tests
+        path: rust/target/nextest/ci/junit.xml
+        reporter: jest-junit
 
     - name: Gather and check Rust code coverage
       run: |
-        grcov target/llvm-cov -s . --ignore "*cargo*" --llvm --branch --guess-directory-when-missing --ignore-not-existing -t lcov -o coverage.info
         tools/check-coverage rust/coverage.stats rust/coverage.info
+      working-directory: rust
 
     - name: Code generation
       run: |
