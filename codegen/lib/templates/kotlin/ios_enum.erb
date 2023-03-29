@@ -4,7 +4,7 @@ import com.trustwallet.core.<%= "TW#{entity.name}" %>.*
 
 <%  type = ": TW#{entity.name}" -%>
 actual enum class <%= entity.name %>(
-    internal val value<%= type %>,
+    val value<%= type %>,
 ) {
 <%# Cases -%>
 <%  entity.cases.each_with_index do |c, i| -%>
@@ -27,8 +27,8 @@ actual enum class <%= entity.name %>(
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>
 
-    internal companion object {
-        internal fun fromValue(value<%= type %>): <%= entity.name %>? =
+    companion object {
+        fun fromValue(value<%= type %>): <%= entity.name %>? =
             values().firstOrNull { it.value == value }
     }
 <%  end -%>
