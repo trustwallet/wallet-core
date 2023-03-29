@@ -132,6 +132,7 @@ enum TWCoinType {
     TWCoinTypeTON = 607,
     TWCoinTypeSui = 784,
     TWCoinTypePolygonzkEVM = 10001422,
+    TWCoinTypeStargaze = 20000118,
 };
 
 /// Returns the blockchain for a coin type.

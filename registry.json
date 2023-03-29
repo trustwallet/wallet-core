@@ -488,6 +488,36 @@
     }
   },
   {
+    "id": "stargaze",
+    "name": "Stargaze",
+    "displayName": "Stargaze",
+    "coinId": 20000118,
+    "symbol": "STARS",
+    "decimals": 6,
+    "chainId": "stargaze-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "stars",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/stargaze",
+      "txPath": "/txs/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://www.stargaze.zone/",
+      "source": "https://github.com/public-awesome/stargaze",
+      "rpc": "https://stargaze-rpc.polkachu.com/",
+      "documentation": "https://docs.stargaze.zone/guides/readme"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
