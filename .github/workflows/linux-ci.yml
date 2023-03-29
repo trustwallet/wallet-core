@@ -76,7 +76,7 @@ jobs:
       with:
         name: Rust Tests
         path: rust/target/nextest/ci/junit.xml
-        reporter: jest-junit
+        reporter: java-junit
 
     - name: Gather and check Rust code coverage
       run: |
