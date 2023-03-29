@@ -6,8 +6,8 @@ import kotlinx.cinterop.CPointer
 <% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
 <% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
 <% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
-actual class <%= entity.name %> internal constructor(
-    internal val pointer: CPointer<TW<%= entity.name %>>,
+actual class <%= entity.name %> constructor(
+    val pointer: CPointer<TW<%= entity.name %>>,
 ) {
 <%# Constructors -%>
 <%- constructors.each do |constructor| -%>
