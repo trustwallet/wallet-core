@@ -2,11 +2,11 @@
 
 set -e
 
+rustup update
 rustup toolchain install nightly
 rustup default nightly
 
 if [[ `uname` == "Darwin" ]]; then
-  rustup default nightly
   rustup toolchain install nightly-x86_64-apple-darwin --force-non-host
   rustup toolchain install nightly-aarch64-apple-darwin --force-non-host
   rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
@@ -25,7 +25,6 @@ rustup target add wasm32-unknown-emscripten
 cargo install cbindgen
 
 if [[ "$1" == "dev" ]]; then
-  rustup component add llvm-tools-preview
-
+  rustup component add llvm-tools-preview clippy rustfmt
   cargo install cargo-llvm-cov cargo-nextest cargo-udeps
 fi
