@@ -23,7 +23,7 @@ rustup target add wasm32-unknown-emscripten
 
 cargo install cbindgen
 
-if [[ `$1` == "dev" ]]; then
+if [[ "$1" == "dev" ]]; then
   rustup component add llvm-tools-preview
 
   cargo install cargo-llvm-cov cargo-nextest cargo-udeps

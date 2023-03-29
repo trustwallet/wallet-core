@@ -19,33 +19,16 @@ jobs:
           tools/install-sys-dependencies-linux
 
       - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
         id: rust_registry_cache
-        uses: actions/cache@v3
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
           key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
+          workspaces: |
+            rust
       - name: Install Rust dependencies
         if: steps.rust_registry_cache.outputs.cache-hit != 'true'
         run: |
           tools/install-rust-dependencies dev
-
-      - name: Cache internal dependencies
-        id: internal_cache
-        uses: actions/cache@v3
-        with:
-          path: build/local
-          key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
-      - name: Install internal dependencies
-        run: |
-          tools/install-dependencies
-        env:
-          CC: /usr/bin/clang
-          CXX: /usr/bin/clang++
-        if: steps.internal_cache.outputs.cache-hit != 'true'
 
       - name: Check code formatting
         run: |
