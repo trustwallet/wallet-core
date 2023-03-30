@@ -39,8 +39,8 @@ fn test_base32_encode() {
     let input = b"Hello, world!";
     let alphabet = "abcdefghijklmnopqrstuvwxyz234567";
 
-    test_base32_encode_helper(input, "JBSWY3DPFQQHO33SNRSCC===", None, true);
     test_base32_encode_helper(input, "JBSWY3DPFQQHO33SNRSCC", None, false);
+    test_base32_encode_helper(input, "JBSWY3DPFQQHO33SNRSCC===", None, true);
     test_base32_encode_helper(input, "jbswy3dpfqqho33snrscc===", Some(alphabet), true);
     test_base32_encode_helper(input, "jbswy3dpfqqho33snrscc", Some(alphabet), false);
 }
