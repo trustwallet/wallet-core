@@ -25,6 +25,12 @@ jobs:
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@v0.0.3
 
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+
       - name: Install Rust dependencies
         run: |
           tools/install-rust-dependencies dev
