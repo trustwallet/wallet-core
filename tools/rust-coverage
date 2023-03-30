@@ -14,11 +14,14 @@
 # Fail if any commands fails
 set -e
 
+pushd rust
+
 # Generate HTML report if requested
 if [[ "$1" == "html" ]]; then
-    tools/rust-test html
-    exit 0
+    cargo llvm-cov test --html
 else
-    tools/rust-test coverage
-    tools/check-coverage rust/coverage.stats rust/coverage.info
+    cargo llvm-cov --lcov --output-path coverage.info
+    ../tools/check-coverage coverage.stats coverage.info
 fi
+
+popd rust

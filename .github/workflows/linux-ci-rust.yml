@@ -20,7 +20,7 @@ jobs:
 
       - name: Check Rust dependencies cache
         id: rust_registry_cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: |
             ~/.cargo/bin/
@@ -35,7 +35,7 @@ jobs:
           tools/install-rust-dependencies dev
 
       - name: Save Rust dependencies cache
-        uses: actions/cache@v3
+        uses: actions/cache/save@v3
         with:
           path: |
             ~/.cargo/bin/
