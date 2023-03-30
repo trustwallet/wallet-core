@@ -9,9 +9,9 @@ import XCTest
 
 class SuiTests: XCTestCase {
     func testAddress() {
-        let anyAddress = AnyAddress(string: "0x061ce2b2100a71bb7aa0da98998887ad82597948", coin: .sui)
+        let anyAddress = AnyAddress(string: "0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015", coin: .sui)
 
-        XCTAssertEqual(anyAddress?.description, "0x061ce2b2100a71bb7aa0da98998887ad82597948")
+        XCTAssertEqual(anyAddress?.description, "0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015")
         XCTAssertEqual(anyAddress?.coin, .sui)
 
         let invalid = "MQqpqMQgCBuiPkoXfgZZsJvuzCeI1zc00z6vHJj4"
