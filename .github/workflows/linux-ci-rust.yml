@@ -76,4 +76,5 @@ jobs:
 
       - name: Gather and check Rust code coverage
         run: |
+          lcov --summary rust/coverage.info
           tools/check-coverage rust/coverage.stats rust/coverage.info
