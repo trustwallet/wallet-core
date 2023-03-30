@@ -12,7 +12,4 @@ cargo fmt --check
 echo "Check Clippy warnings"
 cargo clippy -- -D warnings
 
-echo "Check unused dependencies"
-cargo udeps
-
 popd

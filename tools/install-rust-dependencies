@@ -27,5 +27,4 @@ if [[ "$1" == "dev" ]]; then
   rustup component add llvm-tools-preview clippy rustfmt
   cargo install cargo-llvm-cov --locked
   cargo install cargo-nextest --locked
-  cargo install cargo-udeps --locked
 fi

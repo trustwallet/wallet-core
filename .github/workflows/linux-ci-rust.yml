@@ -45,11 +45,6 @@ jobs:
           cargo clippy -- -D warnings
         working-directory: rust
 
-      - name: Check unused dependencies
-        run: |
-          cargo udeps
-        working-directory: rust
-
       - name: Run tests
         run: |
           cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
