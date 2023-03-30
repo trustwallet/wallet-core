@@ -26,5 +26,4 @@ fi
 
 popd
 
-lcov --summary rust/coverage.info
 tools/check-coverage rust/coverage.stats rust/coverage.info

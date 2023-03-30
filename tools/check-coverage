@@ -15,6 +15,8 @@ set -e
 coverage_stats=$1
 coverage_info=$2
 
+lcov --summary $coverage_info
+
 current=$(<$coverage_stats)
 new=$(lcov --summary $coverage_info | awk '/lines.*:/{sub("%", "", $2);print $2}')
 

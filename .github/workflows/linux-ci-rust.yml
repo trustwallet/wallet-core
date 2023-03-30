@@ -54,7 +54,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cargo llvm-cov nextest --profile ci --lcov --output-path coverage.info
+          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
         working-directory: rust
 
       - name: Rust Test Report
@@ -69,5 +69,4 @@ jobs:
 
       - name: Gather and check Rust code coverage
         run: |
-          lcov --summary rust/coverage.info
           tools/check-coverage rust/coverage.stats rust/coverage.info
