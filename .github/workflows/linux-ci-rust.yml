@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
 jobs:
   build:
     permissions:
@@ -18,24 +22,12 @@ jobs:
         run: |
           tools/install-sys-dependencies-linux
 
-      - name: Check Rust dependencies cache
-        id: rust_registry_cache
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            ~/.cargo
-          key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
 
       - name: Install Rust dependencies
         run: |
           tools/install-rust-dependencies dev
-
-      - name: Save Rust dependencies cache
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            ~/.cargo
-          key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
 
       - name: Check code formatting
         run: |

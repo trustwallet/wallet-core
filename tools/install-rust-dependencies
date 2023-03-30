@@ -2,13 +2,10 @@
 
 set -e
 
-# Pin the nightly version for host toolchain
-NIGHTLY=nightly-2023-03-30
-
 if [[ `uname` == "Darwin" || "$1" == "dev" ]]; then
   rustup update
-  rustup toolchain install $NIGHTLY
-  rustup default $NIGHTLY
+  rustup toolchain install nightly
+  rustup default nightly
   rustup toolchain install nightly-x86_64-apple-darwin --force-non-host
   rustup toolchain install nightly-aarch64-apple-darwin --force-non-host
   rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
@@ -24,9 +21,11 @@ rustup target add x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios
 # Wasm
 rustup target add wasm32-unknown-emscripten
 
-cargo install cbindgen
+cargo install cbindgen --locked
 
 if [[ "$1" == "dev" ]]; then
   rustup component add llvm-tools-preview clippy rustfmt
-  cargo install cargo-llvm-cov cargo-nextest cargo-udeps
+  cargo install cargo-llvm-cov --locked
+  cargo install cargo-nextest --locked
+  cargo install cargo-udeps --locked
 fi
