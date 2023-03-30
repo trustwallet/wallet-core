@@ -7,6 +7,7 @@ import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.java.AnySigner
+import wallet.core.jni.Base64
 import wallet.core.jni.CoinType.ALGORAND
 import wallet.core.jni.proto.Algorand
 import wallet.core.jni.proto.Algorand.SigningOutput
@@ -15,6 +16,33 @@ class TestAlgorandSigner {
 
     init {
         System.loadLibrary("TrustWalletCore")
+    }
+
+    @Test
+    fun algorandTransactionSigningNFTTransfer() {
+        // Successfully broadcasted: https://algoexplorer.io/tx/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
+        val transaction = Algorand.AssetTransfer.newBuilder()
+            .setToAddress("362T7CSXNLIOBX6J3H2SCPS4LPYFNV6DDWE6G64ZEUJ6SY5OJIR6SB5CVE")
+            .setAmount(1)
+            .setAssetId(989643841)
+            .build()
+        val signingInput = Algorand.SigningInput.newBuilder()
+            .setGenesisId("mainnet-v1.0")
+            .setGenesisHash(ByteString.copyFrom(Base64.decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=")))
+            .setNote(ByteString.copyFrom(Base64.decode("VFdUIFRPIFRIRSBNT09O")))
+            .setPrivateKey("dc6051ffc7b3ec601bde432f6dea34d40fe3855e4181afa0f0524c42194a6da7".toHexBytesInByteString())
+            .setFirstRound(27963950)
+            .setLastRound(27964950)
+            .setFee(1000)
+            .setAssetTransfer(transaction)
+            .build()
+
+        val output = AnySigner.sign(signingInput, ALGORAND, SigningOutput.parser())
+
+        assertEquals(
+            output.signature,
+            "nXQsDH1ilG3DIo2VQm5tdYKXe9o599ygdqikmROpZiNXAvQeK3avJqgjM5o+iByCdq6uOxlbveDyVmL9nZxxBg=="
+        )
     }
 
     @Test

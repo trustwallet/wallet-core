@@ -97,7 +97,7 @@ enum TWCoinType {
     TWCoinTypeTHORChain = 931,
     TWCoinTypeBluzelle = 483,
     TWCoinTypeOptimism = 10000070,
-    TWCoinTypeZksync = 10000280,
+    TWCoinTypeZksync = 10000324,
     TWCoinTypeArbitrum = 10042221,
     TWCoinTypeECOChain = 10000553,
     TWCoinTypeAvalancheCChain = 10009000,
@@ -131,8 +131,8 @@ enum TWCoinType {
     TWCoinTypeAgoric = 564,
     TWCoinTypeTON = 607,
     TWCoinTypeSui = 784,
-    TWCoinTypePolygonzkEVM = 10001422,
     TWCoinTypeStargaze = 20000118,
+    TWCoinTypePolygonzkEVM = 10001101,
 };
 
 /// Returns the blockchain for a coin type.
