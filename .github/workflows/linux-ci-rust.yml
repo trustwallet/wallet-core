@@ -23,14 +23,10 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
+            ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
 
       - name: Install Rust dependencies
-        if: steps.rust_registry_cache.outputs.cache-hit != 'true' # if only cache not found
         run: |
           tools/install-rust-dependencies dev
 
@@ -38,10 +34,7 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
+            ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('tools/install-rust-dependencies') }}
 
       - name: Check code formatting

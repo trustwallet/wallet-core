@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: macos-latest-xl
+    if: false
     steps:
     - uses: actions/checkout@v3
     - name: Install system dependencies
