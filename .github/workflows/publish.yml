@@ -43,6 +43,7 @@ jobs:
           
     - name: Build and publish
       run: |
+        cd android
         echo sdk.dir = $ANDROID_HOME > local.properties
-        ./android/gradlew -PnexusUser=${{ secrets.NEXUS_USERNAME }} -PnexusPass=${{ secrets.NEXUS_PASSWORD }} -PartifactVersion=${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }} publish
+        ./gradlew -PnexusUser=${{ secrets.NEXUS_USERNAME }} -PnexusPass=${{ secrets.NEXUS_PASSWORD }} -PartifactVersion=${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }} publish
     
