@@ -4,10 +4,32 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::{base32, base58, base64, hex};
+use crate::{base32, base58, base64, hex, EncodingError};
 use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
+use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
 use tw_memory::ffi::CByteArray;
+
+#[repr(C)]
+pub enum CEncodingError {
+    InvalidInput = 1,
+    InvalidAlphabet = 2,
+}
+
+impl From<EncodingError> for CEncodingError {
+    fn from(error: EncodingError) -> Self {
+        match error {
+            EncodingError::InvalidInput => CEncodingError::InvalidInput,
+            EncodingError::InvalidAlphabet => CEncodingError::InvalidAlphabet,
+        }
+    }
+}
+
+impl From<CEncodingError> for ErrorCode {
+    fn from(error: CEncodingError) -> Self {
+        error as ErrorCode
+    }
+}
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -37,14 +59,15 @@ pub extern "C" fn encode_base32(
     input_len: usize,
     alphabet: *const c_char,
     padding: bool,
-) -> *mut c_char {
+) -> CStrMutResult {
     let input = unsafe { std::slice::from_raw_parts(input, input_len) };
 
     let alphabet = get_alphabet(alphabet);
 
     base32::encode(input, alphabet, padding)
         .map(|result| CString::new(result).unwrap().into_raw())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+        .map_err(CEncodingError::from)
+        .into()
 }
 
 /// Decodes the base32 `input` string.

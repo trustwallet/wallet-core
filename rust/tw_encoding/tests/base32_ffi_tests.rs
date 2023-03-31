@@ -15,7 +15,7 @@ fn test_base32_encode_helper(input: &[u8], expected: &str, alphabet: Option<&str
         .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
         .unwrap_or_else(std::ptr::null_mut);
 
-    let result_ptr = encode_base32(input.as_ptr(), input.len(), alphabet, padding);
+    let result_ptr = encode_base32(input.as_ptr(), input.len(), alphabet, padding).unwrap();
     let result = unsafe { CString::from_raw(result_ptr) };
     assert_eq!(result.to_str().unwrap(), expected);
 }

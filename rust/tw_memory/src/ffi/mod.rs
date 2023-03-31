@@ -7,6 +7,7 @@
 use std::ffi::{c_char, CString};
 
 pub mod c_byte_array;
+pub mod c_result;
 
 pub use c_byte_array::CByteArray;
 

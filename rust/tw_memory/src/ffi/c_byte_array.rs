@@ -4,6 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#[repr(C)]
+pub struct CByteArrayResult {
+    pub code: i32,
+    pub result: CByteArray,
+}
+
+crate::impl_c_result!(CByteArrayResult, CByteArray, CByteArray::null());
+
 // TODO declare `free_c_byte_array`, `is_c_byte_array_null` FFI.
 #[repr(C)]
 pub struct CByteArray {

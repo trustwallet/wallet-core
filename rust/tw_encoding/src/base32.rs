@@ -4,12 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::{EncodingError, EncodingResult};
+
 const ALPHABET_RFC4648: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<String, String> {
+pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> EncodingResult<String> {
     let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
     if alphabet.len() != 32 {
-        return Err("Invalid alphabet: must contain 32 characters".to_string());
+        return Err(EncodingError::InvalidAlphabet);
     }
 
     let mut result = String::new();
@@ -21,13 +23,17 @@ pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<St
         buffer_size += 8;
 
         while buffer_size >= 5 {
-            result.push(char::from(alphabet[(buffer >> (buffer_size - 5)) as usize & 31]));
+            result.push(char::from(
+                alphabet[(buffer >> (buffer_size - 5)) as usize & 31],
+            ));
             buffer_size -= 5;
         }
     }
 
     if buffer_size > 0 {
-        result.push(char::from(alphabet[(buffer << (5 - buffer_size)) as usize & 31]));
+        result.push(char::from(
+            alphabet[(buffer << (5 - buffer_size)) as usize & 31],
+        ));
     }
 
     if padding {
@@ -40,12 +46,16 @@ pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<St
 
 /// TODO `base64::decode` requires for padding bytes to be present if `padding = true`.
 /// This leads to an inconsistent behaviour.
-pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec<u8>, String> {
+pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> EncodingResult<Vec<u8>> {
     let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
     let mut output = Vec::new();
     let mut buffer: u32 = 0;
     let mut bits_left = 0;
-    let alphabet_map: std::collections::HashMap<u8, u32> = alphabet.iter().enumerate().map(|(i, &c)| (c, i as u32)).collect();
+    let alphabet_map: std::collections::HashMap<u8, u32> = alphabet
+        .iter()
+        .enumerate()
+        .map(|(i, &c)| (c, i as u32))
+        .collect();
     let input = if padding {
         input.trim_end_matches('=')
     } else {
@@ -55,7 +65,7 @@ pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec
     for c in input.bytes() {
         let val = match alphabet_map.get(&c) {
             Some(val) => *val,
-            None => return Err("Invalid character in input".to_string()),
+            None => return Err(EncodingError::InvalidInput),
         };
         buffer = (buffer << 5) | val;
         bits_left += 5;
@@ -66,7 +76,7 @@ pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec
     }
 
     if padding && bits_left >= 5 {
-        return Err("Invalid padding in input".to_string());
+        return Err(EncodingError::InvalidInput);
     }
 
     if output == vec![0] {
@@ -107,7 +117,7 @@ mod tests {
 
         let invalid_alphabet = "invalidalphabet";
         let result = encode(data, Some(invalid_alphabet.as_bytes()), false);
-        assert_eq!(result.is_err(), true);
+        assert_eq!(result, Err(EncodingError::InvalidAlphabet));
     }
 
     #[test]

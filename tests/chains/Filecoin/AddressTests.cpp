@@ -6,8 +6,10 @@
 
 #include "Filecoin/Address.h"
 #include "HexCoding.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <vector>
 
 using namespace TW;
@@ -139,6 +141,15 @@ TEST(FilecoinAddress, ToBytes) {
         Address a(test.string);
         ASSERT_EQ(hex(a.toBytes()), test.encoded) << "Address(" << test.string << ")";
     }
+}
+
+TEST(FilecoinAddress, FooBar) {
+    // auto x = Rust::get_result();
+    // ASSERT_TRUE(x.code == 1);
+    // std::cout << "From Cpp: " << std::string(x.result) << std::endl;
+    // Rust::print_result(x.result);
+    // Rust::free_string(x.result);
+    std::cout << "Finish";
 }
 
 }
