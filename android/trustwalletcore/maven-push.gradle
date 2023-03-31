@@ -1,5 +1,9 @@
 apply plugin: 'maven-publish'
 
+// TANGEM
+def nexusUser = project.property("nexusUser")
+def nexusToken = project.property("nexusPass")
+// TANGEM
 version project.property('version')
 group 'com.trustwallet'
 
@@ -40,11 +44,10 @@ publishing {
 
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/trustwallet/wallet-core")
+            url = uri("https://nexus.tangem-tech.com/repository/maven-releases")
             credentials {
-                username = System.getenv("GITHUB_USER")
-                password = System.getenv("GITHUB_TOKEN")
+                username = nexusUser
+                password = nexusToken
             }
         }
     }
