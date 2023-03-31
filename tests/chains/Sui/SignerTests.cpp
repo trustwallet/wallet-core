@@ -15,15 +15,15 @@
 namespace TW::Sui::tests {
 
 TEST(SuiSigner, Transfer) {
-    // Successfully broadcasted https://explorer.sui.io/transaction/rxLgxcAqgMg8gphp6eCsSGQcdZnwFYx2SRdwEhnAUC4
+    // Successfully broadcasted https://explorer.sui.io/txblock/HkPo6rYPyDY53x1MBszvSZVZyixVN7CHvCJGX381czAh?network=devnet
     Proto::SigningInput input;
-    auto txMsg = "AAUCLiNiMy/EzosKCk5EZr5QQZmMVLnvAAAAAAAAACDqj/OT+1+qyLZKV4YLw8kpK3/bTZKspTUmh1pBuUfHPLb0crwkV1LQcBARaxER8XhTNJmK7wAAAAAAAAAgaQEguOdXa+m16IM536nsveakQ4u/GYJAc1fpYGGKEvgBQUP35yxF+cEL5qm153kw18dVeuYB6AMAAAAAAAAttQCskZzd41GsNuNxHYMsbbl2aS4jYjMvxM6LCgpORGa+UEGZjFS57wAAAAAAAAAg6o/zk/tfqsi2SleGC8PJKSt/202SrKU1JodaQblHxzwBAAAAAAAAAOgDAAAAAAAA";
+    auto txMsg = "AAACAAgQJwAAAAAAAAAgJZ/4B0q0Jcu0ifI24Y4I8D8aeFa998eih3vWT3OLUBUCAgABAQAAAQEDAAAAAAEBANV1rX8Y6UhGKlz2mPVk7zlKdSpx/sYkk6+KBVwBLA1QAQbywsjB2JZN8QGdZhbpcFcZvrq9kx2idVy5SM635olk7AIAAAAAAAAgYEVuxmf1zRBGdoDr+VDtMpIFF12s2Ua7I2ru1XyGF8/Vda1/GOlIRipc9pj1ZO85SnUqcf7GJJOvigVcASwNUAEAAAAAAAAA0AcAAAAAAAAA";
     input.mutable_sign_direct_message()->set_unsigned_tx_msg(txMsg);
     auto privateKey = PrivateKey(parse_hex("3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto result = Signer::sign(input);
-    ASSERT_EQ(result.unsigned_tx(), "AAUCLiNiMy/EzosKCk5EZr5QQZmMVLnvAAAAAAAAACDqj/OT+1+qyLZKV4YLw8kpK3/bTZKspTUmh1pBuUfHPLb0crwkV1LQcBARaxER8XhTNJmK7wAAAAAAAAAgaQEguOdXa+m16IM536nsveakQ4u/GYJAc1fpYGGKEvgBQUP35yxF+cEL5qm153kw18dVeuYB6AMAAAAAAAAttQCskZzd41GsNuNxHYMsbbl2aS4jYjMvxM6LCgpORGa+UEGZjFS57wAAAAAAAAAg6o/zk/tfqsi2SleGC8PJKSt/202SrKU1JodaQblHxzwBAAAAAAAAAOgDAAAAAAAA");
-    ASSERT_EQ(result.signature(), "AIYRmHDpQesfAx3iWBCMwInf3MZ56ZQGnPWNtECFjcSq0ssAgjRW6GLnFCX24tfDNjSm9gjYgoLmn1No15iFJAtqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
+    ASSERT_EQ(result.unsigned_tx(), "AAACAAgQJwAAAAAAAAAgJZ/4B0q0Jcu0ifI24Y4I8D8aeFa998eih3vWT3OLUBUCAgABAQAAAQEDAAAAAAEBANV1rX8Y6UhGKlz2mPVk7zlKdSpx/sYkk6+KBVwBLA1QAQbywsjB2JZN8QGdZhbpcFcZvrq9kx2idVy5SM635olk7AIAAAAAAAAgYEVuxmf1zRBGdoDr+VDtMpIFF12s2Ua7I2ru1XyGF8/Vda1/GOlIRipc9pj1ZO85SnUqcf7GJJOvigVcASwNUAEAAAAAAAAA0AcAAAAAAAAA");
+    ASSERT_EQ(result.signature(), "APxPduNVvHj2CcRcHOtiP2aBR9qP3vO2Cb0g12PI64QofDB6ks33oqe/i/iCTLcop2rBrkczwrayZuJOdi7gvwNqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
 }
 
 TEST(SuiSigner, TransferNFT) {
@@ -35,7 +35,7 @@ TEST(SuiSigner, TransferNFT) {
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto result = Signer::sign(input);
     ASSERT_EQ(result.unsigned_tx(), unsigned_tx);
-    ASSERT_EQ(result.signature(), "AIjbyuyg9YX0f8/DXB5XZBnUCOqhUrPDbU9/E/FlzwGtDS57cOL/gZwN3vTV1KiOuN0cr0kxypgJpVLKlhd8hgdqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
+    ASSERT_EQ(result.signature(), "AI+KRy820ucibONQXbaVm53ixNWqRcqp16/aG0hvX7Mt3dOMqTDKRYoRBRvbMDsyPFmpS+n5iYvs5vuGdqjUvgBqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
 }
 
 TEST(SuiSigner, MoveCall) {
@@ -47,7 +47,7 @@ TEST(SuiSigner, MoveCall) {
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto result = Signer::sign(input);
     ASSERT_EQ(result.unsigned_tx(), unsigned_tx);
-    ASSERT_EQ(result.signature(), "AE8394w/+KOodhLjnKgu21iW0xZur6MA4ajPh31f2xaOI7vs6JHLAHLk5ED3bfJfc5ZehmC6D4DMyrH4F0dA3A1qfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
+    ASSERT_EQ(result.signature(), "AHoX1/mzUS8WQ+tNr0gXtfI7KFXjSbDlUxbGG2gkEh6L8FngU2KrsXsR1N8MzCXyJIz7+YvTfl5+Dh6AWSZC5wVqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
 }
 
 TEST(SuiSigner, AddDelegation) {
@@ -59,7 +59,7 @@ TEST(SuiSigner, AddDelegation) {
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto result = Signer::sign(input);
     ASSERT_EQ(result.unsigned_tx(), unsigned_tx);
-    ASSERT_EQ(result.signature(), "AKSbUoc+F4JGG9i+A8yVYyzcD8BXNV88iSaWpoS5KXUG7ao2pxjyvfUJEYyhWXTxgQazNDnIM1xGhD7zu1GU1wRqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
+    ASSERT_EQ(result.signature(), "AMn4XpOcE9pX/VWCcue/tMkk+TxRQprGas53TT9W4beLkj6XuQdSNLSdjp9AmbqQPHKh0yJZ9i7Q2i6aax8NdQZqfN7sFqdcD/Z4e8I1YQlGkDMCK7EOgmydRDqfH8C9jg==");
 }
 
 } // namespace TW::Sui::tests
