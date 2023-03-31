@@ -65,4 +65,7 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+
+    // Signature in base64.
+    string signature = 2;
 }
