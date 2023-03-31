@@ -15,7 +15,7 @@ fn test_base32_encode_helper(input: &[u8], expected: &str, alphabet: Option<&str
         .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
         .unwrap_or_else(std::ptr::null_mut);
 
-    let result_ptr = encode_base32(input.as_ptr(), input.len(), alphabet, padding);
+    let result_ptr = unsafe { encode_base32(input.as_ptr(), input.len(), alphabet, padding) };
     let result = unsafe { CString::from_raw(result_ptr) };
     assert_eq!(result.to_str().unwrap(), expected);
 }
@@ -29,7 +29,7 @@ fn test_base32_decode_helper(input: &str, expected: &[u8], alphabet: Option<&str
         .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
         .unwrap_or_else(std::ptr::null_mut);
 
-    let decoded_ptr = decode_base32(input.as_ptr(), alphabet, padding);
+    let decoded_ptr = unsafe { decode_base32(input.as_ptr(), alphabet, padding) };
     let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
     assert_eq!(decoded_slice, expected);
 }
@@ -39,9 +39,9 @@ fn test_base32_encode() {
     let input = b"Hello, world!";
     let alphabet = "abcdefghijklmnopqrstuvwxyz234567";
 
-    test_base32_encode_helper(input, "JBSWY3DPFQQHO33SNRSCC===", None, true);
     test_base32_encode_helper(input, "JBSWY3DPFQQHO33SNRSCC", None, false);
     test_base32_encode_helper(input, "jbswy3dpfqqho33snrscc===", Some(alphabet), true);
+    test_base32_encode_helper(input, "JBSWY3DPFQQHO33SNRSCC===", None, true);
     test_base32_encode_helper(input, "jbswy3dpfqqho33snrscc", Some(alphabet), false);
 }
 

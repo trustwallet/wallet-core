@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::{base32, base58, base64, hex};
 use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
@@ -32,13 +34,13 @@ impl From<Base58Alphabet> for &Alphabet {
 /// \param padding whether the padding bytes should be included.
 /// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
-pub extern "C" fn encode_base32(
+pub unsafe extern "C" fn encode_base32(
     input: *const u8,
     input_len: usize,
     alphabet: *const c_char,
     padding: bool,
 ) -> *mut c_char {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+    let input = std::slice::from_raw_parts(input, input_len);
 
     let alphabet = get_alphabet(alphabet);
 
@@ -54,12 +56,12 @@ pub extern "C" fn encode_base32(
 /// \param padding whether the padding bytes should be trimmed when decoding.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn decode_base32(
+pub unsafe extern "C" fn decode_base32(
     input: *const c_char,
     alphabet: *const c_char,
     padding: bool,
 ) -> CByteArray {
-    let input = unsafe { CStr::from_ptr(input).to_str().unwrap() };
+    let input = CStr::from_ptr(input).to_str().unwrap();
     let alphabet = get_alphabet(alphabet);
 
     base32::decode(input, alphabet, padding)
@@ -73,7 +75,7 @@ pub extern "C" fn decode_base32(
 /// \param alphabet alphabet type.
 /// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
-pub extern "C" fn encode_base58(
+pub unsafe extern "C" fn encode_base58(
     input: *const u8,
     input_len: usize,
     alphabet: Base58Alphabet,
@@ -89,8 +91,11 @@ pub extern "C" fn encode_base58(
 /// \param alphabet alphabet type.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn decode_base58(input: *const c_char, alphabet: Base58Alphabet) -> CByteArray {
-    let input = unsafe { CStr::from_ptr(input).to_str().unwrap() };
+pub unsafe extern "C" fn decode_base58(
+    input: *const c_char,
+    alphabet: Base58Alphabet,
+) -> CByteArray {
+    let input = CStr::from_ptr(input).to_str().unwrap();
 
     base58::decode(input, alphabet.into())
         .map(CByteArray::from)
@@ -103,8 +108,8 @@ pub extern "C" fn decode_base58(input: *const c_char, alphabet: Base58Alphabet) 
 /// \param is_url whether to use the [URL safe alphabet](https://www.rfc-editor.org/rfc/rfc3548#section-4).
 /// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
-pub extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *mut c_char {
-    let data = unsafe { std::slice::from_raw_parts(data, len) };
+pub unsafe extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *mut c_char {
+    let data = std::slice::from_raw_parts(data, len);
     let encoded = base64::encode(data, is_url);
     CString::new(encoded).unwrap().into_raw()
 }
@@ -114,11 +119,11 @@ pub extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *m
 /// \param is_url whether to use the [URL safe alphabet](https://www.rfc-editor.org/rfc/rfc3548#section-4).
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray {
+pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray {
     if data.is_null() {
         return CByteArray::null();
     }
-    let c_str = unsafe { CStr::from_ptr(data) };
+    let c_str = CStr::from_ptr(data);
     let str_slice = c_str.to_str().unwrap();
     base64::decode(str_slice, is_url)
         .map(CByteArray::from)
@@ -129,19 +134,19 @@ pub extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray
 /// \param data *optional* C-compatible, nul-terminated string.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
+pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
     if data.is_null() {
         return CByteArray {
             data: std::ptr::null_mut(),
             size: 0,
         };
     }
-    let c_str = unsafe { CStr::from_ptr(data) };
+    let c_str = CStr::from_ptr(data);
     let hex_string = c_str.to_str().unwrap();
 
-    return hex::decode(hex_string)
+    hex::decode(hex_string)
         .map(CByteArray::from)
-        .unwrap_or_else(|_| CByteArray::null());
+        .unwrap_or_else(|_| CByteArray::null())
 }
 
 /// Encodes the octets `data` as a hex string using lowercase characters.
@@ -150,8 +155,8 @@ pub extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
 /// \param prefixed whether to add `0x` prefix.
 /// \return *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
-pub extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool) -> *mut c_char {
-    let data = unsafe { std::slice::from_raw_parts(data, len) };
+pub unsafe extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool) -> *mut c_char {
+    let data = std::slice::from_raw_parts(data, len);
     let encoded = hex::encode(data, prefixed);
     CString::new(encoded).unwrap().into_raw()
 }

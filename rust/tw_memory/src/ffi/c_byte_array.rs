@@ -12,9 +12,8 @@ pub struct CByteArray {
 }
 
 impl From<Vec<u8>> for CByteArray {
-    fn from(value: Vec<u8>) -> Self {
-        let size = value.len();
-        let mut mut_vec = value.clone();
+    fn from(mut mut_vec: Vec<u8>) -> Self {
+        let size = mut_vec.len();
         let ptr = mut_vec.as_mut_ptr();
         std::mem::forget(mut_vec);
         CByteArray { data: ptr, size }

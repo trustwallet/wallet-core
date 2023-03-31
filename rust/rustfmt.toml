@@ -1,0 +1,7 @@
+# Put a trailing comma after a block based match arm (non-block arms are not affected)
+# https://github.com/rust-lang/rustfmt/blob/master/Configurations.md#match_block_trailing_comma
+match_block_trailing_comma = true
+
+# Use field initialize shorthand if possible.
+# https://github.com/rust-lang/rustfmt/blob/master/Configurations.md#use_field_init_shorthand
+use_field_init_shorthand = true
