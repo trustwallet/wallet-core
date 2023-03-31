@@ -16,6 +16,32 @@ using namespace TW;
 
 namespace TW::Algorand::tests {
 
+TEST(TWAnySignerAlgorand, SignAssetNFTTransfer) {
+    // Successfully broadcasted: https://algoexplorer.io/tx/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
+    auto privateKey = parse_hex("dc6051ffc7b3ec601bde432f6dea34d40fe3855e4181afa0f0524c42194a6da7");
+    Data note = Base64::decode("VFdUIFRPIFRIRSBNT09O");
+    auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
+
+    Proto::SigningInput input;
+    auto& transaction = *input.mutable_asset_transfer();
+    transaction.set_to_address("362T7CSXNLIOBX6J3H2SCPS4LPYFNV6DDWE6G64ZEUJ6SY5OJIR6SB5CVE");
+    transaction.set_amount(1ull);
+    transaction.set_asset_id(989643841ull);
+    input.set_first_round(27963950ull);
+    input.set_last_round(27964950ull);
+    input.set_fee(1000ull);
+    input.set_genesis_id("mainnet-v1.0");
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    input.set_note(note.data(), note.size());
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAlgorand);
+
+    ASSERT_EQ(hex(output.encoded()), "82a3736967c4409d742c0c7d62946dc3228d95426e6d7582977bda39f7dca076a8a49913a966235702f41e2b76af26a823339a3e881c8276aeae3b195bbde0f25662fd9d9c7106a374786e8ba461616d7401a461726376c420dfb53f8a576ad0e0dfc9d9f5213e5c5bf056d7c31d89e37b992513e963ae4a23a3666565cd03e8a26676ce01aab22ea367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c76ce01aab616a46e6f7465c40f54575420544f20544845204d4f4f4ea3736e64c420ca40799dacdb564d1096611d9da6ca7a6a4916f6d681383860725aedafe91617a474797065a56178666572a478616964ce3afcc441");
+    ASSERT_EQ(output.signature(), "nXQsDH1ilG3DIo2VQm5tdYKXe9o599ygdqikmROpZiNXAvQeK3avJqgjM5o+iByCdq6uOxlbveDyVmL9nZxxBg==");
+}
+
 TEST(TWAnySignerAlgorand, Sign) {
     auto privateKey = parse_hex("d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b");
     auto note = parse_hex("68656c6c6f");
