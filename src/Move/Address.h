@@ -57,7 +57,9 @@ public:
             throw std::invalid_argument("Invalid address string");
         }
         auto hexFunctor = [&string]() {
-            if (std::size_t hexLen = string.size() - 2; string.starts_with("0x") && hexLen < hexSizeAddress && (string.size() == shortSizeAddress || hexLen == hexNonPaddedSizeAddress)) {
+            std::size_t hexLen = string.size() - 2;
+            bool isExpectedLen = hexLen == hexShortSizeAddress || hexLen == hexNonPaddedSizeAddress;
+            if (string.starts_with("0x") && isExpectedLen) {
                 //! We have specific address like 0x1, padding it.
                 return parse_hex(normalize(string.substr(2), hexLen));
             } else {
