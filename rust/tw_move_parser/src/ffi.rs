@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::{
-    ffi::c_char,
-    ffi::CStr
-};
-use move_core_types::*;
+#![allow(clippy::missing_safety_doc)]
+
 use move_core_types::language_storage::TypeTag;
 use move_core_types::transaction_argument::TransactionArgument;
+use move_core_types::*;
+use std::{ffi::c_char, ffi::CStr};
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -23,20 +22,20 @@ pub enum ETypeTag {
     Signer = 6,
     Vector = 7,
     Struct = 8,
-    Error = 9
+    Error = 9,
 }
 
 /// Parses a Move type tag.
 /// \param input *non-null* C-compatible, nul-terminated string.
 /// \return `ETypeTag` enumeration.
 #[no_mangle]
-pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
-    let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };
+pub unsafe extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
+    let s = CStr::from_ptr(input).to_str().unwrap();
     let transaction_argument = match parser::parse_type_tag(s) {
         Ok(v) => v,
-        Err(_) => return ETypeTag::Error
+        Err(_) => return ETypeTag::Error,
     };
-    return match transaction_argument {
+    match transaction_argument {
         TypeTag::Bool => ETypeTag::Bool,
         TypeTag::U8 => ETypeTag::U8,
         TypeTag::U64 => ETypeTag::U64,
@@ -44,7 +43,7 @@ pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
         TypeTag::Address => ETypeTag::Address,
         TypeTag::Signer => ETypeTag::Signer,
         TypeTag::Vector(_) => ETypeTag::Vector,
-        TypeTag::Struct(_) => ETypeTag::Struct
+        TypeTag::Struct(_) => ETypeTag::Struct,
     }
 }
 
@@ -52,17 +51,19 @@ pub extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
 /// \param input *non-null* C-compatible, nul-terminated string.
 /// \return *non-null* C-compatible, nul-terminated string, Binary Canonical Serialization (BCS).
 #[no_mangle]
-pub extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
-    let s = unsafe { CStr::from_ptr(input).to_str().unwrap() };
+pub unsafe extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> *const c_char {
+    let s = CStr::from_ptr(input).to_str().unwrap();
     let transaction_argument = match parser::parse_transaction_argument(s) {
         Ok(v) => v,
-        Err(_) => return "\0".as_ptr() as *const c_char
+        Err(_) => return "\0".as_ptr() as *const c_char,
     };
     let v = match transaction_argument {
         TransactionArgument::U8(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::U64(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::U128(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
-        TransactionArgument::Address(v) => hex::encode(bcs::to_bytes(&bcs::to_bytes(&v).unwrap()).unwrap()),
+        TransactionArgument::Address(v) => {
+            hex::encode(bcs::to_bytes(&bcs::to_bytes(&v).unwrap()).unwrap())
+        },
         TransactionArgument::U8Vector(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
         TransactionArgument::Bool(v) => hex::encode(bcs::to_bytes(&v).unwrap()),
     };

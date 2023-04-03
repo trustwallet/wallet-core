@@ -44,6 +44,8 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
         return Hash::sha256ripemd;
     case Hash::HasherSha3_256ripemd:
         return Hash::sha3_256ripemd;
+    case Hash::HasherBlake2b:
+        return Hash::blake2b;
     case Hash::HasherBlake256d:
         return Hash::blake256d;
     case Hash::HasherBlake256ripemd:
@@ -91,6 +93,10 @@ Data Hash::ripemd(const byte* data, size_t size) {
 
 Data Hash::blake256(const byte* data, size_t size) {
     return Rust::data_from_c_byte_array(Rust::blake_256(data, size));
+}
+
+Data Hash::blake2b(const byte* data, size_t dataSize) {
+    return Rust::data_from_c_byte_array(Rust::blake2_b(data, dataSize, 32));
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize) {

@@ -261,7 +261,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .sui:
-                    let expectedResult = "0x061ce2b2100a71bb7aa0da98998887ad82597948";
+                    let expectedResult = "0xada112cfb90b44ba889cc5d39ac2bf46281e4a91f7919c693bcd9b8323e81ed2";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .hedera:
                     let expectedResult = "0.0.302a300506032b657003210049eba62f64d0d941045595d9433e65d84ecc46bcdb1421de55e05fcf2d8357d5";

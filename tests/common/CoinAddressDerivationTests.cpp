@@ -258,7 +258,7 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "0xce2fd04ac9efa74f17595e5785e847a2399d7e637f5e8179244f76191f653276");
             break;
         case TWCoinTypeSui:
-            EXPECT_EQ(address, "0xfc93395679dec6ca84d9766be2014b6bc1473f2e");
+            EXPECT_EQ(address, "0x870deb25d5c0a4d7250d52d5cd58dacca2d51eb2a120a979b13384cd52e21e1b");
             break;
         case TWCoinTypeHedera:
             EXPECT_EQ(address, "0.0.302a300506032b6570032100ee93a4f66f8d16b819bb9beb9ffccdfcdc1412e87fee6a324c2a99a1e0e67148");

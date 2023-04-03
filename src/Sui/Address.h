@@ -14,9 +14,9 @@
 
 namespace TW::Sui {
 
-class Address : public Move::Address<Address, 20> {
+class Address : public Move::Address<Address, 32> {
 public:
-    using SuiAddress = Move::Address<Address, 20>;
+    using SuiAddress = Move::Address<Address, 32>;
     using SuiAddress::size;
     using SuiAddress::bytes;
 

@@ -8,7 +8,7 @@ on:
       - tools/install-dependencies
   pull_request:
     branches: [ master ]
-    paths: 
+    paths:
       - Dockerfile
       - tools/install-dependencies
 

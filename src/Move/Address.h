@@ -15,6 +15,11 @@ namespace TW::Move {
 template <typename Derived, std::size_t N>
 class Address {
 private:
+    static constexpr std::size_t shortSizeAddress = 3;
+    static constexpr std::size_t hexShortSizeAddress = shortSizeAddress - 2;
+    static constexpr std::size_t hexSizeAddress = N*2;
+    static constexpr std::size_t hexNonPaddedSizeAddress = hexSizeAddress - 1;
+
     static std::string normalize(const std::string& string, std::size_t hexLen) {
         std::string hexStr((size * 2) - hexLen, '0');
         hexStr.append(string);
@@ -32,7 +37,9 @@ public:
         auto address = string;
         if (address.starts_with("0x")) {
             address = address.substr(2);
-            if (std::size_t hexLen = address.size(); hexLen < Address::size * 2) {
+            std::size_t hexLen = address.size();
+
+            if ((hexLen == hexShortSizeAddress || hexLen == hexNonPaddedSizeAddress) && hexLen < hexSizeAddress) {
                 address = normalize(address, hexLen);
             }
         }
@@ -50,7 +57,9 @@ public:
             throw std::invalid_argument("Invalid address string");
         }
         auto hexFunctor = [&string]() {
-            if (std::size_t hexLen = string.size() - 2; string.starts_with("0x") && hexLen < size * 2) {
+            std::size_t hexLen = string.size() - 2;
+            bool isExpectedLen = hexLen == hexShortSizeAddress || hexLen == hexNonPaddedSizeAddress;
+            if (string.starts_with("0x") && isExpectedLen) {
                 //! We have specific address like 0x1, padding it.
                 return parse_hex(normalize(string.substr(2), hexLen));
             } else {
@@ -69,12 +78,12 @@ public:
         std::copy_n(data.begin(), size, bytes.begin());
     }
 
-    Address(const PublicKey& publicKey) {
+    Address(const PublicKey& publicKey, TW::Hash::Hasher hasher = Hash::Hasher::HasherSha3_256) {
         if (publicKey.type != TWPublicKeyTypeED25519) {
             throw std::invalid_argument("Invalid public key type");
         }
         auto digest = static_cast<Derived*>(this)->getDigest(publicKey);
-        const auto data = Hash::sha3_256(digest);
+        const auto data = functionPointerFromEnum(hasher)(digest.data(), digest.size());
         std::copy_n(data.begin(), Address::size, bytes.begin());
     }
 

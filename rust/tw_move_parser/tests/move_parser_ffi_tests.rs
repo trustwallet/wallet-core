@@ -9,7 +9,7 @@ use tw_move_parser::ffi::{parse_function_argument_to_bcs, parse_type_tag, ETypeT
 
 #[test]
 fn tests_type_tag() {
-    let tag = parse_type_tag("0x1::aptos_coin::AptosCoin\0".as_ptr() as *const c_char);
+    let tag = unsafe { parse_type_tag("0x1::aptos_coin::AptosCoin\0".as_ptr() as *const c_char) };
     assert_eq!(tag, ETypeTag::Struct);
 }
 

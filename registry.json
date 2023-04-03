@@ -445,10 +445,10 @@
     "publicKeyType": "ed25519",
     "explorer": {
       "url": "https://explorer.sui.io/",
-      "txPath": "/transaction/",
+      "txPath": "/txblock/",
       "accountPath": "/address/",
-      "sampleTx": "SWRW1RoMHxnD9NeobgBoC4cXGwp2Hc511CnfWUoTBmo",
-      "sampleAccount": "0x62107e1afefccc7b2267ab74e332c146f5c2ca15"
+      "sampleTx": "5i8fbSL6r8yw2xcKmXxwkzHu3wpiyMLsyf2htCvDH8Ao",
+      "sampleAccount": "0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015"
     },
     "info": {
       "url": "https://sui.io/",

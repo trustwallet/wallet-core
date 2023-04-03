@@ -13,8 +13,7 @@ use blake2b_ref::Blake2bBuilder;
 pub fn blake2_b(input: &[u8], hash_size: usize) -> Vec<u8> {
     let mut hasher = Blake2bVar::new(hash_size).unwrap();
     hasher.update(input);
-    let mut buf = Vec::with_capacity(hash_size);
-    buf.resize(hash_size, 0);
+    let mut buf = vec![0; hash_size];
     hasher.finalize_variable(&mut buf).unwrap();
     buf
 }

@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::{blake, blake2, groestl, hmac, ripemd, sha1, sha2, sha3};
 use tw_memory::ffi::CByteArray;
 
@@ -12,8 +14,8 @@ use tw_memory::ffi::CByteArray;
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn blake_256(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn blake_256(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     blake::blake_256(input).into()
 }
 
@@ -23,8 +25,12 @@ pub extern "C" fn blake_256(input: *const u8, input_len: usize) -> CByteArray {
 /// \param hash_size the size of the output hash.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn blake2_b(input: *const u8, input_len: usize, hash_size: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn blake2_b(
+    input: *const u8,
+    input_len: usize,
+    hash_size: usize,
+) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     blake2::blake2_b(input, hash_size).into()
 }
 
@@ -36,15 +42,15 @@ pub extern "C" fn blake2_b(input: *const u8, input_len: usize, hash_size: usize)
 /// \param personal_len the length of the `personal_input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn blake2_b_personal(
+pub unsafe extern "C" fn blake2_b_personal(
     input: *const u8,
     input_len: usize,
     hash_size: usize,
     personal_input: *const u8,
     personal_len: usize,
 ) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
-    let personal = unsafe { std::slice::from_raw_parts(personal_input, personal_len) };
+    let input = std::slice::from_raw_parts(input, input_len);
+    let personal = std::slice::from_raw_parts(personal_input, personal_len);
     blake2::blake2_b_personal(input, hash_size, personal).into()
 }
 
@@ -53,8 +59,8 @@ pub extern "C" fn blake2_b_personal(
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn groestl_512(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn groestl_512(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     groestl::groestl_512(input).into()
 }
 
@@ -65,14 +71,14 @@ pub extern "C" fn groestl_512(input: *const u8, input_len: usize) -> CByteArray 
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn hmac__sha256(
+pub unsafe extern "C" fn hmac__sha256(
     key: *const u8,
     key_len: usize,
     input: *const u8,
     input_len: usize,
 ) -> CByteArray {
-    let key = unsafe { std::slice::from_raw_parts(key, key_len) };
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+    let key = std::slice::from_raw_parts(key, key_len);
+    let input = std::slice::from_raw_parts(input, input_len);
     hmac::hmac_sha256(key, input).into()
 }
 
@@ -81,8 +87,8 @@ pub extern "C" fn hmac__sha256(
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     ripemd::ripemd_160(input).into()
 }
 
@@ -91,8 +97,8 @@ pub extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha1::sha1(input).into()
 }
 
@@ -101,8 +107,8 @@ pub extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha2::sha256(input).into()
 }
 
@@ -111,8 +117,8 @@ pub extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha2::sha512(input).into()
 }
 
@@ -121,8 +127,8 @@ pub extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha2::sha512_256(input).into()
 }
 
@@ -131,8 +137,8 @@ pub extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha3::keccak256(input).into()
 }
 
@@ -141,8 +147,8 @@ pub extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha3::keccak512(input).into()
 }
 
@@ -151,8 +157,8 @@ pub extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha3::sha3_256(input).into()
 }
 
@@ -161,7 +167,7 @@ pub extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArray {
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub extern "C" fn sha3__512(input: *const u8, input_len: usize) -> CByteArray {
-    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
+pub unsafe extern "C" fn sha3__512(input: *const u8, input_len: usize) -> CByteArray {
+    let input = std::slice::from_raw_parts(input, input_len);
     sha3::sha3_512(input).into()
 }

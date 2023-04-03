@@ -2,7 +2,7 @@
 
 set -e
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname` == "Darwin" || "$1" == "dev" ]]; then
   rustup update
   rustup toolchain install nightly
   rustup default nightly
@@ -21,4 +21,10 @@ rustup target add x86_64-apple-ios aarch64-apple-ios-sim aarch64-apple-ios
 # Wasm
 rustup target add wasm32-unknown-emscripten
 
-cargo install cbindgen
+cargo install cbindgen --locked
+
+if [[ "$1" == "dev" ]]; then
+  rustup component add llvm-tools-preview clippy rustfmt
+  cargo install cargo-llvm-cov --locked
+  cargo install cargo-nextest --locked
+fi

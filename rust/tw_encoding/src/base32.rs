@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::{EncodingError, EncodingResult};
+use std::collections::HashMap;
 
 const ALPHABET_RFC4648: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
@@ -23,17 +24,15 @@ pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> EncodingR
         buffer_size += 8;
 
         while buffer_size >= 5 {
-            result.push(char::from(
-                alphabet[(buffer >> (buffer_size - 5)) as usize & 31],
-            ));
+            let value = alphabet[(buffer >> (buffer_size - 5)) as usize & 31];
+            result.push(char::from(value));
             buffer_size -= 5;
         }
     }
 
     if buffer_size > 0 {
-        result.push(char::from(
-            alphabet[(buffer << (5 - buffer_size)) as usize & 31],
-        ));
+        let value = alphabet[(buffer << (5 - buffer_size)) as usize & 31];
+        result.push(char::from(value));
     }
 
     if padding {
@@ -51,7 +50,7 @@ pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> EncodingRe
     let mut output = Vec::new();
     let mut buffer: u32 = 0;
     let mut bits_left = 0;
-    let alphabet_map: std::collections::HashMap<u8, u32> = alphabet
+    let alphabet_map: HashMap<u8, u32> = alphabet
         .iter()
         .enumerate()
         .map(|(i, &c)| (c, i as u32))
@@ -155,12 +154,5 @@ mod tests {
 
         let result = decode(data, Some(alphabet.as_bytes()), false).unwrap();
         assert_eq!(result.as_slice(), expected);
-    }
-
-    #[test]
-    fn foo() {
-        decode("+-", None, false).unwrap_err();
-        decode("B", None, false).unwrap_err();
-        decode("ABC", None, false).unwrap_err();
     }
 }
