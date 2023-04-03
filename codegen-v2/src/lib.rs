@@ -1,14 +1,60 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+trait ParseTree {
+    type Derivation;
+
+    fn derive(input: &str) -> Result<Self::Derivation>;
+    fn generate(&self) -> String;
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+enum GType {
+    Bool,
+    Char,
+    Int,
+    Struct(GStruct),
+}
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl ParseTree for GType {
+    type Derivation = Self;
+
+    fn derive(input: &str) -> Result<Self::Derivation> {
+        let der = match input {
+            "bool" => GType::Bool,
+            "char" => GType::Char,
+            "int" => GType::Int,
+            _ => GType::Struct(GStruct::derive(input)?),
+        };
+
+        Ok(der)
+    }
+    fn generate(&self) -> String {
+        todo!()
     }
 }
+
+struct GStruct;
+
+impl ParseTree for GStruct {
+    type Derivation = Self;
+
+    fn derive(input: &str) -> Result<Self::Derivation> {
+        todo!()
+    }
+    fn generate(&self) -> String {
+        todo!()
+    }
+}
+
+struct GTag;
+
+enum GSeparator {
+    Space,
+}
+
+struct GParam {
+    ty: GType,
+    s1: GSeparator,
+    tag: GTag,
+    s2: GSeparator,
+    name: (),
+}
+
+type Result<T> = std::result::Result<T, ()>;
