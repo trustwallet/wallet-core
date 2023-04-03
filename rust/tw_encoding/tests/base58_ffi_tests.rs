@@ -23,7 +23,7 @@ fn test_base58_decode() {
     let expected = b"Hello, world!";
 
     let input = CString::new(data).unwrap();
-    let decoded_ptr = decode_base58(input.as_ptr(), Base58Alphabet::Bitcoin);
+    let decoded_ptr = decode_base58(input.as_ptr(), Base58Alphabet::Bitcoin).unwrap();
     let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
     assert_eq!(decoded_slice, expected);
 }

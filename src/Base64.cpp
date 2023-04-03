@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Base64.h"
+#include "rust/bindgen/RAII.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
 namespace TW::Base64::internal {
@@ -18,15 +19,11 @@ std::string encode(const Data& val, bool is_url) {
 
 Data decode(const std::string& val, bool is_url) {
     if (val.empty()) {
-        return Data();
+        return {};
     }
-    auto decoded = Rust::decode_base64(val.c_str(), is_url);
-    if (decoded.data == nullptr || decoded.size == 0) {
-        return Data();
-    }
-    std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
-    std::free(decoded.data);
-    return decoded_vec;
+    Data res;
+    Rust::data_from_c_byte_array_result(Rust::decode_base64(val.c_str(), is_url), res);
+    return res;
 }
 
 }

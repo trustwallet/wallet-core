@@ -156,4 +156,11 @@ mod tests {
         let result = decode(data, Some(alphabet.as_bytes()), false).unwrap();
         assert_eq!(result.as_slice(), expected);
     }
+
+    #[test]
+    fn foo() {
+        decode("+-", None, false).unwrap_err();
+        decode("B", None, false).unwrap_err();
+        decode("ABC", None, false).unwrap_err();
+    }
 }

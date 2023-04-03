@@ -16,7 +16,11 @@ macro_rules! impl_c_result {
                 }
             }
 
-            pub fn error(mut code: $crate::ffi::c_result::ErrorCode) -> $name {
+            pub fn error<E>(code: E) -> $name
+            where
+                $crate::ffi::c_result::ErrorCode: From<E>,
+            {
+                let mut code = $crate::ffi::c_result::ErrorCode::from(code);
                 if (code == $crate::ffi::c_result::OK_CODE) {
                     code = $crate::ffi::c_result::UNKNOWN_ERROR;
                 }
@@ -26,9 +30,25 @@ macro_rules! impl_c_result {
                 }
             }
 
+            pub fn is_ok(&self) -> bool {
+                self.code == $crate::ffi::c_result::OK_CODE
+            }
+
+            pub fn is_err(&self) -> bool {
+                !self.is_ok()
+            }
+
+            pub fn into_result(self) -> Result<$result, $crate::ffi::c_result::ErrorCode> {
+                if self.is_ok() {
+                    Ok(self.result)
+                } else {
+                    Err(self.code)
+                }
+            }
+
             #[track_caller]
             pub fn unwrap(self) -> $result {
-                if self.code != $crate::ffi::c_result::OK_CODE {
+                if !self.is_ok() {
                     panic!(
                         "called `{}::unwrap()` on an error: {}",
                         stringify!($name),
@@ -46,7 +66,7 @@ macro_rules! impl_c_result {
             fn from(res: core::result::Result<$result, E>) -> Self {
                 match res {
                     Ok(ready) => $name::ok(ready),
-                    Err(error) => $name::error($crate::ffi::c_result::ErrorCode::from(error)),
+                    Err(error) => $name::error(error),
                 }
             }
         }

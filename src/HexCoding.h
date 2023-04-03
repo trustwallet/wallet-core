@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "rust/bindgen/RAII.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include <algorithm>
@@ -23,15 +24,11 @@ namespace TW::internal {
 /// valid hexadecimal.
 inline Data parse_hex(const std::string& input) {
     if (input.empty()) {
-        return Data();
+        return {};
     }
-    auto decoded = Rust::decode_hex(input.c_str());
-    if (decoded.data == nullptr || decoded.size == 0) {
-        return Data();
-    }
-    std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
-    std::free(decoded.data);
-    return decoded_vec;
+    Data res;
+    Rust::data_from_c_byte_array_result(Rust::decode_hex(input.c_str()), res);
+    return res;
 }
 }
 

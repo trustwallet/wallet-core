@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "Hash.h"
+#include "rust/bindgen/RAII.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include <string>
@@ -18,13 +19,9 @@ namespace TW::Base58 {
         if (string.empty()) {
             return {};
         }
-        auto decoded = decode_base58(string.c_str(), alphabet);
-        if (decoded.data == nullptr || decoded.size == 0) {
-            return {};
-        }
-        Data decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
-        std::free(decoded.data);
-        return decoded_vec;
+        Data res;
+        Rust::data_from_c_byte_array_result(Rust::decode_base58(string.c_str(), alphabet), res);
+        return res;
     }
 
     static inline Data decodeCheck(const std::string& string, Rust::Base58Alphabet alphabet = Rust::Base58Alphabet::Bitcoin, Hash::Hasher hasher = Hash::HasherSha256d) {

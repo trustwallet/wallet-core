@@ -29,7 +29,7 @@ fn test_base32_decode_helper(input: &str, expected: &[u8], alphabet: Option<&str
         .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
         .unwrap_or_else(std::ptr::null_mut);
 
-    let decoded_ptr = decode_base32(input.as_ptr(), alphabet, padding);
+    let decoded_ptr = decode_base32(input.as_ptr(), alphabet, padding).unwrap();
     let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
     assert_eq!(decoded_slice, expected);
 }
