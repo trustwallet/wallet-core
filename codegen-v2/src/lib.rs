@@ -47,6 +47,26 @@ struct GTag;
 
 enum GSeparator {
     Space,
+    Newline,
+    Tab,
+}
+
+impl ParseTree for GSeparator {
+    type Derivation = Self;
+
+    fn derive(input: &str) -> Result<Self::Derivation> {
+        let der = match input {
+            " " => GSeparator::Space,
+            "\n" => GSeparator::Newline,
+            "\t" => GSeparator::Tab,
+            _ => return Err(()),
+        };
+
+        Ok(der)
+    }
+    fn generate(&self) -> String {
+        todo!()
+    }
 }
 
 struct GParam {
