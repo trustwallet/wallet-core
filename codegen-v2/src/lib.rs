@@ -101,7 +101,7 @@ impl<R: Read> DriverUsed<R> {
             reader: self.reader,
         }
     }
-    fn revert(self) -> Driver<R> {
+    fn rollback(self) -> Driver<R> {
         // Do nothing with `amt_read`.
         Driver {
             reader: self.reader,
@@ -120,25 +120,24 @@ impl ParseTree for GType {
     type Derivation = Self;
 
     fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        // Read data until the separator is reached, then return the sub-slice
+        // leading up to it.
         let (slice, handle) = driver.read_until::<GSeparator>()?;
 
         let derived = match slice.as_str() {
-            "bool" => {
-                GType::Bool
-            },
-            "char" => {
-                GType::Char
-            },
-            "int" => {
-                GType::Int
-            },
+            "bool" => GType::Bool,
+            "char" => GType::Char,
+            "int" => GType::Int,
             _ => {
-                let driver = handle.revert();
+                // Rollback driver, retry with the next derivation attempt.
+                let driver = handle.rollback();
                 let der_result = GStruct::derive(driver)?;
+
                 return Ok(DerivationResult { derived: GType::Struct(der_result.derived), driver: der_result.driver } )
             }
         };
 
+        // Commit driver.
         driver = handle.commit();
 
         Ok(DerivationResult { derived, driver })
@@ -219,14 +218,14 @@ impl ParseTree for GSeparatorItem {
         let (slice, handle) = driver.read_amt(1)?;
         let slice = match slice {
             Some(x) => x,
-            None => return Err(Error::new(ErrorType::Todo, handle.revert())),
+            None => return Err(Error::new(ErrorType::Todo, handle.rollback())),
         };
 
         let derived = match slice.as_str() {
             " " => GSeparatorItem::Space,
             "\n" => GSeparatorItem::Newline,
             "\t" => GSeparatorItem::Tab,
-            _ => return Err(Error::new(ErrorType::Todo, handle.revert())),
+            _ => return Err(Error::new(ErrorType::Todo, handle.rollback())),
         };
 
         let driver = handle.commit();
