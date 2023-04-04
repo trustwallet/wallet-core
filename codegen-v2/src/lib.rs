@@ -123,9 +123,18 @@ impl ParseTree for GType {
         let (slice, handle) = driver.read_until::<GSeparator>()?;
 
         let derived = match slice.as_str() {
-            "bool" => GType::Bool,
-            "char" => GType::Char,
-            "int" => GType::Int,
+            "bool" => {
+                driver = handle.revert();
+                GType::Bool
+            },
+            "char" => {
+                driver = handle.revert();
+                GType::Char
+            },
+            "int" => {
+                driver = handle.revert();
+                GType::Int
+            },
             _ => {
                 driver = handle.revert();
                 let der_result = GStruct::derive(driver)?;
@@ -174,17 +183,29 @@ impl GSeparator {
 impl ParseTree for GSeparator {
     type Derivation = Self;
 
-    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let mut sep_items: Option<GSeparator> = None;
         loop {
-            if let Ok(item) = GSeparatorItem::derive(driver) {
-                if let Some(sep) = sep_items {
-                    sep_items = Some(sep.add(item));
+            match GSeparatorItem::derive(driver) {
+                Ok(der_result) => {
+                    driver = der_result.driver;
+
+                    if let Some(sep) = sep_items {
+                        sep_items = Some(sep.add(der_result.derived));
+                    } else {
+                        sep_items = Some(GSeparator::Item(der_result.derived));
+                    }
+                },
+                Err(err) => {
+                    if let Some(items) = sep_items {
+                        return Ok(DerivationResult {
+                            derived: items,
+                            driver: err.driver,
+                        });
+                    } else {
+                        return Err(Error::new(err.ty, err.driver));
+                    }
                 }
-            } else if let Some(items) = sep_items {
-                return Ok(items);
-            } else {
-                return Err(Error::new(ErrorType::Todo, driver));
             }
         }
     }
@@ -201,7 +222,10 @@ impl ParseTree for GSeparatorItem {
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let (slice, handle) = driver.read_amt(1)?;
-        let slice = slice.ok_or(Error::new(ErrorType::Todo, handle.revert()))?;
+        let slice = match slice {
+            Some(x) => x,
+            None => return Err(Error::new(ErrorType::Todo, handle.revert())),
+        };
 
         let derived = match slice.as_str() {
             " " => GSeparatorItem::Space,
