@@ -3,7 +3,15 @@ use std::io::{Read, BufReader, BufRead};
 trait ParseTree {
     type Derivation;
 
-    fn derive(input: &str) -> Result<Self::Derivation>;
+    fn derive<R: Read>(driver: Driver<R>) -> Result<Self::Derivation>;
+}
+
+impl From<&[u8]> for Driver<&[u8]> {
+    fn from(input: &[u8]) -> Self {
+        Driver {
+            reader: BufReader::new(input)
+        }
+    }
 }
 
 struct Driver<R> {
@@ -21,7 +29,8 @@ impl<R: Read> Driver<R> {
         for counter in 0..buffer.len() {
             let slice = &string[counter..];
 
-            if P::derive(slice).is_ok() {
+            let driver = Driver::from(slice.as_bytes());
+            if P::derive(driver).is_ok() {
                 return Ok(
                     (
                         slice.to_string(),
@@ -35,6 +44,31 @@ impl<R: Read> Driver<R> {
         }
 
         Err(())
+    }
+    fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverUsed<R>)> {
+        let buffer = &self.reader.fill_buf().unwrap()[..amt];
+        let slice = std::str::from_utf8(buffer).unwrap();
+
+        if slice.is_empty() {
+            return Ok((
+                None,
+                DriverUsed {
+                    reader: self.reader,
+                    amt_read: 0,
+                }
+            )
+            )
+        }
+
+        Ok(
+            (
+                Some(slice.to_string()),
+                DriverUsed {
+                    reader: self.reader,
+                    amt_read: amt,
+                }
+            )
+        )
     }
 }
 
@@ -64,12 +98,14 @@ enum GType {
 impl ParseTree for GType {
     type Derivation = Self;
 
-    fn derive(input: &str) -> Result<Self::Derivation> {
-        let der = match input {
+    fn derive<R: Read>(driver: Driver<R>) -> Result<Self::Derivation> {
+        let (slice, handle) = driver.read_until::<GSeparator>()?;
+
+        let der = match slice.as_str() {
             "bool" => GType::Bool,
             "char" => GType::Char,
             "int" => GType::Int,
-            _ => GType::Struct(GStruct::derive(input)?),
+            _ => GType::Struct(GStruct::derive(driver)?),
         };
 
         Ok(der)
@@ -81,7 +117,7 @@ struct GStruct;
 impl ParseTree for GStruct {
     type Derivation = Self;
 
-    fn derive(input: &str) -> Result<Self::Derivation> {
+    fn derive<R: Read>(driver: Driver<R>) -> Result<Self::Derivation> {
         todo!()
     }
 }
@@ -111,18 +147,20 @@ impl GSeparator {
 impl ParseTree for GSeparator {
     type Derivation = Self;
 
-    fn derive(input: &str) -> Result<Self::Derivation> {
+    fn derive<R: Read>(driver: Driver<R>) -> Result<Self::Derivation> {
         let mut sep_items: Option<GSeparator> = None;
-
-        for chr in input.chars() {
-            if let Ok(item) = GSeparatorItem::derive(chr.to_string().as_str()) {
+        loop {
+            if let Ok(item) = GSeparatorItem::derive(driver) {
                 if let Some(sep) = sep_items {
                     sep_items = Some(sep.add(item));
                 }
             }
+            else if let Some(items) = sep_items {
+                return Ok(items)
+            } else {
+                return Err(())
+            }
         }
-
-        sep_items.ok_or(())
     }
 }
 
@@ -135,13 +173,18 @@ enum GSeparatorItem {
 impl ParseTree for GSeparatorItem {
     type Derivation = Self;
 
-    fn derive(input: &str) -> Result<Self::Derivation> {
-        let der = match input {
+    fn derive<R: Read>(mut driver: Driver<R>) -> Result<Self::Derivation> {
+        let (slice, handle) = driver.read_amt(1)?;
+        let slice = slice.ok_or(())?;
+
+        let der = match slice.as_str() {
             " " => GSeparatorItem::Space,
             "\n" => GSeparatorItem::Newline,
             "\t" => GSeparatorItem::Tab,
             _ => return Err(()),
         };
+
+        handle.commit();
 
         Ok(der)
     }
