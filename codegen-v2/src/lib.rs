@@ -1,7 +1,57 @@
+use std::io::{Read, BufReader, BufRead};
+
 trait ParseTree {
     type Derivation;
 
     fn derive(input: &str) -> Result<Self::Derivation>;
+}
+
+struct Driver<R> {
+    reader: BufReader<R>
+}
+
+impl<R: Read> Driver<R> {
+    fn read_until<P>(mut self) -> Result<(String, DriverUsed<R>)>
+    where
+        P: ParseTree
+    {
+        let buffer = self.reader.fill_buf().unwrap();
+        let string = std::str::from_utf8(buffer).unwrap();
+
+        for counter in 0..buffer.len() {
+            let slice = &string[counter..];
+
+            if P::derive(slice).is_ok() {
+                return Ok(
+                    (
+                        slice.to_string(),
+                        DriverUsed {
+                            reader: self.reader,
+                            amt_read: counter,
+                        }
+                    )
+                )
+            }
+        }
+
+        Err(())
+    }
+}
+
+struct DriverUsed<R> {
+    reader: BufReader<R>,
+    amt_read: usize,
+}
+
+impl<R: Read> DriverUsed<R> {
+    fn commit(mut self) -> Driver<R> {
+        self.reader.consume(self.amt_read);
+        Driver { reader: self.reader }
+    }
+    fn revert(self) -> Driver<R> {
+        // Do nothing with `amt_read`.
+        Driver { reader: self.reader }
+    }
 }
 
 enum GType {
