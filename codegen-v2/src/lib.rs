@@ -124,25 +124,22 @@ impl ParseTree for GType {
 
         let derived = match slice.as_str() {
             "bool" => {
-                driver = handle.revert();
                 GType::Bool
             },
             "char" => {
-                driver = handle.revert();
                 GType::Char
             },
             "int" => {
-                driver = handle.revert();
                 GType::Int
             },
             _ => {
-                driver = handle.revert();
+                let driver = handle.revert();
                 let der_result = GStruct::derive(driver)?;
-                driver = der_result.driver;
-
-                GType::Struct(der_result.derived)
+                return Ok(DerivationResult { derived: GType::Struct(der_result.derived), driver: der_result.driver } )
             }
         };
+
+        driver = handle.commit();
 
         Ok(DerivationResult { derived, driver })
     }
@@ -153,12 +150,10 @@ struct GStruct;
 impl ParseTree for GStruct {
     type Derivation = Self;
 
-    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+    fn derive<R: Read>(_driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         todo!()
     }
 }
-
-struct GTag;
 
 enum GSeparator {
     Item(GSeparatorItem),
@@ -247,6 +242,8 @@ struct GSeparatorContinued {
 
 struct GParam {
     ty: GType,
-    tag: GTag,
+    tag: GMarker,
     name: (),
 }
+
+struct GMarker(String);
