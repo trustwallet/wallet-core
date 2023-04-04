@@ -2,7 +2,6 @@ trait ParseTree {
     type Derivation;
 
     fn derive(input: &str) -> Result<Self::Derivation>;
-    fn generate(&self) -> String;
 }
 
 enum GType {
@@ -25,9 +24,6 @@ impl ParseTree for GType {
 
         Ok(der)
     }
-    fn generate(&self) -> String {
-        todo!()
-    }
 }
 
 struct GStruct;
@@ -38,12 +34,27 @@ impl ParseTree for GStruct {
     fn derive(input: &str) -> Result<Self::Derivation> {
         todo!()
     }
-    fn generate(&self) -> String {
-        todo!()
-    }
 }
 
 struct GTag;
+
+struct GSeparators(Vec<GSeparator>);
+
+impl ParseTree for GSeparators {
+    type Derivation = Self;
+
+    fn derive(input: &str) -> Result<Self::Derivation> {
+        let mut seps = vec![];
+
+        for chr in input.chars() {
+            // TODO: Find better way to do `.to_string().as_str().
+            let sep = GSeparator::derive(chr.to_string().as_str())?;
+            seps.push(sep);
+        }
+
+        Ok(GSeparators(seps))
+    }
+}
 
 enum GSeparator {
     Space,
@@ -63,9 +74,6 @@ impl ParseTree for GSeparator {
         };
 
         Ok(der)
-    }
-    fn generate(&self) -> String {
-        todo!()
     }
 }
 
