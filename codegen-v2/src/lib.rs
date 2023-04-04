@@ -38,38 +38,58 @@ impl ParseTree for GStruct {
 
 struct GTag;
 
-struct GSeparators(Vec<GSeparator>);
-
-impl ParseTree for GSeparators {
-    type Derivation = Self;
-
-    fn derive(input: &str) -> Result<Self::Derivation> {
-        let mut seps = vec![];
-
-        for chr in input.chars() {
-            // TODO: Find better way to do `.to_string().as_str().
-            let sep = GSeparator::derive(chr.to_string().as_str())?;
-            seps.push(sep);
-        }
-
-        Ok(GSeparators(seps))
-    }
+enum GSeparator {
+    Item(GSeparatorItem),
+    Continued(GSeparatorContinued),
 }
 
-enum GSeparator {
-    Space,
-    Newline,
-    Tab,
+impl GSeparator {
+    fn add(self, new_item: GSeparatorItem) -> Self {
+        match self {
+            GSeparator::Item(item) => GSeparator::Continued(GSeparatorContinued {
+                item,
+                next: Box::new(GSeparator::Item(new_item)),
+            }),
+            GSeparator::Continued(items) => GSeparator::Continued(GSeparatorContinued {
+                item: items.item,
+                next: Box::new(items.next.add(new_item)),
+            }),
+        }
+    }
 }
 
 impl ParseTree for GSeparator {
     type Derivation = Self;
 
     fn derive(input: &str) -> Result<Self::Derivation> {
+        let mut sep_items: Option<GSeparator> = None;
+
+        for chr in input.chars() {
+            if let Ok(item) = GSeparatorItem::derive(chr.to_string().as_str()) {
+                if let Some(sep) = sep_items {
+                    sep_items = Some(sep.add(item));
+                }
+            }
+        }
+
+        sep_items.ok_or(())
+    }
+}
+
+enum GSeparatorItem {
+    Space,
+    Newline,
+    Tab,
+}
+
+impl ParseTree for GSeparatorItem {
+    type Derivation = Self;
+
+    fn derive(input: &str) -> Result<Self::Derivation> {
         let der = match input {
-            " " => GSeparator::Space,
-            "\n" => GSeparator::Newline,
-            "\t" => GSeparator::Tab,
+            " " => GSeparatorItem::Space,
+            "\n" => GSeparatorItem::Newline,
+            "\t" => GSeparatorItem::Tab,
             _ => return Err(()),
         };
 
@@ -77,11 +97,14 @@ impl ParseTree for GSeparator {
     }
 }
 
+struct GSeparatorContinued {
+    item: GSeparatorItem,
+    next: Box<GSeparator>,
+}
+
 struct GParam {
     ty: GType,
-    s1: GSeparator,
     tag: GTag,
-    s2: GSeparator,
     name: (),
 }
 
