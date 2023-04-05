@@ -288,7 +288,6 @@ impl ParseTree for GSeparatorItem {
         dbg!(&slice);
         let slice = match slice {
             Some(string) => string,
-            //None => return Err(Error::new(ErrorType::Todo, handle.rollback())),
             None => {
                 return Ok(DerivationResult {
                     derived: GSeparatorItem::Eof,
@@ -316,10 +315,55 @@ struct GSeparatorContinued {
     next: Box<GSeparator>,
 }
 
-struct GParam {
+enum GParam {
+    Item(GParamItem),
+    Continued(GParamContinued)
+}
+
+enum GParamItem {
+
+}
+
+struct GParamItemWithMarker {
     ty: GType,
-    tag: GMarker,
-    name: (),
+    marker: GMarker,
+    name: GParamName,
+}
+
+impl ParseTree for GParamItemWithMarker {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        todo!()
+    }
+}
+
+struct GParamItemWithoutMarker {
+    ty: GType,
+    name: GParamName,
+}
+
+struct GParamName(String);
+
+struct GParamContinued {
+    item: GParamItem,
+    next: Box<GParam>
+}
+
+impl ParseTree for GParam {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        todo!()
+    }
 }
 
 struct GMarker(String);
+
+impl ParseTree for GMarker {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        todo!()
+    }
+}
