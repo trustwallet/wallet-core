@@ -15,6 +15,7 @@
 #include "uint256.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
+#include "HDWallet.h"
 
 #include <gtest/gtest.h>
 #include <vector>
@@ -96,6 +97,133 @@ Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10,
     input.mutable_transfer_message()->set_use_max_amount(false);
     input.set_ttl(53333333);
     return input;
+}
+
+TEST(CardanoSigning, SendNft) {
+    const auto toAddress = "addr1qy5eme9r6frr0m6q2qpncg282jtrhq5lg09uxy2j0545hj8rv7v2ntdxuv6p4s3eq4lqzg39lewgvt6fk5kmpa0zppesufzjud";
+    const auto fromAddress = "addr1qy9wjfn6nd8kak6dd8z53u7t5wt9f4lx0umll40px5hnq05avwcsq5r3ytdp36wttzv4558jaq8lvhgqhe3y8nuf5xrquju7z4";
+    const auto nftPolicyId = "219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e";
+    const auto nftAssetName = "636f6f6c63617473736f636965747934353637";
+
+    Proto::SigningInput input;
+
+    // Set the first utxo (NFT token and locked ADA).
+
+    auto* utxo1 = input.add_utxos();
+    // The NFT output
+    const auto txHash1 = parse_hex("5df2257e86acc36b95e331e6048dc424f638962a99524ee643651a80445e4e84");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(3);
+    utxo1->set_address(fromAddress);
+    utxo1->set_amount(1202490);
+
+    auto* token1 = utxo1->add_token_amount();
+    token1->set_policy_id(nftPolicyId);
+    token1->set_asset_name(nftAssetName);
+    const auto tokenAmount1 = store(uint256_t(1));
+    token1->set_amount(tokenAmount1.data(), tokenAmount1.size());
+
+    // Set the second utxo (to pay fee).
+
+    auto* utxo2 = input.add_utxos();
+    const auto txHash2 = parse_hex("5df2257e86acc36b95e331e6048dc424f638962a99524ee643651a80445e4e84");
+    utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
+    utxo2->mutable_out_point()->set_output_index(4);
+    utxo2->set_address(fromAddress);
+    utxo2->set_amount(9555841);
+
+    HDWallet hdWallet("chapter upper fetch maple balcony resist jazz dance fetch blush cruise fame measure suspect patient", "");
+    ASSERT_EQ(hdWallet.deriveAddress(TWCoinTypeCardano, TWDerivationDefault), fromAddress);
+    const auto privKey = hdWallet.getKey(TWCoinTypeCardano, TWDerivationDefault);
+    std::cout << "privKey: " << hex(privKey.bytes) << std::endl;
+
+    input.add_private_key(privKey.bytes.data(), privKey.bytes.size());
+
+    // Set an output info.
+
+    input.mutable_transfer_message()->set_to_address(toAddress);
+    input.mutable_transfer_message()->set_change_address(fromAddress);
+    input.mutable_transfer_message()->set_amount(1202490);
+
+    auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
+    toToken->set_policy_id(nftPolicyId);
+    toToken->set_asset_name(nftAssetName);
+    const auto toTokenAmount = store(uint256_t(1)); // Always 1 for NFT transfer
+    toToken->set_amount(toTokenAmount.data(), toTokenAmount.size());
+    // Current slotNo (89043320) + 1000
+    input.set_ttl(89044320);
+
+    // { // check min ADA amount, set it
+    //     const auto bundleProtoData = data(input.transfer_message().token_amount().SerializeAsString());
+    //     const auto minAdaAmount = TWCardanoMinAdaAmount(&bundleProtoData);
+    //     EXPECT_EQ(minAdaAmount, 1592591ul);
+    //     input.mutable_transfer_message()->set_amount(minAdaAmount);
+    // }
+
+    {
+        // run plan and check result
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        std::cout
+            << "availableAmount: " << plan.availableAmount << std::endl
+            << "amount: " << plan.amount << std::endl
+            << "fee: " << plan.fee << std::endl
+            << "change: " << plan.change << std::endl
+            << "utxos: " << plan.utxos.size() << std::endl
+            << "availableTokens: " << plan.availableTokens.size() << std::endl
+            << "availableTokens.getAmount(): " << plan.availableTokens.getAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e_636f6f6c63617473736f636965747934353637") << std::endl
+            << "outputTokens: " << plan.outputTokens.size() << std::endl
+            << "outputTokens.getAmount(): " << plan.outputTokens.getAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e_636f6f6c63617473736f636965747934353637") << std::endl
+            << "changeTokens: " << plan.changeTokens.size() << std::endl
+            << "changeTokens.getAmount(): " << plan.changeTokens.getAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e_636f6f6c63617473736f636965747934353637") << std::endl;
+
+        const auto output = signer.sign();
+        const auto txid = data(output.tx_id());
+        std::cout << "hex(encoded): " << hex(data(output.encoded())) << std::endl << "txid: " << hex(txid);
+        // EXPECT_EQ(hex(txid), "1dd24872d93d3b5091b98e19b9f920cd0c4369e4c5ca178e898152c52f00c162");
+
+        // EXPECT_EQ(plan.availableAmount, 11758890ul);
+        // EXPECT_EQ(plan.amount, 11758890 - 9984729 - 174161ul);
+        // EXPECT_EQ(plan.fee, 174161ul);
+        // EXPECT_EQ(plan.change, 9984729ul);
+        // EXPECT_EQ(plan.utxos.size(), 2ul);
+        // EXPECT_EQ(plan.availableTokens.size(), 1ul);
+        // EXPECT_EQ(plan.availableTokens.getAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e_636f6f6c63617473736f636965747934353637"), 1);
+        // EXPECT_EQ(plan.outputTokens.size(), 1ul);
+        // EXPECT_EQ(plan.outputTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 11000000);
+        // EXPECT_EQ(plan.changeTokens.size(), 1ul);
+        // EXPECT_EQ(plan.changeTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 9000000);
+    }
+
+    // set plan with specific fee, to match the real transaction
+    input.mutable_plan()->set_available_amount(10758331);
+    input.mutable_plan()->set_amount(1202490);
+    input.mutable_plan()->set_fee(176715);
+    input.mutable_plan()->set_change(9379126);
+    *(input.mutable_plan()->add_available_tokens()) = input.utxos(0).token_amount(0);
+    *(input.mutable_plan()->add_output_tokens()) = input.utxos(0).token_amount(0);
+    input.mutable_plan()->mutable_output_tokens(0)->set_amount(toTokenAmount.data(), toTokenAmount.size());
+    *(input.mutable_plan()->add_change_tokens()) = input.utxos(0).token_amount(0);
+    const auto changeTokenAmount = store(uint256_t(0));
+    input.mutable_plan()->mutable_change_tokens(0)->set_amount(changeTokenAmount.data(), changeTokenAmount.size());
+    *(input.mutable_plan()->add_utxos()) = input.utxos(1);
+    *(input.mutable_plan()->add_utxos()) = input.utxos(0);
+    input.mutable_plan()->set_error(Common::Proto::OK);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    const auto txid = data(output.tx_id());
+    std::cout << "hex(encoded): " << hex(data(output.encoded())) << std::endl << "txid: " << hex(txid);
+    // EXPECT_EQ(hex(txid), "1dd24872d93d3b5091b98e19b9f920cd0c4369e4c5ca178e898152c52f00c162");
+
+    // // https://cardanoscan.io/transaction/1dd24872d93d3b5091b98e19b9f920cd0c4369e4c5ca178e898152c52f00c162
+    // // curl -d '{"txHash":"1dd248..c162","txBody":"83a400..08f6"}' -H "Content-Type: application/json" https://<cardano-node>/api/txs/submit
+    // EXPECT_EQ(output.error(), Common::Proto::OK);
+    // const auto encoded = data(output.encoded());
+    // EXPECT_EQ(hex(encoded), "83a400828258206975fcf7bbca745c85f50777f956219868fd9cad14ba496fed1371252e8df60f00825820f2d2b11c8c07c5c646f5b5af20fddf2f0a174743c6a1b13cca27e28a6ca34710000182825839018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468821a00186a00a1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a00a7d8c082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b821a00985b14a1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a00895440021a0002a816031a03a6541ea100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840c8cdee32bfd584f55cf334b4ec6f734635144736d48f882e647a7a6283f230bc5a67d4dd66a9e523e0c29c812ed1e3589febbcf96547a1fc6d061a7ccfb81308f6");
+    // const auto txid = data(output.tx_id());
+    // EXPECT_EQ(hex(txid), "1dd24872d93d3b5091b98e19b9f920cd0c4369e4c5ca178e898152c52f00c162");
 }
 
 TEST(CardanoSigning, Plan) {
