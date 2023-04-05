@@ -1,6 +1,6 @@
 use crate::{
     Driver, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator, GType,
-    ParseTree, WithEof
+    ParseTree, WithEof,
 };
 
 #[test]
@@ -27,12 +27,12 @@ fn test_separator() {
 #[test]
 fn test_types() {
     let driver = Driver::from("int");
-    let der = WithEof::<GType>::derive(driver).unwrap();
-    assert_eq!(der.derived.derived, GType::Int);
+    let der = GType::derive(driver).unwrap();
+    assert_eq!(der.derived, GType::Int);
 
-    let driver = Driver::from("bool ");
-    let der = WithEof::<GType>::derive(driver).unwrap();
-    assert_eq!(der.derived.derived, GType::Bool);
+    let driver = Driver::from("bool");
+    let der = GType::derive(driver).unwrap();
+    assert_eq!(der.derived, GType::Bool);
 
     let driver = Driver::from("char\n");
     let der = GType::derive(driver).unwrap();

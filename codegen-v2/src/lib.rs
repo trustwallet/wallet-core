@@ -13,7 +13,7 @@ trait ParseTree {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 struct WithEof<T> {
-    derived: T
+    derived: T,
 }
 
 impl<T: ParseTree> ParseTree for WithEof<T> {
@@ -29,7 +29,12 @@ impl<T: ParseTree> ParseTree for WithEof<T> {
 
         let driver = handle.commit();
 
-        Ok(DerivationResult { derived: WithEof { derived: der_res.derived }, driver })
+        Ok(DerivationResult {
+            derived: WithEof {
+                derived: der_res.derived,
+            },
+            driver,
+        })
     }
 }
 
@@ -188,6 +193,60 @@ impl<R: Read> DriverUsed<R> {
     }
 }
 
+enum EitherOr<T, D> {
+    Either(T),
+    Or(D),
+}
+
+impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
+    type Derivation = EitherOr<T::Derivation, D::Derivation>;
+
+    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        let der_result = T::derive(driver);
+        match der_result {
+            Ok(der_result) => {
+                return Ok(DerivationResult {
+                    derived: EitherOr::Either(der_result.derived),
+                    driver: der_result.driver,
+                })
+            }
+            Err(err) => {
+                driver = err.driver;
+            }
+        }
+
+        let der_result = D::derive(driver);
+        match der_result {
+            Ok(der_result) => {
+                return Ok(DerivationResult {
+                    derived: EitherOr::Or(der_result.derived),
+                    driver: der_result.driver,
+                })
+            }
+            Err(err) => return Err(Error::new(err.ty, err.driver)),
+        }
+    }
+}
+
+struct GEof;
+
+impl ParseTree for GEof {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        let (slice, handle) = driver.read_amt(1)?;
+
+        if slice.is_some() {
+            return Err(Error::new(ErrorType::Todo, handle.rollback()));
+        }
+
+        Ok(DerivationResult {
+            derived: GEof,
+            driver: handle.commit(),
+        })
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 enum GType {
     Bool,
@@ -202,7 +261,7 @@ impl ParseTree for GType {
     fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
-        let (slice, handle) = driver.read_until::<GSeparator>()?;
+        let (slice, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
         dbg!(&slice);
 
         let derived = match slice.as_str() {
@@ -302,12 +361,12 @@ impl ParseTree for GParamItemWithMarker {
         // Derive parameter type, ignore leading separators.
         let ty_der = GType::derive(driver)?;
         dbg!(&ty_der);
-        let driver = GSeparator::derive(ty_der.driver).ignore_result();
+        let driver = EitherOr::<GSeparator, GEof>::derive(ty_der.driver).ignore_result();
 
         // Derive marker, ignore leading separators.
         let marker_der = GMarker::derive(driver)?;
         dbg!(&marker_der);
-        let driver = GSeparator::derive(marker_der.driver).ignore_result();
+        let driver = EitherOr::<GSeparator, GEof>::derive(marker_der.driver).ignore_result();
 
         // Derive parameter name.
         let name_der = GParamName::derive(driver)?;
@@ -338,7 +397,7 @@ impl ParseTree for GParamItemWithoutMarker {
         // Derive parameter type, ignore leading separators.
         let ty_der = GType::derive(driver)?;
         dbg!(&ty_der);
-        let driver = GSeparator::derive(ty_der.driver).ignore_result();
+        let driver = EitherOr::<GSeparator, GEof>::derive(ty_der.driver).ignore_result();
 
         // Derive parameter name.
         let name_der = GParamName::derive(driver)?;
@@ -362,7 +421,7 @@ impl ParseTree for GParamName {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        let (string, handle) = driver.read_until::<GSeparator>()?;
+        let (string, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
 
         Ok(DerivationResult {
             derived: GParamName(string),
