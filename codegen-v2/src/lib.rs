@@ -31,9 +31,7 @@ struct Error<R> {
 
 impl<R> std::fmt::Debug for Error<R> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Error")
-            .field("type", &self.ty)
-            .finish()
+        f.debug_struct("Error").field("type", &self.ty).finish()
     }
 }
 
@@ -101,7 +99,12 @@ impl<R: Read> Driver<R> {
     fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverUsed<R>), R> {
         let buffer = &self.reader.fill_buf().unwrap();
         if buffer.len() < amt {
-            return Err(Error { ty: ErrorType::Todo, driver: Driver { reader: self.reader } })
+            return Err(Error {
+                ty: ErrorType::Todo,
+                driver: Driver {
+                    reader: self.reader,
+                },
+            });
         }
         let buffer = &buffer[..amt];
         let slice = std::str::from_utf8(buffer).unwrap();
@@ -169,13 +172,19 @@ impl ParseTree for GType {
             "int" => GType::Int,
             _ => {
                 // Rollback driver, retry with the next derivation attempt.
-                /*
-                let driver = handle.rollback();
-                let der_result = GStruct::derive(driver)?;
+                let mut driver = handle.rollback();
 
-                return Ok(DerivationResult { derived: GType::Struct(der_result.derived), driver: der_result.driver } )
-                */
-                return Err(Error::new(ErrorType::Todo, handle.rollback()))
+                match GStruct::derive(driver) {
+                    Ok(der) => {
+                        return Ok(DerivationResult {
+                            derived: GType::Struct(der.derived),
+                            driver: der.driver,
+                        })
+                    }
+                    Err(err) => driver = err.driver,
+                }
+
+                return Err(Error::new(ErrorType::Todo, driver));
             }
         };
 
@@ -233,7 +242,7 @@ impl ParseTree for GSeparator {
                     } else {
                         sep_items = Some(GSeparator::Item(der_result.derived));
                     }
-                },
+                }
                 Err(err) => {
                     if let Some(items) = sep_items {
                         return Ok(DerivationResult {
@@ -268,7 +277,10 @@ impl ParseTree for GSeparatorItem {
         };
 
         if slice.is_empty() {
-            return Ok(DerivationResult { derived: GSeparatorItem::Eof, driver: handle.commit() })
+            return Ok(DerivationResult {
+                derived: GSeparatorItem::Eof,
+                driver: handle.commit(),
+            });
         }
 
         let derived = match slice.as_str() {
