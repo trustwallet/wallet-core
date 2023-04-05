@@ -1,5 +1,8 @@
 use std::io::{BufRead, BufReader, Read};
 
+#[cfg(test)]
+mod tests;
+
 type Result<T, R> = std::result::Result<T, Error<R>>;
 
 trait ParseTree {
@@ -13,9 +16,25 @@ struct DerivationResult<T, R> {
     driver: Driver<R>,
 }
 
+impl<T: std::fmt::Debug, R> std::fmt::Debug for DerivationResult<T, R> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DerivationResult")
+            .field("derived", &self.derived)
+            .finish()
+    }
+}
+
 struct Error<R> {
     ty: ErrorType,
     driver: Driver<R>,
+}
+
+impl<R> std::fmt::Debug for Error<R> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Error")
+            .field("type", &self.ty)
+            .finish()
+    }
 }
 
 impl<R: Read> Error<R> {
@@ -24,14 +43,23 @@ impl<R: Read> Error<R> {
     }
 }
 
+#[derive(Debug)]
 enum ErrorType {
     Todo,
 }
 
 impl<'a> From<&'a [u8]> for Driver<&'a [u8]> {
-    fn from(input: &'a [u8]) -> Self {
+    fn from(buffer: &'a [u8]) -> Self {
         Driver {
-            reader: BufReader::new(input),
+            reader: BufReader::new(buffer),
+        }
+    }
+}
+
+impl<'a> From<&'a str> for Driver<&'a [u8]> {
+    fn from(buffer: &'a str) -> Self {
+        Driver {
+            reader: BufReader::new(buffer.as_bytes()),
         }
     }
 }
@@ -48,7 +76,10 @@ impl<R: Read> Driver<R> {
         let buffer = self.reader.fill_buf().unwrap();
         let string = std::str::from_utf8(buffer).unwrap();
 
+        dbg!("GOT HERE");
+
         for counter in 0..buffer.len() {
+            dbg!(counter);
             let slice = &string[counter..];
 
             let driver = Driver::from(slice.as_bytes());
@@ -66,7 +97,11 @@ impl<R: Read> Driver<R> {
         Err(Error::new(ErrorType::Todo, self))
     }
     fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverUsed<R>), R> {
-        let buffer = &self.reader.fill_buf().unwrap()[..amt];
+        let buffer = &self.reader.fill_buf().unwrap();
+        if buffer.len() < amt {
+            return Err(Error { ty: ErrorType::Todo, driver: Driver { reader: self.reader } })
+        }
+        let buffer = &buffer[..amt];
         let slice = std::str::from_utf8(buffer).unwrap();
 
         if slice.is_empty() {
@@ -109,6 +144,7 @@ impl<R: Read> DriverUsed<R> {
     }
 }
 
+#[derive(Debug, Clone)]
 enum GType {
     Bool,
     Char,
@@ -123,6 +159,7 @@ impl ParseTree for GType {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = driver.read_until::<GSeparator>()?;
+        dbg!(&slice);
 
         let derived = match slice.as_str() {
             "bool" => GType::Bool,
@@ -130,10 +167,13 @@ impl ParseTree for GType {
             "int" => GType::Int,
             _ => {
                 // Rollback driver, retry with the next derivation attempt.
+                /*
                 let driver = handle.rollback();
                 let der_result = GStruct::derive(driver)?;
 
                 return Ok(DerivationResult { derived: GType::Struct(der_result.derived), driver: der_result.driver } )
+                */
+                return Err(Error::new(ErrorType::Todo, handle.rollback()))
             }
         };
 
@@ -144,6 +184,7 @@ impl ParseTree for GType {
     }
 }
 
+#[derive(Debug, Clone)]
 struct GStruct;
 
 impl ParseTree for GStruct {
@@ -154,6 +195,7 @@ impl ParseTree for GStruct {
     }
 }
 
+#[derive(Debug)]
 enum GSeparator {
     Item(GSeparatorItem),
     Continued(GSeparatorContinued),
@@ -205,10 +247,12 @@ impl ParseTree for GSeparator {
     }
 }
 
+#[derive(Debug)]
 enum GSeparatorItem {
     Space,
     Newline,
     Tab,
+    Eof,
 }
 
 impl ParseTree for GSeparatorItem {
@@ -220,6 +264,10 @@ impl ParseTree for GSeparatorItem {
             Some(x) => x,
             None => return Err(Error::new(ErrorType::Todo, handle.rollback())),
         };
+
+        if slice.is_empty() {
+            return Ok(DerivationResult { derived: GSeparatorItem::Eof, driver: handle.commit() })
+        }
 
         let derived = match slice.as_str() {
             " " => GSeparatorItem::Space,
@@ -234,6 +282,7 @@ impl ParseTree for GSeparatorItem {
     }
 }
 
+#[derive(Debug)]
 struct GSeparatorContinued {
     item: GSeparatorItem,
     next: Box<GSeparator>,
