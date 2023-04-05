@@ -1,32 +1,42 @@
-name: iOS CI
+name: Android Build
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: macos-latest-xl
+
     steps:
     - uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-mac
         tools/install-rust-dependencies
+
+    - name: Install Android Dependencies
+      run: tools/install-android-dependencies
+
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v3
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
     - name: Install internal dependencies
-      run: |
-        tools/install-dependencies
+      run: tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
-    - name: Run codegen tests
-      run: tools/codegen-test
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
@@ -35,11 +45,13 @@ jobs:
           rust
 
     - name: Generate files
-      run: tools/generate-files
+      run: tools/generate-files android
 
-    - name: Run iOS tests
-      run: tools/ios-test
+    - name: Build artifacts
+      run: tools/android-build
 
-    - name: Build sample app
-      run: |
-        tools/samples-build ios
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: trustwalletcore.aar
+        path: build/trustwalletcore.aar
