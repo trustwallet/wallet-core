@@ -2,6 +2,10 @@ use crate::{Driver, GSeparator, GType, ParseTree};
 
 #[test]
 fn test_separator() {
+    let driver = Driver::from("");
+    let x = GSeparator::derive(driver).unwrap();
+    dbg!(x);
+
     let driver = Driver::from(" ");
     let x = GSeparator::derive(driver).unwrap();
     dbg!(x);
@@ -21,11 +25,11 @@ fn test_types() {
     let der = GType::derive(driver).unwrap();
     dbg!(der.derived, GType::Int);
 
-    let driver = Driver::from("bool\n");
+    let driver = Driver::from("bool ");
     let der = GType::derive(driver).unwrap();
     dbg!(der.derived, GType::Bool);
 
-    let driver = Driver::from("char");
+    let driver = Driver::from("char\n");
     let der = GType::derive(driver).unwrap();
     dbg!(der.derived, GType::Char);
 }
