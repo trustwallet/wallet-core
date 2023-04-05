@@ -1,4 +1,7 @@
-use crate::{Driver, GMarker, GParamItemWithMarker, GParamName, GSeparator, GType, ParseTree};
+use crate::{
+    Driver, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator, GType,
+    ParseTree,
+};
 
 #[test]
 fn test_separator() {
@@ -54,6 +57,29 @@ fn test_func_params_with_marker() {
         GParamItemWithMarker {
             ty: GType::Bool,
             marker: GMarker("_SOMEMARKER".to_string()),
+            name: GParamName("some_bool".to_string())
+        }
+    );
+}
+
+#[test]
+fn test_func_params_without_marker() {
+    let driver = Driver::from("int my_var");
+    let der = GParamItemWithoutMarker::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GParamItemWithoutMarker {
+            ty: GType::Int,
+            name: GParamName("my_var".to_string())
+        }
+    );
+
+    let driver = Driver::from("bool \nsome_bool");
+    let der = GParamItemWithoutMarker::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GParamItemWithoutMarker {
+            ty: GType::Bool,
             name: GParamName("some_bool".to_string())
         }
     );

@@ -347,17 +347,17 @@ impl ParseTree for GParamItemWithMarker {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        // Derive parameter type, ignore leading separator.
+        // Derive parameter type, ignore leading separators.
         let ty_der = GType::derive(driver)?;
         dbg!(&ty_der);
         let driver = GSeparator::derive(ty_der.driver).ignore_result();
 
-        // Derive marker, ignore leading separator.
+        // Derive marker, ignore leading separators.
         let marker_der = GMarker::derive(driver)?;
         dbg!(&marker_der);
         let driver = GSeparator::derive(marker_der.driver).ignore_result();
 
-        // Derive parameter name, ignore leading separator.
+        // Derive parameter name.
         let name_der = GParamName::derive(driver)?;
         dbg!(&name_der);
 
@@ -373,9 +373,34 @@ impl ParseTree for GParamItemWithMarker {
     }
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct GParamItemWithoutMarker {
     ty: GType,
     name: GParamName,
+}
+
+impl ParseTree for GParamItemWithoutMarker {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        // Derive parameter type, ignore leading separators.
+        let ty_der = GType::derive(driver)?;
+        dbg!(&ty_der);
+        let driver = GSeparator::derive(ty_der.driver).ignore_result();
+
+        // Derive parameter name.
+        let name_der = GParamName::derive(driver)?;
+        dbg!(&name_der);
+
+        // Everything derived successfully, return.
+        Ok(DerivationResult {
+            derived: GParamItemWithoutMarker {
+                ty: ty_der.derived,
+                name: name_der.derived,
+            },
+            driver: name_der.driver,
+        })
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
