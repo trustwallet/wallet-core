@@ -447,3 +447,28 @@ impl ParseTree for GMarker {
         })
     }
 }
+
+enum Continuum<T> {
+    Thing(T),
+    Next(ContinuumNext<T>)
+}
+
+struct ContinuumNext<T> {
+    thing: T,
+    next: Box<Continuum<T>>
+}
+
+impl<T> Continuum<T> {
+    fn add(self, new_thing: T) -> Self {
+        match self {
+            Continuum::Thing(thing) => Continuum::Next(ContinuumNext {
+                thing,
+                next: Box::new(Continuum::Thing(new_thing)),
+            }),
+            Continuum::Next(next) => Continuum::Next(ContinuumNext {
+                thing: next.thing,
+                next: Box::new(next.next.add(new_thing)),
+            }),
+        }
+    }
+}
