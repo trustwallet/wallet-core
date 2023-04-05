@@ -317,12 +317,10 @@ struct GSeparatorContinued {
 
 enum GParam {
     Item(GParamItem),
-    Continued(GParamContinued)
+    Continued(GParamContinued),
 }
 
-enum GParamItem {
-
-}
+enum GParamItem {}
 
 struct GParamItemWithMarker {
     ty: GType,
@@ -334,7 +332,18 @@ impl ParseTree for GParamItemWithMarker {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        todo!()
+        let ty_der = GType::derive(driver)?;
+        let marker_der = GMarker::derive(ty_der.driver)?;
+        let name_der = GParamName::derive(marker_der.driver)?;
+
+        Ok(DerivationResult {
+            derived: GParamItemWithMarker {
+                ty: ty_der.derived,
+                marker: marker_der.derived,
+                name: name_der.derived,
+            },
+            driver: name_der.driver,
+        })
     }
 }
 
@@ -345,9 +354,17 @@ struct GParamItemWithoutMarker {
 
 struct GParamName(String);
 
+impl ParseTree for GParamName {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        todo!()
+    }
+}
+
 struct GParamContinued {
     item: GParamItem,
-    next: Box<GParam>
+    next: Box<GParam>,
 }
 
 impl ParseTree for GParam {
