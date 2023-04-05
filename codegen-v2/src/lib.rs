@@ -165,7 +165,7 @@ impl<R: Read> DriverUsed<R> {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 enum GType {
     Bool,
     Char,
@@ -211,7 +211,7 @@ impl ParseTree for GType {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct GStruct;
 
 impl ParseTree for GStruct {
@@ -336,7 +336,7 @@ enum GParam {
 
 enum GParamItem {}
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct GParamItemWithMarker {
     ty: GType,
     marker: GMarker,
@@ -378,7 +378,7 @@ struct GParamItemWithoutMarker {
     name: GParamName,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct GParamName(String);
 
 impl ParseTree for GParamName {
@@ -407,7 +407,7 @@ impl ParseTree for GParam {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct GMarker(String);
 
 impl ParseTree for GMarker {
