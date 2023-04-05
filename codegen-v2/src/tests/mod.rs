@@ -1,4 +1,4 @@
-use crate::{Driver, GSeparator, GType, ParseTree, GParamItemWithMarker};
+use crate::{Driver, GParamItemWithMarker, GSeparator, GType, ParseTree};
 
 #[test]
 fn test_separator() {

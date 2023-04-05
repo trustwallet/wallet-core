@@ -131,6 +131,20 @@ impl<R: Read> Driver<R> {
     }
 }
 
+// TODO: Rename?
+trait DriverExtractor<R> {
+    fn ignore_result(self) -> Driver<R>;
+}
+
+impl<T, R> DriverExtractor<R> for Result<DerivationResult<T, R>, R> {
+    fn ignore_result(self) -> Driver<R> {
+        match self {
+            Ok(res) => res.driver,
+            Err(err) => err.driver,
+        }
+    }
+}
+
 struct DriverUsed<R> {
     reader: BufReader<R>,
     amt_read: usize,
@@ -333,13 +347,21 @@ impl ParseTree for GParamItemWithMarker {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        // Derive parameter type, ignore leading separator.
         let ty_der = GType::derive(driver)?;
         dbg!(&ty_der);
-        let marker_der = GMarker::derive(ty_der.driver)?;
+        let driver = GSeparator::derive(ty_der.driver).ignore_result();
+
+        // Derive marker, ignore leading separator.
+        let marker_der = GMarker::derive(driver)?;
         dbg!(&marker_der);
-        let name_der = GParamName::derive(marker_der.driver)?;
+        let driver = GSeparator::derive(marker_der.driver).ignore_result();
+
+        // Derive parameter name, ignore leading separator.
+        let name_der = GParamName::derive(driver)?;
         dbg!(&name_der);
 
+        // Everything derived successfully, return.
         Ok(DerivationResult {
             derived: GParamItemWithMarker {
                 ty: ty_der.derived,
@@ -365,9 +387,10 @@ impl ParseTree for GParamName {
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let (string, handle) = driver.read_until::<GSeparator>()?;
 
-        Ok(
-            DerivationResult { derived: GParamName(string), driver: handle.commit() }
-        )
+        Ok(DerivationResult {
+            derived: GParamName(string),
+            driver: handle.commit(),
+        })
     }
 }
 
@@ -393,8 +416,9 @@ impl ParseTree for GMarker {
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let (string, handle) = driver.read_until::<GSeparator>()?;
 
-        Ok(
-            DerivationResult { derived: GMarker(string), driver: handle.commit() }
-        )
+        Ok(DerivationResult {
+            derived: GMarker(string),
+            driver: handle.commit(),
+        })
     }
 }
