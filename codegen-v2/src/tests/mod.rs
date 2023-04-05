@@ -17,7 +17,7 @@ fn test_separator() {
 
 #[test]
 fn test_types() {
-    let driver = Driver::from("int\n");
+    let driver = Driver::from("int");
     let der = GType::derive(driver).unwrap();
     dbg!(der.derived, GType::Int);
 
@@ -25,7 +25,7 @@ fn test_types() {
     let der = GType::derive(driver).unwrap();
     dbg!(der.derived, GType::Bool);
 
-    let driver = Driver::from("char\n");
+    let driver = Driver::from("char");
     let der = GType::derive(driver).unwrap();
     dbg!(der.derived, GType::Char);
 }

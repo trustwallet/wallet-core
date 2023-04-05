@@ -74,7 +74,7 @@ impl<R: Read> Driver<R> {
         let buffer = self.reader.fill_buf().unwrap();
         let string = std::str::from_utf8(buffer).unwrap();
 
-        for counter in 0..buffer.len() {
+        for counter in 0..=buffer.len() {
             let slice = &string[counter..];
 
             dbg!(counter, slice);
@@ -99,15 +99,17 @@ impl<R: Read> Driver<R> {
     fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverUsed<R>), R> {
         let buffer = &self.reader.fill_buf().unwrap();
         if buffer.len() < amt {
-            return Err(Error {
-                ty: ErrorType::Todo,
-                driver: Driver {
+            return Ok((
+                None,
+                DriverUsed {
                     reader: self.reader,
+                    amt_read: 0,
                 },
-            });
+            ));
         }
         let buffer = &buffer[..amt];
         let slice = std::str::from_utf8(buffer).unwrap();
+        dbg!(slice);
 
         if slice.is_empty() {
             return Ok((
@@ -232,15 +234,27 @@ impl ParseTree for GSeparator {
 
     fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let mut sep_items: Option<GSeparator> = None;
+        let mut is_eof = false;
         loop {
             match GSeparatorItem::derive(driver) {
                 Ok(der_result) => {
                     driver = der_result.driver;
 
+                    if let GSeparatorItem::Eof = der_result.derived {
+                        is_eof = true;
+                    }
+
                     if let Some(sep) = sep_items {
                         sep_items = Some(sep.add(der_result.derived));
                     } else {
                         sep_items = Some(GSeparator::Item(der_result.derived));
+                    }
+
+                    if is_eof {
+                        return Ok(DerivationResult {
+                            derived: sep_items.unwrap(),
+                            driver,
+                        });
                     }
                 }
                 Err(err) => {
@@ -271,17 +285,17 @@ impl ParseTree for GSeparatorItem {
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let (slice, handle) = driver.read_amt(1)?;
+        dbg!(&slice);
         let slice = match slice {
-            Some(x) => x,
-            None => return Err(Error::new(ErrorType::Todo, handle.rollback())),
+            Some(string) => string,
+            //None => return Err(Error::new(ErrorType::Todo, handle.rollback())),
+            None => {
+                return Ok(DerivationResult {
+                    derived: GSeparatorItem::Eof,
+                    driver: handle.commit(),
+                });
+            }
         };
-
-        if slice.is_empty() {
-            return Ok(DerivationResult {
-                derived: GSeparatorItem::Eof,
-                driver: handle.commit(),
-            });
-        }
 
         let derived = match slice.as_str() {
             " " => GSeparatorItem::Space,
