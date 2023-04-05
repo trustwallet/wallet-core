@@ -76,16 +76,18 @@ impl<R: Read> Driver<R> {
         let buffer = self.reader.fill_buf().unwrap();
         let string = std::str::from_utf8(buffer).unwrap();
 
-        dbg!("GOT HERE");
-
         for counter in 0..buffer.len() {
-            dbg!(counter);
             let slice = &string[counter..];
+
+            dbg!(counter, slice);
 
             let driver = Driver::from(slice.as_bytes());
             if P::derive(driver).is_ok() {
+                let target = string[..counter].to_string();
+                dbg!(&target);
+
                 return Ok((
-                    slice.to_string(),
+                    target,
                     DriverUsed {
                         reader: self.reader,
                         amt_read: counter,
