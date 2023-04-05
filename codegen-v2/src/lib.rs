@@ -322,6 +322,7 @@ enum GParam {
 
 enum GParamItem {}
 
+#[derive(Debug)]
 struct GParamItemWithMarker {
     ty: GType,
     marker: GMarker,
@@ -333,8 +334,11 @@ impl ParseTree for GParamItemWithMarker {
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         let ty_der = GType::derive(driver)?;
+        dbg!(&ty_der);
         let marker_der = GMarker::derive(ty_der.driver)?;
+        dbg!(&marker_der);
         let name_der = GParamName::derive(marker_der.driver)?;
+        dbg!(&name_der);
 
         Ok(DerivationResult {
             derived: GParamItemWithMarker {
@@ -352,13 +356,18 @@ struct GParamItemWithoutMarker {
     name: GParamName,
 }
 
+#[derive(Debug)]
 struct GParamName(String);
 
 impl ParseTree for GParamName {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        todo!()
+        let (string, handle) = driver.read_until::<GSeparator>()?;
+
+        Ok(
+            DerivationResult { derived: GParamName(string), driver: handle.commit() }
+        )
     }
 }
 
@@ -375,12 +384,17 @@ impl ParseTree for GParam {
     }
 }
 
+#[derive(Debug)]
 struct GMarker(String);
 
 impl ParseTree for GMarker {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        todo!()
+        let (string, handle) = driver.read_until::<GSeparator>()?;
+
+        Ok(
+            DerivationResult { derived: GMarker(string), driver: handle.commit() }
+        )
     }
 }
