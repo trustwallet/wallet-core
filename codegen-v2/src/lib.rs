@@ -450,12 +450,12 @@ impl ParseTree for GMarker {
 
 enum Continuum<T> {
     Thing(T),
-    Next(ContinuumNext<T>)
+    Next(ContinuumNext<T>),
 }
 
 struct ContinuumNext<T> {
     thing: T,
-    next: Box<Continuum<T>>
+    next: Box<Continuum<T>>,
 }
 
 impl<T> Continuum<T> {
@@ -470,5 +470,38 @@ impl<T> Continuum<T> {
                 next: Box::new(next.next.add(new_thing)),
             }),
         }
+    }
+}
+
+impl<T: ParseTree<Derivation = T>> ParseTree for Continuum<T> {
+    type Derivation = Continuum<T>;
+
+    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        let mut sep_items: Option<Continuum<T::Derivation>> = None;
+        loop {
+            match T::derive(driver) {
+                Ok(der_result) => {
+                    driver = der_result.driver;
+
+                    if let Some(sep) = sep_items {
+                        sep_items = Some(sep.add(der_result.derived));
+                    } else {
+                        sep_items = Some(Continuum::Thing(der_result.derived));
+                    }
+                }
+                Err(err) => {
+                    if let Some(items) = sep_items {
+                        return Ok(DerivationResult {
+                            derived: items,
+                            driver: err.driver,
+                        });
+                    } else {
+                        return Err(Error::new(err.ty, err.driver));
+                    }
+                }
+            }
+        }
+
+        todo!()
     }
 }
