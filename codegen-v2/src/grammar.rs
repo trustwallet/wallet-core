@@ -149,29 +149,31 @@ pub struct GFuncParams {
 impl ParseTree for GFuncParams {
     type Derivation = Self;
 
-    fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+    fn derive(mut main_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut params = vec![];
 
         loop {
-            let (pending, checked_out) = reader.checkout();
-            //let res = EitherOr::<GParamItemWithMarker, GParamItemWithoutMarker>::derive(checked_out)?;
-            let res = GParamItemWithoutMarker::derive(checked_out)?;
-            reader = pending.merge(res.branch);
+            // Derive parameters.
+            let (derived, mut reader) = ensure::<GParamItemWithoutMarker>(main_reader)?;
 
-            params.push(res.derived);
+            // Track derived value.
+            params.push(derived);
+
+            // Ignore leading separators.
+            reader = wipe::<GSeparator>(reader);
 
             let (pending, checked_out) = reader.checkout();
             if let Ok(res) = GComma::derive(checked_out) {
-                reader = pending.merge(res.branch);
+                main_reader = pending.merge(res.branch);
             } else {
-                reader = pending.discard();
+                main_reader = pending.discard();
                 break;
             }
         }
 
         Ok(DerivationResult {
             derived: GFuncParams { params },
-            branch: reader.into_branch(),
+            branch: main_reader.into_branch(),
         })
     }
 }
@@ -323,13 +325,13 @@ impl ParseTree for GParamItemWithMarker {
         let (ty_derived, mut reader) = ensure::<GType>(reader)?;
 
         // Ignore leading separators.
-        reader = wipe::<EitherOr<GSeparator, GEof>>(reader);
+        reader = wipe::<GSeparator>(reader);
 
         // Derive marker, ignore leading separators.
         let (marker_derived, mut reader) = ensure::<GMarker>(reader)?;
 
         // Ignore leading separators.
-        reader = wipe::<EitherOr<GSeparator, GEof>>(reader);
+        reader = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GParamName>(reader)?;
@@ -351,28 +353,21 @@ impl ParseTree for GParamItemWithoutMarker {
 
     fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (pending, checked_out) = reader.checkout();
-        let ty_res = GType::derive(checked_out)?;
-        reader = pending.merge(ty_res.branch);
+        let (ty_derived, mut reader) = ensure::<GType>(reader)?;
 
         // Ignore leading separators.
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
-            reader = pending.merge(res.branch);
-        } else {
-            reader = pending.discard();
-        }
+        reader = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
-        let name_res = GParamName::derive(reader)?;
+        let (name_derived, reader) = ensure::<GParamName>(reader)?;
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
             derived: GParamItemWithoutMarker {
-                ty: ty_res.derived,
-                name: name_res.derived,
+                ty: ty_derived,
+                name: name_derived,
             },
-            branch: name_res.branch,
+            branch: reader.into_branch(),
         })
     }
 }
@@ -398,7 +393,7 @@ impl ParseTree for GMarker {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GNonAlphanumeric>()?;
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
 
         if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
             return Err(Error::Todo);
