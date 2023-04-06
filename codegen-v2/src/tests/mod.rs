@@ -1,7 +1,22 @@
 use crate::{
     Driver, GEof, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator,
-    GType, ParseTree,
+    GType, ParseTree, GSeparatorItem,
 };
+
+#[test]
+fn test_separator_items() {
+    let driver = Driver::from(" ");
+    let res = GSeparatorItem::derive(driver).unwrap();
+    assert_eq!(res.derived, GSeparatorItem::Space);
+
+    let driver = Driver::from("\n");
+    let res = GSeparatorItem::derive(driver).unwrap();
+    assert_eq!(res.derived, GSeparatorItem::Newline);
+
+    let driver = Driver::from("\t");
+    let res = GSeparatorItem::derive(driver).unwrap();
+    assert_eq!(res.derived, GSeparatorItem::Tab);
+}
 
 #[test]
 fn test_separator() {

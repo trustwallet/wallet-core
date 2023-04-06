@@ -102,7 +102,7 @@ impl<'a> Driver<'a> {
                     DriverScopeUsed {
                         buffer: self.buffer,
                         amt_read: counter,
-                        pos: self.pos,
+                        pos: self.pos + counter,
                     },
                 ));
             }
@@ -111,6 +111,7 @@ impl<'a> Driver<'a> {
         Err(Error::Todo)
     }
     fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverScopeUsed<'a>)> {
+        dbg!(&self.buffer, &self.buffer[self.pos..]);
         let string = &self.buffer[self.pos..];
         if string.len() < amt {
             return Ok((
@@ -142,12 +143,13 @@ impl<'a> Driver<'a> {
             DriverScopeUsed {
                 buffer: self.buffer,
                 amt_read: amt,
-                pos: self.pos,
+                pos: self.pos + amt,
             },
         ))
     }
 }
 
+#[derive(Debug, Clone)]
 struct DriverScopeUsed<'a> {
     buffer: &'a str,
     amt_read: usize,
@@ -276,12 +278,11 @@ impl ParseTree for GStruct {
 
 type GSeparator = Continuum<GSeparatorItem>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 enum GSeparatorItem {
     Space,
     Newline,
     Tab,
-    Eof,
 }
 
 impl ParseTree for GSeparatorItem {
@@ -289,7 +290,7 @@ impl ParseTree for GSeparatorItem {
 
     fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let (slice, handle) = driver.read_amt(1)?;
-        dbg!(&slice);
+        dbg!(&slice, &handle);
         let slice = match slice {
             Some(string) => string,
             None => {
