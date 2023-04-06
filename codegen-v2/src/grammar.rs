@@ -8,15 +8,15 @@ pub trait ParseTree {
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>>;
 }
 
-fn wipe<'a, T>(reader: Reader<'a>) -> Reader<'a>
+fn wipe<'a, T>(reader: Reader<'a>) -> (Option<T::Derivation>, Reader<'a>)
 where
     T: ParseTree,
 {
     let (pending, checked_out) = reader.checkout();
     if let Ok(res) = T::derive(checked_out) {
-        pending.merge(res.branch)
+        (Some(res.derived), pending.merge(res.branch))
     } else {
-        pending.discard()
+        (None, pending.discard())
     }
 }
 
@@ -149,31 +149,32 @@ pub struct GFuncParams {
 impl ParseTree for GFuncParams {
     type Derivation = Self;
 
-    fn derive(mut main_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+    fn derive(mut parent_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut params = vec![];
 
         loop {
-            // Derive parameters.
-            let (derived, mut reader) = ensure::<GParamItemWithoutMarker>(main_reader)?;
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(parent_reader);
 
-            // Track derived value.
+            // Derive and track parameter.
+            let (derived, reader) = ensure::<GParamItemWithoutMarker>(reader)?;
             params.push(derived);
 
             // Ignore leading separators.
-            reader = wipe::<GSeparator>(reader);
+            let (_, reader) = wipe::<GSeparator>(reader);
 
-            let (pending, checked_out) = reader.checkout();
-            if let Ok(res) = GComma::derive(checked_out) {
-                main_reader = pending.merge(res.branch);
-            } else {
-                main_reader = pending.discard();
+            // Check for potential comma, indicating next paremeter declaration.
+            let (comma, reader) = wipe::<GComma>(reader);
+            parent_reader = reader;
+
+            if comma.is_none() {
                 break;
             }
         }
 
         Ok(DerivationResult {
             derived: GFuncParams { params },
-            branch: main_reader.into_branch(),
+            branch: parent_reader.into_branch(),
         })
     }
 }
@@ -325,13 +326,13 @@ impl ParseTree for GParamItemWithMarker {
         let (ty_derived, mut reader) = ensure::<GType>(reader)?;
 
         // Ignore leading separators.
-        reader = wipe::<GSeparator>(reader);
+        (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive marker, ignore leading separators.
         let (marker_derived, mut reader) = ensure::<GMarker>(reader)?;
 
         // Ignore leading separators.
-        reader = wipe::<GSeparator>(reader);
+        (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GParamName>(reader)?;
@@ -356,7 +357,7 @@ impl ParseTree for GParamItemWithoutMarker {
         let (ty_derived, mut reader) = ensure::<GType>(reader)?;
 
         // Ignore leading separators.
-        reader = wipe::<GSeparator>(reader);
+        (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GParamName>(reader)?;
