@@ -30,17 +30,44 @@ impl<'a> From<&'a str> for Driver<'a> {
 }
 
 #[derive(Debug, Clone)]
+struct DriverAwait<'a> {
+    buffer: &'a str,
+    pos: usize,
+}
+
+impl<'a> DriverAwait<'a> {
+    fn commit(self, driver: Driver<'a>) -> Driver<'a> {
+        Driver {
+            buffer: self.buffer,
+            pos: driver.pos,
+        }
+    }
+    fn rollback(self) -> Driver<'a> {
+        Driver {
+            buffer: self.buffer,
+            pos: self.pos,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 struct Driver<'a> {
     buffer: &'a str,
     pos: usize,
 }
 
 impl<'a> Driver<'a> {
-    fn scope(&self) -> Self {
-        Driver {
-            buffer: self.buffer,
-            pos: 0,
-        }
+    fn scope(self) -> (DriverAwait<'a>, Driver<'a>) {
+        (
+            DriverAwait {
+                buffer: self.buffer,
+                pos: self.pos,
+            },
+            Driver {
+                buffer: self.buffer,
+                pos: 0,
+            },
+        )
     }
     fn read_until<P>(mut self) -> Result<(String, DriverScopeUsed<'a>)>
     where
@@ -140,12 +167,15 @@ impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
 
     fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        if let Ok(res) = T::derive(driver.scope()) {
+        let (pending, scoped) = driver.scope();
+        if let Ok(res) = T::derive(scoped) {
             return Ok(DerivationResult {
                 derived: EitherOr::Either(res.derived),
                 driver: res.driver,
             });
         }
+
+        let driver = pending.rollback();
 
         if let Ok(res) = D::derive(driver) {
             return Ok(DerivationResult {
@@ -287,23 +317,38 @@ impl ParseTree for GParamItemWithMarker {
 
     fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         // Derive parameter type.
-        let ty_res = GType::derive(driver.scope())?;
+        let (pending, scoped) = driver.scope();
+        let ty_res = GType::derive(scoped)?;
         dbg!(&ty_res);
 
+        driver = pending.commit(ty_res.driver);
+
         // Ignore leading separators.
-        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(ty_res.driver.scope()) {
-            driver = res.driver;
+        let (pending, scoped) = driver.scope();
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(scoped) {
+            driver = pending.commit(res.driver);
+        } else {
+            driver = pending.rollback();
         }
 
         // Derive marker, ignore leading separators.
-        let marker_res = GMarker::derive(driver)?;
+        let (pending, scoped) = driver.scope();
+        let marker_res = GMarker::derive(scoped)?;
         dbg!(&marker_res);
 
-        // TODO
-        //let driver = EitherOr::<GSeparator, GEof>::derive(marker_der.driver).ignore_result();
+        driver = pending.commit(marker_res.driver);
+
+        // Ignore leading separators.
+        let (pending, scoped) = driver.scope();
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(scoped) {
+            driver = pending.commit(res.driver);
+        } else {
+            driver = pending.rollback();
+        }
 
         // Derive parameter name.
-        let name_res = GParamName::derive(marker_res.driver)?;
+        let (pending, scoped) = driver.scope();
+        let name_res = GParamName::derive(scoped)?;
         dbg!(&name_res);
 
         // Everything derived successfully, return.
@@ -313,7 +358,7 @@ impl ParseTree for GParamItemWithMarker {
                 marker: marker_res.derived,
                 name: name_res.derived,
             },
-            driver: name_res.driver,
+            driver: pending.commit(name_res.driver),
         })
     }
 }
@@ -329,12 +374,18 @@ impl ParseTree for GParamItemWithoutMarker {
 
     fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         // Derive parameter type.
-        let ty_res = GType::derive(driver.scope())?;
+        let (pending, scoped) = driver.scope();
+        let ty_res = GType::derive(scoped)?;
         dbg!(&ty_res);
 
+        driver = pending.commit(ty_res.driver);
+
         // Ignore leading separators.
-        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(ty_res.driver.scope()) {
-            driver = res.driver;
+        let (pending, scoped) = driver.scope();
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(scoped) {
+            driver = pending.commit(res.driver);
+        } else {
+            driver = pending.rollback();
         }
 
         // Derive parameter name.
@@ -430,8 +481,9 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
     fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let mut sep_items: Option<Continuum<T::Derivation>> = None;
         loop {
-            if let Ok(res) = T::derive(driver.scope()) {
-                driver = res.driver;
+            let (pending, scoped) = driver.scope();
+            if let Ok(res) = T::derive(scoped) {
+                driver = pending.commit(res.driver);
 
                 if let Some(sep) = sep_items {
                     sep_items = Some(sep.add(res.derived));
@@ -443,7 +495,7 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                 if let Some(items) = sep_items {
                     return Ok(DerivationResult {
                         derived: items,
-                        driver,
+                        driver: pending.rollback(),
                     });
                 } else {
                     return Err(Error::Todo);
