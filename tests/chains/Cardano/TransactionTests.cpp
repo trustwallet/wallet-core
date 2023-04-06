@@ -10,6 +10,7 @@
 
 #include "HexCoding.h"
 #include "Cbor.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -120,6 +121,56 @@ TEST(TWCardanoTransaction, minAdaAmount) {
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1629628ul);
+    }
+}
+
+TEST(TWCardanoTransaction, outputMinAdaAmount) {
+    // For an actual value see `ProtocolParams::coinsPerUtxoByte`:
+    // https://input-output-hk.github.io/cardano-graphql/
+    const uint64_t coinsPerUtxoByte = 4310;
+    const auto toAddress = STRING("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+    const auto toLegacy = STRING("Ae2tdPwUPEZ4YjgvykNpoFeYUxoyhNj2kg8KfKWN2FizsSpLUPv68MpTVDo");
+
+    { // ADA-only
+        const auto bundleProto = TokenBundle().toProto();
+        const auto bundleProtoData = data(bundleProto.SerializeAsString());
+        const auto actual = TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte);
+        EXPECT_EQ(actual, 969750ul);
+    }
+    { // ADA-only (to legacy address)
+        const auto bundleProto = TokenBundle().toProto();
+        const auto bundleProtoData = data(bundleProto.SerializeAsString());
+        const auto actual = TWCardanoOutputMinAdaAmount(toLegacy.get(), &bundleProtoData, coinsPerUtxoByte);
+        EXPECT_EQ(actual, 909410ul);
+    }
+    { // 1 NFT
+        auto bundle = TokenBundle();
+        bundle.add(TokenAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e", "coolcatssociety4567", 1));
+        const auto bundleProto = bundle.toProto();
+        const auto bundleProtoData = data(bundleProto.SerializeAsString());
+        const auto actual = TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte);
+        EXPECT_EQ(actual, 1202490ul);
+    }
+    { // 2 policyId, 2 4-char asset names
+        auto bundle = TokenBundle();
+        bundle.add(TokenAmount("8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587", "AADA", 20));
+        bundle.add(TokenAmount("6ac8ef33b510ec004fe11585f7c5a9f0c07f0c23428ab4f29c1d7d10", "MELD", 20));
+        const auto bundleProto = bundle.toProto();
+        const auto bundleProtoData = data(bundleProto.SerializeAsString());
+        const auto actual = TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte);
+        EXPECT_EQ(actual, 1297310ul);
+    }
+    { // Invalid token bundle
+        Data invalidTokenBundleData {1, 2, 3, 4, 5};
+        const auto actual = TWCardanoOutputMinAdaAmount(toAddress.get(), &invalidTokenBundleData, coinsPerUtxoByte);
+        EXPECT_EQ(actual, 0ul);
+    }
+    { // Invalid address
+        const auto invalidAddress = STRING("foobar");
+        const auto bundleProto = TokenBundle().toProto();
+        const auto bundleProtoData = data(bundleProto.SerializeAsString());
+        const auto actual = TWCardanoOutputMinAdaAmount(invalidAddress.get(), &bundleProtoData, coinsPerUtxoByte);
+        EXPECT_EQ(actual, 0ul);
     }
 }
 
