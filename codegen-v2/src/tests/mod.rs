@@ -1,8 +1,53 @@
 use crate::grammar::{
-    GEof, GFuncParams, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName,
-    GSeparator, GSeparatorItem, GType, ParseTree,
+    GEof, GFuncParams, GMarker, GNonAlphanumeric, GNonAlphanumericItem, GParamItemWithMarker,
+    GParamItemWithoutMarker, GParamName, GSeparator, GSeparatorItem, GType, ParseTree,
 };
 use crate::reader::Reader;
+
+#[test]
+fn test_non_alphanumeric_items() {
+    let driver = Reader::from("a");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_err());
+
+    let driver = Reader::from("1");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_err());
+
+    let driver = Reader::from("-");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_err());
+
+    let driver = Reader::from("_");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_err());
+
+    // Does not handle EOF.
+    let driver = Reader::from("");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_err());
+
+    // OK!
+    let driver = Reader::from(" ");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_ok());
+
+    // OK!
+    let driver = Reader::from(",");
+    let res = GNonAlphanumericItem::derive(driver);
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_non_alphanumeric() {
+    let driver = Reader::from(",,, ");
+    let res = GNonAlphanumeric::derive(driver);
+    assert!(res.is_ok());
+
+    let driver = Reader::from(",,,,");
+    let res = GNonAlphanumeric::derive(driver);
+    assert!(res.is_ok());
+}
 
 #[test]
 fn test_eof() {
@@ -106,7 +151,7 @@ fn test_func_params_without_marker() {
 
 #[test]
 fn test_func_params_multiple() {
-    let driver = Reader::from("int my_int , bool my_bool");
+    let driver = Reader::from("int my_int,bool my_bool");
     let der = GFuncParams::derive(driver).unwrap();
     dbg!(der);
 }
