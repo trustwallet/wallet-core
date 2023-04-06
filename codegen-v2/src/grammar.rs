@@ -1,5 +1,6 @@
 use super::reader::{Reader, ReaderBranch, ReaderPending, ReaderStaged};
 use super::{Error, Result};
+use std::any::Any;
 
 pub trait ParseTree {
     type Derivation;
@@ -17,6 +18,35 @@ pub struct DerivationResult<'a, T> {
 pub enum EitherOr<T, D> {
     Either(T),
     Or(D),
+}
+
+pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
+
+// TODO: Rename
+// TODO: Should this wrap the item?
+pub struct GNonAlphanumericItem;
+
+impl ParseTree for GNonAlphanumericItem {
+    type Derivation = Self;
+
+    fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GEof::derive(checked_out) {
+            return Ok(DerivationResult { derived: GNonAlphanumericItem, branch: res.branch })
+        } else {
+            reader = pending.discard();
+        }
+
+        let (slice, handle) = reader.read_amt(1).map(|(s, h)| (s.unwrap(), h))?;
+        if slice.chars().any(|c| !c.is_alphanumeric() && (c != '_' || c != '-')) {
+            return Err(Error::Todo)
+        }
+
+        Ok(DerivationResult {
+            derived: GNonAlphanumericItem,
+            branch: handle.commit().into_branch(),
+        })
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -235,6 +265,7 @@ impl ParseTree for GSeparatorItem {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // TODO: Make use of `GEof` here.
         let (slice, handle) = reader.read_amt(1)?;
         dbg!(&slice, &handle);
         let slice = match slice {
