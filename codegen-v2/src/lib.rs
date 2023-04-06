@@ -8,13 +8,13 @@ type Result<T> = std::result::Result<T, Error>;
 trait ParseTree {
     type Derivation;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>>;
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>>;
 }
 
 #[derive(Debug, Clone)]
 struct DerivationResult<'a, T> {
     derived: T,
-    driver: DriverScope<'a>,
+    driver: Driver<'a>,
 }
 
 #[derive(Debug)]
@@ -23,21 +23,21 @@ enum Error {
     Eof,
 }
 
-impl<'a> From<&'a str> for DriverScope<'a> {
+impl<'a> From<&'a str> for Driver<'a> {
     fn from(buffer: &'a str) -> Self {
-        DriverScope { buffer, pos: 0 }
+        Driver { buffer, pos: 0 }
     }
 }
 
 #[derive(Debug, Clone)]
-struct DriverScope<'a> {
+struct Driver<'a> {
     buffer: &'a str,
     pos: usize,
 }
 
-impl<'a> DriverScope<'a> {
+impl<'a> Driver<'a> {
     fn scope(&self) -> Self {
-        DriverScope {
+        Driver {
             buffer: self.buffer,
             pos: 0,
         }
@@ -53,7 +53,7 @@ impl<'a> DriverScope<'a> {
 
             dbg!(counter, slice);
 
-            let driver = DriverScope::from(slice);
+            let driver = Driver::from(slice);
             if P::derive(driver).is_ok() {
                 let target = string[..counter].to_string();
                 dbg!(&target);
@@ -116,15 +116,15 @@ struct DriverScopeUsed<'a> {
 }
 
 impl<'a> DriverScopeUsed<'a> {
-    fn commit(mut self) -> DriverScope<'a> {
-        DriverScope {
+    fn commit(mut self) -> Driver<'a> {
+        Driver {
             buffer: self.buffer,
             pos: self.pos + self.amt_read,
         }
     }
-    fn rollback(self) -> DriverScope<'a> {
+    fn rollback(self) -> Driver<'a> {
         // Do nothing with `amt_read`.
-        DriverScope {
+        Driver {
             buffer: self.buffer,
             pos: self.pos,
         }
@@ -139,7 +139,7 @@ enum EitherOr<T, D> {
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         if let Ok(res) = T::derive(driver.scope()) {
             return Ok(DerivationResult {
                 derived: EitherOr::Either(res.derived),
@@ -164,7 +164,7 @@ struct GEof;
 impl ParseTree for GEof {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let (slice, handle) = driver.read_amt(1)?;
 
         if slice.is_some() {
@@ -189,7 +189,7 @@ enum GType {
 impl ParseTree for GType {
     type Derivation = Self;
 
-    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
@@ -227,7 +227,7 @@ struct GStruct;
 impl ParseTree for GStruct {
     type Derivation = Self;
 
-    fn derive<'a>(_driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(_driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         todo!()
     }
 }
@@ -245,7 +245,7 @@ enum GSeparatorItem {
 impl ParseTree for GSeparatorItem {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let (slice, handle) = driver.read_amt(1)?;
         dbg!(&slice);
         let slice = match slice {
@@ -285,7 +285,7 @@ struct GParamItemWithMarker {
 impl ParseTree for GParamItemWithMarker {
     type Derivation = Self;
 
-    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         // Derive parameter type.
         let ty_res = GType::derive(driver.scope())?;
         dbg!(&ty_res);
@@ -327,7 +327,7 @@ struct GParamItemWithoutMarker {
 impl ParseTree for GParamItemWithoutMarker {
     type Derivation = Self;
 
-    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         // Derive parameter type.
         let ty_res = GType::derive(driver.scope())?;
         dbg!(&ty_res);
@@ -358,7 +358,7 @@ struct GParamName(String);
 impl ParseTree for GParamName {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let (string, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
 
         Ok(DerivationResult {
@@ -376,7 +376,7 @@ struct GParamContinued {
 impl ParseTree for GParam {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         todo!()
     }
 }
@@ -387,7 +387,7 @@ struct GMarker(String);
 impl ParseTree for GMarker {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let (string, handle) = driver.read_until::<GSeparator>()?;
 
         Ok(DerivationResult {
@@ -427,7 +427,7 @@ impl<T> Continuum<T> {
 impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> {
     type Derivation = Continuum<T>;
 
-    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let mut sep_items: Option<Continuum<T::Derivation>> = None;
         loop {
             if let Ok(res) = T::derive(driver.scope()) {
