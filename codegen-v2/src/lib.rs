@@ -11,33 +11,6 @@ trait ParseTree {
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R>;
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-struct WithEof<T> {
-    derived: T,
-}
-
-impl<T: ParseTree> ParseTree for WithEof<T> {
-    type Derivation = WithEof<T::Derivation>;
-
-    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        let der_res = T::derive(driver)?;
-        let (slice, handle) = der_res.driver.read_amt(1)?;
-
-        if slice.is_some() {
-            return Err(Error::new(ErrorType::Todo, handle.rollback()));
-        }
-
-        let driver = handle.commit();
-
-        Ok(DerivationResult {
-            derived: WithEof {
-                derived: der_res.derived,
-            },
-            driver,
-        })
-    }
-}
-
 struct DerivationResult<T, R> {
     derived: T,
     driver: Driver<R>,
@@ -228,6 +201,7 @@ impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     }
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct GEof;
 
 impl ParseTree for GEof {

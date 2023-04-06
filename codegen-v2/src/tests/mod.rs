@@ -1,26 +1,24 @@
 use crate::{
-    Driver, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator, GType,
-    ParseTree, WithEof,
+    Driver, GEof, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator,
+    GType, ParseTree,
 };
 
 #[test]
 fn test_separator() {
-    /*
     let driver = Driver::from("");
-    let x = WithEof::<GSeparator>::derive(driver).unwrap();
+    let x = GEof::derive(driver).unwrap();
     dbg!(x);
-    */
 
     let driver = Driver::from(" ");
-    let x = WithEof::<GSeparator>::derive(driver).unwrap();
+    let x = GSeparator::derive(driver).unwrap();
     dbg!(x);
 
     let driver = Driver::from("  ");
-    let x = WithEof::<GSeparator>::derive(driver).unwrap();
+    let x = GSeparator::derive(driver).unwrap();
     dbg!(x);
 
     let driver = Driver::from(" \n  \t");
-    let x = WithEof::<GSeparator>::derive(driver).unwrap();
+    let x = GSeparator::derive(driver).unwrap();
     dbg!(x);
 }
 
