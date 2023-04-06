@@ -25,10 +25,7 @@ enum Error {
 
 impl<'a> From<&'a str> for DriverScope<'a> {
     fn from(buffer: &'a str) -> Self {
-        DriverScope {
-            buffer,
-            pos: 0,
-        }
+        DriverScope { buffer, pos: 0 }
     }
 }
 
@@ -39,8 +36,11 @@ struct DriverScope<'a> {
 }
 
 impl<'a> DriverScope<'a> {
-    fn scope(self) -> Self {
-        DriverScope { buffer: self.buffer, pos: 0 }
+    fn scope(&self) -> Self {
+        DriverScope {
+            buffer: self.buffer,
+            pos: 0,
+        }
     }
     fn read_until<P>(mut self) -> Result<(String, DriverScopeUsed<'a>)>
     where
@@ -93,7 +93,7 @@ impl<'a> DriverScope<'a> {
                 DriverScopeUsed {
                     buffer: self.buffer,
                     amt_read: 0,
-                    pos: self.pos
+                    pos: self.pos,
                 },
             ));
         }
@@ -139,30 +139,22 @@ enum EitherOr<T, D> {
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
 
-    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        let der_result = T::derive(driver);
-        match der_result {
-            Ok(der_result) => {
-                return Ok(DerivationResult {
-                    derived: EitherOr::Either(der_result.derived),
-                    driver: der_result.driver,
-                })
-            }
-            Err(err) => {
-                driver = err.driver;
-            }
+    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+        if let Ok(res) = T::derive(driver.scope()) {
+            return Ok(DerivationResult {
+                derived: EitherOr::Either(res.derived),
+                driver: res.driver,
+            });
         }
 
-        let der_result = D::derive(driver);
-        match der_result {
-            Ok(der_result) => {
-                return Ok(DerivationResult {
-                    derived: EitherOr::Or(der_result.derived),
-                    driver: der_result.driver,
-                })
-            }
-            Err(err) => return Err(Error::new(err.ty, err.driver)),
+        if let Ok(res) = D::derive(driver) {
+            return Ok(DerivationResult {
+                derived: EitherOr::Or(res.derived),
+                driver: res.driver,
+            });
         }
+
+        Err(Error::Todo)
     }
 }
 
@@ -211,14 +203,11 @@ impl ParseTree for GType {
                 // Rollback driver, retry with the next derivation attempt.
                 let mut driver = handle.rollback();
 
-                match GStruct::derive(driver) {
-                    Ok(der) => {
-                        return Ok(DerivationResult {
-                            derived: GType::Struct(der.derived),
-                            driver: der.driver,
-                        })
-                    }
-                    Err(err) => driver = err.driver,
+                if let Ok(res) = GStruct::derive(driver) {
+                    return Ok(DerivationResult {
+                        derived: GType::Struct(res.derived),
+                        driver: res.driver,
+                    });
                 }
 
                 return Err(Error::Todo);
@@ -296,29 +285,35 @@ struct GParamItemWithMarker {
 impl ParseTree for GParamItemWithMarker {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        // Derive parameter type, ignore leading separators.
-        let ty_der = GType::derive(driver)?;
-        dbg!(&ty_der);
-        let driver = EitherOr::<GSeparator, GEof>::derive(ty_der.driver).ignore_result();
+    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+        // Derive parameter type.
+        let ty_res = GType::derive(driver.scope())?;
+        dbg!(&ty_res);
+
+        // Ignore leading separators.
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(ty_res.driver.scope()) {
+            driver = res.driver;
+        }
 
         // Derive marker, ignore leading separators.
-        let marker_der = GMarker::derive(driver)?;
-        dbg!(&marker_der);
-        let driver = EitherOr::<GSeparator, GEof>::derive(marker_der.driver).ignore_result();
+        let marker_res = GMarker::derive(driver)?;
+        dbg!(&marker_res);
+
+        // TODO
+        //let driver = EitherOr::<GSeparator, GEof>::derive(marker_der.driver).ignore_result();
 
         // Derive parameter name.
-        let name_der = GParamName::derive(driver)?;
-        dbg!(&name_der);
+        let name_res = GParamName::derive(marker_res.driver)?;
+        dbg!(&name_res);
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
             derived: GParamItemWithMarker {
-                ty: ty_der.derived,
-                marker: marker_der.derived,
-                name: name_der.derived,
+                ty: ty_res.derived,
+                marker: marker_res.derived,
+                name: name_res.derived,
             },
-            driver: name_der.driver,
+            driver: name_res.driver,
         })
     }
 }
@@ -332,23 +327,27 @@ struct GParamItemWithoutMarker {
 impl ParseTree for GParamItemWithoutMarker {
     type Derivation = Self;
 
-    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        // Derive parameter type, ignore leading separators.
-        let ty_der = GType::derive(driver)?;
-        dbg!(&ty_der);
-        let driver = EitherOr::<GSeparator, GEof>::derive(ty_der.driver);
+    fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+        // Derive parameter type.
+        let ty_res = GType::derive(driver.scope())?;
+        dbg!(&ty_res);
+
+        // Ignore leading separators.
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(ty_res.driver.scope()) {
+            driver = res.driver;
+        }
 
         // Derive parameter name.
-        let name_der = GParamName::derive(driver)?;
-        dbg!(&name_der);
+        let name_res = GParamName::derive(driver)?;
+        dbg!(&name_res);
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
             derived: GParamItemWithoutMarker {
-                ty: ty_der.derived,
-                name: name_der.derived,
+                ty: ty_res.derived,
+                name: name_res.derived,
             },
-            driver: name_der.driver,
+            driver: name_res.driver,
         })
     }
 }
@@ -431,26 +430,23 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
     fn derive<'a>(mut driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let mut sep_items: Option<Continuum<T::Derivation>> = None;
         loop {
-            match T::derive(driver) {
-                Ok(der_result) => {
-                    driver = der_result.driver;
+            if let Ok(res) = T::derive(driver.scope()) {
+                driver = res.driver;
 
-                    if let Some(sep) = sep_items {
-                        sep_items = Some(sep.add(der_result.derived));
-                    } else {
-                        sep_items = Some(Continuum::Thing(der_result.derived));
-                    }
+                if let Some(sep) = sep_items {
+                    sep_items = Some(sep.add(res.derived));
+                } else {
+                    sep_items = Some(Continuum::Thing(res.derived));
                 }
-                Err(err) => {
-                    dbg!(&sep_items);
-                    if let Some(items) = sep_items {
-                        return Ok(DerivationResult {
-                            derived: items,
-                            driver,
-                        });
-                    } else {
-                        return Err(Error::Todo);
-                    }
+            } else {
+                dbg!(&sep_items);
+                if let Some(items) = sep_items {
+                    return Ok(DerivationResult {
+                        derived: items,
+                        driver,
+                    });
+                } else {
+                    return Err(Error::Todo);
                 }
             }
         }
