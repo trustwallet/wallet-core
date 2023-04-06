@@ -1,4 +1,4 @@
-use reader::{Reader, ReaderToMerge};
+use reader::{Reader, ReaderBranch};
 
 mod grammar;
 mod reader;

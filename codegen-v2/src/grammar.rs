@@ -1,4 +1,4 @@
-use super::reader::{Reader, ReaderPending, ReaderStaged, ReaderToMerge};
+use super::reader::{Reader, ReaderBranch, ReaderPending, ReaderStaged};
 use super::{Error, Result};
 
 pub trait ParseTree {
@@ -10,7 +10,7 @@ pub trait ParseTree {
 #[derive(Debug, Clone)]
 pub struct DerivationResult<'a, T> {
     pub derived: T,
-    pub reader: ReaderToMerge<'a>,
+    pub branch: ReaderBranch<'a>,
 }
 
 pub enum EitherOr<T, D> {
@@ -41,11 +41,6 @@ pub enum GSeparatorItem {
     Tab,
 }
 
-pub enum GParam {
-    Item(GParamItem),
-    Continued(GParamContinued),
-}
-
 pub enum GParamItem {}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -68,11 +63,6 @@ impl From<String> for GParamName {
     fn from(string: String) -> Self {
         GParamName(string)
     }
-}
-
-pub struct GParamContinued {
-    item: GParamItem,
-    next: Box<GParam>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -104,7 +94,7 @@ impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
         if let Ok(res) = T::derive(checked_out) {
             return Ok(DerivationResult {
                 derived: EitherOr::Either(res.derived),
-                reader: res.reader,
+                branch: res.branch,
             });
         }
 
@@ -113,7 +103,7 @@ impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
         if let Ok(res) = D::derive(reader) {
             return Ok(DerivationResult {
                 derived: EitherOr::Or(res.derived),
-                reader: res.reader,
+                branch: res.branch,
             });
         }
 
@@ -133,7 +123,7 @@ impl ParseTree for GEof {
 
         Ok(DerivationResult {
             derived: GEof,
-            reader: handle.commit().prepare_merge(),
+            branch: handle.commit().into_branch(),
         })
     }
 }
@@ -158,7 +148,7 @@ impl ParseTree for GType {
                 if let Ok(res) = GStruct::derive(reader) {
                     return Ok(DerivationResult {
                         derived: GType::Struct(res.derived),
-                        reader: res.reader,
+                        branch: res.branch,
                     });
                 }
 
@@ -168,7 +158,7 @@ impl ParseTree for GType {
 
         Ok(DerivationResult {
             derived,
-            reader: handle.commit().prepare_merge(),
+            branch: handle.commit().into_branch(),
         })
     }
 }
@@ -203,7 +193,7 @@ impl ParseTree for GSeparatorItem {
 
         Ok(DerivationResult {
             derived,
-            reader: handle.commit().prepare_merge(),
+            branch: handle.commit().into_branch(),
         })
     }
 }
@@ -215,14 +205,12 @@ impl ParseTree for GParamItemWithMarker {
         // Derive parameter type.
         let (pending, checked_out) = reader.checkout();
         let ty_res = GType::derive(checked_out)?;
-        dbg!(&ty_res);
-
-        reader = pending.merge(ty_res.reader);
+        reader = pending.merge(ty_res.branch);
 
         // Ignore leading separators.
         let (pending, checked_out) = reader.checkout();
         if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
-            reader = pending.merge(res.reader);
+            reader = pending.merge(res.branch);
         } else {
             reader = pending.discard();
         }
@@ -230,14 +218,12 @@ impl ParseTree for GParamItemWithMarker {
         // Derive marker, ignore leading separators.
         let (pending, checked_out) = reader.checkout();
         let marker_res = GMarker::derive(checked_out)?;
-        dbg!(&marker_res);
-
-        reader = pending.merge(marker_res.reader);
+        reader = pending.merge(marker_res.branch);
 
         // Ignore leading separators.
         let (pending, checked_out) = reader.checkout();
         if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
-            reader = pending.merge(res.reader);
+            reader = pending.merge(res.branch);
         } else {
             reader = pending.discard();
         }
@@ -245,7 +231,6 @@ impl ParseTree for GParamItemWithMarker {
         // Derive parameter name.
         let (pending, checked_out) = reader.checkout();
         let name_res = GParamName::derive(checked_out)?;
-        dbg!(&name_res);
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
@@ -254,7 +239,7 @@ impl ParseTree for GParamItemWithMarker {
                 marker: marker_res.derived,
                 name: name_res.derived,
             },
-            reader: pending.merge(name_res.reader).prepare_merge(),
+            branch: pending.merge(name_res.branch).into_branch(),
         })
     }
 }
@@ -266,21 +251,18 @@ impl ParseTree for GParamItemWithoutMarker {
         // Derive parameter type.
         let (pending, checked_out) = reader.checkout();
         let ty_res = GType::derive(checked_out)?;
-        dbg!(&ty_res);
-
-        reader = pending.merge(ty_res.reader);
+        reader = pending.merge(ty_res.branch);
 
         // Ignore leading separators.
         let (pending, checked_out) = reader.checkout();
         if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
-            reader = pending.merge(res.reader);
+            reader = pending.merge(res.branch);
         } else {
             reader = pending.discard();
         }
 
         // Derive parameter name.
         let name_res = GParamName::derive(reader)?;
-        dbg!(&name_res);
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
@@ -288,7 +270,7 @@ impl ParseTree for GParamItemWithoutMarker {
                 ty: ty_res.derived,
                 name: name_res.derived,
             },
-            reader: name_res.reader,
+            branch: name_res.branch,
         })
     }
 }
@@ -301,16 +283,8 @@ impl ParseTree for GParamName {
 
         Ok(DerivationResult {
             derived: GParamName(string),
-            reader: handle.commit().prepare_merge(),
+            branch: handle.commit().into_branch(),
         })
-    }
-}
-
-impl ParseTree for GParam {
-    type Derivation = Self;
-
-    fn derive<'a>(_driver: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        todo!()
     }
 }
 
@@ -322,7 +296,7 @@ impl ParseTree for GMarker {
 
         Ok(DerivationResult {
             derived: GMarker(string),
-            reader: handle.commit().prepare_merge(),
+            branch: handle.commit().into_branch(),
         })
     }
 }
@@ -351,8 +325,8 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
             dbg!(&reader);
             let (pending, checked_out) = reader.checkout();
             if let Ok(res) = T::derive(checked_out) {
-                dbg!(&res.reader);
-                reader = pending.merge(res.reader);
+                dbg!(&res.branch);
+                reader = pending.merge(res.branch);
                 dbg!(&reader);
 
                 if let Some(sep) = sep_items {
@@ -365,7 +339,7 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                 if let Some(items) = sep_items {
                     return Ok(DerivationResult {
                         derived: items,
-                        reader: pending.discard().prepare_merge(),
+                        branch: pending.discard().into_branch(),
                     });
                 } else {
                     return Err(Error::Todo);

@@ -20,8 +20,8 @@ impl<'a> Reader<'a> {
             },
         )
     }
-    pub fn prepare_merge(self) -> ReaderToMerge<'a> {
-        ReaderToMerge {
+    pub fn into_branch(self) -> ReaderBranch<'a> {
+        ReaderBranch {
             buffer: self.buffer,
             pos: self.pos,
         }
@@ -130,7 +130,7 @@ pub struct ReaderPending<'a> {
 }
 
 impl<'a> ReaderPending<'a> {
-    pub fn merge(self, reader: ReaderToMerge<'a>) -> Reader<'a> {
+    pub fn merge(self, reader: ReaderBranch<'a>) -> Reader<'a> {
         Reader {
             buffer: self.buffer,
             pos: reader.pos,
@@ -145,7 +145,7 @@ impl<'a> ReaderPending<'a> {
 }
 
 #[derive(Debug, Clone)]
-pub struct ReaderToMerge<'a> {
+pub struct ReaderBranch<'a> {
     buffer: &'a str,
     pos: usize,
 }
