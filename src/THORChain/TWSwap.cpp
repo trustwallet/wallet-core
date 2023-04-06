@@ -51,7 +51,10 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
         outputProto.mutable_error()->set_message("");
 
         switch (fromChain) {
-        case THORChainSwap::Proto::BTC: {
+        case THORChainSwap::Proto::BTC:
+        case THORChainSwap::Proto::DOGE:
+        case THORChainSwap::Proto::BCH:
+        case THORChainSwap::Proto::LTC: {
             Bitcoin::Proto::SigningInput btcInput;
             if (!btcInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
                 outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
@@ -61,7 +64,8 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
             }
         } break;
 
-        case THORChainSwap::Proto::ETH: {
+        case THORChainSwap::Proto::ETH:
+        case THORChainSwap::Proto::AVAX: {
             Ethereum::Proto::SigningInput ethInput;
             if (!ethInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
                 outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
@@ -78,6 +82,16 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
                 outputProto.mutable_error()->set_message("Could not deserialize BNB input");
             } else {
                 *outputProto.mutable_binance() = bnbInput;
+            }
+        } break;
+
+        case THORChainSwap::Proto::ATOM: {
+            Cosmos::Proto::SigningInput cosmosInput;
+            if (!cosmosInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
+                outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
+                outputProto.mutable_error()->set_message("Could not deserialize ATOM input");
+            } else {
+                *outputProto.mutable_cosmos() = cosmosInput;
             }
         } break;
 
