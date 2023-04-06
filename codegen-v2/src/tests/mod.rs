@@ -1,12 +1,12 @@
 use crate::{
-    Driver, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator, GType,
-    ParseTree,
+    Driver, GEof, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator,
+    GType, ParseTree,
 };
 
 #[test]
 fn test_separator() {
     let driver = Driver::from("");
-    let x = GSeparator::derive(driver).unwrap();
+    let x = GEof::derive(driver).unwrap();
     dbg!(x);
 
     let driver = Driver::from(" ");
@@ -28,7 +28,7 @@ fn test_types() {
     let der = GType::derive(driver).unwrap();
     assert_eq!(der.derived, GType::Int);
 
-    let driver = Driver::from("bool ");
+    let driver = Driver::from("bool");
     let der = GType::derive(driver).unwrap();
     assert_eq!(der.derived, GType::Bool);
 
@@ -39,7 +39,7 @@ fn test_types() {
 
 #[test]
 fn test_func_params_with_marker() {
-    let driver = Driver::from("int _NOTNULL my_var");
+    let driver = Driver::from("int _NOTNULL my_var\n");
     let der = GParamItemWithMarker::derive(driver).unwrap();
     assert_eq!(
         der.derived,
@@ -50,7 +50,7 @@ fn test_func_params_with_marker() {
         }
     );
 
-    let driver = Driver::from("bool\n_SOMEMARKER  some_bool");
+    let driver = Driver::from("bool\n_SOMEMARKER  some_bool\n");
     let der = GParamItemWithMarker::derive(driver).unwrap();
     assert_eq!(
         der.derived,

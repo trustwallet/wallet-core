@@ -44,6 +44,7 @@ impl<R: Read> Error<R> {
 #[derive(Debug)]
 enum ErrorType {
     Todo,
+    Eof,
 }
 
 impl<'a> From<&'a [u8]> for Driver<&'a [u8]> {
@@ -165,6 +166,61 @@ impl<R: Read> DriverUsed<R> {
     }
 }
 
+enum EitherOr<T, D> {
+    Either(T),
+    Or(D),
+}
+
+impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
+    type Derivation = EitherOr<T::Derivation, D::Derivation>;
+
+    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        let der_result = T::derive(driver);
+        match der_result {
+            Ok(der_result) => {
+                return Ok(DerivationResult {
+                    derived: EitherOr::Either(der_result.derived),
+                    driver: der_result.driver,
+                })
+            }
+            Err(err) => {
+                driver = err.driver;
+            }
+        }
+
+        let der_result = D::derive(driver);
+        match der_result {
+            Ok(der_result) => {
+                return Ok(DerivationResult {
+                    derived: EitherOr::Or(der_result.derived),
+                    driver: der_result.driver,
+                })
+            }
+            Err(err) => return Err(Error::new(err.ty, err.driver)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+struct GEof;
+
+impl ParseTree for GEof {
+    type Derivation = Self;
+
+    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        let (slice, handle) = driver.read_amt(1)?;
+
+        if slice.is_some() {
+            return Err(Error::new(ErrorType::Todo, handle.rollback()));
+        }
+
+        Ok(DerivationResult {
+            derived: GEof,
+            driver: handle.commit(),
+        })
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 enum GType {
     Bool,
@@ -179,7 +235,7 @@ impl ParseTree for GType {
     fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
-        let (slice, handle) = driver.read_until::<GSeparator>()?;
+        let (slice, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
         dbg!(&slice);
 
         let derived = match slice.as_str() {
@@ -222,69 +278,7 @@ impl ParseTree for GStruct {
     }
 }
 
-#[derive(Debug)]
-enum GSeparator {
-    Item(GSeparatorItem),
-    Continued(GSeparatorContinued),
-}
-
-impl GSeparator {
-    fn add(self, new_item: GSeparatorItem) -> Self {
-        match self {
-            GSeparator::Item(item) => GSeparator::Continued(GSeparatorContinued {
-                item,
-                next: Box::new(GSeparator::Item(new_item)),
-            }),
-            GSeparator::Continued(items) => GSeparator::Continued(GSeparatorContinued {
-                item: items.item,
-                next: Box::new(items.next.add(new_item)),
-            }),
-        }
-    }
-}
-
-impl ParseTree for GSeparator {
-    type Derivation = Self;
-
-    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        let mut sep_items: Option<GSeparator> = None;
-        let mut is_eof = false;
-        loop {
-            match GSeparatorItem::derive(driver) {
-                Ok(der_result) => {
-                    driver = der_result.driver;
-
-                    if let GSeparatorItem::Eof = der_result.derived {
-                        is_eof = true;
-                    }
-
-                    if let Some(sep) = sep_items {
-                        sep_items = Some(sep.add(der_result.derived));
-                    } else {
-                        sep_items = Some(GSeparator::Item(der_result.derived));
-                    }
-
-                    if is_eof {
-                        return Ok(DerivationResult {
-                            derived: sep_items.unwrap(),
-                            driver,
-                        });
-                    }
-                }
-                Err(err) => {
-                    if let Some(items) = sep_items {
-                        return Ok(DerivationResult {
-                            derived: items,
-                            driver: err.driver,
-                        });
-                    } else {
-                        return Err(Error::new(err.ty, err.driver));
-                    }
-                }
-            }
-        }
-    }
-}
+type GSeparator = Continuum<GSeparatorItem>;
 
 #[derive(Debug)]
 enum GSeparatorItem {
@@ -303,10 +297,7 @@ impl ParseTree for GSeparatorItem {
         let slice = match slice {
             Some(string) => string,
             None => {
-                return Ok(DerivationResult {
-                    derived: GSeparatorItem::Eof,
-                    driver: handle.commit(),
-                });
+                return Err(Error::new(ErrorType::Eof, handle.rollback()));
             }
         };
 
@@ -321,12 +312,6 @@ impl ParseTree for GSeparatorItem {
 
         Ok(DerivationResult { derived, driver })
     }
-}
-
-#[derive(Debug)]
-struct GSeparatorContinued {
-    item: GSeparatorItem,
-    next: Box<GSeparator>,
 }
 
 enum GParam {
@@ -350,12 +335,12 @@ impl ParseTree for GParamItemWithMarker {
         // Derive parameter type, ignore leading separators.
         let ty_der = GType::derive(driver)?;
         dbg!(&ty_der);
-        let driver = GSeparator::derive(ty_der.driver).ignore_result();
+        let driver = EitherOr::<GSeparator, GEof>::derive(ty_der.driver).ignore_result();
 
         // Derive marker, ignore leading separators.
         let marker_der = GMarker::derive(driver)?;
         dbg!(&marker_der);
-        let driver = GSeparator::derive(marker_der.driver).ignore_result();
+        let driver = EitherOr::<GSeparator, GEof>::derive(marker_der.driver).ignore_result();
 
         // Derive parameter name.
         let name_der = GParamName::derive(driver)?;
@@ -386,7 +371,7 @@ impl ParseTree for GParamItemWithoutMarker {
         // Derive parameter type, ignore leading separators.
         let ty_der = GType::derive(driver)?;
         dbg!(&ty_der);
-        let driver = GSeparator::derive(ty_der.driver).ignore_result();
+        let driver = EitherOr::<GSeparator, GEof>::derive(ty_der.driver).ignore_result();
 
         // Derive parameter name.
         let name_der = GParamName::derive(driver)?;
@@ -410,7 +395,7 @@ impl ParseTree for GParamName {
     type Derivation = Self;
 
     fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
-        let (string, handle) = driver.read_until::<GSeparator>()?;
+        let (string, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
 
         Ok(DerivationResult {
             derived: GParamName(string),
@@ -445,5 +430,64 @@ impl ParseTree for GMarker {
             derived: GMarker(string),
             driver: handle.commit(),
         })
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+enum Continuum<T> {
+    Thing(T),
+    Next(ContinuumNext<T>),
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+struct ContinuumNext<T> {
+    thing: T,
+    next: Box<Continuum<T>>,
+}
+
+impl<T> Continuum<T> {
+    fn add(self, new_thing: T) -> Self {
+        match self {
+            Continuum::Thing(thing) => Continuum::Next(ContinuumNext {
+                thing,
+                next: Box::new(Continuum::Thing(new_thing)),
+            }),
+            Continuum::Next(next) => Continuum::Next(ContinuumNext {
+                thing: next.thing,
+                next: Box::new(next.next.add(new_thing)),
+            }),
+        }
+    }
+}
+
+impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> {
+    type Derivation = Continuum<T>;
+
+    fn derive<R: Read>(mut driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R> {
+        let mut sep_items: Option<Continuum<T::Derivation>> = None;
+        loop {
+            match T::derive(driver) {
+                Ok(der_result) => {
+                    driver = der_result.driver;
+
+                    if let Some(sep) = sep_items {
+                        sep_items = Some(sep.add(der_result.derived));
+                    } else {
+                        sep_items = Some(Continuum::Thing(der_result.derived));
+                    }
+                }
+                Err(err) => {
+                    dbg!(&sep_items);
+                    if let Some(items) = sep_items {
+                        return Ok(DerivationResult {
+                            derived: items,
+                            driver: err.driver,
+                        });
+                    } else {
+                        return Err(Error::new(err.ty, err.driver));
+                    }
+                }
+            }
+        }
     }
 }
