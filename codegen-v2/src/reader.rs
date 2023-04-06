@@ -1,4 +1,5 @@
-use super::{Result, Error, ParseTree};
+use super::grammar::ParseTree;
+use super::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct Reader<'a> {

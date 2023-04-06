@@ -1,7 +1,8 @@
-use crate::{
+use crate::grammar::{
     GEof, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator,
-    GSeparatorItem, GType, ParseTree, Reader,
+    GSeparatorItem, GType, ParseTree,
 };
+use crate::reader::Reader;
 
 #[test]
 fn test_eof() {
@@ -63,8 +64,8 @@ fn test_func_params_with_marker() {
         der.derived,
         GParamItemWithMarker {
             ty: GType::Int,
-            marker: GMarker("_NOTNULL".to_string()),
-            name: GParamName("my_var".to_string())
+            marker: GMarker::from("_NOTNULL".to_string()),
+            name: GParamName::from("my_var".to_string())
         }
     );
 
@@ -74,8 +75,8 @@ fn test_func_params_with_marker() {
         der.derived,
         GParamItemWithMarker {
             ty: GType::Bool,
-            marker: GMarker("_SOMEMARKER".to_string()),
-            name: GParamName("some_bool".to_string())
+            marker: GMarker::from("_SOMEMARKER".to_string()),
+            name: GParamName::from("some_bool".to_string())
         }
     );
 }
@@ -88,7 +89,7 @@ fn test_func_params_without_marker() {
         der.derived,
         GParamItemWithoutMarker {
             ty: GType::Int,
-            name: GParamName("my_var".to_string())
+            name: GParamName::from("my_var".to_string())
         }
     );
 
@@ -98,7 +99,7 @@ fn test_func_params_without_marker() {
         der.derived,
         GParamItemWithoutMarker {
             ty: GType::Bool,
-            name: GParamName("some_bool".to_string())
+            name: GParamName::from("some_bool".to_string())
         }
     );
 }
