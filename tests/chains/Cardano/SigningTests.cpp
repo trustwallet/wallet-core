@@ -15,7 +15,6 @@
 #include "uint256.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
-#include "HDWallet.h"
 
 #include <gtest/gtest.h>
 #include <vector>

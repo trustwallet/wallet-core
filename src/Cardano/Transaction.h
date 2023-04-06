@@ -104,7 +104,7 @@ public:
     TokenBundle tokenBundle;
 
     /// Returns minimal amount of ADA for the output.
-    uint64_t minAdaAmount(uint64_t coinsPerUtxoByte) const;
+    uint64_t minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept;
 
     TxOutput() = default;
     TxOutput(Data address, Amount amount)

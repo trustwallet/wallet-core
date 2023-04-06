@@ -261,6 +261,8 @@ class TestCardanoSigning {
         assertEquals(Numeric.toHexString(txid.toByteArray()), "0x6dcf3956232953fc25b8355fb1ded1e912b5802090fd21434d789087d6329683");
     }
 
+    // Successfully broadcasted:
+    // https://cardanoscan.io/transaction/87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628
     @Test
     fun testSignNftTransfer() {
         val fromAddress = "addr1qy5eme9r6frr0m6q2qpncg282jtrhq5lg09uxy2j0545hj8rv7v2ntdxuv6p4s3eq4lqzg39lewgvt6fk5kmpa0zppesufzjud"
