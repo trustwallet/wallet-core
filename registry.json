@@ -548,6 +548,36 @@
     }
   },
   {
+    "id": "stride",
+    "name": "Stride",
+    "displayName": "Stride",
+    "coinId": 40000118,
+    "symbol": "STRD",
+    "decimals": 6,
+    "chainId": "stride-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "stride",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/stride",
+      "txPath": "/txs/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://stride.zone/",
+      "source": "https://github.com/Stride-Labs/stride",
+      "rpc": "https://stride-rpc.polkachu.com/",
+      "documentation": "https://docs.stride.zone/docs"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,

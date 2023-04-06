@@ -281,6 +281,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .juno:
                     let expectedResult = "juno142j9u5eaduzd7faumygud6ruhdwme98qxkfz30"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .stride:
+                    let expectedResult = "stride142j9u5eaduzd7faumygud6ruhdwme98qn029zl"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
