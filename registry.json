@@ -518,6 +518,36 @@
     }
   },
   {
+    "id": "juno",
+    "name": "Juno",
+    "displayName": "Juno",
+    "coinId": 30000118,
+    "symbol": "JUNO",
+    "decimals": 6,
+    "chainId": "juno-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "juno",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/juno",
+      "txPath": "/txs/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://www.junonetwork.io/",
+      "source": "https://github.com/CosmosContracts/juno",
+      "rpc": "https://juno-rpc.polkachu.com",
+      "documentation": "https://docs.junonetwork.io/juno/readme"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,

@@ -16,14 +16,14 @@
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
 
-using namespace TW;
+namespace TW::Cosmos::tests {
 
 TEST(TWJunoAnyAddress, IsValid) {
     EXPECT_TRUE(TWAnyAddressIsValidBech32(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos, STRING("juno").get()));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeJuno));
     EXPECT_FALSE(TWAnyAddressIsValidBech32(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeBitcoin, STRING("juno").get()));
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos));
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeBitcoin));
-
 }
 
 TEST(TWJunoAnyAddress, createFromPubKeyJuno) {
@@ -51,5 +51,6 @@ TEST(TWJunoAnyAddress, createFromStringJuno) {
     ASSERT_TRUE(TWAnyAddressIsValidBech32(addrDescription, TWCoinTypeCosmos, hrp.get()));
     TWStringDelete(addrDescription);
     TWAnyAddressDelete(anyAddr);
+}
 
 }

@@ -21,6 +21,7 @@ class TestJunoAddress {
         val addr = "juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94"
         val anyAddr = AnyAddress(addr, CoinType.COSMOS, "juno")
         assert(AnyAddress.isValidBech32(anyAddr.description(), CoinType.COSMOS, "juno"))
+        assert(AnyAddress.isValid(anyAddr.description(), CoinType.JUNO))
         assert(!AnyAddress.isValidBech32(anyAddr.description(), CoinType.BITCOIN, "juno"))
         assert(!AnyAddress.isValid(anyAddr.description(), CoinType.BITCOIN))
         assert(!AnyAddress.isValid(anyAddr.description(), CoinType.COSMOS))
