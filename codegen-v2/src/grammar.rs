@@ -118,7 +118,26 @@ pub struct GParamItemWithoutMarker {
 pub struct GParamName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GMarker(String);
+pub enum GMarker {
+    TWVisibilityDefault,
+    TwExportClass,
+    TwExportStruct,
+    TwExportEnum,
+    TwExportFunc,
+    TwExportMethod,
+    TwExportProperty,
+    TwExportStaticMethod,
+    TwExportStaticProperty,
+    TwMethodDiscardableResult,
+    TwData,
+    TwAssumeNonNullBegin,
+    TwAssumeNonNullEnd,
+    TwDeprecated,
+    TwDeprecatedFor,
+    Nullable,
+    NonNull,
+    NullUnspecified,
+}
 
 pub struct GComma;
 
@@ -256,7 +275,11 @@ impl ParseTree for GFuncParams {
         (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
 
         Ok(DerivationResult {
-            derived: GFuncParams { name: name_der, params, return_ty: return_der },
+            derived: GFuncParams {
+                name: name_der,
+                params,
+                return_ty: return_der,
+            },
             branch: p_reader.into_branch(),
         })
     }
@@ -275,12 +298,6 @@ pub struct ContinuumNext<T> {
 }
 
 // *** DERIVE IMPLEMENTATIONS ***
-
-impl From<String> for GMarker {
-    fn from(string: String) -> Self {
-        GMarker(string)
-    }
-}
 
 impl From<String> for GParamName {
     fn from(string: String) -> Self {
@@ -480,12 +497,31 @@ impl ParseTree for GMarker {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
 
-        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
-            return Err(Error::Todo);
-        }
+        let der = match string.as_str() {
+            "TW_VISIBILITY_DEFAULT" => GMarker::TWVisibilityDefault,
+            "TW_EXPORT_CLASS" => GMarker::TwExportClass,
+            "TW_EXPORT_STRUCT" => GMarker::TwExportStruct,
+            // TODO: Needs special handling.
+            //"TW_EXPORT_ENUM" => GMarker::TwExportStruct,
+            "TW_EXPORT_FUNC" => GMarker::TwExportFunc,
+            "TW_EXPORT_METHOD" => GMarker::TwExportMethod,
+            "TW_EXPORT_PROPERTY" => GMarker::TwExportProperty,
+            "TW_EXPORT_STATIC_METHOD" => GMarker::TwExportStaticMethod,
+            "TW_EXPORT_STATIC_PROPERTY" => GMarker::TwExportStaticProperty,
+            "TW_METHOD_DISCARDABLE_RESULT" => GMarker::TwMethodDiscardableResult,
+            "TWData" => GMarker::TwMethodDiscardableResult,
+            "TW_ASSUME_NONNULL_BEGIN" => GMarker::TwAssumeNonNullBegin,
+            "TW_ASSUME_NONNULL_END" => GMarker::TwAssumeNonNullEnd,
+            // TODO: Needs special handling.
+            //"TW_DEPRECATED" => GMarker::TwDeprecated,
+            //"TW_DEPRECATED_FOR" => GMarker::TwDeprecatedFor,
+            "_Nullable" => GMarker::Nullable,
+            "_Nonnull" => GMarker::NonNull,
+            _ => return Err(Error::Todo),
+        };
 
         Ok(DerivationResult {
-            derived: GMarker(string),
+            derived: der,
             branch: handle.commit().into_branch(),
         })
     }

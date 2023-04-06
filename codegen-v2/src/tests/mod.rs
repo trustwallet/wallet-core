@@ -103,24 +103,24 @@ fn test_types() {
 
 #[test]
 fn test_func_params_with_marker() {
-    let driver = Reader::from("int _NOTNULL my_var\n");
+    let driver = Reader::from("int _Nonnull my_var\n");
     let der = GParamItemWithMarker::derive(driver).unwrap();
     assert_eq!(
         der.derived,
         GParamItemWithMarker {
             ty: GType::Int,
-            marker: GMarker::from("_NOTNULL".to_string()),
+            marker: GMarker::NonNull,
             name: GParamName::from("my_var".to_string())
         }
     );
 
-    let driver = Reader::from("bool\n_SOMEMARKER  some_bool\n");
+    let driver = Reader::from("bool\n_Nonnull  some_bool\n");
     let der = GParamItemWithMarker::derive(driver).unwrap();
     assert_eq!(
         der.derived,
         GParamItemWithMarker {
             ty: GType::Bool,
-            marker: GMarker::from("_SOMEMARKER".to_string()),
+            marker: GMarker::NonNull,
             name: GParamName::from("some_bool".to_string())
         }
     );
