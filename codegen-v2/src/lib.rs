@@ -3,108 +3,82 @@ use std::io::{BufRead, BufReader, Read};
 #[cfg(test)]
 mod tests;
 
-type Result<T, R> = std::result::Result<T, Error<R>>;
+type Result<T> = std::result::Result<T, Error>;
 
 trait ParseTree {
     type Derivation;
 
-    fn derive<R: Read>(driver: Driver<R>) -> Result<DerivationResult<Self::Derivation, R>, R>;
+    fn derive<'a>(driver: DriverScope<'a>) -> Result<DerivationResult<'a, Self::Derivation>>;
 }
 
-struct DerivationResult<T, R> {
+#[derive(Debug, Clone)]
+struct DerivationResult<'a, T> {
     derived: T,
-    driver: Driver<R>,
-}
-
-impl<T: std::fmt::Debug, R> std::fmt::Debug for DerivationResult<T, R> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("DerivationResult")
-            .field("derived", &self.derived)
-            .finish()
-    }
-}
-
-struct Error<R> {
-    ty: ErrorType,
-    driver: Driver<R>,
-}
-
-impl<R> std::fmt::Debug for Error<R> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Error").field("type", &self.ty).finish()
-    }
-}
-
-impl<R: Read> Error<R> {
-    fn new(ty: ErrorType, driver: Driver<R>) -> Self {
-        Error { ty, driver }
-    }
+    driver: DriverScope<'a>,
 }
 
 #[derive(Debug)]
-enum ErrorType {
+enum Error {
     Todo,
     Eof,
 }
 
-impl<'a> From<&'a [u8]> for Driver<&'a [u8]> {
-    fn from(buffer: &'a [u8]) -> Self {
-        Driver {
-            reader: BufReader::new(buffer),
-        }
-    }
-}
-
-impl<'a> From<&'a str> for Driver<&'a [u8]> {
+impl<'a> From<&'a str> for DriverScope<'a> {
     fn from(buffer: &'a str) -> Self {
-        Driver {
-            reader: BufReader::new(buffer.as_bytes()),
+        DriverScope {
+            buffer,
+            pos: 0,
         }
     }
 }
 
-struct Driver<R> {
-    reader: BufReader<R>,
+struct DriverScope<'a> {
+    buffer: &'a str,
+    pos: usize,
 }
 
-impl<R: Read> Driver<R> {
-    fn read_until<P>(mut self) -> Result<(String, DriverUsed<R>), R>
+impl<'a> DriverScope<'a> {
+    fn scope(self) -> Self {
+        DriverScope { buffer: self.buffer, pos: 0 }
+    }
+    fn read_until<P>(mut self) -> Result<(String, DriverScopeUsed<'a>)>
     where
         P: ParseTree,
     {
-        let buffer = self.reader.fill_buf().unwrap();
-        let string = std::str::from_utf8(buffer).unwrap();
+        let string = &self.buffer[self.pos..];
 
-        for counter in 0..=buffer.len() {
+        for counter in 0..=string.len() {
             let slice = &string[counter..];
 
             dbg!(counter, slice);
 
-            let driver = Driver::from(slice.as_bytes());
+            let driver = DriverScope::from(slice);
             if P::derive(driver).is_ok() {
                 let target = string[..counter].to_string();
                 dbg!(&target);
 
                 return Ok((
                     target,
-                    DriverUsed {
-                        reader: self.reader,
+                    DriverScopeUsed {
+                        buffer: self.buffer,
                         amt_read: counter,
+                        pos: self.pos,
                     },
                 ));
             }
         }
 
-        Err(Error::new(ErrorType::Todo, self))
+        Err(Error::Todo)
     }
-    fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverUsed<R>), R> {
+    fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverScopeUsed<'a>)> {
         let buffer = &self.reader.fill_buf().unwrap();
         if buffer.len() < amt {
             return Ok((
                 None,
-                DriverUsed {
-                    reader: self.reader,
+                DriverScopeUsed {
+                    buffer: self.buffer,
                     amt_read: 0,
+                    pos: self.pos,
                 },
             ));
         }
@@ -115,53 +89,43 @@ impl<R: Read> Driver<R> {
         if slice.is_empty() {
             return Ok((
                 None,
-                DriverUsed {
-                    reader: self.reader,
+                DriverScopeUsed {
+                    buffer: self.buffer,
                     amt_read: 0,
+                    pos: self.pos
                 },
             ));
         }
 
         Ok((
             Some(slice.to_string()),
-            DriverUsed {
-                reader: self.reader,
+            DriverScopeUsed {
+                buffer: self.buffer,
                 amt_read: amt,
+                pos: self.pos,
             },
         ))
     }
 }
 
-// TODO: Rename?
-trait DriverExtractor<R> {
-    fn ignore_result(self) -> Driver<R>;
-}
-
-impl<T, R> DriverExtractor<R> for Result<DerivationResult<T, R>, R> {
-    fn ignore_result(self) -> Driver<R> {
-        match self {
-            Ok(res) => res.driver,
-            Err(err) => err.driver,
-        }
-    }
-}
-
-struct DriverUsed<R> {
-    reader: BufReader<R>,
+struct DriverScopeUsed<'a> {
+    buffer: &'a str,
     amt_read: usize,
+    pos: usize,
 }
 
-impl<R: Read> DriverUsed<R> {
-    fn commit(mut self) -> Driver<R> {
-        self.reader.consume(self.amt_read);
-        Driver {
-            reader: self.reader,
+impl<'a> DriverScopeUsed<'a> {
+    fn commit(mut self) -> DriverScope<'a> {
+        DriverScope {
+            buffer: self.buffer,
+            pos: self.pos + self.amt_read,
         }
     }
-    fn rollback(self) -> Driver<R> {
+    fn rollback(self) -> DriverScope<'a> {
         // Do nothing with `amt_read`.
-        Driver {
-            reader: self.reader,
+        DriverScope {
+            buffer: self.buffer,
+            pos: self.pos,
         }
     }
 }
