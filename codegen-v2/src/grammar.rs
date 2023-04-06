@@ -117,6 +117,18 @@ pub struct GParamItemWithoutMarker {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamName(String);
 
+impl From<String> for GParamName {
+    fn from(string: String) -> Self {
+        GParamName(string)
+    }
+}
+
+impl From<String> for GFuncName {
+    fn from(string: String) -> Self {
+        GFuncName(string)
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GMarker {
     TWVisibilityDefault,
@@ -223,14 +235,14 @@ impl ParseTree for GFuncName {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GFuncParams {
-    name: GFuncName,
+pub struct GFunctionDecl {
+    pub name: GFuncName,
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
-    params: Vec<GParamItemWithoutMarker>,
-    return_ty: GType,
+    pub params: Vec<GParamItemWithoutMarker>,
+    pub return_ty: GType,
 }
 
-impl ParseTree for GFuncParams {
+impl ParseTree for GFunctionDecl {
     type Derivation = Self;
 
     fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -275,7 +287,7 @@ impl ParseTree for GFuncParams {
         (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
 
         Ok(DerivationResult {
-            derived: GFuncParams {
+            derived: GFunctionDecl {
                 name: name_der,
                 params,
                 return_ty: return_der,
@@ -298,12 +310,6 @@ pub struct ContinuumNext<T> {
 }
 
 // *** DERIVE IMPLEMENTATIONS ***
-
-impl From<String> for GParamName {
-    fn from(string: String) -> Self {
-        GParamName(string)
-    }
-}
 
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;

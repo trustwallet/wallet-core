@@ -1,6 +1,7 @@
 use crate::grammar::{
-    GEof, GFuncParams, GMarker, GNonAlphanumeric, GNonAlphanumericItem, GParamItemWithMarker,
-    GParamItemWithoutMarker, GParamName, GSeparator, GSeparatorItem, GType, ParseTree,
+    GEof, GFuncName, GFunctionDecl, GMarker, GNonAlphanumeric, GNonAlphanumericItem,
+    GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator, GSeparatorItem, GType,
+    ParseTree,
 };
 use crate::reader::Reader;
 
@@ -150,16 +151,40 @@ fn test_func_params_without_marker() {
 }
 
 #[test]
-fn test_func_params_multiple() {
-    let driver = Reader::from("void do_something(int my_int , bool my_bool)");
-    let der = GFuncParams::derive(driver).unwrap();
-    dbg!(der);
+fn test_function_delceration() {
+    let expected = GFunctionDecl {
+        name: GFuncName::from("some_function".to_string()),
+        params: vec![
+            GParamItemWithoutMarker {
+                ty: GType::Int,
+                name: GParamName::from("some_int".to_string()),
+            },
+            GParamItemWithoutMarker {
+                ty: GType::Bool,
+                name: GParamName::from("some_bool".to_string()),
+            },
+        ],
+        return_ty: GType::Void,
+    };
 
-    let driver = Reader::from("int my_int , bool my_bool");
-    let der = GFuncParams::derive(driver);
+    let driver = Reader::from("void some_function(int some_int, bool some_bool)");
+    let der = GFunctionDecl::derive(driver).unwrap();
+    assert_eq!(der.derived, expected);
+
+    let driver = Reader::from("void some_function(int some_int ,bool some_bool)");
+    let der = GFunctionDecl::derive(driver).unwrap();
+    assert_eq!(der.derived, expected);
+
+    let driver = Reader::from("void some_function(int some_int,bool some_bool)");
+    let der = GFunctionDecl::derive(driver).unwrap();
+    assert_eq!(der.derived, expected);
+
+    let driver = Reader::from("void some_function(int some_int , bool some_bool)");
+    let der = GFunctionDecl::derive(driver).unwrap();
+    assert_eq!(der.derived, expected);
+
+    // Error (no comma)
+    let driver = Reader::from("void some_function(int some_int bool some_bool)");
+    let der = GFunctionDecl::derive(driver);
     assert!(der.is_err());
-
-    let driver = Reader::from("int other_function(int my_int,bool my_bool)");
-    let der = GFuncParams::derive(driver).unwrap();
-    dbg!(der);
 }
