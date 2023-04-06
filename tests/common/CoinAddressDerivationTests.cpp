@@ -275,6 +275,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeStargaze:
             EXPECT_EQ(address, "stars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0d8g78s");
             break;
+        case TWCoinTypeJuno:
+            EXPECT_EQ(address, "juno1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z00fucta");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
