@@ -13,6 +13,7 @@ pub struct DerivationResult<'a, T> {
     pub branch: ReaderBranch<'a>,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum EitherOr<T, D> {
     Either(T),
     Or(D),
@@ -59,18 +60,63 @@ pub struct GParamItemWithoutMarker {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamName(String);
 
-impl From<String> for GParamName {
-    fn from(string: String) -> Self {
-        GParamName(string)
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GMarker(String);
+
+pub struct GComma;
+
+impl ParseTree for GComma {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "," {
+                return Ok(DerivationResult {
+                    derived: GComma,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
     }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GMarker(String);
+pub struct GFuncParams {
+    //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
+    params: Vec<GParamItemWithoutMarker>,
+}
 
-impl From<String> for GMarker {
-    fn from(string: String) -> Self {
-        GMarker(string)
+impl ParseTree for GFuncParams {
+    type Derivation = Self;
+
+    fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let mut params = vec![];
+
+        loop {
+            let (pending, checked_out) = reader.checkout();
+            //let res = EitherOr::<GParamItemWithMarker, GParamItemWithoutMarker>::derive(checked_out)?;
+            let res = GParamItemWithoutMarker::derive(checked_out)?;
+            reader = pending.merge(res.branch);
+
+            params.push(res.derived);
+
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(res) = GComma::derive(checked_out) {
+                reader = pending.merge(res.branch);
+            } else {
+                reader = pending.discard();
+                break;
+            }
+        }
+
+        Ok(DerivationResult {
+            derived: GFuncParams { params },
+            branch: reader.into_branch(),
+        })
     }
 }
 
@@ -84,6 +130,20 @@ pub enum Continuum<T> {
 pub struct ContinuumNext<T> {
     thing: T,
     next: Box<Continuum<T>>,
+}
+
+// *** DERIVE IMPLEMENTATIONS ***
+
+impl From<String> for GMarker {
+    fn from(string: String) -> Self {
+        GMarker(string)
+    }
+}
+
+impl From<String> for GParamName {
+    fn from(string: String) -> Self {
+        GParamName(string)
+    }
 }
 
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
@@ -281,6 +341,10 @@ impl ParseTree for GParamName {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (string, handle) = reader.read_until::<EitherOr<GSeparator, GEof>>()?;
 
+        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
+            return Err(Error::Todo);
+        }
+
         Ok(DerivationResult {
             derived: GParamName(string),
             branch: handle.commit().into_branch(),
@@ -292,7 +356,11 @@ impl ParseTree for GMarker {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GSeparator>()?;
+        let (string, handle) = reader.read_until::<EitherOr<GSeparator, GEof>>()?;
+
+        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
+            return Err(Error::Todo);
+        }
 
         Ok(DerivationResult {
             derived: GMarker(string),

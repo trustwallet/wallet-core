@@ -1,6 +1,6 @@
 use crate::grammar::{
-    GEof, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator,
-    GSeparatorItem, GType, ParseTree,
+    GEof, GFuncParams, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName,
+    GSeparator, GSeparatorItem, GType, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -102,4 +102,11 @@ fn test_func_params_without_marker() {
             name: GParamName::from("some_bool".to_string())
         }
     );
+}
+
+#[test]
+fn test_func_params_multiple() {
+    let driver = Reader::from("int my_int , bool my_bool");
+    let der = GFuncParams::derive(driver).unwrap();
+    dbg!(der);
 }
