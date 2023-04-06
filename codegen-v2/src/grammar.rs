@@ -77,6 +77,7 @@ impl ParseTree for GNonAlphanumericItem {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GType {
+    Void,
     Bool,
     Char,
     Int,
@@ -183,9 +184,31 @@ impl ParseTree for GCloseBracket {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GFuncName(String);
+
+impl ParseTree for GFuncName {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+
+        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GFuncName(string),
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFuncParams {
+    name: GFuncName,
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
     params: Vec<GParamItemWithoutMarker>,
+    return_ty: GType,
 }
 
 impl ParseTree for GFuncParams {
@@ -194,8 +217,14 @@ impl ParseTree for GFuncParams {
     fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut params = vec![];
 
+        // Derive return value.
+        let (return_der, reader) = ensure::<GType>(p_reader)?;
+
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Derive return value.
+        let (name_der, reader) = ensure::<GFuncName>(reader)?;
 
         // Check for opening bracket.
         (_, p_reader) = ensure::<GOpenBracket>(reader)?;
@@ -227,7 +256,7 @@ impl ParseTree for GFuncParams {
         (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
 
         Ok(DerivationResult {
-            derived: GFuncParams { params },
+            derived: GFuncParams { name: name_der, params, return_ty: return_der },
             branch: p_reader.into_branch(),
         })
     }
@@ -311,6 +340,7 @@ impl ParseTree for GType {
         dbg!(&slice);
 
         let derived = match slice.as_str() {
+            "void" => GType::Void,
             "bool" => GType::Bool,
             "char" => GType::Char,
             "int" => GType::Int,
