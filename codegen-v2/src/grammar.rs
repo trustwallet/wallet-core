@@ -140,6 +140,48 @@ impl ParseTree for GComma {
     }
 }
 
+pub struct GOpenBracket;
+
+impl ParseTree for GOpenBracket {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "(" {
+                return Ok(DerivationResult {
+                    derived: GOpenBracket,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+pub struct GCloseBracket;
+
+impl ParseTree for GCloseBracket {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == ")" {
+                return Ok(DerivationResult {
+                    derived: GCloseBracket,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFuncParams {
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
@@ -149,12 +191,18 @@ pub struct GFuncParams {
 impl ParseTree for GFuncParams {
     type Derivation = Self;
 
-    fn derive(mut parent_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+    fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut params = vec![];
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(p_reader);
+
+        // Check for opening bracket.
+        (_, p_reader) = ensure::<GOpenBracket>(reader)?;
 
         loop {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(parent_reader);
+            let (_, reader) = wipe::<GSeparator>(p_reader);
 
             // Derive and track parameter.
             let (derived, reader) = ensure::<GParamItemWithoutMarker>(reader)?;
@@ -165,16 +213,22 @@ impl ParseTree for GFuncParams {
 
             // Check for potential comma, indicating next paremeter declaration.
             let (comma, reader) = wipe::<GComma>(reader);
-            parent_reader = reader;
+            p_reader = reader;
 
             if comma.is_none() {
                 break;
             }
         }
 
+        // Ignore leading separators.
+        (_, p_reader) = wipe::<GSeparator>(p_reader);
+
+        // Check for closing bracket.
+        (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
+
         Ok(DerivationResult {
             derived: GFuncParams { params },
-            branch: parent_reader.into_branch(),
+            branch: p_reader.into_branch(),
         })
     }
 }

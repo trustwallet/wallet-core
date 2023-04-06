@@ -151,11 +151,15 @@ fn test_func_params_without_marker() {
 
 #[test]
 fn test_func_params_multiple() {
-    let driver = Reader::from("int my_int , bool my_bool");
+    let driver = Reader::from("(int my_int , bool my_bool)");
     let der = GFuncParams::derive(driver).unwrap();
     dbg!(der);
 
-    let driver = Reader::from("int my_int,bool my_bool");
+    let driver = Reader::from("int my_int , bool my_bool");
+    let der = GFuncParams::derive(driver);
+    assert!(der.is_err());
+
+    let driver = Reader::from("(int my_int,bool my_bool)");
     let der = GFuncParams::derive(driver).unwrap();
     dbg!(der);
 }
