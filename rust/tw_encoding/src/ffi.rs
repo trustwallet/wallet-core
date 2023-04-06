@@ -14,6 +14,7 @@ use tw_memory::ffi::{CByteArray, CByteArrayResult};
 
 #[repr(C)]
 pub enum CEncodingError {
+    Ok = 0,
     InvalidInput = 1,
     InvalidAlphabet = 2,
 }
@@ -103,7 +104,7 @@ pub unsafe extern "C" fn decode_base32(
     };
 
     base32::decode(input, alphabet, padding)
-        .map(CByteArray::from)
+        .map(CByteArray::new_ptr)
         .map_err(CEncodingError::from)
         .into()
 }
@@ -140,7 +141,7 @@ pub unsafe extern "C" fn decode_base58(
     };
 
     base58::decode(input, alphabet.into())
-        .map(CByteArray::from)
+        .map(CByteArray::new_ptr)
         .map_err(CEncodingError::from)
         .into()
 }
@@ -171,7 +172,7 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
         Err(_) => return CByteArrayResult::error(CEncodingError::InvalidInput),
     };
     base64::decode(str_slice, is_url)
-        .map(CByteArray::from)
+        .map(CByteArray::new_ptr)
         .map_err(CEncodingError::from)
         .into()
 }
@@ -190,7 +191,7 @@ pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArrayResult {
     };
 
     hex::decode(hex_string)
-        .map(CByteArray::from)
+        .map(CByteArray::new_ptr)
         .map_err(CEncodingError::from)
         .into()
 }

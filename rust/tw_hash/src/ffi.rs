@@ -7,16 +7,16 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::{blake, blake2, groestl, hmac, ripemd, sha1, sha2, sha3};
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::{CByteArray, CByteArrayPtr};
 
 /// Computes the Blake-256 hash of the `input` byte array.
 /// \param input *non-null* byte array.
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn blake_256(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn blake_256(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    blake::blake_256(input).into()
+    CByteArray::new_ptr(blake::blake_256(input))
 }
 
 /// Computes the BLAKE2B hash of the `input` byte array.
@@ -29,9 +29,9 @@ pub unsafe extern "C" fn blake2_b(
     input: *const u8,
     input_len: usize,
     hash_size: usize,
-) -> CByteArray {
+) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    blake2::blake2_b(input, hash_size).into()
+    CByteArray::new_ptr(blake2::blake2_b(input, hash_size))
 }
 
 /// Computes the personalized BLAKE2B hash of the `input` byte array.
@@ -48,10 +48,10 @@ pub unsafe extern "C" fn blake2_b_personal(
     hash_size: usize,
     personal_input: *const u8,
     personal_len: usize,
-) -> CByteArray {
+) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
     let personal = std::slice::from_raw_parts(personal_input, personal_len);
-    blake2::blake2_b_personal(input, hash_size, personal).into()
+    CByteArray::new_ptr(blake2::blake2_b_personal(input, hash_size, personal))
 }
 
 /// Computes the Groestl-512 hash of the `input` byte array.
@@ -59,9 +59,9 @@ pub unsafe extern "C" fn blake2_b_personal(
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn groestl_512(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn groestl_512(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    groestl::groestl_512(input).into()
+    CByteArray::new_ptr(groestl::groestl_512(input))
 }
 
 /// Hash-based Message Authentication Code (HMAC) using the SHA-256 hash function.
@@ -76,10 +76,10 @@ pub unsafe extern "C" fn hmac__sha256(
     key_len: usize,
     input: *const u8,
     input_len: usize,
-) -> CByteArray {
+) -> CByteArrayPtr {
     let key = std::slice::from_raw_parts(key, key_len);
     let input = std::slice::from_raw_parts(input, input_len);
-    hmac::hmac_sha256(key, input).into()
+    CByteArray::new_ptr(hmac::hmac_sha256(key, input))
 }
 
 /// Computes the RIPEMD-160 hash of the `input` byte array.
@@ -87,9 +87,9 @@ pub unsafe extern "C" fn hmac__sha256(
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    ripemd::ripemd_160(input).into()
+    CByteArray::new_ptr(ripemd::ripemd_160(input))
 }
 
 /// Computes the SHA-1 hash of the `input` byte array.
@@ -97,9 +97,9 @@ pub unsafe extern "C" fn ripemd_160(input: *const u8, input_len: usize) -> CByte
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha1::sha1(input).into()
+    CByteArray::new_ptr(sha1::sha1(input))
 }
 
 /// Computes the SHA-256 hash of the `input` byte array.
@@ -107,9 +107,9 @@ pub unsafe extern "C" fn sha1(input: *const u8, input_len: usize) -> CByteArray 
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha2::sha256(input).into()
+    CByteArray::new_ptr(sha2::sha256(input))
 }
 
 /// Computes the SHA-512 hash of the `input` byte array.
@@ -117,9 +117,9 @@ pub unsafe extern "C" fn sha256(input: *const u8, input_len: usize) -> CByteArra
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha2::sha512(input).into()
+    CByteArray::new_ptr(sha2::sha512(input))
 }
 
 /// Computes the SHA-512/256 hash of the `input` byte array.
@@ -127,9 +127,9 @@ pub unsafe extern "C" fn sha512(input: *const u8, input_len: usize) -> CByteArra
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha2::sha512_256(input).into()
+    CByteArray::new_ptr(sha2::sha512_256(input))
 }
 
 /// Computes the Keccak-256 hash of the `input` byte array.
@@ -137,9 +137,9 @@ pub unsafe extern "C" fn sha512_256(input: *const u8, input_len: usize) -> CByte
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha3::keccak256(input).into()
+    CByteArray::new_ptr(sha3::keccak256(input))
 }
 
 /// Computes the Keccak-512 hash of the `input` byte array.
@@ -147,9 +147,9 @@ pub unsafe extern "C" fn keccak256(input: *const u8, input_len: usize) -> CByteA
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha3::keccak512(input).into()
+    CByteArray::new_ptr(sha3::keccak512(input))
 }
 
 /// Computes the SHA-3-256 hash of the `input` byte array.
@@ -157,9 +157,9 @@ pub unsafe extern "C" fn keccak512(input: *const u8, input_len: usize) -> CByteA
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha3::sha3_256(input).into()
+    CByteArray::new_ptr(sha3::sha3_256(input))
 }
 
 /// Computes the SHA-3-512 hash of the `input` byte array.
@@ -167,7 +167,7 @@ pub unsafe extern "C" fn sha3__256(input: *const u8, input_len: usize) -> CByteA
 /// \param input_len the length of the `input` array.
 /// \return C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn sha3__512(input: *const u8, input_len: usize) -> CByteArray {
+pub unsafe extern "C" fn sha3__512(input: *const u8, input_len: usize) -> CByteArrayPtr {
     let input = std::slice::from_raw_parts(input, input_len);
-    sha3::sha3_512(input).into()
+    CByteArray::new_ptr(sha3::sha3_512(input))
 }

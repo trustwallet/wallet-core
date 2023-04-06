@@ -6,6 +6,7 @@
 
 use std::ffi::{CStr, CString};
 use tw_encoding::ffi::{decode_base64, encode_base64};
+use tw_memory::ffi::CByteArray;
 
 #[test]
 fn test_encode_base64() {
@@ -31,10 +32,9 @@ fn test_decode_base64_url() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = unsafe { decode_base64(encoded_ptr, true) }.unwrap();
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-
-    assert_eq!(decoded_slice, expected);
+    let decoded =
+        unsafe { CByteArray::from_ptr(decode_base64(encoded_ptr, true).unwrap()).into_vec() };
+    assert_eq!(decoded, expected);
 }
 
 #[test]
@@ -45,10 +45,9 @@ fn test_decode_base64() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = unsafe { decode_base64(encoded_ptr, false) }.unwrap();
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-
-    assert_eq!(decoded_slice, expected);
+    let decoded =
+        unsafe { CByteArray::from_ptr(decode_base64(encoded_ptr, false).unwrap()).into_vec() };
+    assert_eq!(decoded, expected);
 }
 
 #[test]
