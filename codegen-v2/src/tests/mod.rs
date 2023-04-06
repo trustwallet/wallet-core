@@ -4,6 +4,13 @@ use crate::{
 };
 
 #[test]
+fn test_eof() {
+    let driver = Driver::from("");
+    let res = GEof::derive(driver).unwrap();
+    assert_eq!(res.derived, GEof);
+}
+
+#[test]
 fn test_separator_items() {
     let driver = Driver::from(" ");
     let res = GSeparatorItem::derive(driver).unwrap();
@@ -20,10 +27,6 @@ fn test_separator_items() {
 
 #[test]
 fn test_separator() {
-    let driver = Driver::from("");
-    let x = GEof::derive(driver).unwrap();
-    dbg!(x);
-
     let driver = Driver::from(" ");
     let x = GSeparator::derive(driver).unwrap();
     dbg!(x);
