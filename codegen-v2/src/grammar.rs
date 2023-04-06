@@ -280,10 +280,10 @@ impl ParseTree for GParamItemWithMarker {
         (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive marker, ignore leading separators.
-        let (marker_derived, mut reader) = ensure::<GMarker>(reader)?;
+        let (marker_derived, reader) = ensure::<GMarker>(reader)?;
 
         // Ignore leading separators.
-        (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GParamName>(reader)?;
