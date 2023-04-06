@@ -1,5 +1,3 @@
-use std::io::{BufRead, BufReader, Read};
-
 #[cfg(test)]
 mod tests;
 
@@ -8,13 +6,13 @@ type Result<T> = std::result::Result<T, Error>;
 trait ParseTree {
     type Derivation;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>>;
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>>;
 }
 
 #[derive(Debug, Clone)]
 struct DerivationResult<'a, T> {
     derived: T,
-    driver: DriverFinalized<'a>,
+    reader: ReaderToMerge<'a>,
 }
 
 #[derive(Debug)]
@@ -23,27 +21,27 @@ enum Error {
     Eof,
 }
 
-impl<'a> From<&'a str> for Driver<'a> {
+impl<'a> From<&'a str> for Reader<'a> {
     fn from(buffer: &'a str) -> Self {
-        Driver { buffer, pos: 0 }
+        Reader { buffer, pos: 0 }
     }
 }
 
 #[derive(Debug, Clone)]
-struct DriverAwait<'a> {
+struct DriverPending<'a> {
     buffer: &'a str,
     pos: usize,
 }
 
-impl<'a> DriverAwait<'a> {
-    fn commit(self, driver: DriverFinalized<'a>) -> Driver<'a> {
-        Driver {
+impl<'a> DriverPending<'a> {
+    fn merge(self, reader: ReaderToMerge<'a>) -> Reader<'a> {
+        Reader {
             buffer: self.buffer,
-            pos: driver.pos,
+            pos: reader.pos,
         }
     }
-    fn rollback(self) -> Driver<'a> {
-        Driver {
+    fn discard(self) -> Reader<'a> {
+        Reader {
             buffer: self.buffer,
             pos: self.pos,
         }
@@ -51,37 +49,37 @@ impl<'a> DriverAwait<'a> {
 }
 
 #[derive(Debug, Clone)]
-struct DriverFinalized<'a> {
+struct ReaderToMerge<'a> {
     buffer: &'a str,
     pos: usize,
 }
 
 #[derive(Debug, Clone)]
-struct Driver<'a> {
+struct Reader<'a> {
     buffer: &'a str,
     pos: usize,
 }
 
-impl<'a> Driver<'a> {
-    fn scope(self) -> (DriverAwait<'a>, Driver<'a>) {
+impl<'a> Reader<'a> {
+    fn checkout(self) -> (DriverPending<'a>, Reader<'a>) {
         (
-            DriverAwait {
+            DriverPending {
                 buffer: self.buffer,
                 pos: self.pos,
             },
-            Driver {
+            Reader {
                 buffer: self.buffer,
                 pos: self.pos,
             },
         )
     }
-    fn finalized(self) -> DriverFinalized<'a> {
-        DriverFinalized {
+    fn prepare_merge(self) -> ReaderToMerge<'a> {
+        ReaderToMerge {
             buffer: self.buffer,
             pos: self.pos,
         }
     }
-    fn read_until<P>(mut self) -> Result<(String, DriverScopeUsed<'a>)>
+    fn read_until<P>(self) -> Result<(String, ReaderStaged<'a>)>
     where
         P: ParseTree,
     {
@@ -92,14 +90,14 @@ impl<'a> Driver<'a> {
 
             dbg!(counter, slice);
 
-            let driver = Driver::from(slice);
-            if P::derive(driver).is_ok() {
+            let reader = Reader::from(slice);
+            if P::derive(reader).is_ok() {
                 let target = string[..counter].to_string();
                 dbg!(&target);
 
                 return Ok((
                     target,
-                    DriverScopeUsed {
+                    ReaderStaged {
                         buffer: self.buffer,
                         amt_read: counter,
                         pos: self.pos,
@@ -110,13 +108,13 @@ impl<'a> Driver<'a> {
 
         Err(Error::Todo)
     }
-    fn read_amt(mut self, amt: usize) -> Result<(Option<String>, DriverScopeUsed<'a>)> {
+    fn read_amt(mut self, amt: usize) -> Result<(Option<String>, ReaderStaged<'a>)> {
         dbg!(&self.buffer, &self.buffer[self.pos..]);
         let string = &self.buffer[self.pos..];
         if string.len() < amt {
             return Ok((
                 None,
-                DriverScopeUsed {
+                ReaderStaged {
                     buffer: self.buffer,
                     amt_read: 0,
                     pos: self.pos,
@@ -130,7 +128,7 @@ impl<'a> Driver<'a> {
         if slice.is_empty() {
             return Ok((
                 None,
-                DriverScopeUsed {
+                ReaderStaged {
                     buffer: self.buffer,
                     amt_read: 0,
                     pos: self.pos,
@@ -140,7 +138,7 @@ impl<'a> Driver<'a> {
 
         Ok((
             Some(slice.to_string()),
-            DriverScopeUsed {
+            ReaderStaged {
                 buffer: self.buffer,
                 amt_read: amt,
                 pos: self.pos,
@@ -150,22 +148,22 @@ impl<'a> Driver<'a> {
 }
 
 #[derive(Debug, Clone)]
-struct DriverScopeUsed<'a> {
+struct ReaderStaged<'a> {
     buffer: &'a str,
     amt_read: usize,
     pos: usize,
 }
 
-impl<'a> DriverScopeUsed<'a> {
-    fn commit(mut self) -> Driver<'a> {
-        Driver {
+impl<'a> ReaderStaged<'a> {
+    fn commit(mut self) -> Reader<'a> {
+        Reader {
             buffer: self.buffer,
             pos: self.pos + self.amt_read,
         }
     }
-    fn rollback(self) -> Driver<'a> {
+    fn reset(self) -> Reader<'a> {
         // Do nothing with `amt_read`.
-        Driver {
+        Reader {
             buffer: self.buffer,
             pos: self.pos,
         }
@@ -180,21 +178,21 @@ enum EitherOr<T, D> {
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        let (pending, scoped) = driver.scope();
-        if let Ok(res) = T::derive(scoped) {
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = T::derive(checked_out) {
             return Ok(DerivationResult {
                 derived: EitherOr::Either(res.derived),
-                driver: res.driver,
+                reader: res.reader,
             });
         }
 
-        let driver = pending.rollback();
+        let reader = pending.discard();
 
-        if let Ok(res) = D::derive(driver) {
+        if let Ok(res) = D::derive(reader) {
             return Ok(DerivationResult {
                 derived: EitherOr::Or(res.derived),
-                driver: res.driver,
+                reader: res.reader,
             });
         }
 
@@ -208,8 +206,8 @@ struct GEof;
 impl ParseTree for GEof {
     type Derivation = Self;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        let (slice, handle) = driver.read_amt(1)?;
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
 
         if slice.is_some() {
             return Err(Error::Todo);
@@ -217,7 +215,7 @@ impl ParseTree for GEof {
 
         Ok(DerivationResult {
             derived: GEof,
-            driver: handle.commit().finalized(),
+            reader: handle.commit().prepare_merge(),
         })
     }
 }
@@ -233,10 +231,10 @@ enum GType {
 impl ParseTree for GType {
     type Derivation = Self;
 
-    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
-        let (slice, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
+        let (slice, handle) = reader.read_until::<EitherOr<GSeparator, GEof>>()?;
         dbg!(&slice);
 
         let derived = match slice.as_str() {
@@ -244,13 +242,13 @@ impl ParseTree for GType {
             "char" => GType::Char,
             "int" => GType::Int,
             _ => {
-                // Rollback driver, retry with the next derivation attempt.
-                let mut driver = handle.rollback();
+                // Rollback reader, retry with the next derivation attempt.
+                let reader = handle.reset();
 
-                if let Ok(res) = GStruct::derive(driver) {
+                if let Ok(res) = GStruct::derive(reader) {
                     return Ok(DerivationResult {
                         derived: GType::Struct(res.derived),
-                        driver: res.driver,
+                        reader: res.reader,
                     });
                 }
 
@@ -260,7 +258,7 @@ impl ParseTree for GType {
 
         Ok(DerivationResult {
             derived,
-            driver: handle.commit().finalized(),
+            reader: handle.commit().prepare_merge(),
         })
     }
 }
@@ -271,7 +269,7 @@ struct GStruct;
 impl ParseTree for GStruct {
     type Derivation = Self;
 
-    fn derive<'a>(_driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(_driver: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         todo!()
     }
 }
@@ -288,8 +286,8 @@ enum GSeparatorItem {
 impl ParseTree for GSeparatorItem {
     type Derivation = Self;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        let (slice, handle) = driver.read_amt(1)?;
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
         dbg!(&slice, &handle);
         let slice = match slice {
             Some(string) => string,
@@ -307,7 +305,7 @@ impl ParseTree for GSeparatorItem {
 
         Ok(DerivationResult {
             derived,
-            driver: handle.commit().finalized(),
+            reader: handle.commit().prepare_merge(),
         })
     }
 }
@@ -329,40 +327,40 @@ struct GParamItemWithMarker {
 impl ParseTree for GParamItemWithMarker {
     type Derivation = Self;
 
-    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (pending, scoped) = driver.scope();
-        let ty_res = GType::derive(scoped)?;
+        let (pending, checked_out) = reader.checkout();
+        let ty_res = GType::derive(checked_out)?;
         dbg!(&ty_res);
 
-        driver = pending.commit(ty_res.driver);
+        reader = pending.merge(ty_res.reader);
 
         // Ignore leading separators.
-        let (pending, scoped) = driver.scope();
-        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(scoped) {
-            driver = pending.commit(res.driver);
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
+            reader = pending.merge(res.reader);
         } else {
-            driver = pending.rollback();
+            reader = pending.discard();
         }
 
         // Derive marker, ignore leading separators.
-        let (pending, scoped) = driver.scope();
-        let marker_res = GMarker::derive(scoped)?;
+        let (pending, checked_out) = reader.checkout();
+        let marker_res = GMarker::derive(checked_out)?;
         dbg!(&marker_res);
 
-        driver = pending.commit(marker_res.driver);
+        reader = pending.merge(marker_res.reader);
 
         // Ignore leading separators.
-        let (pending, scoped) = driver.scope();
-        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(scoped) {
-            driver = pending.commit(res.driver);
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
+            reader = pending.merge(res.reader);
         } else {
-            driver = pending.rollback();
+            reader = pending.discard();
         }
 
         // Derive parameter name.
-        let (pending, scoped) = driver.scope();
-        let name_res = GParamName::derive(scoped)?;
+        let (pending, checked_out) = reader.checkout();
+        let name_res = GParamName::derive(checked_out)?;
         dbg!(&name_res);
 
         // Everything derived successfully, return.
@@ -372,7 +370,7 @@ impl ParseTree for GParamItemWithMarker {
                 marker: marker_res.derived,
                 name: name_res.derived,
             },
-            driver: pending.commit(name_res.driver).finalized(),
+            reader: pending.merge(name_res.reader).prepare_merge(),
         })
     }
 }
@@ -386,24 +384,24 @@ struct GParamItemWithoutMarker {
 impl ParseTree for GParamItemWithoutMarker {
     type Derivation = Self;
 
-    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (pending, scoped) = driver.scope();
-        let ty_res = GType::derive(scoped)?;
+        let (pending, checked_out) = reader.checkout();
+        let ty_res = GType::derive(checked_out)?;
         dbg!(&ty_res);
 
-        driver = pending.commit(ty_res.driver);
+        reader = pending.merge(ty_res.reader);
 
         // Ignore leading separators.
-        let (pending, scoped) = driver.scope();
-        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(scoped) {
-            driver = pending.commit(res.driver);
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = EitherOr::<GSeparator, GEof>::derive(checked_out) {
+            reader = pending.merge(res.reader);
         } else {
-            driver = pending.rollback();
+            reader = pending.discard();
         }
 
         // Derive parameter name.
-        let name_res = GParamName::derive(driver)?;
+        let name_res = GParamName::derive(reader)?;
         dbg!(&name_res);
 
         // Everything derived successfully, return.
@@ -412,7 +410,7 @@ impl ParseTree for GParamItemWithoutMarker {
                 ty: ty_res.derived,
                 name: name_res.derived,
             },
-            driver: name_res.driver,
+            reader: name_res.reader,
         })
     }
 }
@@ -423,12 +421,12 @@ struct GParamName(String);
 impl ParseTree for GParamName {
     type Derivation = Self;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        let (string, handle) = driver.read_until::<EitherOr<GSeparator, GEof>>()?;
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<EitherOr<GSeparator, GEof>>()?;
 
         Ok(DerivationResult {
             derived: GParamName(string),
-            driver: handle.commit().finalized(),
+            reader: handle.commit().prepare_merge(),
         })
     }
 }
@@ -441,7 +439,7 @@ struct GParamContinued {
 impl ParseTree for GParam {
     type Derivation = Self;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(_driver: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         todo!()
     }
 }
@@ -452,12 +450,12 @@ struct GMarker(String);
 impl ParseTree for GMarker {
     type Derivation = Self;
 
-    fn derive<'a>(driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
-        let (string, handle) = driver.read_until::<GSeparator>()?;
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
 
         Ok(DerivationResult {
             derived: GMarker(string),
-            driver: handle.commit().finalized(),
+            reader: handle.commit().prepare_merge(),
         })
     }
 }
@@ -492,15 +490,15 @@ impl<T> Continuum<T> {
 impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> {
     type Derivation = Continuum<T>;
 
-    fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
+    fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut sep_items: Option<Continuum<T::Derivation>> = None;
         loop {
-            dbg!(&driver);
-            let (pending, scoped) = driver.scope();
-            if let Ok(res) = T::derive(scoped) {
-                dbg!(&res.driver);
-                driver = pending.commit(res.driver);
-                dbg!(&driver);
+            dbg!(&reader);
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(res) = T::derive(checked_out) {
+                dbg!(&res.reader);
+                reader = pending.merge(res.reader);
+                dbg!(&reader);
 
                 if let Some(sep) = sep_items {
                     sep_items = Some(sep.add(res.derived));
@@ -512,7 +510,7 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                 if let Some(items) = sep_items {
                     return Ok(DerivationResult {
                         derived: items,
-                        driver: pending.rollback().finalized(),
+                        reader: pending.discard().prepare_merge(),
                     });
                 } else {
                     return Err(Error::Todo);
