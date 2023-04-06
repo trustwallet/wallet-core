@@ -1,6 +1,6 @@
 use crate::{
     Driver, GEof, GMarker, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator,
-    GType, ParseTree, GSeparatorItem,
+    GSeparatorItem, GType, ParseTree,
 };
 
 #[test]

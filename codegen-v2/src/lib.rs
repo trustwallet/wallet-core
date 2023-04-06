@@ -71,7 +71,7 @@ impl<'a> Driver<'a> {
             },
             Driver {
                 buffer: self.buffer,
-                pos: 0,
+                pos: self.pos,
             },
         )
     }
@@ -102,7 +102,7 @@ impl<'a> Driver<'a> {
                     DriverScopeUsed {
                         buffer: self.buffer,
                         amt_read: counter,
-                        pos: self.pos + counter,
+                        pos: self.pos,
                     },
                 ));
             }
@@ -143,7 +143,7 @@ impl<'a> Driver<'a> {
             DriverScopeUsed {
                 buffer: self.buffer,
                 amt_read: amt,
-                pos: self.pos + amt,
+                pos: self.pos,
             },
         ))
     }
@@ -495,9 +495,12 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
     fn derive<'a>(mut driver: Driver<'a>) -> Result<DerivationResult<'a, Self::Derivation>> {
         let mut sep_items: Option<Continuum<T::Derivation>> = None;
         loop {
+            dbg!(&driver);
             let (pending, scoped) = driver.scope();
             if let Ok(res) = T::derive(scoped) {
+                dbg!(&res.driver);
                 driver = pending.commit(res.driver);
+                dbg!(&driver);
 
                 if let Some(sep) = sep_items {
                     sep_items = Some(sep.add(res.derived));
