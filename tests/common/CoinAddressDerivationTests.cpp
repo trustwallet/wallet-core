@@ -281,6 +281,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeStride:
             EXPECT_EQ(address, "stride1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z06sllcd");
             break;
+        case TWCoinTypeAxelar:
+            EXPECT_EQ(address, "axelar1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0a4ft8q");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
