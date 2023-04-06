@@ -14,7 +14,7 @@ trait ParseTree {
 #[derive(Debug, Clone)]
 struct DerivationResult<'a, T> {
     derived: T,
-    driver: Driver<'a>,
+    driver: DriverFinalized<'a>,
 }
 
 #[derive(Debug)]
@@ -36,7 +36,7 @@ struct DriverAwait<'a> {
 }
 
 impl<'a> DriverAwait<'a> {
-    fn commit(self, driver: Driver<'a>) -> Driver<'a> {
+    fn commit(self, driver: DriverFinalized<'a>) -> Driver<'a> {
         Driver {
             buffer: self.buffer,
             pos: driver.pos,
@@ -48,6 +48,12 @@ impl<'a> DriverAwait<'a> {
             pos: self.pos,
         }
     }
+}
+
+#[derive(Debug, Clone)]
+struct DriverFinalized<'a> {
+    buffer: &'a str,
+    pos: usize,
 }
 
 #[derive(Debug, Clone)]
@@ -68,6 +74,12 @@ impl<'a> Driver<'a> {
                 pos: 0,
             },
         )
+    }
+    fn finalized(self) -> DriverFinalized<'a> {
+        DriverFinalized {
+            buffer: self.buffer,
+            pos: self.pos,
+        }
     }
     fn read_until<P>(mut self) -> Result<(String, DriverScopeUsed<'a>)>
     where
@@ -203,7 +215,7 @@ impl ParseTree for GEof {
 
         Ok(DerivationResult {
             derived: GEof,
-            driver: handle.commit(),
+            driver: handle.commit().finalized(),
         })
     }
 }
@@ -244,10 +256,10 @@ impl ParseTree for GType {
             }
         };
 
-        // Commit driver.
-        driver = handle.commit();
-
-        Ok(DerivationResult { derived, driver })
+        Ok(DerivationResult {
+            derived,
+            driver: handle.commit().finalized(),
+        })
     }
 }
 
@@ -292,9 +304,10 @@ impl ParseTree for GSeparatorItem {
             _ => return Err(Error::Todo),
         };
 
-        let driver = handle.commit();
-
-        Ok(DerivationResult { derived, driver })
+        Ok(DerivationResult {
+            derived,
+            driver: handle.commit().finalized(),
+        })
     }
 }
 
@@ -358,7 +371,7 @@ impl ParseTree for GParamItemWithMarker {
                 marker: marker_res.derived,
                 name: name_res.derived,
             },
-            driver: pending.commit(name_res.driver),
+            driver: pending.commit(name_res.driver).finalized(),
         })
     }
 }
@@ -414,7 +427,7 @@ impl ParseTree for GParamName {
 
         Ok(DerivationResult {
             derived: GParamName(string),
-            driver: handle.commit(),
+            driver: handle.commit().finalized(),
         })
     }
 }
@@ -443,7 +456,7 @@ impl ParseTree for GMarker {
 
         Ok(DerivationResult {
             derived: GMarker(string),
-            driver: handle.commit(),
+            driver: handle.commit().finalized(),
         })
     }
 }
@@ -495,7 +508,7 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                 if let Some(items) = sep_items {
                     return Ok(DerivationResult {
                         derived: items,
-                        driver: pending.rollback(),
+                        driver: pending.rollback().finalized(),
                     });
                 } else {
                     return Err(Error::Todo);
