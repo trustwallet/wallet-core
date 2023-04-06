@@ -578,6 +578,36 @@
     }
   },
   {
+    "id": "axelar",
+    "name": "Axelar",
+    "displayName": "Axelar",
+    "coinId": 50000118,
+    "symbol": "AXL",
+    "decimals": 6,
+    "chainId": "axelar-dojo-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "axelar",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/axelar",
+      "txPath": "/txs/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://axelar.network/",
+      "source": "https://github.com/axelarnetwork/axelar-core",
+      "rpc": "https://axelar-rpc.polkachu.com",
+      "documentation": "https://docs.axelar.dev/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
