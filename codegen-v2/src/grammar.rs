@@ -48,33 +48,6 @@ pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GNonAlphanumericItem;
 
-impl ParseTree for GNonAlphanumericItem {
-    type Derivation = Self;
-
-    fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = GEof::derive(checked_out) {
-            //return Ok(DerivationResult { derived: GNonAlphanumericItem, branch: res.branch })
-            return Err(Error::Todo);
-        } else {
-            reader = pending.discard();
-        }
-
-        let (slice, handle) = reader.read_amt(1).map(|(s, h)| (s.unwrap(), h))?;
-        if slice
-            .chars()
-            .any(|c| c.is_alphanumeric() || c == '_' || c == '-')
-        {
-            return Err(Error::Todo);
-        }
-
-        Ok(DerivationResult {
-            derived: GNonAlphanumericItem,
-            branch: handle.commit().into_branch(),
-        })
-    }
-}
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GType {
     Void,
@@ -117,18 +90,6 @@ pub struct GParamItemWithoutMarker {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamName(String);
 
-impl From<String> for GParamName {
-    fn from(string: String) -> Self {
-        GParamName(string)
-    }
-}
-
-impl From<String> for GFuncName {
-    fn from(string: String) -> Self {
-        GFuncName(string)
-    }
-}
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GMarker {
     TWVisibilityDefault,
@@ -153,86 +114,12 @@ pub enum GMarker {
 
 pub struct GComma;
 
-impl ParseTree for GComma {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "," {
-                return Ok(DerivationResult {
-                    derived: GComma,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
 pub struct GOpenBracket;
-
-impl ParseTree for GOpenBracket {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "(" {
-                return Ok(DerivationResult {
-                    derived: GOpenBracket,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
 
 pub struct GCloseBracket;
 
-impl ParseTree for GCloseBracket {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == ")" {
-                return Ok(DerivationResult {
-                    derived: GCloseBracket,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFuncName(String);
-
-impl ParseTree for GFuncName {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-
-        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
-            return Err(Error::Todo);
-        }
-
-        Ok(DerivationResult {
-            derived: GFuncName(string),
-            branch: handle.commit().into_branch(),
-        })
-    }
-}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
@@ -240,61 +127,6 @@ pub struct GFunctionDecl {
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
     pub params: Vec<GParamItemWithoutMarker>,
     pub return_ty: GType,
-}
-
-impl ParseTree for GFunctionDecl {
-    type Derivation = Self;
-
-    fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let mut params = vec![];
-
-        // Derive return value.
-        let (return_der, reader) = ensure::<GType>(p_reader)?;
-
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
-
-        // Derive return value.
-        let (name_der, reader) = ensure::<GFuncName>(reader)?;
-
-        // Check for opening bracket.
-        (_, p_reader) = ensure::<GOpenBracket>(reader)?;
-
-        loop {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
-
-            // Derive and track parameter.
-            let (derived, reader) = ensure::<GParamItemWithoutMarker>(reader)?;
-            params.push(derived);
-
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
-
-            // Check for potential comma, indicating next paremeter declaration.
-            let (comma, reader) = wipe::<GComma>(reader);
-            p_reader = reader;
-
-            if comma.is_none() {
-                break;
-            }
-        }
-
-        // Ignore leading separators.
-        (_, p_reader) = wipe::<GSeparator>(p_reader);
-
-        // Check for closing bracket.
-        (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
-
-        Ok(DerivationResult {
-            derived: GFunctionDecl {
-                name: name_der,
-                params,
-                return_ty: return_der,
-            },
-            branch: p_reader.into_branch(),
-        })
-    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -310,6 +142,18 @@ pub struct ContinuumNext<T> {
 }
 
 // *** DERIVE IMPLEMENTATIONS ***
+
+impl From<String> for GParamName {
+    fn from(string: String) -> Self {
+        GParamName(string)
+    }
+}
+
+impl From<String> for GFuncName {
+    fn from(string: String) -> Self {
+        GFuncName(string)
+    }
+}
 
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
@@ -578,5 +422,161 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                 }
             }
         }
+    }
+}
+
+impl ParseTree for GNonAlphanumericItem {
+    type Derivation = Self;
+
+    fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GEof::derive(checked_out) {
+            //return Ok(DerivationResult { derived: GNonAlphanumericItem, branch: res.branch })
+            return Err(Error::Todo);
+        } else {
+            reader = pending.discard();
+        }
+
+        let (slice, handle) = reader.read_amt(1).map(|(s, h)| (s.unwrap(), h))?;
+        if slice
+            .chars()
+            .any(|c| c.is_alphanumeric() || c == '_' || c == '-')
+        {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GNonAlphanumericItem,
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GComma {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "," {
+                return Ok(DerivationResult {
+                    derived: GComma,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GOpenBracket {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "(" {
+                return Ok(DerivationResult {
+                    derived: GOpenBracket,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GCloseBracket {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == ")" {
+                return Ok(DerivationResult {
+                    derived: GCloseBracket,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GFuncName {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+
+        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GFuncName(string),
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GFunctionDecl {
+    type Derivation = Self;
+
+    fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let mut params = vec![];
+
+        // Derive return value.
+        let (return_der, reader) = ensure::<GType>(p_reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Derive return value.
+        let (name_der, reader) = ensure::<GFuncName>(reader)?;
+
+        // Check for opening bracket.
+        (_, p_reader) = ensure::<GOpenBracket>(reader)?;
+
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            // Derive and track parameter.
+            let (derived, reader) = ensure::<GParamItemWithoutMarker>(reader)?;
+            params.push(derived);
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // Check for potential comma, indicating next paremeter declaration.
+            let (comma, reader) = wipe::<GComma>(reader);
+            p_reader = reader;
+
+            if comma.is_none() {
+                break;
+            }
+        }
+
+        // Ignore leading separators.
+        (_, p_reader) = wipe::<GSeparator>(p_reader);
+
+        // Check for closing bracket.
+        (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
+
+        Ok(DerivationResult {
+            derived: GFunctionDecl {
+                name: name_der,
+                params,
+                return_ty: return_der,
+            },
+            branch: p_reader.into_branch(),
+        })
     }
 }
