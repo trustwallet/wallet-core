@@ -55,17 +55,23 @@ PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const Derivation
 
 Data getPublicKeyFromPrivateKey(const Data& privateKey) {
     auto pubKey = Rust::starknet_pubkey_from_private(hex(privateKey).c_str());
-    std::string pubKeyStr = pubKey;
-    Rust::free_string(pubKey);
-    return parse_hex(pubKeyStr, true);
+    if (pubKey.code != Rust::OK_CODE) {
+        return {};
+    }
+    const auto toReturn = parse_hex(pubKey.result, true);
+    Rust::free_string(pubKey.result);
+    return toReturn;
 }
 
 Data sign(const Data& privateKey, const Data& digest) {
     auto privKeyStr = hex(privateKey);
     auto hexDigest = hex(digest);
     auto resultSignature = Rust::starknet_sign(privKeyStr.c_str(), hexDigest.c_str());
-    auto toReturn = parse_hex(resultSignature);
-    Rust::free_string(resultSignature);
+    if (resultSignature.code != Rust::OK_CODE) {
+        return {};
+    }
+    auto toReturn = parse_hex(resultSignature.result);
+    Rust::free_string(resultSignature.result);
     return toReturn;
 }
 
@@ -77,7 +83,8 @@ bool verify(const Data& pubKey, const Data& signature, const Data& digest) {
     auto s = hex(subData(signature, 32));
     auto pubKeyStr = hex(pubKey);
     auto digestStr = hex(digest);
-    return Rust::starknet_verify(pubKeyStr.c_str(), digestStr.c_str(), r.c_str(), s.c_str());
+    const auto res = Rust::starknet_verify(pubKeyStr.c_str(), digestStr.c_str(), r.c_str(), s.c_str());
+    return res.code == Rust::OK_CODE && res.result;
 }
 
 } // namespace TW::ImmutableX
