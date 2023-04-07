@@ -35,12 +35,9 @@ impl<'a> Reader<'a> {
         for counter in 0..=string.len() {
             let slice = &string[counter..];
 
-            dbg!(counter, slice);
-
             let reader = Reader::from(slice);
             if P::derive(reader).is_ok() {
                 let target = string[..counter].to_string();
-                dbg!(&target);
 
                 return Ok((
                     target,
@@ -56,7 +53,6 @@ impl<'a> Reader<'a> {
         Err(Error::Todo)
     }
     pub fn read_amt(mut self, amt: usize) -> Result<(Option<String>, ReaderStaged<'a>)> {
-        dbg!(&self.buffer, &self.buffer[self.pos..]);
         let string = &self.buffer[self.pos..];
         if string.len() < amt {
             return Ok((
@@ -70,8 +66,6 @@ impl<'a> Reader<'a> {
         }
 
         let slice = &string[..amt];
-        dbg!(slice);
-
         if slice.is_empty() {
             return Ok((
                 None,

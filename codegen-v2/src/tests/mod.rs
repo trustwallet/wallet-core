@@ -1,7 +1,7 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GMarker, GNonAlphanumeric, GNonAlphanumericItem,
     GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GPrimitive, GSeparator,
-    GSeparatorItem, GTypeCategory, ParseTree,
+    GSeparatorItem, GStruct, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -116,6 +116,13 @@ fn test_types_categories() {
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
             GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(GPrimitive::Int)))
         ))))
+    );
+
+    let driver = Reader::from("struct SomeStruct");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GTypeCategory::Struct(GStruct::from("SomeStruct".to_string()))
     );
 }
 

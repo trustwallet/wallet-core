@@ -48,20 +48,10 @@ pub enum EitherOr<T, D> {
 pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 
 // TODO: Rename?
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GType {
     Mutable(GTypeCategory),
     Const(GTypeCategory),
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum GAggregate {}
-
-impl ParseTree for GAggregate {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        todo!()
-    }
 }
 
 // TODO: Rename
@@ -72,7 +62,7 @@ pub struct GNonAlphanumericItem;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GTypeCategory {
     Scalar(GPrimitive),
-    Aggregate(GAggregate),
+    Struct(GStruct),
     Pointer(Box<GTypeCategory>),
 }
 
@@ -113,10 +103,15 @@ impl ParseTree for GTypeCategory {
             });
         }
 
-        // Handle aggregate types.
-        // TODO
+        dbg!("GOT HERE");
 
-        Err(Error::Todo)
+        // Handle aggregate types.
+        let res = GStruct::derive(pending.discard())?;
+
+        Ok(DerivationResult {
+            derived: GTypeCategory::Struct(res.derived),
+            branch: res.branch,
+        })
     }
 }
 
@@ -126,11 +121,10 @@ pub enum GPrimitive {
     Bool,
     Char,
     Int,
-    Struct(GStruct),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GStruct;
+pub struct GStruct(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GEof;
@@ -227,6 +221,12 @@ impl From<String> for GFuncName {
     }
 }
 
+impl From<String> for GStruct {
+    fn from(string: String) -> Self {
+        GStruct(string)
+    }
+}
+
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
 
@@ -276,7 +276,6 @@ impl ParseTree for GPrimitive {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        dbg!(&slice);
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
@@ -284,16 +283,6 @@ impl ParseTree for GPrimitive {
             "char" => GPrimitive::Char,
             "int" => GPrimitive::Int,
             _ => {
-                // Rollback reader, retry with the next derivation attempt.
-                let reader = handle.reset();
-
-                if let Ok(res) = GStruct::derive(reader) {
-                    return Ok(DerivationResult {
-                        derived: GPrimitive::Struct(res.derived),
-                        branch: res.branch,
-                    });
-                }
-
                 return Err(Error::Todo);
             }
         };
@@ -308,8 +297,39 @@ impl ParseTree for GPrimitive {
 impl ParseTree for GStruct {
     type Derivation = Self;
 
-    fn derive<'a>(_driver: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        todo!()
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        dbg!("GOT HERE");
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for "struct" prefix.
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        dbg!(&string);
+        if string != "struct" {
+            return Err(Error::Todo);
+        }
+
+        dbg!("GOT HERE, TOO");
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Derive struct name
+        let (name, handle) = reader.read_until::<EitherOr<GSeparator, GEof>>()?;
+        dbg!(&name);
+        if name.is_empty()
+            || name
+                .chars()
+                .any(|c| (!c.is_alphanumeric() && (c != '_' || c != '-')))
+        {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GStruct(name),
+            branch: handle.commit().into_branch(),
+        })
     }
 }
 
@@ -319,7 +339,6 @@ impl ParseTree for GSeparatorItem {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // TODO: Make use of `GEof` here.
         let (slice, handle) = reader.read_amt(1)?;
-        dbg!(&slice, &handle);
         let slice = match slice {
             Some(string) => string,
             None => {
@@ -470,12 +489,9 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
     fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut sep_items: Option<Continuum<T::Derivation>> = None;
         loop {
-            dbg!(&reader);
             let (pending, checked_out) = reader.checkout();
             if let Ok(res) = T::derive(checked_out) {
-                dbg!(&res.branch);
                 reader = pending.merge(res.branch);
-                dbg!(&reader);
 
                 if let Some(sep) = sep_items {
                     sep_items = Some(sep.add(res.derived));
@@ -483,7 +499,6 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                     sep_items = Some(Continuum::Thing(res.derived));
                 }
             } else {
-                dbg!(&sep_items);
                 if let Some(items) = sep_items {
                     return Ok(DerivationResult {
                         derived: items,
