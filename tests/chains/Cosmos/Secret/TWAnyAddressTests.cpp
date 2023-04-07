@@ -4,25 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWAnyAddress.h>
-#include "HexCoding.h"
+#include "../CosmosTestHelpers.h"
 
-#include "TestUtilities.h"
-#include <gtest/gtest.h>
+namespace TW::Cosmos::tests {
 
-using namespace TW;
+static const std::string gSecretAddr = "secret1l0cjpuwu09hwu4wdds7pljn83346x2c90d8h0l";
+static const std::string gSecretHrp = "secret";
 
-TEST(TWSecretAnyAddress, IsValid) {
-    EXPECT_TRUE(TWAnyAddressIsValid(STRING("secret16vw3fp7x35tzmwlkdkyzr8vgscn0zewtduyjuf").get(), TWCoinTypeSecret));
-    EXPECT_TRUE(TWAnyAddressIsValid(STRING("secret15rgv8teecnt53h0gdvngzt3am3yuz3rxh4fnle").get(), TWCoinTypeSecret));
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02").get(), TWCoinTypeSecret));
+TEST(TWSecretAnyAddress, AllSecretAddressTests) {
+    CosmosAddressParameters parameters{.hrp = gSecretHrp,
+                                       .coinType = TWCoinTypeSecret,
+                                       .address = gSecretAddr,
+                                       .privKey = "a054c9a67d81ada560ab6fda3310ebf5971e163ff2291ee736ca64b6a5af1ada",
+                                       .publicKey = "03967d2c6263c2d74d9c2fac3a024e2892a94497b64edb294ffab4042851f00b90"};
+    allAddressTestsWrapper(parameters);
 }
 
-TEST(TWSecretAnyAddress, Create) {
-    auto string = STRING("secret16vw3fp7x35tzmwlkdkyzr8vgscn0zewtduyjuf");
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeSecret));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
-    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "d31d1487c68d162dbbf66d88219d888626f165cb");
-}
+} // namespace TW::Cosmos::tests

@@ -39,7 +39,9 @@ namespace TW::Cosmos::tests::internal {
         EXPECT_TRUE(TWAnyAddressIsValidBech32(address_utf8.get(), TWCoinTypeCosmos, hrp_utf8.get()));
         EXPECT_TRUE(TWAnyAddressIsValid(address_utf8.get(), addressParameters.coinType));
         EXPECT_FALSE(TWAnyAddressIsValidBech32(address_utf8.get(), TWCoinTypeBitcoin, hrp_utf8.get()));
-        EXPECT_FALSE(TWAnyAddressIsValid(address_utf8.get(), TWCoinTypeCosmos));
+        if (addressParameters.coinType != TWCoinTypeCosmos) {
+            EXPECT_FALSE(TWAnyAddressIsValid(address_utf8.get(), TWCoinTypeCosmos));
+        }
         EXPECT_FALSE(TWAnyAddressIsValid(address_utf8.get(), TWCoinTypeBitcoin));
     }
 
