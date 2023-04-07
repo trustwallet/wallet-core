@@ -118,11 +118,26 @@ fn test_types_categories() {
         ))))
     );
 
-    let driver = Reader::from("struct SomeStruct");
+    let driver = Reader::from("Unknown");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(der.derived, GTypeCategory::Unknown("Unknown".to_string()));
+
+    let driver = Reader::from("Unknown **");
     let der = GTypeCategory::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GTypeCategory::Struct(GStruct::from("SomeStruct".to_string()))
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
+            GTypeCategory::Unknown("Unknown".to_string())
+        ))))
+    );
+
+    let driver = Reader::from("Unknown * * *");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown("Unknown".to_string())))
+        ))))
     );
 }
 

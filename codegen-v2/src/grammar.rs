@@ -64,13 +64,15 @@ pub enum GTypeCategory {
     Scalar(GPrimitive),
     Struct(GStruct),
     Pointer(Box<GTypeCategory>),
+    // TODO: Add some sort of `GAnyKeyword` that can parse valid keywords.
+    Unknown(String),
 }
 
 impl ParseTree for GTypeCategory {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        // Handle scalar first.
+        // Handle scalar.
         let (pending, checked_out) = reader.checkout();
         if let Ok(ty_res) = GPrimitive::derive(checked_out) {
             let mut p_reader = pending.merge(ty_res.branch);
@@ -103,14 +105,42 @@ impl ParseTree for GTypeCategory {
             });
         }
 
-        dbg!("GOT HERE");
+        // Reset buffer.
+        let reader = pending.discard();
 
         // Handle aggregate types.
-        let res = GStruct::derive(pending.discard())?;
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+
+        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
+            return Err(Error::Todo);
+        }
+
+        let mut derived = GTypeCategory::Unknown(string);
+
+        // TODO: Unify with scalar, use single function.
+        let mut p_reader = handle.commit();
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            // Try pointer.
+            // TODO: Implement `GAsterisk`?
+            let (slice, handle) = reader.read_amt(1)?;
+            if let Some(slice) = slice {
+                if slice == "*" {
+                    p_reader = handle.commit();
+                    derived = GTypeCategory::Pointer(Box::new(derived));
+                    continue;
+                }
+            }
+
+            p_reader = handle.reset();
+            break;
+        }
 
         Ok(DerivationResult {
-            derived: GTypeCategory::Struct(res.derived),
-            branch: res.branch,
+            derived,
+            branch: p_reader.into_branch(),
         })
     }
 }
