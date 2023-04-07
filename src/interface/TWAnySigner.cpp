@@ -36,7 +36,7 @@ TWData* _Nonnull TWAnySignerSignExternally(TWData* _Nonnull data, enum TWCoinTyp
 }
 
 TWData* _Nonnull TWAnySignerSignExternally(TWData* _Nonnull data, enum TWCoinType coin, TWData *_Nonnull publicKey, TWData* (*externalSigner)(TWData*)) {
-    return TWAnySignerSignExternally(data, coin, publicKey, externalSigner);
+    return TWAnySignerSignExternally(data, coin, publicKey, std::function(externalSigner));
 }
 
 TWString *_Nonnull TWAnySignerSignJSON(TWString *_Nonnull json, TWData *_Nonnull key, enum TWCoinType coin) {
