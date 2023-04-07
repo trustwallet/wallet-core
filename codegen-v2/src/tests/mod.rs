@@ -219,6 +219,7 @@ fn test_function_delceration() {
             },
         ],
         return_ty: GPrimitive::Void,
+        markers: vec![],
     };
 
     let driver = Reader::from("void some_function(int some_int, bool some_bool)");
@@ -241,4 +242,29 @@ fn test_function_delceration() {
     let driver = Reader::from("void some_function(int some_int bool some_bool)");
     let der = GFunctionDecl::derive(driver);
     assert!(der.is_err());
+}
+
+#[test]
+fn test_function_delceration_with_markers() {
+    let expected = GFunctionDecl {
+        name: GFuncName::from("some_function".to_string()),
+        params: vec![
+            GParamItemWithoutMarker {
+                ty: GPrimitive::Int,
+                name: GParamName::from("some_int".to_string()),
+            },
+            GParamItemWithoutMarker {
+                ty: GPrimitive::Bool,
+                name: GParamName::from("some_bool".to_string()),
+            },
+        ],
+        return_ty: GPrimitive::Void,
+        markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
+    };
+
+    let driver = Reader::from(
+        "TW_EXPORT_STRUCT void some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT",
+    );
+    let der = GFunctionDecl::derive(driver).unwrap();
+    assert_eq!(der.derived, expected);
 }

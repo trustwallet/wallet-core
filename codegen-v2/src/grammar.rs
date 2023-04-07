@@ -208,10 +208,16 @@ pub enum GMarker {
     NullUnspecified,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GComma;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GSemicolon;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GOpenBracket;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GCloseBracket;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -223,6 +229,7 @@ pub struct GFunctionDecl {
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
     pub params: Vec<GParamItemWithoutMarker>,
     pub return_ty: GPrimitive,
+    pub markers: Vec<GMarker>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -306,6 +313,7 @@ impl ParseTree for GPrimitive {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        dbg!(&slice);
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
@@ -588,6 +596,25 @@ impl ParseTree for GComma {
     }
 }
 
+impl ParseTree for GSemicolon {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == ";" {
+                return Ok(DerivationResult {
+                    derived: GSemicolon,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 impl ParseTree for GOpenBracket {
     type Derivation = Self;
 
@@ -647,10 +674,25 @@ impl ParseTree for GFunctionDecl {
     type Derivation = Self;
 
     fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let mut markers = vec![];
         let mut params = vec![];
+
+        // Derive (optional) marker.
+        let (pending, checked_out) = p_reader.checkout();
+        if let Ok(marker_res) = GMarker::derive(checked_out) {
+            markers.push(marker_res.derived);
+            p_reader = pending.merge(marker_res.branch);
+        } else {
+            p_reader = pending.discard();
+        }
+
+        // Ignore leading separators.
+        (_, p_reader) = wipe::<GSeparator>(p_reader);
 
         // Derive return value.
         let (return_der, reader) = ensure::<GPrimitive>(p_reader)?;
+
+        dbg!("GOT HERE");
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
@@ -687,11 +729,24 @@ impl ParseTree for GFunctionDecl {
         // Check for closing bracket.
         (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
 
+        // Ignore leading separators.
+        let (_, mut p_reader) = wipe::<GSeparator>(p_reader);
+
+        // Derive (optional) marker.
+        let (pending, checked_out) = p_reader.checkout();
+        if let Ok(marker_res) = GMarker::derive(checked_out) {
+            markers.push(marker_res.derived);
+            p_reader = pending.merge(marker_res.branch);
+        } else {
+            p_reader = pending.discard();
+        }
+
         Ok(DerivationResult {
             derived: GFunctionDecl {
                 name: name_der,
                 params,
                 return_ty: return_der,
+                markers,
             },
             branch: p_reader.into_branch(),
         })
