@@ -54,6 +54,60 @@ pub struct GNonAlphanumericItem;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GType {
+    Primitive(GPrimitive),
+    Pointer(GPrimitive),
+    Const(GPrimitive),
+    ConstPointer(GPrimitive),
+}
+
+impl ParseTree for GType {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        dbg!(&slice);
+
+        match slice.as_str() {
+            "const" => {
+                let reader = handle.commit();
+
+                // Check for pointer first
+                let (pending, checked_out) = reader.checkout();
+                if let Ok(ty_res) = GPrimitive::derive(checked_out) {
+                    let reader = pending.merge(ty_res.branch);
+                    let (_, reader) = wipe::<GSeparator>(reader);
+
+                    let (slice, handle) = reader.read_amt(1)?;
+
+                    // Check for pointer first
+                    if let Some(slice) = slice {
+                        if slice == "*" {
+                            return Ok(DerivationResult {
+                                derived: GType::ConstPointer(ty_res.derived),
+                                branch: handle.commit().into_branch(),
+                            });
+                        }
+                    }
+
+                    // Check for scalar type
+                    return Ok(DerivationResult {
+                        derived: GType::Const(ty_res.derived),
+                        branch: handle.reset().into_branch(),
+                    });
+                }
+            }
+            _ => {
+                let reader = handle.reset();
+                panic!()
+            }
+        }
+
+        todo!()
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum GPrimitive {
     Void,
     Bool,
     Char,
@@ -80,14 +134,14 @@ pub enum GParamItem {}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItemWithMarker {
-    pub ty: GType,
+    pub ty: GPrimitive,
     pub marker: GMarker,
     pub name: GParamName,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItemWithoutMarker {
-    pub ty: GType,
+    pub ty: GPrimitive,
     pub name: GParamName,
 }
 
@@ -130,7 +184,7 @@ pub struct GFunctionDecl {
     pub name: GFuncName,
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
     pub params: Vec<GParamItemWithoutMarker>,
-    pub return_ty: GType,
+    pub return_ty: GPrimitive,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -201,7 +255,7 @@ impl ParseTree for GEof {
     }
 }
 
-impl ParseTree for GType {
+impl ParseTree for GPrimitive {
     type Derivation = Self;
 
     fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -211,17 +265,17 @@ impl ParseTree for GType {
         dbg!(&slice);
 
         let derived = match slice.as_str() {
-            "void" => GType::Void,
-            "bool" => GType::Bool,
-            "char" => GType::Char,
-            "int" => GType::Int,
+            "void" => GPrimitive::Void,
+            "bool" => GPrimitive::Bool,
+            "char" => GPrimitive::Char,
+            "int" => GPrimitive::Int,
             _ => {
                 // Rollback reader, retry with the next derivation attempt.
                 let reader = handle.reset();
 
                 if let Ok(res) = GStruct::derive(reader) {
                     return Ok(DerivationResult {
-                        derived: GType::Struct(res.derived),
+                        derived: GPrimitive::Struct(res.derived),
                         branch: res.branch,
                     });
                 }
@@ -278,7 +332,7 @@ impl ParseTree for GParamItemWithMarker {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut reader) = ensure::<GType>(reader)?;
+        let (ty_derived, mut reader) = ensure::<GPrimitive>(reader)?;
 
         // Ignore leading separators.
         (_, reader) = wipe::<GSeparator>(reader);
@@ -309,7 +363,7 @@ impl ParseTree for GParamItemWithoutMarker {
 
     fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut reader) = ensure::<GType>(reader)?;
+        let (ty_derived, mut reader) = ensure::<GPrimitive>(reader)?;
 
         // Ignore leading separators.
         (_, reader) = wipe::<GSeparator>(reader);
@@ -537,7 +591,7 @@ impl ParseTree for GFunctionDecl {
         let mut params = vec![];
 
         // Derive return value.
-        let (return_der, reader) = ensure::<GType>(p_reader)?;
+        let (return_der, reader) = ensure::<GPrimitive>(p_reader)?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);

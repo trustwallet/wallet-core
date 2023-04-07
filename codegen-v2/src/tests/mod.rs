@@ -1,7 +1,7 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GMarker, GNonAlphanumeric, GNonAlphanumericItem,
-    GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GSeparator, GSeparatorItem, GType,
-    ParseTree,
+    GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GPrimitive, GSeparator,
+    GSeparatorItem, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -90,16 +90,16 @@ fn test_separator() {
 #[test]
 fn test_types() {
     let driver = Reader::from("int");
-    let der = GType::derive(driver).unwrap();
-    assert_eq!(der.derived, GType::Int);
+    let der = GPrimitive::derive(driver).unwrap();
+    assert_eq!(der.derived, GPrimitive::Int);
 
     let driver = Reader::from("bool");
-    let der = GType::derive(driver).unwrap();
-    assert_eq!(der.derived, GType::Bool);
+    let der = GPrimitive::derive(driver).unwrap();
+    assert_eq!(der.derived, GPrimitive::Bool);
 
     let driver = Reader::from("char\n");
-    let der = GType::derive(driver).unwrap();
-    assert_eq!(der.derived, GType::Char);
+    let der = GPrimitive::derive(driver).unwrap();
+    assert_eq!(der.derived, GPrimitive::Char);
 }
 
 #[test]
@@ -109,7 +109,7 @@ fn test_func_params_with_marker() {
     assert_eq!(
         der.derived,
         GParamItemWithMarker {
-            ty: GType::Int,
+            ty: GPrimitive::Int,
             marker: GMarker::NonNull,
             name: GParamName::from("my_var".to_string())
         }
@@ -120,7 +120,7 @@ fn test_func_params_with_marker() {
     assert_eq!(
         der.derived,
         GParamItemWithMarker {
-            ty: GType::Bool,
+            ty: GPrimitive::Bool,
             marker: GMarker::NonNull,
             name: GParamName::from("some_bool".to_string())
         }
@@ -134,7 +134,7 @@ fn test_func_params_without_marker() {
     assert_eq!(
         der.derived,
         GParamItemWithoutMarker {
-            ty: GType::Int,
+            ty: GPrimitive::Int,
             name: GParamName::from("my_var".to_string())
         }
     );
@@ -144,7 +144,7 @@ fn test_func_params_without_marker() {
     assert_eq!(
         der.derived,
         GParamItemWithoutMarker {
-            ty: GType::Bool,
+            ty: GPrimitive::Bool,
             name: GParamName::from("some_bool".to_string())
         }
     );
@@ -156,15 +156,15 @@ fn test_function_delceration() {
         name: GFuncName::from("some_function".to_string()),
         params: vec![
             GParamItemWithoutMarker {
-                ty: GType::Int,
+                ty: GPrimitive::Int,
                 name: GParamName::from("some_int".to_string()),
             },
             GParamItemWithoutMarker {
-                ty: GType::Bool,
+                ty: GPrimitive::Bool,
                 name: GParamName::from("some_bool".to_string()),
             },
         ],
-        return_ty: GType::Void,
+        return_ty: GPrimitive::Void,
     };
 
     let driver = Reader::from("void some_function(int some_int, bool some_bool)");
