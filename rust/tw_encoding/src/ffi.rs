@@ -208,11 +208,11 @@ pub unsafe extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool)
     CString::new(encoded).unwrap().into_raw()
 }
 
-fn get_alphabet(alphabet: *const c_char) -> Result<Option<&'static [u8]>, CEncodingCode> {
+fn get_alphabet(alphabet: *const c_char) -> Result<Option<String>, CEncodingCode> {
     if alphabet.is_null() {
         return Ok(None);
     }
     unsafe { CStr::from_ptr(alphabet).to_str() }
-        .map(|alphabet| Some(alphabet.as_bytes()))
+        .map(|alphabet| Some(alphabet.to_string()))
         .map_err(|_| CEncodingCode::InvalidAlphabet)
 }
