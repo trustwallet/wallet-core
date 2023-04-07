@@ -9,6 +9,11 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPrivateKey.h>
+#include "HexCoding.h"
+#include "Hash.h"
+#include "PublicKey.h"
+#include "Bech32Address.h"
+#include "Cosmos/Address.h"
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
@@ -17,7 +22,7 @@ namespace TW::Cosmos::tests::internal {
     static constexpr const char* gPubKey = "02cbfdb5e472893322294e60cf0883d43df431e1089d29ecb447a9e6d55045aae5";
     static constexpr const char* gPrivKey = "a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433";
 
-    void isValidAddressWrapper(const std::string& hrp, TWCoinType coinType, const std::string& address) {
+    static inline void isValidAddressWrapper(const std::string& hrp, TWCoinType coinType, const std::string& address) {
         auto address_utf8 = STRING(address.c_str());
         auto hrp_utf8 = STRING(hrp.c_str());
         EXPECT_TRUE(TWAnyAddressIsValidBech32(address_utf8.get(), TWCoinTypeCosmos, hrp_utf8.get()));
@@ -27,7 +32,7 @@ namespace TW::Cosmos::tests::internal {
         EXPECT_FALSE(TWAnyAddressIsValid(address_utf8.get(), TWCoinTypeBitcoin));
     }
 
-    void createFromPubKeyWrapper(const std::string& hrp, TWCoinType coinType, const std::string& address_str, TWPublicKeyType pubKeyType = TWPublicKeyTypeSECP256k1) {
+    static inline void createFromPubKeyWrapper(const std::string& hrp, TWCoinType coinType, const std::string& address_str, TWPublicKeyType pubKeyType = TWPublicKeyTypeSECP256k1) {
         // BECH32
         {
             const auto hrp_utf8 = STRING(hrp.c_str());
@@ -52,13 +57,13 @@ namespace TW::Cosmos::tests::internal {
         }
     }
 
-    void createFromPrivKeyWrapper(TWCoinType coinType, const std::string& address_str, TWPublicKeyType pubKeyType = TWPublicKeyTypeSECP256k1) {
+    static inline void createFromPrivKeyWrapper(TWCoinType coinType, const std::string& address_str, TWPublicKeyType pubKeyType = TWPublicKeyTypeSECP256k1) {
         auto privateKey = PrivateKey(parse_hex(gPrivKey));
         auto address = Address(coinType, privateKey.getPublicKey(pubKeyType));
         ASSERT_EQ(address.string(), address_str);
     }
 
-    void createFromStringWrapper(const std::string& hrp_str, TWCoinType coinType, const std::string& address_str) {
+    static inline void createFromStringWrapper(const std::string& hrp_str, TWCoinType coinType, const std::string& address_str) {
         // BECH32
         {
             const auto address = STRING(address_str.c_str());
@@ -83,7 +88,7 @@ namespace TW::Cosmos::tests::internal {
 }
 
 namespace TW::Cosmos::tests {
-    void allAddressTestsWrapper(const std::string& hrp_str, TWCoinType coinType, const std::string& address_str) {
+    static inline void allAddressTestsWrapper(const std::string& hrp_str, TWCoinType coinType, const std::string& address_str) {
         internal::isValidAddressWrapper(hrp_str, coinType, address_str);
         internal::createFromPubKeyWrapper(hrp_str, coinType, address_str);
         internal::createFromPrivKeyWrapper(coinType, address_str);
