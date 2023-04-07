@@ -48,6 +48,11 @@ fn test_non_alphanumeric() {
     let driver = Reader::from(",,,,");
     let res = GNonAlphanumeric::derive(driver);
     assert!(res.is_ok());
+
+    // ERR!
+    let driver = Reader::from(",,,,a");
+    let res = GNonAlphanumeric::derive(driver);
+    assert!(res.is_ok());
 }
 
 #[test]
