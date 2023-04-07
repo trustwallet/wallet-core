@@ -197,10 +197,14 @@ int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key,
     assert(digest_size >= 32);
     return ecdsa_sign_digest(curve, priv_key, digest, sig, pby, is_canonical);
 }
-
+#include <iostream>
+#include "HexCoding.h"
 Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     Data result;
     bool success = false;
+    auto z = hex(digest);
+    std::cout << "key " << hex(key()) << std::endl;
+    std::cout << "digest " << z << std::endl;
     switch (curve) {
     case TWCurveSECP256k1: {
         result.resize(65);

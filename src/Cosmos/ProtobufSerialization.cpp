@@ -4,6 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <future>
+#include <iostream>
+#include "HexCoding.h"
 #include "ProtobufSerialization.h"
 #include "JsonSerialization.h"
 #include "../proto/Cosmos.pb.h"
@@ -316,14 +319,17 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) {
     return txBody.SerializeAsString();
 }
 
-std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
+std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin, const Data& publicKeyData) {
     if (input.messages_size() >= 1 && input.messages(0).has_sign_direct_message()) {
         return input.messages(0).sign_direct_message().auth_info_bytes();
     }
 
     // AuthInfo
-    const auto privateKey = PrivateKey(input.private_key());
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+//    const auto privateKey = PrivateKey(input.private_key());
+//    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    std::cout << hex(publicKeyData)<<std::endl;
+    const PublicKey publicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
+    
     auto authInfo = cosmos::AuthInfo();
     auto* signerInfo = authInfo.add_signer_infos();
 
@@ -361,7 +367,9 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
     return authInfo.SerializeAsString();
 }
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin) {
+
+
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin, const std::function<Data(Data)> externalSigner) {
     // SignDoc Preimage
     auto signDoc = cosmos::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
@@ -382,8 +390,17 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
         }
     }
 
+    std::cout << "serialized sign doc " << hex(serializedSignDoc) << std::endl;
     const auto privateKey = PrivateKey(input.private_key());
-    auto signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
+
+    auto signedHash = Data();
+    if(externalSigner) {
+        std::future<Data> signedHashFuture = std::async(externalSigner, hashToSign);
+        signedHash = signedHashFuture.get();
+    } else {
+        signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
+    }
+    
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
     return signature;
 }

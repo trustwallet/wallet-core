@@ -15,13 +15,21 @@
 namespace TW::Cosmos {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin) noexcept {
+    const auto& privateKey = PrivateKey(input.private_key());
+    const auto& publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    return sign(input, coin, publicKey.bytes, nullptr);
+}
+
+
+//// TANGEM
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin, const Data& publicKeyData, const std::function<Data(Data)> externalSigner) noexcept {
     switch (input.signing_mode()) {
     case Proto::JSON:
         return signJsonSerialized(input, coin);
 
     case Proto::Protobuf:
     default:
-        return signProtobuf(input, coin);
+        return signProtobuf(input, coin, publicKeyData, externalSigner);
     }
 }
 
@@ -42,13 +50,13 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     return output;
 }
 
-Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCoinType coin) noexcept {
+Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCoinType coin, const Data& publicKeyData, const std::function<Data(Data)> externalSigner) noexcept {
     using namespace Protobuf;
     using namespace Json;
     try {
         const auto serializedTxBody = buildProtoTxBody(input);
-        const auto serializedAuthInfo = buildAuthInfo(input, coin);
-        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo, coin);
+        const auto serializedAuthInfo = buildAuthInfo(input, coin, publicKeyData);
+        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo, coin, externalSigner);
         auto serializedTxRaw = buildProtoTxRaw(serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
