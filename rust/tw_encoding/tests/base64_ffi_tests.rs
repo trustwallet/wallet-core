@@ -6,7 +6,7 @@
 
 use std::ffi::{CStr, CString};
 use tw_encoding::ffi::{decode_base64, encode_base64};
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::c_byte_array::CByteArray;
 
 #[test]
 fn test_encode_base64() {

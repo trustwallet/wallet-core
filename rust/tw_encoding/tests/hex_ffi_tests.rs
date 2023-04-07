@@ -6,7 +6,7 @@
 
 use std::ffi::{CStr, CString};
 use tw_encoding::ffi::{decode_hex, encode_hex};
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::c_byte_array::CByteArray;
 
 #[test]
 fn test_encode_hex_without_prefix() {

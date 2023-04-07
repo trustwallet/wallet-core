@@ -85,5 +85,12 @@ pub struct CStrMutResult {
     pub result: *mut c_char,
 }
 
+#[repr(C)]
+pub struct CBoolResult {
+    pub code: i32,
+    pub result: bool,
+}
+
 impl_c_result!(CStrResult, *const c_char, core::ptr::null());
 impl_c_result!(CStrMutResult, *mut c_char, core::ptr::null_mut());
+impl_c_result!(CBoolResult, bool, false);

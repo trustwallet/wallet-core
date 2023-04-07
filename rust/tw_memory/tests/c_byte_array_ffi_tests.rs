@@ -4,8 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_memory::ffi::c_byte_array::free_c_byte_array;
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::c_byte_array::{free_c_byte_array, CByteArray};
 
 #[test]
 fn test_free_c_byte_array() {

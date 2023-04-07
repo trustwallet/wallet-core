@@ -6,7 +6,7 @@
 
 use std::ffi::CString;
 use tw_encoding::ffi::{decode_base58, encode_base58, Base58Alphabet};
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::c_byte_array::CByteArray;
 
 #[test]
 fn test_base58_encode() {

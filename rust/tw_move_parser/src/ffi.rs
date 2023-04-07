@@ -10,8 +10,7 @@ use move_core_types::language_storage::TypeTag;
 use move_core_types::transaction_argument::TransactionArgument;
 use move_core_types::*;
 use std::{ffi::c_char, ffi::CStr};
-use tw_memory::ffi::c_result::ErrorCode;
-use tw_memory::ffi::CStrResult;
+use tw_memory::ffi::c_result::{CStrResult, ErrorCode};
 
 #[repr(C)]
 pub enum CMoveParserCode {

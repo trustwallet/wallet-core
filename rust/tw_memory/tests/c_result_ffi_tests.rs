@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_result::{OK_CODE, UNKNOWN_ERROR};
-use tw_memory::ffi::{CByteArray, CByteArrayResult};
 
 #[test]
 fn test_c_result_unwrap() {

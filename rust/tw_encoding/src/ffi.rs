@@ -9,8 +9,8 @@
 use crate::{base32, base58, base64, hex, EncodingError};
 use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
+use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
-use tw_memory::ffi::{CByteArray, CByteArrayResult};
 
 #[repr(C)]
 pub enum CEncodingCode {
