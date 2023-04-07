@@ -4,17 +4,23 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWAnyAddress.h>
-#include "HexCoding.h"
+#include "../CosmosTestHelpers.h"
 
-#include "TestUtilities.h"
-#include <gtest/gtest.h>
+namespace TW::Cosmos::tests {
 
-using namespace TW;
+static const std::string gNativeInjectiveAddr = "inj14py36sx57ud82t9yrks9z6hdsrpn5x6k8tf7m3";
+static const std::string gNativeInjectiveHrp = "inj";
 
-TEST(TWNativeInjective, Address) {
-    auto string = STRING("inj1xmpkmxr4as00em23tc2zgmuyy2gr4h3wgcl6vd");
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeNativeInjective));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
+TEST(TWNativeInjectiveAnyAddress, AllNativeInjectiveAddressTests) {
+    CosmosAddressParameters parameters{.hrp = gNativeInjectiveHrp,
+        .coinType = TWCoinTypeNativeInjective,
+        .address = gNativeInjectiveAddr,
+        .standaloneChain = false,
+        .publicKeyType = TWPublicKeyTypeSECP256k1Extended,
+        .privKey = "8d2a3bd62d300a148c89dc8635f87b7a24a951bd1c4e78675fe40e1a640d46ed",
+        .publicKey = "04868e7e1634417db2adfd9fe38205bfa0fea01898a7fd30565d13f7056a37c065211845f6e553524c2c1611af9712ac02b7a3b439c9f0cfcadfd81a2c86cc0ab8",
+    };
+    allAddressTestsWrapper(parameters);
 }
+
+} // namespace TW::Cosmos::tests
