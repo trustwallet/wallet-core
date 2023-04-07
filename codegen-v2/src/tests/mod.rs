@@ -1,7 +1,7 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GMarker, GNonAlphanumeric, GNonAlphanumericItem,
     GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GPrimitive, GSeparator,
-    GSeparatorItem, ParseTree,
+    GSeparatorItem, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -85,6 +85,38 @@ fn test_separator() {
     let driver = Reader::from(" \n  \t");
     let x = GSeparator::derive(driver).unwrap();
     dbg!(x);
+}
+
+#[test]
+fn test_types_categories() {
+    let driver = Reader::from("int");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(der.derived, GTypeCategory::Scalar(GPrimitive::Int));
+
+    let driver = Reader::from("int*");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(GPrimitive::Int)))
+    );
+
+    let driver = Reader::from("int **");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
+            GTypeCategory::Scalar(GPrimitive::Int)
+        ))))
+    );
+
+    let driver = Reader::from("int * * *");
+    let der = GTypeCategory::derive(driver).unwrap();
+    assert_eq!(
+        der.derived,
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(GPrimitive::Int)))
+        ))))
+    );
 }
 
 #[test]

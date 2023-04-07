@@ -69,6 +69,7 @@ impl ParseTree for GAggregate {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GNonAlphanumericItem;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GTypeCategory {
     Scalar(GPrimitive),
     Aggregate(GAggregate),
@@ -79,29 +80,43 @@ impl ParseTree for GTypeCategory {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        // Try scalar first.
+        // Handle scalar first.
         let (pending, checked_out) = reader.checkout();
         if let Ok(ty_res) = GPrimitive::derive(checked_out) {
-            let reader = pending.merge(ty_res.branch);
+            let mut p_reader = pending.merge(ty_res.branch);
 
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let mut derived = GTypeCategory::Scalar(ty_res.derived);
 
-            // Try pointer.
-            let (slice, handle) = reader.read_amt(1)?;
-            if let Some(slice) = slice {
-                if slice == "*" {
-                    //let x = GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(ty_res.derived)));
-                    // TODO: Handle following `**...`
+            loop {
+                // Ignore leading separators.
+                let (_, reader) = wipe::<GSeparator>(p_reader);
+
+                // Try pointer.
+                // TODO: Implement `GAsterisk`?
+                let (slice, handle) = reader.read_amt(1)?;
+                if let Some(slice) = slice {
+                    if slice == "*" {
+                        p_reader = handle.commit();
+                        derived = GTypeCategory::Pointer(Box::new(derived));
+                        continue;
+                    }
                 }
+
+                p_reader = handle.reset();
+                break;
             }
 
-            return Ok(DerivationResult { derived: GTypeCategory::Scalar(ty_res.derived), branch: handle.commit().into_branch() })
+            return Ok(DerivationResult {
+                derived,
+                branch: p_reader.into_branch(),
+            });
         }
 
-        let reader = pending.discard();
+        // Handle aggregate types.
+        // TODO
 
-        todo!()
+        Err(Error::Todo)
     }
 }
 
