@@ -631,14 +631,14 @@ TEST(HDWallet, NearKey) {
     }
 }
 
-TEST(HDWallet, AgoricKey) {
-    const auto derivPath = "m/44'/564'/0'/0/0";
+TEST(HDWallet, CroKey) {
+    const auto derivPath = "m/44'/394'/0'/0/0";
     HDWallet wallet = HDWallet("rude segment two fury you output manual volcano sugar draft elite fame", "");
     {
-        const auto privateKey = wallet.getKey(TWCoinTypeAgoric, DerivationPath(derivPath));
-        EXPECT_EQ(hex(privateKey.bytes), "9457d0a4b7bdfe23528af07603af0f7d0ac0c510526da7721abefdc3948461f6");
+        const auto privateKey = wallet.getKey(TWCoinTypeCryptoOrg, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "5469c1a88e67d6d490e647ac8d82d54c4a17b8f00d272b3b30fac2253339aa28");
         const auto p = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-        EXPECT_EQ(hex(p.bytes), "03602731bc2f787eec358c1ba8ddb8e7c7720f56a0406b8d16e20c93b822953960");
+        EXPECT_EQ(hex(p.bytes), "025824f188c340235910b15e5e35aea11cfc28eabfa7756da5585c08f74db437ef");
         //EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
     }
 }
