@@ -15,7 +15,7 @@ namespace TW::Rust {
             return {};
         }
         if (rawArray->data == nullptr || rawArray->size == 0) {
-            // We need to release the memory allocated to the `CByteArray*` pointer even if the byte array points to a null.
+            // We need to release the memory allocated to the `CByteArray*` pointer even if the inner `CByteArray::data` points to a null.
             free_c_byte_array(rawArray);
             return {};
         }
@@ -26,6 +26,10 @@ namespace TW::Rust {
 
     inline bool data_from_c_byte_array_result(CByteArrayResult&& array_result, Data& dest) {
         if (array_result.code != OK_CODE) {
+            if (array_result.result != nullptr) {
+                // We need to release the memory allocated to the `CByteArray*`.
+                free_c_byte_array(array_result.result);
+            }
             return false;
         }
         dest = data_from_c_byte_array(array_result.result);

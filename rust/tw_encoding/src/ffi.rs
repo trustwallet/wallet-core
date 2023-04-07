@@ -13,29 +13,29 @@ use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
 use tw_memory::ffi::{CByteArray, CByteArrayResult};
 
 #[repr(C)]
-pub enum CEncodingError {
+pub enum CEncodingCode {
     Ok = 0,
     InvalidInput = 1,
     InvalidAlphabet = 2,
 }
 
-impl From<EncodingError> for CEncodingError {
+impl From<EncodingError> for CEncodingCode {
     fn from(error: EncodingError) -> Self {
         match error {
-            EncodingError::InvalidInput => CEncodingError::InvalidInput,
-            EncodingError::InvalidAlphabet => CEncodingError::InvalidAlphabet,
+            EncodingError::InvalidInput => CEncodingCode::InvalidInput,
+            EncodingError::InvalidAlphabet => CEncodingCode::InvalidAlphabet,
         }
     }
 }
 
-impl From<hex::FromHexError> for CEncodingError {
+impl From<hex::FromHexError> for CEncodingCode {
     fn from(_error: hex::FromHexError) -> Self {
-        CEncodingError::InvalidInput
+        CEncodingCode::InvalidInput
     }
 }
 
-impl From<CEncodingError> for ErrorCode {
-    fn from(error: CEncodingError) -> Self {
+impl From<CEncodingCode> for ErrorCode {
+    fn from(error: CEncodingCode) -> Self {
         error as ErrorCode
     }
 }
@@ -78,7 +78,7 @@ pub unsafe extern "C" fn encode_base32(
 
     base32::encode(input, alphabet, padding)
         .map(|result| CString::new(result).unwrap().into_raw())
-        .map_err(CEncodingError::from)
+        .map_err(CEncodingCode::from)
         .into()
 }
 
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn decode_base32(
 ) -> CByteArrayResult {
     let input = match unsafe { CStr::from_ptr(input).to_str() } {
         Ok(input) => input,
-        Err(_) => return CByteArrayResult::error(CEncodingError::InvalidInput),
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
     let alphabet = match get_alphabet(alphabet) {
         Ok(alphabet) => alphabet,
@@ -105,7 +105,7 @@ pub unsafe extern "C" fn decode_base32(
 
     base32::decode(input, alphabet, padding)
         .map(CByteArray::new_ptr)
-        .map_err(CEncodingError::from)
+        .map_err(CEncodingCode::from)
         .into()
 }
 
@@ -137,12 +137,12 @@ pub unsafe extern "C" fn decode_base58(
 ) -> CByteArrayResult {
     let input = match unsafe { CStr::from_ptr(input).to_str() } {
         Ok(input) => input,
-        Err(_) => return CByteArrayResult::error(CEncodingError::InvalidInput),
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
 
     base58::decode(input, alphabet.into())
         .map(CByteArray::new_ptr)
-        .map_err(CEncodingError::from)
+        .map_err(CEncodingCode::from)
         .into()
 }
 
@@ -165,15 +165,15 @@ pub unsafe extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool
 #[no_mangle]
 pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArrayResult {
     if data.is_null() {
-        return CByteArrayResult::error(CEncodingError::InvalidInput);
+        return CByteArrayResult::error(CEncodingCode::InvalidInput);
     }
     let str_slice = match unsafe { CStr::from_ptr(data).to_str() } {
         Ok(input) => input,
-        Err(_) => return CByteArrayResult::error(CEncodingError::InvalidInput),
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
     base64::decode(str_slice, is_url)
         .map(CByteArray::new_ptr)
-        .map_err(CEncodingError::from)
+        .map_err(CEncodingCode::from)
         .into()
 }
 
@@ -183,16 +183,16 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
 #[no_mangle]
 pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArrayResult {
     if data.is_null() {
-        return CByteArrayResult::error(CEncodingError::InvalidInput);
+        return CByteArrayResult::error(CEncodingCode::InvalidInput);
     }
     let hex_string = match unsafe { CStr::from_ptr(data).to_str() } {
         Ok(input) => input,
-        Err(_) => return CByteArrayResult::error(CEncodingError::InvalidInput),
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
 
     hex::decode(hex_string)
         .map(CByteArray::new_ptr)
-        .map_err(CEncodingError::from)
+        .map_err(CEncodingCode::from)
         .into()
 }
 
@@ -208,11 +208,11 @@ pub unsafe extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool)
     CString::new(encoded).unwrap().into_raw()
 }
 
-fn get_alphabet(alphabet: *const c_char) -> Result<Option<&'static [u8]>, CEncodingError> {
+fn get_alphabet(alphabet: *const c_char) -> Result<Option<&'static [u8]>, CEncodingCode> {
     if alphabet.is_null() {
         return Ok(None);
     }
     unsafe { CStr::from_ptr(alphabet).to_str() }
         .map(|alphabet| Some(alphabet.as_bytes()))
-        .map_err(|_| CEncodingError::InvalidAlphabet)
+        .map_err(|_| CEncodingCode::InvalidAlphabet)
 }

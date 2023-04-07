@@ -24,7 +24,7 @@ pub struct CByteArray {
 
 impl Drop for CByteArray {
     fn drop(&mut self) {
-        // Do nothing if the memory is released already.
+        // Do nothing if the memory has been released already.
         // It could be released on `CByteArray::into_vec`.
         if self.data.is_null() {
             return;
