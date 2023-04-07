@@ -8,6 +8,8 @@ pub trait ParseTree {
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>>;
 }
 
+// Convenience function. Removes a derived type from the reader, returning the
+// updated reader.
 fn wipe<'a, T>(reader: Reader<'a>) -> (Option<T::Derivation>, Reader<'a>)
 where
     T: ParseTree,
@@ -20,6 +22,8 @@ where
     }
 }
 
+// Convenience function. Tries to successfully derive a type from the reader,
+// returning the updated reader.
 fn ensure<'a, T>(reader: Reader<'a>) -> Result<(T::Derivation, Reader<'a>)>
 where
     T: ParseTree,
