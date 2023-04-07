@@ -12,7 +12,8 @@ static const std::string gAxelarAddr = "axelar1mry47pkga5tdswtluy0m8teslpalkdq06
 static const std::string gAxelarHrp = "axelar";
 
 TEST(TWAxelarAnyAddress, AllAxelarAddressTests) {
-    allAddressTestsWrapper(gAxelarHrp, TWCoinTypeAxelar, gAxelarAddr);
+    CosmosAddressParameters parameters{.hrp = gAxelarHrp, .coinType = TWCoinTypeAxelar, .address = gAxelarAddr};
+    allAddressTestsWrapper(parameters);
 }
 
 }

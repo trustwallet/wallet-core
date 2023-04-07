@@ -631,4 +631,16 @@ TEST(HDWallet, NearKey) {
     }
 }
 
+TEST(HDWallet, AgoricKey) {
+    const auto derivPath = "m/44'/564'/0'/0/0";
+    HDWallet wallet = HDWallet("rude segment two fury you output manual volcano sugar draft elite fame", "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeAgoric, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "9457d0a4b7bdfe23528af07603af0f7d0ac0c510526da7721abefdc3948461f6");
+        const auto p = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(p.bytes), "03602731bc2f787eec358c1ba8ddb8e7c7720f56a0406b8d16e20c93b822953960");
+        //EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
+    }
+}
+
 } // namespace TW::HDWalletTests
