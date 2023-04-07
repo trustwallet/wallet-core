@@ -36,7 +36,9 @@ fn test_c_result_error_with_ok_code() {
 #[test]
 fn test_c_result_into_result() {
     let c_res = CByteArrayResult::ok(CByteArray::new_ptr(vec![1, 2, 3]));
-    c_res.into_result().unwrap();
+    let raw_array = c_res.into_result().unwrap();
+    // Release the memory by taking the ownership.
+    unsafe { CByteArray::from_ptr(raw_array) };
 
     let c_res = CByteArrayResult::error(10);
     c_res.into_result().unwrap_err();

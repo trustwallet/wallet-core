@@ -10,8 +10,13 @@
 #include "WalletCoreRSBindgen.h"
 
 namespace TW::Rust {
-    inline Data data_from_c_byte_array(CByteArray* rawArray) {
+    inline Data data_from_c_byte_array(CByteArrayPtr rawArray) {
+        if (rawArray == nullptr) {
+            return {};
+        }
         if (rawArray->data == nullptr || rawArray->size == 0) {
+            // We need to release the memory allocated to the `CByteArray*` pointer even if the byte array points to a null.
+            free_c_byte_array(rawArray);
             return {};
         }
         Data result(&rawArray->data[0], &rawArray->data[rawArray->size]);
