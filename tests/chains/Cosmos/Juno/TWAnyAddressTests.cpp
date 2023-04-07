@@ -13,7 +13,7 @@ static const std::string gJunoHrp = "juno";
 
 TEST(TWJunoAnyAddress, AllJunoAddressTests) {
     CosmosAddressParameters parameters{.hrp = gJunoHrp, .coinType = TWCoinTypeJuno, .address = gJunoAddr};
-    allAddressTestsWrapper(parameters);
+    TestCosmosAddressParameters(parameters);
 }
 
 }

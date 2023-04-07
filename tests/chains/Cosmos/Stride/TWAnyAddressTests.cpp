@@ -15,7 +15,7 @@ static const std::string gStrideHrp = "stride";
 
 TEST(TWStrideAnyAddress, AllStrideAddressTests) {
     CosmosAddressParameters parameters{.hrp = gStrideHrp, .coinType = TWCoinTypeStride, .address = gStrideAddr};
-    allAddressTestsWrapper(parameters);
+    TestCosmosAddressParameters(parameters);
 }
 
 }

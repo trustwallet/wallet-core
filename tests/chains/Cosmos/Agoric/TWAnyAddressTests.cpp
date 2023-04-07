@@ -17,7 +17,7 @@ TEST(TWAgoricAnyAddress, AllAgoricAddressTests) {
                                        .address = gAgoricAddr,
                                        .privKey = "9457d0a4b7bdfe23528af07603af0f7d0ac0c510526da7721abefdc3948461f6",
                                        .publicKey = "03602731bc2f787eec358c1ba8ddb8e7c7720f56a0406b8d16e20c93b822953960"};
-    allAddressTestsWrapper(parameters);
+    TestCosmosAddressParameters(parameters);
 }
 
 } // namespace TW::Cosmos::tests

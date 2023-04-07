@@ -13,7 +13,7 @@ static const std::string gAtomHrp = "cosmos";
 
 TEST(TWAtomAnyAddress, AllAtomAddressTests) {
     CosmosAddressParameters parameters{.hrp = gAtomHrp, .coinType = TWCoinTypeCosmos, .address = gAtomAddr};
-    allAddressTestsWrapper(parameters);
+    TestCosmosAddressParameters(parameters);
 }
 
 }

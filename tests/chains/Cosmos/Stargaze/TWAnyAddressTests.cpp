@@ -16,7 +16,7 @@ static const std::string gStarsHrp = "stars";
 
 TEST(TWStargazeAnyAddress, AllStargazeAddressTests) {
     CosmosAddressParameters parameters{.hrp = gStarsHrp, .coinType = TWCoinTypeStargaze, .address = gStarsAddr};
-    allAddressTestsWrapper(parameters);
+    TestCosmosAddressParameters(parameters);
 }
 
 }

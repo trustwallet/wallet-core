@@ -13,7 +13,7 @@ static const std::string gOsmosisHrp = "osmo";
 
 TEST(TWOsmosisAnyAddress, AllOsmosisAddressTests) {
     CosmosAddressParameters parameters{.hrp = gOsmosisHrp, .coinType = TWCoinTypeOsmosis, .address = gOsmosisAddr};
-    allAddressTestsWrapper(parameters);
+    TestCosmosAddressParameters(parameters);
 }
 
 }

@@ -33,7 +33,7 @@ struct CosmosAddressParameters {
 }
 
 namespace TW::Cosmos::tests::internal {
-    static inline void isValidAddressWrapper(const CosmosAddressParameters& addressParameters) {
+    static inline void isValidAddress(const CosmosAddressParameters& addressParameters) {
         auto address_utf8 = STRING(addressParameters.address.c_str());
         auto hrp_utf8 = STRING(addressParameters.hrp.c_str());
         EXPECT_TRUE(TWAnyAddressIsValidBech32(address_utf8.get(), TWCoinTypeCosmos, hrp_utf8.get()));
@@ -45,7 +45,7 @@ namespace TW::Cosmos::tests::internal {
         EXPECT_FALSE(TWAnyAddressIsValid(address_utf8.get(), TWCoinTypeBitcoin));
     }
 
-    static inline void createFromPubKeyWrapper(const CosmosAddressParameters& addressParameters) {
+    static inline void testCreateFromPubKeyWrapper(const CosmosAddressParameters& addressParameters) {
         if (addressParameters.standaloneChain) {
             const auto hrp_utf8 = STRING(addressParameters.hrp.c_str());
             const auto data = DATA(addressParameters.publicKey.c_str());
@@ -69,13 +69,13 @@ namespace TW::Cosmos::tests::internal {
         }
     }
 
-    static inline void createFromPrivKeyWrapper(const CosmosAddressParameters& addressParameters) {
+    static inline void testCreateFromPrivKey(const CosmosAddressParameters& addressParameters) {
         auto privateKey = PrivateKey(parse_hex(addressParameters.privKey));
         auto address = Address(addressParameters.coinType, privateKey.getPublicKey(addressParameters.publicKeyType));
         ASSERT_EQ(address.string(), addressParameters.address);
     }
 
-    static inline void createFromStringWrapper(const CosmosAddressParameters& addressParameters) {
+    static inline void testCreateFromString(const CosmosAddressParameters& addressParameters) {
         // BECH32
         if (addressParameters.standaloneChain) {
             const auto address = STRING(addressParameters.address.c_str());
@@ -100,10 +100,10 @@ namespace TW::Cosmos::tests::internal {
 }
 
 namespace TW::Cosmos::tests {
-    static inline void allAddressTestsWrapper(const CosmosAddressParameters& addressParameters) {
-        internal::isValidAddressWrapper(addressParameters);
-        internal::createFromPubKeyWrapper(addressParameters);
-        internal::createFromPrivKeyWrapper(addressParameters);
-        internal::createFromStringWrapper(addressParameters);
+    static inline void TestCosmosAddressParameters(const CosmosAddressParameters& addressParameters) {
+        internal::isValidAddress(addressParameters);
+        internal::testCreateFromPubKeyWrapper(addressParameters);
+        internal::testCreateFromPrivKey(addressParameters);
+        internal::testCreateFromString(addressParameters);
     }
 }
