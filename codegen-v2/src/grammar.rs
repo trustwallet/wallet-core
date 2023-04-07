@@ -47,60 +47,59 @@ pub enum EitherOr<T, D> {
 
 pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 
+// TODO: Rename?
+pub enum GType {
+    Mutable(GTypeCategory),
+    Const(GTypeCategory),
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum GAggregate {}
+
+impl ParseTree for GAggregate {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        todo!()
+    }
+}
+
 // TODO: Rename
 // TODO: Should this wrap the item?
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GNonAlphanumericItem;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum GType {
-    Primitive(GPrimitive),
-    Pointer(GPrimitive),
-    Const(GPrimitive),
-    ConstPointer(GPrimitive),
+pub enum GTypeCategory {
+    Scalar(GPrimitive),
+    Aggregate(GAggregate),
+    Pointer(Box<GTypeCategory>),
 }
 
-impl ParseTree for GType {
+impl ParseTree for GTypeCategory {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        dbg!(&slice);
+        // Try scalar first.
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(ty_res) = GPrimitive::derive(checked_out) {
+            let reader = pending.merge(ty_res.branch);
 
-        match slice.as_str() {
-            "const" => {
-                let reader = handle.commit();
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
 
-                // Check for pointer first
-                let (pending, checked_out) = reader.checkout();
-                if let Ok(ty_res) = GPrimitive::derive(checked_out) {
-                    let reader = pending.merge(ty_res.branch);
-                    let (_, reader) = wipe::<GSeparator>(reader);
-
-                    let (slice, handle) = reader.read_amt(1)?;
-
-                    // Check for pointer first
-                    if let Some(slice) = slice {
-                        if slice == "*" {
-                            return Ok(DerivationResult {
-                                derived: GType::ConstPointer(ty_res.derived),
-                                branch: handle.commit().into_branch(),
-                            });
-                        }
-                    }
-
-                    // Check for scalar type
-                    return Ok(DerivationResult {
-                        derived: GType::Const(ty_res.derived),
-                        branch: handle.reset().into_branch(),
-                    });
+            // Try pointer.
+            let (slice, handle) = reader.read_amt(1)?;
+            if let Some(slice) = slice {
+                if slice == "*" {
+                    //let x = GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(ty_res.derived)));
+                    // TODO: Handle following `**...`
                 }
             }
-            _ => {
-                let reader = handle.reset();
-                panic!()
-            }
+
+            return Ok(DerivationResult { derived: GTypeCategory::Scalar(ty_res.derived), branch: handle.commit().into_branch() })
         }
+
+        let reader = pending.discard();
 
         todo!()
     }
