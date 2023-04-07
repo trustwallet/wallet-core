@@ -15,17 +15,23 @@ pub struct CByteArrayResult {
 crate::impl_c_result!(CByteArrayResult, CByteArrayPtr, std::ptr::null_mut());
 
 /// C-compatible byte array.
-///
-/// # Freeing memory
-///
-/// Since the structure fields are public, it's highly unsafe to free the memory on [`Drop::drop`].
-/// In order to free the memory, consider using [`CByteArray::into_vec`] or [`CByteArray::free`]
-/// unsafe methods.
 #[repr(C)]
 pub struct CByteArray {
-    pub data: *mut u8,
-    pub size: usize,
-    pub capacity: usize,
+    data: *mut u8,
+    size: usize,
+    capacity: usize,
+}
+
+impl Drop for CByteArray {
+    fn drop(&mut self) {
+        // Do nothing if the memory is released already.
+        // It could be released on `CByteArray::into_vec`.
+        if self.data.is_null() {
+            return;
+        }
+
+        let _ = unsafe { Vec::from_raw_parts(self.data, self.size, self.capacity) };
+    }
 }
 
 impl From<Vec<u8>> for CByteArray {
@@ -35,6 +41,7 @@ impl From<Vec<u8>> for CByteArray {
 }
 
 impl CByteArray {
+    /// Returns a `CByteArray` instance from the given `mut_vec` bytes.
     pub fn new(mut mut_vec: Vec<u8>) -> CByteArray {
         let data = mut_vec.as_mut_ptr();
         let size = mut_vec.len();
@@ -47,20 +54,37 @@ impl CByteArray {
         }
     }
 
+    /// Returns the pointer to a `CByteArray` instance allocated on heap.
     pub fn new_ptr(data: Vec<u8>) -> CByteArrayPtr {
         Box::into_raw(Box::new(CByteArray::from(data)))
     }
 
-    pub unsafe fn into_vec(self) -> Vec<u8> {
-        Vec::from_raw_parts(self.data, self.size, self.capacity)
+    /// Converts `CByteArray` into `Vec<u8>` without additional allocation.
+    ///
+    /// # Safe
+    ///
+    /// `data`, `size` and `capacity` must be valid and exactly the same as after [`CByteArray::new`].
+    pub unsafe fn into_vec(mut self) -> Vec<u8> {
+        let data = Vec::from_raw_parts(self.data, self.size, self.capacity);
+        // Set the self to null to avoid realising the memory.
+        self.set_null();
+        data
     }
 
+    /// Creates a `CByteArray` from the `ptr` pointer.
+    ///
+    /// # Safe
+    ///
+    /// The `ptr` pointer must point to a memory previously allocated on heap in Rust *only*.
     pub unsafe fn from_ptr(ptr: CByteArrayPtr) -> CByteArray {
         *Box::from_raw(ptr)
     }
 
-    pub unsafe fn free(self) {
-        let _ = Vec::from_raw_parts(self.data, self.size, self.capacity);
+    /// Set the pointer, size and capacity to the default values.
+    fn set_null(&mut self) {
+        self.data = std::ptr::null_mut();
+        self.size = 0;
+        self.capacity = 0;
     }
 }
 
@@ -68,9 +92,9 @@ impl CByteArray {
 /// \param ptr *non-null* C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn free_c_byte_array(ptr: CByteArrayPtr) {
-    // Take the ownership back to rust and drop the owner.
     if ptr.is_null() {
         return;
     }
-    Box::from_raw(ptr).free();
+    // Take the ownership back to rust and drop the owner.
+    let _ = CByteArray::from_ptr(ptr);
 }

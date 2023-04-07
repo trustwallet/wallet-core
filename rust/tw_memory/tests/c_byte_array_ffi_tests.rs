@@ -19,3 +19,16 @@ fn test_free_c_byte_array() {
         // free_c_byte_array(raw_array);
     }
 }
+
+#[test]
+fn test_drop_c_byte_array() {
+    // The memory must be released on `Drop::drop`.
+    let _ = CByteArray::new(vec![1, 2, 3]);
+}
+
+#[test]
+fn test_c_byte_array_into_vec() {
+    // The memory must be valid after `CByteArray::into_vec` and `CByteArray::drop`.
+    let data = unsafe { CByteArray::new(vec![1, 2, 3]).into_vec() };
+    assert_eq!(data, [1, 2, 3]);
+}
