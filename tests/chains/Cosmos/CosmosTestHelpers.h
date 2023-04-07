@@ -75,7 +75,7 @@ namespace TW::Cosmos::tests::internal {
 
     static inline void createFromStringWrapper(const CosmosAddressParameters& addressParameters) {
         // BECH32
-        {
+        if (addressParameters.standaloneChain) {
             const auto address = STRING(addressParameters.address.c_str());
             const auto hrp = STRING(addressParameters.hrp.c_str());
             const auto anyAddr = TWAnyAddressCreateBech32(address.get(), TWCoinTypeCosmos, hrp.get());
