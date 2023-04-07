@@ -4,17 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../CosmosTestHelpers.h"
+#include <TrustWalletCore/TWCoinType.h>
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
+#include "../CosmosTestHelpers.h"
 
 namespace TW::Cosmos::tests {
 
-static const std::string gStrideAddr = "stride1mry47pkga5tdswtluy0m8teslpalkdq0a2sjge";
-static const std::string gStrideHrp = "stride";
+static const std::string gStarsAddr = "stars1mry47pkga5tdswtluy0m8teslpalkdq02a8nhy";
+static const std::string gStarsHrp = "stars";
 
-TEST(TWStrideAnyAddress, AllStrideAddressTests) {
-    allAddressTestsWrapper(gStrideHrp, TWCoinTypeStride, gStrideAddr);
+TEST(TWStargazeAnyAddress, AllStargazeAddressTests) {
+    allAddressTestsWrapper(gStarsHrp, TWCoinTypeStargaze, gStarsAddr);
 }
 
 }
