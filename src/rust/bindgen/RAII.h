@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "iostream"
 #include "WalletCoreRSBindgen.h"
 
 namespace TW::Rust {

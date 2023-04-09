@@ -66,7 +66,7 @@ pub unsafe extern "C" fn parse_type_tag(input: *const c_char) -> ETypeTag {
 /// \return *non-null* C-compatible, nul-terminated string, Binary Canonical Serialization (BCS).
 #[no_mangle]
 pub unsafe extern "C" fn parse_function_argument_to_bcs(input: *const c_char) -> CStrResult {
-    let s = match unsafe { CStr::from_ptr(input).to_str() } {
+    let s = match CStr::from_ptr(input).to_str() {
         Ok(input) => input,
         Err(_) => return CStrResult::error(CMoveParserCode::InvalidInput),
     };

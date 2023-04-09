@@ -94,7 +94,7 @@ pub unsafe extern "C" fn decode_base32(
     alphabet: *const c_char,
     padding: bool,
 ) -> CByteArrayResult {
-    let input = match unsafe { CStr::from_ptr(input).to_str() } {
+    let input = match CStr::from_ptr(input).to_str() {
         Ok(input) => input,
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
@@ -135,7 +135,7 @@ pub unsafe extern "C" fn decode_base58(
     input: *const c_char,
     alphabet: Base58Alphabet,
 ) -> CByteArrayResult {
-    let input = match unsafe { CStr::from_ptr(input).to_str() } {
+    let input = match CStr::from_ptr(input).to_str() {
         Ok(input) => input,
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
@@ -167,7 +167,7 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
     if data.is_null() {
         return CByteArrayResult::error(CEncodingCode::InvalidInput);
     }
-    let str_slice = match unsafe { CStr::from_ptr(data).to_str() } {
+    let str_slice = match CStr::from_ptr(data).to_str() {
         Ok(input) => input,
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
@@ -185,7 +185,7 @@ pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArrayResult {
     if data.is_null() {
         return CByteArrayResult::error(CEncodingCode::InvalidInput);
     }
-    let hex_string = match unsafe { CStr::from_ptr(data).to_str() } {
+    let hex_string = match CStr::from_ptr(data).to_str() {
         Ok(input) => input,
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
