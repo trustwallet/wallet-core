@@ -108,7 +108,7 @@ pub struct DerivationResult<'a, T> {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum EitherOr<T, D> {
     Either(T),
     Or(D),
@@ -118,7 +118,7 @@ pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 
 // TODO: Rename?
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum GType {
     Mutable(GTypeCategory),
     Const(GTypeCategory),
@@ -130,7 +130,7 @@ pub enum GType {
 pub struct GNonAlphanumericItem;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum GTypeCategory {
     Scalar(GPrimitive),
     Struct(GStruct),
@@ -142,7 +142,7 @@ pub enum GTypeCategory {
 
 // TODO: Not complete (eg. "unsigned char", etc...)
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum GPrimitive {
     // TODO: Not a primitive, handle somewhere else.
     Void,
@@ -177,7 +177,7 @@ pub struct GEof;
 pub type GSeparator = Continuum<GSeparatorItem>;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum GSeparatorItem {
     Space,
     Newline,
@@ -203,7 +203,7 @@ pub struct GParamItem {
 pub struct GParamName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum GMarker {
     TWVisibilityDefault,
     TwExportClass,
@@ -236,7 +236,7 @@ pub struct GFunctionDecl {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "variant", content = "value")]
+#[serde(tag = "g_variant", content = "value")]
 pub enum Continuum<T> {
     Thing(T),
     Next(ContinuumNext<T>),
