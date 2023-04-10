@@ -10,7 +10,7 @@ pub trait ParseTree {
 
 // Convenience function. Removes a derived type from the reader, returning the
 // updated reader.
-fn wipe<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
+pub fn wipe<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
 where
     T: ParseTree,
 {
@@ -24,13 +24,27 @@ where
 
 // Convenience function. Tries to successfully derive a type from the reader,
 // returning the updated reader.
-fn ensure<T>(reader: Reader) -> Result<(T::Derivation, Reader)>
+pub fn ensure<T>(reader: Reader) -> Result<(T::Derivation, Reader)>
 where
     T: ParseTree,
 {
     let (pending, checked_out) = reader.checkout();
     let res = T::derive(checked_out)?;
     Ok((res.derived, pending.merge(res.branch)))
+}
+
+// Convenience function. Tries to successfully derive a type from the reader,
+// returning the updated reader.
+pub fn optional<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
+where
+    T: ParseTree,
+{
+    let (pending, checked_out) = reader.checkout();
+    if let Ok(res) = T::derive(checked_out) {
+        (Some(res.derived), pending.merge(res.branch))
+    } else {
+        (None, pending.discard())
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -701,6 +715,7 @@ impl ParseTree for GHeaderInclude {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (string, handle) = reader.read_until::<GSeparator>()?;
+        //dbg!(&string);
 
         if string != "#include" {
             return Err(Error::Todo);

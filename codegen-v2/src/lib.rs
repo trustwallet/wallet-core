@@ -1,4 +1,4 @@
-use grammar::ParseTree;
+use grammar::{ParseTree, optional, wipe};
 use reader::{Reader, ReaderBranch};
 
 mod grammar;
@@ -16,30 +16,35 @@ pub enum Error {
 
 pub fn parse_file(path: &str) {
     let file = std::fs::read_to_string(path).unwrap();
-    let mut reader = Reader::from(file.as_str());
+    let mut p_reader = Reader::from(file.as_str());
 
     loop {
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(derived) = grammar::GHeaderInclude::derive(checked_out) {
-            dbg!(&derived);
-            reader = pending.merge(derived.branch);
+        let (include_der, reader) = optional::<grammar::GHeaderInclude>(p_reader);
+        if let Some(include_der) = include_der {
+            dbg!(&include_der);
+
+            // Ignore leading separators.
+            let (der, reader) = wipe::<grammar::GSeparator>(reader);
+            //dbg!(&der);
+
+            p_reader = reader;
+            continue;
         } else {
-            reader = pending.discard();
+            p_reader = reader;
         }
 
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(derived) = grammar::GAnyLine::derive(checked_out) {
-            //dbg!(&derived);
-            reader = pending.merge(derived.branch);
-        } else {
-            reader = pending.discard();
+        let (include_der, reader) = optional::<grammar::GAnyLine>(p_reader);
+        if let Some(include_der) = include_der {
+            // ...
         }
 
-        let (pending, checked_out) = reader.checkout();
-        if grammar::GEof::derive(checked_out).is_ok() {
-            break;
+        p_reader = reader;
+
+        let (include_der, reader) = optional::<grammar::GEof>(p_reader);
+        if let Some(include_der) = include_der {
+            break
         } else {
-            reader = pending.discard();
+            p_reader = reader;
         }
     }
 }
