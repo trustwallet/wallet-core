@@ -8,6 +8,14 @@ pub trait ParseTree {
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>>;
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum GHeaderFileItem {
+    HeaderInclude(GHeaderInclude),
+    Newline,
+    Eof,
+    Unknown(String),
+}
+
 // Convenience function. Removes a derived type from the reader, returning the
 // updated reader.
 pub fn wipe<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
@@ -704,7 +712,10 @@ impl ParseTree for GEndOfLine {
             let (item_der, reader) = optional::<GSeparatorItem>(p_reader);
             if let Some(item) = item_der {
                 if let GSeparatorItem::Newline = item {
-                    return Ok(DerivationResult { derived: GEndOfLine, branch: reader.into_branch() })
+                    return Ok(DerivationResult {
+                        derived: GEndOfLine,
+                        branch: reader.into_branch(),
+                    });
                 }
             } else {
                 break;
@@ -866,5 +877,46 @@ impl ParseTree for GFunctionDecl {
             },
             branch: p_reader.into_branch(),
         })
+    }
+}
+
+impl ParseTree for GHeaderFileItem {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Check for newline.
+        let (der, reader) = optional::<GNewline>(reader);
+        if der.is_some() {
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Newline,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for EOF.
+        let (der, reader) = optional::<GEof>(reader);
+        if der.is_some() {
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Eof,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for include header.
+        let (include_der, reader) = optional::<GHeaderInclude>(reader);
+        if let Some(item) = include_der {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::HeaderInclude(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        let (string, handle) = reader.read_until::<GNewline>()?;
+        let (_, reader) = wipe::<GEndOfLine>(handle.commit());
+        return Ok(DerivationResult {
+            derived: GHeaderFileItem::Unknown(string),
+            branch: reader.into_branch(),
+        });
     }
 }
