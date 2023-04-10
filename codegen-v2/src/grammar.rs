@@ -108,10 +108,10 @@ impl ParseTree for GType {
                 branch: res.branch,
             })
         } else {
-            let res = GTypeCategory::derive(handle.commit())?;
+            let res = GTypeCategory::derive(handle.reset())?;
 
             Ok(DerivationResult {
-                derived: GType::Const(res.derived),
+                derived: GType::Mutable(res.derived),
                 branch: res.branch,
             })
         }
@@ -431,19 +431,16 @@ impl ParseTree for GStruct {
 
         // Check for "struct" prefix.
         let (string, handle) = reader.read_until::<GSeparator>()?;
-        dbg!(&string);
         if string != "struct" {
             return Err(Error::Todo);
         }
-
-        dbg!("GOT HERE, TOO");
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Derive struct name
+        // TODO:
         let (name, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        dbg!(&name);
         if name.is_empty()
             || name
                 .chars()
@@ -492,6 +489,7 @@ impl ParseTree for GParamItem {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
         let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
+        dbg!(&ty_derived);
 
         // Derive (optional) markers.
         let mut markers = vec![];
@@ -933,8 +931,6 @@ impl ParseTree for GFunctionDecl {
 
         // Derive return value.
         let (return_der, reader) = ensure::<GType>(p_reader)?;
-
-        dbg!("GOT HERE");
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
