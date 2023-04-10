@@ -14,6 +14,7 @@ pub enum GHeaderFileItem {
     Comment(GCommentBlock),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
+    Marker(GMarker),
     Newline,
     Eof,
     Unrecognized(String),
@@ -318,6 +319,8 @@ pub enum GMarker {
     Nullable,
     NonNull,
     //NullUnspecified,
+    TWExternCBegin,
+    TWExternCEnd,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -725,6 +728,8 @@ impl ParseTree for GMarker {
             //"TW_DEPRECATED_FOR" => GMarker::TwDeprecatedFor,
             "_Nullable" => GMarker::Nullable,
             "_Nonnull" => GMarker::NonNull,
+            "TW_EXTERN_C_BEGIN" => GMarker::TWExternCBegin,
+            "TW_EXTERN_C_END" => GMarker::TWExternCEnd,
             _ => return Err(Error::Todo),
         };
 
@@ -1184,8 +1189,8 @@ impl ParseTree for GHeaderFileItem {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Check for newline.
-        let (der, reader) = optional::<GNewline>(reader);
-        if der.is_some() {
+        let (res, reader) = optional::<GNewline>(reader);
+        if res.is_some() {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Newline,
                 branch: reader.into_branch(),
@@ -1193,8 +1198,8 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for EOF.
-        let (der, reader) = optional::<GEof>(reader);
-        if der.is_some() {
+        let (res, reader) = optional::<GEof>(reader);
+        if res.is_some() {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Eof,
                 branch: reader.into_branch(),
@@ -1202,8 +1207,8 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for comment block.
-        let (include_der, reader) = optional::<GCommentBlock>(reader);
-        if let Some(item) = include_der {
+        let (res, reader) = optional::<GCommentBlock>(reader);
+        if let Some(item) = res {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Comment(item),
                 branch: reader.into_branch(),
@@ -1211,8 +1216,8 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for pragma header.
-        let (include_der, reader) = optional::<GHeaderPragma>(reader);
-        if let Some(item) = include_der {
+        let (res, reader) = optional::<GHeaderPragma>(reader);
+        if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
 
             return Ok(DerivationResult {
@@ -1222,8 +1227,8 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for include header.
-        let (include_der, reader) = optional::<GHeaderInclude>(reader);
-        if let Some(item) = include_der {
+        let (res, reader) = optional::<GHeaderInclude>(reader);
+        if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::HeaderInclude(item),
@@ -1232,8 +1237,8 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for struct decleration.
-        let (include_der, reader) = optional::<GStructDecl>(reader);
-        if let Some(item) = include_der {
+        let (res, reader) = optional::<GStructDecl>(reader);
+        if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::StructDecl(item),
@@ -1242,8 +1247,8 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for function decleration.
-        let (include_der, reader) = optional::<GFunctionDecl>(reader);
-        if let Some(item) = include_der {
+        let (res, reader) = optional::<GFunctionDecl>(reader);
+        if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::FunctionDecl(item),
@@ -1251,6 +1256,18 @@ impl ParseTree for GHeaderFileItem {
             });
         }
 
+        // Check for markers.
+        let (res, reader) = optional::<GMarker>(reader);
+        if let Some(item) = res {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Marker(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // For all other, set value as `Unrecongized`.
+        // TODO: Should this just return Err?
         let (string, handle) = reader.read_until::<GNewline>()?;
         let (_, reader) = wipe::<GEndOfLine>(handle.commit());
         return Ok(DerivationResult {
