@@ -279,6 +279,12 @@ pub enum GSeparatorItem {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GReturnValue {
+    pub ty: GType,
+    pub markers: Vec<GMarker>,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItem {
     pub ty: GType,
     pub markers: Vec<GMarker>,
@@ -352,7 +358,7 @@ pub struct GEndOfLine;
 pub struct GFunctionDecl {
     pub name: GFuncName,
     pub params: Vec<GParamItem>,
-    pub return_ty: GType,
+    pub return_value: GReturnValue,
     pub markers: Vec<GMarker>,
 }
 
@@ -571,6 +577,40 @@ impl ParseTree for GSeparatorItem {
         Ok(DerivationResult {
             derived,
             branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GReturnValue {
+    type Derivation = Self;
+
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Derive parameter type.
+        let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
+
+        // Derive (optional) markers.
+        let mut markers = vec![];
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(marker_res) = GMarker::derive(checked_out) {
+                markers.push(marker_res.derived);
+                p_reader = pending.merge(marker_res.branch);
+            } else {
+                p_reader = pending.discard();
+                break;
+            }
+        }
+
+        // Everything derived successfully, return.
+        Ok(DerivationResult {
+            derived: GReturnValue {
+                ty: ty_derived,
+                markers,
+            },
+            branch: p_reader.into_branch(),
         })
     }
 }
@@ -1020,22 +1060,10 @@ impl ParseTree for GFunctionDecl {
         (_, p_reader) = wipe::<GSeparator>(p_reader);
 
         // Derive return value.
-        let (return_der, reader) = ensure::<GType>(p_reader)?;
+        let (return_der, reader) = ensure::<GReturnValue>(p_reader)?;
 
         // Ignore leading separators.
-        (_, p_reader) = wipe::<GSeparator>(reader);
-
-        // Derive (optional) marker.
-        let (pending, checked_out) = p_reader.checkout();
-        if let Ok(marker_res) = GMarker::derive(checked_out) {
-            markers.push(marker_res.derived);
-            p_reader = pending.merge(marker_res.branch);
-        } else {
-            p_reader = pending.discard();
-        }
-
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive function name.
         let (name_der, reader) = ensure::<GFuncName>(reader)?;
@@ -1091,7 +1119,7 @@ impl ParseTree for GFunctionDecl {
             derived: GFunctionDecl {
                 name: name_der,
                 params,
-                return_ty: return_der,
+                return_value: return_der,
                 markers,
             },
             branch: reader.into_branch(),

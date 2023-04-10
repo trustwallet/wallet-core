@@ -1,6 +1,6 @@
 use crate::grammar::{
     GFuncName, GFunctionDecl, GMarker, GParamItem, GParamName, GPrimitive,
-    GType, GTypeCategory, ParseTree,
+    GType, GTypeCategory, ParseTree, GReturnValue,
 };
 use crate::reader::Reader;
 
@@ -70,7 +70,7 @@ fn test_function_delceration() {
                 markers: vec![],
             },
         ],
-        return_ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+        return_value: GReturnValue { ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)), markers: vec![]},
         markers: vec![],
     };
 
@@ -112,7 +112,7 @@ fn test_function_delceration_with_markers() {
                 markers: vec![],
             },
         ],
-        return_ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+        return_value: GReturnValue { ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)), markers: vec![]},
         markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
     };
 
@@ -139,7 +139,7 @@ fn test_function_delceration_struct_return_value() {
                 markers: vec![],
             },
         ],
-        return_ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+        return_value: GReturnValue { ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)), markers: vec![]},
         markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
     };
 
