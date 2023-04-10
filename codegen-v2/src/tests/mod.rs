@@ -1,7 +1,7 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GMarker, GNonAlphanumeric, GNonAlphanumericItem,
     GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GPrimitive, GSeparator,
-    GSeparatorItem, GStruct, GTypeCategory, ParseTree,
+    GSeparatorItem, GStruct, GTypeCategory, ParseTree, GHeaderInclude,
 };
 use crate::reader::Reader;
 
@@ -272,4 +272,11 @@ fn test_function_delceration_with_markers() {
     );
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
+}
+
+#[test]
+fn test_header_include() {
+    let driver = Reader::from("#include \"some_file.h\"");
+    let res = GHeaderInclude::derive(driver);
+    dbg!(res);
 }

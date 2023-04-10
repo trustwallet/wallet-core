@@ -222,6 +222,9 @@ pub struct GCloseBracket;
 pub struct GFuncName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GHeaderInclude(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
@@ -661,6 +664,53 @@ impl ParseTree for GFuncName {
 
         Ok(DerivationResult {
             derived: GFuncName(string),
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GHeaderInclude {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+
+        if string != "#include" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Check for opening quote `"`.
+        let (slice, handle) = reader.read_amt(1)?;
+        let slice = slice.ok_or(Error::Todo)?;
+
+        if slice != "\"" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Read the fine path to include
+        let (file_path, handle) = reader.read_until::<GNonAlphanumeric>()?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Check for closing quote `"`.
+        let (slice, handle) = reader.read_amt(1)?;
+        let slice = slice.ok_or(Error::Todo)?;
+
+        dbg!(&slice);
+
+        if slice != "\"" {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GHeaderInclude(file_path),
             branch: handle.commit().into_branch(),
         })
     }
