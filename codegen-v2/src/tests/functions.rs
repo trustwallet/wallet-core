@@ -122,3 +122,30 @@ fn test_function_delceration_with_markers() {
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
 }
+
+#[test]
+fn test_function_delceration_struct_return_value() {
+    let expected = GFunctionDecl {
+        name: GFuncName::from("some_function".to_string()),
+        params: vec![
+            GParamItem {
+                ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
+                name: GParamName::from("some_int".to_string()),
+                markers: vec![],
+            },
+            GParamItem {
+                ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
+                name: GParamName::from("some_bool".to_string()),
+                markers: vec![],
+            },
+        ],
+        return_ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+        markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
+    };
+
+    let driver = Reader::from(
+        "TW_EXPORT_STATIC_METHOD struct something* _Nullable some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
+    );
+    let der = GFunctionDecl::derive(driver).unwrap();
+    dbg!(&der);
+}

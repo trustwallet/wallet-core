@@ -1023,9 +1023,21 @@ impl ParseTree for GFunctionDecl {
         let (return_der, reader) = ensure::<GType>(p_reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        (_, p_reader) = wipe::<GSeparator>(reader);
 
-        // Derive return value.
+        // Derive (optional) marker.
+        let (pending, checked_out) = p_reader.checkout();
+        if let Ok(marker_res) = GMarker::derive(checked_out) {
+            markers.push(marker_res.derived);
+            p_reader = pending.merge(marker_res.branch);
+        } else {
+            p_reader = pending.discard();
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(p_reader);
+
+        // Derive function name.
         let (name_der, reader) = ensure::<GFuncName>(reader)?;
 
         // Check for opening bracket.
