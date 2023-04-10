@@ -96,7 +96,10 @@ impl ParseTree for GTypeCategory {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        fn check_for_pointers(mut derived: GTypeCategory, mut p_reader: Reader) -> Result<(GTypeCategory, Reader)> {
+        fn check_for_pointers(
+            mut derived: GTypeCategory,
+            mut p_reader: Reader,
+        ) -> Result<(GTypeCategory, Reader)> {
             loop {
                 // Ignore leading separators.
                 let (_, reader) = wipe::<GSeparator>(p_reader);
@@ -819,7 +822,7 @@ impl ParseTree for GCommentLine {
         // Check for comment prefix
         let (string, handle) = reader.read_until::<GSeparator>()?;
         if string != "//" && string != "///" {
-            return Err(Error::Todo)
+            return Err(Error::Todo);
         }
 
         // Ignore leading separators.
@@ -858,7 +861,7 @@ impl ParseTree for GCommentBlock {
         }
 
         if lines.is_empty() {
-            return Err(Error::Todo)
+            return Err(Error::Todo);
         }
 
         Ok(DerivationResult {
