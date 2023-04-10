@@ -96,14 +96,7 @@ impl ParseTree for GTypeCategory {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        // Handle scalar.
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(ty_res) = GPrimitive::derive(checked_out) {
-            let mut p_reader = pending.merge(ty_res.branch);
-
-            // Prepare scala type, might get wrapped (multiple times) in pointer.
-            let mut derived = GTypeCategory::Scalar(ty_res.derived);
-
+        fn check_for_pointers(mut derived: GTypeCategory, mut p_reader: Reader) -> Result<(GTypeCategory, Reader)> {
             loop {
                 // Ignore leading separators.
                 let (_, reader) = wipe::<GSeparator>(p_reader);
@@ -123,9 +116,39 @@ impl ParseTree for GTypeCategory {
                 break;
             }
 
+            Ok((derived, p_reader))
+        }
+
+        // Handle scalar.
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(ty_res) = GPrimitive::derive(checked_out) {
+            let p_reader = pending.merge(ty_res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Scalar(ty_res.derived);
+            let (derived, reader) = check_for_pointers(derived, p_reader)?;
+
             return Ok(DerivationResult {
                 derived,
-                branch: p_reader.into_branch(),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
+        // Handle struct
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GStruct::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Struct(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
             });
         }
 
@@ -391,7 +414,7 @@ impl ParseTree for GStruct {
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Derive struct name
-        let (name, handle) = reader.read_until::<EitherOr<GSeparator, GEof>>()?;
+        let (name, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
         dbg!(&name);
         if name.is_empty()
             || name
