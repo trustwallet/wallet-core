@@ -92,6 +92,32 @@ pub enum GTypeCategory {
     Unknown(String),
 }
 
+impl ParseTree for GType {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string == "const" {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+            let res = GTypeCategory::derive(reader)?;
+
+            Ok(DerivationResult {
+                derived: GType::Const(res.derived),
+                branch: res.branch,
+            })
+        } else {
+            let res = GTypeCategory::derive(handle.commit())?;
+
+            Ok(DerivationResult {
+                derived: GType::Const(res.derived),
+                branch: res.branch,
+            })
+        }
+    }
+}
+
 impl ParseTree for GTypeCategory {
     type Derivation = Self;
 
@@ -220,7 +246,7 @@ pub enum GSeparatorItem {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItem {
-    pub ty: GPrimitive,
+    pub ty: GType,
     pub markers: Vec<GMarker>,
     pub name: GParamName,
 }
@@ -291,9 +317,8 @@ pub struct GEndOfLine;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
-    //params: Vec<EitherOr<GParamItemWithMarker, GParamItem>>,
     pub params: Vec<GParamItem>,
-    pub return_ty: GPrimitive,
+    pub return_ty: GType,
     pub markers: Vec<GMarker>,
 }
 
@@ -466,7 +491,7 @@ impl ParseTree for GParamItem {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut p_reader) = ensure::<GPrimitive>(reader)?;
+        let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
 
         // Derive (optional) markers.
         let mut markers = vec![];
@@ -907,7 +932,7 @@ impl ParseTree for GFunctionDecl {
         (_, p_reader) = wipe::<GSeparator>(p_reader);
 
         // Derive return value.
-        let (return_der, reader) = ensure::<GPrimitive>(p_reader)?;
+        let (return_der, reader) = ensure::<GType>(p_reader)?;
 
         dbg!("GOT HERE");
 
