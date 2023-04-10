@@ -219,6 +219,9 @@ pub struct GOpenBracket;
 pub struct GCloseBracket;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GDoubleQuote;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFuncName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -633,6 +636,25 @@ impl ParseTree for GOpenBracket {
     }
 }
 
+impl ParseTree for GDoubleQuote {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "\"" {
+                return Ok(DerivationResult {
+                    derived: GDoubleQuote,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 impl ParseTree for GCloseBracket {
     type Derivation = Self;
 
@@ -683,35 +705,23 @@ impl ParseTree for GHeaderInclude {
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Check for opening quote `"`.
-        let (slice, handle) = reader.read_amt(1)?;
-        let slice = slice.ok_or(Error::Todo)?;
-
-        if slice != "\"" {
-            return Err(Error::Todo);
-        }
+        let (_, reader) = ensure::<GDoubleQuote>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Read the fine path to include
-        let (file_path, handle) = reader.read_until::<GNonAlphanumeric>()?;
+        let (file_path, handle) = reader.read_until::<GDoubleQuote>()?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Check for closing quote `"`.
-        let (slice, handle) = reader.read_amt(1)?;
-        let slice = slice.ok_or(Error::Todo)?;
-
-        dbg!(&slice);
-
-        if slice != "\"" {
-            return Err(Error::Todo);
-        }
+        let (_, reader) = ensure::<GDoubleQuote>(reader)?;
 
         Ok(DerivationResult {
-            derived: GHeaderInclude(file_path),
-            branch: handle.commit().into_branch(),
+            derived: GHeaderInclude(file_path.trim().to_string()),
+            branch: reader.into_branch(),
         })
     }
 }
