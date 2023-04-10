@@ -18,8 +18,14 @@ pub enum Error {
 }
 
 pub fn parse_file(path: &str) -> Result<Vec<GHeaderFileItem>> {
-    let file = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
-    let mut reader = Reader::from(file.as_str());
+    let content = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
+
+    // TODO: Find a better solution for this.
+    let content: String = content.chars()
+        .filter(|c| c.is_ascii())
+        .collect();
+
+    let mut reader = Reader::from(content.as_str());
 
     let mut items = vec![];
 
