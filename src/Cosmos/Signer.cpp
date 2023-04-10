@@ -20,7 +20,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType c
     return sign(input, coin, publicKey.bytes, nullptr);
 }
 
-
 //// TANGEM
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin, const Data& publicKeyData, const std::function<Data(Data)> externalSigner) noexcept {
     switch (input.signing_mode()) {
