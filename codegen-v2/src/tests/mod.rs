@@ -1,7 +1,7 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GHeaderInclude, GMarker, GNonAlphanumeric,
-    GNonAlphanumericItem, GParamItemWithMarker, GParamItemWithoutMarker, GParamName, GPrimitive,
-    GSeparator, GSeparatorItem, GStruct, GTypeCategory, ParseTree,
+    GNonAlphanumericItem, GParamItemWithoutMarker, GParamName, GPrimitive, GSeparator,
+    GSeparatorItem, GStruct, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -164,24 +164,24 @@ fn test_types() {
 #[test]
 fn test_func_params_with_marker() {
     let driver = Reader::from("int _Nonnull my_var\n");
-    let der = GParamItemWithMarker::derive(driver).unwrap();
+    let der = GParamItemWithoutMarker::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GParamItemWithMarker {
+        GParamItemWithoutMarker {
             ty: GPrimitive::Int,
-            marker: GMarker::NonNull,
-            name: GParamName::from("my_var".to_string())
+            name: GParamName::from("my_var".to_string()),
+            markers: vec![GMarker::NonNull],
         }
     );
 
     let driver = Reader::from("bool\n_Nonnull  some_bool\n");
-    let der = GParamItemWithMarker::derive(driver).unwrap();
+    let der = GParamItemWithoutMarker::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GParamItemWithMarker {
+        GParamItemWithoutMarker {
             ty: GPrimitive::Bool,
-            marker: GMarker::NonNull,
-            name: GParamName::from("some_bool".to_string())
+            name: GParamName::from("some_bool".to_string()),
+            markers: vec![GMarker::NonNull],
         }
     );
 }
@@ -194,7 +194,8 @@ fn test_func_params_without_marker() {
         der.derived,
         GParamItemWithoutMarker {
             ty: GPrimitive::Int,
-            name: GParamName::from("my_var".to_string())
+            name: GParamName::from("my_var".to_string()),
+            markers: vec![],
         }
     );
 
@@ -204,7 +205,8 @@ fn test_func_params_without_marker() {
         der.derived,
         GParamItemWithoutMarker {
             ty: GPrimitive::Bool,
-            name: GParamName::from("some_bool".to_string())
+            name: GParamName::from("some_bool".to_string()),
+            markers: vec![],
         }
     );
 }
@@ -217,10 +219,12 @@ fn test_function_delceration() {
             GParamItemWithoutMarker {
                 ty: GPrimitive::Int,
                 name: GParamName::from("some_int".to_string()),
+                markers: vec![],
             },
             GParamItemWithoutMarker {
                 ty: GPrimitive::Bool,
                 name: GParamName::from("some_bool".to_string()),
+                markers: vec![],
             },
         ],
         return_ty: GPrimitive::Void,
@@ -257,10 +261,12 @@ fn test_function_delceration_with_markers() {
             GParamItemWithoutMarker {
                 ty: GPrimitive::Int,
                 name: GParamName::from("some_int".to_string()),
+                markers: vec![],
             },
             GParamItemWithoutMarker {
                 ty: GPrimitive::Bool,
                 name: GParamName::from("some_bool".to_string()),
+                markers: vec![],
             },
         ],
         return_ty: GPrimitive::Void,

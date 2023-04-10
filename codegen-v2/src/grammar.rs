@@ -169,15 +169,9 @@ pub enum GSeparatorItem {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GParamItemWithMarker {
-    pub ty: GPrimitive,
-    pub marker: GMarker,
-    pub name: GParamName,
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItemWithoutMarker {
     pub ty: GPrimitive,
+    pub markers: Vec<GMarker>,
     pub name: GParamName,
 }
 
@@ -402,46 +396,31 @@ impl ParseTree for GSeparatorItem {
     }
 }
 
-impl ParseTree for GParamItemWithMarker {
-    type Derivation = Self;
-
-    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        // Derive parameter type.
-        let (ty_derived, mut reader) = ensure::<GPrimitive>(reader)?;
-
-        // Ignore leading separators.
-        (_, reader) = wipe::<GSeparator>(reader);
-
-        // Derive marker, ignore leading separators.
-        let (marker_derived, reader) = ensure::<GMarker>(reader)?;
-
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
-
-        // Derive parameter name.
-        let (name_derived, reader) = ensure::<GParamName>(reader)?;
-
-        // Everything derived successfully, return.
-        Ok(DerivationResult {
-            derived: GParamItemWithMarker {
-                ty: ty_derived,
-                marker: marker_derived,
-                name: name_derived,
-            },
-            branch: reader.into_branch(),
-        })
-    }
-}
-
 impl ParseTree for GParamItemWithoutMarker {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut reader) = ensure::<GPrimitive>(reader)?;
+        let (ty_derived, mut p_reader) = ensure::<GPrimitive>(reader)?;
+
+        // Derive (optional) markers.
+        let mut markers = vec![];
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(marker_res) = GMarker::derive(checked_out) {
+                markers.push(marker_res.derived);
+                p_reader = pending.merge(marker_res.branch);
+            } else {
+                p_reader = pending.discard();
+                break;
+            }
+        }
 
         // Ignore leading separators.
-        (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = wipe::<GSeparator>(p_reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GParamName>(reader)?;
@@ -451,6 +430,7 @@ impl ParseTree for GParamItemWithoutMarker {
             derived: GParamItemWithoutMarker {
                 ty: ty_derived,
                 name: name_derived,
+                markers,
             },
             branch: reader.into_branch(),
         })
