@@ -19,14 +19,12 @@ pub fn parse_file(path: &str) {
     let mut p_reader = Reader::from(file.as_str());
 
     loop {
+        let (der, reader) = wipe::<grammar::GEndOfLine>(p_reader);
+        p_reader = reader;
+
         let (include_der, reader) = optional::<grammar::GHeaderInclude>(p_reader);
         if let Some(include_der) = include_der {
             dbg!(&include_der);
-
-            // Ignore leading separators.
-            let (der, reader) = wipe::<grammar::GSeparator>(reader);
-            //dbg!(&der);
-
             p_reader = reader;
             continue;
         } else {

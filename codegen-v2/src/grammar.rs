@@ -242,6 +242,9 @@ pub struct GNewline;
 pub struct GAnyLine(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GEndOfLine;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItem>>,
@@ -687,6 +690,27 @@ impl ParseTree for GCloseBracket {
                     branch: handle.commit().into_branch(),
                 });
             }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GEndOfLine {
+    type Derivation = Self;
+
+    fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        loop {
+            let (item_der, reader) = optional::<GSeparatorItem>(p_reader);
+            if let Some(item) = item_der {
+                if let GSeparatorItem::Newline = item {
+                    return Ok(DerivationResult { derived: GEndOfLine, branch: reader.into_branch() })
+                }
+            } else {
+                break;
+            }
+
+            p_reader = reader;
         }
 
         Err(Error::Todo)
