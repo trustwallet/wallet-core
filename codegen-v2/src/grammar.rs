@@ -261,7 +261,10 @@ pub enum GPrimitive {
 pub struct GStruct(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GStructDecl(GStruct);
+pub struct GStructDecl {
+    g_struct: GStruct,
+    markers: Vec<GMarker>,
+}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GEnum(String);
@@ -540,15 +543,31 @@ impl ParseTree for GEnum {
 impl ParseTree for GStructDecl {
     type Derivation = Self;
 
-    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (pending, checked_out) = reader.checkout();
+    fn derive<'a>(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Derive (optional) markers.
+        let mut markers = vec![];
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(marker_res) = GMarker::derive(checked_out) {
+                markers.push(marker_res.derived);
+                p_reader = pending.merge(marker_res.branch);
+            } else {
+                p_reader = pending.discard();
+                break;
+            }
+        }
+
+        let (pending, checked_out) = p_reader.checkout();
         let res = GStruct::derive(checked_out)?;
 
         // Check for required semicolon.
         let (_, reader) = ensure::<GSemicolon>(pending.merge(res.branch))?;
 
         Ok(DerivationResult {
-            derived: GStructDecl(res.derived),
+            derived: GStructDecl { g_struct: res.derived, markers},
             branch: reader.into_branch(),
         })
     }
