@@ -52,7 +52,7 @@ impl<'a> Reader<'a> {
 
         Err(Error::Todo)
     }
-    pub fn read_amt(mut self, amt: usize) -> Result<(Option<String>, ReaderStaged<'a>)> {
+    pub fn read_amt(self, amt: usize) -> Result<(Option<String>, ReaderStaged<'a>)> {
         let string = &self.buffer[self.pos..];
         if string.len() < amt {
             return Ok((
@@ -102,7 +102,7 @@ pub struct ReaderStaged<'a> {
 }
 
 impl<'a> ReaderStaged<'a> {
-    pub fn commit(mut self) -> Reader<'a> {
+    pub fn commit(self) -> Reader<'a> {
         Reader {
             buffer: self.buffer,
             pos: self.pos + self.amt_read,

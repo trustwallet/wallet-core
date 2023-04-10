@@ -1,6 +1,5 @@
-use super::reader::{Reader, ReaderBranch, ReaderPending, ReaderStaged};
+use super::reader::{Reader, ReaderBranch};
 use super::{Error, Result};
-use std::any::Any;
 
 pub trait ParseTree {
     type Derivation;
@@ -16,7 +15,7 @@ pub enum GHeaderFileItem {
     StructDecl(GStructDecl),
     Newline,
     Eof,
-    Unknown(String),
+    Unrecognized(String),
 }
 
 // Convenience function. Removes a derived type from the reader, returning the
@@ -294,21 +293,21 @@ pub enum GMarker {
     TWVisibilityDefault,
     TwExportClass,
     TwExportStruct,
-    TwExportEnum,
+    //TwExportEnum,
     TwExportFunc,
     TwExportMethod,
     TwExportProperty,
     TwExportStaticMethod,
     TwExportStaticProperty,
     TwMethodDiscardableResult,
-    TwData,
+    //TwData,
     TwAssumeNonNullBegin,
     TwAssumeNonNullEnd,
-    TwDeprecated,
-    TwDeprecatedFor,
+    //TwDeprecated,
+    //TwDeprecatedFor,
     Nullable,
     NonNull,
-    NullUnspecified,
+    //NullUnspecified,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -1152,7 +1151,7 @@ impl ParseTree for GHeaderFileItem {
         let (string, handle) = reader.read_until::<GNewline>()?;
         let (_, reader) = wipe::<GEndOfLine>(handle.commit());
         return Ok(DerivationResult {
-            derived: GHeaderFileItem::Unknown(string),
+            derived: GHeaderFileItem::Unrecognized(string),
             branch: reader.into_branch(),
         });
     }

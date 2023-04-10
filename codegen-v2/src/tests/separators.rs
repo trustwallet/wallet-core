@@ -1,7 +1,5 @@
 use crate::grammar::{
-    GEof, GFuncName, GFunctionDecl, GHeaderInclude, GMarker, GNonAlphanumeric,
-    GNonAlphanumericItem, GParamItem, GParamName, GPrimitive, GSeparator, GSeparatorItem, GStruct,
-    GTypeCategory, ParseTree,
+    GSeparator, GSeparatorItem, ParseTree,
 };
 use crate::reader::Reader;
 

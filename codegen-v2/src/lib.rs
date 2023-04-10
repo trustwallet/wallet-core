@@ -1,5 +1,5 @@
-use grammar::{optional, wipe, GHeaderFileItem, ParseTree};
-use reader::{Reader, ReaderBranch};
+use grammar::{GHeaderFileItem, ParseTree};
+use reader::{Reader};
 
 mod grammar;
 mod reader;
@@ -24,7 +24,7 @@ pub fn parse_file(path: &str) {
             let (derived, branch) = (der.derived, der.branch);
             reader = pending.merge(branch);
 
-            if let GHeaderFileItem::Unknown(_) = derived {
+            if let GHeaderFileItem::Unrecognized(_) = derived {
                 // ...
             } else {
                 dbg!(&derived);
