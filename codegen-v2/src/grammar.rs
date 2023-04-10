@@ -12,6 +12,7 @@ pub trait ParseTree {
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     Comment(GCommentBlock),
+    Function(GFunctionDecl),
     Newline,
     Eof,
     Unknown(String),
@@ -351,7 +352,7 @@ impl ParseTree for GPrimitive {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        dbg!(&slice);
+        //dbg!(&slice);
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
@@ -374,8 +375,6 @@ impl ParseTree for GStruct {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        dbg!("GOT HERE");
-
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
@@ -933,6 +932,12 @@ impl ParseTree for GFunctionDecl {
             p_reader = pending.discard();
         }
 
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(p_reader);
+
+        // Check for required semicolon.
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
+
         Ok(DerivationResult {
             derived: GFunctionDecl {
                 name: name_der,
@@ -940,7 +945,7 @@ impl ParseTree for GFunctionDecl {
                 return_ty: return_der,
                 markers,
             },
-            branch: p_reader.into_branch(),
+            branch: reader.into_branch(),
         })
     }
 }
@@ -982,6 +987,16 @@ impl ParseTree for GHeaderFileItem {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::HeaderInclude(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for function decleration.
+        let (include_der, reader) = optional::<GFunctionDecl>(reader);
+        if let Some(item) = include_der {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Function(item),
                 branch: reader.into_branch(),
             });
         }

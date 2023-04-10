@@ -231,24 +231,24 @@ fn test_function_delceration() {
         markers: vec![],
     };
 
-    let driver = Reader::from("void some_function(int some_int, bool some_bool)");
+    let driver = Reader::from("void some_function(int some_int, bool some_bool);");
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
 
-    let driver = Reader::from("void some_function(int some_int ,bool some_bool)");
+    let driver = Reader::from("void some_function(int some_int ,bool some_bool);");
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
 
-    let driver = Reader::from("void some_function(int some_int,bool some_bool)");
+    let driver = Reader::from("void some_function(int some_int,bool some_bool);");
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
 
-    let driver = Reader::from("void some_function(int some_int , bool some_bool)");
+    let driver = Reader::from("void some_function(int some_int , bool some_bool);");
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
 
     // Error (no comma)
-    let driver = Reader::from("void some_function(int some_int bool some_bool)");
+    let driver = Reader::from("void some_function(int some_int bool some_bool);");
     let der = GFunctionDecl::derive(driver);
     assert!(der.is_err());
 }
@@ -274,7 +274,7 @@ fn test_function_delceration_with_markers() {
     };
 
     let driver = Reader::from(
-        "TW_EXPORT_STRUCT void some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT",
+        "TW_EXPORT_STRUCT void some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
     );
     let der = GFunctionDecl::derive(driver).unwrap();
     assert_eq!(der.derived, expected);
@@ -284,5 +284,12 @@ fn test_function_delceration_with_markers() {
 fn test_header_include() {
     let driver = Reader::from("#include \"some_file.h\"");
     let res = GHeaderInclude::derive(driver);
+    dbg!(res);
+}
+
+#[test]
+fn test_struct() {
+    let driver = Reader::from("struct SomeStruct");
+    let res = GStruct::derive(driver);
     dbg!(res);
 }
