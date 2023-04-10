@@ -169,7 +169,7 @@ pub enum GSeparatorItem {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GParamItemWithoutMarker {
+pub struct GParamItem {
     pub ty: GPrimitive,
     pub markers: Vec<GMarker>,
     pub name: GParamName,
@@ -224,8 +224,8 @@ pub struct GHeaderInclude(String);
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
-    //params: Vec<EitherOr<GParamItemWithMarker, GParamItemWithoutMarker>>,
-    pub params: Vec<GParamItemWithoutMarker>,
+    //params: Vec<EitherOr<GParamItemWithMarker, GParamItem>>,
+    pub params: Vec<GParamItem>,
     pub return_ty: GPrimitive,
     pub markers: Vec<GMarker>,
 }
@@ -396,7 +396,7 @@ impl ParseTree for GSeparatorItem {
     }
 }
 
-impl ParseTree for GParamItemWithoutMarker {
+impl ParseTree for GParamItem {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -427,7 +427,7 @@ impl ParseTree for GParamItemWithoutMarker {
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
-            derived: GParamItemWithoutMarker {
+            derived: GParamItem {
                 ty: ty_derived,
                 name: name_derived,
                 markers,
@@ -744,7 +744,7 @@ impl ParseTree for GFunctionDecl {
             let (_, reader) = wipe::<GSeparator>(p_reader);
 
             // Derive and track parameter.
-            let (derived, reader) = ensure::<GParamItemWithoutMarker>(reader)?;
+            let (derived, reader) = ensure::<GParamItem>(reader)?;
             params.push(derived);
 
             // Ignore leading separators.

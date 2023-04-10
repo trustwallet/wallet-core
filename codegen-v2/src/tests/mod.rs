@@ -1,6 +1,6 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GHeaderInclude, GMarker, GNonAlphanumeric,
-    GNonAlphanumericItem, GParamItemWithoutMarker, GParamName, GPrimitive, GSeparator,
+    GNonAlphanumericItem, GParamItem, GParamName, GPrimitive, GSeparator,
     GSeparatorItem, GStruct, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
@@ -164,10 +164,10 @@ fn test_types() {
 #[test]
 fn test_func_params_with_marker() {
     let driver = Reader::from("int _Nonnull my_var\n");
-    let der = GParamItemWithoutMarker::derive(driver).unwrap();
+    let der = GParamItem::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GParamItemWithoutMarker {
+        GParamItem {
             ty: GPrimitive::Int,
             name: GParamName::from("my_var".to_string()),
             markers: vec![GMarker::NonNull],
@@ -175,10 +175,10 @@ fn test_func_params_with_marker() {
     );
 
     let driver = Reader::from("bool\n_Nonnull  some_bool\n");
-    let der = GParamItemWithoutMarker::derive(driver).unwrap();
+    let der = GParamItem::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GParamItemWithoutMarker {
+        GParamItem {
             ty: GPrimitive::Bool,
             name: GParamName::from("some_bool".to_string()),
             markers: vec![GMarker::NonNull],
@@ -189,10 +189,10 @@ fn test_func_params_with_marker() {
 #[test]
 fn test_func_params_without_marker() {
     let driver = Reader::from("int my_var");
-    let der = GParamItemWithoutMarker::derive(driver).unwrap();
+    let der = GParamItem::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GParamItemWithoutMarker {
+        GParamItem {
             ty: GPrimitive::Int,
             name: GParamName::from("my_var".to_string()),
             markers: vec![],
@@ -200,10 +200,10 @@ fn test_func_params_without_marker() {
     );
 
     let driver = Reader::from("bool \nsome_bool");
-    let der = GParamItemWithoutMarker::derive(driver).unwrap();
+    let der = GParamItem::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GParamItemWithoutMarker {
+        GParamItem {
             ty: GPrimitive::Bool,
             name: GParamName::from("some_bool".to_string()),
             markers: vec![],
@@ -216,12 +216,12 @@ fn test_function_delceration() {
     let expected = GFunctionDecl {
         name: GFuncName::from("some_function".to_string()),
         params: vec![
-            GParamItemWithoutMarker {
+            GParamItem {
                 ty: GPrimitive::Int,
                 name: GParamName::from("some_int".to_string()),
                 markers: vec![],
             },
-            GParamItemWithoutMarker {
+            GParamItem {
                 ty: GPrimitive::Bool,
                 name: GParamName::from("some_bool".to_string()),
                 markers: vec![],
@@ -258,12 +258,12 @@ fn test_function_delceration_with_markers() {
     let expected = GFunctionDecl {
         name: GFuncName::from("some_function".to_string()),
         params: vec![
-            GParamItemWithoutMarker {
+            GParamItem {
                 ty: GPrimitive::Int,
                 name: GParamName::from("some_int".to_string()),
                 markers: vec![],
             },
-            GParamItemWithoutMarker {
+            GParamItem {
                 ty: GPrimitive::Bool,
                 name: GParamName::from("some_bool".to_string()),
                 markers: vec![],
