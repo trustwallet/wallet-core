@@ -1,6 +1,6 @@
 use crate::grammar::{
-    GFuncName, GFunctionDecl, GMarker, GParamItem, GParamName, GPrimitive,
-    GType, GTypeCategory, ParseTree, GReturnValue,
+    GFuncName, GFunctionDecl, GMarker, GParamItem, GParamName, GPrimitive, GReturnValue, GStruct,
+    GType, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -70,7 +70,10 @@ fn test_function_delceration() {
                 markers: vec![],
             },
         ],
-        return_value: GReturnValue { ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)), markers: vec![]},
+        return_value: GReturnValue {
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+            markers: vec![],
+        },
         markers: vec![],
     };
 
@@ -112,7 +115,10 @@ fn test_function_delceration_with_markers() {
                 markers: vec![],
             },
         ],
-        return_value: GReturnValue { ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)), markers: vec![]},
+        return_value: GReturnValue {
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+            markers: vec![],
+        },
         markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
     };
 
@@ -139,13 +145,18 @@ fn test_function_delceration_struct_return_value() {
                 markers: vec![],
             },
         ],
-        return_value: GReturnValue { ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)), markers: vec![]},
-        markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
+        return_value: GReturnValue {
+            ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(
+                GStruct::from("SomeStruct".to_string()),
+            )))),
+            markers: vec![GMarker::Nullable],
+        },
+        markers: vec![GMarker::TwExportStaticMethod, GMarker::TWVisibilityDefault],
     };
 
     let driver = Reader::from(
-        "TW_EXPORT_STATIC_METHOD struct something* _Nullable some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
+        "TW_EXPORT_STATIC_METHOD struct SomeStruct* _Nullable some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
     );
     let der = GFunctionDecl::derive(driver).unwrap();
-    dbg!(&der);
+    assert_eq!(der.derived, expected);
 }

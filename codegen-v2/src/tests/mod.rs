@@ -1,7 +1,4 @@
-use crate::grammar::{
-    GEof, GHeaderInclude, GNonAlphanumeric,
-    GNonAlphanumericItem, ParseTree,
-};
+use crate::grammar::{GEof, GHeaderInclude, GNonAlphanumeric, GNonAlphanumericItem, ParseTree};
 use crate::reader::Reader;
 
 mod functions;

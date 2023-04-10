@@ -1,5 +1,5 @@
 use grammar::{GHeaderFileItem, ParseTree};
-use reader::{Reader};
+use reader::Reader;
 
 mod grammar;
 mod reader;

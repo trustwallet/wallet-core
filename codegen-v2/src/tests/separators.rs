@@ -1,6 +1,4 @@
-use crate::grammar::{
-    GSeparator, GSeparatorItem, ParseTree,
-};
+use crate::grammar::{GSeparator, GSeparatorItem, ParseTree};
 use crate::reader::Reader;
 
 #[test]
