@@ -46,7 +46,8 @@ where
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "g_type", content = "value")]
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     HeaderPragma(GHeaderPragma),
@@ -59,45 +60,45 @@ pub enum GHeaderFileItem {
     Unrecognized(String),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GComma;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GSemicolon;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GOpenBracket;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GCloseBracket;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GDoubleQuote;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GHeaderInclude(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GHeaderPragma(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GCommentLine(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GCommentBlock {
     lines: Vec<GCommentLine>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GFuncName(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GNewline;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GAnyLine(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEndOfLine;
 
 #[derive(Debug, Clone)]
@@ -106,7 +107,8 @@ pub struct DerivationResult<'a, T> {
     pub branch: ReaderBranch<'a>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum EitherOr<T, D> {
     Either(T),
     Or(D),
@@ -115,7 +117,8 @@ pub enum EitherOr<T, D> {
 pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 
 // TODO: Rename?
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum GType {
     Mutable(GTypeCategory),
     Const(GTypeCategory),
@@ -123,10 +126,11 @@ pub enum GType {
 
 // TODO: Rename
 // TODO: Should this wrap the item?
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GNonAlphanumericItem;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum GTypeCategory {
     Scalar(GPrimitive),
     Struct(GStruct),
@@ -137,7 +141,8 @@ pub enum GTypeCategory {
 }
 
 // TODO: Not complete (eg. "unsigned char", etc...)
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum GPrimitive {
     // TODO: Not a primitive, handle somewhere else.
     Void,
@@ -153,47 +158,52 @@ pub enum GPrimitive {
     UInt32T,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStruct(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStructDecl {
-    g_struct: GStruct,
+    #[serde(rename = "struct")]
+    struct_val: GStruct,
     markers: Vec<GMarker>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEnum(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEof;
 
 pub type GSeparator = Continuum<GSeparatorItem>;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum GSeparatorItem {
     Space,
     Newline,
     Tab,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GReturnValue {
+    #[serde(rename = "type")]
     pub ty: GType,
     pub markers: Vec<GMarker>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GParamItem {
+    #[serde(rename = "type")]
     pub ty: GType,
     pub markers: Vec<GMarker>,
     pub name: GParamName,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GParamName(String);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum GMarker {
     TWVisibilityDefault,
     TwExportClass,
@@ -217,7 +227,7 @@ pub enum GMarker {
     TWExternCEnd,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
     pub params: Vec<GParamItem>,
@@ -225,13 +235,14 @@ pub struct GFunctionDecl {
     pub markers: Vec<GMarker>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value")]
 pub enum Continuum<T> {
     Thing(T),
     Next(ContinuumNext<T>),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ContinuumNext<T> {
     thing: T,
     next: Box<Continuum<T>>,
@@ -428,7 +439,7 @@ impl ParseTree for GStructDecl {
 
         Ok(DerivationResult {
             derived: GStructDecl {
-                g_struct: res.derived,
+                struct_val: res.derived,
                 markers,
             },
             branch: reader.into_branch(),

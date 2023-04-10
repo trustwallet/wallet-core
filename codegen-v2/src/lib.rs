@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate serde;
+
 use grammar::{GHeaderFileItem, ParseTree};
 use reader::Reader;
 
@@ -41,5 +44,7 @@ pub fn parse_file(path: &str) -> Result<Vec<GHeaderFileItem>> {
 
 #[test]
 fn test_parse_file() {
-    let _res = parse_file("../include/TrustWalletCore/TWAnyAddress.h").unwrap();
+    let res = parse_file("../include/TrustWalletCore/TWAnyAddress.h").unwrap();
+    let string = serde_json::to_string_pretty(&res).unwrap();
+    println!("{}", string);
 }
