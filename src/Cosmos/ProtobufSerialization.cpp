@@ -325,7 +325,6 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin, con
 
     // AuthInfo
     const PublicKey publicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
-    
     auto authInfo = cosmos::AuthInfo();
     auto* signerInfo = authInfo.add_signer_infos();
 
@@ -384,13 +383,12 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
         }
     }
 
-    const auto privateKey = PrivateKey(input.private_key());
-
     auto signedHash = Data();
     if(externalSigner) {
         std::future<Data> signedHashFuture = std::async(externalSigner, hashToSign);
         signedHash = signedHashFuture.get();
     } else {
+        const auto privateKey = PrivateKey(input.private_key());
         signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
     }
     

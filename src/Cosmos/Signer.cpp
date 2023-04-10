@@ -16,7 +16,7 @@ namespace TW::Cosmos {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin) noexcept {
     const auto& privateKey = PrivateKey(input.private_key());
-    const auto& publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    const auto& publicKey = privateKey.getPublicKey(TWCoinTypePublicKeyType(coin));
     return sign(input, coin, publicKey.bytes, nullptr);
 }
 
