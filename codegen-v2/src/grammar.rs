@@ -223,6 +223,14 @@ pub enum GMarker {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GCommentLine(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GCommentBlock {
+    lines: Vec<GCommentLine>,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GComma;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -776,6 +784,58 @@ impl ParseTree for GHeaderInclude {
 
         Ok(DerivationResult {
             derived: GHeaderInclude(file_path.trim().to_string()),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GCommentLine {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Check for comment prefix
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string != "//" || string != "///" {
+            return Err(Error::Todo)
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Read the comment.
+        let (comment, handle) = reader.read_until::<GNewline>()?;
+
+        // Consume newline character itself..
+        let (_, reader) = ensure::<GNewline>(handle.commit())?;
+
+        Ok(DerivationResult {
+            derived: GCommentLine(comment),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GCommentBlock {
+    type Derivation = Self;
+
+    fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let mut lines = vec![];
+
+        loop {
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(res) = GCommentLine::derive(checked_out) {
+                let (derived, branch) = (res.derived, res.branch);
+
+                lines.push(derived);
+                reader = pending.merge(branch);
+            } else {
+                reader = pending.discard();
+                break;
+            }
+        }
+
+        Ok(DerivationResult {
+            derived: GCommentBlock { lines },
             branch: reader.into_branch(),
         })
     }
