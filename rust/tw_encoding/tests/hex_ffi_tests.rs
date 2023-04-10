@@ -6,7 +6,6 @@
 
 use std::ffi::{CStr, CString};
 use tw_encoding::ffi::{decode_hex, encode_hex};
-use tw_memory::ffi::c_byte_array::CByteArray;
 
 #[test]
 fn test_encode_hex_without_prefix() {
@@ -31,8 +30,7 @@ fn test_decode_hex() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded: Vec<_> =
-        unsafe { CByteArray::from_ptr(decode_hex(encoded_ptr).unwrap()).into_vec() };
+    let decoded: Vec<_> = unsafe { decode_hex(encoded_ptr).unwrap().into_vec() };
     assert_eq!(decoded, b"hello world");
 }
 
@@ -43,7 +41,6 @@ fn test_decode_hex_with_prefix() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded: Vec<_> =
-        unsafe { CByteArray::from_ptr(decode_hex(encoded_ptr).unwrap()).into_vec() };
+    let decoded: Vec<_> = unsafe { decode_hex(encoded_ptr).unwrap().into_vec() };
     assert_eq!(decoded, b"hello world");
 }

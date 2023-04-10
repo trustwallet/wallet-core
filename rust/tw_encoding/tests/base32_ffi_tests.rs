@@ -6,7 +6,6 @@
 
 use std::ffi::CString;
 use tw_encoding::ffi::{decode_base32, encode_base32};
-use tw_memory::ffi::c_byte_array::CByteArray;
 
 /// Checks if the encoded `input` with the given `alphabet` and `padding` parameters
 /// equals to `expected`.
@@ -32,7 +31,9 @@ fn test_base32_decode_helper(input: &str, expected: &[u8], alphabet: Option<&str
         .unwrap_or_else(std::ptr::null_mut);
 
     let decoded = unsafe {
-        CByteArray::from_ptr(decode_base32(input.as_ptr(), alphabet, padding).unwrap()).into_vec()
+        decode_base32(input.as_ptr(), alphabet, padding)
+            .unwrap()
+            .into_vec()
     };
     assert_eq!(decoded, expected);
 }

@@ -6,7 +6,6 @@
 
 use std::ffi::CString;
 use tw_encoding::ffi::{decode_base58, encode_base58, Base58Alphabet};
-use tw_memory::ffi::c_byte_array::CByteArray;
 
 #[test]
 fn test_base58_encode() {
@@ -25,7 +24,8 @@ fn test_base58_decode() {
 
     let input = CString::new(data).unwrap();
     let decoded = unsafe {
-        CByteArray::from_ptr(decode_base58(input.as_ptr(), Base58Alphabet::Bitcoin).unwrap())
+        decode_base58(input.as_ptr(), Base58Alphabet::Bitcoin)
+            .unwrap()
             .into_vec()
     };
     assert_eq!(decoded, expected);

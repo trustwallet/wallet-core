@@ -11,8 +11,8 @@ fn test_free_c_byte_array() {
     unsafe {
         free_c_byte_array(std::ptr::null_mut());
 
-        let raw_array = CByteArray::new_ptr(vec![1, 2, 3]);
-        free_c_byte_array(raw_array);
+        let mut raw_array = CByteArray::new(vec![1, 2, 3]);
+        free_c_byte_array(&mut raw_array as *mut CByteArray);
 
         // The following leads to an undefined behaviour.
         // free_c_byte_array(raw_array);

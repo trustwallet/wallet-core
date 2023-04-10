@@ -8,13 +8,13 @@ use tw_hash::ffi::{
     blake2_b, blake2_b_personal, blake_256, groestl_512, hmac__sha256, keccak256, keccak512,
     ripemd_160, sha1, sha256, sha3__256, sha3__512, sha512, sha512_256,
 };
-use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayPtr};
+use tw_memory::ffi::c_byte_array::CByteArray;
 
-type ExternFn = unsafe extern "C" fn(*const u8, usize) -> CByteArrayPtr;
+type ExternFn = unsafe extern "C" fn(*const u8, usize) -> CByteArray;
 
 #[track_caller]
 pub fn test_hash_helper(hash: ExternFn, input: &[u8], expected: &str) {
-    let decoded = unsafe { CByteArray::from_ptr(hash(input.as_ptr(), input.len())).into_vec() };
+    let decoded = unsafe { hash(input.as_ptr(), input.len()).into_vec() };
     assert_eq!(hex::encode(decoded), expected);
 }
 
@@ -23,7 +23,7 @@ fn test_blake2b() {
     const HASH_SIZE: usize = 64;
 
     /// Declare a `blake2_b` helper that forwards `HASH_SIZE`.
-    unsafe extern "C" fn blake2_b_hash(input: *const u8, input_len: usize) -> CByteArrayPtr {
+    unsafe extern "C" fn blake2_b_hash(input: *const u8, input_len: usize) -> CByteArray {
         blake2_b(input, input_len, HASH_SIZE)
     }
 
@@ -37,13 +37,13 @@ fn test_blake2b_personal() {
     let personal_data = b"MyApp Files Hash";
     let content = b"the same content";
     let actual = unsafe {
-        CByteArray::from_ptr(blake2_b_personal(
+        blake2_b_personal(
             content.as_ptr(),
             content.len(),
             32,
             personal_data.as_ptr(),
             personal_data.len(),
-        ))
+        )
         .into_vec()
     };
     let expected = "20d9cd024d4fb086aae819a1432dd2466de12947831b75c5a30cf2676095d3b4";
@@ -78,15 +78,8 @@ fn test_hmac_sha256() {
     let data =
         hex::decode("f300888ca4f512cebdc0020ff0f7224c7f896315e90e172bed65d005138f224d").unwrap();
     let data = data.as_slice();
-    let actual = unsafe {
-        CByteArray::from_ptr(hmac__sha256(
-            key.as_ptr(),
-            key.len(),
-            data.as_ptr(),
-            data.len(),
-        ))
-        .into_vec()
-    };
+    let actual =
+        unsafe { hmac__sha256(key.as_ptr(), key.len(), data.as_ptr(), data.len()).into_vec() };
     let expected = "a7301d5563614e3955750e4480aabf7753f44b4975308aeb8e23c31e114962ab".to_string();
     assert_eq!(hex::encode(actual), expected);
 }
