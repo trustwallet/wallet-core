@@ -88,6 +88,7 @@ pub struct GNonAlphanumericItem;
 pub enum GTypeCategory {
     Scalar(GPrimitive),
     Struct(GStruct),
+    Enum(GEnum),
     Pointer(Box<GTypeCategory>),
     // TODO: Add some sort of `GAnyKeyword` that can parse valid keywords.
     Unknown(String),
@@ -185,6 +186,24 @@ impl ParseTree for GTypeCategory {
         // Reset buffer.
         let reader = pending.discard();
 
+        // Handle enum
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GEnum::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Enum(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
         // Handle aggregate types.
         let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
 
@@ -222,12 +241,21 @@ impl ParseTree for GTypeCategory {
     }
 }
 
+// TODO: Not complete (eg. "unsigned char", etc...)
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GPrimitive {
+    // TODO: Not a primitive, handle somewhere else.
     Void,
     Bool,
     Char,
+    ShortInt,
     Int,
+    UnsignedInt,
+    LongInt,
+    Float,
+    Double,
+    LongDouble,
+    UInt32T,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -235,6 +263,9 @@ pub struct GStruct(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GStructDecl(GStruct);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GEnum(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GEof;
@@ -412,7 +443,15 @@ impl ParseTree for GPrimitive {
             "void" => GPrimitive::Void,
             "bool" => GPrimitive::Bool,
             "char" => GPrimitive::Char,
+            "short" => GPrimitive::ShortInt,
             "int" => GPrimitive::Int,
+            "signed" => GPrimitive::Int,
+            "unsigned" => GPrimitive::UnsignedInt,
+            "long" => GPrimitive::LongInt,
+            "float" => GPrimitive::Float,
+            "double" => GPrimitive::Double,
+            "long double" => GPrimitive::LongDouble,
+            "uint32_t" => GPrimitive::UInt32T,
             _ => {
                 return Err(Error::Todo);
             }
@@ -454,6 +493,40 @@ impl ParseTree for GStruct {
 
         Ok(DerivationResult {
             derived: GStruct(name),
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GEnum {
+    type Derivation = Self;
+
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for "enum" prefix.
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string != "enum" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Derive struct name
+        // TODO:
+        let (name, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        if name.is_empty()
+            || name
+                .chars()
+                .any(|c| (!c.is_alphanumeric() && (c != '_' || c != '-')))
+        {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GEnum(name),
             branch: handle.commit().into_branch(),
         })
     }
