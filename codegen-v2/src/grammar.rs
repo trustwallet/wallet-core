@@ -7,19 +7,6 @@ pub trait ParseTree {
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>>;
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum GHeaderFileItem {
-    HeaderInclude(GHeaderInclude),
-    HeaderPragma(GHeaderPragma),
-    Comment(GCommentBlock),
-    FunctionDecl(GFunctionDecl),
-    StructDecl(GStructDecl),
-    Marker(GMarker),
-    Newline,
-    Eof,
-    Unrecognized(String),
-}
-
 // Convenience function. Removes a derived type from the reader, returning the
 // updated reader.
 pub fn wipe<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
@@ -59,6 +46,60 @@ where
     }
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum GHeaderFileItem {
+    HeaderInclude(GHeaderInclude),
+    HeaderPragma(GHeaderPragma),
+    Comment(GCommentBlock),
+    FunctionDecl(GFunctionDecl),
+    StructDecl(GStructDecl),
+    Marker(GMarker),
+    Newline,
+    Eof,
+    Unrecognized(String),
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GComma;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GSemicolon;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GOpenBracket;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GCloseBracket;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GDoubleQuote;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GHeaderInclude(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GHeaderPragma(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GCommentLine(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GCommentBlock {
+    lines: Vec<GCommentLine>,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GFuncName(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GNewline;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GAnyLine(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GEndOfLine;
+
 #[derive(Debug, Clone)]
 pub struct DerivationResult<'a, T> {
     pub derived: T,
@@ -93,153 +134,6 @@ pub enum GTypeCategory {
     Pointer(Box<GTypeCategory>),
     // TODO: Add some sort of `GAnyKeyword` that can parse valid keywords.
     Unknown(String),
-}
-
-impl ParseTree for GType {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GSeparator>()?;
-        if string == "const" {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(handle.commit());
-
-            let res = GTypeCategory::derive(reader)?;
-
-            Ok(DerivationResult {
-                derived: GType::Const(res.derived),
-                branch: res.branch,
-            })
-        } else {
-            let res = GTypeCategory::derive(handle.reset())?;
-
-            Ok(DerivationResult {
-                derived: GType::Mutable(res.derived),
-                branch: res.branch,
-            })
-        }
-    }
-}
-
-impl ParseTree for GTypeCategory {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        fn check_for_pointers(
-            mut derived: GTypeCategory,
-            mut p_reader: Reader,
-        ) -> Result<(GTypeCategory, Reader)> {
-            loop {
-                // Ignore leading separators.
-                let (_, reader) = wipe::<GSeparator>(p_reader);
-
-                // Try pointer.
-                // TODO: Implement `GAsterisk`?
-                let (slice, handle) = reader.read_amt(1)?;
-                if let Some(slice) = slice {
-                    if slice == "*" {
-                        p_reader = handle.commit();
-                        derived = GTypeCategory::Pointer(Box::new(derived));
-                        continue;
-                    }
-                }
-
-                p_reader = handle.reset();
-                break;
-            }
-
-            Ok((derived, p_reader))
-        }
-
-        // Handle scalar.
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(ty_res) = GPrimitive::derive(checked_out) {
-            let p_reader = pending.merge(ty_res.branch);
-
-            // Prepare scala type, might get wrapped (multiple times) in pointer.
-            let derived = GTypeCategory::Scalar(ty_res.derived);
-            let (derived, reader) = check_for_pointers(derived, p_reader)?;
-
-            return Ok(DerivationResult {
-                derived,
-                branch: reader.into_branch(),
-            });
-        }
-
-        // Reset buffer.
-        let reader = pending.discard();
-
-        // Handle struct
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = GStruct::derive(checked_out) {
-            let reader = pending.merge(res.branch);
-
-            // Prepare scala type, might get wrapped (multiple times) in pointer.
-            let derived = GTypeCategory::Struct(res.derived);
-            let (derived, reader) = check_for_pointers(derived, reader)?;
-
-            return Ok(DerivationResult {
-                derived,
-                branch: reader.into_branch(),
-            });
-        }
-
-        // Reset buffer.
-        let reader = pending.discard();
-
-        // Handle enum
-        let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = GEnum::derive(checked_out) {
-            let reader = pending.merge(res.branch);
-
-            // Prepare scala type, might get wrapped (multiple times) in pointer.
-            let derived = GTypeCategory::Enum(res.derived);
-            let (derived, reader) = check_for_pointers(derived, reader)?;
-
-            return Ok(DerivationResult {
-                derived,
-                branch: reader.into_branch(),
-            });
-        }
-
-        // Reset buffer.
-        let reader = pending.discard();
-
-        // Handle aggregate types.
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-
-        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
-            return Err(Error::Todo);
-        }
-
-        let mut derived = GTypeCategory::Unknown(string);
-
-        // TODO: Unify with scalar, use single function.
-        let mut p_reader = handle.commit();
-        loop {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
-
-            // Try pointer.
-            // TODO: Implement `GAsterisk`?
-            let (slice, handle) = reader.read_amt(1)?;
-            if let Some(slice) = slice {
-                if slice == "*" {
-                    p_reader = handle.commit();
-                    derived = GTypeCategory::Pointer(Box::new(derived));
-                    continue;
-                }
-            }
-
-            p_reader = handle.reset();
-            break;
-        }
-
-        Ok(DerivationResult {
-            derived,
-            branch: p_reader.into_branch(),
-        })
-    }
 }
 
 // TODO: Not complete (eg. "unsigned char", etc...)
@@ -322,47 +216,6 @@ pub enum GMarker {
     TWExternCBegin,
     TWExternCEnd,
 }
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GCommentLine(String);
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GCommentBlock {
-    lines: Vec<GCommentLine>,
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GComma;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GSemicolon;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GOpenBracket;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GCloseBracket;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GDoubleQuote;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GFuncName(String);
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GHeaderInclude(String);
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GHeaderPragma(String);
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GNewline;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GAnyLine(String);
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct GEndOfLine;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
@@ -1274,5 +1127,152 @@ impl ParseTree for GHeaderFileItem {
             derived: GHeaderFileItem::Unrecognized(string),
             branch: reader.into_branch(),
         });
+    }
+}
+
+impl ParseTree for GType {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string == "const" {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+            let res = GTypeCategory::derive(reader)?;
+
+            Ok(DerivationResult {
+                derived: GType::Const(res.derived),
+                branch: res.branch,
+            })
+        } else {
+            let res = GTypeCategory::derive(handle.reset())?;
+
+            Ok(DerivationResult {
+                derived: GType::Mutable(res.derived),
+                branch: res.branch,
+            })
+        }
+    }
+}
+
+impl ParseTree for GTypeCategory {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        fn check_for_pointers(
+            mut derived: GTypeCategory,
+            mut p_reader: Reader,
+        ) -> Result<(GTypeCategory, Reader)> {
+            loop {
+                // Ignore leading separators.
+                let (_, reader) = wipe::<GSeparator>(p_reader);
+
+                // Try pointer.
+                // TODO: Implement `GAsterisk`?
+                let (slice, handle) = reader.read_amt(1)?;
+                if let Some(slice) = slice {
+                    if slice == "*" {
+                        p_reader = handle.commit();
+                        derived = GTypeCategory::Pointer(Box::new(derived));
+                        continue;
+                    }
+                }
+
+                p_reader = handle.reset();
+                break;
+            }
+
+            Ok((derived, p_reader))
+        }
+
+        // Handle scalar.
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(ty_res) = GPrimitive::derive(checked_out) {
+            let p_reader = pending.merge(ty_res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Scalar(ty_res.derived);
+            let (derived, reader) = check_for_pointers(derived, p_reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
+        // Handle struct
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GStruct::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Struct(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
+        // Handle enum
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GEnum::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Enum(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
+        // Handle aggregate types.
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+
+        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
+            return Err(Error::Todo);
+        }
+
+        let mut derived = GTypeCategory::Unknown(string);
+
+        // TODO: Unify with scalar, use single function.
+        let mut p_reader = handle.commit();
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            // Try pointer.
+            // TODO: Implement `GAsterisk`?
+            let (slice, handle) = reader.read_amt(1)?;
+            if let Some(slice) = slice {
+                if slice == "*" {
+                    p_reader = handle.commit();
+                    derived = GTypeCategory::Pointer(Box::new(derived));
+                    continue;
+                }
+            }
+
+            p_reader = handle.reset();
+            break;
+        }
+
+        Ok(DerivationResult {
+            derived,
+            branch: p_reader.into_branch(),
+        })
     }
 }
