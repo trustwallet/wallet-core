@@ -12,7 +12,8 @@ pub trait ParseTree {
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     Comment(GCommentBlock),
-    Function(GFunctionDecl),
+    FunctionDecl(GFunctionDecl),
+    StructDecl(GStructDecl),
     Newline,
     Eof,
     Unknown(String),
@@ -233,6 +234,9 @@ pub enum GPrimitive {
 pub struct GStruct(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GStructDecl(GStruct);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GEof;
 
 pub type GSeparator = Continuum<GSeparatorItem>;
@@ -403,7 +407,6 @@ impl ParseTree for GPrimitive {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        //dbg!(&slice);
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
@@ -456,6 +459,23 @@ impl ParseTree for GStruct {
     }
 }
 
+impl ParseTree for GStructDecl {
+    type Derivation = Self;
+
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (pending, checked_out) = reader.checkout();
+        let res = GStruct::derive(checked_out)?;
+
+        // Check for required semicolon.
+        let (_, reader) = ensure::<GSemicolon>(pending.merge(res.branch))?;
+
+        Ok(DerivationResult {
+            derived: GStructDecl(res.derived),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
 impl ParseTree for GSeparatorItem {
     type Derivation = Self;
 
@@ -489,7 +509,6 @@ impl ParseTree for GParamItem {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
         let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
-        dbg!(&ty_derived);
 
         // Derive (optional) markers.
         let mut markers = vec![];
@@ -807,7 +826,6 @@ impl ParseTree for GHeaderInclude {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (string, handle) = reader.read_until::<GSeparator>()?;
-        //dbg!(&string);
 
         if string != "#include" {
             return Err(Error::Todo);
@@ -1038,12 +1056,22 @@ impl ParseTree for GHeaderFileItem {
             });
         }
 
+        // Check for struct decleration.
+        let (include_der, reader) = optional::<GStructDecl>(reader);
+        if let Some(item) = include_der {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::StructDecl(item),
+                branch: reader.into_branch(),
+            });
+        }
+
         // Check for function decleration.
         let (include_der, reader) = optional::<GFunctionDecl>(reader);
         if let Some(item) = include_der {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
-                derived: GHeaderFileItem::Function(item),
+                derived: GHeaderFileItem::FunctionDecl(item),
                 branch: reader.into_branch(),
             });
         }
