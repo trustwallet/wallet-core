@@ -5,12 +5,12 @@ use std::any::Any;
 pub trait ParseTree {
     type Derivation;
 
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>>;
+    fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>>;
 }
 
 // Convenience function. Removes a derived type from the reader, returning the
 // updated reader.
-fn wipe<'a, T>(reader: Reader<'a>) -> (Option<T::Derivation>, Reader<'a>)
+fn wipe<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
 where
     T: ParseTree,
 {
@@ -24,7 +24,7 @@ where
 
 // Convenience function. Tries to successfully derive a type from the reader,
 // returning the updated reader.
-fn ensure<'a, T>(reader: Reader<'a>) -> Result<(T::Derivation, Reader<'a>)>
+fn ensure<T>(reader: Reader) -> Result<(T::Derivation, Reader)>
 where
     T: ParseTree,
 {
@@ -168,8 +168,6 @@ pub enum GSeparatorItem {
     Tab,
 }
 
-pub enum GParamItem {}
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItemWithMarker {
     pub ty: GPrimitive,
@@ -309,7 +307,7 @@ impl ParseTree for GEof {
 impl ParseTree for GPrimitive {
     type Derivation = Self;
 
-    fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
@@ -432,7 +430,7 @@ impl ParseTree for GParamItemWithMarker {
 impl ParseTree for GParamItemWithoutMarker {
     type Derivation = Self;
 
-    fn derive<'a>(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
         let (ty_derived, mut reader) = ensure::<GPrimitive>(reader)?;
 
@@ -536,15 +534,13 @@ impl<T: ParseTree<Derivation = T> + std::fmt::Debug> ParseTree for Continuum<T> 
                 } else {
                     sep_items = Some(Continuum::Thing(res.derived));
                 }
+            } else if let Some(items) = sep_items {
+                return Ok(DerivationResult {
+                    derived: items,
+                    branch: pending.discard().into_branch(),
+                });
             } else {
-                if let Some(items) = sep_items {
-                    return Ok(DerivationResult {
-                        derived: items,
-                        branch: pending.discard().into_branch(),
-                    });
-                } else {
-                    return Err(Error::Todo);
-                }
+                return Err(Error::Todo);
             }
         }
     }
@@ -555,7 +551,7 @@ impl ParseTree for GNonAlphanumericItem {
 
     fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = GEof::derive(checked_out) {
+        if GEof::derive(checked_out).is_ok() {
             //return Ok(DerivationResult { derived: GNonAlphanumericItem, branch: res.branch })
             return Err(Error::Todo);
         } else {

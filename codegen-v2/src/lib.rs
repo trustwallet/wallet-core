@@ -5,10 +5,10 @@ mod reader;
 #[cfg(test)]
 mod tests;
 
-type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug)]
-enum Error {
+pub enum Error {
     Todo,
     Eof,
 }
