@@ -14,9 +14,11 @@ pub enum Error {
     Eof,
 }
 
-pub fn parse_file(path: &str) {
-    let file = std::fs::read_to_string(path).unwrap();
+pub fn parse_file(path: &str) -> Result<Vec<GHeaderFileItem>> {
+    let file = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
     let mut reader = Reader::from(file.as_str());
+
+    let mut items = vec![];
 
     loop {
         let (pending, checked_out) = reader.checkout();
@@ -24,23 +26,20 @@ pub fn parse_file(path: &str) {
             let (derived, branch) = (der.derived, der.branch);
             reader = pending.merge(branch);
 
-            if let GHeaderFileItem::Unrecognized(der) = &derived {
-                // ...
-                dbg!(&der);
-            } else {
-                //dbg!(&derived);
-            }
-
             if let GHeaderFileItem::Eof = derived {
                 break;
             }
+
+            items.push(derived);
         } else {
             reader = pending.discard();
         }
     }
+
+    Ok(items)
 }
 
 #[test]
 fn test_parse_file() {
-    parse_file("../include/TrustWalletCore/TWAnyAddress.h");
+    let _res = parse_file("../include/TrustWalletCore/TWAnyAddress.h").unwrap();
 }
