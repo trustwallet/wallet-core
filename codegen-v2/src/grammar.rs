@@ -11,6 +11,7 @@ pub trait ParseTree {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
+    Comment(GCommentBlock),
     Newline,
     Eof,
     Unknown(String),
@@ -795,7 +796,7 @@ impl ParseTree for GCommentLine {
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Check for comment prefix
         let (string, handle) = reader.read_until::<GSeparator>()?;
-        if string != "//" || string != "///" {
+        if string != "//" && string != "///" {
             return Err(Error::Todo)
         }
 
@@ -832,6 +833,10 @@ impl ParseTree for GCommentBlock {
                 reader = pending.discard();
                 break;
             }
+        }
+
+        if lines.is_empty() {
+            return Err(Error::Todo)
         }
 
         Ok(DerivationResult {
@@ -958,6 +963,15 @@ impl ParseTree for GHeaderFileItem {
         if der.is_some() {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Eof,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for comment block.
+        let (include_der, reader) = optional::<GCommentBlock>(reader);
+        if let Some(item) = include_der {
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Comment(item),
                 branch: reader.into_branch(),
             });
         }
