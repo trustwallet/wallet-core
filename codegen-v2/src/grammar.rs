@@ -12,7 +12,8 @@ pub trait ParseTree {
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     Comment(GCommentBlock),
-    Function(GFunctionDecl),
+    FunctionDecl(GFunctionDecl),
+    StructDecl(GStructDecl),
     Newline,
     Eof,
     Unknown(String),
@@ -87,9 +88,36 @@ pub struct GNonAlphanumericItem;
 pub enum GTypeCategory {
     Scalar(GPrimitive),
     Struct(GStruct),
+    Enum(GEnum),
     Pointer(Box<GTypeCategory>),
     // TODO: Add some sort of `GAnyKeyword` that can parse valid keywords.
     Unknown(String),
+}
+
+impl ParseTree for GType {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string == "const" {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+            let res = GTypeCategory::derive(reader)?;
+
+            Ok(DerivationResult {
+                derived: GType::Const(res.derived),
+                branch: res.branch,
+            })
+        } else {
+            let res = GTypeCategory::derive(handle.reset())?;
+
+            Ok(DerivationResult {
+                derived: GType::Mutable(res.derived),
+                branch: res.branch,
+            })
+        }
+    }
 }
 
 impl ParseTree for GTypeCategory {
@@ -158,6 +186,24 @@ impl ParseTree for GTypeCategory {
         // Reset buffer.
         let reader = pending.discard();
 
+        // Handle enum
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GEnum::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Enum(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
         // Handle aggregate types.
         let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
 
@@ -195,16 +241,31 @@ impl ParseTree for GTypeCategory {
     }
 }
 
+// TODO: Not complete (eg. "unsigned char", etc...)
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GPrimitive {
+    // TODO: Not a primitive, handle somewhere else.
     Void,
     Bool,
     Char,
+    ShortInt,
     Int,
+    UnsignedInt,
+    LongInt,
+    Float,
+    Double,
+    LongDouble,
+    UInt32T,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GStruct(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GStructDecl(GStruct);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GEnum(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GEof;
@@ -220,7 +281,7 @@ pub enum GSeparatorItem {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GParamItem {
-    pub ty: GPrimitive,
+    pub ty: GType,
     pub markers: Vec<GMarker>,
     pub name: GParamName,
 }
@@ -291,9 +352,8 @@ pub struct GEndOfLine;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
-    //params: Vec<EitherOr<GParamItemWithMarker, GParamItem>>,
     pub params: Vec<GParamItem>,
-    pub return_ty: GPrimitive,
+    pub return_ty: GType,
     pub markers: Vec<GMarker>,
 }
 
@@ -378,13 +438,20 @@ impl ParseTree for GPrimitive {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
         let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        //dbg!(&slice);
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
             "bool" => GPrimitive::Bool,
             "char" => GPrimitive::Char,
+            "short" => GPrimitive::ShortInt,
             "int" => GPrimitive::Int,
+            "signed" => GPrimitive::Int,
+            "unsigned" => GPrimitive::UnsignedInt,
+            "long" => GPrimitive::LongInt,
+            "float" => GPrimitive::Float,
+            "double" => GPrimitive::Double,
+            "long double" => GPrimitive::LongDouble,
+            "uint32_t" => GPrimitive::UInt32T,
             _ => {
                 return Err(Error::Todo);
             }
@@ -406,19 +473,16 @@ impl ParseTree for GStruct {
 
         // Check for "struct" prefix.
         let (string, handle) = reader.read_until::<GSeparator>()?;
-        dbg!(&string);
         if string != "struct" {
             return Err(Error::Todo);
         }
-
-        dbg!("GOT HERE, TOO");
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Derive struct name
+        // TODO:
         let (name, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        dbg!(&name);
         if name.is_empty()
             || name
                 .chars()
@@ -430,6 +494,57 @@ impl ParseTree for GStruct {
         Ok(DerivationResult {
             derived: GStruct(name),
             branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GEnum {
+    type Derivation = Self;
+
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for "enum" prefix.
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string != "enum" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Derive struct name
+        // TODO:
+        let (name, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        if name.is_empty()
+            || name
+                .chars()
+                .any(|c| (!c.is_alphanumeric() && (c != '_' || c != '-')))
+        {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GEnum(name),
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GStructDecl {
+    type Derivation = Self;
+
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (pending, checked_out) = reader.checkout();
+        let res = GStruct::derive(checked_out)?;
+
+        // Check for required semicolon.
+        let (_, reader) = ensure::<GSemicolon>(pending.merge(res.branch))?;
+
+        Ok(DerivationResult {
+            derived: GStructDecl(res.derived),
+            branch: reader.into_branch(),
         })
     }
 }
@@ -466,7 +581,7 @@ impl ParseTree for GParamItem {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut p_reader) = ensure::<GPrimitive>(reader)?;
+        let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
 
         // Derive (optional) markers.
         let mut markers = vec![];
@@ -784,7 +899,6 @@ impl ParseTree for GHeaderInclude {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (string, handle) = reader.read_until::<GSeparator>()?;
-        //dbg!(&string);
 
         if string != "#include" {
             return Err(Error::Todo);
@@ -907,9 +1021,7 @@ impl ParseTree for GFunctionDecl {
         (_, p_reader) = wipe::<GSeparator>(p_reader);
 
         // Derive return value.
-        let (return_der, reader) = ensure::<GPrimitive>(p_reader)?;
-
-        dbg!("GOT HERE");
+        let (return_der, reader) = ensure::<GType>(p_reader)?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
@@ -1017,12 +1129,22 @@ impl ParseTree for GHeaderFileItem {
             });
         }
 
+        // Check for struct decleration.
+        let (include_der, reader) = optional::<GStructDecl>(reader);
+        if let Some(item) = include_der {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::StructDecl(item),
+                branch: reader.into_branch(),
+            });
+        }
+
         // Check for function decleration.
         let (include_der, reader) = optional::<GFunctionDecl>(reader);
         if let Some(item) = include_der {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
-                derived: GHeaderFileItem::Function(item),
+                derived: GHeaderFileItem::FunctionDecl(item),
                 branch: reader.into_branch(),
             });
         }

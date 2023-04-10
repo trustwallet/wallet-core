@@ -1,7 +1,7 @@
 use crate::grammar::{
     GEof, GFuncName, GFunctionDecl, GHeaderInclude, GMarker, GNonAlphanumeric,
     GNonAlphanumericItem, GParamItem, GParamName, GPrimitive, GSeparator, GSeparatorItem, GStruct,
-    GTypeCategory, ParseTree,
+    GType, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
 
@@ -12,7 +12,7 @@ fn test_func_params_with_marker() {
     assert_eq!(
         der.derived,
         GParamItem {
-            ty: GPrimitive::Int,
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
             name: GParamName::from("my_var".to_string()),
             markers: vec![GMarker::NonNull],
         }
@@ -23,7 +23,7 @@ fn test_func_params_with_marker() {
     assert_eq!(
         der.derived,
         GParamItem {
-            ty: GPrimitive::Bool,
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool".to_string()),
             markers: vec![GMarker::NonNull],
         }
@@ -37,7 +37,7 @@ fn test_func_params_without_marker() {
     assert_eq!(
         der.derived,
         GParamItem {
-            ty: GPrimitive::Int,
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
             name: GParamName::from("my_var".to_string()),
             markers: vec![],
         }
@@ -48,7 +48,7 @@ fn test_func_params_without_marker() {
     assert_eq!(
         der.derived,
         GParamItem {
-            ty: GPrimitive::Bool,
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool".to_string()),
             markers: vec![],
         }
@@ -61,17 +61,17 @@ fn test_function_delceration() {
         name: GFuncName::from("some_function".to_string()),
         params: vec![
             GParamItem {
-                ty: GPrimitive::Int,
+                ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
                 name: GParamName::from("some_int".to_string()),
                 markers: vec![],
             },
             GParamItem {
-                ty: GPrimitive::Bool,
+                ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
                 name: GParamName::from("some_bool".to_string()),
                 markers: vec![],
             },
         ],
-        return_ty: GPrimitive::Void,
+        return_ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
         markers: vec![],
     };
 
@@ -103,17 +103,17 @@ fn test_function_delceration_with_markers() {
         name: GFuncName::from("some_function".to_string()),
         params: vec![
             GParamItem {
-                ty: GPrimitive::Int,
+                ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
                 name: GParamName::from("some_int".to_string()),
                 markers: vec![],
             },
             GParamItem {
-                ty: GPrimitive::Bool,
+                ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
                 name: GParamName::from("some_bool".to_string()),
                 markers: vec![],
             },
         ],
-        return_ty: GPrimitive::Void,
+        return_ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
         markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
     };
 
