@@ -10,6 +10,7 @@ pub trait ParseTree {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
+    HeaderPragma(GHeaderPragma),
     Comment(GCommentBlock),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
@@ -349,6 +350,9 @@ pub struct GFuncName(String);
 pub struct GHeaderInclude(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GHeaderPragma(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GNewline;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -567,7 +571,10 @@ impl ParseTree for GStructDecl {
         let (_, reader) = ensure::<GSemicolon>(pending.merge(res.branch))?;
 
         Ok(DerivationResult {
-            derived: GStructDecl { g_struct: res.derived, markers},
+            derived: GStructDecl {
+                g_struct: res.derived,
+                markers,
+            },
             branch: reader.into_branch(),
         })
     }
@@ -987,6 +994,32 @@ impl ParseTree for GHeaderInclude {
     }
 }
 
+impl ParseTree for GHeaderPragma {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+
+        if string != "#pragma" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Read string until newline
+        let (string, handle) = reader.read_until::<GNewline>()?;
+
+        // Consume newline character itself.
+        let (_, reader) = ensure::<GNewline>(handle.commit())?;
+
+        Ok(DerivationResult {
+            derived: GHeaderPragma(string.trim().to_string()),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
 impl ParseTree for GCommentLine {
     type Derivation = Self;
 
@@ -1173,6 +1206,17 @@ impl ParseTree for GHeaderFileItem {
         if let Some(item) = include_der {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Comment(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for pragma header.
+        let (include_der, reader) = optional::<GHeaderPragma>(reader);
+        if let Some(item) = include_der {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::HeaderPragma(item),
                 branch: reader.into_branch(),
             });
         }
