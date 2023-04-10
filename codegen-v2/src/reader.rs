@@ -22,7 +22,7 @@ impl<'a> Reader<'a> {
     }
     pub fn into_branch(self) -> ReaderBranch<'a> {
         ReaderBranch {
-            buffer: self.buffer,
+            _buffer: self.buffer,
             pos: self.pos,
         }
     }
@@ -140,6 +140,6 @@ impl<'a> ReaderPending<'a> {
 
 #[derive(Debug, Clone)]
 pub struct ReaderBranch<'a> {
-    buffer: &'a str,
+    _buffer: &'a str,
     pos: usize,
 }

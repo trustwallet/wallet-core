@@ -24,10 +24,11 @@ pub fn parse_file(path: &str) {
             let (derived, branch) = (der.derived, der.branch);
             reader = pending.merge(branch);
 
-            if let GHeaderFileItem::Unrecognized(_) = derived {
+            if let GHeaderFileItem::Unrecognized(der) = &derived {
                 // ...
+                dbg!(&der);
             } else {
-                dbg!(&derived);
+                //dbg!(&derived);
             }
 
             if let GHeaderFileItem::Eof = derived {

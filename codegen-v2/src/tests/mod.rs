@@ -70,6 +70,6 @@ fn test_eof() {
 #[test]
 fn test_header_include() {
     let driver = Reader::from("#include \"some_file.h\"");
-    let res = GHeaderInclude::derive(driver);
+    let res = GHeaderInclude::derive(driver).unwrap();
     dbg!(res);
 }
