@@ -222,6 +222,12 @@ pub struct GFuncName(String);
 pub struct GHeaderInclude(String);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GNewline;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct GAnyLine(String);
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct GFunctionDecl {
     pub name: GFuncName,
     //params: Vec<EitherOr<GParamItemWithMarker, GParamItem>>,
@@ -635,6 +641,25 @@ impl ParseTree for GDoubleQuote {
     }
 }
 
+impl ParseTree for GNewline {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "\n" {
+                return Ok(DerivationResult {
+                    derived: GNewline,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 impl ParseTree for GCloseBracket {
     type Derivation = Self;
 
@@ -701,6 +726,22 @@ impl ParseTree for GHeaderInclude {
 
         Ok(DerivationResult {
             derived: GHeaderInclude(file_path.trim().to_string()),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GAnyLine {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GNewline>()?;
+
+        // Consume newline character itself..
+        let (_, reader) = ensure::<GNewline>(handle.commit())?;
+
+        Ok(DerivationResult {
+            derived: GAnyLine(string),
             branch: reader.into_branch(),
         })
     }
