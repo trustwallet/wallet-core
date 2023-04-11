@@ -17,7 +17,7 @@ class CByteArrayWrapper {
 public:
     CByteArrayWrapper() = default;
 
-    /// Implicit move constructor.
+    /// Implicit constructor.
     CByteArrayWrapper(CByteArray&& rawArray) {
         *this = std::move(rawArray);
     }
@@ -72,20 +72,25 @@ public:
         return *this;
     }
 
+    /// Returns an inner value.
+    /// This method must be used if only `CResult::isOk` returns true,
+    /// otherwise it throws an exception.
     T unwrap() {
         return *inner;
     }
 
+    /// Returns the result value if `CResult::isOk` return true, otherwise returns a default value.
     T unwrap_or_default() {
         return inner ? *inner : T {};
     }
 
+    /// Whether the result contains a value.
     bool isOk() {
         return code == OK_CODE;
     }
 
 private:
-    ErrorCode code = UNKNOWN_ERROR;
+    ErrorCode code;
     std::optional<T> inner;
 };
 
