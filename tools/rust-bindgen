@@ -15,6 +15,9 @@ create_xc_framework() {
   cp $BUILD_FOLDER/catalyst/$TARGET_NAME $TARGET_XCFRAMEWORK_NAME/ios-arm64_x86_64-maccatalyst
 }
 
+# Generate Proto files
+pb-rs src/proto/*.proto --output_directory rust/tw_proto/src/generated
+
 cd rust
 
 if [[ "$1" != "android" ]]; then

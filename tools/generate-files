@@ -84,4 +84,3 @@ elif [ "$1" == "android" ]; then
 else
     echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
 fi
-

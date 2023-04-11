@@ -35,6 +35,19 @@ jobs:
         run: |
           tools/install-rust-dependencies dev
 
+      - name: Generate Proto files
+        run: |
+          pb-rs src/proto/*.proto --output_directory rust/tw_proto/src/generated
+
+      # This step ensures that the Rust generated at the prev step files
+      # match the `src/proto/*.proto` source files.
+      # https://stackoverflow.com/a/5737794
+      - name: Ensure generated files are up-to-date
+        run: |
+          git_status=$(git status --porcelain)
+          echo $git_status
+          test -z "$git_status"
+
       - name: Check code formatting
         run: |
           cargo fmt --check
