@@ -10,12 +10,17 @@ env:
   SCCACHE_GHA_ENABLED: "true"
   RUSTC_WRAPPER: "sccache"
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     permissions:
       contents: read
       checks: write
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false || github.event_name != 'pull_request_target'
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
