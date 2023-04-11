@@ -5,28 +5,25 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Base64.h"
-#include "rust/bindgen/RAII.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 namespace TW::Base64::internal {
 
 std::string encode(const Data& val, bool is_url) {
-    char* encoded = Rust::encode_base64(val.data(), val.size(), is_url);
-    std::string encoded_str(encoded);
-    Rust::free_string(encoded);
-    return encoded_str;
+    Rust::CStringWrapper res = Rust::encode_base64(val.data(), val.size(), is_url);
+    return res.str;
 }
 
 Data decode(const std::string& val, bool is_url) {
     if (val.empty()) {
         return {};
     }
-    Data res;
-    Rust::data_from_c_byte_array_result(Rust::decode_base64(val.c_str(), is_url), res);
-    return res;
+    Rust::CResult<Rust::CByteArrayWrapper> res = Rust::decode_base64(val.c_str(), is_url);
+    return res.unwrap_or_default().data;
 }
 
-}
+} // namespace TW::Base64::internal
 
 namespace TW::Base64 {
 

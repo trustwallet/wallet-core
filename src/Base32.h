@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Data.h"
-#include "rust/bindgen/RAII.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include <cassert>
 
@@ -20,11 +20,12 @@ inline bool decode(const std::string& encoded_in, Data& decoded_out, const char*
     if (encoded_in.empty()) {
         return true;
     }
-    auto decoded = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
-    if (!Rust::data_from_c_byte_array_result(std::move(decoded), decoded_out)) {
-        return false;
+    Rust::CResult<Rust::CByteArrayWrapper> res = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
+    if (res.isOk()) {
+        decoded_out = res.unwrap().data;
+        return true;
     }
-    return !decoded_out.empty();
+    return false;
 }
 
 

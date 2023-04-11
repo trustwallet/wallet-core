@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Data.h"
-#include "rust/bindgen/RAII.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include <algorithm>
 #include <array>
@@ -26,9 +26,9 @@ inline Data parse_hex(const std::string& input) {
     if (input.empty()) {
         return {};
     }
-    Data res;
-    Rust::data_from_c_byte_array_result(Rust::decode_hex(input.c_str()), res);
-    return res;
+
+    Rust::CResult<Rust::CByteArrayWrapper> res = Rust::decode_hex(input.c_str());
+    return res.unwrap_or_default().data;
 }
 }
 
