@@ -136,6 +136,7 @@ enum TWCoinType {
     TWCoinTypeJuno = 30000118,
     TWCoinTypeStride = 40000118,
     TWCoinTypeAxelar = 50000118,
+    TWCoinTypeCrescent = 60000118,
 };
 
 /// Returns the blockchain for a coin type.
