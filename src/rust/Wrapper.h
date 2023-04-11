@@ -11,6 +11,20 @@
 #include "Data.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
+namespace TW::Rust::internal {
+
+/// This trait is used to constrain perfect forwarding constructors.
+/// See https://rules.sonarsource.com/cpp/RSPEC-6458
+template<typename Self, typename Arg>
+struct IsPerfectForwarding {
+    static constexpr bool value = !std::is_same_v<Self, std::remove_cv_t<typename std::remove_reference_t<Arg>>>;
+};
+
+template<typename Self, typename Arg>
+inline constexpr bool IsPerfectForwardingV = IsPerfectForwarding<Self, Arg>::value;
+
+}
+
 namespace TW::Rust {
 
 class CByteArrayWrapper {
@@ -58,7 +72,11 @@ template<typename T>
 class CResult {
 public:
     /// Implicit move constructor.
-    template <typename R>
+    /// This constructor is not fired if `R` type is `CResult`, i.e not a move constructor.
+    template<
+        typename R,
+        std::enable_if_t<internal::IsPerfectForwardingV<CResult, R>, bool> = true
+    >
     CResult(R&& result) {
         *this = std::forward<R>(result);
     }
