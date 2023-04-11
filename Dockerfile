@@ -56,9 +56,14 @@ WORKDIR /wallet-core
 # Install dependencies
 RUN tools/install-dependencies
 
-# Build: generate, cmake, and make lib
-RUN tools/generate-files \
-    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
+# Switch to testing branch
+RUN git fetch && git checkout h/docker-fix
+
+# Build: generate files and rust lib
+RUN tools/generate-files
+
+# Build: cmake + make
+RUN cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
     && make -Cbuild -j12 TrustWalletCore
 
 # Build unit tester
