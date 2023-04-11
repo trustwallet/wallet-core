@@ -171,7 +171,7 @@ pub struct GStruct(String);
 pub struct GStructDecl {
     #[serde(rename = "struct")]
     struct_val: GStruct,
-    markers: Vec<GMarker>,
+    markers: GMarkers,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -231,6 +231,11 @@ pub enum GMarker {
     //NullUnspecified,
     TWExternCBegin,
     TWExternCEnd,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+struct GMarkers {
+    markers: Vec<GMarker>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -420,33 +425,20 @@ impl ParseTree for GEnum {
 impl ParseTree for GStructDecl {
     type Derivation = Self;
 
-    fn derive<'a>(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive (optional) markers.
-        let mut markers = vec![];
-        loop {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
+        let (markers_res, reader) = ensure::<GMarkers>(reader)?;
 
-            let (pending, checked_out) = reader.checkout();
-            if let Ok(marker_res) = GMarker::derive(checked_out) {
-                markers.push(marker_res.derived);
-                p_reader = pending.merge(marker_res.branch);
-            } else {
-                p_reader = pending.discard();
-                break;
-            }
-        }
-
-        let (pending, checked_out) = p_reader.checkout();
-        let res = GStruct::derive(checked_out)?;
+        // Derive struct declaration.
+        let (struct_res, reader) = ensure::<GStruct>(reader)?;
 
         // Check for required semicolon.
-        let (_, reader) = ensure::<GSemicolon>(pending.merge(res.branch))?;
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
 
         Ok(DerivationResult {
             derived: GStructDecl {
-                struct_val: res.derived,
-                markers,
+                struct_val: struct_res,
+                markers: markers_res,
             },
             branch: reader.into_branch(),
         })
@@ -606,6 +598,32 @@ impl ParseTree for GMarker {
         Ok(DerivationResult {
             derived: der,
             branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GMarkers {
+    type Derivation = Self;
+
+    fn derive(mut p_reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
+        let mut markers = vec![];
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(marker_res) = GMarker::derive(checked_out) {
+                markers.push(marker_res.derived);
+                p_reader = pending.merge(marker_res.branch);
+            } else {
+                p_reader = pending.discard();
+                break;
+            }
+        }
+
+        Ok(DerivationResult {
+            derived: GMarkers { markers },
+            branch: p_reader.into_branch(),
         })
     }
 }
