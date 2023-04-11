@@ -3,13 +3,21 @@ name: Kotlin CI
 on:
   push:
     branches: [ master ]
-  pull_request:
+  pull_request_target:
     branches: [ master ]
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: macos-latest-xl
-
+    if: github.event.pull_request.draft == false || github.event_name != 'pull_request_target'
     steps:
     - uses: actions/checkout@v3
 
