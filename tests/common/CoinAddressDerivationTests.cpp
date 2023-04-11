@@ -293,6 +293,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeNativeCanto:
             EXPECT_EQ(address, "canto1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0wvfqju");
             break;
+        case TWCoinTypeComdex:
+            EXPECT_EQ(address, "comdex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z075ap4k");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
