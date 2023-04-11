@@ -11,20 +11,6 @@
 #include "Data.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
-namespace TW::Rust::internal {
-
-/// This trait is used to constrain perfect forwarding constructors.
-/// See https://rules.sonarsource.com/cpp/RSPEC-6458
-template<typename Self, typename Arg>
-struct IsPerfectForwarding {
-    static constexpr bool value = !std::is_same_v<Self, std::remove_cv_t<typename std::remove_reference_t<Arg>>>;
-};
-
-template<typename Self, typename Arg>
-inline constexpr bool IsPerfectForwardingV = IsPerfectForwarding<Self, Arg>::value;
-
-}
-
 namespace TW::Rust {
 
 class CByteArrayWrapper {
@@ -32,11 +18,11 @@ public:
     CByteArrayWrapper() = default;
 
     /// Implicit constructor.
-    CByteArrayWrapper(CByteArray&& rawArray) {
-        *this = std::move(rawArray);
+    CByteArrayWrapper(const CByteArray &rawArray) {
+        *this = rawArray;
     }
 
-    CByteArrayWrapper& operator=(CByteArray&& rawArray) {
+    CByteArrayWrapper& operator=(CByteArray rawArray) {
         if (rawArray.data == nullptr || rawArray.size == 0) {
             return *this;
         }
@@ -73,19 +59,16 @@ class CResult {
 public:
     /// Implicit move constructor.
     /// This constructor is not fired if `R` type is `CResult`, i.e not a move constructor.
-    template<
-        typename R,
-        std::enable_if_t<internal::IsPerfectForwardingV<CResult, R>, bool> = true
-    >
-    CResult(R&& result) {
-        *this = std::forward<R>(result);
+    template<typename R>
+    CResult(const R& result) {
+        *this = result;
     }
 
     template <typename R>
-    CResult& operator=(R&& result) {
+    CResult& operator=(const R& result) {
         code = result.code;
         if (code == OK_CODE) {
-            inner = std::move(result.result);
+            inner = result.result;
         }
         return *this;
     }
@@ -103,7 +86,7 @@ public:
     }
 
     /// Whether the result contains a value.
-    bool isOk() {
+    bool isOk() const {
         return code == OK_CODE;
     }
 
