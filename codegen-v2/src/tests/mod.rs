@@ -1,6 +1,7 @@
 use crate::grammar::{GEof, GHeaderInclude, GNonAlphanumeric, GNonAlphanumericItem, ParseTree};
 use crate::reader::Reader;
 
+mod attributes;
 mod functions;
 mod primitives;
 mod separators;

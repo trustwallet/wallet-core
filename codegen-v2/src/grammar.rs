@@ -76,6 +76,12 @@ pub struct GCloseBracket;
 pub struct GDoubleQuote;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GHeaderDefine {
+    pub key: String,
+    pub value: Option<String>,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GHeaderInclude(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -801,13 +807,11 @@ impl ParseTree for GEndOfLine {
                     });
                 }
             } else {
-                break;
+                return Err(Error::Todo);
             }
 
             p_reader = reader;
         }
-
-        Err(Error::Todo)
     }
 }
 
@@ -823,6 +827,39 @@ impl ParseTree for GFuncName {
 
         Ok(DerivationResult {
             derived: GFuncName(string),
+            branch: handle.commit().into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GHeaderDefine {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+
+        if string != "#define" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Retrieve the key name.
+        let (key, handle) =
+            reader.read_until::<EitherOr<EitherOr<GNewline, GSeparator>, GEof>>()?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Retrieve the value itself, read until newline.
+        let (value, handle) = reader.read_until::<EitherOr<GNewline, GEof>>()?;
+
+        let value = value.trim().to_string();
+        let value = if value.is_empty() { None } else { Some(value) };
+
+        Ok(DerivationResult {
+            derived: GHeaderDefine { key, value },
             branch: handle.commit().into_branch(),
         })
     }
