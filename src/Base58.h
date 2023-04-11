@@ -19,7 +19,7 @@ namespace TW::Base58 {
         if (string.empty()) {
             return {};
         }
-        Rust::CResult<Rust::CByteArrayWrapper> res = Rust::decode_base58(string.c_str(), alphabet);
+        Rust::CByteArrayResultWrapper res = Rust::decode_base58(string.c_str(), alphabet);
         return res.unwrap_or_default().data;
     }
 

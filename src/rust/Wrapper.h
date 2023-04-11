@@ -13,8 +13,7 @@
 
 namespace TW::Rust {
 
-class CByteArrayWrapper {
-public:
+struct CByteArrayWrapper {
     CByteArrayWrapper() = default;
 
     /// Implicit constructor.
@@ -35,8 +34,7 @@ public:
     Data data;
 };
 
-class CStringWrapper {
-public:
+struct CStringWrapper {
     /// Implicit move constructor.
     CStringWrapper(const char* c_str) {
         *this = c_str;
@@ -94,5 +92,7 @@ private:
     ErrorCode code;
     std::optional<T> inner;
 };
+
+using CByteArrayResultWrapper = CResult<CByteArrayWrapper>;
 
 } // namespace TW::Rust

@@ -19,7 +19,7 @@ Data decode(const std::string& val, bool is_url) {
     if (val.empty()) {
         return {};
     }
-    Rust::CResult<Rust::CByteArrayWrapper> res = Rust::decode_base64(val.c_str(), is_url);
+    Rust::CByteArrayResultWrapper res = Rust::decode_base64(val.c_str(), is_url);
     return res.unwrap_or_default().data;
 }
 

@@ -27,7 +27,7 @@ inline Data parse_hex(const std::string& input) {
         return {};
     }
 
-    Rust::CResult<Rust::CByteArrayWrapper> res = Rust::decode_hex(input.c_str());
+    Rust::CByteArrayResultWrapper res = Rust::decode_hex(input.c_str());
     return res.unwrap_or_default().data;
 }
 }
