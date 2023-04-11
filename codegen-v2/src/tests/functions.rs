@@ -1,6 +1,6 @@
 use crate::grammar::{
     GFuncName, GFunctionDecl, GMarker, GParamItem, GParamName, GPrimitive, GReturnValue, GStruct,
-    GType, GTypeCategory, ParseTree,
+    GType, GTypeCategory, ParseTree, GMarkers,
 };
 use crate::reader::Reader;
 
@@ -13,7 +13,7 @@ fn test_func_params_with_marker() {
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
             name: GParamName::from("my_var".to_string()),
-            markers: vec![GMarker::NonNull],
+            markers: GMarkers { markers: vec![GMarker::NonNull] },
         }
     );
 
@@ -24,7 +24,7 @@ fn test_func_params_with_marker() {
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool".to_string()),
-            markers: vec![GMarker::NonNull],
+            markers: GMarkers { markers: vec![GMarker::NonNull] },
         }
     );
 }
@@ -38,7 +38,7 @@ fn test_func_params_without_marker() {
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
             name: GParamName::from("my_var".to_string()),
-            markers: vec![],
+            markers: GMarkers { markers: vec![] },
         }
     );
 
@@ -49,7 +49,7 @@ fn test_func_params_without_marker() {
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool".to_string()),
-            markers: vec![],
+            markers: GMarkers { markers: vec![] },
         }
     );
 }
@@ -62,19 +62,19 @@ fn test_function_delceration() {
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
                 name: GParamName::from("some_int".to_string()),
-                markers: vec![],
+                markers: GMarkers { markers: vec![] },
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
                 name: GParamName::from("some_bool".to_string()),
-                markers: vec![],
+                markers: GMarkers { markers: vec![] },
             },
         ],
         return_value: GReturnValue {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
-            markers: vec![],
+            markers: GMarkers { markers: vec![] },
         },
-        markers: vec![],
+        markers: GMarkers { markers: vec![] },
     };
 
     let driver = Reader::from("void some_function(int some_int, bool some_bool);");
@@ -107,19 +107,19 @@ fn test_function_delceration_with_markers() {
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
                 name: GParamName::from("some_int".to_string()),
-                markers: vec![],
+                markers: GMarkers { markers: vec![] },
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
                 name: GParamName::from("some_bool".to_string()),
-                markers: vec![],
+                markers: GMarkers { markers: vec![] },
             },
         ],
         return_value: GReturnValue {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
-            markers: vec![],
+            markers: GMarkers { markers: vec![] },
         },
-        markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault],
+        markers: GMarkers { markers: vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault] },
     };
 
     let driver = Reader::from(
@@ -137,21 +137,21 @@ fn test_function_delceration_struct_return_value() {
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
                 name: GParamName::from("some_int".to_string()),
-                markers: vec![],
+                markers: GMarkers { markers: vec![] },
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
                 name: GParamName::from("some_bool".to_string()),
-                markers: vec![],
+                markers: GMarkers { markers: vec![] },
             },
         ],
         return_value: GReturnValue {
             ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(
                 GStruct::from("SomeStruct".to_string()),
             )))),
-            markers: vec![GMarker::Nullable],
+            markers: GMarkers { markers: vec![GMarker::Nullable] },
         },
-        markers: vec![GMarker::TwExportStaticMethod, GMarker::TWVisibilityDefault],
+        markers: GMarkers { markers: vec![GMarker::TwExportStaticMethod, GMarker::TWVisibilityDefault] },
     };
 
     let driver = Reader::from(

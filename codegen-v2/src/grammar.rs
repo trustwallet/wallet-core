@@ -194,14 +194,14 @@ pub enum GSeparatorItem {
 pub struct GReturnValue {
     #[serde(rename = "type")]
     pub ty: GType,
-    pub markers: Vec<GMarker>,
+    pub markers: GMarkers,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GParamItem {
     #[serde(rename = "type")]
     pub ty: GType,
-    pub markers: Vec<GMarker>,
+    pub markers: GMarkers,
     pub name: GParamName,
 }
 
@@ -234,8 +234,8 @@ pub enum GMarker {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-struct GMarkers {
-    markers: Vec<GMarker>,
+pub struct GMarkers {
+    pub markers: Vec<GMarker>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -243,7 +243,7 @@ pub struct GFunctionDecl {
     pub name: GFuncName,
     pub params: Vec<GParamItem>,
     pub return_value: GReturnValue,
-    pub markers: Vec<GMarker>,
+    pub markers: GMarkers,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -427,7 +427,7 @@ impl ParseTree for GStructDecl {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive (optional) markers.
-        let (markers_res, reader) = ensure::<GMarkers>(reader)?;
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Derive struct declaration.
         let (struct_res, reader) = ensure::<GStruct>(reader)?;
@@ -438,7 +438,7 @@ impl ParseTree for GStructDecl {
         Ok(DerivationResult {
             derived: GStructDecl {
                 struct_val: struct_res,
-                markers: markers_res,
+                markers,
             },
             branch: reader.into_branch(),
         })
@@ -477,31 +477,18 @@ impl ParseTree for GReturnValue {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
+        let (ty, reader) = ensure::<GType>(reader)?;
 
         // Derive (optional) markers.
-        let mut markers = vec![];
-        loop {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
-
-            let (pending, checked_out) = reader.checkout();
-            if let Ok(marker_res) = GMarker::derive(checked_out) {
-                markers.push(marker_res.derived);
-                p_reader = pending.merge(marker_res.branch);
-            } else {
-                p_reader = pending.discard();
-                break;
-            }
-        }
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
             derived: GReturnValue {
-                ty: ty_derived,
+                ty,
                 markers,
             },
-            branch: p_reader.into_branch(),
+            branch: reader.into_branch(),
         })
     }
 }
@@ -511,26 +498,14 @@ impl ParseTree for GParamItem {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Derive parameter type.
-        let (ty_derived, mut p_reader) = ensure::<GType>(reader)?;
+        let (ty_derived, reader) = ensure::<GType>(reader)?;
 
         // Derive (optional) markers.
-        let mut markers = vec![];
-        loop {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
-
-            let (pending, checked_out) = reader.checkout();
-            if let Ok(marker_res) = GMarker::derive(checked_out) {
-                markers.push(marker_res.derived);
-                p_reader = pending.merge(marker_res.branch);
-            } else {
-                p_reader = pending.discard();
-                break;
-            }
-        }
+        // Derive (optional) markers.
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GParamName>(reader)?;
@@ -1019,24 +994,17 @@ impl ParseTree for GAnyLine {
 impl ParseTree for GFunctionDecl {
     type Derivation = Self;
 
-    fn derive(mut p_reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let mut markers = vec![];
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let mut params = vec![];
 
         // Derive (optional) marker.
-        let (pending, checked_out) = p_reader.checkout();
-        if let Ok(marker_res) = GMarker::derive(checked_out) {
-            markers.push(marker_res.derived);
-            p_reader = pending.merge(marker_res.branch);
-        } else {
-            p_reader = pending.discard();
-        }
+        let (mut markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
-        (_, p_reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive return value.
-        let (return_der, reader) = ensure::<GReturnValue>(p_reader)?;
+        let (return_der, reader) = ensure::<GReturnValue>(reader)?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
@@ -1045,22 +1013,23 @@ impl ParseTree for GFunctionDecl {
         let (name_der, reader) = ensure::<GFuncName>(reader)?;
 
         // Check for opening bracket.
-        (_, p_reader) = ensure::<GOpenBracket>(reader)?;
+        let (_, mut reader) = ensure::<GOpenBracket>(reader)?;
 
+        // Derive parameters
         loop {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
+            let (_, r) = wipe::<GSeparator>(reader);
 
             // Derive and track parameter.
-            let (derived, reader) = ensure::<GParamItem>(reader)?;
+            let (derived, r) = ensure::<GParamItem>(r)?;
             params.push(derived);
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, r) = wipe::<GSeparator>(r);
 
             // Check for potential comma, indicating next paremeter declaration.
-            let (comma, reader) = wipe::<GComma>(reader);
-            p_reader = reader;
+            let (comma, r) = wipe::<GComma>(r);
+            reader = r;
 
             if comma.is_none() {
                 break;
@@ -1068,25 +1037,22 @@ impl ParseTree for GFunctionDecl {
         }
 
         // Ignore leading separators.
-        (_, p_reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Check for closing bracket.
-        (_, p_reader) = ensure::<GCloseBracket>(p_reader)?;
+        let (_, reader) = ensure::<GCloseBracket>(reader)?;
 
         // Ignore leading separators.
-        let (_, mut p_reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
-        // Derive (optional) marker.
-        let (pending, checked_out) = p_reader.checkout();
-        if let Ok(marker_res) = GMarker::derive(checked_out) {
-            markers.push(marker_res.derived);
-            p_reader = pending.merge(marker_res.branch);
-        } else {
-            p_reader = pending.discard();
-        }
+        // Derive (optional) marker at the end of the function.
+        let (markers2, reader) = ensure::<GMarkers>(reader)?;
+
+        // Merge with first marker check.
+        markers.markers.extend(markers2.markers);
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(p_reader);
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Check for required semicolon.
         let (_, reader) = ensure::<GSemicolon>(reader)?;
