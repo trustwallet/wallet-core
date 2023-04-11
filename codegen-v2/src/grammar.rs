@@ -496,7 +496,6 @@ impl ParseTree for GParamItem {
         let (ty_derived, reader) = ensure::<GType>(reader)?;
 
         // Derive (optional) markers.
-        // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
