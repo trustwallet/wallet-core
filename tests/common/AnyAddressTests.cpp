@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,11 +30,11 @@ TEST(AnyAddress, createFromPubKeyDerivation) {
     const Data key = parse_hex(ANY_ADDRESS_TEST_PUBKEY);
     PublicKey publicKey(key, TWPublicKeyTypeSECP256k1);
     {
-        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, TWDerivationDefault, std::monostate()));
+        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, std::string(""), TWDerivationDefault));
         EXPECT_EQ(addr->address, ANY_ADDRESS_TEST_ADDRESS);
     }
     {
-        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, TWDerivationBitcoinLegacy, std::monostate()));
+        std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin, std::string(""), TWDerivationBitcoinLegacy));
         EXPECT_EQ(addr->address, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx");
     }
 }

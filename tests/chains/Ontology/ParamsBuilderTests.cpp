@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -84,7 +84,7 @@ TEST(ParamsBuilder, transferInvokeCode) {
 
 TEST(ParamsBuilder, invokeOep4Code) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex));
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
 
     NeoVmParamValue::ParamArray args{};
     std::string method{"name"};
@@ -96,7 +96,7 @@ TEST(ParamsBuilder, invokeOep4Code) {
 
 TEST(ParamsBuilder, invokeOep4CodeBalanceOf) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex));
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
     auto user_addr = Address("AeaThtPwh5kAYnjHavzwmvxPd725nVTvbM");
     Data d(std::begin(user_addr._data), std::end(user_addr._data));
 
@@ -110,7 +110,7 @@ TEST(ParamsBuilder, invokeOep4CodeBalanceOf) {
 
 TEST(OntologyOep4, invokeOep4CodeTransfer) {
     std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
-    auto wing_addr = Address(parse_hex(wing_hex));
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
     auto from = Address("APniYDGozkhUh8Tk7pe35aah2HGJ4fJfVd");
     auto to = Address("AVY6LfvxauVQAVHDV9hC3ZCv7cQqzfDotH");
     uint64_t amount = 253;

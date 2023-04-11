@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,8 +25,15 @@ AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinTyp
     return new AnyAddress{.address = std::move(normalized), .coin = coin};
 }
 
-AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, TWDerivation derivation, const PrefixVariant& prefix) {
-    const auto derivedAddress = TW::deriveAddress(coin, publicKey, derivation, prefix);
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp, TWDerivation derivation) {
+
+    auto derivedAddress = TW::deriveAddress(coin, publicKey, derivation, hrp);
+    return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
+}
+
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const PrefixVariant& addressPrefix, TWDerivation derivation) {
+
+    auto derivedAddress = TW::deriveAddress(coin, publicKey, addressPrefix, derivation);
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 

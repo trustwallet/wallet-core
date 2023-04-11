@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,7 +10,6 @@
 
 #include "Data.h"
 #include "Coin.h"
-#include "CoinEntry.h"
 #include "AnyAddress.h"
 
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
@@ -71,25 +70,17 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyDerivation(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, enum TWDerivation derivation) {
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, derivation)};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, std::string(""), derivation)};
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp) {
     const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::Bech32Prefix(hrpStr.c_str()))};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, hrpStr)};
 }
 
 struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* publicKey, enum TWCoinType coin, uint32_t ss58Prefix) {
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, TWDerivationDefault, TW::SS58Prefix(ss58Prefix))};
-}
-
-struct TWAnyAddress* TWAnyAddressCreateWithPublicKeyFilecoinAddressType(struct TWPublicKey* _Nonnull publicKey, enum TWFilecoinAddressType filecoinAddressType) {
-    TW::PrefixVariant prefix = std::monostate();
-    if (filecoinAddressType == TWFilecoinAddressTypeDelegated) {
-        prefix = TW::DelegatedPrefix();
-    }
-    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, TWCoinTypeFilecoin, TWDerivationDefault, prefix)};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, ss58Prefix)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {

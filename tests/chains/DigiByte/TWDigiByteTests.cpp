@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,7 +32,6 @@ TEST(DigiByteTransaction, SignTransaction) {
     const int64_t fee = 1000;
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_coin_type(TWCoinTypeDigiByte);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
@@ -99,7 +98,6 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     const int64_t amount = 2000000;
 
     Proto::SigningInput input;
-    input.set_coin_type(TWCoinTypeDigiByte);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);

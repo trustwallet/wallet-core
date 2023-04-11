@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,7 +43,6 @@ enum TWCoinType {
     TWCoinTypeDigiByte = 20,
     TWCoinTypeDogecoin = 3,
     TWCoinTypeEOS = 194,
-    TWCoinTypeWAX = 14001,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
     TWCoinTypeFIO = 235,
@@ -68,7 +67,7 @@ enum TWCoinType {
     TWCoinTypeStellar = 148,
     TWCoinTypeTezos = 1729,
     TWCoinTypeTheta = 500,
-    TWCoinTypeThunderCore = 1001,
+    TWCoinTypeThunderToken = 1001,
     TWCoinTypeNEO = 888,
     TWCoinTypeTomoChain = 889,
     TWCoinTypeTron = 195,
@@ -88,7 +87,7 @@ enum TWCoinType {
     TWCoinTypeKusama = 434,
     TWCoinTypePolkadot = 354,
     TWCoinTypeFilecoin = 461,
-    TWCoinTypeMultiversX = 508,
+    TWCoinTypeElrond = 508,
     TWCoinTypeBandChain = 494,
     TWCoinTypeSmartChainLegacy = 10000714,
     TWCoinTypeSmartChain = 20000714,
@@ -97,7 +96,7 @@ enum TWCoinType {
     TWCoinTypeTHORChain = 931,
     TWCoinTypeBluzelle = 483,
     TWCoinTypeOptimism = 10000070,
-    TWCoinTypeZksync = 10000324,
+    TWCoinTypeZksync = 10000280,
     TWCoinTypeArbitrum = 10042221,
     TWCoinTypeECOChain = 10000553,
     TWCoinTypeAvalancheCChain = 10009000,
@@ -127,17 +126,6 @@ enum TWCoinType {
     TWCoinTypeAptos = 637,
     TWCoinTypeHedera = 3030,
     TWCoinTypeSecret = 529,
-    TWCoinTypeNativeInjective = 10000060,
-    TWCoinTypeAgoric = 564,
-    TWCoinTypeTON = 607,
-    TWCoinTypeSui = 784,
-    TWCoinTypeStargaze = 20000118,
-    TWCoinTypePolygonzkEVM = 10001101,
-    TWCoinTypeJuno = 30000118,
-    TWCoinTypeStride = 40000118,
-    TWCoinTypeAxelar = 50000118,
-    TWCoinTypeCrescent = 60000118,
-    TWCoinTypeKujira = 70000118,
 };
 
 /// Returns the blockchain for a coin type.

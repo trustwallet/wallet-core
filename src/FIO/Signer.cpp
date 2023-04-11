@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -47,7 +47,7 @@ std::string Signer::signatureToBase58(const Data& sig) {
     Data hash = Hash::ripemd(sigWithSuffix);
     Data sigWithChecksum(sig);
     append(sigWithChecksum, TW::data(hash.data(), 4));
-    string s = SignaturePrefix + Base58::encode(sigWithChecksum);
+    string s = SignaturePrefix + Base58::bitcoin.encode(sigWithChecksum);
     return s;
 }
 

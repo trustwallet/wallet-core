@@ -10,9 +10,7 @@ Swift for iOS and Java (Kotlin) for Android.
 ![Android CI](https://github.com/trustwallet/wallet-core/workflows/Android%20CI/badge.svg)
 ![Linux CI](https://github.com/trustwallet/wallet-core/workflows/Linux%20CI/badge.svg)
 ![Wasm CI](https://github.com/trustwallet/wallet-core/workflows/Wasm%20CI/badge.svg)
-![Kotlin CI](https://github.com/trustwallet/wallet-core/workflows/Kotlin%20CI/badge.svg)
 ![Docker CI](https://github.com/trustwallet/wallet-core/workflows/Docker%20CI/badge.svg)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TrustWallet_wallet-core&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=TrustWallet_wallet-core)
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/trustwallet/wallet-core)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
@@ -64,7 +62,7 @@ Or add remote url + `master` branch, it points to recent (not always latest) bin
 .package(name: "WalletCore", url: "https://github.com/trustwallet/wallet-core", .branchItem("master")),
 ```
 
-Then add libraries to target's `dependencies`:
+Then add libraries to target's `dependencies`: 
 
 ```swift
 .product(name: "WalletCore", package: "WalletCore"),
@@ -89,9 +87,6 @@ npm install @trustwallet/wallet-core
 
 Please check out the [Go integration sample](https://github.com/trustwallet/wallet-core/tree/master/samples/go).
 
-## Kotlin Multipleplatform (beta)
-
-Please check out the [Kotlin Multiplatform sample](https://github.com/trustwallet/wallet-core/tree/master/samples/kmp)
 
 # Projects
 
@@ -106,8 +101,6 @@ Projects using Trust Wallet Core. Add yours too!
 | [Frontier](https://frontier.xyz/)
 | [Tokenary](https://tokenary.io/)
 | [MemesWallet](https://planetmemes.com/)
-| [xPortal](https://xportal.com/)
-| [Slingshot](https://slingshot.finance/)
 
 # Community
 

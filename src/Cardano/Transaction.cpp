@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -311,27 +311,6 @@ Data Transaction::getId() const {
     const auto encoded = encode();
     auto hash = Hash::blake2b(encoded, 32);
     return hash;
-}
-
-/// https://github.com/Emurgo/cardano-serialization-lib/blob/78184e0a2c207c2f8bba57b0d3c437f4c808c125/rust/src/utils.rs#L1415
-uint64_t minAdaAmountHelper(const TxOutput& output, uint64_t coinsPerUtxoByte) noexcept {
-    const size_t outputSize = cborizeOutput(output).encoded().size();
-    return static_cast<uint64_t>(outputSize + 160) * coinsPerUtxoByte;
-}
-
-/// https://github.com/Emurgo/cardano-serialization-lib/blob/78184e0a2c207c2f8bba57b0d3c437f4c808c125/rust/src/utils.rs#L1388
-uint64_t TxOutput::minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept {
-    // A copy of `this`.
-    TxOutput output(address, amount, tokenBundle);
-
-    while (true) {
-        const auto minAmount = minAdaAmountHelper(output, coinsPerUtxoByte);
-        if (output.amount >= minAmount) {
-            return minAmount;
-        }
-        // Set the amount to `minAmount` and re-try again.
-        output.amount = minAmount;
-    }
 }
 
 } // namespace TW::Cardano

@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,7 +20,6 @@
 #include "Protobuf/terra_wasm_v1beta1_tx.pb.h"
 #include "Protobuf/thorchain_bank_tx.pb.h"
 #include "Protobuf/ethermint_keys.pb.h"
-#include "Protobuf/injective_keys.pb.h"
 
 #include "PrivateKey.h"
 #include "Data.h"
@@ -336,12 +335,6 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
             signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
             break;
         }
-        case TWCoinTypeNativeInjective: {
-            auto pubKey = injective::crypto::v1beta1::ethsecp256k1::PubKey();
-            pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
-            signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
-            break;
-        }
         default: {
             auto pubKey = cosmos::crypto::secp256k1::PubKey();
             pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
@@ -372,7 +365,6 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
 
     Data hashToSign;
     switch(coin) {
-        case TWCoinTypeNativeInjective:
         case TWCoinTypeNativeEvmos: {
             hashToSign = Hash::keccak256(serializedSignDoc);
             break;

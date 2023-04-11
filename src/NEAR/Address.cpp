@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,7 +30,7 @@ std::optional<Data> Address::decodeLegacyAddress(const std::string& string) {
         return {};
     }
 
-    const Data& decoded = Base58::decode(string.substr(prefix.size()));
+    const Data& decoded = Base58::bitcoin.decode(string.substr(prefix.size()));
     return Data(decoded.begin(), decoded.end() - 4);
 }
 

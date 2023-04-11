@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,6 @@
 #include "Signer.h"
 #include "Address.h"
 #include "BaseTransaction.h"
-#include "Base64.h"
 #include "../HexCoding.h"
 
 #include <google/protobuf/util/json_util.h>
@@ -39,7 +38,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signature = sign(key, transaction);
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
-        protoOutput.set_signature(Base64::encode(signature));
     } else if (input.has_asset_transfer()) {
         auto message = input.asset_transfer();
         auto to = Address(message.to_address());
@@ -51,7 +49,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signature = sign(key, transaction);
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
-        protoOutput.set_signature(Base64::encode(signature));
     } else if (input.has_asset_opt_in()) {
         auto message = input.asset_opt_in();
 
@@ -61,7 +58,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signature = sign(key, transaction);
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
-        protoOutput.set_signature(Base64::encode(signature));
     }
 
     return protoOutput;

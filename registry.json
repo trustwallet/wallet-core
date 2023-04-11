@@ -430,34 +430,6 @@
     }
   },
   {
-    "id": "sui",
-    "name": "Sui",
-    "coinId": 784,
-    "symbol": "SUI",
-    "decimals": 9,
-    "blockchain": "Sui",
-    "derivation": [
-      {
-        "path": "m/44'/784'/0'/0'/0'"
-      }
-    ],
-    "curve": "ed25519",
-    "publicKeyType": "ed25519",
-    "explorer": {
-      "url": "https://explorer.sui.io/",
-      "txPath": "/txblock/",
-      "accountPath": "/address/",
-      "sampleTx": "5i8fbSL6r8yw2xcKmXxwkzHu3wpiyMLsyf2htCvDH8Ao",
-      "sampleAccount": "0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015"
-    },
-    "info": {
-      "url": "https://sui.io/",
-      "source": "https://github.com/MystenLabs/sui",
-      "rpc": "https://fullnode.testnet.sui.io",
-      "documentation": "https://docs.sui.io/"
-    }
-  },
-  {
     "id": "cosmos",
     "name": "Cosmos",
     "displayName": "Cosmos Hub",
@@ -485,186 +457,6 @@
       "source": "https://github.com/cosmos/cosmos-sdk",
       "rpc": "https://stargate.cosmos.network",
       "documentation": "https://cosmos.network/rpc"
-    }
-  },
-  {
-    "id": "stargaze",
-    "name": "Stargaze",
-    "displayName": "Stargaze",
-    "coinId": 20000118,
-    "symbol": "STARS",
-    "decimals": 6,
-    "chainId": "stargaze-1",
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/118'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "stars",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://www.mintscan.io/stargaze",
-      "txPath": "/txs/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "https://www.stargaze.zone/",
-      "source": "https://github.com/public-awesome/stargaze",
-      "rpc": "https://stargaze-rpc.polkachu.com/",
-      "documentation": "https://docs.stargaze.zone/guides/readme"
-    }
-  },
-  {
-    "id": "juno",
-    "name": "Juno",
-    "displayName": "Juno",
-    "coinId": 30000118,
-    "symbol": "JUNO",
-    "decimals": 6,
-    "chainId": "juno-1",
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/118'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "juno",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://www.mintscan.io/juno",
-      "txPath": "/txs/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "https://www.junonetwork.io/",
-      "source": "https://github.com/CosmosContracts/juno",
-      "rpc": "https://juno-rpc.polkachu.com",
-      "documentation": "https://docs.junonetwork.io/juno/readme"
-    }
-  },
-  {
-    "id": "stride",
-    "name": "Stride",
-    "displayName": "Stride",
-    "coinId": 40000118,
-    "symbol": "STRD",
-    "decimals": 6,
-    "chainId": "stride-1",
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/118'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "stride",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://www.mintscan.io/stride",
-      "txPath": "/txs/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "https://stride.zone/",
-      "source": "https://github.com/Stride-Labs/stride",
-      "rpc": "https://stride-rpc.polkachu.com/",
-      "documentation": "https://docs.stride.zone/docs"
-    }
-  },
-  {
-    "id": "axelar",
-    "name": "Axelar",
-    "displayName": "Axelar",
-    "coinId": 50000118,
-    "symbol": "AXL",
-    "decimals": 6,
-    "chainId": "axelar-dojo-1",
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/118'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "axelar",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://www.mintscan.io/axelar",
-      "txPath": "/txs/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "https://axelar.network/",
-      "source": "https://github.com/axelarnetwork/axelar-core",
-      "rpc": "https://axelar-rpc.polkachu.com",
-      "documentation": "https://docs.axelar.dev/"
-    }
-  },
-  {
-    "id": "crescent",
-    "name": "Crescent",
-    "displayName": "Crescent",
-    "coinId": 60000118,
-    "symbol": "CRE",
-    "decimals": 6,
-    "chainId": "crescent-1",
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/118'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "cre",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://www.mintscan.io/crescent",
-      "txPath": "/txs/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "https://crescent.network/",
-      "source": "https://github.com/crescent-network/crescent",
-      "rpc": "https://crescent-rpc.polkachu.com",
-      "documentation": "https://docs.crescent.network/introduction/what-is-crescent"
-    }
-  },
-  {
-    "id": "kujira",
-    "name": "Kujira",
-    "displayName": "Kujira",
-    "coinId": 70000118,
-    "symbol": "KUJI",
-    "decimals": 6,
-    "chainId": "kaiyo-1",
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/118'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "kujira",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://www.mintscan.io/kujira",
-      "txPath": "/txs/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "https://kujira.app/",
-      "source": "https://github.com/Team-Kujira/core",
-      "rpc": "https://kujira-rpc.polkachu.com",
-      "documentation": "https://docs.kujira.app/introduction/readme"
     }
   },
   {
@@ -965,32 +757,6 @@
       "source": "https://github.com/eosio/eos",
       "rpc": "",
       "documentation": "https://developers.eos.io/eosio-nodeos/reference"
-    }
-  },
-  {
-    "id": "wax",
-    "name": "WAX",
-    "coinId": 14001,
-    "symbol": "WAXP",
-    "decimals": 4,
-    "blockchain": "EOS",
-    "derivation": [
-      {
-        "path": "m/44'/194'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "explorer": {
-      "url": "https://wax.bloks.io",
-      "txPath": "/transaction/",
-      "accountPath": "/account/"
-    },
-    "info": {
-      "url": "http://wax.io",
-      "source": "https://github.com/worldwide-asset-exchange/wax-blockchain",
-      "rpc": "https://wax.blacklusion.io",
-      "documentation": "https://https://developer.wax.io"
     }
   },
   {
@@ -1585,11 +1351,11 @@
   },
   {
     "id": "elrond",
-    "name": "MultiversX",
+    "name": "Elrond",
     "coinId": 508,
     "symbol": "eGLD",
     "decimals": 18,
-    "blockchain": "MultiversX",
+    "blockchain": "ElrondNetwork",
     "derivation": [
       {
         "path": "m/44'/508'/0'/0'/0'"
@@ -1599,15 +1365,15 @@
     "publicKeyType": "ed25519",
     "hrp": "erd",
     "explorer": {
-      "url": "https://explorer.multiversx.com",
+      "url": "https://explorer.elrond.com",
       "txPath": "/transactions/",
-      "accountPath": "/accounts/"
+      "accountPath": "/address/"
     },
     "info": {
-      "url": "https://multiversx.com/",
-      "source": "https://github.com/multiversx/mx-chain-go",
-      "rpc": "https://api.multiversx.com",
-      "documentation": "https://docs.multiversx.com"
+      "url": "https://elrond.com/",
+      "source": "https://github.com/ElrondNetwork/elrond-go",
+      "rpc": "https://api.elrond.com",
+      "documentation": "https://docs.elrond.com"
     }
   },
   {
@@ -1638,7 +1404,7 @@
       "url": "https://binance.org",
       "source": "https://github.com/binance-chain/node-binary",
       "rpc": "https://dex.binance.org",
-      "documentation": "https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/paths"
+      "documentation": "https://docs.binance.org/api-reference/dex-api/paths.html"
     }
   },
   {
@@ -1754,7 +1520,7 @@
   },
   {
     "id": "thundertoken",
-    "name": "ThunderCore",
+    "name": "Thunder Token",
     "coinId": 1001,
     "symbol": "TT",
     "decimals": 18,
@@ -2304,40 +2070,10 @@
     }
   },
   {
-    "id": "polygonzkevm",
-    "name": "Polygon zkEVM",
-    "displayName": "Polygon zkEVM",
-    "coinId": 10001101,
-    "slip44": 60,
-    "symbol": "ETH",
-    "decimals": 18,
-    "blockchain": "Ethereum",
-    "derivation": [
-      {
-        "path": "m/44'/60'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "chainId": "1101",
-    "addressHasher": "keccak256",
-    "explorer": {
-      "url": "https://zkevm.polygonscan.com",
-      "txPath": "/tx/",
-      "accountPath": "/address/"
-    },
-    "info": {
-      "url": "https://www.polygon.technology/",
-      "source": "https://github.com/0xpolygonhermez",
-      "rpc": "https://zkevm-rpc.com",
-      "documentation": "https://wiki.polygon.technology/docs/zkEVM/introduction/"
-    }
-  },
-  {
     "id": "zksync",
     "name": "Zksync",
-    "displayName": "zkSync Era",
-    "coinId": 10000324,
+    "displayName": "zkSync v2",
+    "coinId": 10000280,
     "slip44": 60,
     "symbol": "ETH",
     "decimals": 18,
@@ -2349,18 +2085,18 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "324",
+    "chainId": "280",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.zksync.io",
+      "url": "https://zksync2-testnet.zkscan.io",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
       "url": "https://portal.zksync.io/",
       "source": "https://github.com/matter-labs/zksync",
-      "rpc": "https://zksync2-mainnet.zksync.io",
-      "documentation": "https://era.zksync.io/docs"
+      "rpc": "https://zksync2-testnet.zksync.dev",
+      "documentation": "https://v2-docs.zksync.io"
     }
   },
   {
@@ -3143,95 +2879,6 @@
       "url": "https://hedera.com/",
       "source": "https://github.com/hashgraph",
       "documentation": "https://docs.hedera.com"
-    }
-  },
-  {
-    "id": "agoric",
-    "name": "Agoric",
-    "coinId": 564,
-    "symbol": "BLD",
-    "decimals": 6,
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/564'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
-    "hrp": "agoric",
-    "chainId": "agoric-3",
-    "addressHasher": "sha256ripemd",
-    "explorer": {
-      "url": "https://atomscan.com/agoric",
-      "txPath": "/transactions/",
-      "accountPath": "/accounts/",
-      "sampleTx": "576224B1A0F3D56BA23C5350C2A0E3CEA86F40005B828793E5ACBC2F4813152E",
-      "sampleAccount": "agoric1cqvwa8jr6pmt45jndanc8lqmdsxjkhw0yertc0"
-    },
-    "info": {
-      "url": "https://agoric.com",
-      "source": "https://github.com/Agoric/agoric-sdk",
-      "rpc": "https://agoric-rpc.polkachu.com",
-      "documentation": "https://docs.agoric.com"
-    }
-  },
-  {
-    "id": "nativeinjective",
-    "name": "NativeInjective",
-    "displayName": "Native Injective",
-    "coinId": 10000060,
-    "symbol": "INJ",
-    "decimals": 18,
-    "blockchain": "Cosmos",
-    "derivation": [
-      {
-        "path": "m/44'/60'/0'/0/0"
-      }
-    ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "hrp": "inj",
-    "addressHasher": "keccak256",
-    "chainId": "injective-1",
-    "explorer": {
-      "url": "https://www.mintscan.io/injective",
-      "txPath": "/txs/",
-      "accountPath": "/account/",
-      "sampleTx": "C5F6A4FF9DF1AE9FF543D2CEBD8E3E9B04290B2445F9D91D7707EDBF4B7EE16B",
-      "sampleAccount": "inj1xmpkmxr4as00em23tc2zgmuyy2gr4h3wgcl6vd"
-    },
-    "info": {
-      "url": "https://injective.com",
-      "documentation": "https://docs.injective.network"
-    }
-  },
-  {
-    "id": "ton",
-    "name": "TON",
-    "coinId": 607,
-    "symbol": "TON",
-    "decimals": 9,
-    "blockchain": "The Open Network",
-    "derivation": [
-      {
-        "path": "m/44'/607'/0'"
-      }
-    ],
-    "curve": "ed25519",
-    "publicKeyType": "ed25519",
-    "explorer": {
-      "url": "https://tonscan.org",
-      "txPath": "/tx/",
-      "accountPath": "/address/",
-      "sampleTx": "fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs=",
-      "sampleAccount": "EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N"
-    },
-    "info": {
-      "url": "https://ton.org",
-      "source": "https://github.com/ton-blockchain",
-      "rpc": "https://toncenter.com/api/v2/jsonRPC",
-      "documentation": "https://ton.org/docs"
     }
   }
 ]

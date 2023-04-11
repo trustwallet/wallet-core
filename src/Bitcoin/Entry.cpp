@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -63,10 +63,8 @@ std::string Entry::normalizeAddress(TWCoinType coin, const std::string& address)
     }
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const {
-    byte p2pkh = getFromPrefixPkhOrDefault(addressPrefix, coin);
-    const char* hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
-
+std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+                                 byte p2pkh, const char* hrp) const {
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:

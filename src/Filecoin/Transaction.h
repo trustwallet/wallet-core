@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust.
+// Copyright © 2017-2020 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,18 +18,6 @@ Data encodeBigInt(const uint256_t& value);
 
 class Transaction {
   public:
-    enum class MethodType: uint64_t {
-        /// Simple transfers.
-        SEND = 0,
-        /// InvokeEVM method.
-        INVOKE_EVM = 3844450837,
-    };
-
-    enum class SignatureType: uint8_t {
-        SECP256K1 = 1,
-        DELEGATED = 3,
-    };
-
     // Transaction version
     uint64_t version;
     // Recipient address
@@ -44,13 +32,13 @@ class Transaction {
     int64_t gasLimit;
     uint256_t gasFeeCap;
     uint256_t gasPremium;
-    // Transaction type
+    // Transaction type; 0 for simple transfers
     uint64_t method;
-    // Transaction data
+    // Transaction data; empty for simple transfers
     Data params;
 
     Transaction(Address to, Address from, uint64_t nonce, uint256_t value, int64_t gasLimit,
-                uint256_t gasFeeCap, uint256_t gasPremium, MethodType method, Data params)
+                uint256_t gasFeeCap, uint256_t gasPremium)
         : version(0)
         , to(std::move(to))
         , from(std::move(from))
@@ -59,8 +47,7 @@ class Transaction {
         , gasLimit(gasLimit)
         , gasFeeCap(std::move(gasFeeCap))
         , gasPremium(std::move(gasPremium))
-        , method(static_cast<uint64_t>(method))
-        , params(std::move(params)) {}
+        , method(0) {}
 
   public:
     // message returns the CBOR encoding of the Filecoin Message to be signed.
@@ -70,7 +57,7 @@ class Transaction {
     Data cid() const;
 
     // serialize returns json ready for MpoolPush rpc
-    std::string serialize(SignatureType signatureType, Data& signature) const;
+    std::string serialize(Data& signature) const;
 };
 
 } // namespace TW::Filecoin

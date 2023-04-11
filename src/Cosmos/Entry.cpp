@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,19 +14,21 @@ using namespace std;
 
 namespace TW::Cosmos {
 
+// Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
+
 bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
     if (auto* hrp = std::get_if<Bech32Prefix>(&addressPrefix); hrp) {
+        if (hrpForString(*hrp) != TWHRPUnknown) {
+            return Address::isValid(coin, address);
+        }
         return Address::isValid(address, *hrp);
     }
-    return Address::isValid(coin, address);
+    return false;
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
-    if (std::holds_alternative<Bech32Prefix>(addressPrefix)) {
-        const std::string hrp = std::get<Bech32Prefix>(addressPrefix);
-        if (!hrp.empty()) {
-            return Address(hrp, publicKey, coin).string();
-        }
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
+    if (!std::string(hrp).empty()) {
+        return Address(hrp, publicKey, coin).string();
     }
     return Address(coin, publicKey).string();
 }

@@ -1,13 +1,16 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Wallet.h"
+#include "CellBuilder.h"
 #include "Messages.h"
 
 #include "HexCoding.h"
+
+using namespace TW;
 
 namespace TW::Everscale {
 
@@ -24,14 +27,14 @@ CellBuilder InitData::writeTo() const {
     return builder;
 }
 
-AddressData InitData::computeAddr(int8_t workchainId) const {
+Address InitData::computeAddr(int8_t workchainId) const {
     auto builder = this->writeTo();
 
     StateInit stateInit{
         .code = Cell::deserialize(Wallet::code.data(), Wallet::code.size()),
         .data = builder.intoCell(),
     };
-    return AddressData(workchainId, stateInit.writeTo().intoCell()->hash);
+    return Address(workchainId, stateInit.writeTo().intoCell()->hash);
 }
 
 StateInit InitData::makeStateInit() const {
@@ -52,14 +55,28 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     payload.appendU32(_seqno);
 
     // create internal message
-    MessageData::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to.addressData, gift.amount);
-    auto message = Message(MessageData(header));
+    Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to, gift.amount);
+    auto message = Message(header);
 
     // append it to the body
     payload.appendU8(gift.flags);
     payload.appendReferenceCell(message.intoCell());
 
     return payload;
+}
+
+CellBuilder StateInit::writeTo() const {
+    CellBuilder builder;
+
+    builder.appendBitZero(); // split_depth
+    builder.appendBitZero(); // special
+    builder.appendBitOne();  // code
+    builder.appendReferenceCell(code);
+    builder.appendBitOne(); // data
+    builder.appendReferenceCell(data);
+    builder.appendBitZero(); // library
+
+    return builder;
 }
 
 } // namespace TW::Everscale

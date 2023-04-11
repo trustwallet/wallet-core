@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,7 +22,6 @@ namespace TW::Bitcoin {
 
 TEST(GroestlcoinSigning, SignP2WPKH) {
     Proto::SigningInput input;
-    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);
@@ -65,7 +64,6 @@ TEST(GroestlcoinSigning, SignP2WPKH) {
 
 TEST(GroestlcoinSigning, SignP2PKH) {
     Proto::SigningInput input;
-    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);
@@ -109,7 +107,6 @@ TEST(GroestlcoinSigning, SignP2PKH) {
 TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
     // TX outputs
     Proto::SigningInput input;
-    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(5'000);
     input.set_byte_fee(1);
@@ -120,14 +117,14 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
     auto utxoKey0 = PrivateKey(parse_hex("302fc195a8fc96c5a581471e67e4c1ac2efda252f76ad5c77a53764c70d58f91"));
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
-    EXPECT_EQ(hex(utxoPubkeyHash), "2fc7d70acef142d1f7b5ef2f20b1a9b759797674");
+    EXPECT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "2fc7d70acef142d1f7b5ef2f20b1a9b759797674");
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
     auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
     auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
-    ASSERT_EQ(hex(scriptHash), "0055b0c94df477ee6b9f75185dfc9aa8ce2e52e4");
+    ASSERT_EQ(hex(scriptHash.begin(), scriptHash.end()), "0055b0c94df477ee6b9f75185dfc9aa8ce2e52e4");
     auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
-    (*input.mutable_scripts())[hex(scriptHash)] = scriptString;
+    (*input.mutable_scripts())[hex(scriptHash.begin(), scriptHash.end())] = scriptString;
 
     auto utxo0 = input.add_utxo();
     auto utxo0Script = Script(parse_hex("a9140055b0c94df477ee6b9f75185dfc9aa8ce2e52e487"));
@@ -162,7 +159,6 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
 
 TEST(GroestlcoinSigning, PlanP2WPKH) {
     Proto::SigningInput input;
-    input.set_coin_type(TWCoinTypeGroestlcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);

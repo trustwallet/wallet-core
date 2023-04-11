@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,10 +24,10 @@ const std::string TRANSFER_TOKEN_FUNCTION = "0xa9059cbb";
 protocol::TransferContract to_internal(const Proto::TransferContract& transfer) {
     auto internal = protocol::TransferContract();
 
-    const auto ownerAddress = Base58::decodeCheck(transfer.owner_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(transfer.owner_address());
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
-    const auto toAddress = Base58::decodeCheck(transfer.to_address());
+    const auto toAddress = Base58::bitcoin.decodeCheck(transfer.to_address());
     internal.set_to_address(toAddress.data(), toAddress.size());
 
     internal.set_amount(transfer.amount());
@@ -42,10 +42,10 @@ protocol::TransferAssetContract to_internal(const Proto::TransferAssetContract& 
 
     internal.set_asset_name(transfer.asset_name());
 
-    const auto ownerAddress = Base58::decodeCheck(transfer.owner_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(transfer.owner_address());
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
-    const auto toAddress = Base58::decodeCheck(transfer.to_address());
+    const auto toAddress = Base58::bitcoin.decodeCheck(transfer.to_address());
     internal.set_to_address(toAddress.data(), toAddress.size());
 
     internal.set_amount(transfer.amount());
@@ -56,8 +56,8 @@ protocol::TransferAssetContract to_internal(const Proto::TransferAssetContract& 
 protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& freezeContract) {
     auto internal = protocol::FreezeBalanceContract();
     auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::decodeCheck(freezeContract.owner_address());
-    const auto receiverAddress = Base58::decodeCheck(freezeContract.receiver_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(freezeContract.owner_address());
+    const auto receiverAddress = Base58::bitcoin.decodeCheck(freezeContract.receiver_address());
 
     protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
 
@@ -70,25 +70,11 @@ protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& 
     return internal;
 }
 
-protocol::FreezeBalanceV2Contract to_internal(const Proto::FreezeBalanceV2Contract& freezeContract) {
-    auto internal = protocol::FreezeBalanceV2Contract();
-    auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::decodeCheck(freezeContract.owner_address());
-
-    protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
-
-    internal.set_resource(resource);
-    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
-    internal.set_frozen_balance(freezeContract.frozen_balance());
-
-    return internal;
-}
-
 protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContract& unfreezeContract) {
     auto internal = protocol::UnfreezeBalanceContract();
     auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::decodeCheck(unfreezeContract.owner_address());
-    const auto receiverAddress = Base58::decodeCheck(unfreezeContract.receiver_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(unfreezeContract.owner_address());
+    const auto receiverAddress = Base58::bitcoin.decodeCheck(unfreezeContract.receiver_address());
 
     protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
 
@@ -96,66 +82,12 @@ protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContra
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
 
-    return internal;
-}
-
-protocol::UnfreezeBalanceV2Contract to_internal(const Proto::UnfreezeBalanceV2Contract& unfreezeContract) {
-    auto internal = protocol::UnfreezeBalanceV2Contract();
-    auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::decodeCheck(unfreezeContract.owner_address());
-
-    protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
-
-    internal.set_resource(resource);
-    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
-    internal.set_unfreeze_balance(unfreezeContract.unfreeze_balance());
-
-    return internal;
-}
-
-protocol::DelegateResourceContract to_internal(const Proto::DelegateResourceContract& delegateContract) {
-    auto internal = protocol::DelegateResourceContract();
-    auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::decodeCheck(delegateContract.owner_address());
-    const auto receiverAddress = Base58::decodeCheck(delegateContract.receiver_address());
-
-    protocol::ResourceCode_Parse(delegateContract.resource(), &resource);
-
-    internal.set_resource(resource);
-    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
-    internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
-    internal.set_balance(delegateContract.balance());
-    internal.set_lock(delegateContract.lock());
-
-    return internal;
-}
-
-protocol::UnDelegateResourceContract to_internal(const Proto::UnDelegateResourceContract& undelegateContract) {
-    auto internal = protocol::UnDelegateResourceContract();
-    auto resource = protocol::ResourceCode();
-    const auto ownerAddress = Base58::decodeCheck(undelegateContract.owner_address());
-    const auto receiverAddress = Base58::decodeCheck(undelegateContract.receiver_address());
-
-    protocol::ResourceCode_Parse(undelegateContract.resource(), &resource);
-
-    internal.set_resource(resource);
-    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
-    internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
-    internal.set_balance(undelegateContract.balance());
-
-    return internal;
-}
-
-protocol::WithdrawExpireUnfreezeContract to_internal(const Proto::WithdrawExpireUnfreezeContract& withdrawExpireUnfreezeContract) {
-    auto internal = protocol::WithdrawExpireUnfreezeContract();
-    const auto ownerAddress = Base58::decodeCheck(withdrawExpireUnfreezeContract.owner_address());
-    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     return internal;
 }
 
 protocol::UnfreezeAssetContract to_internal(const Proto::UnfreezeAssetContract& unfreezeContract) {
     auto internal = protocol::UnfreezeAssetContract();
-    const auto ownerAddress = Base58::decodeCheck(unfreezeContract.owner_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(unfreezeContract.owner_address());
 
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
@@ -164,13 +96,13 @@ protocol::UnfreezeAssetContract to_internal(const Proto::UnfreezeAssetContract& 
 
 protocol::VoteAssetContract to_internal(const Proto::VoteAssetContract& voteContract) {
     auto internal = protocol::VoteAssetContract();
-    const auto ownerAddress = Base58::decodeCheck(voteContract.owner_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(voteContract.owner_address());
 
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_support(voteContract.support());
     internal.set_count(voteContract.count());
     for (int i = 0; i < voteContract.vote_address_size(); i++) {
-        auto voteAddress = Base58::decodeCheck(voteContract.vote_address(i));
+        auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.vote_address(i));
         internal.add_vote_address(voteAddress.data(), voteAddress.size());
     }
 
@@ -179,12 +111,12 @@ protocol::VoteAssetContract to_internal(const Proto::VoteAssetContract& voteCont
 
 protocol::VoteWitnessContract to_internal(const Proto::VoteWitnessContract& voteContract) {
     auto internal = protocol::VoteWitnessContract();
-    const auto ownerAddress = Base58::decodeCheck(voteContract.owner_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(voteContract.owner_address());
 
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_support(voteContract.support());
     for (int i = 0; i < voteContract.votes_size(); i++) {
-        auto voteAddress = Base58::decodeCheck(voteContract.votes(i).vote_address());
+        auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.votes(i).vote_address());
         auto* vote = internal.add_votes();
 
         vote->set_vote_address(voteAddress.data(), voteAddress.size());
@@ -196,7 +128,7 @@ protocol::VoteWitnessContract to_internal(const Proto::VoteWitnessContract& vote
 
 protocol::WithdrawBalanceContract to_internal(const Proto::WithdrawBalanceContract& withdrawContract) {
     auto internal = protocol::WithdrawBalanceContract();
-    const auto ownerAddress = Base58::decodeCheck(withdrawContract.owner_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(withdrawContract.owner_address());
 
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
@@ -205,8 +137,8 @@ protocol::WithdrawBalanceContract to_internal(const Proto::WithdrawBalanceContra
 
 protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& triggerSmartContract) {
     auto internal = protocol::TriggerSmartContract();
-    const auto ownerAddress = Base58::decodeCheck(triggerSmartContract.owner_address());
-    const auto contractAddress = Base58::decodeCheck(triggerSmartContract.contract_address());
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(triggerSmartContract.owner_address());
+    const auto contractAddress = Base58::bitcoin.decodeCheck(triggerSmartContract.contract_address());
 
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_contract_address(contractAddress.data(), contractAddress.size());
@@ -219,7 +151,7 @@ protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& tr
 }
 
 protocol::TriggerSmartContract to_internal(const Proto::TransferTRC20Contract& transferTrc20Contract) {
-    auto toAddress = Base58::decodeCheck(transferTrc20Contract.to_address());
+    auto toAddress = Base58::bitcoin.decodeCheck(transferTrc20Contract.to_address());
     // amount is 256 bits, big endian
     Data amount = data(transferTrc20Contract.amount());
 
@@ -269,21 +201,7 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
     internal.mutable_raw_data()->set_ref_block_bytes(heightData.data() + heightData.size() - 2, 2);
 }
 
-Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto hash = parse_hex(input.txid());
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
-    auto output = Proto::SigningOutput();
-    output.set_signature(signature.data(), signature.size());
-    output.set_id(input.txid());
-    output.set_id(hash.data(), hash.size());
-    return output;
-}
-
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    if (!input.txid().empty()) {
-        return signDirect(input);
-    }
     auto internal = protocol::Transaction();
     auto output = Proto::SigningOutput();
 
@@ -311,47 +229,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         google::protobuf::Any any;
         any.PackFrom(freeze_balance);
         *contract->mutable_parameter() = any;
-    } else if (input.transaction().has_freeze_balance_v2()) {
-        auto* contract = internal.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceV2Contract);
-        auto freeze_balance = to_internal(input.transaction().freeze_balance_v2());
-        google::protobuf::Any any;
-        any.PackFrom(freeze_balance);
-        *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_balance()) {
         auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceContract);
+
         auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance());
         google::protobuf::Any any;
         any.PackFrom(unfreeze_balance);
-        *contract->mutable_parameter() = any;
-    } else if (input.transaction().has_unfreeze_balance_v2()) {
-        auto* contract = internal.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceV2Contract);
-        auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance_v2());
-        google::protobuf::Any any;
-        any.PackFrom(unfreeze_balance);
-        *contract->mutable_parameter() = any;
-    } else if (input.transaction().has_withdraw_expire_unfreeze()) {
-        auto* contract = internal.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_WithdrawExpireUnfreezeContract);
-        auto withdraw_expire_unfreeze = to_internal(input.transaction().withdraw_expire_unfreeze());
-        google::protobuf::Any any;
-        any.PackFrom(withdraw_expire_unfreeze);
-        *contract->mutable_parameter() = any;
-    } else if (input.transaction().has_delegate_resource()) {
-        auto* contract = internal.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_DelegateResourceContract);
-        auto delegate_resource = to_internal(input.transaction().delegate_resource());
-        google::protobuf::Any any;
-        any.PackFrom(delegate_resource);
-        *contract->mutable_parameter() = any;
-    } else if (input.transaction().has_undelegate_resource()) {
-        auto* contract = internal.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_UnDelegateResourceContract);
-        auto undelegate_resource = to_internal(input.transaction().undelegate_resource());
-        google::protobuf::Any any;
-        any.PackFrom(undelegate_resource);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_asset()) {
         auto* contract = internal.mutable_raw_data()->add_contract();

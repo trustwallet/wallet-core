@@ -14,13 +14,13 @@ RUN apt-get update \
         software-properties-common \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Add latest cmake
+# Add latest cmake/boost
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
 
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 # Install required packages for dev
 RUN apt-get update \
     && apt-get install -y \
@@ -39,33 +39,34 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
-# Install rust
-RUN wget "https://sh.rustup.rs" -O rustup.sh \
-    && sh rustup.sh -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN cargo install --force cbindgen \
-    && rustup target add wasm32-unknown-emscripten
-
 # ↑ Setup build environment
 # ↓ Build and compile wallet core
 
-COPY . /wallet-core
+RUN git clone https://github.com/trustwallet/wallet-core.git
 WORKDIR /wallet-core
 
 # Install dependencies
 RUN tools/install-dependencies
 
-# Build: generate files and rust lib
-RUN tools/generate-files
-
-# Build: cmake + make wallet core
-RUN cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
+# Build: generate, cmake, and make lib
+RUN tools/generate-files \
+    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
     && make -Cbuild -j12 TrustWalletCore
 
 # Build unit tester
 RUN make -Cbuild -j12 tests
 
-# Download and Install Go: apt install golang-go
-# Build Go sample app: cd samples/go && /usr/local/go/bin/go build -o main && ./main
+# Download and Install Go
+ENV GO_VERSION=1.16.12
+ENV GO_ARCH=amd64
+RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+    && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+    && chown -R root:root ./go \
+    && mv -v ./go /usr/local \
+    && ls /usr/local/go \
+    && /usr/local/go/bin/go version \
+    && rm "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+
+# Building GoLang sample app:  cd samples/go && /usr/local/go/bin/go build -o main && ./main
 
 CMD ["/bin/bash"]

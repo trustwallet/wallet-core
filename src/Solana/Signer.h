@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "VersionedTransaction.h"
+#include "Transaction.h"
 #include "Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
@@ -18,13 +18,13 @@ namespace TW::Solana {
 class Signer {
   public:
     /// Signs the given transaction.
-    static void sign(const std::vector<PrivateKey>& privateKeys, VersionedTransaction& transaction);
+    static void sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction);
 
     /// Signs a json Proto::SigningInput with private key
     static std::string signJSON(const std::string& json, const Data& key);
 
     static void signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
-                                    VersionedTransaction& transaction, Data& recentBlockhash);
+                                    Transaction& transaction, Solana::Hash& recentBlockhash);
     static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);
 
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;

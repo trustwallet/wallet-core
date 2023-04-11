@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,9 +9,9 @@
 #include "../BinaryCoding.h"
 
 #include <algorithm>
-#include <cmath>
 #include <sstream>
 #include <string>
+#include <math.h> // Todo put OS specific if endifs later
 
 namespace TW::Ripple {
 
@@ -169,8 +169,8 @@ Data Transaction::serializeCurrencyAmount(const CurrencyAmount& currency_amount)
         return Data();
     }
 
-    int64_t min_mantissa = (uint64_t)std::pow(10, 15);
-    int64_t max_mantissa = (uint64_t)std::pow(10, 16) - 1;
+    int64_t min_mantissa = (uint64_t)pow(10, 15);
+    int64_t max_mantissa = (uint64_t)pow(10, 16) - 1;
     int32_t min_exp = -96;
     int32_t max_exp = 80;
 

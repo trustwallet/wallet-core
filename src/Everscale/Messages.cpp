@@ -1,27 +1,80 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Messages.h"
-
-#include "Wallet.h"
 #include "WorkchainType.h"
 
 using namespace TW;
 
 namespace TW::Everscale {
 
+void ExternalInboundMessageHeader::writeTo(CellBuilder& builder) const {
+    builder.appendBitOne();
+    builder.appendBitZero();
+
+    // addr src (none)
+    builder.appendRaw(Data{0x00}, 2);
+
+    // addr dst
+    Data dstAddr(_dst.hash.begin(), _dst.hash.end());
+
+    Data prefix{0x80};
+    builder.appendRaw(prefix, 2);
+
+    builder.appendBitZero();
+    builder.appendI8(_dst.workchainId);
+    builder.appendRaw(dstAddr, 256);
+
+    // fee
+    builder.appendU128(_importFee);
+}
+
+void InternalMessageHeader::writeTo(CellBuilder& builder) const {
+    // tag
+    builder.appendBitZero();
+
+    builder.appendBitBool(_ihrDisabled);
+    builder.appendBitBool(_bounce);
+    builder.appendBitBool(_bounced);
+
+    // addr src (none)
+    builder.appendRaw(Data{0x00}, 2);
+
+    // addr dst
+    Data dstAddr(_dst.hash.begin(), _dst.hash.end());
+
+    Data prefix{0x80};
+    builder.appendRaw(prefix, 2);
+
+    builder.appendBitZero();
+    builder.appendI8(_dst.workchainId);
+    builder.appendRaw(dstAddr, 256);
+
+    // value
+    builder.appendU128(_value);
+    builder.appendBitZero();
+
+    // fee
+    builder.appendU128(_ihrFee);
+    builder.appendU128(_fwdFee);
+
+    // created
+    builder.appendU64(_createdLt);
+    builder.appendU32(_createdAt);
+}
+
 Cell::Ref Message::intoCell() const {
     CellBuilder builder;
 
     // write Header
-    _messageData.header->writeTo(builder);
+    _header->writeTo(builder);
 
     // write StateInit
-    if (_messageData.init.has_value()) {
-        auto initBuilder = _messageData.init.value().writeTo();
+    if (_init.has_value()) {
+        auto initBuilder = _init.value().writeTo();
 
         builder.appendBitOne();
         builder.appendBitZero();
@@ -31,9 +84,9 @@ Cell::Ref Message::intoCell() const {
     }
 
     // write Body
-    if (_messageData.body.has_value()) {
+    if (_body.has_value()) {
         builder.appendBitZero();
-        builder.appendCellSlice(CellSlice(_messageData.body.value().get()));
+        builder.appendCellSlice(_body.value());
     } else {
         builder.appendBitZero();
     }
@@ -41,8 +94,8 @@ Cell::Ref Message::intoCell() const {
     return builder.intoCell();
 }
 
-MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount, uint32_t expiredAt,
-                                Address to, const Cell::Ref& contractData) {
+Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount, uint32_t expiredAt,
+                         Address to, const Cell::Ref& contractData) {
     auto getInitData = [](const PublicKey& publicKey, const Cell::Ref& contractData) {
         if (contractData != nullptr) {
             auto cellSlice = CellSlice(contractData.get());
@@ -71,15 +124,23 @@ MessageData createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool boun
     payload.prependRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
 
     auto header = std::make_shared<ExternalInboundMessageHeader>(InitData(publicKey).computeAddr(WorkchainType::Basechain));
-    auto message = MessageData(header);
+    auto message = Message(header);
 
     if (withInitState) {
-        message.init = initData.makeStateInit();
+        message.setStateInit(initData.makeStateInit());
     }
 
-    message.body = payload.intoCell();
+    auto cell = payload.intoCell();
+    auto body = CellSlice(cell.get());
 
-    return message;
+    message.setBody(body);
+
+    const auto messageCell = message.intoCell();
+
+    Data result{};
+    messageCell->serialize(result);
+
+    return result;
 }
 
 } // namespace TW::Everscale

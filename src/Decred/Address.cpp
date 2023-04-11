@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -17,7 +17,7 @@ static const auto keyhashSize = Hash::ripemdSize;
 static const auto addressDataSize = keyhashSize + 2;
 
 bool Address::isValid(const std::string& string) noexcept {
-    const auto data = Base58::decodeCheck(string, Rust::Base58Alphabet::Bitcoin, Hash::HasherBlake256d);
+    const auto data = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
     if (data.size() != addressDataSize) {
         return false;
     }
@@ -30,7 +30,7 @@ bool Address::isValid(const std::string& string) noexcept {
 }
 
 Address::Address(const std::string& string) {
-    const auto data = Base58::decodeCheck(string, Rust::Base58Alphabet::Bitcoin, Hash::HasherBlake256d);
+    const auto data = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
     if (data.size() != addressDataSize) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -40,7 +40,7 @@ Address::Address(const std::string& string) {
 
 Address::Address(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
-        throw std::invalid_argument("Invalid public key type");
+        throw std::invalid_argument("Invalid publid key type");
     }
     const auto hash = Hash::ripemd(Hash::blake256(publicKey.bytes));
     std::copy(hash.begin(), hash.end(), bytes.begin() + 2);
@@ -49,7 +49,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::encodeCheck(bytes, Rust::Base58Alphabet::Bitcoin, Hash::HasherBlake256d);
+    return Base58::bitcoin.encodeCheck(bytes, Hash::HasherBlake256d);
 }
 
 } // namespace TW::Decred
