@@ -7,7 +7,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::{blake, blake2, groestl, hmac, ripemd, sha1, sha2, sha3};
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::c_byte_array::CByteArray;
 
 /// Computes the Blake-256 hash of the `input` byte array.
 /// \param input *non-null* byte array.

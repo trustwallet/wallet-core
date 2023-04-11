@@ -98,12 +98,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
-name = "base64"
-version = "0.21.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4a4ddaa51a5bc52a6948f74c06d20aaaddb71924eab79b8c97a8c556e942d6a"
-
-[[package]]
 name = "bcs"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -286,6 +280,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "data-encoding"
+version = "2.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23d8666cb01533c39dde32bcbab8e227b4ed6679b2c925eba05feabea39508fb"
 
 [[package]]
 name = "derivative"
@@ -924,7 +924,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95540acef038bfdf3c91da323cedf0fd335f73899152cabdf407033fc7560713"
 dependencies = [
- "base64 0.13.1",
+ "base64",
  "ethereum-types",
  "hex",
  "serde",
@@ -1078,8 +1078,8 @@ dependencies = [
 name = "tw_encoding"
 version = "0.1.0"
 dependencies = [
- "base64 0.21.0",
  "bs58",
+ "data-encoding",
  "hex",
  "tw_memory",
 ]
