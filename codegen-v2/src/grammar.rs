@@ -234,9 +234,7 @@ pub enum GMarker {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GMarkers {
-    pub markers: Vec<GMarker>,
-}
+pub struct GMarkers(pub Vec<GMarker>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GFunctionDecl {
@@ -484,10 +482,7 @@ impl ParseTree for GReturnValue {
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
-            derived: GReturnValue {
-                ty,
-                markers,
-            },
+            derived: GReturnValue { ty, markers },
             branch: reader.into_branch(),
         })
     }
@@ -597,7 +592,7 @@ impl ParseTree for GMarkers {
         }
 
         Ok(DerivationResult {
-            derived: GMarkers { markers },
+            derived: GMarkers(markers),
             branch: p_reader.into_branch(),
         })
     }
@@ -1049,7 +1044,7 @@ impl ParseTree for GFunctionDecl {
         let (markers2, reader) = ensure::<GMarkers>(reader)?;
 
         // Merge with first marker check.
-        markers.markers.extend(markers2.markers);
+        markers.0.extend(markers2.0);
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
