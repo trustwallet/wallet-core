@@ -117,5 +117,6 @@ class CoinAddressDerivationTests {
         JUNO -> assertEquals("juno142j9u5eaduzd7faumygud6ruhdwme98qxkfz30", address)
         STRIDE -> assertEquals("stride142j9u5eaduzd7faumygud6ruhdwme98qn029zl", address)
         AXELAR -> assertEquals("axelar142j9u5eaduzd7faumygud6ruhdwme98q52u3aj", address)
+        CRESCENT -> assertEquals("cre142j9u5eaduzd7faumygud6ruhdwme98q5veur7", address)
     }
 }
