@@ -3207,6 +3207,36 @@
     }
   },
   {
+    "id": "nativecanto",
+    "name": "NativeCanto",
+    "displayName": "NativeCanto",
+    "coinId": 10007700,
+    "symbol": "CANTO",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "chainId": "canto_7700-1",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "hrp": "canto",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://mintscan.io/canto",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "7A7830270097AA9AC8B819EFBB8E0B56579F20ECB7615ECD37E19ABEEFB8DB83",
+      "sampleAccount": "canto17xpfvakm2amg962yls6f84z3kell8c5lz0zsl4"
+    },
+    "info": {
+      "url": "https://canto.io/",
+      "documentation": "https://docs.canto.io/"
+    }
+  },
+  {
     "id": "ton",
     "name": "TON",
     "coinId": 607,
