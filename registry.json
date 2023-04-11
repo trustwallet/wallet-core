@@ -638,6 +638,36 @@
     }
   },
   {
+    "id": "kujira",
+    "name": "Kujira",
+    "displayName": "Kujira",
+    "coinId": 70000118,
+    "symbol": "KUJI",
+    "decimals": 6,
+    "chainId": "kaiyo-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "kujira",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/kujira",
+      "txPath": "/txs/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://kujira.app/",
+      "source": "https://github.com/Team-Kujira/core",
+      "rpc": "https://kujira-rpc.polkachu.com",
+      "documentation": "https://docs.kujira.app/introduction/readme"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
