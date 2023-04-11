@@ -114,5 +114,8 @@ class CoinAddressDerivationTests {
         NATIVEINJECTIVE -> assertEquals("inj13u6g7vqgw074mgmf2ze2cadzvkz9snlwcrtq8a", address)
         AGORIC -> assertEquals("agoric18zvvgk6j3eq5wd7mqxccgt20gz2w94cy88aek5", address)
         STARGAZE -> assertEquals("stars142j9u5eaduzd7faumygud6ruhdwme98qycayaz", address)
+        JUNO -> assertEquals("juno142j9u5eaduzd7faumygud6ruhdwme98qxkfz30", address)
+        STRIDE -> assertEquals("stride142j9u5eaduzd7faumygud6ruhdwme98qn029zl", address)
+        AXELAR -> assertEquals("axelar142j9u5eaduzd7faumygud6ruhdwme98q52u3aj", address)
     }
 }

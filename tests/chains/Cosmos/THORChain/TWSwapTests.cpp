@@ -221,6 +221,68 @@ TEST(TWTHORChainSwap, SwapBnbBtc) {
     EXPECT_EQ(hex(output.encoded()), "fd01f0625dee0a4c2a2c87fa0a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e421080ade204126a0a26eb5ae9872103ea4b4bc12dc6f36a28d2c9775e01eef44def32cc70fb54f0e4177b659dbc0e19124086d43e9bdf12508a9a1415f5f970dfa5ff5930dee01d922f99779b63190735ba1d69694bda203b6678939a5c1eab0a52ed32bb67864ec7864de37b333533ae0c1a3d3d3a4254432e4254433a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070383a3130303030303030");
 }
 
+TEST(TWTHORChainSwap, SwapAtomBnb) {
+    // prepare swap input
+    Proto::SwapInput input;
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(Proto::ATOM);
+    fromAsset.set_symbol("ATOM");
+    *input.mutable_from_asset() = fromAsset;
+    input.set_from_address("cosmos1v4e6vpehwrfez2dqepnw9g6t4fl83xzegd5ac9");
+    Proto::Asset toAsset;
+    toAsset.set_chain(Proto::BNB);
+    toAsset.set_symbol("BNB");
+    *input.mutable_to_asset() = toAsset;
+    input.set_to_address("bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2");
+    input.set_vault_address("cosmos154t5ycejlr7ax3ynmed9z05yg5a27y9u6pj5hq");
+    input.set_from_amount("300000");
+    input.set_to_amount_limit("819391");
+    input.set_affiliate_fee_address("t");
+    input.set_affiliate_fee_rate_bp("0");
+
+    // serialize input
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0a080807120441544f4d122d636f736d6f73317634653676706568777266657a32647165706e773967367434666c3833787a656764356163391a0708031203424e42222a626e623173346b616c6c786e67707973707a6d366e72657a6b6d6c3972677977366b78707734666872322a2d636f736d6f7331353474357963656a6c7237617833796e6d6564397a303579673561323779397536706a3568713a0633303030303042063831393339314a0174520130");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+
+    // invoke swap
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 204ul);
+    // parse result in proto
+    Proto::SwapOutput outputProto;
+    EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(outputProto.from_chain(), Proto::ATOM);
+    EXPECT_EQ(outputProto.to_chain(), Proto::BNB);
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
+    EXPECT_TRUE(outputProto.has_cosmos());
+    Cosmos::Proto::SigningInput txInput = outputProto.cosmos();
+
+    ASSERT_EQ(txInput.memo(), "=:BNB.BNB:bnb1s4kallxngpyspzm6nrezkml9rgyw6kxpw4fhr2:819391:t:0");
+    auto& fee = *txInput.mutable_fee();
+    fee.set_gas(200000);
+    auto& fee_amount = *fee.add_amounts();
+    fee_amount.set_denom("uatom");
+    fee_amount.set_amount("500");
+
+    txInput.set_account_number(1483163);
+    txInput.set_sequence(1);
+
+    auto privKey = parse_hex("3eed3f32b8ba90e579ba46f37e7445fb4b34558306aa5bc32c525a93dff486e7");
+    txInput.set_private_key(privKey.data(), privKey.size());
+
+    // sign and encode resulting input
+    Cosmos::Proto::SigningOutput output;
+    ANY_SIGN(txInput, TWCoinTypeCosmos);
+    EXPECT_EQ(output.error(), "");
+    ASSERT_EQ(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"CtMBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczF2NGU2dnBlaHdyZmV6MmRxZXBudzlnNnQ0Zmw4M3h6ZWdkNWFjORItY29zbW9zMTU0dDV5Y2VqbHI3YXgzeW5tZWQ5ejA1eWc1YTI3eTl1NnBqNWhxGg8KBXVhdG9tEgYzMDAwMDASPz06Qk5CLkJOQjpibmIxczRrYWxseG5ncHlzcHptNm5yZXprbWw5cmd5dzZreHB3NGZocjI6ODE5MzkxOnQ6MBJmClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDmmNIYBvR9bnOloFEMOWdk9DHYIGe7naW0T19y+/k1SUSBAoCCAEYARISCgwKBXVhdG9tEgM1MDAQwJoMGkCFqUWtDu0pn1P/cnVQnIJIWF8HFJn/xkJh55Mc7ZLVPF60uXYUOg8nNkt0IQPuTFREw32/yff6lmA5w6KwPen/\"}");
+
+    // https://viewblock.io/thorchain/tx/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50
+    // https://www.mintscan.io/cosmos/txs/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50
+    // https://binance.mintscan.io/txs/2C97061737B16B234990B9B18A2BF65F7C7418FF9E39A68E634C832E4E4C59CE
+}
+
 TEST(TWTHORChainSwap, NegativeInvalidInput) {
     const auto inputData = parse_hex("00112233");
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));

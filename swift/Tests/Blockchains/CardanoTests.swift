@@ -221,4 +221,68 @@ class CardanoTests: XCTestCase {
         let txid = output.txID
         XCTAssertEqual(txid.hexString, "6dcf3956232953fc25b8355fb1ded1e912b5802090fd21434d789087d6329683")
     }
+
+    // Successfully broadcasted:
+    // https://cardanoscan.io/transaction/87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628
+    func testSignNftTransfer() throws {
+        let fromAddress = "addr1qy5eme9r6frr0m6q2qpncg282jtrhq5lg09uxy2j0545hj8rv7v2ntdxuv6p4s3eq4lqzg39lewgvt6fk5kmpa0zppesufzjud"
+        let toAddress = "addr1qy9wjfn6nd8kak6dd8z53u7t5wt9f4lx0umll40px5hnq05avwcsq5r3ytdp36wttzv4558jaq8lvhgqhe3y8nuf5xrquju7z4"
+        let coinsPerUtxoByte = 4310;
+
+        let tokenAmount = CardanoTokenAmount.with {
+            $0.policyID = "219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e"
+            $0.assetName = "coolcatssociety4567"
+            $0.amount = Data(hexString: "01")! // 1
+        };
+        var input = CardanoSigningInput.with {
+            $0.transferMessage.toAddress = toAddress
+            $0.transferMessage.changeAddress = fromAddress
+            $0.ttl = 89130965
+        }
+        input.transferMessage.tokenAmount.token.append(tokenAmount);
+        
+        // check min ADA amount, set it
+        let inputTokenAmountSerialized = try input.transferMessage.tokenAmount.serializedData()
+        let minAmount = Cardano.outputMinAdaAmount(toAddress: toAddress, tokenBundle: inputTokenAmountSerialized, coinsPerUtxoByte: UInt64(coinsPerUtxoByte));
+        XCTAssertEqual(minAmount, 1202490)
+        input.transferMessage.amount = minAmount
+        
+        input.privateKey.append(Data(hexString: "d09831a668db6b36ffb747600cb1cd3e3d34f36e1e6feefc11b5f988719b7557a7029ab80d3e6fe4180ad07a59ddf742ea9730f3c4145df6365fa4ae2ee49c3392e19444caf461567727b7fefec40a3763bdb6ce5e0e8c05f5e340355a8fef4528dfe7502cfbda49e38f5a0021962d52dc3dee82834a23abb6750981799b75577d1ed9af9853707f0ef74264274e71b2f12e86e3c91314b6efa75ef750d9711b84cedd742ab873ef2f9566ad20b3fc702232c6d2f5d83ff425019234037d1e58")!)
+
+        let utxo1 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "aba499ec2f23529e70bb256ceaffcc6274a882cf02f29e5670c75ee980d7c2b8")!
+            $0.outPoint.outputIndex = 0
+            $0.address = fromAddress
+            $0.amount = 1202490
+            $0.tokenAmount = [tokenAmount]
+        }
+        input.utxos.append(utxo1)
+        
+        let utxo2 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "ee414d635b3bc67831907354d274a31174664777c57c21ae923b9459e5644840")!
+            $0.outPoint.outputIndex = 0
+            $0.address = fromAddress
+            $0.amount = 1000000
+        }
+        input.utxos.append(utxo2)
+        
+        let utxo3 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "6a7221dcc28353ed69b733391ffeb984a34c1e72293af111d59f9ddfa8639167")!
+            $0.outPoint.outputIndex = 0
+            $0.address = fromAddress
+            $0.amount = 2000000
+        }
+        input.utxos.append(utxo3)
+
+        // Sign
+        let output: CardanoSigningOutput = AnySigner.sign(input: input, coin: .cardano)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
+
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString,
+            "83a400838258206a7221dcc28353ed69b733391ffeb984a34c1e72293af111d59f9ddfa863916700825820aba499ec2f23529e70bb256ceaffcc6274a882cf02f29e5670c75ee980d7c2b800825820ee414d635b3bc67831907354d274a31174664777c57c21ae923b9459e5644840000182825839010ae9267a9b4f6edb4d69c548f3cba39654d7e67f37ffd5e1352f303e9d63b100507122da18e9cb58995a50f2e80ff65d00be6243cf89a186821a0012593aa1581c219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5ea153636f6f6c63617473736f6369657479343536370182583901299de4a3d24637ef4050033c214754963b829f43cbc311527d2b4bc8e36798a9ada6e3341ac239057e012225fe5c862f49b52db0f5e208731a002b1525021a0002b19b031a055007d5a1008182582088bd26e8656fa7dead846c3373588f0192da5bfb90bf5d3fb877decfb3b3fd085840da8656aca0dacc57d4c2d957fc7dff03908f6dcf60c48f1e40b3006e2fd0cfacfa4c24fa02e35a310572526586d4ce0d30bf660ba274c8efd507848cbe177d09f6")
+
+        let txid = output.txID
+        XCTAssertEqual(txid.hexString, "87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628")
+    }
 }
