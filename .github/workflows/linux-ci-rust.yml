@@ -3,12 +3,8 @@ name: Linux CI Rust
 on:
   push:
     branches: [ master ]
-  pull_request_target:
+  pull_request:
     branches: [ master ]
-    types:
-      - opened
-      - synchronize
-      - ready_for_review
 
 env:
   SCCACHE_GHA_ENABLED: "true"
@@ -24,7 +20,7 @@ jobs:
       contents: read
       checks: write
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false || github.event_name != 'pull_request_target'
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Install system dependencies
