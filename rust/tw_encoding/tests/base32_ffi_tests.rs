@@ -15,7 +15,8 @@ fn test_base32_encode_helper(input: &[u8], expected: &str, alphabet: Option<&str
         .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
         .unwrap_or_else(std::ptr::null_mut);
 
-    let result_ptr = unsafe { encode_base32(input.as_ptr(), input.len(), alphabet, padding) };
+    let result_ptr =
+        unsafe { encode_base32(input.as_ptr(), input.len(), alphabet, padding) }.unwrap();
     let result = unsafe { CString::from_raw(result_ptr) };
     assert_eq!(result.to_str().unwrap(), expected);
 }
@@ -29,9 +30,12 @@ fn test_base32_decode_helper(input: &str, expected: &[u8], alphabet: Option<&str
         .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
         .unwrap_or_else(std::ptr::null_mut);
 
-    let decoded_ptr = unsafe { decode_base32(input.as_ptr(), alphabet, padding) };
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-    assert_eq!(decoded_slice, expected);
+    let decoded = unsafe {
+        decode_base32(input.as_ptr(), alphabet, padding)
+            .unwrap()
+            .into_vec()
+    };
+    assert_eq!(decoded, expected);
 }
 
 #[test]

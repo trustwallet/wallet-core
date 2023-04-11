@@ -75,9 +75,14 @@ EntryFunction EntryFunction::from_json(const nlohmann::json& payload) noexcept {
     std::vector<Data> args;
     for (auto&& cur : payload.at("arguments")) {
         auto curStr = cur.get<std::string>();
-        auto* res = Rust::parse_function_argument_to_bcs(curStr.c_str());
-        args.emplace_back(parse_hex(res));
-        Rust::free_string(res);
+        auto res = Rust::parse_function_argument_to_bcs(curStr.c_str());
+        if (res.code != Rust::OK_CODE) {
+            // TODO consider exiting this function.
+            args.emplace_back();
+            continue;
+        }
+        args.emplace_back(parse_hex(res.result));
+        Rust::free_string(res.result);
     }
 
     std::vector<TypeTag> tags;

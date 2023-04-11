@@ -31,10 +31,8 @@ fn test_decode_base64_url() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = unsafe { decode_base64(encoded_ptr, true) };
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-
-    assert_eq!(decoded_slice, expected);
+    let decoded = unsafe { decode_base64(encoded_ptr, true).unwrap().into_vec() };
+    assert_eq!(decoded, expected);
 }
 
 #[test]
@@ -45,10 +43,8 @@ fn test_decode_base64() {
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = unsafe { decode_base64(encoded_ptr, false) };
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-
-    assert_eq!(decoded_slice, expected);
+    let decoded = unsafe { decode_base64(encoded_ptr, false).unwrap().into_vec() };
+    assert_eq!(decoded, expected);
 }
 
 #[test]
@@ -56,6 +52,6 @@ fn test_decode_base64_invalid() {
     let invalid_encoded = "_This_is_an_invalid_base64_";
     let encoded_c_str = CString::new(invalid_encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
-    let decoded_ptr = unsafe { decode_base64(encoded_ptr, false) };
-    assert_eq!(decoded_ptr.data.is_null(), true);
+    let res = unsafe { decode_base64(encoded_ptr, false) };
+    assert!(res.is_err());
 }

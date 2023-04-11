@@ -8,8 +8,8 @@ use std::ffi::{c_char, CString};
 
 pub mod ffi;
 
-pub fn c_string_standalone(input: String) -> *const c_char {
-    let res = CString::new(input).unwrap();
+pub fn c_string_standalone<S: Into<String>>(input: S) -> *const c_char {
+    let res = CString::new(input.into()).unwrap();
     let p = res.as_ptr();
     std::mem::forget(res);
     p

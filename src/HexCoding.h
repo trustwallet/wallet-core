@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include <algorithm>
 #include <array>
@@ -23,15 +24,11 @@ namespace TW::internal {
 /// valid hexadecimal.
 inline Data parse_hex(const std::string& input) {
     if (input.empty()) {
-        return Data();
+        return {};
     }
-    auto decoded = Rust::decode_hex(input.c_str());
-    if (decoded.data == nullptr || decoded.size == 0) {
-        return Data();
-    }
-    std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
-    std::free(decoded.data);
-    return decoded_vec;
+
+    Rust::CByteArrayResultWrapper res = Rust::decode_hex(input.c_str());
+    return res.unwrap_or_default().data;
 }
 }
 

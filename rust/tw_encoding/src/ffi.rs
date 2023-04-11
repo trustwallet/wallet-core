@@ -6,10 +6,39 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{base32, base58, base64, hex};
+use crate::{base32, base58, base64, hex, EncodingError};
 use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
-use tw_memory::ffi::CByteArray;
+use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
+use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
+
+#[repr(C)]
+pub enum CEncodingCode {
+    Ok = 0,
+    InvalidInput = 1,
+    InvalidAlphabet = 2,
+}
+
+impl From<EncodingError> for CEncodingCode {
+    fn from(error: EncodingError) -> Self {
+        match error {
+            EncodingError::InvalidInput => CEncodingCode::InvalidInput,
+            EncodingError::InvalidAlphabet => CEncodingCode::InvalidAlphabet,
+        }
+    }
+}
+
+impl From<hex::FromHexError> for CEncodingCode {
+    fn from(_error: hex::FromHexError) -> Self {
+        CEncodingCode::InvalidInput
+    }
+}
+
+impl From<CEncodingCode> for ErrorCode {
+    fn from(error: CEncodingCode) -> Self {
+        error as ErrorCode
+    }
+}
 
 #[repr(C)]
 #[derive(PartialEq, Debug)]
@@ -32,21 +61,25 @@ impl From<Base58Alphabet> for &Alphabet {
 /// \param alphabet *optional* C-compatible, nul-terminated string.
 ///                `ALPHABET_RFC4648` is used by default if `alphabet` is null.
 /// \param padding whether the padding bytes should be included.
-/// \return *non-null* C-compatible, nul-terminated string.
+/// \return C-compatible result with a C-compatible, nul-terminated string.
 #[no_mangle]
 pub unsafe extern "C" fn encode_base32(
     input: *const u8,
     input_len: usize,
     alphabet: *const c_char,
     padding: bool,
-) -> *mut c_char {
-    let input = std::slice::from_raw_parts(input, input_len);
+) -> CStrMutResult {
+    let input = unsafe { std::slice::from_raw_parts(input, input_len) };
 
-    let alphabet = get_alphabet(alphabet);
+    let alphabet = match get_alphabet(alphabet) {
+        Ok(alphabet) => alphabet,
+        Err(e) => return CStrMutResult::error(e),
+    };
 
     base32::encode(input, alphabet, padding)
         .map(|result| CString::new(result).unwrap().into_raw())
-        .unwrap_or_else(|_| std::ptr::null_mut())
+        .map_err(CEncodingCode::from)
+        .into()
 }
 
 /// Decodes the base32 `input` string.
@@ -54,19 +87,26 @@ pub unsafe extern "C" fn encode_base32(
 /// \param alphabet *optional* C-compatible, nul-terminated string.
 ///                `ALPHABET_RFC4648` is used by default if `alphabet` is null.
 /// \param padding whether the padding bytes should be trimmed when decoding.
-/// \return C-compatible byte array.
+/// \return C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn decode_base32(
     input: *const c_char,
     alphabet: *const c_char,
     padding: bool,
-) -> CByteArray {
-    let input = CStr::from_ptr(input).to_str().unwrap();
-    let alphabet = get_alphabet(alphabet);
+) -> CByteArrayResult {
+    let input = match CStr::from_ptr(input).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
+    };
+    let alphabet = match get_alphabet(alphabet) {
+        Ok(alphabet) => alphabet,
+        Err(e) => return CByteArrayResult::error(e),
+    };
 
     base32::decode(input, alphabet, padding)
-        .map(CByteArray::from)
-        .unwrap_or_else(|_| CByteArray::null())
+        .map(CByteArray::new)
+        .map_err(CEncodingCode::from)
+        .into()
 }
 
 /// Encodes the `input` data as base58.
@@ -89,17 +129,21 @@ pub unsafe extern "C" fn encode_base58(
 /// Decodes the base58 `input` string.
 /// \param input *non-null* C-compatible, nul-terminated string.
 /// \param alphabet alphabet type.
-/// \return C-compatible byte array.
+/// \return C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn decode_base58(
     input: *const c_char,
     alphabet: Base58Alphabet,
-) -> CByteArray {
-    let input = CStr::from_ptr(input).to_str().unwrap();
+) -> CByteArrayResult {
+    let input = match CStr::from_ptr(input).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
+    };
 
     base58::decode(input, alphabet.into())
-        .map(CByteArray::from)
-        .unwrap_or_else(|_| CByteArray::null())
+        .map(CByteArray::new)
+        .map_err(CEncodingCode::from)
+        .into()
 }
 
 /// Encodes the `data` data as a padded, base64 string.
@@ -117,36 +161,39 @@ pub unsafe extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool
 /// Decodes the base64 `data` string.
 /// \param data *optional* C-compatible, nul-terminated string.
 /// \param is_url whether to use the [URL safe alphabet](https://www.rfc-editor.org/rfc/rfc3548#section-4).
-/// \return C-compatible byte array.
+/// \return C-compatible result with a C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArray {
+pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CByteArrayResult {
     if data.is_null() {
-        return CByteArray::null();
+        return CByteArrayResult::error(CEncodingCode::InvalidInput);
     }
-    let c_str = CStr::from_ptr(data);
-    let str_slice = c_str.to_str().unwrap();
+    let str_slice = match CStr::from_ptr(data).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
+    };
     base64::decode(str_slice, is_url)
-        .map(CByteArray::from)
-        .unwrap_or_else(|_| CByteArray::null())
+        .map(CByteArray::new)
+        .map_err(CEncodingCode::from)
+        .into()
 }
 
 /// Decodes the hex `data` string.
 /// \param data *optional* C-compatible, nul-terminated string.
-/// \return C-compatible byte array.
+/// \return C-compatible result with a C-compatible byte array.
 #[no_mangle]
-pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArray {
+pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArrayResult {
     if data.is_null() {
-        return CByteArray {
-            data: std::ptr::null_mut(),
-            size: 0,
-        };
+        return CByteArrayResult::error(CEncodingCode::InvalidInput);
     }
-    let c_str = CStr::from_ptr(data);
-    let hex_string = c_str.to_str().unwrap();
+    let hex_string = match CStr::from_ptr(data).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
+    };
 
     hex::decode(hex_string)
-        .map(CByteArray::from)
-        .unwrap_or_else(|_| CByteArray::null())
+        .map(CByteArray::new)
+        .map_err(CEncodingCode::from)
+        .into()
 }
 
 /// Encodes the octets `data` as a hex string using lowercase characters.
@@ -161,10 +208,11 @@ pub unsafe extern "C" fn encode_hex(data: *const u8, len: usize, prefixed: bool)
     CString::new(encoded).unwrap().into_raw()
 }
 
-fn get_alphabet(alphabet: *const c_char) -> Option<&'static [u8]> {
+fn get_alphabet(alphabet: *const c_char) -> Result<Option<String>, CEncodingCode> {
     if alphabet.is_null() {
-        return None;
+        return Ok(None);
     }
-    let alphabet = unsafe { CStr::from_ptr(alphabet).to_str().unwrap().as_bytes() };
-    Some(alphabet)
+    unsafe { CStr::from_ptr(alphabet).to_str() }
+        .map(|alphabet| Some(alphabet.to_string()))
+        .map_err(|_| CEncodingCode::InvalidAlphabet)
 }
