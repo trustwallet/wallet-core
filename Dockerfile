@@ -56,11 +56,11 @@ WORKDIR /wallet-core
 # Install dependencies
 RUN tools/install-dependencies
 
-# Switch to testing branch
-RUN git fetch && git checkout h/docker-fix
-
 # Build: generate files and rust lib
 RUN tools/generate-files
+
+# Switch to testing branch
+RUN git fetch && git checkout h/docker-fix
 
 # Build: cmake + make
 RUN cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
