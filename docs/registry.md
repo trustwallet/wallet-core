@@ -109,4 +109,5 @@ This list is generated from [./registry.json](../registry.json)
 | 40000118 | Stride           | STRD   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stride/info/logo.png" width="32" />       | <https://stride.zone/>        |
 | 50000118 | Axelar           | AXL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/axelar/info/logo.png" width="32" />       | <https://axelar.network/>     |
 | 60000118 | Crescent         | CRE    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/crescent/info/logo.png" width="32" />     | <https://crescent.network/>   |
+| 70000118 | Kujira           | KUJI   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kujira/info/logo.png" width="32" />       | <https://kujira.app/>         |
 | 1323161554 | Aurora           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aurora/info/logo.png" width="32" />       | <https://aurora.dev/>         |
