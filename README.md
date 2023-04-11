@@ -106,6 +106,8 @@ Projects using Trust Wallet Core. Add yours too!
 | [Frontier](https://frontier.xyz/)
 | [Tokenary](https://tokenary.io/)
 | [MemesWallet](https://planetmemes.com/)
+| [xPortal](https://xportal.com/)
+| [Slingshot](https://slingshot.finance/)
 
 # Community
 
