@@ -7,25 +7,25 @@ use crate::{must_err, must_ok};
 fn test_define_attribute_correct_separator_handling() {
     // Key only.
     let expected = GDefine {
-        key: GKeyword("SOME_DEF".to_string()),
+        key: GKeyword("some_def".to_string()),
         value: None,
     };
 
-    must_ok!(GDefine, "#define SOME_DEF", expected);
-    must_ok!(GDefine, "#define SOME_DEF\n", expected);
+    must_ok!(GDefine, "#define some_def", expected);
+    must_ok!(GDefine, "#define some_def\n", expected);
     // Note that "some_value" is not parsed.
-    must_ok!(GDefine, "#define SOME_DEF\nsome_value", expected);
-    must_ok!(GDefine, "#define SOME_DEF \nsome_value", expected);
-    must_ok!(GDefine, "#define SOME_DEF\n some_value", expected);
+    must_ok!(GDefine, "#define some_def\nsome_value", expected);
+    must_ok!(GDefine, "#define some_def \nsome_value", expected);
+    must_ok!(GDefine, "#define some_def\n some_value", expected);
 
     // Key and value.
     let expected = GDefine {
-        key: GKeyword("SOME_DEF".to_string()),
+        key: GKeyword("some_def".to_string()),
         value: Some("some_value".to_string()),
     };
 
-    must_ok!(GDefine, "#define SOME_DEF some_value", expected);
-    must_ok!(GDefine, "#define SOME_DEF some_value\n", expected);
+    must_ok!(GDefine, "#define some_def some_value", expected);
+    must_ok!(GDefine, "#define some_def some_value\n", expected);
 
     // Fails
     must_err!(GDefine, "#define\nSOME_DEF some_value");
@@ -33,12 +33,12 @@ fn test_define_attribute_correct_separator_handling() {
 
 #[test]
 fn test_define_attribute_continued() {
-    let driver = Reader::from("#define SOME_DEF\n#define OTHER_DEF with value");
+    let driver = Reader::from("#define some_def\n#define OTHER_DEF with value");
     let (res, reader) = ensure::<GDefine>(driver).unwrap();
     assert_eq!(
         res,
         GDefine {
-            key: GKeyword("SOME_DEF".to_string()),
+            key: GKeyword("some_def".to_string()),
             value: None,
         }
     );
@@ -55,33 +55,30 @@ fn test_define_attribute_continued() {
 
 #[test]
 fn test_define_attribute() {
-    let driver = Reader::from("#define SOME_DEF");
-    let der = GDefine::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GDefine,
+        "#define some_def",
         GDefine {
-            key: GKeyword("SOME_DEF".to_string()),
+            key: GKeyword("some_def".to_string()),
             value: None,
         }
     );
 
-    let driver = Reader::from("#define SOME_DEF some value\n");
-    let der = GDefine::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GDefine,
+        "#define some_def some value\n",
         GDefine {
-            key: GKeyword("SOME_DEF".to_string()),
+            key: GKeyword("some_def".to_string()),
             value: Some("some value".to_string()),
         }
     );
 
     // TODO: Should it behave like that?
-    let driver = Reader::from("#define SOME_DEF(x)");
-    let der = GDefine::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GDefine,
+        "#define some_def(x)",
         GDefine {
-            key: GKeyword("SOME_DEF".to_string()),
+            key: GKeyword("some_def".to_string()),
             value: Some("(x)".to_string()),
         }
     );
