@@ -64,7 +64,7 @@ fn test_func_params() {
 }
 
 #[test]
-fn test_function_delceration() {
+fn test_function_declaration() {
     let expected = GFunctionDecl {
         name: GFuncName::from("some_function"),
         params: vec![
@@ -85,31 +85,33 @@ fn test_function_delceration() {
         },
         markers: GMarkers(vec![]),
     };
-
     must_ok!(
         GFunctionDecl,
         "void some_function(int some_int, bool some_bool);",
         expected
     );
-
-    must_ok!(
-        GFunctionDecl,
-        "void some_function(int some_int ,bool some_bool);",
-        expected
-    );
-
     must_ok!(
         GFunctionDecl,
         "void some_function(int some_int,bool some_bool);",
         expected
     );
-
     must_ok!(
         GFunctionDecl,
-        "void some_function(int some_int , bool some_bool);",
+        "void some_function ( int some_int , bool some_bool ) ;",
+        expected
+    );
+    must_ok!(
+        GFunctionDecl,
+        "void\nsome_function\n(\nint\nsome_int\n,\nbool\nsome_bool\n)\n;",
         expected
     );
 
+    // ERR
+    must_err!(
+        GFunctionDecl,
+        "voidsome_function(int some_int, bool some_bool);"
+    );
+    // ERR (no comma)
     must_err!(
         GFunctionDecl,
         "void some_function(int some_int bool some_bool);"
@@ -117,7 +119,7 @@ fn test_function_delceration() {
 }
 
 #[test]
-fn test_function_delceration_with_markers() {
+fn test_function_declaration_with_markers() {
     let expected = GFunctionDecl {
         name: GFuncName::from("some_function"),
         params: vec![
@@ -147,7 +149,7 @@ fn test_function_delceration_with_markers() {
 }
 
 #[test]
-fn test_function_delceration_struct_return_value() {
+fn test_function_declaration_struct_return_value() {
     let expected = GFunctionDecl {
         name: GFuncName::from("some_function"),
         params: vec![

@@ -1091,6 +1091,9 @@ impl ParseTree for GFunctionDecl {
         // Derive function name.
         let (name_der, reader) = ensure::<GFuncName>(reader)?;
 
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
         // Check for opening bracket.
         let (_, mut reader) = ensure::<GOpenBracket>(reader)?;
 
