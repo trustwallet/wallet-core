@@ -668,6 +668,36 @@
     }
   },
   {
+    "id": "comdex",
+    "name": "Comdex",
+    "displayName": "Comdex",
+    "coinId": 80000118,
+    "symbol": "CMDX",
+    "decimals": 6,
+    "chainId": "comdex-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "comdex",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/comdex",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "04C790D09A40EE958DBDD385B679B5EB60C10F9BC1389CC8F896DC9193A5ED6C",
+      "sampleAccount": "comdex1jz7av7cq45gh5hhrugtak7lkps2ga5v0u64nz6"
+    },
+    "info": {
+      "url": "https://comdex.one/",
+      "documentation": "https://docs.comdex.one/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
