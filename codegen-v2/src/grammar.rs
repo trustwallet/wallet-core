@@ -171,7 +171,6 @@ pub enum GPrimitive {
     LongInt,
     Float,
     Double,
-    LongDouble,
     UInt32T,
 }
 
@@ -333,7 +332,6 @@ impl ParseTree for GPrimitive {
             "long" => GPrimitive::LongInt,
             "float" => GPrimitive::Float,
             "double" => GPrimitive::Double,
-            "long double" => GPrimitive::LongDouble,
             "uint32_t" => GPrimitive::UInt32T,
             _ => {
                 return Err(Error::Todo);

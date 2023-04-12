@@ -1,17 +1,17 @@
 use crate::grammar::{GPrimitive, ParseTree};
 use crate::reader::Reader;
+use crate::must_ok;
 
 #[test]
 fn test_primitives() {
-    let driver = Reader::from("int");
-    let der = GPrimitive::derive(driver).unwrap();
-    assert_eq!(der.derived, GPrimitive::Int);
-
-    let driver = Reader::from("bool");
-    let der = GPrimitive::derive(driver).unwrap();
-    assert_eq!(der.derived, GPrimitive::Bool);
-
-    let driver = Reader::from("char\n");
-    let der = GPrimitive::derive(driver).unwrap();
-    assert_eq!(der.derived, GPrimitive::Char);
+    must_ok!(GPrimitive, "void", GPrimitive::Void);
+    must_ok!(GPrimitive, "bool", GPrimitive::Bool);
+    must_ok!(GPrimitive, "char", GPrimitive::Char);
+    must_ok!(GPrimitive, "short", GPrimitive::ShortInt);
+    must_ok!(GPrimitive, "signed", GPrimitive::Int);
+    must_ok!(GPrimitive, "unsigned", GPrimitive::UnsignedInt);
+    must_ok!(GPrimitive, "long", GPrimitive::LongInt);
+    must_ok!(GPrimitive, "float", GPrimitive::Float);
+    must_ok!(GPrimitive, "double", GPrimitive::Double);
+    must_ok!(GPrimitive, "uint32_t", GPrimitive::UInt32T);
 }
