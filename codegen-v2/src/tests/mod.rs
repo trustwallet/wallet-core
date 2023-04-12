@@ -1,15 +1,14 @@
 use crate::grammar::{GEof, GHeaderInclude, GNonAlphanumeric, GNonAlphanumericItem, ParseTree};
 use crate::reader::Reader;
-use std::fmt::Debug;
 
 mod attributes;
 mod functions;
+mod keyword;
 mod primitives;
 mod separators;
 mod structs;
 mod type_categories;
 mod typedef;
-mod keyword;
 
 #[macro_export]
 macro_rules! must_ok {

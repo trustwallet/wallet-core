@@ -68,9 +68,7 @@ fn test_types_categories_struct() {
     let der = GTypeCategory::derive(driver).unwrap();
     assert_eq!(
         der.derived,
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from(
-            "SomeStruct"
-        ))))
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from("SomeStruct"))))
     );
 
     let driver = Reader::from("struct SomeStruct **");
@@ -87,9 +85,7 @@ fn test_types_categories_struct() {
     assert_eq!(
         der.derived,
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from(
-                "SomeStruct"
-            ))))
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from("SomeStruct"))))
         ))))
     );
 
