@@ -24,7 +24,23 @@ fn test_define_attribute_correct_separator_handling() {
     let der = GDefine::derive(driver);
     assert!(der.is_err());
 
+    let driver = Reader::from("#define \nSOME_DEF some_value");
+    let der = GDefine::derive(driver);
+    assert!(der.is_err());
+
+    let driver = Reader::from("#define\n SOME_DEF some_value");
+    let der = GDefine::derive(driver);
+    assert!(der.is_err());
+
     let driver = Reader::from("#define SOME_DEF\nsome_value");
+    let der = GDefine::derive(driver);
+    assert!(der.is_err());
+
+    let driver = Reader::from("#define SOME_DEF \nsome_value");
+    let der = GDefine::derive(driver);
+    assert!(der.is_err());
+
+    let driver = Reader::from("#define SOME_DEF\n some_value");
     let der = GDefine::derive(driver);
     assert!(der.is_err());
 }
