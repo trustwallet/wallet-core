@@ -1414,23 +1414,21 @@ mod tests {
         }
     }
 
-    // TODO:
-    impl From<String> for GParamName {
-        fn from(string: String) -> Self {
-            GParamName(string)
+    impl From<&str> for GParamName {
+        fn from(string: &str) -> Self {
+            GParamName(string.to_string())
         }
     }
 
-    // TODO:
-    impl From<String> for GFuncName {
-        fn from(string: String) -> Self {
-            GFuncName(string)
+    impl From<&str> for GFuncName {
+        fn from(string: &str) -> Self {
+            GFuncName(string.to_string())
         }
     }
 
-    impl From<String> for GStruct {
-        fn from(string: String) -> Self {
-            GStruct(string)
+    impl From<&str> for GStruct {
+        fn from(string: &str) -> Self {
+            GStruct(string.to_string())
         }
     }
 }

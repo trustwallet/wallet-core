@@ -12,7 +12,7 @@ fn test_func_params_with_marker() {
         der.derived,
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-            name: GParamName::from("my_var".to_string()),
+            name: GParamName::from("my_var"),
             markers: GMarkers(vec![GMarker::NonNull]),
         }
     );
@@ -23,7 +23,7 @@ fn test_func_params_with_marker() {
         der.derived,
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-            name: GParamName::from("some_bool".to_string()),
+            name: GParamName::from("some_bool"),
             markers: GMarkers(vec![GMarker::NonNull]),
         }
     );
@@ -37,7 +37,7 @@ fn test_func_params_without_marker() {
         der.derived,
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-            name: GParamName::from("my_var".to_string()),
+            name: GParamName::from("my_var"),
             markers: GMarkers(vec![]),
         }
     );
@@ -48,7 +48,7 @@ fn test_func_params_without_marker() {
         der.derived,
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-            name: GParamName::from("some_bool".to_string()),
+            name: GParamName::from("some_bool"),
             markers: GMarkers(vec![]),
         }
     );
@@ -57,16 +57,16 @@ fn test_func_params_without_marker() {
 #[test]
 fn test_function_delceration() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function".to_string()),
+        name: GFuncName::from("some_function"),
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-                name: GParamName::from("some_int".to_string()),
+                name: GParamName::from("some_int"),
                 markers: GMarkers(vec![]),
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-                name: GParamName::from("some_bool".to_string()),
+                name: GParamName::from("some_bool"),
                 markers: GMarkers(vec![]),
             },
         ],
@@ -102,16 +102,16 @@ fn test_function_delceration() {
 #[test]
 fn test_function_delceration_with_markers() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function".to_string()),
+        name: GFuncName::from("some_function"),
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-                name: GParamName::from("some_int".to_string()),
+                name: GParamName::from("some_int"),
                 markers: GMarkers(vec![]),
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-                name: GParamName::from("some_bool".to_string()),
+                name: GParamName::from("some_bool"),
                 markers: GMarkers(vec![]),
             },
         ],
@@ -132,22 +132,22 @@ fn test_function_delceration_with_markers() {
 #[test]
 fn test_function_delceration_struct_return_value() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function".to_string()),
+        name: GFuncName::from("some_function"),
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-                name: GParamName::from("some_int".to_string()),
+                name: GParamName::from("some_int"),
                 markers: GMarkers(vec![]),
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-                name: GParamName::from("some_bool".to_string()),
+                name: GParamName::from("some_bool"),
                 markers: GMarkers(vec![]),
             },
         ],
         return_value: GReturnValue {
             ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(
-                GStruct::from("SomeStruct".to_string()),
+                GStruct::from("SomeStruct"),
             )))),
             markers: GMarkers(vec![GMarker::Nullable]),
         },
