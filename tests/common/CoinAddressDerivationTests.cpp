@@ -297,6 +297,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeComdex:
             EXPECT_EQ(address, "comdex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z075ap4k");
             break;
+        case TWCoinTypeNeutron:
+            EXPECT_EQ(address, "neutron1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0aykpkx");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
