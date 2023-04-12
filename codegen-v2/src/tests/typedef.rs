@@ -1,4 +1,4 @@
-use crate::grammar::{GMarker, GType, GTypeCategory, GTypedef, ParseTree};
+use crate::grammar::{GMarker, GMarkers, GType, GTypeCategory, GTypedef, ParseTree, GPrimitive};
 use crate::reader::Reader;
 
 #[test]
@@ -12,9 +12,20 @@ fn test_typedef() {
                 "TWData".to_string()
             )))),
             name: "TW_Aeternity_Proto_SigningInput".to_string(),
-            markers: crate::grammar::GMarkers(vec![GMarker::NonNull])
+            markers: GMarkers(vec![GMarker::NonNull])
         }
-    )
+    );
+
+    let driver = Reader::from("typedef const void TWData;");
+    let res = GTypedef::derive(driver).unwrap();
+    assert_eq!(
+        res.derived,
+        GTypedef {
+            ty: GType::Const(GTypeCategory::Scalar(GPrimitive::Void)),
+            name: "TWData".to_string(),
+            markers: GMarkers(vec![])
+        }
+    );
 }
 
 #[test]

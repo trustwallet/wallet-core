@@ -558,7 +558,6 @@ impl ParseTree for GMarker {
             "TW_EXPORT_STATIC_METHOD" => GMarker::TwExportStaticMethod,
             "TW_EXPORT_STATIC_PROPERTY" => GMarker::TwExportStaticProperty,
             "TW_METHOD_DISCARDABLE_RESULT" => GMarker::TwMethodDiscardableResult,
-            "TWData" => GMarker::TwMethodDiscardableResult,
             "TW_ASSUME_NONNULL_BEGIN" => GMarker::TwAssumeNonNullBegin,
             "TW_ASSUME_NONNULL_END" => GMarker::TwAssumeNonNullEnd,
             // TODO: Needs special handling.
@@ -935,18 +934,21 @@ impl ParseTree for GTypedef {
 
         // Read type
         let (ty, reader) = ensure::<GType>(reader)?;
+        dbg!(&ty);
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
+        dbg!(&markers);
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Read typedef name.
         let (name, handle) = reader.read_until::<GSemicolon>()?;
+        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::Todo);
