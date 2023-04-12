@@ -71,6 +71,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
         case TWCoinTypeXDai:
+        case TWCoinTypeIoTeXEVM:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 

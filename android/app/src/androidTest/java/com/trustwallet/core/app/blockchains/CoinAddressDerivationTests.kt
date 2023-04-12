@@ -77,6 +77,7 @@ class CoinAddressDerivationTests {
         EOS -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)
         WAX -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)
         IOTEX -> assertEquals("io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk", address)
+        IOTEXEVM -> assertEquals("0x038B8C633873Ca0f06961100BE5d37676EADDD23", address)
         ZILLIQA -> assertEquals("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6", address)
         ZELCASH -> assertEquals("t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf", address)
         RAVENCOIN -> assertEquals("RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS", address)
