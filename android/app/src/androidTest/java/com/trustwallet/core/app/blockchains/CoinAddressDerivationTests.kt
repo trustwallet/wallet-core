@@ -119,5 +119,6 @@ class CoinAddressDerivationTests {
         AXELAR -> assertEquals("axelar142j9u5eaduzd7faumygud6ruhdwme98q52u3aj", address)
         CRESCENT -> assertEquals("cre142j9u5eaduzd7faumygud6ruhdwme98q5veur7", address)
         KUJIRA -> assertEquals("kujira142j9u5eaduzd7faumygud6ruhdwme98qpvgpme", address)
+        NATIVECANTO -> assertEquals("canto13u6g7vqgw074mgmf2ze2cadzvkz9snlwqua5pd", address)
     }
 }

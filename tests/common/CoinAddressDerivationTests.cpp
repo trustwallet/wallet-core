@@ -290,6 +290,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeKujira:
             EXPECT_EQ(address, "kujira1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0gnampt");
             break;
+        case TWCoinTypeNativeCanto:
+            EXPECT_EQ(address, "canto1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0wvfqju");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
