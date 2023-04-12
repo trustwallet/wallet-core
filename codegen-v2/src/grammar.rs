@@ -152,7 +152,7 @@ pub struct GNonAlphanumericItem;
 #[serde(tag = "g_variant", content = "value")]
 pub enum GTypeCategory {
     Scalar(GPrimitive),
-    Struct(GStruct),
+    Struct(GStructName),
     Enum(GEnum),
     Pointer(Box<GTypeCategory>),
 }
@@ -176,12 +176,12 @@ pub enum GPrimitive {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GStruct(String);
+pub struct GStructName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStructDecl {
     #[serde(rename = "struct")]
-    struct_val: GStruct,
+    struct_val: GStructName,
     markers: GMarkers,
 }
 
@@ -347,7 +347,7 @@ impl ParseTree for GPrimitive {
     }
 }
 
-impl ParseTree for GStruct {
+impl ParseTree for GStructName {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -367,7 +367,7 @@ impl ParseTree for GStruct {
         let (name, reader) = ensure::<GKeyword>(reader)?;
 
         Ok(DerivationResult {
-            derived: GStruct(name.0),
+            derived: GStructName(name.0),
             branch: reader.into_branch(),
         })
     }
@@ -407,7 +407,7 @@ impl ParseTree for GStructDecl {
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Derive struct declaration.
-        let (struct_res, reader) = ensure::<GStruct>(reader)?;
+        let (struct_res, reader) = ensure::<GStructName>(reader)?;
 
         // Check for required semicolon.
         let (_, reader) = ensure::<GSemicolon>(reader)?;
@@ -1326,7 +1326,7 @@ impl ParseTree for GTypeCategory {
 
         // Handle struct
         let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = GStruct::derive(checked_out) {
+        if let Ok(res) = GStructName::derive(checked_out) {
             let reader = pending.merge(res.branch);
 
             // Prepare scala type, might get wrapped (multiple times) in pointer.
@@ -1383,9 +1383,9 @@ mod tests {
         }
     }
 
-    impl From<&str> for GStruct {
+    impl From<&str> for GStructName {
         fn from(string: &str) -> Self {
-            GStruct(string.to_string())
+            GStructName(string.to_string())
         }
     }
 }

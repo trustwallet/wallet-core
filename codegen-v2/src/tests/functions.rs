@@ -1,6 +1,6 @@
 use crate::grammar::{
     GFuncName, GFunctionDecl, GMarker, GMarkers, GParamItem, GParamName, GPrimitive, GReturnValue,
-    GStruct, GType, GTypeCategory, ParseTree,
+    GStructName, GType, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
 use crate::{must_err, must_ok};
@@ -168,7 +168,7 @@ fn test_function_declaration_struct_return_value() {
         ],
         return_value: GReturnValue {
             ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(
-                GStruct::from("SomeStruct"),
+                GStructName::from("SomeStruct"),
             )))),
             markers: GMarkers(vec![GMarker::Nullable]),
         },

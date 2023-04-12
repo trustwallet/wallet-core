@@ -1,4 +1,4 @@
-use crate::grammar::{GPrimitive, GStruct, GTypeCategory, ParseTree};
+use crate::grammar::{GPrimitive, GStructName, GTypeCategory, ParseTree};
 use crate::must_ok;
 use crate::reader::Reader;
 
@@ -36,25 +36,25 @@ fn test_types_categories_struct() {
     must_ok!(
         GTypeCategory,
         "struct SomeStruct",
-        GTypeCategory::Struct(GStruct::from("SomeStruct"))
+        GTypeCategory::Struct(GStructName::from("SomeStruct"))
     );
     must_ok!(
         GTypeCategory,
         "struct SomeStruct*",
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from("SomeStruct"))))
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from("SomeStruct"))))
     );
     must_ok!(
         GTypeCategory,
         "struct SomeStruct **",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Struct(GStruct::from("SomeStruct"))
+            GTypeCategory::Struct(GStructName::from("SomeStruct"))
         ))))
     );
     must_ok!(
         GTypeCategory,
         "struct SomeStruct * * *",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from("SomeStruct"))))
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from("SomeStruct"))))
         ))))
     );
 }
