@@ -139,6 +139,7 @@ enum TWCoinType {
     TWCoinTypeCrescent = 60000118,
     TWCoinTypeKujira = 70000118,
     TWCoinTypeNativeCanto = 10007700,
+    TWCoinTypeComdex = 80000118,
 };
 
 /// Returns the blockchain for a coin type.
