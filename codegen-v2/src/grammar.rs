@@ -155,7 +155,7 @@ pub enum GTypeCategory {
     Struct(GStruct),
     Enum(GEnum),
     Pointer(Box<GTypeCategory>),
-    // TODO: Add some sort of `GAnyKeyword` that can parse valid keywords.
+    // TODO: This should not exist.
     Unknown(GKeyword),
 }
 
@@ -366,19 +366,11 @@ impl ParseTree for GStruct {
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Derive struct name
-        // TODO:
-        let (name, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-        if name.is_empty()
-            || name
-                .chars()
-                .any(|c| (!c.is_alphanumeric() && (c != '_' || c != '-')))
-        {
-            return Err(Error::Todo);
-        }
+        let (name, reader) = ensure::<GKeyword>(reader)?;
 
         Ok(DerivationResult {
-            derived: GStruct(name),
-            branch: handle.commit().into_branch(),
+            derived: GStruct(name.0),
+            branch: reader.into_branch(),
         })
     }
 }
