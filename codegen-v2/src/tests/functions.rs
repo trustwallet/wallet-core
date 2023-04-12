@@ -21,6 +21,7 @@ fn test_func_params_separator_handling() {
     must_ok!(GParamItem, "int\nmy_var\n", expected);
 
     must_err!(GParamItem, "\nint my_var");
+    must_err!(GParamItem, "intmy_var");
 }
 
 #[test]
@@ -54,7 +55,7 @@ fn test_func_params() {
     );
     must_ok!(
         GParamItem,
-        "bool\n_Nonnull  some_bool\n",
+        "bool\n_Nonnull some_bool\n",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool"),
@@ -85,6 +86,7 @@ fn test_function_declaration() {
         },
         markers: GMarkers(vec![]),
     };
+
     must_ok!(
         GFunctionDecl,
         "void some_function(int some_int, bool some_bool);",
@@ -111,7 +113,7 @@ fn test_function_declaration() {
         GFunctionDecl,
         "voidsome_function(int some_int, bool some_bool);"
     );
-    // ERR (no comma)
+    // No comma.
     must_err!(
         GFunctionDecl,
         "void some_function(int some_int bool some_bool);"
