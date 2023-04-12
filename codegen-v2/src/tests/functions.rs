@@ -3,13 +3,13 @@ use crate::grammar::{
     GStruct, GType, GTypeCategory, ParseTree,
 };
 use crate::reader::Reader;
+use crate::{must_err, must_ok};
 
 #[test]
 fn test_func_params_with_marker() {
-    let driver = Reader::from("int _Nonnull my_var\n");
-    let der = GParamItem::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GParamItem,
+        "int _Nonnull my_var\n",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
             name: GParamName::from("my_var"),
@@ -17,10 +17,9 @@ fn test_func_params_with_marker() {
         }
     );
 
-    let driver = Reader::from("bool\n_Nonnull  some_bool\n");
-    let der = GParamItem::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GParamItem,
+        "bool\n_Nonnull  some_bool\n",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool"),
@@ -31,10 +30,9 @@ fn test_func_params_with_marker() {
 
 #[test]
 fn test_func_params_without_marker() {
-    let driver = Reader::from("int my_var");
-    let der = GParamItem::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GParamItem,
+        "int my_var",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
             name: GParamName::from("my_var"),
@@ -42,10 +40,9 @@ fn test_func_params_without_marker() {
         }
     );
 
-    let driver = Reader::from("bool \nsome_bool");
-    let der = GParamItem::derive(driver).unwrap();
-    assert_eq!(
-        der.derived,
+    must_ok!(
+        GParamItem,
+        "bool \nsome_bool",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool"),
@@ -77,26 +74,34 @@ fn test_function_delceration() {
         markers: GMarkers(vec![]),
     };
 
-    let driver = Reader::from("void some_function(int some_int, bool some_bool);");
-    let der = GFunctionDecl::derive(driver).unwrap();
-    assert_eq!(der.derived, expected);
+    must_ok!(
+        GFunctionDecl,
+        "void some_function(int some_int, bool some_bool);",
+        expected
+    );
 
-    let driver = Reader::from("void some_function(int some_int ,bool some_bool);");
-    let der = GFunctionDecl::derive(driver).unwrap();
-    assert_eq!(der.derived, expected);
+    must_ok!(
+        GFunctionDecl,
+        "void some_function(int some_int ,bool some_bool);",
+        expected
+    );
 
-    let driver = Reader::from("void some_function(int some_int,bool some_bool);");
-    let der = GFunctionDecl::derive(driver).unwrap();
-    assert_eq!(der.derived, expected);
+    must_ok!(
+        GFunctionDecl,
+        "void some_function(int some_int,bool some_bool);",
+        expected
+    );
 
-    let driver = Reader::from("void some_function(int some_int , bool some_bool);");
-    let der = GFunctionDecl::derive(driver).unwrap();
-    assert_eq!(der.derived, expected);
+    must_ok!(
+        GFunctionDecl,
+        "void some_function(int some_int , bool some_bool);",
+        expected
+    );
 
-    // Error (no comma)
-    let driver = Reader::from("void some_function(int some_int bool some_bool);");
-    let der = GFunctionDecl::derive(driver);
-    assert!(der.is_err());
+    must_err!(
+        GFunctionDecl,
+        "void some_function(int some_int bool some_bool);"
+    );
 }
 
 #[test]
@@ -122,11 +127,11 @@ fn test_function_delceration_with_markers() {
         markers: GMarkers(vec![GMarker::TwExportStruct, GMarker::TWVisibilityDefault]),
     };
 
-    let driver = Reader::from(
+    must_ok!(
+        GFunctionDecl,
         "TW_EXPORT_STRUCT void some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
+        expected
     );
-    let der = GFunctionDecl::derive(driver).unwrap();
-    assert_eq!(der.derived, expected);
 }
 
 #[test]
@@ -157,9 +162,9 @@ fn test_function_delceration_struct_return_value() {
         ]),
     };
 
-    let driver = Reader::from(
+    must_ok!(
+        GFunctionDecl,
         "TW_EXPORT_STATIC_METHOD struct SomeStruct* _Nullable some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
+        expected
     );
-    let der = GFunctionDecl::derive(driver).unwrap();
-    assert_eq!(der.derived, expected);
 }
