@@ -9,6 +9,7 @@ mod separators;
 mod structs;
 mod type_categories;
 mod typedef;
+mod keyword;
 
 #[macro_export]
 macro_rules! must_ok {

@@ -276,24 +276,6 @@ pub struct ContinuumNext<T> {
 
 // *** DERIVE IMPLEMENTATIONS ***
 
-impl From<String> for GParamName {
-    fn from(string: String) -> Self {
-        GParamName(string)
-    }
-}
-
-impl From<String> for GFuncName {
-    fn from(string: String) -> Self {
-        GFuncName(string)
-    }
-}
-
-impl From<String> for GStruct {
-    fn from(string: String) -> Self {
-        GStruct(string)
-    }
-}
-
 impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
     type Derivation = EitherOr<T::Derivation, D::Derivation>;
 
@@ -993,6 +975,9 @@ impl ParseTree for GKeyword {
     type Derivation = Self;
 
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
         let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
 
         if string.is_empty()
@@ -1416,5 +1401,36 @@ impl ParseTree for GTypeCategory {
             derived,
             branch: p_reader.into_branch(),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    impl From<&str> for GKeyword {
+        fn from(string: &str) -> Self {
+            GKeyword(string.to_string())
+        }
+    }
+
+    // TODO:
+    impl From<String> for GParamName {
+        fn from(string: String) -> Self {
+            GParamName(string)
+        }
+    }
+
+    // TODO:
+    impl From<String> for GFuncName {
+        fn from(string: String) -> Self {
+            GFuncName(string)
+        }
+    }
+
+    impl From<String> for GStruct {
+        fn from(string: String) -> Self {
+            GStruct(string)
+        }
     }
 }
