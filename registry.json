@@ -668,6 +668,66 @@
     }
   },
   {
+    "id": "comdex",
+    "name": "Comdex",
+    "displayName": "Comdex",
+    "coinId": 80000118,
+    "symbol": "CMDX",
+    "decimals": 6,
+    "chainId": "comdex-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "comdex",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/comdex",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "04C790D09A40EE958DBDD385B679B5EB60C10F9BC1389CC8F896DC9193A5ED6C",
+      "sampleAccount": "comdex1jz7av7cq45gh5hhrugtak7lkps2ga5v0u64nz6"
+    },
+    "info": {
+      "url": "https://comdex.one/",
+      "documentation": "https://docs.comdex.one/"
+    }
+  },
+  {
+    "id": "neutron",
+    "name": "Neutron",
+    "displayName": "Neutron",
+    "coinId": 90000118,
+    "symbol": "NTRN",
+    "decimals": 6,
+    "chainId": "baryon-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "neutron",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://testnet.mintscan.io/neutron-testnet",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "E18BA087009A05EB6A15A22FE30BA99379B909F74A74120E6F92B9882C45F0D7",
+      "sampleAccount": "neutron1pm4af8pcurxssdxztqw9rexx5f8zfq7uzqfmy8"
+    },
+    "info": {
+      "url": "https://neutron.org/",
+      "documentation": "https://docs.neutron.org/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
@@ -1100,6 +1160,7 @@
       "documentation": "https://developer.algorand.org/docs/algod-rest-paths"
     }
   },
+
   {
     "id": "iotex",
     "name": "IoTeX",
@@ -1125,6 +1186,33 @@
       "source": "https://github.com/iotexproject/iotex-core",
       "rpc": "",
       "documentation": "https://docs.iotex.io/#api"
+    }
+  },
+  {
+    "id": "iotexevm",
+    "name": "IoTeX EVM",
+    "displayName": "IoTeX EVM",
+    "coinId": 10004689,
+    "symbol": "IOTX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/304'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4689",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://iotexscan.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://iotex.io/",
+      "documentation": "https://iotex.io/developers"
     }
   },
   {
@@ -3204,6 +3292,36 @@
     "info": {
       "url": "https://injective.com",
       "documentation": "https://docs.injective.network"
+    }
+  },
+  {
+    "id": "nativecanto",
+    "name": "NativeCanto",
+    "displayName": "NativeCanto",
+    "coinId": 10007700,
+    "symbol": "CANTO",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "chainId": "canto_7700-1",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "hrp": "canto",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://mintscan.io/canto",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "7A7830270097AA9AC8B819EFBB8E0B56579F20ECB7615ECD37E19ABEEFB8DB83",
+      "sampleAccount": "canto17xpfvakm2amg962yls6f84z3kell8c5lz0zsl4"
+    },
+    "info": {
+      "url": "https://canto.io/",
+      "documentation": "https://docs.canto.io/"
     }
   },
   {

@@ -124,6 +124,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ioTeX:
                     let expectedResult = "io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .ioTeXEVM:
+                    let expectedResult = "0x038B8C633873Ca0f06961100BE5d37676EADDD23"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .litecoin:
                     let expectedResult = "ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -292,6 +295,15 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .kujira:
                     let expectedResult = "kujira142j9u5eaduzd7faumygud6ruhdwme98qpvgpme"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .nativeCanto:
+                    let expectedResult = "canto13u6g7vqgw074mgmf2ze2cadzvkz9snlwqua5pd"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .comdex:
+                    let expectedResult = "comdex142j9u5eaduzd7faumygud6ruhdwme98qhtgm0y"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .neutron:
+                    let expectedResult = "neutron142j9u5eaduzd7faumygud6ruhdwme98q5mrmv5"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
