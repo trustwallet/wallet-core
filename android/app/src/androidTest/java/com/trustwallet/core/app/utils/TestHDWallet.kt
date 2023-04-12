@@ -1,8 +1,16 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 package com.trustwallet.core.app.utils
 
 import com.trustwallet.core.app.utils.Numeric
+import com.trustwallet.core.app.utils.toHex
 import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
+import wallet.core.jni.Derivation
 import wallet.core.jni.HDVersion
 import wallet.core.jni.HDWallet
 import wallet.core.jni.Mnemonic
@@ -63,6 +71,52 @@ class TestHDWallet {
         val hd = HDWallet(Numeric.hexStringToByteArray("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), "TREZOR")
         assertEquals(hd.mnemonic(), words)
         assertEquals(Numeric.toHexString(hd.entropy()), "0xba5821e8c356c05ba5f025d9532fe0f21f65d594")
+    }
+
+    @Test
+    fun testGetKeyForCoin() {
+        val coin = CoinType.BITCOIN
+        val wallet = HDWallet(words, password)
+        val key = wallet.getKeyForCoin(coin)
+
+        val address = coin.deriveAddress(key)
+        assertEquals(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+    }
+
+    @Test
+    fun testGetKeyDerivation() {
+        val coin = CoinType.BITCOIN
+        val wallet = HDWallet(words, password)
+
+        val key1 = wallet.getKeyDerivation(coin, Derivation.BITCOINSEGWIT)
+        assertEquals(key1.data().toHex(), "0x1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac")
+
+        val key2 = wallet.getKeyDerivation(coin, Derivation.BITCOINLEGACY)
+        assertEquals(key2.data().toHex(), "0x28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")
+
+        val key3 = wallet.getKeyDerivation(coin, Derivation.BITCOINTESTNET)
+        assertEquals(key3.data().toHex(), "0xca5845e1b43e3adf577b7f110b60596479425695005a594c88f9901c3afe864f")
+    }
+
+    @Test
+    fun testGetAddressForCoin() {
+        val coin = CoinType.BITCOIN
+        val wallet = HDWallet(words, password)
+
+        val address = wallet.getAddressForCoin(coin)
+        assertEquals(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+    }
+
+    @Test
+    fun testGetAddressDerivation() {
+        val coin = CoinType.BITCOIN
+        val wallet = HDWallet(words, password)
+
+        val address1 = wallet.getAddressDerivation(coin, Derivation.BITCOINSEGWIT)
+        assertEquals(address1, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85")
+
+        val address2 = wallet.getAddressDerivation(coin, Derivation.BITCOINLEGACY)
+        assertEquals(address2, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")
     }
 
     @Test

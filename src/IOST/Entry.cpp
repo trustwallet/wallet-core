@@ -16,8 +16,7 @@ using namespace std;
 
 namespace TW::IOST {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte,
-                            const char*) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, [[maybe_unused]] const PrefixVariant& addressPrefixp) const {
     return Account::isValid(address);
 }
 

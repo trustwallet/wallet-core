@@ -16,7 +16,7 @@ target_compile_options(${TARGET_NAME} PRIVATE "-Wall")
 
 set_target_properties(${TARGET_NAME}
         PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
 )
 
@@ -39,6 +39,6 @@ set_target_properties(${TARGET_NAME}
 
 set_target_properties(${TARGET_NAME} 
         PROPERTIES 
-        COMPILE_FLAGS "-O2 -sSTRICT -sUSE_BOOST_HEADERS=1" 
+        COMPILE_FLAGS "-O2 -sSTRICT -sUSE_BOOST_HEADERS=1"
         LINK_FLAGS "--bind --no-entry --closure 1 -O2 -sSTRICT -sASSERTIONS -sMODULARIZE=1 -sALLOW_MEMORY_GROWTH=1 -sDYNAMIC_EXECUTION=0"
 )

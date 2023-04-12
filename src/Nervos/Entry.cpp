@@ -12,9 +12,9 @@
 namespace TW::Nervos {
 using namespace std;
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, byte, byte,
-                            const char* hrp) const {
-    return Address::isValid(address, hrp);
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
+    auto* hrpPrefix = std::get_if<Bech32Prefix>(&addressPrefix);
+    return Address::isValid(address, hrpPrefix ? *hrpPrefix : HRP_NERVOS);
 }
 
 string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, byte,

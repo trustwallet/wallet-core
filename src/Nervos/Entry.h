@@ -17,8 +17,7 @@ namespace TW::Nervos {
 /// includes in this file
 class Entry final : public CoinEntry {
 public:
-    bool validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
-                         const char* hrp) const;
+    bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
                               const char* hrp) const;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;

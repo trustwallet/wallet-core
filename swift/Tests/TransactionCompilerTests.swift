@@ -153,14 +153,14 @@ class TransactionCompilerTests: XCTestCase {
             XCTAssertTrue(signatureInfos.contains { $0.key == key })
             let sigInfo: SignatureInfo = signatureInfos[key]!
             let publicKeyData = sigInfo.publicKey
-            let publicKey = PublicKey(data: publicKeyData, type: PublicKeyType.secp256k1)
+            let publicKey = PublicKey(data: publicKeyData, type: PublicKeyType.secp256k1)!
             let signature = sigInfo.signature
             
             signatureVec.add(data: signature)
             pubkeyVec.add(data: publicKeyData)
 
             // Verify signature (pubkey & hash & signature)
-            publicKey?.verifyAsDER(signature: signature, message: preImageHash)
+            XCTAssertTrue(publicKey.verifyAsDER(signature: signature, message: preImageHash))
         }
         
         /// Step 3: Compile transaction info

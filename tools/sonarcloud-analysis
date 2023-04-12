@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+TARGET=sonar-scanner-cli-4.7.0.2747-linux.zip
+TARGET_DIR=sonar-scanner-4.7.0.2747-linux
+curl https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${TARGET} --output ${TARGET}
+unzip ${TARGET}
+cp tools/sonar-scanner.properties ${TARGET_DIR}/conf
+chmod +x ${TARGET_DIR}/bin/sonar-scanner
+./${TARGET_DIR}/bin/sonar-scanner

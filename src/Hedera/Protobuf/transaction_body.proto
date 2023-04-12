@@ -1,0 +1,76 @@
+// Taken from https://github.com/hashgraph/hedera-protobufs/tree/main/services
+
+syntax = "proto3";
+
+package proto;
+
+/*-
+ * ‌
+ * Hedera Network Services Protobuf
+ * ​
+ * Copyright (C) 2018 - 2021 Hedera Hashgraph, LLC
+ * ​
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ‍
+ */
+
+option java_package = "com.hederahashgraph.api.proto.java";
+option java_multiple_files = true;
+
+import "crypto_transfer.proto";
+import "duration.proto";
+import "basic_types.proto";
+
+/**
+ * A single transaction. All transaction types are possible here.
+ */
+message TransactionBody {
+  /**
+   * The ID for this transaction, which includes the payer's account (the account paying the
+   * transaction fee). If two transactions have the same transactionID, they won't both have an
+   * effect
+   */
+  TransactionID transactionID = 1;
+
+  /**
+   * The account of the node that submits the client's transaction to the network
+   */
+  AccountID nodeAccountID = 2;
+
+  /**
+   * The maximum transaction fee the client is willing to pay
+   */
+  uint64 transactionFee = 3;
+
+  /**
+   * The transaction is invalid if consensusTimestamp > transactionID.transactionValidStart +
+   * transactionValidDuration
+   */
+  Duration transactionValidDuration = 4;
+
+  /**
+   * Any notes or descriptions that should be put into the record (max length 100)
+   */
+  string memo = 6;
+
+  /**
+   * The choices here are arranged by service in roughly lexicographical order. The field ordinals are non-sequential, and a result of the historical order of implementation.
+   */
+  oneof data {
+
+    /**
+     * Transfer amount between accounts
+     */
+    CryptoTransferTransactionBody cryptoTransfer = 14;
+  }
+}

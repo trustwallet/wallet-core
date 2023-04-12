@@ -51,7 +51,7 @@ class KusamaTests: XCTestCase {
                     $0.value = Data(hexString: "0x02540be400")!
                 }
             }
-            $0.network = .kusama
+            $0.network = CoinType.kusama.ss58Prefix
             $0.transactionVersion = 2
             $0.privateKey = key.data
         }

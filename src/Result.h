@@ -122,10 +122,10 @@ struct Result {
     E error() const { return get<E>(); }
 
     /// Returns a new success result with the given payloadd.
-    static Result<T, E> success(T&& val) { return Result(Types::Success<T>(std::forward<T>(val))); }
+    static Result<T, E> success(T&& val) { return Result(Types::Success<T>(std::move(val))); }
 
     /// Returns a new failure result with the given error.
-    static Result<T, E> failure(E&& val) { return Result(Types::Failure<E>(std::forward<E>(val))); }
+    static Result<T, E> failure(E&& val) { return Result(Types::Failure<E>(std::move(val))); }
 
     static Result<T, E> failure(E& val) { return Result(Types::Failure<E>(val)); }
 
@@ -171,7 +171,7 @@ struct Result<void, E> {
 
     /// Returns a new failure result with the given error.
     static Result<void, E> failure(E&& val) {
-        return Result(Types::Failure<E>(std::forward<E>(val)));
+        return Result(Types::Failure<E>(std::move(val)));
     }
 
     operator bool() const { return success_; }

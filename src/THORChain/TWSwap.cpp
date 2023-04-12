@@ -34,7 +34,10 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
         inputProto.vault_address(),
         inputProto.router_address(),
         inputProto.from_amount(),
-        inputProto.to_amount_limit());
+        inputProto.to_amount_limit(),
+        inputProto.affiliate_fee_address(),
+        inputProto.affiliate_fee_rate_bp(),
+        inputProto.extra_memo());
 
     outputProto.set_from_chain(fromChain);
     outputProto.set_to_chain(toChain);

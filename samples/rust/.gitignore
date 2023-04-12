@@ -1,0 +1,6 @@
+# build directory
+target
+
+# Generated proto files
+src/wc_proto/*.rs
+

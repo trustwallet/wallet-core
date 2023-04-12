@@ -17,28 +17,35 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+
     - name: Install system dependencies
       run: brew install boost ninja
+
     - name: Install Android Dependencies
-      run: |
-        tools/install-android-dependencies
+      run: tools/install-android-dependencies
+
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
     - name: Install internal dependencies
-      run: |
-        tools/install-dependencies
+      run: tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
+    
+    - name: Generate files
+      run: tools/generate-files
+
+    - name: Build Kotlin doc
+      run: tools/kotlin-doc
+
     - name: Run test
-      run: |
-        tools/generate-files
-        tools/android-test
+      run: tools/android-test
+
     - name: Build sample app
-      run: |
-        tools/samples-build android
+      run: tools/samples-build android
       env:
         GITHUB_USER: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

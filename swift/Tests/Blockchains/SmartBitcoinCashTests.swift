@@ -10,12 +10,12 @@ import XCTest
 class SmartBitcoinCashTests: XCTestCase {
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "ab4accc9310d90a61fc354d8f353bca4a2b3c0590685d3eb82d0216af3badddc")!)!
+        let key = PrivateKey(data: Data(hexString: "155cbd57319f3d938977b4c18000473eb3c432c4e31b667b63e88559c497d82d")!)!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = AnyAddress(publicKey: pubkey, coin: .smartBitcoinCash)
-        let addressFromString = AnyAddress(string: "0xA3Dcd899C0f3832DFDFed9479a9d828c6A4EB2A7", coin: .smartBitcoinCash)!
+        let addressFromString = AnyAddress(string: "0x8bFC9477684987dcAf0970b9bce5E3D9267C99C0", coin: .smartBitcoinCash)!
 
-        XCTAssertEqual(pubkey.data.hexString, "0448a9ffac8022f1c7eb5253746e24d11d9b6b2737c0aecd48335feabb95a179916b1f3a97bed6740a85a2d11c663d38566acfb08af48a47ce0c835c65c9b23d0d")
+        XCTAssertEqual(pubkey.data.hexString, "046439f94100c802691c53ef18523be2c24d301f0e2bd3b425e832378a5405eff4331d5e57303785969073321fc76a8504a3854bdb21e6ab7b268a1737882a29c0")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 

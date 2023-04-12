@@ -33,6 +33,11 @@ private:
     Identifier mName;
 };
 
+inline ModuleId gAptosAccountModule{Address::one(), "aptos_account"};
+inline ModuleId gAptosCoinModule{Address::one(), "coin"};
+inline ModuleId gAptosManagedCoinsModule{Address::one(), "managed_coin"};
+inline ModuleId gAptosTokenTransfersModule{Address::three(), "token_transfers"};
+
 BCS::Serializer& operator<<(BCS::Serializer& stream, const ModuleId& module) noexcept;
 
 struct TypeTag;
@@ -96,7 +101,7 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, TSigner) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const Vector& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TStructTag& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept;
-static const TypeTag gTransferTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(gAddressOne, "aptos_coin", "AptosCoin", {})})};
-static const TypeTag gOfferNftTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(gAddressThree, "token_transfers", "offer_script", {})})};
+static const TypeTag gTransferTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(Address::one(), "aptos_coin", "AptosCoin", {})})};
+static const TypeTag gOfferNftTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(Address::three(), "token_transfers", "offer_script", {})})};
 
 } // namespace TW::Aptos

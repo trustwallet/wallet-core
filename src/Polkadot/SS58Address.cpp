@@ -34,7 +34,7 @@ bool SS58Address::isValid(const std::string& string, uint32_t network) {
 
 template <typename T>
 Data SS58Address::computeChecksum(const T& data) {
-    auto prefix = Data(SS58Prefix.begin(), SS58Prefix.end());
+    auto prefix = Data(gSS58Prefix.begin(), gSS58Prefix.end());
     append(prefix, Data(data.begin(), data.end()));
     auto hash = Hash::blake2b(prefix, 64);
     auto checksum = Data(checksumSize);

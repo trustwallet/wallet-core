@@ -36,6 +36,7 @@ static const CoinInfo defaultsForMissing = {
     "",
     "",
     0,
+    0
 };
 
 /// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
@@ -73,6 +74,7 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
                 "<%= explorer_tx_url(coin) %>",
                 "<%= explorer_account_url(coin) %>",
                 <% if coin['slip44'].nil? -%><%= coin['coinId'] %><% else -%><%= coin['slip44'] %><% end -%>,
+                <% if coin['ss58Prefix'].nil? -%>0<% else -%><%= coin['ss58Prefix'] %><% end -%>,
             };
 <% end -%>
         default:

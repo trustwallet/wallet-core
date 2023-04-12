@@ -21,6 +21,17 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
     return TW::validateAddress(coin, address);
 }
 
+bool TWAnyAddressIsValidSS58([[maybe_unused]] TWString* string, [[maybe_unused]] enum TWCoinType coin, [[maybe_unused]] uint32_t ss58Prefix) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    return TW::validateAddress(coin, address, ss58Prefix);
+}
+
+bool TWAnyAddressIsValidBech32(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
+    return TW::validateAddress(coin, address, hrpStr.c_str());
+}
+
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
     const auto& address = *reinterpret_cast<const std::string*>(string);
@@ -31,9 +42,45 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
     return new TWAnyAddress{impl};
 }
 
+struct TWAnyAddress* _Nullable TWAnyAddressCreateBech32(TWString* _Nonnull string,
+                                                            enum TWCoinType coin, TWString* _Nonnull hrp) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
+    auto *impl = TW::AnyAddress::createAddress(address, coin, hrpStr.c_str());
+    if (impl == nullptr) {
+        return nullptr;
+    }
+    return new TWAnyAddress{impl};
+}
+
+
+struct TWAnyAddress* TWAnyAddressCreateSS58(TWString* _Nonnull string, enum TWCoinType coin, uint32_t ss58Prefix) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    auto *impl = TW::AnyAddress::createAddress(address, coin, ss58Prefix);
+    if (impl == nullptr) {
+        return nullptr;
+    }
+    return new TWAnyAddress{impl};
+}
+
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin)};
+}
+
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyDerivation(
+    struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, enum TWDerivation derivation) {
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, std::string(""), derivation)};
+}
+
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(
+    struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp) {
+    const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, hrpStr)};
+}
+
+struct TWAnyAddress* TWAnyAddressCreateSS58WithPublicKey(struct TWPublicKey* publicKey, enum TWCoinType coin, uint32_t ss58Prefix) {
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin, ss58Prefix)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {

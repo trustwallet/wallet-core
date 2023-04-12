@@ -324,7 +324,7 @@ TEST(CosmosSigner, SignDirect1) {
 
 TEST(CosmosSigner, SignDirect_0a90010a) {
     const auto bodyBytes = parse_hex("0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637");
-    {   // verify contents of body
+    { // verify contents of body
         auto msgSend = cosmos::bank::v1beta1::MsgSend();
         msgSend.set_from_address("cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6");
         msgSend.set_to_address("cosmos1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5lzv7xu");
@@ -365,6 +365,36 @@ TEST(CosmosSigner, SignDirect_0a90010a) {
     EXPECT_EQ(hex(output.signature()), "48179920259b83396f3f8e5f51adbef6777c1576c2b66ba7803f226779e4a33b0128af07fb226097a099888e2b343cdaec2812615a94d9c6d81ac71c3c034766");
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error_message(), "");
+}
+
+TEST(CosmosSigner, MsgVote) {
+    // Successfully broadcasted https://www.mintscan.io/cosmos/txs/2EFA054B842B1641B131137B13360F95164C6C1D51BB4A4AC6DE8F75F504AA4C
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1366160);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(0);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_msg_vote();
+    message.set_voter("cosmos1mry47pkga5tdswtluy0m8teslpalkdq07pswu4");
+    message.set_proposal_id(77);
+    message.set_option(TW::Cosmos::Proto::Message_VoteOption_YES);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(97681);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount("2418");
+
+    auto privateKey = parse_hex("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+    auto expected = R"(
+                {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClQKUgobL2Nvc21vcy5nb3YudjFiZXRhMS5Nc2dWb3RlEjMITRItY29zbW9zMW1yeTQ3cGtnYTV0ZHN3dGx1eTBtOHRlc2xwYWxrZHEwN3Bzd3U0GAESZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAsv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarlEgQKAggBEhMKDQoFdWF0b20SBDI0MTgQkfsFGkA+Nb3NULc38quGC1x+8ZXry4w9mMX3IA7wUjFboTv7kVOwPlleIc8UqIsjVvKTUFnUuW8dlGQzNR1KkvbvZ1NA"})";
+    assertJSONEqual(output.serialized(), expected);
 }
 
 } // namespace TW::Cosmos::tests

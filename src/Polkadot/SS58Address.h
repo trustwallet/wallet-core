@@ -12,7 +12,7 @@
 
 #include <string>
 
-inline const std::string SS58Prefix{"SS58PRE"};
+inline const std::string gSS58Prefix{"SS58PRE"};
 
 namespace TW {
 

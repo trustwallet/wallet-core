@@ -6,13 +6,16 @@
 
 #include "boost/format.hpp"
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include "Elrond/Address.h"
 #include "Elrond/Signer.h"
+#include "Elrond/Codec.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "TestAccounts.h"
+#include "TestUtilities.h"
 
 using namespace TW;
 
@@ -41,6 +44,189 @@ TEST(ElrondSigner, SignGenericAction) {
 
     ASSERT_EQ(expectedEncoded, encoded);
     ASSERT_EQ(expectedSignature, signature);
+}
+
+TEST(ElrondSigner, SignGenericActionUnDelegate) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(6);
+    input.mutable_generic_action()->mutable_accounts()->set_sender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa");
+    input.mutable_generic_action()->mutable_accounts()->set_receiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r");
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("unDelegate@" + TW::Elrond::Codec::encodeBigInt("1000000000000000000"));
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(12000000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "89f9683af92f7b835bff4e1d0dbfcff5245b3367df4d23538eb799e0ad0a90be29ac3bd3598ce55b35b35ebef68bfa5738eed39fd01adc33476f65bd1b966e0b";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"dW5EZWxlZ2F0ZUAwZGUwYjZiM2E3NjQwMDAw",
+                                     "gasLimit":12000000,
+                                     "gasPrice":1000000000,
+                                     "nonce":6,
+                                     "receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r",
+                                     "sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa",
+                                     "signature":"89f9683af92f7b835bff4e1d0dbfcff5245b3367df4d23538eb799e0ad0a90be29ac3bd3598ce55b35b35ebef68bfa5738eed39fd01adc33476f65bd1b966e0b",
+                                     "value":"0",
+                                     "version":1
+                                    })"_json;
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+    ASSERT_EQ(expectedSignature, signature);
+    // Successfully broadcasted https://explorer.elrond.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
+}
+
+TEST(ElrondSigner, SignGenericActionRedelegateRewards) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_generic_action()->mutable_accounts()->set_sender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa");
+    input.mutable_generic_action()->mutable_accounts()->set_receiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r");
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("reDelegateRewards");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(12000000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "fc0238d41e4d02a24ac8a502cc3d59e406258b5c186c883e2e9aeffa859a818f5317bf22c9bc6d3838c64529953a46c1d4aabc485f96675a4c4dd642f5f50402";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"cmVEZWxlZ2F0ZVJld2FyZHM=",
+                                     "gasLimit":12000000,
+                                     "gasPrice":1000000000,
+                                     "nonce":7,
+                                     "receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r",
+                                     "sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa",
+                                     "signature":"fc0238d41e4d02a24ac8a502cc3d59e406258b5c186c883e2e9aeffa859a818f5317bf22c9bc6d3838c64529953a46c1d4aabc485f96675a4c4dd642f5f50402",
+                                     "value":"0",
+                                     "version":1
+                                    })"_json;
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+    ASSERT_EQ(expectedSignature, signature);
+}
+
+TEST(ElrondSigner, SignGenericActionClaimRewards) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_generic_action()->mutable_accounts()->set_sender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa");
+    input.mutable_generic_action()->mutable_accounts()->set_receiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r");
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("claimRewards");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(6000000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "c453652214d428045721ad5560194a699ce4194ba7edcbdc1c4f5d1e9a605b82bb0a0fd7dba708322b62518d5d5af3e7380efab0804ac00cdafe7598e7498900";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"Y2xhaW1SZXdhcmRz",
+                                     "gasLimit":6000000,
+                                     "gasPrice":1000000000,
+                                     "nonce":7,
+                                     "receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r",
+                                     "sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa",
+                                     "signature":"c453652214d428045721ad5560194a699ce4194ba7edcbdc1c4f5d1e9a605b82bb0a0fd7dba708322b62518d5d5af3e7380efab0804ac00cdafe7598e7498900",
+                                     "value":"0",
+                                     "version":1
+                                    })"_json;
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+    ASSERT_EQ(expectedSignature, signature);
+}
+
+TEST(ElrondSigner, SignGenericActionWithdrawStake) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_generic_action()->mutable_accounts()->set_sender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa");
+    input.mutable_generic_action()->mutable_accounts()->set_receiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r");
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("withdraw");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(12000000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "a2a17498e78e29082c433c009895bd949fc68b2222620d8f5350f821350cde390c15ffe00df4f0e84a074abd892331b79503bf458a35cb90333d1350553d9302";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"d2l0aGRyYXc=",
+                                     "gasLimit":12000000,
+                                     "gasPrice":1000000000,
+                                     "nonce":7,
+                                     "receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r",
+                                     "sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa",
+                                     "signature":"a2a17498e78e29082c433c009895bd949fc68b2222620d8f5350f821350cde390c15ffe00df4f0e84a074abd892331b79503bf458a35cb90333d1350553d9302",
+                                     "value":"0",
+                                     "version":1
+                                    })"_json;
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+    ASSERT_EQ(expectedSignature, signature);
+    // Need to wait 9 days for broadcasting
+}
+
+TEST(ElrondSigner, SignGenericActionDelegate) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(1);
+    input.mutable_generic_action()->mutable_accounts()->set_sender("erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa");
+    input.mutable_generic_action()->mutable_accounts()->set_receiver("erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r");
+    input.mutable_generic_action()->set_value("1");
+    input.mutable_generic_action()->set_data("delegate");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(12000000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "3b9164d47a4e3c0330ae387cd29ba6391f9295acf5e43a16a4a2611645e66e5fa46bf22294ca68fe1948adf45cec8cb47b8792afcdb248bd9adec7c6e6c27108";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"ZGVsZWdhdGU=",
+                                     "gasLimit":12000000,
+                                     "gasPrice":1000000000,
+                                     "nonce":1,
+                                     "receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r",
+                                     "sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa",
+                                     "signature":"3b9164d47a4e3c0330ae387cd29ba6391f9295acf5e43a16a4a2611645e66e5fa46bf22294ca68fe1948adf45cec8cb47b8792afcdb248bd9adec7c6e6c27108",
+                                     "value":"1",
+                                     "version":1
+                                    })"_json;
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
+    ASSERT_EQ(expectedSignature, signature);
+    // Successfully broadcasted https://explorer.elrond.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
 }
 
 TEST(ElrondSigner, SignGenericActionJSON) {

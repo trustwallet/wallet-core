@@ -3,11 +3,7 @@ package com.trustwallet.core.app.utils
 import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.*
 import org.junit.Test
-import wallet.core.jni.Curve
-import wallet.core.jni.Hash
-import wallet.core.jni.PrivateKey
-import wallet.core.jni.PublicKey
-import wallet.core.jni.PublicKeyType
+import wallet.core.jni.*
 
 class TestPrivateKey {
     private val validPrivateKeyData = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5".toHexBytes()
@@ -78,6 +74,13 @@ class TestPrivateKey {
         assertNotNull(derivedData)
 
         assertEquals(derivedData?.toHex(), "0xef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a")
+    }
+
+    @Test
+    fun testGetPublicKeyCoinType() {
+        val privateKeyData = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5".toHexBytes()
+        val privateKey = PrivateKey(privateKeyData)
+        assertEquals(privateKey.getPublicKey(CoinType.ETHEREUM).data().toHex(), "0x0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
     }
 
     @Test

@@ -26,6 +26,7 @@
 #include "EOS/Entry.h"
 #include "Elrond/Entry.h"
 #include "Ethereum/Entry.h"
+#include "Everscale/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
@@ -55,10 +56,12 @@
 #include "VeChain/Entry.h"
 #include "Verge/Entry.h"
 #include "Waves/Entry.h"
+#include "XRP/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Zen/Entry.h"
 #include "Everscale/Entry.h"
+#include "Hedera/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -111,6 +114,7 @@ BitcoinDiamond::Entry bcdDP;
 Zen::Entry zenDP;
 Nervos::Entry NervosDP;
 Everscale::Entry EverscaleDP;
+Hedera::Entry HederaDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -165,6 +169,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainNervos: entry = &NervosDP; break;
         case TWBlockchainEverscale: entry = &EverscaleDP; break;
         case TWBlockchainAptos: entry = &AptosDP; break;
+        case TWBlockchainHedera: entry = &HederaDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
@@ -177,7 +182,7 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     if (nameIn == TWDerivationDefault && derivation.size() > 0) {
         return derivation[0];
     }
-    for (auto deriv: derivation) {
+    for (auto deriv : derivation) {
         if (deriv.name == nameIn) {
             return deriv;
         }
@@ -185,27 +190,62 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     return Derivation();
 }
 
+bool TW::validateAddress(TWCoinType coin, const string& address, const PrefixVariant& prefix) {
+    // dispatch
+    auto* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->validateAddress(coin, address, prefix);
+}
+
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+    const auto* hrp = stringForHRP(TW::hrp(coin));
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
-    const auto* hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
+    bool isValid = false;
+    // First check HRP.
+    if (hrp != nullptr && !std::string(hrp).empty()) {
+        isValid = dispatcher->validateAddress(coin, string, Bech32Prefix(hrp));
+    }
+    // Then check UTXO
+    if ((p2pkh != 0 || p2sh != 0) && !isValid) {
+        return isValid || dispatcher->validateAddress(coin, string, Base58Prefix{.p2pkh = p2pkh, .p2sh = p2sh});
+    }
+    // Then check normal
+    if (!isValid) {
+        isValid = dispatcher->validateAddress(coin, string, std::monostate());
+    }
+    return isValid;
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
+namespace TW::internal {
+    inline std::string normalizeAddress(TWCoinType coin, const string& address) {
+        // dispatch
+        auto* dispatcher = coinDispatcher(coin);
+        assert(dispatcher != nullptr);
+        return dispatcher->normalizeAddress(coin, address);
+    }
+}
+
+std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
     if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";
     }
 
-    // dispatch
-    auto* dispatcher = coinDispatcher(coin);
-    assert(dispatcher != nullptr);
-    return dispatcher->normalizeAddress(coin, address);
+    return internal::normalizeAddress(coin, address);
+}
+
+std::string TW::normalizeAddress(TWCoinType coin, const std::string& address, const PrefixVariant& prefix) {
+    if (!TW::validateAddress(coin, address, prefix)) {
+        // invalid address, not normalizing
+        return "";
+    }
+
+    return internal::normalizeAddress(coin, address);
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
@@ -217,18 +257,21 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWD
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
-    return deriveAddress(coin, publicKey, TWDerivationDefault);
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation) {
+    auto const* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->deriveAddress(coin, publicKey, derivation, addressPrefix);
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
     auto p2pkh = TW::p2pkhPrefix(coin);
-    const auto* hrp = stringForHRP(TW::hrp(coin));
-
+    const char* hrpRaw = [&hrp, coin]() {
+        return hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
+    }();
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrp);
+    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrpRaw);
 }
 
 Data TW::addressToData(TWCoinType coin, const std::string& address) {
@@ -361,6 +404,10 @@ Hash::Hasher TW::addressHasher(TWCoinType coin) {
 
 uint32_t TW::slip44Id(TWCoinType coin) {
     return getCoinInfo(coin).slip44;
+}
+
+std::uint32_t TW::ss58Prefix(TWCoinType coin) {
+    return getCoinInfo(coin).ss58Prefix;
 }
 
 TWString* _Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {

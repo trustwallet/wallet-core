@@ -13,8 +13,12 @@
 
 namespace TW::Bitcoin {
 
-bool Entry::validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
-                            const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
+    auto* base58Prefix = std::get_if<Base58Prefix>(&addressPrefix);
+    auto* hrp = std::get_if<Bech32Prefix>(&addressPrefix);
+    bool isValidBase58 = base58Prefix ? Address::isValid(address, {{base58Prefix->p2pkh}, {base58Prefix->p2sh}}) : false;
+    bool isValidHrp = hrp ? SegwitAddress::isValid(address, *hrp) : false;
+
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
@@ -25,21 +29,18 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, byte p2
     case TWCoinTypeBitcoinGold:
     case TWCoinTypeSyscoin:
     case TWCoinTypeStratis:
-        return SegwitAddress::isValid(address, hrp) || Address::isValid(address, {{p2pkh}, {p2sh}});
-
+        return isValidBase58 || isValidHrp;
     case TWCoinTypeBitcoinCash:
-        return BitcoinCashAddress::isValid(address) || Address::isValid(address, {{p2pkh}, {p2sh}});
-
+        return base58Prefix ? isValidBase58 : BitcoinCashAddress::isValid(address);
     case TWCoinTypeECash:
-        return ECashAddress::isValid(address) || Address::isValid(address, {{p2pkh}, {p2sh}});
-
+        return base58Prefix ? isValidBase58 : ECashAddress::isValid(address);
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypePivx:
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:
     default:
-        return Address::isValid(address, {{p2pkh}, {p2sh}});
+        return isValidBase58;
     }
 }
 
@@ -107,7 +108,7 @@ std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const
     }
 }
 
-template<typename CashAddress>
+template <typename CashAddress>
 inline Data cashAddressToData(const CashAddress&& addr) {
     return subData(addr.getData(), 1);
 }

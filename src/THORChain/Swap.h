@@ -10,6 +10,7 @@
 
 #include <string>
 #include <utility>
+#include <optional>
 
 namespace TW::THORChainSwap {
 
@@ -37,7 +38,10 @@ public:
         const std::string& vaultAddress,    // ThorChainSwap vault, on the source chain. Should be queried afresh, as it may change
         const std::string& routerAddress,   // ThorChain router, only in case of Ethereum source network
         const std::string& fromAmount,      // The source amount, as integer in the smallest native unit of the chain
-        const std::string& toAmountLimit    // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
+        const std::string& toAmountLimit,   // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
+        const std::string& affFeeAddress = "", // Optional affiliate fee destination address.  A Rune address.
+        const std::string& affFeeRate = "",    // Optional affiliate fee, percentage base points, e.g. 100 means 1%, 0 - 1000, as string.
+        const std::string& extraMemo = ""      // Optional extra custom memo, reserved for later use.
     );
 
 protected:
@@ -46,7 +50,7 @@ protected:
     static std::pair<int, std::string> buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
 
 public:
-    static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit);
+    static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit, const std::string& feeAddress, std::optional<uint16_t> feeRate, const std::string& extra);
 };
 
 } // namespace TW

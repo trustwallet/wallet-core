@@ -12,12 +12,15 @@
 #include "TWDerivation.h"
 #include "TWHDVersion.h"
 #include "TWHRP.h"
-#include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
 #include "TWDerivation.h"
+#include "TWPublicKeyType.h"
 
 TW_EXTERN_C_BEGIN
+
+/// Represents a private key.
+struct TWPrivateKey;
 
 /// Coin type for Level 2 of BIP44.
 ///
@@ -129,6 +132,7 @@ enum TWCoinType {
     TWCoinTypeEverscale = 396,
     TWCoinTypeAptos = 637,
     TWCoinTypeNebl = 146,
+    TWCoinTypeHedera = 3030,
 };
 
 /// Returns the blockchain for a coin type.
@@ -255,6 +259,13 @@ TWString* _Nonnull TWCoinTypeChainId(enum TWCoinType coin);
 /// \return SLIP-0044 id for the given coin type
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
+
+/// SS58Prefix for this coin type
+///
+/// \param coin A coin type
+/// \return SS58Prefix for the given coin type
+TW_EXPORT_PROPERTY
+uint32_t TWCoinTypeSS58Prefix(enum TWCoinType coin);
 
 /// public key type for this coin type
 ///

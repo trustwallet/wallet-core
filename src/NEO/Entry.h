@@ -14,7 +14,7 @@ namespace TW::NEO {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry final : public CoinEntry {
 public:
-    bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const override;
+    bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const override;
     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const override;
     Data addressToData(TWCoinType coin, const std::string& address) const override;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;

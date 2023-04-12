@@ -283,7 +283,7 @@ std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version
 bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
     TW::memzero(node);
     const char* curveNameStr = curveName(curve);
-    if (curveNameStr == nullptr || ::strlen(curveNameStr) == 0) {
+    if (curveNameStr == nullptr || std::string(curveNameStr).empty()) {
         return false;
     }
     node->curve = get_curve_by_name(curveNameStr);

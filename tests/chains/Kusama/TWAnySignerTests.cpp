@@ -24,7 +24,7 @@ TEST(TWAnySignerKusama, Sign) {
     input.set_nonce(1);
     input.set_spec_version(2019);
     input.set_private_key(key.data(), key.size());
-    input.set_network(Proto::Network::KUSAMA);
+    input.set_network(TWCoinTypeSS58Prefix(TWCoinTypeKusama));
     input.set_transaction_version(2);
 
     auto balanceCall = input.mutable_balance_call();

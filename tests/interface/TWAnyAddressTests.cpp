@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,12 +9,13 @@
 #include "HexCoding.h"
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 
-TEST(AnyAddress, InvalidString) {
+TEST(TWAnyAddress, InvalidString) {
     auto string = STRING("0x4E5B2e1dc63F6b91cb6Cd759936495434C7e972F");
     auto btcAddress = TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoin);
     auto ethAaddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeEthereum));
@@ -24,7 +25,7 @@ TEST(AnyAddress, InvalidString) {
     ASSERT_EQ(TWAnyAddressCoin(ethAaddress.get()), TWCoinTypeEthereum);
 }
 
-TEST(AnyAddress, Data) {
+TEST(TWAnyAddress, Data) {
     // ethereum
     {
         auto string = STRING("0x4E5B2e1dc63F6b91cb6Cd759936495434C7e972F");
@@ -167,5 +168,36 @@ TEST(AnyAddress, Data) {
         auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeSolana));
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "18f9d8d877393bbbe8d697a8a2e52879cc7e84f467656d1cce6bab5a8d2637ec");
+    }
+}
+
+TEST(TWAnyAddress, createFromPubKey) {
+    constexpr auto pubkey = "02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc";
+    const auto pubkey_twstring = STRING(pubkey);
+    const auto pubkey_data = WRAPD(TWDataCreateWithHexString(pubkey_twstring.get()));
+    const auto pubkey_obj = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pubkey_data.get(), TWPublicKeyTypeSECP256k1));
+
+    const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubkey_obj.get(), TWCoinTypeBitcoin));
+
+    assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
+}
+
+TEST(TWAnyAddress, createFromPubKeyDerivation) {
+    constexpr auto pubkey = "02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc";
+    const auto pubkey_twstring = STRING(pubkey);
+    const auto pubkey_data = WRAPD(TWDataCreateWithHexString(pubkey_twstring.get()));
+    const auto pubkey_obj = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pubkey_data.get(), TWPublicKeyTypeSECP256k1));
+
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationDefault));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinLegacy));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx");
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinTestnet));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
     }
 }

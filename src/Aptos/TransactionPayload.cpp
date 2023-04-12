@@ -48,7 +48,7 @@ nlohmann::json EntryFunction::json() const noexcept {
         {"type", "entry_function_payload"},
         {"function", mModule.shortString() + "::" + mFunction},
         {"type_arguments", tyArgsJson},
-        {"arguments", mJsonArgs}
+        {"arguments", mJsonArgs.empty() ? nlohmann::json::array() : mJsonArgs}
     };
     // clang-format on
     return out;

@@ -1,0 +1,19 @@
+// Derive Bitcoin addresses of different flavor
+
+coin = CoinType.bitcoin
+
+privKeyData = '0xafeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5';
+privKey = PrivateKey.createWithData(HexCoding.decode(privKeyData));
+pubKey = privKey.getPublicKeySecp256k1(true);
+address11 = SegwitAddress.createWithPublicKey(HRP.bitcoin, pubKey).description();
+
+// This is not yet possible yet through AnyAddress
+// TWAnyAddressCreateWithPublicKeyDerivation
+address21 = AnyAddress.createWithPublicKey(pubKey, coin);
+address21.description()
+
+// This is not yet possible yet through HDWallet
+// TWHDWalletGetKeyDerivation
+// TWHDWalletGetAddressDerivation
+wallet = HDWallet.createWithMnemonic('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', '');
+address = wallet.getAddressForCoin(coin);

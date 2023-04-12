@@ -44,7 +44,7 @@ class PolkadotTests: XCTestCase {
             $0.blockHash = Data(hexString: "0x7d5fa17b70251d0806f26156b1b698dfd09e040642fa092595ce0a78e9e84fcd")!
             $0.nonce = 1
             $0.specVersion = 28
-            $0.network = .polkadot
+            $0.network = CoinType.polkadot.ss58Prefix
             $0.transactionVersion = 6
             $0.privateKey = key.data
             $0.era = PolkadotEra.with {
@@ -73,7 +73,7 @@ class PolkadotTests: XCTestCase {
             $0.blockHash = genesisHash
             $0.nonce = 0
             $0.specVersion = 17
-            $0.network = .polkadot
+            $0.network = CoinType.polkadot.ss58Prefix
             $0.transactionVersion = 3
             $0.privateKey = key.data
             $0.stakingCall.bond = PolkadotStaking.Bond.with {
@@ -97,7 +97,7 @@ class PolkadotTests: XCTestCase {
             $0.blockHash = genesisHash
             $0.nonce = 4
             $0.specVersion = 30
-            $0.network = .polkadot
+            $0.network = CoinType.polkadot.ss58Prefix
             $0.transactionVersion = 7
             $0.privateKey = key.data
             $0.stakingCall.bondAndNominate = PolkadotStaking.BondAndNominate.with {
@@ -125,7 +125,7 @@ class PolkadotTests: XCTestCase {
             $0.blockHash = genesisHash
             $0.nonce = 5
             $0.specVersion = 30
-            $0.network = .polkadot
+            $0.network = CoinType.polkadot.ss58Prefix
             $0.transactionVersion = 7
             $0.privateKey = key.data
             $0.stakingCall.bondExtra = PolkadotStaking.BondExtra.with {
@@ -151,7 +151,7 @@ class PolkadotTests: XCTestCase {
             }
             $0.nonce = 6
             $0.specVersion = 9200
-            $0.network = .polkadot
+            $0.network = CoinType.polkadot.ss58Prefix
             $0.transactionVersion = 12
             $0.privateKey = key.data
             $0.stakingCall.chillAndUnbond = PolkadotStaking.ChillAndUnbond.with {

@@ -51,6 +51,64 @@ class ElrondTests: XCTestCase {
         XCTAssertEqual(output.signature, expectedSignature)
         XCTAssertEqual(output.encoded, expectedEncoded)
     }
+    
+    func testSignGenericActionUndelegate() {
+        // Successfully broadcasted https://explorer.elrond.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+
+        let input = ElrondSigningInput.with {
+            $0.genericAction = ElrondGenericAction.with {
+                $0.accounts = ElrondAccounts.with {
+                    $0.senderNonce = 6
+                    $0.sender = "erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa"
+                    $0.receiver = "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r"
+                }
+                $0.value = "0"
+                $0.data = "unDelegate@0de0b6b3a7640000"
+                $0.version = 1
+            }
+            $0.gasPrice = 1000000000
+            $0.gasLimit = 12000000
+            $0.chainID = "1"
+            $0.privateKey = privateKey.data
+        }
+
+        let output: ElrondSigningOutput = AnySigner.sign(input: input, coin: .elrond)
+        let expectedSignature = "89f9683af92f7b835bff4e1d0dbfcff5245b3367df4d23538eb799e0ad0a90be29ac3bd3598ce55b35b35ebef68bfa5738eed39fd01adc33476f65bd1b966e0b"
+        let expectedEncoded = #"{"nonce":6,"value":"0","receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r","sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa","gasPrice":1000000000,"gasLimit":12000000,"data":"dW5EZWxlZ2F0ZUAwZGUwYjZiM2E3NjQwMDAw","chainID":"1","version":1,"signature":"\#(expectedSignature)"}"#
+
+        XCTAssertEqual(output.signature, expectedSignature)
+        XCTAssertEqual(output.encoded, expectedEncoded)
+    }
+    
+    func testSignGenericActionDelegate() {
+        // Successfully broadcasted https://explorer.elrond.com/transactions/e5007662780f8ed677b37b156007c24bf60b7366000f66ec3525cfa16a4564e7
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+
+        let input = ElrondSigningInput.with {
+            $0.genericAction = ElrondGenericAction.with {
+                $0.accounts = ElrondAccounts.with {
+                    $0.senderNonce = 1
+                    $0.sender = "erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa"
+                    $0.receiver = "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r"
+                }
+                $0.value = "1"
+                $0.data = "delegate"
+                $0.version = 1
+            }
+            $0.gasPrice = 1000000000
+            $0.gasLimit = 12000000
+            $0.chainID = "1"
+            $0.privateKey = privateKey.data
+        }
+
+        let output: ElrondSigningOutput = AnySigner.sign(input: input, coin: .elrond)
+        let expectedSignature = "3b9164d47a4e3c0330ae387cd29ba6391f9295acf5e43a16a4a2611645e66e5fa46bf22294ca68fe1948adf45cec8cb47b8792afcdb248bd9adec7c6e6c27108"
+        let expectedEncoded = #"{"nonce":1,"value":"1","receiver":"erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfhllllscrt56r","sender":"erd1aajqh5xjka5fk0c235dwy7qd6lkz2e29tlhy8gncuq0mcr68q34qgswnqa","gasPrice":1000000000,"gasLimit":12000000,"data":"ZGVsZWdhdGU=","chainID":"1","version":1,"signature":"\#(expectedSignature)"}"#
+
+        XCTAssertEqual(output.signature, expectedSignature)
+        XCTAssertEqual(output.encoded, expectedEncoded)
+    }
 
     func testSignEGLDTransfer() {
         let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!

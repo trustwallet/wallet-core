@@ -12,9 +12,10 @@
 
 namespace TW::Zcash {
 
-bool Entry::validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
     if (coin == TWCoinTypeKomodo) {
-        return Bitcoin::Address::isValid(address, {{p2pkh}, {p2sh}});
+        auto* base58Prefix = std::get_if<Base58Prefix>(&addressPrefix);
+        return base58Prefix ? Bitcoin::Address::isValid(address, {{base58Prefix->p2pkh}, {base58Prefix->p2sh}}) : false;
     }
     return TAddress::isValid(address);
 }

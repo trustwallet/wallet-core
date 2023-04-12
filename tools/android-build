@@ -13,3 +13,8 @@ cp trustwalletcore/build/outputs/aar/trustwalletcore-release.aar ../build/trustw
 popd
 
 echo "Now upload build/trustwalletcore.aar to https://github.com/TrustWallet/trust-wallet-core/releases/tag/$version"
+
+echo "Building docs..."
+tools/kotlin-doc
+
+echo "Now upload Kotlin docs from build/kdoc.zip to whatever place it needs to be"

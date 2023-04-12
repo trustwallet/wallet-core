@@ -63,6 +63,7 @@ fi
 "$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=src/Cosmos/Protobuf --cpp_out=src/Cosmos/Protobuf src/Cosmos/Protobuf/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/Hedera/Protobuf --cpp_out=src/Hedera/Protobuf src/Hedera/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=tests/chains/Cosmos/Protobuf --cpp_out=tests/chains/Cosmos/Protobuf tests/chains/Cosmos/Protobuf/*.proto
 
 # Generate Proto interface file

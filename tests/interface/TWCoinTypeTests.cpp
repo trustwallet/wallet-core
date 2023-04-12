@@ -7,6 +7,7 @@
 #include "TestUtilities.h"
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <gtest/gtest.h>
 

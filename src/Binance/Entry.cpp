@@ -13,7 +13,7 @@
 
 namespace TW::Binance {
 
-bool Entry::validateAddress(TWCoinType coin, const std::string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
    switch (coin) {
    case TWCoinTypeTBinance:
        return TAddress::isValid(address);

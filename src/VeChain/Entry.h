@@ -8,6 +8,7 @@
 
 #include "Ethereum/Entry.h"
 #include "../CoinEntry.h"
+#include "Ethereum/Entry.h"
 
 namespace TW::VeChain {
 

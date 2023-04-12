@@ -37,6 +37,12 @@ message TokenTransferMessage {
   StructTag function = 3;
 }
 
+// Necessary fields to process a ManagedTokensRegisterMessage
+message ManagedTokensRegisterMessage {
+  // token function to register, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
+  StructTag function = 1;
+}
+
 // Necessary fields to process a CreateAccountMessage
 message CreateAccountMessage {
   // auth account address to create
@@ -101,24 +107,26 @@ message SigningInput {
   string sender = 1;
   // Sequence number, incremented atomically for each tx present on the account, start at 0 (int64)
   int64 sequence_number = 2;
-  oneof transaction_payload {
-    TransferMessage transfer = 3;
-    TokenTransferMessage token_transfer = 4;
-    CreateAccountMessage create_account = 5;
-    NftMessage nft_message = 6;
-  }
   // Max gas amount that the user is willing to pay (uint64)
-  uint64 max_gas_amount = 7;
+  uint64 max_gas_amount = 3;
   // Gas unit price - queried through API (uint64)
-  uint64 gas_unit_price = 8;
+  uint64 gas_unit_price = 4;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
-  uint64 expiration_timestamp_secs = 9;
+  uint64 expiration_timestamp_secs = 5;
   //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
-  uint32 chain_id = 10;
+  uint32 chain_id = 6;
   //  Private key to sign the transaction (bytes)
-  bytes private_key = 11;
+  bytes private_key = 7;
   // hex encoded function to sign, use it for smart contract approval (string)
-  string any_encoded = 12;
+  string any_encoded = 8;
+
+  oneof transaction_payload {
+    TransferMessage transfer = 9;
+    TokenTransferMessage token_transfer = 10;
+    CreateAccountMessage create_account = 11;
+    NftMessage nft_message = 12;
+    ManagedTokensRegisterMessage register_token = 13;
+  }
 }
 
 // Information related to the signed transaction

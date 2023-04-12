@@ -11,7 +11,7 @@
 namespace TW::Aptos::tests {
 
 TEST(AptosTransactionPayload, PayLoadBasis) {
-    ModuleId module(gAddressOne, "coin");
+    ModuleId module(Address::one(), "coin");
     std::uint64_t amount{1000};
     Address to("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
     BCS::Serializer serializer;

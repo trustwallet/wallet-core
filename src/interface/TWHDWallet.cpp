@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -67,14 +67,17 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
-    auto derivationPath = TW::derivationPath(coin);
-    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
+    return TWHDWalletGetKeyDerivation(wallet, coin, TWDerivationDefault);
 }
 
 TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
-    auto derivationPath = TW::derivationPath(coin);
+    return TWHDWalletGetAddressDerivation(wallet, coin, TWDerivationDefault);
+}
+
+TWString *_Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet *wallet, TWCoinType coin, enum TWDerivation derivation) {
+    auto derivationPath = TW::derivationPath(coin, derivation);
     PrivateKey privateKey = wallet->impl.getKey(coin, derivationPath);
-    std::string address = deriveAddress(coin, privateKey);
+    std::string address = deriveAddress(coin, privateKey, derivation);
     return TWStringCreateWithUTF8Bytes(address.c_str());
 }
 
@@ -82,6 +85,11 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull walle
     auto& s = *reinterpret_cast<const std::string*>(derivationPath);
     const auto path = DerivationPath(s);
     return new TWPrivateKey{ wallet->impl.getKey(coin, path) };
+}
+
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyDerivation(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation) {
+    auto derivationPath = TW::derivationPath(coin, derivation);
+    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {

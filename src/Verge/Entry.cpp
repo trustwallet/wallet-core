@@ -16,9 +16,12 @@ namespace TW::Verge {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte,
-                            const char* hrp) const {
-    return Bitcoin::Address::isValid(address) || TW::Bitcoin::SegwitAddress::isValid(address, hrp);
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, const PrefixVariant& addressPrefix) const {
+    auto* base58Prefix = std::get_if<Base58Prefix>(&addressPrefix);
+    auto* hrp = std::get_if<Bech32Prefix>(&addressPrefix);
+    bool isValidBase58 = base58Prefix ? Bitcoin::Address::isValid(address) : false;
+    bool isValidHrp = hrp ? Bitcoin::SegwitAddress::isValid(address, *hrp) : false;
+    return isValidBase58 || isValidHrp;
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,

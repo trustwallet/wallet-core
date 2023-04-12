@@ -32,7 +32,7 @@ TEST(PolkadotCompiler, CompileWithSignatures) {
     input.set_nonce(0);
     input.set_spec_version(25);
     input.set_transaction_version(5);
-    input.set_network(Polkadot::Proto::POLKADOT);
+    input.set_network(ss58Prefix(TWCoinTypePolkadot));
 
     auto era = input.mutable_era();
     era->set_block_number(5898150);

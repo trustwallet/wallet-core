@@ -135,27 +135,25 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
 
     // Check, by parsing
     EXPECT_EQ((int)TWDataSize(txInputData0.get()), 61);
-    Ethereum::Proto::SigningInput input;
-    ASSERT_TRUE(
-        input.ParseFromArray(TWDataBytes(txInputData0.get()), (int)TWDataSize(txInputData0.get())));
-    EXPECT_EQ(hex(input.chain_id()), "01");
-    EXPECT_EQ(input.to_address(), "0x3535353535353535353535353535353535353535");
-    ASSERT_TRUE(input.transaction().has_transfer());
-    EXPECT_EQ(hex(input.transaction().transfer().amount()), "0de0b6b3a7640000");
+    Ethereum::Proto::SigningInput signingInput;
+    ASSERT_TRUE(signingInput.ParseFromArray(TWDataBytes(txInputData0.get()), (int)TWDataSize(txInputData0.get())));
+    EXPECT_EQ(hex(signingInput.chain_id()), "01");
+    EXPECT_EQ(signingInput.to_address(), "0x3535353535353535353535353535353535353535");
+    ASSERT_TRUE(signingInput.transaction().has_transfer());
+    EXPECT_EQ(hex(signingInput.transaction().transfer().amount()), "0de0b6b3a7640000");
 
     // Set a few other values
     const auto nonce = store(uint256_t(11));
     const auto gasPrice = store(uint256_t(20000000000));
     const auto gasLimit = store(uint256_t(21000));
-    input.set_nonce(nonce.data(), nonce.size());
-    input.set_gas_price(gasPrice.data(), gasPrice.size());
-    input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_tx_mode(Ethereum::Proto::Legacy);
+    signingInput.set_nonce(nonce.data(), nonce.size());
+    signingInput.set_gas_price(gasPrice.data(), gasPrice.size());
+    signingInput.set_gas_limit(gasLimit.data(), gasLimit.size());
+    signingInput.set_tx_mode(Ethereum::Proto::Legacy);
 
     // Serialize back, this shows how to serialize SigningInput protobuf to byte array
-    const auto txInputDataData = data(input.SerializeAsString());
-    const auto txInputData =
-        WRAPD(TWDataCreateWithBytes(txInputDataData.data(), txInputDataData.size()));
+    const auto txInputDataData = data(signingInput.SerializeAsString());
+    const auto txInputData = WRAPD(TWDataCreateWithBytes(txInputDataData.data(), txInputDataData.size()));
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 75);
 
     /// Step 2: Obtain preimage hash
@@ -203,14 +201,14 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
 
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
-        Ethereum::Proto::SigningInput signingInput;
-        ASSERT_TRUE(signingInput.ParseFromArray(TWDataBytes(txInputData.get()),
+        Ethereum::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()),
                                          (int)TWDataSize(txInputData.get())));
         auto key = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
-        signingInput.set_private_key(key.data(), key.size());
+        input.set_private_key(key.data(), key.size());
 
         Ethereum::Proto::SigningOutput output;
-        ANY_SIGN(signingInput, coin);
+        ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }

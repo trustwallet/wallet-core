@@ -176,13 +176,13 @@ TEST(CardanoSigning, ExtraOutputPlan) {
         const auto tokenAmount = store(uint256_t(3000000));
         token->set_amount(tokenAmount.data(), tokenAmount.size());
 
-        const auto txOutput = TxOutput::fromProto(txOutputProto);
-        EXPECT_EQ(txOutput.amount, 2000000ul);
-        const auto toAddress = AddressV3(txOutput.address);
+        const auto txOutput1 = TxOutput::fromProto(txOutputProto);
+        EXPECT_EQ(txOutput1.amount, 2000000ul);
+        const auto toAddress = AddressV3(txOutput1.address);
         EXPECT_EQ(toAddress.string(), "addr1v9jxgu33wyunycmdddnh5a3edq6x2dt3xakkuun6wd6hsar8v9uhvee5w9erw7fnvauhswfhw44k673nv3n8sdmj89n82denweckuv34xvmnw6m9xeerq7rt8ymh5aesxaj8zu3e0y6k67tcd3nkzervxfenqer8ddjn27jkkrj");
-        EXPECT_EQ(txOutput.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].amount, 3000000);
-        EXPECT_EQ(txOutput.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].assetName, "43554259");
-        EXPECT_EQ(txOutput.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].policyId, sundaeTokenPolicy);
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].amount, 3000000);
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].assetName, "43554259");
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].policyId, sundaeTokenPolicy);
     }
     {
         // also test proto toProto / toProto
@@ -190,7 +190,7 @@ TEST(CardanoSigning, ExtraOutputPlan) {
         std::vector<TokenAmount> tokenAmount;
         tokenAmount.emplace_back(sundaeTokenPolicy, "43554259", 3000000);
         const Proto::TxOutput txOutputProto = TxOutput(toAddress.data(), 2000000, TokenBundle(tokenAmount)).toProto();
-        EXPECT_EQ(txOutputProto.amount(), 2000000);
+        EXPECT_EQ(txOutputProto.amount(), 2000000ul);
         EXPECT_EQ(txOutputProto.address(), "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
         const auto token = txOutputProto.token_amount(0);
         EXPECT_EQ(token.policy_id(), sundaeTokenPolicy);

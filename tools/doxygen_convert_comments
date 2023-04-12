@@ -7,6 +7,13 @@ SWIFT_SEE_PATTERN='s/\\see/\- SeeAlso:/g'
 SWIFT_FOLDER_PATH="swift/Sources/Generated/*.swift"
 SWIFT_FOLDER_PATH_BAK="swift/Sources/Generated/*.bak"
 
+KOTLIN_PARAMETER_PATTERN='s/\\param/\@param/g'
+KOTLIN_RETURN_PATTERN='s/\\return/\@return/g'
+KOTLIN_NOTE_PATTERN='s/\\note/\@note/g'
+KOTLIN_SEE_PATTERN='s/\\see/\@see/g'
+KOTLIN_FOLDER_PATH="jni/java/wallet/core/jni/*.java"
+KOTLIN_FOLDER_PATH_BAK="jni/java/wallet/core/jni/*.bak"
+
 function process_swift_comments() {
     perl -pi.bak -e "$SWIFT_PARAMETER_PATTERN" "$1"
     perl -pi.bak -e "$SWIFT_RETURN_PATTERN" "$1"
@@ -14,6 +21,16 @@ function process_swift_comments() {
     perl -pi.bak -e "$SWIFT_SEE_PATTERN" "$1"
 }
 
+function process_kotlin_comments() {
+    # Process multiline /// comments into javadoc /** ... */ format
+    perl -0777 -pi.bak -e 's/\/\/\/([^\n]*\n)((?:\ *\/\/\/[^\n]*\n)*)/\/**\n *$1$2*\/\n/g' $1
+    perl -pi.bak -e 's/\/\/\//\ \*/g' $1
+
+    perl -pi.bak -e "$KOTLIN_PARAMETER_PATTERN" "$1"
+    perl -pi.bak -e "$KOTLIN_RETURN_PATTERN" "$1"
+    perl -pi.bak -e "$KOTLIN_NOTE_PATTERN" "$1"
+    perl -pi.bak -e "$KOTLIN_SEE_PATTERN" "$1"
+}
 
 function swift_convert() {
   echo "Processing swift conversion"
@@ -25,4 +42,15 @@ function swift_convert() {
   rm -rf $SWIFT_FOLDER_PATH_BAK
 }
 
+function kotlin_convert() {
+  echo "Processing kotlin conversion"
+
+  for d in $KOTLIN_FOLDER_PATH ; do
+      process_kotlin_comments $d
+  done
+
+  rm -rf $KOTLIN_FOLDER_PATH_BAK
+}
+
 swift_convert
+kotlin_convert

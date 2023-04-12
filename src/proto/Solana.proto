@@ -187,6 +187,9 @@ message SigningOutput {
 
     // error code description
     string error_message = 3;
+
+    // The unsigned transaction
+    string unsigned_tx = 4;
 }
 
 /// Transaction pre-signing output

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+pushd jni
+
+DOKKA_CLI_JAR=../build/dokka/dokka-cli-1.7.20.jar
+
+declare -a DOKKA_DEPS=(
+dokka-base-1.7.20.jar
+dokka-analysis-1.7.20.jar
+kotlin-analysis-intellij-1.7.20.jar
+kotlin-analysis-compiler-1.7.20.jar
+kotlinx-coroutines-core-1.6.4.jar
+kotlinx-html-jvm-0.8.0.jar
+freemarker-2.3.31.jar
+)
+
+pluginClassPath=""
+for dep in "${DOKKA_DEPS[@]}" ; do
+	pluginClassPath="$pluginClassPath;../build/dokka/$dep"
+done
+
+mkdir -p dokka-out
+
+java -jar ${DOKKA_CLI_JAR} -moduleName WalletCore -outputDir dokka-out -pluginsClasspath $pluginClassPath -sourceSet "-sourceSetName TrustWallet -src java/wallet/core/jni"
+
+zip -rq kdoc.zip dokka-out && mv kdoc.zip ../build/dokka
+
+popd #jni

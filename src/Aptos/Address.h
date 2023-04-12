@@ -27,6 +27,18 @@ public:
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
+    static Address zero() {
+        return Address("0x0");
+    }
+
+    static Address one() {
+        return Address("0x1");
+    }
+
+    static Address three() {
+        return Address("0x3");
+    }
+
     /// Initializes an Aptos address with a string representation.
     explicit Address(const std::string& string);
 
@@ -49,10 +61,6 @@ public:
 constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcept {
     return lhs.bytes == rhs.bytes;
 }
-
-inline const Address gAddressZero = Address("0x0");
-inline const Address gAddressOne = Address("0x1");
-inline const Address gAddressThree = Address("0x3");
 
 BCS::Serializer& operator<<(BCS::Serializer& stream, Address) noexcept;
 
