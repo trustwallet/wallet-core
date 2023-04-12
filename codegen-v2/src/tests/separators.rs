@@ -1,22 +1,16 @@
 use crate::grammar::{GSeparator, GSeparatorItem, ParseTree};
 use crate::reader::Reader;
+use crate::must_ok;
 
 #[test]
 fn test_separator_items() {
-    let driver = Reader::from(" ");
-    let res = GSeparatorItem::derive(driver).unwrap();
-    assert_eq!(res.derived, GSeparatorItem::Space);
-
-    let driver = Reader::from("\n");
-    let res = GSeparatorItem::derive(driver).unwrap();
-    assert_eq!(res.derived, GSeparatorItem::Newline);
-
-    let driver = Reader::from("\t");
-    let res = GSeparatorItem::derive(driver).unwrap();
-    assert_eq!(res.derived, GSeparatorItem::Tab);
+    must_ok!(GSeparatorItem, " ", GSeparatorItem::Space);
+    must_ok!(GSeparatorItem, "\n", GSeparatorItem::Newline);
+    must_ok!(GSeparatorItem, "\t", GSeparatorItem::Tab);
 }
 
 #[test]
+// TODO: Assert
 fn test_separator() {
     let driver = Reader::from(" ");
     let x = GSeparator::derive(driver).unwrap();

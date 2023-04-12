@@ -6,7 +6,6 @@ mod functions;
 mod keyword;
 mod primitives;
 mod separators;
-mod structs;
 mod type_categories;
 mod typedef;
 
