@@ -858,7 +858,7 @@ impl ParseTree for GDefine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GSpaces>()?;
+        let (string, handle) = reader.read_until::<GSpace>()?;
 
         if string != "#define" {
             return Err(Error::Todo);
@@ -875,9 +875,6 @@ impl ParseTree for GDefine {
 
         // Retrieve the value itself, read until newline.
         let (value, reader) = ensure::<GAnyLine>(reader)?;
-
-        // Consume end-of-line
-        let (_, reader) = ensure::<EitherOr<GEndOfLine, GEof>>(reader)?;
 
         let value = value.0.trim().to_string();
         let value = if value.is_empty() { None } else { Some(value) };
@@ -1206,6 +1203,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for typedef statement.
         let (res, reader) = optional::<GTypedef>(reader);
         if let Some(item) = res {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Typedef(item),
                 branch: reader.into_branch(),
