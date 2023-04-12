@@ -29,25 +29,6 @@ fn test_types_categories() {
             GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(GPrimitive::Int)))
         ))))
     );
-    must_ok!(
-        GTypeCategory,
-        "Unknown",
-        GTypeCategory::Unknown(GKeyword::from("Unknown"))
-    );
-    must_ok!(
-        GTypeCategory,
-        "Unknown **",
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Unknown(GKeyword::from("Unknown"))
-        ))))
-    );
-    must_ok!(
-        GTypeCategory,
-        "Unknown * * *",
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(GKeyword::from("Unknown"))))
-        ))))
-    );
 }
 
 #[test]
@@ -74,25 +55,6 @@ fn test_types_categories_struct() {
         "struct SomeStruct * * *",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
             GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStruct::from("SomeStruct"))))
-        ))))
-    );
-    must_ok!(
-        GTypeCategory,
-        "Unknown",
-        GTypeCategory::Unknown(GKeyword::from("Unknown"))
-    );
-    must_ok!(
-        GTypeCategory,
-        "Unknown **",
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Unknown(GKeyword::from("Unknown"))
-        ))))
-    );
-    must_ok!(
-        GTypeCategory,
-        "Unknown * * *",
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(GKeyword::from("Unknown"))))
         ))))
     );
 }

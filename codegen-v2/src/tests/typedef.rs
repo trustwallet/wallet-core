@@ -32,10 +32,10 @@ fn test_keyword_separator_handling() {
 fn test_typedef() {
     must_ok!(
         GTypedef,
-        "typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput;",
+        "typedef int *_Nonnull TW_Aeternity_Proto_SigningInput;",
         GTypedef {
-            ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(
-                GKeyword::from("TWData")
+            ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(
+                GPrimitive::Int
             )))),
             name: "TW_Aeternity_Proto_SigningInput".to_string(),
             markers: GMarkers(vec![GMarker::NonNull])

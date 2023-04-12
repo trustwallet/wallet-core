@@ -155,8 +155,6 @@ pub enum GTypeCategory {
     Struct(GStruct),
     Enum(GEnum),
     Pointer(Box<GTypeCategory>),
-    // TODO: This should not exist.
-    Unknown(GKeyword),
 }
 
 // TODO: Not complete (eg. "unsigned char", etc...)
@@ -1359,19 +1357,7 @@ impl ParseTree for GTypeCategory {
             });
         }
 
-        // Reset buffer.
-        let reader = pending.discard();
-
-        // Handle all else as "Unknown"
-        let (keyword, reader) = ensure::<GKeyword>(reader)?;
-
-        let derived = GTypeCategory::Unknown(keyword);
-        let (derived, reader) = check_for_pointers(derived, reader)?;
-
-        Ok(DerivationResult {
-            derived,
-            branch: reader.into_branch(),
-        })
+        Err(Error::Todo)
     }
 }
 
