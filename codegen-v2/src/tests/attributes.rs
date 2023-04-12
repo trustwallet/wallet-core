@@ -1,50 +1,30 @@
 use crate::grammar::{ensure, GDefine, GKeyword, ParseTree};
 use crate::reader::Reader;
+use crate::tests::{must_err, must_ok};
 
 #[test]
 // TODO: Backslashes should be handled.
 fn test_define_attribute_correct_separator_handling() {
-    let driver = Reader::from("#define SOME_DEF");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
+    let expected = GDefine {
+        key: GKeyword("SOME_DEF".to_string()),
+        value: None,
+    };
 
-    let driver = Reader::from("#define SOME_DEF\n");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
+    must_ok::<GDefine>("#define SOME_DEF", Some(&expected));
+    must_ok::<GDefine>("#define SOME_DEF\n", Some(&expected));
+    must_ok::<GDefine>("#define SOME_DEF\nsome_value", Some(&expected));
+    must_ok::<GDefine>("#define SOME_DEF \nsome_value", Some(&expected));
+    must_ok::<GDefine>("#define SOME_DEF\n some_value", Some(&expected));
 
-    let driver = Reader::from("#define SOME_DEF some_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
+    let expected = GDefine {
+        key: GKeyword("SOME_DEF".to_string()),
+        value: Some("some_value".to_string()),
+    };
 
-    let driver = Reader::from("#define SOME_DEF some_value\n");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
+    must_ok::<GDefine>("#define SOME_DEF some_value", Some(&expected));
+    must_ok::<GDefine>("#define SOME_DEF some_value\n", Some(&expected));
 
-    // OK! The "some_value" part could be another component.
-    let driver = Reader::from("#define SOME_DEF\nsome_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
-
-    let driver = Reader::from("#define SOME_DEF \nsome_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
-
-    let driver = Reader::from("#define SOME_DEF\n some_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_ok());
-
-    // ERR
-    let driver = Reader::from("#define\nSOME_DEF some_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_err());
-
-    let driver = Reader::from("#define \nSOME_DEF some_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_err());
-
-    let driver = Reader::from("#define\n SOME_DEF some_value");
-    let der = GDefine::derive(driver);
-    assert!(der.is_err());
+    must_err::<GDefine>("#define\nSOME_DEF some_value");
 }
 
 #[test]
