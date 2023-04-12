@@ -52,7 +52,7 @@ pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     HeaderPragma(GHeaderPragma),
     Comment(GCommentBlock),
-    Define(GHeaderDefine),
+    Define(GDefine),
     Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
@@ -78,7 +78,7 @@ pub struct GCloseBracket;
 pub struct GDoubleQuote;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GHeaderDefine {
+pub struct GDefine {
     pub key: String,
     pub value: Option<String>,
 }
@@ -827,7 +827,7 @@ impl ParseTree for GFuncName {
     }
 }
 
-impl ParseTree for GHeaderDefine {
+impl ParseTree for GDefine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -854,7 +854,7 @@ impl ParseTree for GHeaderDefine {
         let value = if value.is_empty() { None } else { Some(value) };
 
         Ok(DerivationResult {
-            derived: GHeaderDefine { key, value },
+            derived: GDefine { key, value },
             branch: handle.commit().into_branch(),
         })
     }
@@ -1148,7 +1148,7 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for define statement.
-        let (res, reader) = optional::<GHeaderDefine>(reader);
+        let (res, reader) = optional::<GDefine>(reader);
         if let Some(item) = res {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Define(item),
