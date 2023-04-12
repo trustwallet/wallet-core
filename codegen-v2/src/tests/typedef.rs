@@ -1,12 +1,36 @@
 use crate::grammar::{GMarker, GMarkers, GPrimitive, GType, GTypeCategory, GTypedef, ParseTree};
 use crate::reader::Reader;
+use crate::{must_err, must_ok};
 
 #[test]
+// TODO: Backslashes should be handled.
+fn test_keyword_separator_handling() {
+    let expected = GTypedef {
+        ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
+        name: "var".to_string(),
+        markers: GMarkers(vec![]),
+    };
+
+    must_ok!(GTypedef, "typedef int var;", expected);
+    must_ok!(GTypedef, " typedef int var;", expected);
+    must_ok!(GTypedef, "typedef int var; ", expected);
+    must_ok!(GTypedef, "typedef int var;\n", expected);
+    must_ok!(GTypedef, "typedef int var ;", expected);
+    must_ok!(GTypedef, "typedef\nint\nvar\n;", expected);
+
+    // ERR
+    must_err!(GTypedef, "\ntypedef int var ;");
+    // No semicolon.
+    must_err!(GTypedef, "typedef int var");
+    must_err!(GTypedef, "typedef int var word;");
+}
+
+#[test]
+// TODO: Update/expand
 fn test_typedef() {
-    let driver = Reader::from("typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput;");
-    let res = GTypedef::derive(driver).unwrap();
-    assert_eq!(
-        res.derived,
+    must_ok!(
+        GTypedef,
+        "typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput;",
         GTypedef {
             ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(
                 "TWData".to_string()
@@ -15,32 +39,22 @@ fn test_typedef() {
             markers: GMarkers(vec![GMarker::NonNull])
         }
     );
-
-    let driver = Reader::from("typedef const void TWData;");
-    let res = GTypedef::derive(driver).unwrap();
-    assert_eq!(
-        res.derived,
+    must_ok!(
+        GTypedef,
+        "typedef const void TWData;",
         GTypedef {
             ty: GType::Const(GTypeCategory::Scalar(GPrimitive::Void)),
             name: "TWData".to_string(),
             markers: GMarkers(vec![])
         }
     );
-}
 
-#[test]
-fn test_typedef_invalid() {
-    // ERR: No typedef name.
-    let driver = Reader::from("typedef TWData *_Nonnull;");
-    let res = GTypedef::derive(driver);
-    assert!(res.is_err());
-
-    let driver = Reader::from("typedef TWData *_Nonnull ;");
-    let res = GTypedef::derive(driver);
-    assert!(res.is_err());
-
-    // ERR: No semicolon
-    let driver = Reader::from("typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput");
-    let res = GTypedef::derive(driver);
-    assert!(res.is_err());
+    // ERR
+    // No typedef name.
+    must_err!(GTypedef, "typedef TWData *_Nonnull;");
+    // No semicolon
+    must_err!(
+        GTypedef,
+        "typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput"
+    );
 }

@@ -936,6 +936,9 @@ impl ParseTree for GTypedef {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
         let (string, handle) = reader.read_until::<GSeparator>()?;
 
         if string != "typedef" {
@@ -958,17 +961,21 @@ impl ParseTree for GTypedef {
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Read typedef name.
-        let (name, handle) = reader.read_until::<GSemicolon>()?;
+        let (keyword, reader) = ensure::<GKeyword>(reader)?;
 
-        if name.is_empty() {
-            return Err(Error::Todo);
-        }
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Consume semicolon.
-        let (_, reader) = ensure::<GSemicolon>(handle.commit())?;
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
 
         Ok(DerivationResult {
-            derived: GTypedef { ty, name, markers },
+            // TODO: `name` should be `GKeyword`.
+            derived: GTypedef {
+                ty,
+                name: keyword.0,
+                markers,
+            },
             branch: reader.into_branch(),
         })
     }
