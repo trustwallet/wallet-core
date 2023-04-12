@@ -10,6 +10,6 @@ use tw_memory::ffi::free_string;
 #[test]
 fn tests_ffi_string() {
     unsafe {
-        free_string(c_string_standalone("foo".to_string()));
+        free_string(c_string_standalone("foo"));
     }
 }

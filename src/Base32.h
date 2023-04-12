@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include <cassert>
 
@@ -19,23 +20,24 @@ inline bool decode(const std::string& encoded_in, Data& decoded_out, const char*
     if (encoded_in.empty()) {
         return true;
     }
-    auto decoded = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
-    if (decoded.data == nullptr || decoded.size == 0) {
-        return false;
+    Rust::CByteArrayResultWrapper res = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
+    if (res.isOk()) {
+        decoded_out = res.unwrap().data;
+        return true;
     }
-    Data decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
-    std::free(decoded.data);
-    decoded_out = decoded_vec;
-    return true;
+    return false;
 }
 
 
 /// Encode bytes in Data to Base32 string
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
-inline std::string encode(const Data& val, const char* alphabet = nullptr, bool padding = false) {
-    auto* encoded = Rust::encode_base32(val.data(), val.size(), alphabet, padding);
-    std::string encoded_str(encoded);
-    Rust::free_string(encoded);
+inline std::string encode(const Data &val, const char *alphabet = nullptr, bool padding = false) {
+    auto res = Rust::encode_base32(val.data(), val.size(), alphabet, padding);
+    if (res.code != Rust::OK_CODE) {
+        return {};
+    }
+    std::string encoded_str(res.result);
+    Rust::free_string(res.result);
     return encoded_str;
 }
 

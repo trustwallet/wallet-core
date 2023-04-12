@@ -6,30 +6,24 @@
 
 #include "Base64.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 namespace TW::Base64::internal {
 
 std::string encode(const Data& val, bool is_url) {
-    char* encoded = Rust::encode_base64(val.data(), val.size(), is_url);
-    std::string encoded_str(encoded);
-    Rust::free_string(encoded);
-    return encoded_str;
+    Rust::CStringWrapper res = Rust::encode_base64(val.data(), val.size(), is_url);
+    return res.str;
 }
 
 Data decode(const std::string& val, bool is_url) {
     if (val.empty()) {
-        return Data();
+        return {};
     }
-    auto decoded = Rust::decode_base64(val.c_str(), is_url);
-    if (decoded.data == nullptr || decoded.size == 0) {
-        return Data();
-    }
-    std::vector<uint8_t> decoded_vec(&decoded.data[0], &decoded.data[decoded.size]);
-    std::free(decoded.data);
-    return decoded_vec;
+    Rust::CByteArrayResultWrapper res = Rust::decode_base64(val.c_str(), is_url);
+    return res.unwrap_or_default().data;
 }
 
-}
+} // namespace TW::Base64::internal
 
 namespace TW::Base64 {
 
