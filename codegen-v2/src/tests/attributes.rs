@@ -1,30 +1,34 @@
 use crate::grammar::{ensure, GDefine, GKeyword, ParseTree};
 use crate::reader::Reader;
-use crate::tests::{must_err, must_ok};
+use crate::{must_err, must_ok};
 
 #[test]
 // TODO: Backslashes should be handled.
 fn test_define_attribute_correct_separator_handling() {
+    // Key only.
     let expected = GDefine {
         key: GKeyword("SOME_DEF".to_string()),
         value: None,
     };
 
-    must_ok::<GDefine>("#define SOME_DEF", Some(&expected));
-    must_ok::<GDefine>("#define SOME_DEF\n", Some(&expected));
-    must_ok::<GDefine>("#define SOME_DEF\nsome_value", Some(&expected));
-    must_ok::<GDefine>("#define SOME_DEF \nsome_value", Some(&expected));
-    must_ok::<GDefine>("#define SOME_DEF\n some_value", Some(&expected));
+    must_ok!(GDefine, "#define SOME_DEF");
+    must_ok!(GDefine, "#define SOME_DEF", expected);
+    must_ok!(GDefine, "#define SOME_DEF\n", expected);
+    must_ok!(GDefine, "#define SOME_DEF\nsome_value", expected);
+    must_ok!(GDefine, "#define SOME_DEF \nsome_value", expected);
+    must_ok!(GDefine, "#define SOME_DEF\n some_value", expected);
 
+    // Key and value.
     let expected = GDefine {
         key: GKeyword("SOME_DEF".to_string()),
         value: Some("some_value".to_string()),
     };
 
-    must_ok::<GDefine>("#define SOME_DEF some_value", Some(&expected));
-    must_ok::<GDefine>("#define SOME_DEF some_value\n", Some(&expected));
+    must_ok!(GDefine, "#define SOME_DEF some_value", expected);
+    must_ok!(GDefine, "#define SOME_DEF some_value\n", expected);
 
-    must_err::<GDefine>("#define\nSOME_DEF some_value");
+    // Fails
+    must_err!(GDefine, "#define\nSOME_DEF some_value");
 }
 
 #[test]

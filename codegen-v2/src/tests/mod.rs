@@ -10,34 +10,29 @@ mod structs;
 mod type_categories;
 mod typedef;
 
-fn must_ok<T>(input: &str, comp: Option<&T::Derivation>)
-where
-    T: ParseTree + Debug,
-    <T as ParseTree>::Derivation: Debug + Eq + PartialEq,
-{
-    let reader = Reader::from(input);
-    let res = T::derive(reader);
-
-    dbg!(&res);
-
-    if let Some(comp) = comp {
-        let res = res.unwrap();
-        assert_eq!(&res.derived, comp);
-    } else {
-        assert!(res.is_ok());
-    }
+#[macro_export]
+macro_rules! must_ok {
+    ($ty:ty, $input:expr) => {{
+        let res = <$ty>::derive(Reader::from($input));
+        assert!(res.is_ok(), "{:?}", res);
+    }};
+    ($ty:ty, $input:expr, $expected:expr) => {{
+        let res = <$ty>::derive(Reader::from($input));
+        assert!(
+            res.is_ok() && res.as_ref().unwrap().derived == $expected,
+            "{:?} != {:?}",
+            res,
+            $expected
+        );
+    }};
 }
 
-fn must_err<T: ParseTree>(input: &str)
-where
-    T: ParseTree + Debug,
-    <T as ParseTree>::Derivation: Debug,
-{
-    let driver = Reader::from(input);
-    let res = T::derive(driver);
-
-    dbg!(&res);
-    assert!(res.is_err());
+#[macro_export]
+macro_rules! must_err {
+    ($ty:ty, $input:expr) => {{
+        let res = <$ty>::derive(Reader::from($input));
+        assert!(res.is_err());
+    }};
 }
 
 #[test]
