@@ -69,6 +69,9 @@ pub struct GComma;
 pub struct GSemicolon;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GSpace;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GOpenBracket;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -190,6 +193,8 @@ pub struct GEnum(String);
 pub struct GEof;
 
 pub type GSeparator = Continuum<GSeparatorItem>;
+
+pub type GSpaces = Continuum<GSpace>;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "g_variant", content = "value")]
@@ -712,6 +717,25 @@ impl ParseTree for GSemicolon {
     }
 }
 
+impl ParseTree for GSpace {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == " " {
+                return Ok(DerivationResult {
+                    derived: GSpace,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 impl ParseTree for GOpenBracket {
     type Derivation = Self;
 
@@ -831,31 +855,36 @@ impl ParseTree for GDefine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GSeparator>()?;
+        let (string, handle) = reader.read_until::<GSpaces>()?;
 
         if string != "#define" {
             return Err(Error::Todo);
         }
 
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(handle.commit());
 
         // Retrieve the key name.
         let (key, handle) =
-            reader.read_until::<EitherOr<EitherOr<GNewline, GSeparator>, GEof>>()?;
+            reader.read_until::<EitherOr<GSpaces, GEof>>()?;
+        dbg!(&key);
 
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(handle.commit());
 
         // Retrieve the value itself, read until newline.
-        let (value, handle) = reader.read_until::<EitherOr<GNewline, GEof>>()?;
+        let (value, handle) = reader.read_until::<EitherOr<GSpaces, GEof>>()?;
+        dbg!(&value);
+
+        // Consume end-of-line
+        let (_, reader) = ensure::<EitherOr<GEndOfLine, GEof>>(handle.commit())?;
 
         let value = value.trim().to_string();
         let value = if value.is_empty() { None } else { Some(value) };
 
         Ok(DerivationResult {
             derived: GDefine { key, value },
-            branch: handle.commit().into_branch(),
+            branch: reader.into_branch(),
         })
     }
 }
