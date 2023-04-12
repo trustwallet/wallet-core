@@ -1,4 +1,4 @@
-use crate::grammar::{GMarker, GMarkers, GType, GTypeCategory, GTypedef, ParseTree, GPrimitive};
+use crate::grammar::{GMarker, GMarkers, GPrimitive, GType, GTypeCategory, GTypedef, ParseTree};
 use crate::reader::Reader;
 
 #[test]

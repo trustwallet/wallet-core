@@ -1,4 +1,4 @@
-use crate::grammar::{GDefine, ParseTree};
+use crate::grammar::{GDefine, GKeyword, ParseTree};
 use crate::reader::Reader;
 
 #[test]
@@ -36,7 +36,7 @@ fn test_define_attribute() {
     assert_eq!(
         der.derived,
         GDefine {
-            key: "SOME_DEF".to_string(),
+            key: GKeyword("SOME_DEF".to_string()),
             value: None,
         }
     );
@@ -46,18 +46,19 @@ fn test_define_attribute() {
     assert_eq!(
         der.derived,
         GDefine {
-            key: "SOME_DEF".to_string(),
+            key: GKeyword("SOME_DEF".to_string()),
             value: Some("some value".to_string()),
         }
     );
 
+    // TODO: Should it behave like that?
     let driver = Reader::from("#define SOME_DEF(x)");
     let der = GDefine::derive(driver).unwrap();
     assert_eq!(
         der.derived,
         GDefine {
-            key: "SOME_DEF(x)".to_string(),
-            value: None,
+            key: GKeyword("SOME_DEF".to_string()),
+            value: Some("(x)".to_string()),
         }
     );
 }

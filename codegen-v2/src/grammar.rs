@@ -82,7 +82,7 @@ pub struct GDoubleQuote;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GDefine {
-    pub key: String,
+    pub key: GKeyword,
     pub value: Option<String>,
 }
 
@@ -141,6 +141,9 @@ pub enum GType {
     Mutable(GTypeCategory),
     Const(GTypeCategory),
 }
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GKeyword(pub String);
 
 // TODO: Rename
 // TODO: Should this wrap the item?
@@ -865,21 +868,18 @@ impl ParseTree for GDefine {
         let (_, reader) = wipe::<GSpaces>(handle.commit());
 
         // Retrieve the key name.
-        let (key, handle) =
-            reader.read_until::<EitherOr<GSpaces, GEof>>()?;
-        dbg!(&key);
+        let (key, reader) = ensure::<GKeyword>(reader)?;
 
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(handle.commit());
+        let (_, reader) = wipe::<GSpaces>(reader);
 
         // Retrieve the value itself, read until newline.
-        let (value, handle) = reader.read_until::<EitherOr<GSpaces, GEof>>()?;
-        dbg!(&value);
+        let (value, reader) = ensure::<GAnyLine>(reader)?;
 
         // Consume end-of-line
-        let (_, reader) = ensure::<EitherOr<GEndOfLine, GEof>>(handle.commit())?;
+        let (_, reader) = ensure::<EitherOr<GEndOfLine, GEof>>(reader)?;
 
-        let value = value.trim().to_string();
+        let value = value.0.trim().to_string();
         let value = if value.is_empty() { None } else { Some(value) };
 
         Ok(DerivationResult {
@@ -965,21 +965,18 @@ impl ParseTree for GTypedef {
 
         // Read type
         let (ty, reader) = ensure::<GType>(reader)?;
-        dbg!(&ty);
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
-        dbg!(&markers);
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Read typedef name.
         let (name, handle) = reader.read_until::<GSemicolon>()?;
-        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::Todo);
@@ -991,6 +988,27 @@ impl ParseTree for GTypedef {
         Ok(DerivationResult {
             derived: GTypedef { ty, name, markers },
             branch: reader.into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GKeyword {
+    type Derivation = Self;
+
+    fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+
+        if string.is_empty()
+            || string
+                .chars()
+                .any(|c| (!c.is_alphanumeric() && c != '_' && c != '-'))
+        {
+            return Err(Error::Todo);
+        }
+
+        Ok(DerivationResult {
+            derived: GKeyword(string),
+            branch: handle.commit().into_branch(),
         })
     }
 }
@@ -1055,10 +1073,10 @@ impl ParseTree for GAnyLine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GNewline>()?;
+        let (string, handle) = reader.read_until::<EitherOr<GNewline, GEof>>()?;
 
         // Consume newline character itself..
-        let (_, reader) = ensure::<GNewline>(handle.commit())?;
+        let (_, reader) = wipe::<GNewline>(handle.commit());
 
         Ok(DerivationResult {
             derived: GAnyLine(string),
