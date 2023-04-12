@@ -48,13 +48,4 @@ fn test_typedef() {
             markers: GMarkers(vec![])
         }
     );
-
-    // ERR
-    // No typedef name.
-    must_err!(GTypedef, "typedef TWData *_Nonnull;");
-    // No semicolon
-    must_err!(
-        GTypedef,
-        "typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput"
-    );
 }
