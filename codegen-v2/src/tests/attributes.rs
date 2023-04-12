@@ -11,9 +11,9 @@ fn test_define_attribute_correct_separator_handling() {
         value: None,
     };
 
-    must_ok!(GDefine, "#define SOME_DEF");
     must_ok!(GDefine, "#define SOME_DEF", expected);
     must_ok!(GDefine, "#define SOME_DEF\n", expected);
+    // Note that "some_value" is not parsed.
     must_ok!(GDefine, "#define SOME_DEF\nsome_value", expected);
     must_ok!(GDefine, "#define SOME_DEF \nsome_value", expected);
     must_ok!(GDefine, "#define SOME_DEF\n some_value", expected);
@@ -32,8 +32,7 @@ fn test_define_attribute_correct_separator_handling() {
 }
 
 #[test]
-// TODO: Backslashes should be handled.
-fn test_define_attribute_reoccuring() {
+fn test_define_attribute_continued() {
     let driver = Reader::from("#define SOME_DEF\n#define OTHER_DEF with value");
     let (res, reader) = ensure::<GDefine>(driver).unwrap();
     assert_eq!(
