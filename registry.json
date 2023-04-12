@@ -1130,6 +1130,7 @@
       "documentation": "https://developer.algorand.org/docs/algod-rest-paths"
     }
   },
+
   {
     "id": "iotex",
     "name": "IoTeX",
@@ -1155,6 +1156,33 @@
       "source": "https://github.com/iotexproject/iotex-core",
       "rpc": "",
       "documentation": "https://docs.iotex.io/#api"
+    }
+  },
+  {
+    "id": "iotexevm",
+    "name": "IoTeX EVM",
+    "displayName": "IoTeX EVM",
+    "coinId": 10004689,
+    "symbol": "IOTX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/304'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "4689",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://iotexscan.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://iotex.io/",
+      "documentation": "https://iotex.io/developers"
     }
   },
   {
