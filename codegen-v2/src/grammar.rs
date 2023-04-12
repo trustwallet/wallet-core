@@ -134,7 +134,6 @@ pub enum EitherOr<T, D> {
 
 pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 
-// TODO: Rename?
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "g_variant", content = "value")]
 pub enum GType {
@@ -145,7 +144,6 @@ pub enum GType {
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GKeyword(pub String);
 
-// TODO: Rename
 // TODO: Should this wrap the item?
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GNonAlphanumericItem;
@@ -158,7 +156,7 @@ pub enum GTypeCategory {
     Enum(GEnum),
     Pointer(Box<GTypeCategory>),
     // TODO: Add some sort of `GAnyKeyword` that can parse valid keywords.
-    Unknown(String),
+    Unknown(GKeyword),
 }
 
 // TODO: Not complete (eg. "unsigned char", etc...)
@@ -1380,39 +1378,15 @@ impl ParseTree for GTypeCategory {
         // Reset buffer.
         let reader = pending.discard();
 
-        // Handle aggregate types.
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        // Handle all else as "Unknown"
+        let (keyword, reader) = ensure::<GKeyword>(reader)?;
 
-        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
-            return Err(Error::Todo);
-        }
-
-        let mut derived = GTypeCategory::Unknown(string);
-
-        // TODO: Unify with scalar, use single function.
-        let mut p_reader = handle.commit();
-        loop {
-            // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
-
-            // Try pointer.
-            // TODO: Implement `GAsterisk`?
-            let (slice, handle) = reader.read_amt(1)?;
-            if let Some(slice) = slice {
-                if slice == "*" {
-                    p_reader = handle.commit();
-                    derived = GTypeCategory::Pointer(Box::new(derived));
-                    continue;
-                }
-            }
-
-            p_reader = handle.reset();
-            break;
-        }
+        let derived = GTypeCategory::Unknown(keyword);
+        let (derived, reader) = check_for_pointers(derived, reader)?;
 
         Ok(DerivationResult {
             derived,
-            branch: p_reader.into_branch(),
+            branch: reader.into_branch(),
         })
     }
 }

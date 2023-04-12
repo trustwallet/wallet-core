@@ -1,4 +1,4 @@
-use crate::grammar::{GPrimitive, GStruct, GTypeCategory, ParseTree};
+use crate::grammar::{GKeyword, GPrimitive, GStruct, GTypeCategory, ParseTree};
 use crate::must_ok;
 use crate::reader::Reader;
 
@@ -32,20 +32,20 @@ fn test_types_categories() {
     must_ok!(
         GTypeCategory,
         "Unknown",
-        GTypeCategory::Unknown("Unknown".to_string())
+        GTypeCategory::Unknown(GKeyword::from("Unknown"))
     );
     must_ok!(
         GTypeCategory,
         "Unknown **",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Unknown("Unknown".to_string())
+            GTypeCategory::Unknown(GKeyword::from("Unknown"))
         ))))
     );
     must_ok!(
         GTypeCategory,
         "Unknown * * *",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown("Unknown".to_string())))
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(GKeyword::from("Unknown"))))
         ))))
     );
 }
@@ -79,20 +79,20 @@ fn test_types_categories_struct() {
     must_ok!(
         GTypeCategory,
         "Unknown",
-        GTypeCategory::Unknown("Unknown".to_string())
+        GTypeCategory::Unknown(GKeyword::from("Unknown"))
     );
     must_ok!(
         GTypeCategory,
         "Unknown **",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Unknown("Unknown".to_string())
+            GTypeCategory::Unknown(GKeyword::from("Unknown"))
         ))))
     );
     must_ok!(
         GTypeCategory,
         "Unknown * * *",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown("Unknown".to_string())))
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(GKeyword::from("Unknown"))))
         ))))
     );
 }

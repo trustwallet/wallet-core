@@ -1,4 +1,6 @@
-use crate::grammar::{GMarker, GMarkers, GPrimitive, GType, GTypeCategory, GTypedef, ParseTree};
+use crate::grammar::{
+    GKeyword, GMarker, GMarkers, GPrimitive, GType, GTypeCategory, GTypedef, ParseTree,
+};
 use crate::reader::Reader;
 use crate::{must_err, must_ok};
 
@@ -33,7 +35,7 @@ fn test_typedef() {
         "typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput;",
         GTypedef {
             ty: GType::Mutable(GTypeCategory::Pointer(Box::new(GTypeCategory::Unknown(
-                "TWData".to_string()
+                GKeyword::from("TWData")
             )))),
             name: "TW_Aeternity_Proto_SigningInput".to_string(),
             markers: GMarkers(vec![GMarker::NonNull])
