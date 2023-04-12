@@ -52,6 +52,8 @@ pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     HeaderPragma(GHeaderPragma),
     Comment(GCommentBlock),
+    Define(GHeaderDefine),
+    Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
     Marker(GMarker),
@@ -1141,6 +1143,24 @@ impl ParseTree for GHeaderFileItem {
         if let Some(item) = res {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Comment(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for define statement.
+        let (res, reader) = optional::<GHeaderDefine>(reader);
+        if let Some(item) = res {
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Define(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for typedef statement.
+        let (res, reader) = optional::<GTypedef>(reader);
+        if let Some(item) = res {
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::Typedef(item),
                 branch: reader.into_branch(),
             });
         }
