@@ -88,6 +88,13 @@ pub struct GHeaderInclude(String);
 pub struct GHeaderPragma(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GTypedef {
+    pub ty: GType,
+    pub name: String,
+    pub markers: GMarkers,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GCommentLine(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -908,6 +915,48 @@ impl ParseTree for GHeaderPragma {
 
         Ok(DerivationResult {
             derived: GHeaderPragma(string.trim().to_string()),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GTypedef {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+
+        if string != "typedef" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+        // Read type
+        let (ty, reader) = ensure::<GType>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Derive (optional) markers.
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Read typedef name.
+        let (name, handle) = reader.read_until::<GSemicolon>()?;
+
+        if name.is_empty() {
+            return Err(Error::Todo);
+        }
+
+        // Consume semicolon.
+        let (_, reader) = ensure::<GSemicolon>(handle.commit())?;
+
+        Ok(DerivationResult {
+            derived: GTypedef { ty, name, markers },
             branch: reader.into_branch(),
         })
     }

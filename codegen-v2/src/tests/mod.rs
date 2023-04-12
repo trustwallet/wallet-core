@@ -7,6 +7,7 @@ mod primitives;
 mod separators;
 mod structs;
 mod type_categories;
+mod typedef;
 
 #[test]
 fn test_non_alphanumeric_items() {
