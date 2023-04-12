@@ -6,30 +6,25 @@ use crate::reader::Reader;
 use crate::{must_err, must_ok};
 
 #[test]
-fn test_func_params_with_marker() {
-    must_ok!(
-        GParamItem,
-        "int _Nonnull my_var\n",
-        GParamItem {
-            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-            name: GParamName::from("my_var"),
-            markers: GMarkers(vec![GMarker::NonNull]),
-        }
-    );
+fn test_func_params_separator_handling() {
+    let expected = GParamItem {
+        ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
+        name: GParamName::from("my_var"),
+        markers: GMarkers(vec![]),
+    };
 
-    must_ok!(
-        GParamItem,
-        "bool\n_Nonnull  some_bool\n",
-        GParamItem {
-            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-            name: GParamName::from("some_bool"),
-            markers: GMarkers(vec![GMarker::NonNull]),
-        }
-    );
+    must_ok!(GParamItem, "int my_var", expected);
+    must_ok!(GParamItem, " int my_var", expected);
+    must_ok!(GParamItem, "int my_var ", expected);
+    must_ok!(GParamItem, "int my_var\n", expected);
+    must_ok!(GParamItem, "int\nmy_var", expected);
+    must_ok!(GParamItem, "int\nmy_var\n", expected);
+
+    must_err!(GParamItem, "\nint my_var");
 }
 
 #[test]
-fn test_func_params_without_marker() {
+fn test_func_params() {
     must_ok!(
         GParamItem,
         "int my_var",
@@ -39,7 +34,6 @@ fn test_func_params_without_marker() {
             markers: GMarkers(vec![]),
         }
     );
-
     must_ok!(
         GParamItem,
         "bool \nsome_bool",
@@ -47,6 +41,24 @@ fn test_func_params_without_marker() {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
             name: GParamName::from("some_bool"),
             markers: GMarkers(vec![]),
+        }
+    );
+    must_ok!(
+        GParamItem,
+        "int _Nonnull my_var\n",
+        GParamItem {
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
+            name: GParamName::from("my_var"),
+            markers: GMarkers(vec![GMarker::NonNull]),
+        }
+    );
+    must_ok!(
+        GParamItem,
+        "bool\n_Nonnull  some_bool\n",
+        GParamItem {
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
+            name: GParamName::from("some_bool"),
+            markers: GMarkers(vec![GMarker::NonNull]),
         }
     );
 }

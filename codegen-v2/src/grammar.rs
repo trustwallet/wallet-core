@@ -491,6 +491,9 @@ impl ParseTree for GParamItem {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
         // Derive parameter type.
         let (ty_derived, reader) = ensure::<GType>(reader)?;
 
