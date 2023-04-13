@@ -1,22 +1,23 @@
-use crate::grammar::{GEof, GNonAlphanumeric, GNonAlphanumericItem, ParseTree};
+use crate::grammar::{GEof, GNonAlphanumeric, GNonAlphanumericItem};
 
 mod attributes;
+mod comment;
 mod functions;
 mod keyword;
 mod primitives;
 mod separators;
 mod type_categories;
 mod typedef;
-mod comment;
+mod enums;
 
 #[macro_export]
 macro_rules! must_ok {
     ($ty:ty, $input:expr) => {{
-        let res = <$ty>::derive($crate::reader::Reader::from($input));
+        let res = <$ty as $crate::grammar::ParseTree>::derive($crate::reader::Reader::from($input));
         assert!(res.is_ok(), "{:?}", res);
     }};
     ($ty:ty, $input:expr, $expected:expr) => {{
-        let res = <$ty>::derive($crate::reader::Reader::from($input));
+        let res = <$ty as $crate::grammar::ParseTree>::derive($crate::reader::Reader::from($input));
         assert!(
             res.is_ok() && res.as_ref().unwrap().derived == $expected,
             "{:?} != {:?}",
@@ -29,7 +30,7 @@ macro_rules! must_ok {
 #[macro_export]
 macro_rules! must_err {
     ($ty:ty, $input:expr) => {{
-        let res = <$ty>::derive($crate::reader::Reader::from($input));
+        let res = <$ty as $crate::grammar::ParseTree>::derive($crate::reader::Reader::from($input));
         assert!(res.is_err());
     }};
 }

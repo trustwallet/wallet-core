@@ -1,4 +1,4 @@
-use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory, ParseTree};
+use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory};
 use crate::must_ok;
 
 #[test]
