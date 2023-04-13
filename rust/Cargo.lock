@@ -1287,6 +1287,7 @@ version = "0.1.0"
 dependencies = [
  "pb-rs",
  "quick-protobuf",
+ "tw_memory",
 ]
 
 [[package]]
@@ -1363,6 +1364,7 @@ dependencies = [
  "tw_hash",
  "tw_memory",
  "tw_move_parser",
+ "tw_proto",
  "tw_starknet",
 ]
 
