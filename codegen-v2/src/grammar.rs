@@ -362,7 +362,6 @@ impl ParseTree for GEnumDecl {
             // Check for possible assignment ("=").
             let (assignment, reader) = optional::<GAssignment>(reader);
             if assignment.is_none() {
-
                 // Track variant without value.
                 variants.push((field_name, None));
 
@@ -906,20 +905,33 @@ impl ParseTree for GStaticVar {
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
-        // Check for assignment.
+        // Check for assignment ("=").
         let (_, reader) = ensure::<GAssignment>(reader)?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        // Check and consume for doube quote.
+        let (quote, reader) = optional::<GDoubleQuote>(reader);
 
-        // Read to end of line.
-        let (var_value, handle) = reader.read_until::<GSemicolon>()?;
+        // TODO: This should be determiend by checking the type, not whether
+        // there's a quote or not.
+        let (var_value, reader) = if quote.is_some() {
+            // Read until doubleq uote.
+            let (var_value, handle) = reader.read_until::<GDoubleQuote>()?;
+
+            // Check and consume for quote.
+            let (_, reader) = ensure::<GDoubleQuote>(handle.commit())?;
+
+            (var_value, reader)
+        } else {
+            // Read to end .
+            let (var_value, handle) = reader.read_until::<GSemicolon>()?;
+            (var_value, handle.commit())
+        };
 
         // Consume semicolon.
-        let (_, reader) = ensure::<GSemicolon>(handle.commit())?;
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
 
         Ok(DerivationResult {
             derived: GStaticVar {

@@ -103,7 +103,7 @@ fn test_types_static() {
             GPrimitive::Char,
         )))),
         name: GKeyword::from("SOME_VAR"),
-        value: "\"some_value\"".to_string(),
+        value: "some_value".to_string(),
         markers: GMarkers(vec![GMarker::NonNull]),
     };
 
@@ -111,6 +111,23 @@ fn test_types_static() {
     must_ok!(
         GStaticVar,
         "static const char *_Nonnull SOME_VAR = \"some_value\";",
+        expected
+    );
+
+    let expected = GStaticVar {
+        ty: GType::Const(GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(
+            GPrimitive::Char,
+        )))),
+        name: GKeyword::from("SOME_VAR"),
+        // TODO: Should be a variant based on `ty`.
+        value: "50".to_string(),
+        markers: GMarkers(vec![GMarker::NonNull]),
+    };
+
+    #[rustfmt::skip]
+    must_ok!(
+        GStaticVar,
+        "static const char *_Nonnull SOME_VAR = 50;",
         expected
     );
 }
