@@ -9,3 +9,11 @@ pub mod base58;
 pub mod base64;
 pub mod ffi;
 pub mod hex;
+
+pub type EncodingResult<T> = Result<T, EncodingError>;
+
+#[derive(Debug, PartialEq)]
+pub enum EncodingError {
+    InvalidInput,
+    InvalidAlphabet,
+}
