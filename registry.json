@@ -728,6 +728,35 @@
     }
   },
   {
+    "id": "sommelier",
+    "name": "Sommelier",
+    "displayName": "Sommelier",
+    "coinId": 11000118,
+    "symbol": "SOMM",
+    "decimals": 6,
+    "chainId": "sommelier-3",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "somm",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/sommelier",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "E73A9E5E534777DDADF7F69A5CB41972894B862D1763FA4081FE913D8D3A5E80",
+      "sampleAccount": "somm10d5wmqvezwtj20u5hg3wuvwucce2nhsy0tzqgn"
+    },
+    "info": {
+      "url": "https://www.sommelier.finance/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,

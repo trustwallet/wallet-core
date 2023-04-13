@@ -300,6 +300,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeNeutron:
             EXPECT_EQ(address, "neutron1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0aykpkx");
             break;
+        case TWCoinTypeSommelier:
+            EXPECT_EQ(address, "somm1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z048s0at");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
