@@ -976,8 +976,10 @@ impl ParseTree for GHeaderInclude {
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
 
-        // Read the fine path to include
+        // Read the file path to include
         let (file_path, handle) = reader.read_until::<GDoubleQuote>()?;
+
+        // TODO: Return error if file_path is empty?
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(handle.commit());
