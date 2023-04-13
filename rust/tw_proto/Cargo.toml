@@ -1,7 +1,10 @@
 [package]
-name = "tw-proto"
+name = "tw_proto"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 quick-protobuf = "0.8.1"
+
+[build-dependencies]
+pb-rs = "0.10.0"
