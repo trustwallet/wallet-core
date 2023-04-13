@@ -1,4 +1,6 @@
-use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory, GStaticVar, GType, GMarkers, GMarker};
+use crate::grammar::{
+    GKeyword, GMarker, GMarkers, GPrimitive, GStaticVar, GStructName, GType, GTypeCategory,
+};
 use crate::must_ok;
 
 #[test]
