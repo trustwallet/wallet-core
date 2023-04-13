@@ -123,5 +123,6 @@ class CoinAddressDerivationTests {
         NATIVECANTO -> assertEquals("canto13u6g7vqgw074mgmf2ze2cadzvkz9snlwqua5pd", address)
         COMDEX -> assertEquals("comdex142j9u5eaduzd7faumygud6ruhdwme98qhtgm0y", address)
         NEUTRON -> assertEquals("neutron142j9u5eaduzd7faumygud6ruhdwme98q5mrmv5", address)
+        SOMMELIER -> assertEquals("somm142j9u5eaduzd7faumygud6ruhdwme98quc948e", address)
     }
 }
