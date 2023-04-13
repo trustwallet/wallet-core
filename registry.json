@@ -757,6 +757,36 @@
     }
   },
   {
+    "id": "fetchai",
+    "name": "FetchAI",
+    "displayName": "Fetch AI",
+    "coinId": 12000118,
+    "symbol": "FET",
+    "decimals": 6,
+    "chainId": "fetchhub-4",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "fetch",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/fetchai",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "7EB4F6C26809BA047F81CEFD0889775AC8522B7B8AF559B436083BE7039C5EA6",
+      "sampleAccount": "fetch1t3qet68dr0qkmrjtq89lrx837qa2t05265qy6s"
+    },
+    "info": {
+      "url": "https://fetch.ai/",
+      "documentation": "https://docs.fetch.ai/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
