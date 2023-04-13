@@ -1,6 +1,5 @@
 use crate::grammar::{GPrimitive, ParseTree};
 use crate::must_ok;
-use crate::reader::Reader;
 
 #[test]
 fn test_primitives() {

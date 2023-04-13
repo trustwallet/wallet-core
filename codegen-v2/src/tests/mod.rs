@@ -1,5 +1,4 @@
-use crate::grammar::{GEof, GHeaderInclude, GNonAlphanumeric, GNonAlphanumericItem, ParseTree};
-use crate::reader::Reader;
+use crate::grammar::{GEof, GNonAlphanumeric, GNonAlphanumericItem, ParseTree};
 
 mod attributes;
 mod functions;
@@ -8,15 +7,16 @@ mod primitives;
 mod separators;
 mod type_categories;
 mod typedef;
+mod comment;
 
 #[macro_export]
 macro_rules! must_ok {
     ($ty:ty, $input:expr) => {{
-        let res = <$ty>::derive(Reader::from($input));
+        let res = <$ty>::derive($crate::reader::Reader::from($input));
         assert!(res.is_ok(), "{:?}", res);
     }};
     ($ty:ty, $input:expr, $expected:expr) => {{
-        let res = <$ty>::derive(Reader::from($input));
+        let res = <$ty>::derive($crate::reader::Reader::from($input));
         assert!(
             res.is_ok() && res.as_ref().unwrap().derived == $expected,
             "{:?} != {:?}",
@@ -29,7 +29,7 @@ macro_rules! must_ok {
 #[macro_export]
 macro_rules! must_err {
     ($ty:ty, $input:expr) => {{
-        let res = <$ty>::derive(Reader::from($input));
+        let res = <$ty>::derive($crate::reader::Reader::from($input));
         assert!(res.is_err());
     }};
 }

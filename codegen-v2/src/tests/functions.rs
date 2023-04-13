@@ -2,7 +2,6 @@ use crate::grammar::{
     GFuncName, GFunctionDecl, GMarker, GMarkers, GParamItem, GParamName, GPrimitive, GReturnValue,
     GStructName, GType, GTypeCategory, ParseTree,
 };
-use crate::reader::Reader;
 use crate::{must_err, must_ok};
 
 #[test]

@@ -72,6 +72,12 @@ pub struct GSemicolon;
 pub struct GSpace;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GForwardSlash;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GAsterisk;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GOpenBracket;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -115,6 +121,9 @@ pub struct GNewline;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GAnyLine(String);
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GInlineComment(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEndOfLine;
@@ -702,6 +711,44 @@ impl ParseTree for GSpace {
     }
 }
 
+impl ParseTree for GForwardSlash {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "/" {
+                return Ok(DerivationResult {
+                    derived: GForwardSlash,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GAsterisk {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "*" {
+                return Ok(DerivationResult {
+                    derived: GAsterisk,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 impl ParseTree for GOpenBracket {
     type Derivation = Self;
 
@@ -1055,6 +1102,31 @@ impl ParseTree for GAnyLine {
     }
 }
 
+impl ParseTree for GInlineComment {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
+        let (_, reader) = ensure::<GForwardSlash>(reader)?;
+        let (_, reader) = ensure::<GAsterisk>(reader)?;
+
+        // TODO: Should have some sort of read_until_str` method.
+        // TODO: Does not handle `/* some * word */`.
+        let (comment, handle) = reader.read_until::<GAsterisk>()?;
+        let reader = handle.commit();
+
+        // Consume ending characters.
+        let (_, reader) = ensure::<GAsterisk>(reader)?;
+        let (_, reader) = ensure::<GForwardSlash>(reader)?;
+
+        Ok(
+            DerivationResult { derived: GInlineComment(comment.trim().to_string()), branch: reader.into_branch() }
+        )
+    }
+}
+
 impl ParseTree for GFunctionDecl {
     type Derivation = Self;
 
@@ -1384,6 +1456,12 @@ mod tests {
     impl From<&str> for GKeyword {
         fn from(string: &str) -> Self {
             GKeyword(string.to_string())
+        }
+    }
+
+    impl From<&str> for GInlineComment {
+        fn from(string: &str) -> Self {
+            GInlineComment(string.to_string())
         }
     }
 

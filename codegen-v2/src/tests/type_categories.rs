@@ -1,6 +1,5 @@
 use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory, ParseTree};
 use crate::must_ok;
-use crate::reader::Reader;
 
 #[test]
 fn test_types_categories() {
