@@ -2,13 +2,13 @@ use crate::grammar::{GEof, GNonAlphanumeric, GNonAlphanumericItem};
 
 mod attributes;
 mod comment;
+mod enums;
 mod functions;
 mod keyword;
 mod primitives;
 mod separators;
 mod type_categories;
 mod typedef;
-mod enums;
 
 #[macro_export]
 macro_rules! must_ok {

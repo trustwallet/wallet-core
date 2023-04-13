@@ -351,21 +351,22 @@ impl ParseTree for GEnumDecl {
         // Check for opening curly bracket.
         let (_, reader) = ensure::<GOpenCurlyBracket>(reader)?;
 
-        // Ignore leading separators.
-        let (_, mut reader) = wipe::<GSeparator>(reader);
-
         // Parse variant(s)
         let mut variants = vec![];
         let mut p_reader = reader;
         loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
             // Read variant name.
-            let (field_name, reader) = optional::<GKeyword>(p_reader);
+            let (field_name, reader) = optional::<GKeyword>(reader);
             if field_name.is_none() {
                 p_reader = reader;
                 break;
             }
 
             let field_name = field_name.unwrap();
+            dbg!(&field_name);
 
             // Ignore leading separators.
             let (_, reader) = wipe::<GSeparator>(reader);
@@ -373,8 +374,10 @@ impl ParseTree for GEnumDecl {
             // Check for possible assignment ("=").
             let (assignment, reader) = optional::<GAssignment>(reader);
             if assignment.is_none() {
+                dbg!("no assignment");
                 // Check for comma.
-                let (_, reader) = ensure::<GKeyword>(reader)?;
+                let (_, reader) = ensure::<GComma>(reader)?;
+                dbg!("comma found");
 
                 // Track variant without value.
                 variants.push((field_name, None));
@@ -394,13 +397,16 @@ impl ParseTree for GEnumDecl {
             let (_, reader) = wipe::<GSeparator>(reader);
 
             // Check for comma.
-            let (_, reader) = ensure::<GKeyword>(reader)?;
+            let (_, reader) = ensure::<GComma>(reader)?;
 
             p_reader = reader;
         }
 
         Ok(DerivationResult {
-            derived: GEnumDecl { name: enum_name, variants },
+            derived: GEnumDecl {
+                name: enum_name,
+                variants,
+            },
             branch: p_reader.into_branch(),
         })
     }

@@ -1,4 +1,4 @@
-use crate::grammar::{GPrimitive};
+use crate::grammar::GPrimitive;
 use crate::must_ok;
 
 #[test]

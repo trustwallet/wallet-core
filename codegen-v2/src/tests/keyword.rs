@@ -1,4 +1,4 @@
-use crate::grammar::{GKeyword};
+use crate::grammar::GKeyword;
 use crate::{must_err, must_ok};
 
 #[test]
