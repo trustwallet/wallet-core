@@ -5,7 +5,6 @@ use grammar::{GHeaderFileItem, ParseTree};
 use reader::Reader;
 use std::{
     collections::HashMap,
-    fmt::format,
     path::{Path, PathBuf},
 };
 
