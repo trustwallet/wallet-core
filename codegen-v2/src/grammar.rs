@@ -959,8 +959,10 @@ impl ParseTree for GHeaderInclude {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<GSeparator>()?;
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
 
+        let (string, handle) = reader.read_until::<GSeparator>()?;
         if string != "#include" {
             return Err(Error::Todo);
         }
@@ -980,7 +982,7 @@ impl ParseTree for GHeaderInclude {
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(handle.commit());
 
-        // Check for closing quote `"`.
+        // Consume closing quote.
         let (_, reader) = ensure::<GDoubleQuote>(reader)?;
 
         Ok(DerivationResult {
