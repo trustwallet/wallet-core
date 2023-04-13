@@ -41,7 +41,9 @@ fn test_types_categories_struct() {
     must_ok!(
         GTypeCategory,
         "struct SomeStruct*",
-        GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from("SomeStruct"))))
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from(
+            "SomeStruct"
+        ))))
     );
     must_ok!(
         GTypeCategory,
@@ -54,7 +56,9 @@ fn test_types_categories_struct() {
         GTypeCategory,
         "struct SomeStruct * * *",
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
-            GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from("SomeStruct"))))
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from(
+                "SomeStruct"
+            ))))
         ))))
     );
 }

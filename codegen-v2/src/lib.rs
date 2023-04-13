@@ -3,7 +3,10 @@ extern crate serde;
 
 use grammar::{GHeaderFileItem, ParseTree};
 use reader::Reader;
-use std::{path::{Path, PathBuf}, collections::HashMap};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 mod grammar;
 mod reader;
@@ -19,10 +22,10 @@ pub enum Error {
 }
 
 pub struct CHeaderDirectory {
-    map: HashMap<PathBuf, Vec<GHeaderFileItem>>
+    map: HashMap<PathBuf, Vec<GHeaderFileItem>>,
 }
 
-pub fn parse_file(path: &Path) -> Result<CHeaderDirectory> {
+pub fn parse_file(path: &Path, mut main_dir: CHeaderDirectory) -> Result<CHeaderDirectory> {
     let parent = path.parent().unwrap();
 
     let content = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
@@ -30,8 +33,6 @@ pub fn parse_file(path: &Path) -> Result<CHeaderDirectory> {
     let content: String = content.chars().filter(|c| c.is_ascii()).collect();
 
     let mut reader = Reader::from(content.as_str());
-
-    let mut map = HashMap::new();
     let mut items = vec![];
 
     loop {
@@ -43,10 +44,14 @@ pub fn parse_file(path: &Path) -> Result<CHeaderDirectory> {
             if let GHeaderFileItem::HeaderInclude(include) = &derived {
                 let path = parent.join(Path::new(&include.0));
 
-                let child_dir = parse_file(&path)?;
-                map.extend(child_dir.map);
+                // If the `#include`d file is not yet parsed, parse it.
+                // Otherwise, skip it.
+                if !main_dir.map.contains_key(&path) {
+                    main_dir = parse_file(&path, main_dir)?;
+                }
             }
 
+            // Indicates EOF, implying this loop must exit.
             if let GHeaderFileItem::Eof = derived {
                 break;
             }
@@ -57,11 +62,10 @@ pub fn parse_file(path: &Path) -> Result<CHeaderDirectory> {
         }
     }
 
-    map.insert(path.to_path_buf(), items);
+    // Update the map with newly parsed items.
+    main_dir.map.insert(path.to_path_buf(), items);
 
-    Ok(CHeaderDirectory {
-        map
-    })
+    Ok(main_dir)
 }
 
 #[test]

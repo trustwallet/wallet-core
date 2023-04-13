@@ -1,6 +1,6 @@
 use crate::grammar::{GSeparator, GSeparatorItem, ParseTree};
-use crate::reader::Reader;
 use crate::must_ok;
+use crate::reader::Reader;
 
 #[test]
 fn test_separator_items() {
