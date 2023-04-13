@@ -1,5 +1,4 @@
-use crate::grammar::{GPrimitive, ParseTree};
-use crate::reader::Reader;
+use crate::grammar::GPrimitive;
 use crate::must_ok;
 
 #[test]

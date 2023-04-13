@@ -1,8 +1,7 @@
 use crate::grammar::{
     GFuncName, GFunctionDecl, GMarker, GMarkers, GParamItem, GParamName, GPrimitive, GReturnValue,
-    GStructName, GType, GTypeCategory, ParseTree,
+    GStructName, GType, GTypeCategory,
 };
-use crate::reader::Reader;
 use crate::{must_err, must_ok};
 
 #[test]
@@ -182,5 +181,10 @@ fn test_function_declaration_struct_return_value() {
         GFunctionDecl,
         "TW_EXPORT_STATIC_METHOD struct SomeStruct* _Nullable some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
         expected
+    );
+
+    must_ok!(
+        GFunctionDecl,
+        "struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path);"
     );
 }

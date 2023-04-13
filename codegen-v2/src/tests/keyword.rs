@@ -1,5 +1,4 @@
-use crate::grammar::{GKeyword, ParseTree};
-use crate::reader::Reader;
+use crate::grammar::GKeyword;
 use crate::{must_err, must_ok};
 
 #[test]

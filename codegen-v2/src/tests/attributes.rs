@@ -1,4 +1,4 @@
-use crate::grammar::{ensure, GDefine, GKeyword, ParseTree};
+use crate::grammar::{ensure, GDefine, GKeyword};
 use crate::reader::Reader;
 use crate::{must_err, must_ok};
 

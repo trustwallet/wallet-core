@@ -34,6 +34,8 @@ where
 
 // Convenience function. Tries to successfully derive a type from the reader,
 // returning the updated reader.
+// TODO: Alias to `wipe()`.
+// TODO: Should this be wrapped in a `Result`?
 pub fn optional<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
 where
     T: ParseTree,
@@ -56,6 +58,7 @@ pub enum GHeaderFileItem {
     Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
+    EnumDecl(GEnumDecl),
     Marker(GMarker),
     Newline,
     Eof,
@@ -72,10 +75,27 @@ pub struct GSemicolon;
 pub struct GSpace;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GOpenBracket;
+pub struct GAssignment;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GForwardSlash;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GAsterisk;
+
+// TODO: make "round bracket" explicity in name.
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GOpenBracket;
+
+// TODO: make "round bracket" explicity in name.
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GCloseBracket;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GOpenCurlyBracket;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GCloseCurlyBracket;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GDoubleQuote;
@@ -87,10 +107,10 @@ pub struct GDefine {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GHeaderInclude(String);
+pub struct GHeaderInclude(pub String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GHeaderPragma(String);
+pub struct GHeaderPragma(pub String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GTypedef {
@@ -115,6 +135,9 @@ pub struct GNewline;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GAnyLine(String);
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GInlineComment(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEndOfLine;
@@ -155,6 +178,7 @@ pub enum GTypeCategory {
     Struct(GStructName),
     Enum(GEnum),
     Pointer(Box<GTypeCategory>),
+    Unrecognized(GKeyword),
 }
 
 // TODO: Not complete (eg. "unsigned char", etc...)
@@ -184,8 +208,16 @@ pub struct GStructDecl {
     markers: GMarkers,
 }
 
+// TODO: Rename?
+// TODO: Should take GKeyword
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEnum(String);
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GEnumDecl {
+    pub name: GKeyword,
+    pub variants: Vec<(GKeyword, Option<usize>)>,
+}
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEof;
@@ -293,6 +325,116 @@ impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
         }
 
         Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GEnumDecl {
+    type Derivation = Self;
+
+    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
+        let (string, handle) = reader.read_until::<GSpace>()?;
+
+        if string != "enum" {
+            return Err(Error::Todo);
+        }
+
+        // Read the enum name.
+        let (enum_name, reader) = ensure::<GKeyword>(handle.commit())?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for opening curly bracket.
+        let (_, reader) = ensure::<GOpenCurlyBracket>(reader)?;
+
+        // Parse variant(s)
+        let mut variants = vec![];
+        let mut p_reader = reader;
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            // Read variant name.
+            let (field_name, reader) = optional::<GKeyword>(reader);
+            if field_name.is_none() {
+                p_reader = reader;
+                break;
+            }
+
+            let field_name = field_name.unwrap();
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // Check for possible assignment ("=").
+            let (assignment, reader) = optional::<GAssignment>(reader);
+            if assignment.is_none() {
+                // Track variant without value.
+                variants.push((field_name, None));
+
+                // Check for comma.
+                let (comma, reader) = optional::<GComma>(reader);
+                p_reader = reader;
+
+                // If there's no comma, we assume we're at the end of the enum.
+                if comma.is_none() {
+                    break;
+                }
+
+                continue;
+            }
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // Read variant value.
+            let (number, reader) = ensure::<GKeyword>(reader)?;
+            let number = number.0.parse::<usize>().map_err(|_| Error::Todo)?;
+
+            // Track variant with value.
+            variants.push((field_name, Some(number)));
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // Check for comma.
+            let (comma, reader) = optional::<GComma>(reader);
+            p_reader = reader;
+
+            // If there's no comma, we assume we're at the end of the enum.
+            if comma.is_none() {
+                break;
+            }
+        }
+
+        if variants.is_empty() {
+            return Err(Error::Todo);
+        }
+
+        let reader = p_reader;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for closing curly bracket.
+        let (_, reader) = ensure::<GCloseCurlyBracket>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for required semicolon.
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
+
+        Ok(DerivationResult {
+            derived: GEnumDecl {
+                name: enum_name,
+                variants,
+            },
+            branch: reader.into_branch(),
+        })
     }
 }
 
@@ -624,7 +766,6 @@ impl ParseTree for GNonAlphanumericItem {
     fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (pending, checked_out) = reader.checkout();
         if GEof::derive(checked_out).is_ok() {
-            //return Ok(DerivationResult { derived: GNonAlphanumericItem, branch: res.branch })
             return Err(Error::Todo);
         } else {
             reader = pending.discard();
@@ -702,6 +843,63 @@ impl ParseTree for GSpace {
     }
 }
 
+impl ParseTree for GAssignment {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "=" {
+                return Ok(DerivationResult {
+                    derived: GAssignment,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GForwardSlash {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "/" {
+                return Ok(DerivationResult {
+                    derived: GForwardSlash,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GAsterisk {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "*" {
+                return Ok(DerivationResult {
+                    derived: GAsterisk,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
 impl ParseTree for GOpenBracket {
     type Derivation = Self;
 
@@ -769,6 +967,44 @@ impl ParseTree for GCloseBracket {
             if symbol == ")" {
                 return Ok(DerivationResult {
                     derived: GCloseBracket,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GOpenCurlyBracket {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "{" {
+                return Ok(DerivationResult {
+                    derived: GOpenCurlyBracket,
+                    branch: handle.commit().into_branch(),
+                });
+            }
+        }
+
+        Err(Error::Todo)
+    }
+}
+
+impl ParseTree for GCloseCurlyBracket {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        let (slice, handle) = reader.read_amt(1)?;
+
+        if let Some(symbol) = slice {
+            if symbol == "}" {
+                return Ok(DerivationResult {
+                    derived: GCloseCurlyBracket,
                     branch: handle.commit().into_branch(),
                 });
             }
@@ -1055,6 +1291,32 @@ impl ParseTree for GAnyLine {
     }
 }
 
+impl ParseTree for GInlineComment {
+    type Derivation = Self;
+
+    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
+        let (_, reader) = ensure::<GForwardSlash>(reader)?;
+        let (_, reader) = ensure::<GAsterisk>(reader)?;
+
+        // TODO: Should have some sort of read_until_str` method.
+        // TODO: Does not handle `/* some * word */`.
+        let (comment, handle) = reader.read_until::<GAsterisk>()?;
+        let reader = handle.commit();
+
+        // Consume ending characters.
+        let (_, reader) = ensure::<GAsterisk>(reader)?;
+        let (_, reader) = ensure::<GForwardSlash>(reader)?;
+
+        Ok(DerivationResult {
+            derived: GInlineComment(comment.trim().to_string()),
+            branch: reader.into_branch(),
+        })
+    }
+}
+
 impl ParseTree for GFunctionDecl {
     type Derivation = Self;
 
@@ -1227,6 +1489,16 @@ impl ParseTree for GHeaderFileItem {
             });
         }
 
+        // Check for enum decleration.
+        let (res, reader) = optional::<GEnumDecl>(reader);
+        if let Some(item) = res {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::EnumDecl(item),
+                branch: reader.into_branch(),
+            });
+        }
+
         // Check for markers.
         let (res, reader) = optional::<GMarker>(reader);
         if let Some(item) = res {
@@ -1355,6 +1627,24 @@ impl ParseTree for GTypeCategory {
             });
         }
 
+        // Reset buffer.
+        let reader = pending.discard();
+
+        // All other is handled as `GTypeCategory::Unrecognized`
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GKeyword::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Unrecognized(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
         Err(Error::Todo)
     }
 }
@@ -1366,6 +1656,12 @@ mod tests {
     impl From<&str> for GKeyword {
         fn from(string: &str) -> Self {
             GKeyword(string.to_string())
+        }
+    }
+
+    impl From<&str> for GInlineComment {
+        fn from(string: &str) -> Self {
+            GInlineComment(string.to_string())
         }
     }
 
