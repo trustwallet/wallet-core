@@ -1,4 +1,4 @@
-use crate::grammar::{GPrimitive, GStructName, GTypeCategory, ParseTree};
+use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory, ParseTree};
 use crate::must_ok;
 use crate::reader::Reader;
 
@@ -58,6 +58,38 @@ fn test_types_categories_struct() {
         GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
             GTypeCategory::Pointer(Box::new(GTypeCategory::Struct(GStructName::from(
                 "SomeStruct"
+            ))))
+        ))))
+    );
+}
+
+#[test]
+fn test_types_categories_unrecognized() {
+    must_ok!(
+        GTypeCategory,
+        "SomeType",
+        GTypeCategory::Unrecognized(GKeyword::from("SomeType"))
+    );
+    must_ok!(
+        GTypeCategory,
+        "SomeType*",
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Unrecognized(GKeyword::from(
+            "SomeType"
+        ))))
+    );
+    must_ok!(
+        GTypeCategory,
+        "SomeType **",
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
+            GTypeCategory::Unrecognized(GKeyword::from("SomeType"))
+        ))))
+    );
+    must_ok!(
+        GTypeCategory,
+        "SomeType * * *",
+        GTypeCategory::Pointer(Box::new(GTypeCategory::Pointer(Box::new(
+            GTypeCategory::Pointer(Box::new(GTypeCategory::Unrecognized(GKeyword::from(
+                "SomeType"
             ))))
         ))))
     );
