@@ -3,6 +3,7 @@ extern crate serde;
 
 use grammar::{GHeaderFileItem, ParseTree};
 use reader::Reader;
+use std::{path::{Path, PathBuf}, collections::HashMap};
 
 mod grammar;
 mod reader;
@@ -17,14 +18,20 @@ pub enum Error {
     Eof,
 }
 
-pub fn parse_file(path: &str) -> Result<Vec<GHeaderFileItem>> {
-    let content = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
+pub struct CHeaderDirectory {
+    map: HashMap<PathBuf, Vec<GHeaderFileItem>>
+}
 
+pub fn parse_file(path: &Path) -> Result<CHeaderDirectory> {
+    let parent = path.parent().unwrap();
+
+    let content = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
     // TODO: Find a better solution for this.
     let content: String = content.chars().filter(|c| c.is_ascii()).collect();
 
     let mut reader = Reader::from(content.as_str());
 
+    let mut map = HashMap::new();
     let mut items = vec![];
 
     loop {
@@ -32,6 +39,13 @@ pub fn parse_file(path: &str) -> Result<Vec<GHeaderFileItem>> {
         if let Ok(der) = GHeaderFileItem::derive(checked_out) {
             let (derived, branch) = (der.derived, der.branch);
             reader = pending.merge(branch);
+
+            if let GHeaderFileItem::HeaderInclude(include) = &derived {
+                let path = parent.join(Path::new(&include.0));
+
+                let child_dir = parse_file(&path)?;
+                map.extend(child_dir.map);
+            }
 
             if let GHeaderFileItem::Eof = derived {
                 break;
@@ -43,13 +57,17 @@ pub fn parse_file(path: &str) -> Result<Vec<GHeaderFileItem>> {
         }
     }
 
-    Ok(items)
+    map.insert(path.to_path_buf(), items);
+
+    Ok(CHeaderDirectory {
+        map
+    })
 }
 
 #[test]
 #[ignore]
 fn test_parse_file() {
-    let res = parse_file("../include/TrustWalletCore/TWBase.h").unwrap();
-    let string = serde_json::to_string_pretty(&res).unwrap();
-    println!("{}", string);
+    //let res = parse_file("../include/TrustWalletCore/TWBase.h").unwrap();
+    //let string = serde_json::to_string_pretty(&res).unwrap();
+    //println!("{}", string);
 }

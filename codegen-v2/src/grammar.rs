@@ -87,10 +87,10 @@ pub struct GDefine {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GHeaderInclude(String);
+pub struct GHeaderInclude(pub String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GHeaderPragma(String);
+pub struct GHeaderPragma(pub String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GTypedef {
