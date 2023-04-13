@@ -107,6 +107,14 @@ pub struct GDefine {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GStaticVar {
+    pub ty: GType,
+    pub name: GKeyword,
+    pub value: String,
+    pub markers: GMarkers,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GHeaderInclude(pub String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -1105,6 +1113,55 @@ impl ParseTree for GDefine {
 
         Ok(DerivationResult {
             derived: GDefine { key, value },
+            branch: reader.into_branch(),
+        })
+    }
+}
+
+impl ParseTree for GStaticVar {
+    type Derivation = Self;
+
+    fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
+        // Retrieve the type.
+        let (ty, reader) = ensure::<GType>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Retrieve markers.
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
+
+        // Retrieve the name.
+        let (var_name, reader) = ensure::<GKeyword>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for assignment.
+        let (_, reader) = ensure::<GAssignment>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Read to end of line.
+        let (var_value, handle) = reader.read_until::<GSemicolon>()?;
+
+        // Consume semicolon.
+        let (_, reader) = ensure::<GSemicolon>(handle.commit())?;
+
+        Ok(DerivationResult {
+            derived: GStaticVar {
+                ty,
+                name: var_name,
+                value: var_value,
+                markers,
+            },
             branch: reader.into_branch(),
         })
     }
