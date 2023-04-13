@@ -55,6 +55,7 @@ pub enum GHeaderFileItem {
     HeaderPragma(GHeaderPragma),
     Comment(GCommentBlock),
     Define(GDefine),
+    StaticVar(GStaticVar),
     Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
@@ -1090,6 +1091,9 @@ impl ParseTree for GDefine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
         let (string, handle) = reader.read_until::<GSpace>()?;
 
         if string != "#define" {
@@ -1124,6 +1128,14 @@ impl ParseTree for GStaticVar {
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
         // Ignore leading spaces.
         let (_, reader) = wipe::<GSpaces>(reader);
+
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string != "static" {
+            return Err(Error::Todo);
+        }
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(handle.commit());
 
         // Retrieve the type.
         let (ty, reader) = ensure::<GType>(reader)?;
@@ -1519,6 +1531,15 @@ impl ParseTree for GHeaderFileItem {
         if let Some(item) = res {
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Define(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for define statement.
+        let (res, reader) = optional::<GStaticVar>(reader);
+        if let Some(item) = res {
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::StaticVar(item),
                 branch: reader.into_branch(),
             });
         }

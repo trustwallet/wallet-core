@@ -1,4 +1,4 @@
-use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory};
+use crate::grammar::{GKeyword, GPrimitive, GStructName, GTypeCategory, GStaticVar, GType, GMarkers, GMarker};
 use crate::must_ok;
 
 #[test]
@@ -91,5 +91,24 @@ fn test_types_categories_unrecognized() {
                 "SomeType"
             ))))
         ))))
+    );
+}
+
+#[test]
+fn test_types_static() {
+    let expected = GStaticVar {
+        ty: GType::Const(GTypeCategory::Pointer(Box::new(GTypeCategory::Scalar(
+            GPrimitive::Char,
+        )))),
+        name: GKeyword::from("SOME_VAR"),
+        value: "\"some_value\"".to_string(),
+        markers: GMarkers(vec![GMarker::NonNull]),
+    };
+
+    #[rustfmt::skip]
+    must_ok!(
+        GStaticVar,
+        "static const char *_Nonnull SOME_VAR = \"some_value\";",
+        expected
     );
 }
