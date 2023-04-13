@@ -58,6 +58,7 @@ pub enum GHeaderFileItem {
     Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
     StructDecl(GStructDecl),
+    EnumDecl(GEnumDecl),
     Marker(GMarker),
     Newline,
     Eof,
@@ -364,7 +365,6 @@ impl ParseTree for GEnumDecl {
             }
 
             let field_name = field_name.unwrap();
-            dbg!(&field_name);
 
             // Ignore leading separators.
             let (_, reader) = wipe::<GSeparator>(reader);
@@ -392,9 +392,7 @@ impl ParseTree for GEnumDecl {
 
             // Read variant value.
             let (number, reader) = ensure::<GKeyword>(reader)?;
-            dbg!(&number);
             let number = number.0.parse::<usize>().map_err(|_| Error::Todo)?;
-            dbg!(&number);
 
             // Track variant with value.
             variants.push((field_name, Some(number)));
@@ -1487,6 +1485,16 @@ impl ParseTree for GHeaderFileItem {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::FunctionDecl(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for enum decleration.
+        let (res, reader) = optional::<GEnumDecl>(reader);
+        if let Some(item) = res {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::EnumDecl(item),
                 branch: reader.into_branch(),
             });
         }
