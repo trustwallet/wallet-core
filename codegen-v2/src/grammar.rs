@@ -375,8 +375,17 @@ impl ParseTree for GEnumDecl {
                 // Track variant without value.
                 variants.push((field_name, None));
 
+                // TODO: Should be parsed
+                // Wipe (possible) inline comment.
+                let (_, reader) = wipe::<GInlineComment>(reader);
+
                 // Check for comma.
                 let (comma, reader) = optional::<GComma>(reader);
+
+                // TODO: Should be parsed
+                // Wipe (possible) comment.
+                let (_, reader) = wipe::<GCommentLine>(reader);
+
                 p_reader = reader;
 
                 // If there's no comma, we assume we're at the end of the enum.
@@ -402,6 +411,18 @@ impl ParseTree for GEnumDecl {
 
             // Check for comma.
             let (comma, reader) = optional::<GComma>(reader);
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // TODO: Should be parsed
+            // Wipe (possible) inline comment.
+            let (_, reader) = wipe::<GInlineComment>(reader);
+
+            // TODO: Should be parsed
+            // Wipe (possible) comment.
+            let (_, reader) = wipe::<GCommentLine>(reader);
+
             p_reader = reader;
 
             // If there's no comma, we assume we're at the end of the enum.
@@ -1223,6 +1244,9 @@ impl ParseTree for GCommentLine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
         // Check for comment prefix
         let (string, handle) = reader.read_until::<GSeparator>()?;
         if string != "//" && string != "///" {
