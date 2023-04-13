@@ -35,6 +35,7 @@ where
 // Convenience function. Tries to successfully derive a type from the reader,
 // returning the updated reader.
 // TODO: Alias to `wipe()`.
+// TODO: Should this be wrapped in a `Result`?
 pub fn optional<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
 where
     T: ParseTree,
@@ -339,11 +340,8 @@ impl ParseTree for GEnumDecl {
             return Err(Error::Todo);
         }
 
-        // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
-
         // Read the enum name.
-        let (enum_name, reader) = ensure::<GKeyword>(reader)?;
+        let (enum_name, reader) = ensure::<GKeyword>(handle.commit())?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
@@ -374,21 +372,29 @@ impl ParseTree for GEnumDecl {
             // Check for possible assignment ("=").
             let (assignment, reader) = optional::<GAssignment>(reader);
             if assignment.is_none() {
-                dbg!("no assignment");
-                // Check for comma.
-                let (_, reader) = ensure::<GComma>(reader)?;
-                dbg!("comma found");
-
                 // Track variant without value.
                 variants.push((field_name, None));
 
+                // Check for comma.
+                let (comma, reader) = optional::<GComma>(reader);
                 p_reader = reader;
+
+                // If there's no comma, we assume we're at the end of the enum.
+                if comma.is_none() {
+                    break;
+                }
+
                 continue;
             }
 
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
             // Read variant value.
             let (number, reader) = ensure::<GKeyword>(reader)?;
+            dbg!(&number);
             let number = number.0.parse::<usize>().map_err(|_| Error::Todo)?;
+            dbg!(&number);
 
             // Track variant with value.
             variants.push((field_name, Some(number)));
@@ -397,17 +403,39 @@ impl ParseTree for GEnumDecl {
             let (_, reader) = wipe::<GSeparator>(reader);
 
             // Check for comma.
-            let (_, reader) = ensure::<GComma>(reader)?;
-
+            let (comma, reader) = optional::<GComma>(reader);
             p_reader = reader;
+
+            // If there's no comma, we assume we're at the end of the enum.
+            if comma.is_none() {
+                break;
+            }
         }
+
+        if variants.is_empty() {
+            return Err(Error::Todo);
+        }
+
+        let reader = p_reader;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for closing curly bracket.
+        let (_, reader) = ensure::<GCloseCurlyBracket>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for required semicolon.
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
 
         Ok(DerivationResult {
             derived: GEnumDecl {
                 name: enum_name,
                 variants,
             },
-            branch: p_reader.into_branch(),
+            branch: reader.into_branch(),
         })
     }
 }
@@ -824,7 +852,7 @@ impl ParseTree for GAssignment {
         let (slice, handle) = reader.read_amt(1)?;
 
         if let Some(symbol) = slice {
-            if symbol == "/" {
+            if symbol == "=" {
                 return Ok(DerivationResult {
                     derived: GAssignment,
                     branch: handle.commit().into_branch(),
