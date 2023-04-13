@@ -3,62 +3,24 @@ name: Docker CI
 on:
   push:
     branches: [ master ]
-    tags:
-      - "*.*.*"
   pull_request:
     branches: [ master ]
     paths:
       - Dockerfile
       - tools/install-dependencies
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Lint Dockerfile
-      run: |
-        curl -L https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint && chmod +x hadolint
-        ./hadolint Dockerfile
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-        aws-region: us-east-1
-
-    - name: Login to Amazon ECR Public
-      id: login-ecr-public
-      uses: aws-actions/amazon-ecr-login@v1
-      with:
-        registry-type: public
-
-    - name: Set docker image name
-      env:
-        REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-        REGISTRY_ALIAS: y4f6g9v9 # Given by AWS
-        REPOSITORY: wallet-core
-      run: |
-        echo "IMAGE_NAME=$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY" >> $GITHUB_ENV
-
-    - name: Build docker image
-      run: |
-        docker build -t $IMAGE_NAME .
-
-    - name: Push docker image with Git tag to Amazon ECR Public
-      # Run on tag push only.
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
-      run: |
-        TAG_VERSION=${GITHUB_REF#refs/tags/}
-        docker tag $IMAGE_NAME $IMAGE_NAME:$TAG_VERSION
-        docker push $IMAGE_NAME:$TAG_VERSION
-
-    - name: Push docker image to Amazon ECR Public
-      # Run on push commit to master branch only.
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master')
-      run: |
-        docker push $IMAGE_NAME:latest
+      - uses: actions/checkout@v3
+      - name: Lint Dockerfile
+        run: |
+          curl -L https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint && chmod +x hadolint
+          ./hadolint Dockerfile
+      - name: Build Dockerfile
+        uses: docker/build-push-action@v1.1.0
+        with:
+          repository: trustwallet/wallet-core
+          tags: latest
+          push: false
