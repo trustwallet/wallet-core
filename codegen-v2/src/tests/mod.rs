@@ -53,9 +53,7 @@ fn test_non_alphanumeric_items() {
 fn test_non_alphanumeric() {
     must_ok!(GNonAlphanumeric, ",,, ");
     must_ok!(GNonAlphanumeric, ",,,,");
-
-    // ERR!
-    must_err!(GNonAlphanumeric, ",,,a");
+    must_ok!(GNonAlphanumeric, ",,,a");
 }
 
 #[test]

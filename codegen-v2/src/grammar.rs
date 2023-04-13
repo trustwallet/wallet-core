@@ -155,6 +155,7 @@ pub enum GTypeCategory {
     Struct(GStructName),
     Enum(GEnum),
     Pointer(Box<GTypeCategory>),
+    Unrecognized(GKeyword),
 }
 
 // TODO: Not complete (eg. "unsigned char", etc...)
@@ -624,7 +625,6 @@ impl ParseTree for GNonAlphanumericItem {
     fn derive(mut reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (pending, checked_out) = reader.checkout();
         if GEof::derive(checked_out).is_ok() {
-            //return Ok(DerivationResult { derived: GNonAlphanumericItem, branch: res.branch })
             return Err(Error::Todo);
         } else {
             reader = pending.discard();
@@ -1347,6 +1347,24 @@ impl ParseTree for GTypeCategory {
 
             // Prepare scala type, might get wrapped (multiple times) in pointer.
             let derived = GTypeCategory::Enum(res.derived);
+            let (derived, reader) = check_for_pointers(derived, reader)?;
+
+            return Ok(DerivationResult {
+                derived,
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Reset buffer.
+        let reader = pending.discard();
+
+        // All other is handled as `GTypeCategory::Unrecognized`
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(res) = GKeyword::derive(checked_out) {
+            let reader = pending.merge(res.branch);
+
+            // Prepare scala type, might get wrapped (multiple times) in pointer.
+            let derived = GTypeCategory::Unrecognized(res.derived);
             let (derived, reader) = check_for_pointers(derived, reader)?;
 
             return Ok(DerivationResult {

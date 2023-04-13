@@ -183,4 +183,9 @@ fn test_function_declaration_struct_return_value() {
         "TW_EXPORT_STATIC_METHOD struct SomeStruct* _Nullable some_function(int some_int, bool some_bool) TW_VISIBILITY_DEFAULT;",
         expected
     );
+
+    must_ok!(
+        GFunctionDecl,
+        "struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path);"
+    );
 }
