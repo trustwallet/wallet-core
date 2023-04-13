@@ -401,7 +401,11 @@ impl ParseTree for GEnumDecl {
 
             // Read variant value.
             let (number, reader) = ensure::<GKeyword>(reader)?;
-            let number = number.0.parse::<usize>().map_err(|_| Error::Todo)?;
+            let number = if number.0.starts_with("0x") {
+                usize::from_str_radix(&number.0[2..], 16).map_err(|_| Error::Todo)?
+            } else {
+                number.0.parse::<usize>().map_err(|_| Error::Todo)?
+            };
 
             // Track variant with value.
             variants.push((field_name, Some(number)));

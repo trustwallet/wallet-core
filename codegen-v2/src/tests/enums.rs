@@ -74,6 +74,12 @@ fn test_enum_decls_separator_handling() {
         "enum SomeEnum\n{\nONE\n=\n1\n,\nTWO\n=\n2,\nTHREE\n=\n3\n,\n}\n;",
         expected
     );
+    // Hex values.
+    must_ok!(
+        GEnumDecl,
+        "enum SomeEnum { ONE = 0x1, TWO = 0x2, THREE = 0x3 };",
+        expected
+    );
 
     // ERR!
     must_err!(GEnumDecl, "enum SomeEnum { } ");
