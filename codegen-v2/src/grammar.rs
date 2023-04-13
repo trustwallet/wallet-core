@@ -244,7 +244,7 @@ pub enum GMarker {
     TWVisibilityDefault,
     TwExportClass,
     TwExportStruct,
-    //TwExportEnum,
+    TwExportEnum(String),
     TwExportFunc,
     TwExportMethod,
     TwExportProperty,
@@ -680,8 +680,18 @@ impl ParseTree for GMarker {
             "TW_VISIBILITY_DEFAULT" => GMarker::TWVisibilityDefault,
             "TW_EXPORT_CLASS" => GMarker::TwExportClass,
             "TW_EXPORT_STRUCT" => GMarker::TwExportStruct,
-            // TODO: Needs special handling.
-            //"TW_EXPORT_ENUM" => GMarker::TwExportStruct,
+            "TW_EXPORT_ENUM" => {
+                let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+                let (_, reader) = ensure::<GOpenBracket>(reader)?;
+                let (string, handle) = reader.read_until::<GCloseBracket>()?;
+                let (_, reader) = ensure::<GCloseBracket>(handle.commit())?;
+
+                return Ok(DerivationResult {
+                    derived: GMarker::TwExportEnum(string),
+                    branch: reader.into_branch(),
+                });
+            },
             "TW_EXPORT_FUNC" => GMarker::TwExportFunc,
             "TW_EXPORT_METHOD" => GMarker::TwExportMethod,
             "TW_EXPORT_PROPERTY" => GMarker::TwExportProperty,

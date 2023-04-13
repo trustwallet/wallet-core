@@ -109,8 +109,8 @@ fn test_parse_file() {
 
     println!("UNRECOGNIZED items:");
 
-    for (_path, items) in dir.map {
-        //println!("## FILE: {}", path.to_str().unwrap());
+    for (path, items) in dir.map {
+        println!("> ## FILE: {}", path.to_str().unwrap());
         for item in items {
             if let GHeaderFileItem::Unrecognized(item) = item {
                 println!("  > {}", item);
