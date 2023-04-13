@@ -343,6 +343,10 @@ impl ParseTree for GEnumDecl {
             // Ignore leading separators.
             let (_, reader) = wipe::<GSeparator>(p_reader);
 
+            // TODO: Should be parsed
+            // Wipe (possible) comment.
+            let (_, reader) = wipe::<GCommentLine>(reader);
+
             // Read variant name.
             let (field_name, reader) = optional::<GKeyword>(reader);
             if field_name.is_none() {
@@ -358,6 +362,7 @@ impl ParseTree for GEnumDecl {
             // Check for possible assignment ("=").
             let (assignment, reader) = optional::<GAssignment>(reader);
             if assignment.is_none() {
+
                 // Track variant without value.
                 variants.push((field_name, None));
 
