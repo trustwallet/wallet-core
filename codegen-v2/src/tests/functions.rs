@@ -188,3 +188,20 @@ fn test_function_declaration_struct_return_value() {
         "struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path);"
     );
 }
+
+#[test]
+fn test_function_no_params() {
+    let expected = GFunctionDecl {
+        name: GFuncName::from("some_function"),
+        params: vec![],
+        return_value: GReturnValue {
+            ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),
+            markers: GMarkers(vec![]),
+        },
+        markers: GMarkers(vec![]),
+    };
+
+    must_ok!(GFunctionDecl, "void some_function();", expected);
+
+    must_ok!(GFunctionDecl, "void some_function( );", expected);
+}

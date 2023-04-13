@@ -691,7 +691,7 @@ impl ParseTree for GMarker {
                     derived: GMarker::TwExportEnum(string),
                     branch: reader.into_branch(),
                 });
-            },
+            }
             "TW_EXPORT_FUNC" => GMarker::TwExportFunc,
             "TW_EXPORT_METHOD" => GMarker::TwExportMethod,
             "TW_EXPORT_PROPERTY" => GMarker::TwExportProperty,
@@ -1224,8 +1224,15 @@ impl ParseTree for GFunctionDecl {
             // Ignore leading separators.
             let (_, r) = wipe::<GSeparator>(reader);
 
+            // Check for empty params.
+            let (string, handle) = r.read_until::<GCloseBracket>()?;
+            reader = handle.reset();
+            if string.is_empty() {
+                break;
+            }
+
             // Derive and track parameter.
-            let (derived, r) = ensure::<GParamItem>(r)?;
+            let (derived, r) = ensure::<GParamItem>(reader)?;
             params.push(derived);
 
             // Ignore leading separators.
