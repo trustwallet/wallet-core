@@ -1,6 +1,47 @@
 use super::reader::{Reader, ReaderBranch};
 use super::{Error, Result};
 
+#[macro_export]
+macro_rules! define_char {
+    ($name:ident, $char:expr) => {
+        #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+        pub struct $name;
+
+        impl ParseTree for $name {
+            type Derivation = Self;
+
+            fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+                let (slice, handle) = reader.read_amt(1)?;
+
+                if let Some(symbol) = slice {
+                    if symbol == $char {
+                        return Ok(DerivationResult {
+                            derived: $name,
+                            branch: handle.commit().into_branch(),
+                        });
+                    }
+                }
+
+                Err(Error::Todo)
+            }
+        }
+    };
+}
+
+define_char!(GComma, ",");
+define_char!(GSemicolon, ";");
+define_char!(GSpace, " ");
+define_char!(GAssignment, "=");
+define_char!(GForwardSlash, "/");
+define_char!(GBackwardSlash, "\\");
+define_char!(GAsterisk, "*");
+define_char!(GOpenBracket, "(");
+define_char!(GCloseBracket, ")");
+define_char!(GOpenCurlyBracket, "{");
+define_char!(GCloseCurlyBracket, "}");
+define_char!(GDoubleQuote, "\"");
+define_char!(GNewline, "\n");
+
 pub trait ParseTree {
     type Derivation;
 
@@ -67,41 +108,6 @@ pub enum GHeaderFileItem {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GComma;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GSemicolon;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GSpace;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GAssignment;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GForwardSlash;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GAsterisk;
-
-// TODO: make "round bracket" explicity in name.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GOpenBracket;
-
-// TODO: make "round bracket" explicity in name.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GCloseBracket;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GOpenCurlyBracket;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GCloseCurlyBracket;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GDoubleQuote;
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GDefine {
     pub key: GKeyword,
     pub value: Option<String>,
@@ -138,9 +144,6 @@ pub struct GCommentBlock {
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GFuncName(String);
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GNewline;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GAnyLine(String);
@@ -817,234 +820,6 @@ impl ParseTree for GNonAlphanumericItem {
             derived: GNonAlphanumericItem,
             branch: handle.commit().into_branch(),
         })
-    }
-}
-
-impl ParseTree for GComma {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "," {
-                return Ok(DerivationResult {
-                    derived: GComma,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GSemicolon {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == ";" {
-                return Ok(DerivationResult {
-                    derived: GSemicolon,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GSpace {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == " " {
-                return Ok(DerivationResult {
-                    derived: GSpace,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GAssignment {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "=" {
-                return Ok(DerivationResult {
-                    derived: GAssignment,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GForwardSlash {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "/" {
-                return Ok(DerivationResult {
-                    derived: GForwardSlash,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GAsterisk {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "*" {
-                return Ok(DerivationResult {
-                    derived: GAsterisk,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GOpenBracket {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "(" {
-                return Ok(DerivationResult {
-                    derived: GOpenBracket,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GDoubleQuote {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "\"" {
-                return Ok(DerivationResult {
-                    derived: GDoubleQuote,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GNewline {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "\n" {
-                return Ok(DerivationResult {
-                    derived: GNewline,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GCloseBracket {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == ")" {
-                return Ok(DerivationResult {
-                    derived: GCloseBracket,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GOpenCurlyBracket {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "{" {
-                return Ok(DerivationResult {
-                    derived: GOpenCurlyBracket,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
-    }
-}
-
-impl ParseTree for GCloseCurlyBracket {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (slice, handle) = reader.read_amt(1)?;
-
-        if let Some(symbol) = slice {
-            if symbol == "}" {
-                return Ok(DerivationResult {
-                    derived: GCloseCurlyBracket,
-                    branch: handle.commit().into_branch(),
-                });
-            }
-        }
-
-        Err(Error::Todo)
     }
 }
 
