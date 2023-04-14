@@ -129,5 +129,6 @@ class CoinAddressDerivationTests {
         UMEE -> assertEquals("umee142j9u5eaduzd7faumygud6ruhdwme98qzjhxjp", address)
         QUASAR -> assertEquals("quasar142j9u5eaduzd7faumygud6ruhdwme98q78symk", address)
         PERSISTENCE -> assertEquals("persistence142j9u5eaduzd7faumygud6ruhdwme98q7gv2ch", address)
+        AKASH -> assertEquals("akash142j9u5eaduzd7faumygud6ruhdwme98qal870f", address)
     }
 }
