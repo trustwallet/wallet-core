@@ -1,4 +1,4 @@
-use tw_memory::ffi::c_byte_array::CByteArray;
+use tw_memory::ffi::{c_byte_array::CByteArray, free_string};
 
 /// Test `pass_eth_signing_msg_through` to avoid dropping code coverage.
 #[test]
@@ -20,4 +20,19 @@ fn test_pass_eth_signing_msg_through() {
             .into_vec()
     };
     assert_eq!(actual, serialized);
+}
+
+/// Test `polkadot_test_signing_input` to avoid dropping code coverage.
+#[test]
+fn test_polkadot_test_signing_input() {
+    unsafe { tw_proto::ffi::polkadot_test_signing_input().unwrap() };
+}
+
+/// Test `polkadot_tx_expected_encoded` to avoid dropping code coverage.
+#[test]
+fn polkadot_tx_expected_encoded() {
+    unsafe {
+        let str = tw_proto::ffi::polkadot_tx_expected_encoded();
+        free_string(str);
+    };
 }
