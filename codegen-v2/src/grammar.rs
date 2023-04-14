@@ -186,10 +186,9 @@ pub enum GPrimitive {
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStructDecl {
-    #[serde(rename = "struct")]
-    name: GStructName,
-    fields: Vec<(GKeyword, GType)>,
-    markers: GMarkers,
+    pub name: GStructName,
+    pub fields: Vec<(GKeyword, GType)>,
+    pub markers: GMarkers,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -197,9 +196,10 @@ pub struct GStructName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStructInd {
+    // TODO: Rename?
     #[serde(rename = "struct")]
-    struct_val: GStructName,
-    markers: GMarkers,
+    pub name: GStructName,
+    pub markers: GMarkers,
 }
 
 // TODO: Rename?
@@ -515,7 +515,7 @@ impl ParseTree for GStructName {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = wipe::<GSpaces>(reader);
 
         // Check for "struct" prefix.
         let (string, handle) = reader.read_until::<GSeparator>()?;
@@ -572,14 +572,8 @@ impl ParseTree for GStructDecl {
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
-        // Check for prefix
-        let (string, handle) = reader.read_until::<GSeparator>()?;
-        if string != "struct" {
-            return Err(Error::Todo);
-        }
-
         // Read the struct name.
-        let (struct_name, reader) = ensure::<GStructName>(handle.commit())?;
+        let (struct_name, reader) = ensure::<GStructName>(reader)?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
@@ -680,7 +674,7 @@ impl ParseTree for GStructInd {
 
         Ok(DerivationResult {
             derived: GStructInd {
-                struct_val: struct_res,
+                name: struct_res,
                 markers,
             },
             branch: reader.into_branch(),
