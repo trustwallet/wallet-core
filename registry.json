@@ -757,6 +757,66 @@
     }
   },
   {
+    "id": "fetchai",
+    "name": "FetchAI",
+    "displayName": "Fetch AI",
+    "coinId": 12000118,
+    "symbol": "FET",
+    "decimals": 6,
+    "chainId": "fetchhub-4",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "fetch",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/fetchai",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "7EB4F6C26809BA047F81CEFD0889775AC8522B7B8AF559B436083BE7039C5EA6",
+      "sampleAccount": "fetch1t3qet68dr0qkmrjtq89lrx837qa2t05265qy6s"
+    },
+    "info": {
+      "url": "https://fetch.ai/",
+      "documentation": "https://docs.fetch.ai/"
+    }
+  },
+  {
+    "id": "mars",
+    "name": "Mars",
+    "displayName": "Mars Hub",
+    "coinId": 13000118,
+    "symbol": "MARS",
+    "decimals": 6,
+    "chainId": "mars-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "mars",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/mars-protocol",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "C12120760C71189A678739E0F1FD4EFAF2C29EA660B57A359AC728F89FAA7528",
+      "sampleAccount": "mars1nnjy6nct405pzfaqjm3dsyw0pf0kyw72vhw4pr"
+    },
+    "info": {
+      "url": "https://marsprotocol.io/",
+      "documentation": "https://docs.marsprotocol.io/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
