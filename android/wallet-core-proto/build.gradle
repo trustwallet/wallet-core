@@ -1,0 +1,19 @@
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+
+group = 'com.trustwallet'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    sourceSets {
+        main.java.srcDirs += '../../jni/proto'
+    }
+}
+
+dependencies {
+    api 'com.google.protobuf:protobuf-javalite:3.22.3'
+}
+
+apply from: 'maven-push.gradle'

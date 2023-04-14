@@ -1,10 +1,7 @@
 apply plugin: 'maven-publish'
 
-version project.property('version')
-group 'com.trustwallet'
-
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from android.sourceSets.main.java.sourceFiles
 }
 
@@ -15,13 +12,10 @@ artifacts {
 publishing {
     publications {
         Production(MavenPublication) {
-            artifact("$buildDir/outputs/aar/trustwalletcore-release.aar")
-            artifact sourcesJar { 
+            artifact("$buildDir/outputs/aar/wallet-core-release.aar")
+            artifact sourcesJar {
                 classifier "sources"
             }
-            groupId this.group
-            artifactId 'wallet-core'
-            version this.version
 
             pom.withXml {
                 def dependenciesNode = asNode().appendNode('dependencies')
