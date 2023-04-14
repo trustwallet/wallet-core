@@ -149,6 +149,7 @@ pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
 pub enum GType {
     Mutable(GTypeCategory),
     Const(GTypeCategory),
+    Extern(GTypeCategory),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -1549,6 +1550,16 @@ impl ParseTree for GType {
 
             Ok(DerivationResult {
                 derived: GType::Const(res.derived),
+                branch: res.branch,
+            })
+        } else if string == "extern" {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(handle.commit());
+
+            let res = GTypeCategory::derive(reader)?;
+
+            Ok(DerivationResult {
+                derived: GType::Extern(res.derived),
                 branch: res.branch,
             })
         } else {
