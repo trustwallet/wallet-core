@@ -1,8 +1,12 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 #![allow(clippy::missing_safety_doc)]
 
 use std::borrow::Cow;
-use std::ffi::c_char;
-use tw_memory::c_string_standalone;
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
@@ -43,14 +47,6 @@ pub unsafe extern "C" fn pass_eth_signing_msg_through(
         .map(CByteArray::from)
         .map_err(|_| CProtoError::ErrorSerializingMsg)
         .into()
-}
-
-/// Returns an encoded and signed `polkadot_test_signing_input` transaction.
-/// This FFI is used within integration tests.
-/// \return C-compatible, null-terminated string.
-#[no_mangle]
-pub unsafe extern "C" fn polkadot_tx_expected_encoded() -> *const c_char {
-    c_string_standalone("29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0")
 }
 
 /// Returns a serialized `Polkadot::Proto::SigningInput` message.

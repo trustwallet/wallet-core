@@ -1,4 +1,10 @@
-use tw_memory::ffi::{c_byte_array::CByteArray, free_string};
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+use tw_memory::ffi::c_byte_array::CByteArray;
 
 /// Test `pass_eth_signing_msg_through` to avoid dropping code coverage.
 #[test]
@@ -26,13 +32,4 @@ fn test_pass_eth_signing_msg_through() {
 #[test]
 fn test_polkadot_test_signing_input() {
     unsafe { tw_proto::ffi::polkadot_test_signing_input().unwrap() };
-}
-
-/// Test `polkadot_tx_expected_encoded` to avoid dropping code coverage.
-#[test]
-fn polkadot_tx_expected_encoded() {
-    unsafe {
-        let str = tw_proto::ffi::polkadot_tx_expected_encoded();
-        free_string(str);
-    };
 }

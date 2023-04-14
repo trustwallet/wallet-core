@@ -56,6 +56,12 @@ TEST(RustBindgen, EthSigningMessageProto) {
 TEST(RustBindgen, PolkadotSignTxProto) {
     using namespace TW;
 
+    auto blockHash = parse_hex("0x343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
+    auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
+    auto toAddress = "14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3";
+    auto privateKey = parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115");
+    auto expectedEncoded = "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0";
+
     Rust::CByteArrayResultWrapper res = Rust::polkadot_test_signing_input();
     ASSERT_TRUE(res.isOk());
     auto serialized = std::move(res.unwrap().data);
@@ -63,7 +69,19 @@ TEST(RustBindgen, PolkadotSignTxProto) {
     Polkadot::Proto::SigningInput input;
     input.ParseFromArray(serialized.data(), static_cast<int>(serialized.size()));
 
+    ASSERT_EQ(input.nonce(), 0);
+    ASSERT_EQ(input.spec_version(), 17);
+    ASSERT_EQ(data(input.private_key()), privateKey);
+    ASSERT_EQ(input.network(), 0);
+    ASSERT_EQ(input.transaction_version(), 3);
+
+    ASSERT_EQ(input.era().block_number(), 927699);
+    ASSERT_EQ(input.era().period(), 8);
+
+    auto transfer = input.balance_call().transfer();
+    ASSERT_EQ(data(transfer.value()), store(uint256_t(12345)));
+    ASSERT_EQ(transfer.to_address(), toAddress);
+
     auto output = Polkadot::Signer::sign(input);
-    Rust::CStringWrapper expected_encoded = Rust::polkadot_tx_expected_encoded();
-    ASSERT_EQ(hex(output.encoded()), expected_encoded.str);
+    ASSERT_EQ(hex(output.encoded()), expectedEncoded);
 }
