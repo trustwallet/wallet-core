@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-group='com.github.trustwallet'
+
+group = 'com.trustwallet'
 
 android {
     compileSdkVersion 32
@@ -47,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.protobuf:protobuf-javalite:3.21.2'
+    api project(':wallet-core-proto')
 }
 
 apply from: 'maven-push.gradle'
