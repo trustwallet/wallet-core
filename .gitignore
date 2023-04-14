@@ -27,7 +27,7 @@ lib/protobuf
 # Generated files
 jni/cpp/generated
 jni/java/wallet/core/jni
-jni/java/wallet/core/proto
+jni/proto
 jni/dokka-out
 swift/Sources/Generated
 swift/wallet-core/
