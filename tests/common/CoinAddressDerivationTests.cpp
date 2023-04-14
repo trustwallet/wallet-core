@@ -309,6 +309,24 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeMars:
             EXPECT_EQ(address, "mars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0yxx6e6");
             break;
+        case TWCoinTypeUmee:
+            EXPECT_EQ(address, "umee1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tdzugn");
+            break;
+        case TWCoinTypeCoreum:
+            EXPECT_EQ(address, "core1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0248ct6");
+            break;
+        case TWCoinTypeQuasar:
+            EXPECT_EQ(address, "quasar1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0hc97py");
+            break;
+        case TWCoinTypePersistence:
+            EXPECT_EQ(address, "persistence1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0hhesz9");
+            break;
+        case TWCoinTypeAkash:
+            EXPECT_EQ(address, "akash1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z05qjy4m");
+            break;
+        case TWCoinTypeNoble:
+            EXPECT_EQ(address, "noble1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z03c2t50");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

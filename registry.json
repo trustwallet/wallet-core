@@ -817,6 +817,185 @@
     }
   },
   {
+    "id": "umee",
+    "name": "Umee",
+    "displayName": "Umee",
+    "coinId": 14000118,
+    "symbol": "UMEE",
+    "decimals": 6,
+    "chainId": "umee-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "umee",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/umee",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "65B4B52C5F324F2287540847A114F645D89D544D99F793879FB3DBFF2CFEFC84",
+      "sampleAccount": "umee16934q0qf4akw8qruy5y8v748rvtxxjckgsecq4"
+    },
+    "info": {
+      "url": "https://umee.cc/",
+      "documentation": "https://umeeversity.umee.cc/developers/"
+    }
+  },
+  {
+    "id": "noble",
+    "name": "Noble",
+    "displayName": "Noble",
+    "coinId": 18000118,
+    "symbol": "USDC",
+    "decimals": 6,
+    "chainId": "noble-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "noble",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/noble",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "EA231079975A058FEC28EF372B445763918C098DE033E868E2E035F3F98C59C7",
+      "sampleAccount": "noble1y2egevq0nyzm7w6a9kpxkw86eqytcvxpwsp6d9"
+    },
+    "info": {
+      "url": "https://nobleassets.xyz/"
+    }
+  },
+  {
+    "id": "coreum",
+    "name": "Coreum",
+    "displayName": "Coreum",
+    "coinId": 10000990,
+    "symbol": "CORE",
+    "decimals": 6,
+    "chainId": "coreum-mainnet-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/990'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "core",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/coreum",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "32A4AE2AE6AAE31E75EDDADE0AB9F1499ABD5AD8D3F261ADEF2805CD46FF74E7",
+      "sampleAccount": "core1zmwdnfpwuymwn0fkwnj2aaje34npd5sqgjxq9v"
+    },
+    "info": {
+      "url": "https://www.coreum.com/",
+      "documentation": "https://www.coreum.com/developers"
+    }
+  },
+  {
+    "id": "quasar",
+    "name": "Quasar",
+    "displayName": "Quasar",
+    "coinId": 15000118,
+    "symbol": "QSR",
+    "decimals": 6,
+    "chainId": "quasar-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "quasar",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/quasar",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "2898B89C98FE1E8CF1E05A37E4EE5EE5ED83FD957B0CAEE53DE39FC82BF1A033",
+      "sampleAccount": "quasar1cqu6w425slheul3jsmyt6q0ec0rs0w0ugkst3k"
+    },
+    "info": {
+      "url": "https://www.quasar.fi/",
+      "documentation": "https://docs.quasar.fi/"
+    }
+  },
+  {
+    "id": "persistence",
+    "name": "Persistence",
+    "displayName": "Persistence",
+    "coinId": 16000118,
+    "symbol": "XPRT",
+    "decimals": 6,
+    "chainId": "core-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "persistence",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/persistence",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "BBD9DEE03A8D7538D8E7398217467F4A2B5690D15773E8A6442E6AEEEFA21E64",
+      "sampleAccount": "persistence10ys69560pqr6zmqam80g8s0smtjw6p3ugzmy3u"
+    },
+    "info": {
+      "url": "https://persistence.one/",
+      "documentation": "https://docs.persistence.one/"
+    }
+  },
+  {
+    "id": "akash",
+    "name": "Akash",
+    "displayName": "Akash",
+    "coinId": 17000118,
+    "symbol": "AKT",
+    "decimals": 6,
+    "chainId": "akashnet-2",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "akash",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/akash",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "C0083856344425908D5333D4325E3E0DE9D697BA568C6D99C34303819F615D25",
+      "sampleAccount": "akash1f4nskxfw8ufhwnajh7xwt0wmdtxm02vwta6krg"
+    },
+    "info": {
+      "url": "https://akash.network/",
+      "documentation": "https://docs.akash.network/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,

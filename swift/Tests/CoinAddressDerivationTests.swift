@@ -314,6 +314,24 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .mars:
                     let expectedResult = "mars142j9u5eaduzd7faumygud6ruhdwme98qdenqrg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .umee:
+                    let expectedResult = "umee142j9u5eaduzd7faumygud6ruhdwme98qzjhxjp"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .coreum:
+                    let expectedResult = "core1rawf376jz2lnchgc4wzf4h9c77neg3zldc7xa8"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .quasar:
+                    let expectedResult = "quasar142j9u5eaduzd7faumygud6ruhdwme98q78symk"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .persistence:
+                    let expectedResult = "persistence142j9u5eaduzd7faumygud6ruhdwme98q7gv2ch"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .akash:
+                    let expectedResult = "akash142j9u5eaduzd7faumygud6ruhdwme98qal870f"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .noble:
+                    let expectedResult = "noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
