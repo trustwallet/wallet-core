@@ -847,6 +847,35 @@
     }
   },
   {
+    "id": "noble",
+    "name": "Noble",
+    "displayName": "Noble",
+    "coinId": 18000118,
+    "symbol": "USDC",
+    "decimals": 6,
+    "chainId": "noble-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "noble",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/noble",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "EA231079975A058FEC28EF372B445763918C098DE033E868E2E035F3F98C59C7",
+      "sampleAccount": "noble1y2egevq0nyzm7w6a9kpxkw86eqytcvxpwsp6d9"
+    },
+    "info": {
+      "url": "https://nobleassets.xyz/"
+    }
+  },
+  {
     "id": "coreum",
     "name": "Coreum",
     "displayName": "Coreum",
