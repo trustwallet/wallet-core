@@ -24,7 +24,7 @@ pub fn serialize<T: MessageWrite>(message: &T) -> ProtoResult<Vec<u8>> {
     Ok(v)
 }
 
-/// Serializes a Protobuf message without the length prefix.
+/// Deserializes a Protobuf message from the given `data` bytes without the length prefix.
 /// Please note that [`quick_protobuf::deserialize_from_slice`] requires the data
 /// starts from a `varint32` length prefix.
 pub fn deserialize<'a, T: MessageRead<'a>>(data: &'a [u8]) -> ProtoResult<T> {

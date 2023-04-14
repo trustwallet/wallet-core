@@ -41,7 +41,7 @@ fn test_deserialize_prefixed() {
 }
 
 #[test]
-fn test_deserialize_expect_properties() {
+fn test_serialize_deserialize() {
     let serialized = [
         10, 1, 1, 18, 1, 0, 34, 5, 9, 199, 101, 36, 0, 42, 3, 1, 48, 185, 66, 42, 48, 120, 54, 98,
         49, 55, 53, 52, 55, 52, 101, 56, 57, 48, 57, 52, 99, 52, 52, 100, 97, 57, 56, 98, 57, 53,
@@ -79,4 +79,7 @@ fn test_deserialize_expect_properties() {
 
     let actual: Ethereum::Proto::SigningInput = deserialize(&serialized).unwrap();
     assert_eq!(actual, expected);
+
+    let actual_serialized = serialize(&actual).unwrap();
+    assert_eq!(actual_serialized, serialized);
 }
