@@ -146,6 +146,7 @@ enum TWCoinType {
     TWCoinTypeFetchAI = 12000118,
     TWCoinTypeMars = 13000118,
     TWCoinTypeUmee = 14000118,
+    TWCoinTypeQuasar = 15000118,
 };
 
 /// Returns the blockchain for a coin type.
