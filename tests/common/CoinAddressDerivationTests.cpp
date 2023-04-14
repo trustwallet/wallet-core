@@ -324,6 +324,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeAkash:
             EXPECT_EQ(address, "akash1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z05qjy4m");
             break;
+        case TWCoinTypeNoble:
+            EXPECT_EQ(address, "noble1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z03c2t50");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
