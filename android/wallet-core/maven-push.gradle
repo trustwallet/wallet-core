@@ -12,11 +12,10 @@ artifacts {
 publishing {
     publications {
         Production(MavenPublication) {
-            artifact("$buildDir/outputs/aar/trustwalletcore-release.aar")
+            artifact("$buildDir/outputs/aar/wallet-core-release.aar")
             artifact sourcesJar {
                 classifier "sources"
             }
-            artifactId 'wallet-core'
 
             pom.withXml {
                 def dependenciesNode = asNode().appendNode('dependencies')
