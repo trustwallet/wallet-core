@@ -185,6 +185,14 @@ pub enum GPrimitive {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GStructDecl {
+    #[serde(rename = "struct")]
+    name: GStructName,
+    fields: Vec<(GKeyword, GType)>,
+    markers: GMarkers,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStructName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -321,7 +329,7 @@ impl ParseTree for GEnumDecl {
         // Ignore leading spaces.
         let (_, reader) = wipe::<GSpaces>(reader);
 
-        let (string, handle) = reader.read_until::<GSpace>()?;
+        let (string, handle) = reader.read_until::<GSeparator>()?;
 
         if string != "enum" {
             return Err(Error::Todo);
@@ -554,10 +562,113 @@ impl ParseTree for GEnum {
     }
 }
 
+impl ParseTree for GStructDecl {
+    type Derivation = Self;
+
+    fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
+        // Derive (optional) markers.
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
+
+        // Check for prefix
+        let (string, handle) = reader.read_until::<GSeparator>()?;
+        if string != "struct" {
+            return Err(Error::Todo);
+        }
+
+        // Read the struct name.
+        let (struct_name, reader) = ensure::<GStructName>(handle.commit())?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for opening curly bracket.
+        let (_, reader) = ensure::<GOpenCurlyBracket>(reader)?;
+
+        // Parse field(s)
+        let mut fields = vec![];
+        let mut p_reader = reader;
+        loop {
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(p_reader);
+
+            // TODO: Should be parsed
+            // Wipe (possible) comment.
+            let (_, reader) = wipe::<GCommentLine>(reader);
+
+            // Read field type. If this fails, we interpret it as no (more)
+            // field(s) present.
+            let (pending, checked_out) = reader.checkout();
+            let (field_ty, reader) = if let Ok((ty, r)) = ensure::<GType>(checked_out) {
+                (ty, r)
+            } else {
+                p_reader = pending.discard();
+                break;
+            };
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // Read field name
+            let (field_name, reader) = ensure::<GKeyword>(reader)?;
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // Track field.
+            fields.push((field_name, field_ty));
+
+            // Check for semicolon.
+            let (_, reader) = ensure::<GSemicolon>(reader)?;
+
+            // Ignore leading separators.
+            let (_, reader) = wipe::<GSeparator>(reader);
+
+            // TODO: Should be parsed
+            // Wipe (possible) inline comment.
+            let (_, reader) = wipe::<GInlineComment>(reader);
+
+            // TODO: Should be parsed
+            // Wipe (possible) comment.
+            let (_, reader) = wipe::<GCommentLine>(reader);
+
+            p_reader = reader;
+        }
+
+        let reader = p_reader;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for closing curly bracket.
+        let (_, reader) = ensure::<GCloseCurlyBracket>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
+
+        // Check for required semicolon.
+        let (_, reader) = ensure::<GSemicolon>(reader)?;
+
+        Ok(DerivationResult {
+            derived: GStructDecl {
+                name: struct_name,
+                fields,
+                markers,
+            },
+            branch: reader.into_branch(),
+        })
+    }
+}
+
 impl ParseTree for GStructInd {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+        // Ignore leading spaces.
+        let (_, reader) = wipe::<GSpaces>(reader);
+
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
