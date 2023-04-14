@@ -143,6 +143,7 @@ enum TWCoinType {
     TWCoinTypeComdex = 80000118,
     TWCoinTypeNeutron = 90000118,
     TWCoinTypeSommelier = 11000118,
+    TWCoinTypeFetchAI = 12000118,
 };
 
 /// Returns the blockchain for a coin type.
