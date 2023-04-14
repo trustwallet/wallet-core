@@ -306,6 +306,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeFetchAI:
             EXPECT_EQ(address, "fetch1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z02xk8wk");
             break;
+        case TWCoinTypeMars:
+            EXPECT_EQ(address, "mars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0yxx6e6");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
