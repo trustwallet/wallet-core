@@ -73,7 +73,7 @@ pub enum GHeaderFileItem {
     StaticVar(GStaticVar),
     Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
-    StructDecl(GStructDecl),
+    StructIndicator(GStructInd),
     EnumDecl(GEnumDecl),
     Marker(GMarker),
     Newline,
@@ -188,7 +188,7 @@ pub enum GPrimitive {
 pub struct GStructName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GStructDecl {
+pub struct GStructInd {
     #[serde(rename = "struct")]
     struct_val: GStructName,
     markers: GMarkers,
@@ -554,7 +554,7 @@ impl ParseTree for GEnum {
     }
 }
 
-impl ParseTree for GStructDecl {
+impl ParseTree for GStructInd {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -568,7 +568,7 @@ impl ParseTree for GStructDecl {
         let (_, reader) = ensure::<GSemicolon>(reader)?;
 
         Ok(DerivationResult {
-            derived: GStructDecl {
+            derived: GStructInd {
                 struct_val: struct_res,
                 markers,
             },
@@ -1363,11 +1363,11 @@ impl ParseTree for GHeaderFileItem {
         }
 
         // Check for struct decleration.
-        let (res, reader) = optional::<GStructDecl>(reader);
+        let (res, reader) = optional::<GStructInd>(reader);
         if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
-                derived: GHeaderFileItem::StructDecl(item),
+                derived: GHeaderFileItem::StructIndicator(item),
                 branch: reader.into_branch(),
             });
         }
