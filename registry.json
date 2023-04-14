@@ -847,6 +847,36 @@
     }
   },
   {
+    "id": "quasar",
+    "name": "Quasar",
+    "displayName": "Quasar",
+    "coinId": 15000118,
+    "symbol": "QSR",
+    "decimals": 6,
+    "chainId": "quasar-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "quasar",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/quasar",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "2898B89C98FE1E8CF1E05A37E4EE5EE5ED83FD957B0CAEE53DE39FC82BF1A033",
+      "sampleAccount": "quasar1cqu6w425slheul3jsmyt6q0ec0rs0w0ugkst3k"
+    },
+    "info": {
+      "url": "https://www.quasar.fi/",
+      "documentation": "https://docs.quasar.fi/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,

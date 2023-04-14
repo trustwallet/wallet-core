@@ -108,6 +108,7 @@ This list is generated from [./registry.json](../registry.json)
 | 12000118 | Fetch AI         | FET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fetchai/info/logo.png" width="32" />      | <https://fetch.ai/>           |
 | 13000118 | Mars Hub         | MARS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/mars/info/logo.png" width="32" />         | <https://marsprotocol.io/>    |
 | 14000118 | Umee             | UMEE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/umee/info/logo.png" width="32" />         | <https://umee.cc/>            |
+| 15000118 | Quasar           | QSR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/quasar/info/logo.png" width="32" />       | <https://www.quasar.fi/>      |
 | 20000118 | Stargaze         | STARS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stargaze/info/logo.png" width="32" />     | <https://www.stargaze.zone/>  |
 | 20000714 | BNB Smart Chain  | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
 | 20009001 | Native Evmos     | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nativeevmos/info/logo.png" width="32" />  | <https://evmos.org/>          |
