@@ -620,6 +620,18 @@ TEST(HDWallet, StargazeKey) {
     }
 }
 
+TEST(HDWallet, CoreumKey) {
+    const auto derivPath = "m/44'/990'/0'/0/0";
+    HDWallet wallet = HDWallet("rude segment two fury you output manual volcano sugar draft elite fame", "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeCoreum, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "56e5e45bf33a779527ec670b5336f6bc78efbe0e3bf1f004e7250673a82a3431");
+        const auto p = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(p.bytes), "0345d8d927b955c3cd468d12b5bc634c7919ee4777e578439af6314cf04b2ff114");
+        EXPECT_EQ(Cosmos::Address(TWCoinTypeCoreum ,p).string(), "core1a5nvz6smgsph9gephguyhn30fmzrpaxrvvdjun");
+    }
+}
+
 TEST(HDWallet, NearKey) {
     const auto derivPath = "m/44'/397'/0'";
     HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");

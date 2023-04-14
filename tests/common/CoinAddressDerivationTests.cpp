@@ -312,6 +312,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeUmee:
             EXPECT_EQ(address, "umee1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tdzugn");
             break;
+        case TWCoinTypeCoreum:
+            EXPECT_EQ(address, "core1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0248ct6");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }
