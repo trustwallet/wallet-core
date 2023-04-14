@@ -847,6 +847,36 @@
     }
   },
   {
+    "id": "coreum",
+    "name": "Coreum",
+    "displayName": "Coreum",
+    "coinId": 10000990,
+    "symbol": "CORE",
+    "decimals": 6,
+    "chainId": "coreum-mainnet-1",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/990'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "core",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/coreum",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "32A4AE2AE6AAE31E75EDDADE0AB9F1499ABD5AD8D3F261ADEF2805CD46FF74E7",
+      "sampleAccount": "core1zmwdnfpwuymwn0fkwnj2aaje34npd5sqgjxq9v"
+    },
+    "info": {
+      "url": "https://www.coreum.com/",
+      "documentation": "https://www.coreum.com/developers"
+    }
+  },
+  {
     "id": "quasar",
     "name": "Quasar",
     "displayName": "Quasar",
