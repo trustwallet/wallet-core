@@ -126,5 +126,6 @@ class CoinAddressDerivationTests {
         SOMMELIER -> assertEquals("somm142j9u5eaduzd7faumygud6ruhdwme98quc948e", address)
         FETCHAI -> assertEquals("fetch142j9u5eaduzd7faumygud6ruhdwme98qrera5y", address)
         MARS -> assertEquals("mars142j9u5eaduzd7faumygud6ruhdwme98qdenqrg", address)
+        UMEE -> assertEquals("umee142j9u5eaduzd7faumygud6ruhdwme98qzjhxjp", address)
     }
 }
