@@ -75,6 +75,7 @@ pub enum GHeaderFileItem {
     FunctionDecl(GFunctionDecl),
     StructIndicator(GStructInd),
     EnumDecl(GEnumDecl),
+    StructDecl(GStructDecl),
     Marker(GMarker),
     Newline,
     Eof,
@@ -181,6 +182,7 @@ pub enum GPrimitive {
     LongInt,
     Float,
     Double,
+    UInt8T,
     UInt32T,
 }
 
@@ -497,6 +499,7 @@ impl ParseTree for GPrimitive {
             "long" => GPrimitive::LongInt,
             "float" => GPrimitive::Float,
             "double" => GPrimitive::Double,
+            "uint8_t" => GPrimitive::UInt8T,
             "uint32_t" => GPrimitive::UInt32T,
             _ => {
                 return Err(Error::Todo);
@@ -571,6 +574,9 @@ impl ParseTree for GStructDecl {
 
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
+
+        // Ignore leading separators.
+        let (_, reader) = wipe::<GSeparator>(reader);
 
         // Read the struct name.
         let (struct_name, reader) = ensure::<GStructName>(reader)?;
@@ -1390,6 +1396,7 @@ impl ParseTree for GFunctionDecl {
 impl ParseTree for GHeaderFileItem {
     type Derivation = Self;
 
+    // TODO: The content of this method should probably be a macro.
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Check for newline.
         let (res, reader) = optional::<GNewline>(reader);
@@ -1467,7 +1474,8 @@ impl ParseTree for GHeaderFileItem {
             });
         }
 
-        // Check for struct decleration.
+        // TODO: Is this needed?
+        // Check for struct indicator.
         let (res, reader) = optional::<GStructInd>(reader);
         if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
@@ -1493,6 +1501,16 @@ impl ParseTree for GHeaderFileItem {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::EnumDecl(item),
+                branch: reader.into_branch(),
+            });
+        }
+
+        // Check for struct decleration.
+        let (res, reader) = optional::<GStructDecl>(reader);
+        if let Some(item) = res {
+            let (_, reader) = wipe::<GEndOfLine>(reader);
+            return Ok(DerivationResult {
+                derived: GHeaderFileItem::StructDecl(item),
                 branch: reader.into_branch(),
             });
         }

@@ -132,6 +132,17 @@ fn test_enum_decls_with_comment() {
         expected
     );
 
+    must_ok!(
+        GEnumDecl,
+        r#"enum SomeEnum {
+        ONE,
+        // Comment
+        TWO,
+        THREE
+    };"#,
+        expected
+    );
+
     // Variants with values.
     let expected = GEnumDecl {
         name: GKeyword::from("SomeEnum"),
@@ -167,6 +178,17 @@ fn test_enum_decls_with_comment() {
         r#"enum SomeEnum {
         ONE = 1, // Comment
         TWO = 2, // Comment
+        THREE = 3,
+    };"#,
+        expected
+    );
+
+    must_ok!(
+        GEnumDecl,
+        r#"enum SomeEnum {
+        ONE = 1,
+        // Comment
+        TWO = 2,
         THREE = 3,
     };"#,
         expected
