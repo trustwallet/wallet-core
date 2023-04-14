@@ -937,6 +937,36 @@
     }
   },
   {
+    "id": "akash",
+    "name": "Akash",
+    "displayName": "Akash",
+    "coinId": 17000118,
+    "symbol": "AKT",
+    "decimals": 6,
+    "chainId": "akashnet-2",
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "akash",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/akash",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "C0083856344425908D5333D4325E3E0DE9D697BA568C6D99C34303819F615D25",
+      "sampleAccount": "akash1f4nskxfw8ufhwnajh7xwt0wmdtxm02vwta6krg"
+    },
+    "info": {
+      "url": "https://akash.network/",
+      "documentation": "https://docs.akash.network/"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,

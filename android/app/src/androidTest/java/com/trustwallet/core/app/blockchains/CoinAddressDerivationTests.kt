@@ -130,5 +130,6 @@ class CoinAddressDerivationTests {
         COREUM -> assertEquals("core1rawf376jz2lnchgc4wzf4h9c77neg3zldc7xa8", address)
         QUASAR -> assertEquals("quasar142j9u5eaduzd7faumygud6ruhdwme98q78symk", address)
         PERSISTENCE -> assertEquals("persistence142j9u5eaduzd7faumygud6ruhdwme98q7gv2ch", address)
+        AKASH -> assertEquals("akash142j9u5eaduzd7faumygud6ruhdwme98qal870f", address)
     }
 }
