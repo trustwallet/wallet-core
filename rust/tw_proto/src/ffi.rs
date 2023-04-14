@@ -1,5 +1,8 @@
 #![allow(clippy::missing_safety_doc)]
 
+use std::borrow::Cow;
+use std::ffi::c_char;
+use tw_memory::c_string_standalone;
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
@@ -7,8 +10,9 @@ use tw_memory::ffi::c_result::ErrorCode;
 #[repr(C)]
 pub enum CProtoError {
     Ok = 0,
-    ErrorDeserializingMsg = 1,
-    ErrorSerializingMsg = 2,
+    Internal = 1,
+    ErrorDeserializingMsg = 2,
+    ErrorSerializingMsg = 3,
 }
 
 impl From<CProtoError> for ErrorCode {
@@ -36,6 +40,64 @@ pub unsafe extern "C" fn pass_eth_signing_msg_through(
         Err(_) => return CByteArrayResult::error(CProtoError::ErrorDeserializingMsg),
     };
     crate::serialize(&msg)
+        .map(CByteArray::from)
+        .map_err(|_| CProtoError::ErrorSerializingMsg)
+        .into()
+}
+
+/// Returns an encoded and signed `polkadot_test_signing_input` transaction.
+/// This FFI is used within integration tests.
+/// \return C-compatible, null-terminated string.
+#[no_mangle]
+pub unsafe extern "C" fn polkadot_tx_expected_encoded() -> *const c_char {
+    c_string_standalone("29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0")
+}
+
+/// Returns a serialized `Polkadot::Proto::SigningInput` message.
+/// This FFI is used within integration tests.
+/// \return C-compatible result with a C-compatible byte array.
+#[no_mangle]
+pub unsafe extern "C" fn polkadot_test_signing_input() -> CByteArrayResult {
+    use crate::Polkadot::Proto::{
+        self as proto, mod_Balance::OneOfmessage_oneof as BalanceEnum,
+        mod_SigningInput::OneOfmessage_oneof as SigningMsgEnum,
+    };
+
+    let block_hash = "0x343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642";
+    let genesis_hash = "91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3";
+    let to_address = "14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3";
+    let privkey = [
+        171, 248, 229, 189, 190, 48, 198, 86, 86, 192, 163, 203, 209, 129, 255, 138, 86, 41, 74,
+        105, 223, 237, 210, 121, 130, 170, 206, 74, 118, 144, 145, 21,
+    ];
+    let value = [48, 57]; // 12345
+
+    let block_hash = tw_encoding::hex::decode(block_hash).expect("Expect valid hash");
+    let genesis_hash = tw_encoding::hex::decode(genesis_hash).expect("Expect valid hash");
+
+    let balance = BalanceEnum::transfer(proto::mod_Balance::Transfer {
+        to_address: Cow::from(to_address),
+        value: Cow::Borrowed(&value),
+    });
+    let signing_input = proto::SigningInput {
+        block_hash: Cow::Owned(block_hash),
+        genesis_hash: Cow::Owned(genesis_hash),
+        nonce: 0,
+        spec_version: 17,
+        transaction_version: 3,
+        era: Some(proto::Era {
+            block_number: 927699,
+            period: 8,
+        }),
+        private_key: Cow::Borrowed(&privkey),
+        network: 0,
+        message_oneof: SigningMsgEnum::balance_call(proto::Balance {
+            message_oneof: balance,
+        }),
+        ..proto::SigningInput::default()
+    };
+
+    crate::serialize(&signing_input)
         .map(CByteArray::from)
         .map_err(|_| CProtoError::ErrorSerializingMsg)
         .into()

@@ -5,10 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
+#include "Polkadot/Signer.h"
 #include "TestUtilities.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "gtest/gtest.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/Polkadot.pb.h"
 #include "uint256.h"
 
 TEST(RustBindgen, MoveParseFunctionArgument) {
@@ -49,4 +51,19 @@ TEST(RustBindgen, EthSigningMessageProto) {
     Rust::CByteArrayResultWrapper res = Rust::pass_eth_signing_msg_through(serialized.data(), serialized.size());
     ASSERT_TRUE(res.isOk());
     ASSERT_EQ(res.unwrap().data, serialized);
+}
+
+TEST(RustBindgen, PolkadotSignTxProto) {
+    using namespace TW;
+
+    Rust::CByteArrayResultWrapper res = Rust::polkadot_test_signing_input();
+    ASSERT_TRUE(res.isOk());
+    auto serialized = std::move(res.unwrap().data);
+
+    Polkadot::Proto::SigningInput input;
+    input.ParseFromArray(serialized.data(), static_cast<int>(serialized.size()));
+
+    auto output = Polkadot::Signer::sign(input);
+    Rust::CStringWrapper expected_encoded = Rust::polkadot_tx_expected_encoded();
+    ASSERT_EQ(hex(output.encoded()), expected_encoded.str);
 }

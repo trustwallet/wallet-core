@@ -1287,6 +1287,7 @@ version = "0.1.0"
 dependencies = [
  "pb-rs",
  "quick-protobuf",
+ "tw_encoding",
  "tw_memory",
 ]
 
