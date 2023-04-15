@@ -12,7 +12,7 @@ artifacts {
 publishing {
     publications {
         Production(MavenPublication) {
-            artifact("$buildDir/libs/proto.jar")
+            artifact("$buildDir/libs/wallet-core-proto.jar")
             artifact sourcesJar {
                 classifier "sources"
             }
