@@ -4,14 +4,24 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use bs58::{decode::Result, Alphabet};
+use crate::{EncodingError, EncodingResult};
+use bs58::{decode::Error, Alphabet};
+
+impl From<Error> for EncodingError {
+    fn from(_: Error) -> Self {
+        EncodingError::InvalidInput
+    }
+}
 
 pub fn encode(input: &[u8], alphabet: &Alphabet) -> String {
     bs58::encode(input).with_alphabet(alphabet).into_string()
 }
 
-pub fn decode(input: &str, alphabet: &Alphabet) -> Result<Vec<u8>> {
-    bs58::decode(input).with_alphabet(alphabet).into_vec()
+pub fn decode(input: &str, alphabet: &Alphabet) -> EncodingResult<Vec<u8>> {
+    bs58::decode(input)
+        .with_alphabet(alphabet)
+        .into_vec()
+        .map_err(EncodingError::from)
 }
 
 #[cfg(test)]

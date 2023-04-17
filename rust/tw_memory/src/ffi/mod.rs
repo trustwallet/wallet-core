@@ -9,8 +9,8 @@
 use std::ffi::{c_char, CString};
 
 pub mod c_byte_array;
-
-pub use c_byte_array::CByteArray;
+pub mod c_byte_array_ref;
+pub mod c_result;
 
 /// Releases the memory previously allocated for the `ptr` string.
 /// \param ptr *non-null* C-compatible, nul-terminated string.

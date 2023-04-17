@@ -177,7 +177,7 @@ message SigningInput {
     Delegate delegate = 7;
 
     // Optional, used in case of withdraw
-    Withdraw withdraw = 8;    
+    Withdraw withdraw = 8;
 
     // Optional
     DeregisterStakingKey deregister_staking_key = 9;

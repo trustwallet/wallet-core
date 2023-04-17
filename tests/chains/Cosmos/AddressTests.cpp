@@ -14,6 +14,10 @@
 
 namespace TW::Cosmos {
 
+TEST(CosmosAddressAddressToData, Invalid) {
+    ASSERT_TRUE(addressToData(TWCoinTypeCosmos, "fake").empty());
+}
+
 TEST(CosmosAddress, Valid) {
     ASSERT_TRUE(Address::isValid(TWCoinTypeBinance, "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"));
 }

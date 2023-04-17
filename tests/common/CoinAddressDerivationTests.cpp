@@ -71,6 +71,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
         case TWCoinTypeXDai:
+        case TWCoinTypeIoTeXEVM:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 
@@ -274,6 +275,57 @@ TEST(Coin, DeriveAddress) {
             break;
         case TWCoinTypeStargaze:
             EXPECT_EQ(address, "stars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0d8g78s");
+            break;
+        case TWCoinTypeJuno:
+            EXPECT_EQ(address, "juno1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z00fucta");
+            break;
+        case TWCoinTypeStride:
+            EXPECT_EQ(address, "stride1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z06sllcd");
+            break;
+        case TWCoinTypeAxelar:
+            EXPECT_EQ(address, "axelar1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0a4ft8q");
+            break;
+        case TWCoinTypeCrescent:
+            EXPECT_EQ(address, "cre1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0anvxev");
+            break;
+        case TWCoinTypeKujira:
+            EXPECT_EQ(address, "kujira1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0gnampt");
+            break;
+        case TWCoinTypeNativeCanto:
+            EXPECT_EQ(address, "canto1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0wvfqju");
+            break;
+        case TWCoinTypeComdex:
+            EXPECT_EQ(address, "comdex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z075ap4k");
+            break;
+        case TWCoinTypeNeutron:
+            EXPECT_EQ(address, "neutron1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0aykpkx");
+            break;
+        case TWCoinTypeSommelier:
+            EXPECT_EQ(address, "somm1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z048s0at");
+            break;
+        case TWCoinTypeFetchAI:
+            EXPECT_EQ(address, "fetch1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z02xk8wk");
+            break;
+        case TWCoinTypeMars:
+            EXPECT_EQ(address, "mars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0yxx6e6");
+            break;
+        case TWCoinTypeUmee:
+            EXPECT_EQ(address, "umee1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tdzugn");
+            break;
+        case TWCoinTypeCoreum:
+            EXPECT_EQ(address, "core1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0248ct6");
+            break;
+        case TWCoinTypeQuasar:
+            EXPECT_EQ(address, "quasar1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0hc97py");
+            break;
+        case TWCoinTypePersistence:
+            EXPECT_EQ(address, "persistence1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0hhesz9");
+            break;
+        case TWCoinTypeAkash:
+            EXPECT_EQ(address, "akash1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z05qjy4m");
+            break;
+        case TWCoinTypeNoble:
+            EXPECT_EQ(address, "noble1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z03c2t50");
             break;
             // no default branch here, intentionally, to better notice any missing coins
         }

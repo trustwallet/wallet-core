@@ -6,9 +6,14 @@ on:
   pull_request:
     branches: [ master ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
 

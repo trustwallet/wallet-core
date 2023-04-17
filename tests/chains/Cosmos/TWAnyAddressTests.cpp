@@ -4,18 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TestUtilities.h"
+#include "CosmosTestHelpers.h"
 
-#include <TrustWalletCore/TWAnyAddress.h>
-#include <TrustWalletCore/TWCoinType.h>
+namespace TW::Cosmos::tests {
 
-#include <gtest/gtest.h>
+static const std::string gAtomAddr = "cosmos1mry47pkga5tdswtluy0m8teslpalkdq07pswu4";
+static const std::string gAtomHrp = "cosmos";
 
-TEST(CosmosAnyAddress, Cosmos) {
-    auto string = STRING("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeCosmos));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
-    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "bc2da90c84049370d1b7c528bc164bc588833f21");
+TEST(TWAtomAnyAddress, AllAtomAddressTests) {
+    CosmosAddressParameters parameters{.hrp = gAtomHrp, .coinType = TWCoinTypeCosmos, .address = gAtomAddr};
+    TestCosmosAddressParameters(parameters);
+}
+
 }

@@ -8,6 +8,7 @@
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "IoTeX/Address.h"
 #include "Cosmos/Address.h"
 #include "Sui/Address.h"
 #include "Coin.h"
@@ -619,6 +620,18 @@ TEST(HDWallet, StargazeKey) {
     }
 }
 
+TEST(HDWallet, CoreumKey) {
+    const auto derivPath = "m/44'/990'/0'/0/0";
+    HDWallet wallet = HDWallet("rude segment two fury you output manual volcano sugar draft elite fame", "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeCoreum, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "56e5e45bf33a779527ec670b5336f6bc78efbe0e3bf1f004e7250673a82a3431");
+        const auto p = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(p.bytes), "0345d8d927b955c3cd468d12b5bc634c7919ee4777e578439af6314cf04b2ff114");
+        EXPECT_EQ(Cosmos::Address(TWCoinTypeCoreum ,p).string(), "core1a5nvz6smgsph9gephguyhn30fmzrpaxrvvdjun");
+    }
+}
+
 TEST(HDWallet, NearKey) {
     const auto derivPath = "m/44'/397'/0'";
     HDWallet wallet = HDWallet("owner erupt swamp room swift final allow unaware hint identify figure cotton", "");
@@ -629,6 +642,31 @@ TEST(HDWallet, NearKey) {
         EXPECT_EQ(hex(p.bytes), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
         EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
     }
+}
+
+TEST(HDWallet, IoTexEvmKeys) {
+    const auto derivPath = "m/44'/304'/0'/0/0";
+    HDWallet wallet = HDWallet("token major laundry actor dish lunch physical machine kingdom adapt gym true", "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeEthereum, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "3aa86eafa99cb9ae0f7c1c4f06391ffbef91578169715dfbdcdf76b532b73f24");
+        const auto p = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        EXPECT_EQ(hex(p.bytes), "042be00e86db75bbe3e8defe9bb09fbd5444eea10e2d53d55468f3d25bf3b0cb3ea8d992baba30c9353584b8ff061f8585cae1c792b8bb6f0607750dbf4fe8c760");
+        EXPECT_EQ(Ethereum::Address(p).string(), "0x6b3FBEDcB9E106e84c3a47f63cf96Df8500bBc22");
+    }
+}
+
+TEST(HDWallet, IoTexKeys) {
+    const auto derivPath = "m/44'/304'/0'/0/0";
+    HDWallet wallet = HDWallet("token major laundry actor dish lunch physical machine kingdom adapt gym true", "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeIoTeX, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "3aa86eafa99cb9ae0f7c1c4f06391ffbef91578169715dfbdcdf76b532b73f24");
+        const auto p = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        EXPECT_EQ(hex(p.bytes), "042be00e86db75bbe3e8defe9bb09fbd5444eea10e2d53d55468f3d25bf3b0cb3ea8d992baba30c9353584b8ff061f8585cae1c792b8bb6f0607750dbf4fe8c760");
+        EXPECT_EQ(IoTeX::Address(p).string(), "io1dvlmah9euyrwsnp6glmre7tdlpgqh0pzz542zd");
+    }
+    // io1qmkv62pvg56qkashkwauhhjv3gtjhcm889r8dc
 }
 
 } // namespace TW::HDWalletTests

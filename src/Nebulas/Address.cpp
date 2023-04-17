@@ -8,6 +8,7 @@
 #include "../Base58.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include <cstring>
 
 namespace TW::Nebulas {
 
@@ -27,7 +28,7 @@ bool Address::isValid(const std::string& string) {
     Data content(data.begin(), data.begin() + 22);
     Data checksum(data.begin() + 22, data.end());
     auto dataSha3 = Hash::sha3_256(content);
-    return ::memcmp(dataSha3.data(), checksum.data(), 4) == 0;
+    return std::memcmp(dataSha3.data(), checksum.data(), 4) == 0;
 }
 
 Address::Address(const std::string& string) {

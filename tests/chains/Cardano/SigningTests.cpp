@@ -98,6 +98,106 @@ Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10,
     return input;
 }
 
+/// Successfully broadcasted:
+/// https://cardanoscan.io/transaction/87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628
+TEST(CardanoSigning, SendNft) {
+    const auto fromAddressPrivKey = "d09831a668db6b36ffb747600cb1cd3e3d34f36e1e6feefc11b5f988719b7557a7029ab80d3e6fe4180ad07a59ddf742ea9730f3c4145df6365fa4ae2ee49c3392e19444caf461567727b7fefec40a3763bdb6ce5e0e8c05f5e340355a8fef4528dfe7502cfbda49e38f5a0021962d52dc3dee82834a23abb6750981799b75577d1ed9af9853707f0ef74264274e71b2f12e86e3c91314b6efa75ef750d9711b84cedd742ab873ef2f9566ad20b3fc702232c6d2f5d83ff425019234037d1e58";
+    const auto fromAddress = "addr1qy5eme9r6frr0m6q2qpncg282jtrhq5lg09uxy2j0545hj8rv7v2ntdxuv6p4s3eq4lqzg39lewgvt6fk5kmpa0zppesufzjud";
+    const auto toAddress = "addr1qy9wjfn6nd8kak6dd8z53u7t5wt9f4lx0umll40px5hnq05avwcsq5r3ytdp36wttzv4558jaq8lvhgqhe3y8nuf5xrquju7z4";
+    const auto nftPolicyId = "219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e";
+    const auto nftAssetName = "coolcatssociety4567";
+    const auto nftTokenAmount = 1ul;
+    // 1.20249 ADA. Amount locked by the NFT.
+    const auto nftInputAmount = 1202490ul;
+    const auto ttl = 89130965ul;
+
+    Proto::SigningInput input;
+
+    // Set the first utxo (NFT token and locked ADA).
+
+    auto* utxo1 = input.add_utxos();
+    // NFT unspent output.
+    const auto txHash1 = parse_hex("aba499ec2f23529e70bb256ceaffcc6274a882cf02f29e5670c75ee980d7c2b8");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(0);
+    utxo1->set_address(fromAddress);
+    utxo1->set_amount(nftInputAmount);
+
+    auto* token1 = utxo1->add_token_amount();
+    token1->set_policy_id(nftPolicyId);
+    token1->set_asset_name(nftAssetName);
+    const auto tokenAmount1 = store(uint256_t(nftTokenAmount));
+    token1->set_amount(tokenAmount1.data(), tokenAmount1.size());
+
+    // Set additional utxos to pay fee.
+
+    auto* utxo2 = input.add_utxos();
+    const auto txHash2 = parse_hex("ee414d635b3bc67831907354d274a31174664777c57c21ae923b9459e5644840");
+    utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
+    utxo2->mutable_out_point()->set_output_index(0);
+    utxo2->set_address(fromAddress);
+    utxo2->set_amount(1000000);
+
+    auto* utxo3 = input.add_utxos();
+    const auto txHash3 = parse_hex("6a7221dcc28353ed69b733391ffeb984a34c1e72293af111d59f9ddfa8639167");
+    utxo3->mutable_out_point()->set_tx_hash(txHash3.data(), txHash3.size());
+    utxo3->mutable_out_point()->set_output_index(0);
+    utxo3->set_address(fromAddress);
+    utxo3->set_amount(2000000);
+
+    PrivateKey privKey(parse_hex(fromAddressPrivKey));
+    input.add_private_key(privKey.bytes.data(), privKey.bytes.size());
+
+    // Set an output info.
+
+    input.mutable_transfer_message()->set_to_address(toAddress);
+    input.mutable_transfer_message()->set_change_address(fromAddress);
+    input.mutable_transfer_message()->set_amount(nftInputAmount);
+
+    auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
+    toToken->set_policy_id(nftPolicyId);
+    toToken->set_asset_name(nftAssetName);
+    const auto toTokenAmount = store(uint256_t(nftTokenAmount));
+    toToken->set_amount(toTokenAmount.data(), toTokenAmount.size());
+    input.set_ttl(ttl);
+
+    { // check min ADA amount
+        // The byte cost at the moment when the transaction was constructed.
+        // See `ProtocolParams::coinsPerUtxoByte`:
+        // https://input-output-hk.github.io/cardano-graphql/
+        const uint64_t coinsPerUtxoByte = 4310;
+
+        const auto bundleProtoData = data(input.transfer_message().token_amount().SerializeAsString());
+        const auto toAddressPtr = STRING(toAddress);
+
+        const auto minAdaAmount = TWCardanoOutputMinAdaAmount(toAddressPtr.get(), &bundleProtoData, coinsPerUtxoByte);
+        EXPECT_EQ(minAdaAmount, nftInputAmount);
+        EXPECT_EQ(input.transfer_message().amount(), minAdaAmount);
+    }
+
+    // run plan and check result
+    auto signer = Signer(input);
+    const auto plan = signer.doPlan();
+    const auto output = signer.sign();
+
+    const auto txid = hex(data(output.tx_id()));
+    EXPECT_EQ(txid, "87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628");
+
+    EXPECT_EQ(plan.availableAmount, nftInputAmount + 1000000ul + 2000000ul);
+    EXPECT_EQ(plan.amount, nftInputAmount);
+    EXPECT_EQ(plan.fee, 176539ul);
+    EXPECT_EQ(plan.change, 1000000ul + 2000000ul - 176539ul);
+    EXPECT_EQ(plan.utxos.size(), 3ul);
+    EXPECT_EQ(plan.availableTokens.size(), nftTokenAmount);
+    EXPECT_EQ(plan.availableTokens.getAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e_coolcatssociety4567"), nftTokenAmount);
+    EXPECT_EQ(plan.outputTokens.size(), 1ul);
+    EXPECT_EQ(plan.outputTokens.getAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e_coolcatssociety4567"), nftTokenAmount);
+    EXPECT_EQ(plan.changeTokens.size(), 0ul);
+
+    const auto txHex = hex(data(output.encoded()));
+    EXPECT_EQ(txHex, "83a400838258206a7221dcc28353ed69b733391ffeb984a34c1e72293af111d59f9ddfa863916700825820aba499ec2f23529e70bb256ceaffcc6274a882cf02f29e5670c75ee980d7c2b800825820ee414d635b3bc67831907354d274a31174664777c57c21ae923b9459e5644840000182825839010ae9267a9b4f6edb4d69c548f3cba39654d7e67f37ffd5e1352f303e9d63b100507122da18e9cb58995a50f2e80ff65d00be6243cf89a186821a0012593aa1581c219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5ea153636f6f6c63617473736f6369657479343536370182583901299de4a3d24637ef4050033c214754963b829f43cbc311527d2b4bc8e36798a9ada6e3341ac239057e012225fe5c862f49b52db0f5e208731a002b1525021a0002b19b031a055007d5a1008182582088bd26e8656fa7dead846c3373588f0192da5bfb90bf5d3fb877decfb3b3fd085840da8656aca0dacc57d4c2d957fc7dff03908f6dcf60c48f1e40b3006e2fd0cfacfa4c24fa02e35a310572526586d4ce0d30bf660ba274c8efd507848cbe177d09f6");
+}
+
 TEST(CardanoSigning, Plan) {
     auto input = createSampleInput(7000000);
 

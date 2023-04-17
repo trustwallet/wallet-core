@@ -4,83 +4,64 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::{EncodingError, EncodingResult};
+use data_encoding::{Encoding, Specification};
+use std::cell::RefCell;
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
-const ALPHABET_RFC4648: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+const ALPHABET_RFC4648: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-pub fn encode(input: &[u8], alphabet: Option<&[u8]>, padding: bool) -> Result<String, String> {
-    let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
-    if alphabet.len() != 32 {
-        return Err("Invalid alphabet: must contain 32 characters".to_string());
-    }
+type EncodingMap = HashMap<EncodingParams, Encoding>;
 
-    let mut result = String::new();
-    let mut buffer: u32 = 0;
-    let mut buffer_size = 0;
-
-    for &byte in input {
-        buffer = (buffer << 8) | u32::from(byte);
-        buffer_size += 8;
-
-        while buffer_size >= 5 {
-            let value = alphabet[(buffer >> (buffer_size - 5)) as usize & 31];
-            result.push(char::from(value));
-            buffer_size -= 5;
-        }
-    }
-
-    if buffer_size > 0 {
-        let value = alphabet[(buffer << (5 - buffer_size)) as usize & 31];
-        result.push(char::from(value));
-    }
-
-    if padding {
-        let padding = 8 - (result.len() % 8);
-        result.extend(std::iter::repeat('=').take(padding));
-    }
-
-    Ok(result)
+thread_local! {
+    /// Cache the encodings to avoid parsing already handled alphabets on each operation.
+    static ENCODINGS: RefCell<EncodingMap> = RefCell::new(HashMap::new());
 }
 
-/// TODO `base64::decode` requires for padding bytes to be present if `padding = true`.
-/// This leads to an inconsistent behaviour.
-pub fn decode(input: &str, alphabet: Option<&[u8]>, padding: bool) -> Result<Vec<u8>, String> {
-    let alphabet = alphabet.unwrap_or(ALPHABET_RFC4648);
-    let mut output = Vec::new();
-    let mut buffer: u32 = 0;
-    let mut bits_left = 0;
-    let alphabet_map: HashMap<u8, u32> = alphabet
-        .iter()
-        .enumerate()
-        .map(|(i, &c)| (c, i as u32))
-        .collect();
-    let input = if padding {
-        input.trim_end_matches('=')
-    } else {
-        input
-    };
+#[derive(Debug, Clone, Eq, Hash, PartialEq)]
+struct EncodingParams {
+    alphabet: String,
+    padding: bool,
+}
 
-    for c in input.bytes() {
-        let val = match alphabet_map.get(&c) {
-            Some(val) => *val,
-            None => return Err("Invalid character in input".to_string()),
-        };
-        buffer = (buffer << 5) | val;
-        bits_left += 5;
-        if bits_left >= 8 {
-            output.push((buffer >> (bits_left - 8)) as u8);
-            bits_left -= 8;
-        }
+pub fn encode(input: &[u8], alphabet: Option<String>, padding: bool) -> EncodingResult<String> {
+    let encoding = get_encoding(alphabet, padding)?;
+    Ok(encoding.encode(input))
+}
+
+pub fn decode(input: &str, alphabet: Option<String>, padding: bool) -> EncodingResult<Vec<u8>> {
+    let encoding = get_encoding(alphabet, padding)?;
+    encoding
+        .decode(input.as_bytes())
+        .map_err(|_| EncodingError::InvalidInput)
+}
+
+fn get_encoding(alphabet: Option<String>, padding: bool) -> EncodingResult<Encoding> {
+    let alphabet = alphabet.unwrap_or_else(|| ALPHABET_RFC4648.to_string());
+    let encoding_params = EncodingParams { alphabet, padding };
+
+    ENCODINGS.with(
+        |encodings| match encodings.borrow_mut().entry(encoding_params.clone()) {
+            Entry::Occupied(ready) => Ok(ready.get().clone()),
+            Entry::Vacant(vacant) => {
+                let new_encoding = create_encoding(encoding_params)?;
+                Ok(vacant.insert(new_encoding).clone())
+            },
+        },
+    )
+}
+
+fn create_encoding(params: EncodingParams) -> EncodingResult<Encoding> {
+    let mut specification = Specification::new();
+    specification.symbols = params.alphabet;
+    if params.padding {
+        specification.padding = Some('=');
     }
 
-    if padding && bits_left >= 5 {
-        return Err("Invalid padding in input".to_string());
-    }
-
-    if output == vec![0] {
-        return Ok(vec![]);
-    }
-    Ok(output)
+    specification
+        .encoding()
+        .map_err(|_| EncodingError::InvalidAlphabet)
 }
 
 #[cfg(test)]
@@ -110,12 +91,12 @@ mod tests {
         let alphabet = "abcdefghijklmnopqrstuvwxyz234567";
         let data = b"7uoq6tp427uzv7fztkbsnn64iwotfrristwpryy";
         let expected = "g52w64jworydimrxov5hmn3gpj2gwyttnzxdmndjo5xxiztsojuxg5dxobzhs6i";
-        let result = encode(data, Some(alphabet.as_bytes()), false).unwrap();
+        let result = encode(data, Some(alphabet.to_string()), false).unwrap();
         assert_eq!(result, expected);
 
         let invalid_alphabet = "invalidalphabet";
-        let result = encode(data, Some(invalid_alphabet.as_bytes()), false);
-        assert_eq!(result.is_err(), true);
+        let result = encode(data, Some(invalid_alphabet.to_string()), false);
+        assert_eq!(result, Err(EncodingError::InvalidAlphabet));
     }
 
     #[test]
@@ -128,21 +109,15 @@ mod tests {
     }
 
     #[test]
-    fn test_base32_decode_abc() {
-        let data = "ABC";
-        let expected = b"";
-
-        let result = decode(data, None, false).unwrap();
-        assert_eq!(result.as_slice(), expected);
-    }
-
-    #[test]
     fn test_base32_decode_padding() {
         let data = "JBSWY3DPFQQHO33SNRSCC===";
         let expected = b"Hello, world!";
 
         let result = decode(data, None, true).unwrap();
         assert_eq!(result.as_slice(), expected);
+
+        let data = "JBSWY3DPFQQHO33SNRSCC";
+        decode(data, None, true).expect_err("No padding while it's required");
     }
 
     #[test]
@@ -151,7 +126,22 @@ mod tests {
         let data = "g52w64jworydimrxov5hmn3gpj2gwyttnzxdmndjo5xxiztsojuxg5dxobzhs6i";
         let expected = b"7uoq6tp427uzv7fztkbsnn64iwotfrristwpryy";
 
-        let result = decode(data, Some(alphabet.as_bytes()), false).unwrap();
+        let result = decode(data, Some(alphabet.to_string()), false).unwrap();
         assert_eq!(result.as_slice(), expected);
+    }
+
+    #[test]
+    fn test_decode_invalid() {
+        const BASE32_ALPHABET_FILECOIN: &str = "abcdefghijklmnopqrstuvwxyz234567";
+
+        decode("+-", None, false).unwrap_err();
+        decode("A", None, false).unwrap_err();
+        decode("ABC", None, false).unwrap_err();
+        decode(
+            "rw6wy7w6sbsguyn3yzeygg34fgf72n5ao5sxykz",
+            Some(BASE32_ALPHABET_FILECOIN.to_string()),
+            false,
+        )
+        .unwrap_err();
     }
 }

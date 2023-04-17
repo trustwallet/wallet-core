@@ -25,26 +25,22 @@ fn test_encode_hex_with_prefix() {
 
 #[test]
 fn test_decode_hex() {
-    let encoded = "7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1";
+    let encoded = "68656c6c6f20776f726c64";
 
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = unsafe { decode_hex(encoded_ptr) };
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-
-    assert_eq!(decoded_slice.is_empty(), false);
+    let decoded: Vec<_> = unsafe { decode_hex(encoded_ptr).unwrap().into_vec() };
+    assert_eq!(decoded, b"hello world");
 }
 
 #[test]
 fn test_decode_hex_with_prefix() {
-    let encoded = "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1";
+    let encoded = "0x68656c6c6f20776f726c64";
 
     let encoded_c_str = CString::new(encoded).unwrap();
     let encoded_ptr = encoded_c_str.as_ptr();
 
-    let decoded_ptr = unsafe { decode_hex(encoded_ptr) };
-    let decoded_slice = unsafe { std::slice::from_raw_parts(decoded_ptr.data, decoded_ptr.size) };
-
-    assert_eq!(decoded_slice.is_empty(), false);
+    let decoded: Vec<_> = unsafe { decode_hex(encoded_ptr).unwrap().into_vec() };
+    assert_eq!(decoded, b"hello world");
 }

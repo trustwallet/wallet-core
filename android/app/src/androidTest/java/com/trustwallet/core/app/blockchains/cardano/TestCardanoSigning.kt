@@ -16,10 +16,9 @@ import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.*
 import wallet.core.jni.Cardano.getStakingAddress
+import wallet.core.jni.Cardano.outputMinAdaAmount
 import wallet.core.jni.CoinType.CARDANO
 import wallet.core.jni.proto.Cardano
-import wallet.core.jni.proto.Cardano.SigningInput
-import wallet.core.jni.proto.Cardano.SigningOutput
 import wallet.core.jni.proto.Common.SigningError
 
 
@@ -65,7 +64,7 @@ class TestCardanoSigning {
             .build()
         input.addUtxos(utxo2)
         
-        val output = AnySigner.sign(input.build(), CARDANO, SigningOutput.parser())
+        val output = AnySigner.sign(input.build(), CARDANO, Cardano.SigningOutput.parser())
         assertEquals(output.error, SigningError.OK)
 
         val encoded = output.encoded
@@ -143,7 +142,7 @@ class TestCardanoSigning {
         utxo2.addTokenAmount(token2)
         input.addUtxos(utxo2.build())
         
-        val output = AnySigner.sign(input.build(), CARDANO, SigningOutput.parser())
+        val output = AnySigner.sign(input.build(), CARDANO, Cardano.SigningOutput.parser())
         assertEquals(output.error, SigningError.OK)
 
         val encoded = output.encoded
@@ -206,7 +205,7 @@ class TestCardanoSigning {
             .build()
         input.addUtxos(utxo2)
         
-        val output = AnySigner.sign(input.build(), CARDANO, SigningOutput.parser())
+        val output = AnySigner.sign(input.build(), CARDANO, Cardano.SigningOutput.parser())
         assertEquals(output.error, SigningError.OK)
 
         val encoded = output.encoded
@@ -251,7 +250,7 @@ class TestCardanoSigning {
             .build()
         input.addUtxos(utxo1)
         
-        val output = AnySigner.sign(input.build(), CARDANO, SigningOutput.parser())
+        val output = AnySigner.sign(input.build(), CARDANO, Cardano.SigningOutput.parser())
         assertEquals(output.error, SigningError.OK)
 
         val encoded = output.encoded
@@ -260,5 +259,87 @@ class TestCardanoSigning {
 
         val txid = output.txId
         assertEquals(Numeric.toHexString(txid.toByteArray()), "0x6dcf3956232953fc25b8355fb1ded1e912b5802090fd21434d789087d6329683");
+    }
+
+    // Successfully broadcasted:
+    // https://cardanoscan.io/transaction/87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628
+    @Test
+    fun testSignNftTransfer() {
+        val fromAddress = "addr1qy5eme9r6frr0m6q2qpncg282jtrhq5lg09uxy2j0545hj8rv7v2ntdxuv6p4s3eq4lqzg39lewgvt6fk5kmpa0zppesufzjud"
+        val toAddress = "addr1qy9wjfn6nd8kak6dd8z53u7t5wt9f4lx0umll40px5hnq05avwcsq5r3ytdp36wttzv4558jaq8lvhgqhe3y8nuf5xrquju7z4"
+        val coinsPerUtxoByte = 4310
+
+        val tokenAmount = Cardano.TokenAmount.newBuilder()
+            .setPolicyId("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e")
+            .setAssetName("coolcatssociety4567")
+            .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("01"))) // 1
+            .build()
+
+        // UTXOs
+
+        val outpoint1 = Cardano.OutPoint.newBuilder()
+            .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("aba499ec2f23529e70bb256ceaffcc6274a882cf02f29e5670c75ee980d7c2b8")))
+            .setOutputIndex(0)
+            .build()
+        val utxo1 = Cardano.TxInput.newBuilder()
+            .setOutPoint(outpoint1)
+            .setAddress(fromAddress)
+            .setAmount(1_202_490)
+            .addTokenAmount(tokenAmount)
+
+        val outpoint2 = Cardano.OutPoint.newBuilder()
+            .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("ee414d635b3bc67831907354d274a31174664777c57c21ae923b9459e5644840")))
+            .setOutputIndex(0)
+            .build()
+        val utxo2 = Cardano.TxInput.newBuilder()
+            .setOutPoint(outpoint2)
+            .setAddress(fromAddress)
+            .setAmount(1_000_000)
+
+        val outpoint3 = Cardano.OutPoint.newBuilder()
+            .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("6a7221dcc28353ed69b733391ffeb984a34c1e72293af111d59f9ddfa8639167")))
+            .setOutputIndex(0)
+            .build()
+        val utxo3 = Cardano.TxInput.newBuilder()
+            .setOutPoint(outpoint3)
+            .setAddress(fromAddress)
+            .setAmount(2_000_000)
+
+        // Transfer TX
+
+        val privKey = Numeric.hexStringToByteArray("d09831a668db6b36ffb747600cb1cd3e3d34f36e1e6feefc11b5f988719b7557a7029ab80d3e6fe4180ad07a59ddf742ea9730f3c4145df6365fa4ae2ee49c3392e19444caf461567727b7fefec40a3763bdb6ce5e0e8c05f5e340355a8fef4528dfe7502cfbda49e38f5a0021962d52dc3dee82834a23abb6750981799b75577d1ed9af9853707f0ef74264274e71b2f12e86e3c91314b6efa75ef750d9711b84cedd742ab873ef2f9566ad20b3fc702232c6d2f5d83ff425019234037d1e58")
+        val toTokenBundle = Cardano.TokenBundle.newBuilder()
+            .addToken(tokenAmount)
+            .build()
+
+        // Check min ADA amount, set it
+        val minAmount = outputMinAdaAmount(toAddress, toTokenBundle.toByteArray(), coinsPerUtxoByte.toLong())
+        assertEquals(minAmount, 1_202_490)
+
+        val transfer = Cardano.Transfer.newBuilder()
+            .setToAddress(toAddress)
+            .setChangeAddress(fromAddress)
+            .setAmount(minAmount)
+            .setTokenAmount(toTokenBundle)
+            .build()
+        val signInput = Cardano.SigningInput.newBuilder()
+            .setTransferMessage(transfer)
+            .setTtl(89130965)
+            .addUtxos(utxo1)
+            .addUtxos(utxo2)
+            .addUtxos(utxo3)
+            .addPrivateKey(ByteString.copyFrom(privKey))
+
+        // Sign and check
+
+        val output = AnySigner.sign(signInput.build(), CARDANO, Cardano.SigningOutput.parser())
+        assertEquals(output.error, SigningError.OK)
+
+        val encoded = output.encoded
+        assertEquals(Numeric.toHexString(encoded.toByteArray()),
+            "0x83a400838258206a7221dcc28353ed69b733391ffeb984a34c1e72293af111d59f9ddfa863916700825820aba499ec2f23529e70bb256ceaffcc6274a882cf02f29e5670c75ee980d7c2b800825820ee414d635b3bc67831907354d274a31174664777c57c21ae923b9459e5644840000182825839010ae9267a9b4f6edb4d69c548f3cba39654d7e67f37ffd5e1352f303e9d63b100507122da18e9cb58995a50f2e80ff65d00be6243cf89a186821a0012593aa1581c219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5ea153636f6f6c63617473736f6369657479343536370182583901299de4a3d24637ef4050033c214754963b829f43cbc311527d2b4bc8e36798a9ada6e3341ac239057e012225fe5c862f49b52db0f5e208731a002b1525021a0002b19b031a055007d5a1008182582088bd26e8656fa7dead846c3373588f0192da5bfb90bf5d3fb877decfb3b3fd085840da8656aca0dacc57d4c2d957fc7dff03908f6dcf60c48f1e40b3006e2fd0cfacfa4c24fa02e35a310572526586d4ce0d30bf660ba274c8efd507848cbe177d09f6");
+
+        val txid = output.txId
+        assertEquals(Numeric.toHexString(txid.toByteArray()), "0x87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628");
     }
 }

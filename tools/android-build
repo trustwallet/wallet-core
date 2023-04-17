@@ -9,10 +9,10 @@ version=$(wc_read_version)
 
 pushd android
 ./gradlew assembleRelease
-cp trustwalletcore/build/outputs/aar/trustwalletcore-release.aar ../build/trustwalletcore.aar
+cp wallet-core/build/outputs/aar/wallet-core-release.aar ../build/wallet-core.aar
 popd
 
-echo "Now upload build/trustwalletcore.aar to https://github.com/TrustWallet/trust-wallet-core/releases/tag/$version"
+echo "Now upload build/wallet-core.aar to https://github.com/TrustWallet/trust-wallet-core/releases/tag/$version"
 
 echo "Building docs..."
 tools/kotlin-doc

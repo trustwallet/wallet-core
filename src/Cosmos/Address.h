@@ -22,9 +22,6 @@ class Address: public Bech32Address {
 public:
     Address() : Bech32Address("") {}
 
-    /// Initializes an address with a key hash, with prefix of the given coin.
-    Address(TWCoinType coin, const Data& keyHash) : Bech32Address(stringForHRP(TW::hrp(coin)), keyHash) {}
-
     /// Initializes an address with a key hash, with given prefix.
     Address(const std::string& hrp, const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
