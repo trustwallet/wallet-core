@@ -12,7 +12,7 @@ pub struct CByteArrayResult {
 
 crate::impl_c_result!(CByteArrayResult, CByteArray, CByteArray::null());
 
-/// C-compatible byte array.
+/// A C-compatible wrapper over a byte array allocated in Rust.
 #[repr(C)]
 #[derive(Debug)]
 pub struct CByteArray {
@@ -84,6 +84,16 @@ impl CByteArray {
         self.data = std::ptr::null_mut();
         self.size = 0;
         self.capacity = 0;
+    }
+
+    /// Returns the const pointer to the data.
+    pub fn data(&self) -> *const u8 {
+        self.data.cast_const()
+    }
+
+    /// Returns the data length.
+    pub fn size(&self) -> usize {
+        self.size
     }
 }
 
