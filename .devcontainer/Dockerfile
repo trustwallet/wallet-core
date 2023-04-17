@@ -73,3 +73,9 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path -y
 ENV PATH="/home/vscode/.cargo/bin:${PATH}"
 RUN cargo install --force cbindgen \
     && rustup target add wasm32-unknown-emscripten
+
+# Install dependencies
+RUN tools/install-dependencies
+
+# Build: generate files and rust lib
+RUN tools/generate-files
