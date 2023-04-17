@@ -4,6 +4,7 @@ apply plugin: 'maven-publish'
 group = 'com.trustwallet'
 
 android {
+    namespace 'wallet.core'
     compileSdkVersion 32
     ndkVersion '23.1.7779620'
     defaultConfig {
@@ -43,6 +44,12 @@ android {
         cmake {
             version "3.18.1"
             path "../../CMakeLists.txt"
+        }
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
         }
     }
 }
