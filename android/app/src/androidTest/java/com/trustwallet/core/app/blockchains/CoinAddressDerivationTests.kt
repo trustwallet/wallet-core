@@ -124,5 +124,13 @@ class CoinAddressDerivationTests {
         COMDEX -> assertEquals("comdex142j9u5eaduzd7faumygud6ruhdwme98qhtgm0y", address)
         NEUTRON -> assertEquals("neutron142j9u5eaduzd7faumygud6ruhdwme98q5mrmv5", address)
         SOMMELIER -> assertEquals("somm142j9u5eaduzd7faumygud6ruhdwme98quc948e", address)
+        FETCHAI -> assertEquals("fetch142j9u5eaduzd7faumygud6ruhdwme98qrera5y", address)
+        MARS -> assertEquals("mars142j9u5eaduzd7faumygud6ruhdwme98qdenqrg", address)
+        UMEE -> assertEquals("umee142j9u5eaduzd7faumygud6ruhdwme98qzjhxjp", address)
+        COREUM -> assertEquals("core1rawf376jz2lnchgc4wzf4h9c77neg3zldc7xa8", address)
+        QUASAR -> assertEquals("quasar142j9u5eaduzd7faumygud6ruhdwme98q78symk", address)
+        PERSISTENCE -> assertEquals("persistence142j9u5eaduzd7faumygud6ruhdwme98q7gv2ch", address)
+        AKASH -> assertEquals("akash142j9u5eaduzd7faumygud6ruhdwme98qal870f", address)
+        NOBLE -> assertEquals("noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa", address)
     }
 }

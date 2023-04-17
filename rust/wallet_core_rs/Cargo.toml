@@ -12,4 +12,5 @@ tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
 tw_move_parser = { path = "../tw_move_parser" }
+tw_proto = { path = "../tw_proto" }
 tw_starknet = { path = "../tw_starknet" }

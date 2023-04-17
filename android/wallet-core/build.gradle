@@ -1,8 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-group='com.github.trustwallet'
+
+group = 'com.trustwallet'
 
 android {
+    namespace 'wallet.core'
     compileSdkVersion 32
     ndkVersion '23.1.7779620'
     defaultConfig {
@@ -44,10 +46,16 @@ android {
             path "../../CMakeLists.txt"
         }
     }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
-    implementation 'com.google.protobuf:protobuf-javalite:3.21.2'
+    api project(':wallet-core-proto')
 }
 
 apply from: 'maven-push.gradle'
