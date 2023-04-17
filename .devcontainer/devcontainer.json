@@ -20,7 +20,8 @@
 				"rust-lang.rust-analyzer",
 				"sswg.swift-lang",
 				"ms-vscode.cpptools",
-				"ms-vscode.cpptools-extension-pack"
+				"ms-vscode.cpptools-extension-pack",
+				"rebornix.Ruby"
 			]
 		}
 	},
