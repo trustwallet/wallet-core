@@ -171,7 +171,7 @@ pub struct GNonAlphanumericItem;
 pub enum GTypeCategory {
     Scalar(GPrimitive),
     Struct(GStructName),
-    Enum(GEnum),
+    Enum(GEnumName),
     Pointer(Box<GTypeCategory>),
     Unrecognized(GKeyword),
 }
@@ -211,7 +211,7 @@ pub struct GStruct {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GEnum(GKeyword);
+pub struct GEnumName(GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEnumDecl {
@@ -540,7 +540,7 @@ impl ParseTree for GStructName {
     }
 }
 
-impl ParseTree for GEnum {
+impl ParseTree for GEnumName {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -560,7 +560,7 @@ impl ParseTree for GEnum {
         let (name, reader) = ensure::<GKeyword>(reader)?;
 
         Ok(DerivationResult {
-            derived: GEnum(name),
+            derived: GEnumName(name),
             branch: reader.into_branch(),
         })
     }
@@ -1603,7 +1603,7 @@ impl ParseTree for GTypeCategory {
 
         // Handle enum
         let (pending, checked_out) = reader.checkout();
-        if let Ok(res) = GEnum::derive(checked_out) {
+        if let Ok(res) = GEnumName::derive(checked_out) {
             let reader = pending.merge(res.branch);
 
             // Prepare scala type, might get wrapped (multiple times) in pointer.
