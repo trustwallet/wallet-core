@@ -18,7 +18,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug)]
 pub enum Error {
     Todo,
-    Eof,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
