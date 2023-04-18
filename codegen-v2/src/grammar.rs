@@ -22,9 +22,10 @@ pub trait ParseTree {
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>>;
 }
 
-// Convenience function. Removes a derived type from the reader, returning the
-// updated reader.
-pub fn wipe<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
+// Convenience function. Tries to successfully derive a type from the reader,
+// returning the updated reader.
+// TODO: Should this be wrapped in a `Result`?
+pub fn optional<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
 where
     T: ParseTree,
 {
@@ -45,22 +46,6 @@ where
     let (pending, checked_out) = reader.checkout();
     let res = T::derive(checked_out)?;
     Ok((res.derived, pending.merge(res.branch)))
-}
-
-// Convenience function. Tries to successfully derive a type from the reader,
-// returning the updated reader.
-// TODO: Alias to `wipe()`.
-// TODO: Should this be wrapped in a `Result`?
-pub fn optional<T>(reader: Reader) -> (Option<T::Derivation>, Reader)
-where
-    T: ParseTree,
-{
-    let (pending, checked_out) = reader.checkout();
-    if let Ok(res) = T::derive(checked_out) {
-        (Some(res.derived), pending.merge(res.branch))
-    } else {
-        (None, pending.discard())
-    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -139,7 +124,7 @@ pub enum EitherOr<T, D> {
     Or(D),
 }
 
-pub type GNonAlphanumeric = Continuum<GNonAlphanumericItem>;
+pub type GNonAlphanumerics = Continuum<GNonAlphanumericItem>;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "g_variant", content = "value")]
@@ -320,7 +305,7 @@ impl ParseTree for GEnumDecl {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         let (string, handle) = reader.read_until::<GSeparator>()?;
 
@@ -332,7 +317,7 @@ impl ParseTree for GEnumDecl {
         let (enum_name, reader) = ensure::<GKeyword>(handle.commit())?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for opening curly bracket.
         let (_, reader) = ensure::<GOpenCurlyBracket>(reader)?;
@@ -342,11 +327,11 @@ impl ParseTree for GEnumDecl {
         let mut p_reader = reader;
         loop {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
+            let (_, reader) = optional::<GSeparator>(p_reader);
 
             // TODO: Should be parsed
             // Wipe (possible) comment.
-            let (_, reader) = wipe::<GCommentLine>(reader);
+            let (_, reader) = optional::<GCommentLine>(reader);
 
             // Read variant name.
             let (field_name, reader) = optional::<GKeyword>(reader);
@@ -358,7 +343,7 @@ impl ParseTree for GEnumDecl {
             let field_name = field_name.unwrap();
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // Check for possible assignment ("=").
             let (assignment, reader) = optional::<GAssignment>(reader);
@@ -368,14 +353,14 @@ impl ParseTree for GEnumDecl {
 
                 // TODO: Should be parsed
                 // Wipe (possible) inline comment.
-                let (_, reader) = wipe::<GInlineComment>(reader);
+                let (_, reader) = optional::<GInlineComment>(reader);
 
                 // Check for comma.
                 let (comma, reader) = optional::<GComma>(reader);
 
                 // TODO: Should be parsed
                 // Wipe (possible) comment.
-                let (_, reader) = wipe::<GCommentLine>(reader);
+                let (_, reader) = optional::<GCommentLine>(reader);
 
                 p_reader = reader;
 
@@ -388,7 +373,7 @@ impl ParseTree for GEnumDecl {
             }
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // Read variant value.
             let (number, reader) = ensure::<GKeyword>(reader)?;
@@ -402,21 +387,21 @@ impl ParseTree for GEnumDecl {
             variants.push((field_name, Some(number)));
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // Check for comma.
             let (comma, reader) = optional::<GComma>(reader);
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // TODO: Should be parsed
             // Wipe (possible) inline comment.
-            let (_, reader) = wipe::<GInlineComment>(reader);
+            let (_, reader) = optional::<GInlineComment>(reader);
 
             // TODO: Should be parsed
             // Wipe (possible) comment.
-            let (_, reader) = wipe::<GCommentLine>(reader);
+            let (_, reader) = optional::<GCommentLine>(reader);
 
             p_reader = reader;
 
@@ -433,13 +418,13 @@ impl ParseTree for GEnumDecl {
         let reader = p_reader;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for closing curly bracket.
         let (_, reader) = ensure::<GCloseCurlyBracket>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for required semicolon.
         let (_, reader) = ensure::<GSemicolon>(reader)?;
@@ -477,7 +462,7 @@ impl ParseTree for GPrimitive {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
-        let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumerics, GEof>>()?;
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
@@ -509,7 +494,7 @@ impl ParseTree for GStructName {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         // Check for "struct" prefix.
         let (string, handle) = reader.read_until::<GSeparator>()?;
@@ -518,7 +503,7 @@ impl ParseTree for GStructName {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Derive struct name
         let (name, reader) = ensure::<GKeyword>(reader)?;
@@ -535,7 +520,7 @@ impl ParseTree for GEnum {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for "enum" prefix.
         let (string, handle) = reader.read_until::<GSeparator>()?;
@@ -544,7 +529,7 @@ impl ParseTree for GEnum {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Derive struct name
         let (name, reader) = ensure::<GKeyword>(reader)?;
@@ -561,19 +546,19 @@ impl ParseTree for GStructDecl {
 
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Read the struct name.
         let (struct_name, reader) = ensure::<GStructName>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for opening curly bracket.
         let (_, reader) = ensure::<GOpenCurlyBracket>(reader)?;
@@ -583,11 +568,11 @@ impl ParseTree for GStructDecl {
         let mut p_reader = reader;
         loop {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
+            let (_, reader) = optional::<GSeparator>(p_reader);
 
             // TODO: Should be parsed
             // Wipe (possible) comment.
-            let (_, reader) = wipe::<GCommentLine>(reader);
+            let (_, reader) = optional::<GCommentLine>(reader);
 
             // Read field type. If this fails, we interpret it as no (more)
             // field(s) present.
@@ -600,13 +585,13 @@ impl ParseTree for GStructDecl {
             };
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // Read field name
             let (field_name, reader) = ensure::<GKeyword>(reader)?;
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // Track field.
             fields.push((field_name, field_ty));
@@ -615,15 +600,15 @@ impl ParseTree for GStructDecl {
             let (_, reader) = ensure::<GSemicolon>(reader)?;
 
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(reader);
+            let (_, reader) = optional::<GSeparator>(reader);
 
             // TODO: Should be parsed
             // Wipe (possible) inline comment.
-            let (_, reader) = wipe::<GInlineComment>(reader);
+            let (_, reader) = optional::<GInlineComment>(reader);
 
             // TODO: Should be parsed
             // Wipe (possible) comment.
-            let (_, reader) = wipe::<GCommentLine>(reader);
+            let (_, reader) = optional::<GCommentLine>(reader);
 
             p_reader = reader;
         }
@@ -631,13 +616,13 @@ impl ParseTree for GStructDecl {
         let reader = p_reader;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for closing curly bracket.
         let (_, reader) = ensure::<GCloseCurlyBracket>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for required semicolon.
         let (_, reader) = ensure::<GSemicolon>(reader)?;
@@ -658,7 +643,7 @@ impl ParseTree for GStruct {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
@@ -729,7 +714,7 @@ impl ParseTree for GParamItem {
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         // Derive parameter type.
         let (ty_derived, reader) = ensure::<GType>(reader)?;
@@ -738,7 +723,7 @@ impl ParseTree for GParamItem {
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Derive parameter name.
         let (name_derived, reader) = ensure::<GKeyword>(reader)?;
@@ -759,14 +744,14 @@ impl ParseTree for GMarker {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumerics, GEof>>()?;
 
         let der = match string.as_str() {
             "TW_VISIBILITY_DEFAULT" => GMarker::TWVisibilityDefault,
             "TW_EXPORT_CLASS" => GMarker::TwExportClass,
             "TW_EXPORT_STRUCT" => GMarker::TwExportStruct,
             "TW_EXPORT_ENUM" => {
-                let (_, reader) = wipe::<GSeparator>(handle.commit());
+                let (_, reader) = optional::<GSeparator>(handle.commit());
 
                 let (_, reader) = ensure::<GOpenBracket>(reader)?;
                 let (string, handle) = reader.read_until::<GCloseBracket>()?;
@@ -809,7 +794,7 @@ impl ParseTree for GMarkers {
         let mut markers = vec![];
         loop {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(p_reader);
+            let (_, reader) = optional::<GSeparator>(p_reader);
 
             let (pending, checked_out) = reader.checkout();
             if let Ok(marker_res) = GMarker::derive(checked_out) {
@@ -923,7 +908,7 @@ impl ParseTree for GDefine {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         let (string, handle) = reader.read_until::<GSpace>()?;
 
@@ -932,13 +917,13 @@ impl ParseTree for GDefine {
         }
 
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(handle.commit());
+        let (_, reader) = optional::<GSpaces>(handle.commit());
 
         // Retrieve the key name.
         let (key, reader) = ensure::<GKeyword>(reader)?;
 
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         // Retrieve the value itself, read until newline.
         let (value, reader) = ensure::<GAnyLine>(reader)?;
@@ -958,7 +943,7 @@ impl ParseTree for GStaticVar {
 
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         let (string, handle) = reader.read_until::<GSeparator>()?;
         if string != "static" {
@@ -966,13 +951,13 @@ impl ParseTree for GStaticVar {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Retrieve the type.
         let (ty, reader) = ensure::<GType>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Retrieve markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
@@ -981,13 +966,13 @@ impl ParseTree for GStaticVar {
         let (var_name, reader) = ensure::<GKeyword>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for assignment ("=").
         let (_, reader) = ensure::<GAssignment>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check and consume for doube quote.
         let (quote, reader) = optional::<GDoubleQuote>(reader);
@@ -1028,7 +1013,7 @@ impl ParseTree for GHeaderInclude {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         let (string, handle) = reader.read_until::<GSeparator>()?;
         if string != "#include" {
@@ -1036,13 +1021,13 @@ impl ParseTree for GHeaderInclude {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Check for opening quote `"`.
         let (_, reader) = ensure::<GDoubleQuote>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Read the file path to include
         let (file_path, handle) = reader.read_until::<GDoubleQuote>()?;
@@ -1050,7 +1035,7 @@ impl ParseTree for GHeaderInclude {
         // TODO: Return error if file_path is empty?
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Consume closing quote.
         let (_, reader) = ensure::<GDoubleQuote>(reader)?;
@@ -1073,7 +1058,7 @@ impl ParseTree for GHeaderPragma {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Read string until newline
         let (string, handle) = reader.read_until::<GNewline>()?;
@@ -1093,7 +1078,7 @@ impl ParseTree for GTypedef {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         let (string, handle) = reader.read_until::<GSeparator>()?;
 
@@ -1102,25 +1087,25 @@ impl ParseTree for GTypedef {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Read type
         let (ty, reader) = ensure::<GType>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Derive (optional) markers.
         let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Read typedef name.
         let (keyword, reader) = ensure::<GKeyword>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Consume semicolon.
         let (_, reader) = ensure::<GSemicolon>(reader)?;
@@ -1142,9 +1127,9 @@ impl ParseTree for GKeyword {
 
     fn derive(reader: Reader) -> Result<DerivationResult<Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
+        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumerics, GEof>>()?;
 
         if string.is_empty()
             || string
@@ -1166,7 +1151,7 @@ impl ParseTree for GCommentLine {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         // Check for comment prefix
         let (string, handle) = reader.read_until::<GSeparator>()?;
@@ -1175,7 +1160,7 @@ impl ParseTree for GCommentLine {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(handle.commit());
+        let (_, reader) = optional::<GSeparator>(handle.commit());
 
         // Read the comment.
         let (comment, handle) = reader.read_until::<GNewline>()?;
@@ -1227,7 +1212,7 @@ impl ParseTree for GAnyLine {
         let (string, handle) = reader.read_until::<EitherOr<GNewline, GEof>>()?;
 
         // Consume newline character itself..
-        let (_, reader) = wipe::<GNewline>(handle.commit());
+        let (_, reader) = optional::<GNewline>(handle.commit());
 
         Ok(DerivationResult {
             derived: GAnyLine(string),
@@ -1241,7 +1226,7 @@ impl ParseTree for GInlineComment {
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
-        let (_, reader) = wipe::<GSpaces>(reader);
+        let (_, reader) = optional::<GSpaces>(reader);
 
         let (_, reader) = ensure::<GForwardSlash>(reader)?;
         let (_, reader) = ensure::<GAsterisk>(reader)?;
@@ -1272,19 +1257,19 @@ impl ParseTree for GFunctionDecl {
         let (mut markers, reader) = ensure::<GMarkers>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Derive return value.
         let (return_der, reader) = ensure::<GReturnValue>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Derive function name.
         let (name_der, reader) = ensure::<GKeyword>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for opening bracket.
         let (_, mut reader) = ensure::<GOpenBracket>(reader)?;
@@ -1292,7 +1277,7 @@ impl ParseTree for GFunctionDecl {
         // Derive parameters
         loop {
             // Ignore leading separators.
-            let (_, r) = wipe::<GSeparator>(reader);
+            let (_, r) = optional::<GSeparator>(reader);
 
             // Check for empty params.
             let (string, handle) = r.read_until::<GCloseBracket>()?;
@@ -1306,10 +1291,10 @@ impl ParseTree for GFunctionDecl {
             params.push(derived);
 
             // Ignore leading separators.
-            let (_, r) = wipe::<GSeparator>(r);
+            let (_, r) = optional::<GSeparator>(r);
 
             // Check for potential comma, indicating next paremeter declaration.
-            let (comma, r) = wipe::<GComma>(r);
+            let (comma, r) = optional::<GComma>(r);
             reader = r;
 
             if comma.is_none() {
@@ -1318,13 +1303,13 @@ impl ParseTree for GFunctionDecl {
         }
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for closing bracket.
         let (_, reader) = ensure::<GCloseBracket>(reader)?;
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Derive (optional) marker at the end of the function.
         let (markers2, reader) = ensure::<GMarkers>(reader)?;
@@ -1333,7 +1318,7 @@ impl ParseTree for GFunctionDecl {
         markers.0.extend(markers2.0);
 
         // Ignore leading separators.
-        let (_, reader) = wipe::<GSeparator>(reader);
+        let (_, reader) = optional::<GSeparator>(reader);
 
         // Check for required semicolon.
         let (_, reader) = ensure::<GSemicolon>(reader)?;
@@ -1403,7 +1388,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for typedef statement.
         let (res, reader) = optional::<GTypedef>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Typedef(item),
                 branch: reader.into_branch(),
@@ -1413,7 +1398,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for pragma header.
         let (res, reader) = optional::<GHeaderPragma>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
 
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::HeaderPragma(item),
@@ -1424,7 +1409,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for include header.
         let (res, reader) = optional::<GHeaderInclude>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::HeaderInclude(item),
                 branch: reader.into_branch(),
@@ -1435,7 +1420,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for struct indicator.
         let (res, reader) = optional::<GStruct>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::StructIndicator(item),
                 branch: reader.into_branch(),
@@ -1445,7 +1430,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for function decleration.
         let (res, reader) = optional::<GFunctionDecl>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::FunctionDecl(item),
                 branch: reader.into_branch(),
@@ -1455,7 +1440,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for enum decleration.
         let (res, reader) = optional::<GEnumDecl>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::EnumDecl(item),
                 branch: reader.into_branch(),
@@ -1465,7 +1450,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for struct decleration.
         let (res, reader) = optional::<GStructDecl>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::StructDecl(item),
                 branch: reader.into_branch(),
@@ -1475,7 +1460,7 @@ impl ParseTree for GHeaderFileItem {
         // Check for markers.
         let (res, reader) = optional::<GMarker>(reader);
         if let Some(item) = res {
-            let (_, reader) = wipe::<GEndOfLine>(reader);
+            let (_, reader) = optional::<GEndOfLine>(reader);
             return Ok(DerivationResult {
                 derived: GHeaderFileItem::Marker(item),
                 branch: reader.into_branch(),
@@ -1485,7 +1470,7 @@ impl ParseTree for GHeaderFileItem {
         // For all other, set value as `Unrecongized`.
         // TODO: Should this just return Err?
         let (string, handle) = reader.read_until::<GNewline>()?;
-        let (_, reader) = wipe::<GEndOfLine>(handle.commit());
+        let (_, reader) = optional::<GEndOfLine>(handle.commit());
         return Ok(DerivationResult {
             derived: GHeaderFileItem::Unrecognized(string),
             branch: reader.into_branch(),
@@ -1500,7 +1485,7 @@ impl ParseTree for GType {
         let (string, handle) = reader.read_until::<GSeparator>()?;
         if string == "const" {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(handle.commit());
+            let (_, reader) = optional::<GSeparator>(handle.commit());
 
             let res = GTypeCategory::derive(reader)?;
 
@@ -1510,7 +1495,7 @@ impl ParseTree for GType {
             })
         } else if string == "extern" {
             // Ignore leading separators.
-            let (_, reader) = wipe::<GSeparator>(handle.commit());
+            let (_, reader) = optional::<GSeparator>(handle.commit());
 
             let res = GTypeCategory::derive(reader)?;
 
@@ -1539,7 +1524,7 @@ impl ParseTree for GTypeCategory {
         ) -> Result<(GTypeCategory, Reader)> {
             loop {
                 // Ignore leading separators.
-                let (_, reader) = wipe::<GSeparator>(p_reader);
+                let (_, reader) = optional::<GSeparator>(p_reader);
 
                 // Try pointer.
                 // TODO: Implement `GAsterisk`?

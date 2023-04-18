@@ -1,4 +1,4 @@
-use crate::grammar::{GEof, GNonAlphanumeric, GNonAlphanumericItem};
+use crate::grammar::{GEof, GNonAlphanumerics, GNonAlphanumericItem};
 
 mod attributes;
 mod comment;
@@ -53,9 +53,9 @@ fn test_non_alphanumeric_items() {
 
 #[test]
 fn test_non_alphanumeric() {
-    must_ok!(GNonAlphanumeric, ",,, ");
-    must_ok!(GNonAlphanumeric, ",,,,");
-    must_ok!(GNonAlphanumeric, ",,,a");
+    must_ok!(GNonAlphanumerics, ",,, ");
+    must_ok!(GNonAlphanumerics, ",,,,");
+    must_ok!(GNonAlphanumerics, ",,,a");
 }
 
 #[test]
