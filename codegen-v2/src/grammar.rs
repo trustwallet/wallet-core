@@ -74,7 +74,7 @@ where
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "g_type", content = "value")]
+#[serde(tag = "g_type", content = "value", rename_all = "snake_case")]
 pub enum GHeaderFileItem {
     HeaderInclude(GHeaderInclude),
     HeaderPragma(GHeaderPragma),
@@ -144,9 +144,9 @@ pub struct DerivationResult<'a, T> {
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "g_variant", content = "value")]
-pub enum EitherOr<T, D> {
-    Either(T),
-    Or(D),
+pub enum Either<T, D> {
+    Left(T),
+    Right(D),
 }
 
 pub type GNonAlphanumerics = Continuum<GNonAlphanumericItem>;
@@ -300,14 +300,14 @@ pub struct ContinuumNext<T> {
 
 // *** DERIVE IMPLEMENTATIONS ***
 
-impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
-    type Derivation = EitherOr<T::Derivation, D::Derivation>;
+impl<T: ParseTree, D: ParseTree> ParseTree for Either<T, D> {
+    type Derivation = Either<T::Derivation, D::Derivation>;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         let (pending, checked_out) = reader.checkout();
         if let Ok(res) = T::derive(checked_out) {
             return Ok(DerivationResult {
-                derived: EitherOr::Either(res.derived),
+                derived: Either::Left(res.derived),
                 branch: res.branch,
             });
         }
@@ -316,7 +316,7 @@ impl<T: ParseTree, D: ParseTree> ParseTree for EitherOr<T, D> {
 
         if let Ok(res) = D::derive(reader) {
             return Ok(DerivationResult {
-                derived: EitherOr::Or(res.derived),
+                derived: Either::Right(res.derived),
                 branch: res.branch,
             });
         }
@@ -487,7 +487,7 @@ impl ParseTree for GPrimitive {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Read data until the separator is reached, then return the sub-slice
         // leading up to it.
-        let (slice, handle) = reader.read_until::<EitherOr<GNonAlphanumerics, GEof>>()?;
+        let (slice, handle) = reader.read_until::<Either<GNonAlphanumerics, GEof>>()?;
 
         let derived = match slice.as_str() {
             "void" => GPrimitive::Void,
@@ -769,7 +769,7 @@ impl ParseTree for GMarker {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumerics, GEof>>()?;
+        let (string, handle) = reader.read_until::<Either<GNonAlphanumerics, GEof>>()?;
 
         let der = match string.as_str() {
             "TW_VISIBILITY_DEFAULT" => GMarker::TWVisibilityDefault,
@@ -1154,7 +1154,7 @@ impl ParseTree for GKeyword {
         // Ignore leading spaces.
         let (_, reader) = optional::<GSpaces>(reader);
 
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumerics, GEof>>()?;
+        let (string, handle) = reader.read_until::<Either<GNonAlphanumerics, GEof>>()?;
 
         if string.is_empty()
             || string
@@ -1234,7 +1234,7 @@ impl ParseTree for GAnyLine {
     type Derivation = Self;
 
     fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<EitherOr<GNewline, GEof>>()?;
+        let (string, handle) = reader.read_until::<Either<GNewline, GEof>>()?;
 
         // Consume newline character itself..
         let (_, reader) = optional::<GNewline>(handle.commit());
