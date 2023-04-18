@@ -15,3 +15,5 @@ pub mod sha2;
 pub mod sha3;
 
 mod hash_wrapper;
+
+pub use digest::Digest;

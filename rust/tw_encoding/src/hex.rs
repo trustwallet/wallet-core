@@ -6,6 +6,13 @@
 
 pub use hex::FromHexError;
 
+#[macro_export]
+macro_rules! hex {
+    ($hex:literal) => {
+        $crate::hex::decode($hex).unwrap()
+    };
+}
+
 pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
     let hex_string = data.trim_start_matches("0x");
     hex::decode(hex_string)
