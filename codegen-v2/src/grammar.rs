@@ -1,6 +1,31 @@
 use super::reader::{Reader, ReaderBranch};
 use super::{Error, Result};
-use crate::define_char;
+
+macro_rules! define_char {
+    ($name:ident, $char:expr) => {
+        #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+        pub struct $name;
+
+        impl ParseTree for $name {
+            type Derivation = Self;
+
+            fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
+                let (slice, handle) = reader.read_amt(1)?;
+
+                if let Some(symbol) = slice {
+                    if symbol == $char {
+                        return Ok(DerivationResult {
+                            derived: $name,
+                            branch: handle.commit().into_branch(),
+                        });
+                    }
+                }
+
+                Err(Error::Todo)
+            }
+        }
+    };
+}
 
 define_char!(GComma, ",");
 define_char!(GSemicolon, ";");
