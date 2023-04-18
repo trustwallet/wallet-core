@@ -1,6 +1,6 @@
 use crate::grammar::{
-    GFuncName, GFunctionDecl, GMarker, GMarkers, GParamItem, GParamName, GPrimitive, GReturnValue,
-    GStructName, GType, GTypeCategory,
+    GFuncName, GFunctionDecl, GMarker, GMarkers, GParamItem, GPrimitive, GReturnValue,
+    GStructName, GType, GTypeCategory, GKeyword
 };
 use crate::{must_err, must_ok};
 
@@ -8,7 +8,7 @@ use crate::{must_err, must_ok};
 fn test_func_params_separator_handling() {
     let expected = GParamItem {
         ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-        name: GParamName::from("my_var"),
+        name: GKeyword::from("my_var"),
         markers: GMarkers(vec![]),
     };
 
@@ -30,7 +30,7 @@ fn test_func_params() {
         "int my_var",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-            name: GParamName::from("my_var"),
+            name: GKeyword::from("my_var"),
             markers: GMarkers(vec![]),
         }
     );
@@ -39,7 +39,7 @@ fn test_func_params() {
         "bool \nsome_bool",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-            name: GParamName::from("some_bool"),
+            name: GKeyword::from("some_bool"),
             markers: GMarkers(vec![]),
         }
     );
@@ -48,7 +48,7 @@ fn test_func_params() {
         "int _Nonnull my_var\n",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-            name: GParamName::from("my_var"),
+            name: GKeyword::from("my_var"),
             markers: GMarkers(vec![GMarker::NonNull]),
         }
     );
@@ -57,7 +57,7 @@ fn test_func_params() {
         "bool\n_Nonnull some_bool\n",
         GParamItem {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-            name: GParamName::from("some_bool"),
+            name: GKeyword::from("some_bool"),
             markers: GMarkers(vec![GMarker::NonNull]),
         }
     );
@@ -70,12 +70,12 @@ fn test_function_declaration() {
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-                name: GParamName::from("some_int"),
+                name: GKeyword::from("some_int"),
                 markers: GMarkers(vec![]),
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-                name: GParamName::from("some_bool"),
+                name: GKeyword::from("some_bool"),
                 markers: GMarkers(vec![]),
             },
         ],
@@ -126,12 +126,12 @@ fn test_function_declaration_with_markers() {
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-                name: GParamName::from("some_int"),
+                name: GKeyword::from("some_int"),
                 markers: GMarkers(vec![]),
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-                name: GParamName::from("some_bool"),
+                name: GKeyword::from("some_bool"),
                 markers: GMarkers(vec![]),
             },
         ],
@@ -156,12 +156,12 @@ fn test_function_declaration_struct_return_value() {
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
-                name: GParamName::from("some_int"),
+                name: GKeyword::from("some_int"),
                 markers: GMarkers(vec![]),
             },
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Bool)),
-                name: GParamName::from("some_bool"),
+                name: GKeyword::from("some_bool"),
                 markers: GMarkers(vec![]),
             },
         ],

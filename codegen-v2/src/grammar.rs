@@ -243,11 +243,8 @@ pub struct GParamItem {
     #[serde(rename = "type")]
     pub ty: GType,
     pub markers: GMarkers,
-    pub name: GParamName,
+    pub name: GKeyword,
 }
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GParamName(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "g_variant", content = "value")]
@@ -751,7 +748,7 @@ impl ParseTree for GParamItem {
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive parameter name.
-        let (name_derived, reader) = ensure::<GParamName>(reader)?;
+        let (name_derived, reader) = ensure::<GKeyword>(reader)?;
 
         // Everything derived successfully, return.
         Ok(DerivationResult {
@@ -761,23 +758,6 @@ impl ParseTree for GParamItem {
                 markers,
             },
             branch: reader.into_branch(),
-        })
-    }
-}
-
-impl ParseTree for GParamName {
-    type Derivation = Self;
-
-    fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-
-        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
-            return Err(Error::Todo);
-        }
-
-        Ok(DerivationResult {
-            derived: GParamName(string),
-            branch: handle.commit().into_branch(),
         })
     }
 }
@@ -1689,12 +1669,6 @@ mod tests {
     impl From<&str> for GInlineComment {
         fn from(string: &str) -> Self {
             GInlineComment(string.to_string())
-        }
-    }
-
-    impl From<&str> for GParamName {
-        fn from(string: &str) -> Self {
-            GParamName(string.to_string())
         }
     }
 
