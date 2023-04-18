@@ -1,6 +1,6 @@
 use crate::grammar::{
-    GKeyword, GFunctionDecl, GMarker, GMarkers, GParamItem, GPrimitive, GReturnValue,
-    GStructName, GType, GTypeCategory
+    GFunctionDecl, GKeyword, GMarker, GMarkers, GParamItem, GPrimitive, GReturnValue, GStructName,
+    GType, GTypeCategory,
 };
 use crate::{must_err, must_ok};
 

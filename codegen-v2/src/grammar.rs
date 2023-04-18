@@ -192,7 +192,7 @@ pub struct GStructDecl {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GStructName(String);
+pub struct GStructName(GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStructInd {
@@ -528,7 +528,7 @@ impl ParseTree for GStructName {
         let (name, reader) = ensure::<GKeyword>(reader)?;
 
         Ok(DerivationResult {
-            derived: GStructName(name.0),
+            derived: GStructName(name),
             branch: reader.into_branch(),
         })
     }
@@ -1654,7 +1654,7 @@ mod tests {
 
     impl From<&str> for GStructName {
         fn from(string: &str) -> Self {
-            GStructName(string.to_string())
+            GStructName(GKeyword::from(string))
         }
     }
 }
