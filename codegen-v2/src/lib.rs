@@ -74,7 +74,7 @@ fn parse_file(path: &Path, mut main_dir: CHeaderDirectory) -> Result<CHeaderDire
             if let GHeaderFileItem::HeaderInclude(include) = &derived {
                 let child_path = parent.join(Path::new(&include.0));
 
-                // Skip referencing includes.
+                // Skip self-referencing includes.
                 if child_path == path {
                     continue;
                 }
