@@ -5,7 +5,7 @@ in `codegen/`. This project will progess over multiple stages (PRs).
 
 - [x] Write a (minimal) parser with full coverage of the C headers in `include/` ([#3065](https://github.com/trustwallet/wallet-core/pull/3065)).
 - [ ] Implement a templating engine, write easy to read templates.
-	- [ ] Start with Swift codegen.
+	- [ ] Start with Swift codegen, replicate existing API (no breakage).
 	- [ ] Complete codegen for remaining languages.
 - [ ] Extend the parser to handle all valid C header syntax.
 	- [ ] Add explicit error types (right now it's just `Error::Todo`).
