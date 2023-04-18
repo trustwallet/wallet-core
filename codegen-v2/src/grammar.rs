@@ -73,7 +73,7 @@ pub enum GHeaderFileItem {
     StaticVar(GStaticVar),
     Typedef(GTypedef),
     FunctionDecl(GFunctionDecl),
-    StructIndicator(GStructInd),
+    StructIndicator(GStruct),
     EnumDecl(GEnumDecl),
     StructDecl(GStructDecl),
     Marker(GMarker),
@@ -195,17 +195,13 @@ pub struct GStructDecl {
 pub struct GStructName(GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GStructInd {
-    // TODO: Rename?
-    #[serde(rename = "struct")]
+pub struct GStruct {
     pub name: GStructName,
     pub markers: GMarkers,
 }
 
-// TODO: Rename?
-// TODO: Should take GKeyword
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GEnum(String);
+pub struct GEnum(GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEnumDecl {
@@ -554,7 +550,7 @@ impl ParseTree for GEnum {
         let (name, reader) = ensure::<GKeyword>(reader)?;
 
         Ok(DerivationResult {
-            derived: GEnum(name.0),
+            derived: GEnum(name),
             branch: reader.into_branch(),
         })
     }
@@ -657,7 +653,7 @@ impl ParseTree for GStructDecl {
     }
 }
 
-impl ParseTree for GStructInd {
+impl ParseTree for GStruct {
     type Derivation = Self;
 
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
@@ -674,7 +670,7 @@ impl ParseTree for GStructInd {
         let (_, reader) = ensure::<GSemicolon>(reader)?;
 
         Ok(DerivationResult {
-            derived: GStructInd {
+            derived: GStruct {
                 name: struct_res,
                 markers,
             },
@@ -1437,7 +1433,7 @@ impl ParseTree for GHeaderFileItem {
 
         // TODO: Is this needed?
         // Check for struct indicator.
-        let (res, reader) = optional::<GStructInd>(reader);
+        let (res, reader) = optional::<GStruct>(reader);
         if let Some(item) = res {
             let (_, reader) = wipe::<GEndOfLine>(reader);
             return Ok(DerivationResult {
