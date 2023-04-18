@@ -1,6 +1,6 @@
 use crate::grammar::{
-    GFuncName, GFunctionDecl, GMarker, GMarkers, GParamItem, GPrimitive, GReturnValue,
-    GStructName, GType, GTypeCategory, GKeyword
+    GKeyword, GFunctionDecl, GMarker, GMarkers, GParamItem, GPrimitive, GReturnValue,
+    GStructName, GType, GTypeCategory
 };
 use crate::{must_err, must_ok};
 
@@ -66,7 +66,7 @@ fn test_func_params() {
 #[test]
 fn test_function_declaration() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function"),
+        name: GKeyword::from("some_function"),
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
@@ -122,7 +122,7 @@ fn test_function_declaration() {
 #[test]
 fn test_function_declaration_with_markers() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function"),
+        name: GKeyword::from("some_function"),
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
@@ -152,7 +152,7 @@ fn test_function_declaration_with_markers() {
 #[test]
 fn test_function_declaration_struct_return_value() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function"),
+        name: GKeyword::from("some_function"),
         params: vec![
             GParamItem {
                 ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Int)),
@@ -192,7 +192,7 @@ fn test_function_declaration_struct_return_value() {
 #[test]
 fn test_function_no_params() {
     let expected = GFunctionDecl {
-        name: GFuncName::from("some_function"),
+        name: GKeyword::from("some_function"),
         params: vec![],
         return_value: GReturnValue {
             ty: GType::Mutable(GTypeCategory::Scalar(GPrimitive::Void)),

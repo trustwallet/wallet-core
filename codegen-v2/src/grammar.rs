@@ -118,9 +118,6 @@ pub struct GCommentBlock {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GFuncName(String);
-
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GAnyLine(String);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -276,7 +273,7 @@ pub struct GMarkers(pub Vec<GMarker>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GFunctionDecl {
-    pub name: GFuncName,
+    pub name: GKeyword,
     pub params: Vec<GParamItem>,
     pub return_value: GReturnValue,
     pub markers: GMarkers,
@@ -925,23 +922,6 @@ impl ParseTree for GEndOfLine {
     }
 }
 
-impl ParseTree for GFuncName {
-    type Derivation = Self;
-
-    fn derive(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
-        let (string, handle) = reader.read_until::<EitherOr<GNonAlphanumeric, GEof>>()?;
-
-        if string.is_empty() || string.chars().any(|c| (!c.is_alphanumeric() && c != '_')) {
-            return Err(Error::Todo);
-        }
-
-        Ok(DerivationResult {
-            derived: GFuncName(string),
-            branch: handle.commit().into_branch(),
-        })
-    }
-}
-
 impl ParseTree for GDefine {
     type Derivation = Self;
 
@@ -1305,7 +1285,7 @@ impl ParseTree for GFunctionDecl {
         let (_, reader) = wipe::<GSeparator>(reader);
 
         // Derive function name.
-        let (name_der, reader) = ensure::<GFuncName>(reader)?;
+        let (name_der, reader) = ensure::<GKeyword>(reader)?;
 
         // Ignore leading separators.
         let (_, reader) = wipe::<GSeparator>(reader);
@@ -1669,12 +1649,6 @@ mod tests {
     impl From<&str> for GInlineComment {
         fn from(string: &str) -> Self {
             GInlineComment(string.to_string())
-        }
-    }
-
-    impl From<&str> for GFuncName {
-        fn from(string: &str) -> Self {
-            GFuncName(string.to_string())
         }
     }
 
