@@ -1,0 +1,25 @@
+name: Codegen-v2 Tests
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'codegen-v2/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'codegen-v2/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Rust
+      uses: actions/setup-rust@v1
+      with:
+        rust-version: '1.57.0'
+    - name: Run Tests
+      run: cargo test
