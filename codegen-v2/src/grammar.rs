@@ -1156,11 +1156,7 @@ impl ParseTree for GKeyword {
 
         let (string, handle) = reader.read_until::<Either<GNonAlphanumerics, GEof>>()?;
 
-        if string.is_empty()
-            || string
-                .chars()
-                .any(|c| (!c.is_alphanumeric() && c != '_' && c != '-'))
-        {
+        if string.is_empty() {
             return Err(Error::Todo);
         }
 
