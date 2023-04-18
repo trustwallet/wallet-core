@@ -1,0 +1,32 @@
+{{#if is_static}}
+public static func
+{{~else}}
+public func
+{{~/if}}
+ {{method_name~}}
+(
+	{{~! Add each param followed by a comma, unless on the last item }}
+	{{#each params}}
+		{{~name}}: {{type~}}{{#unless @last}}, {{/unless~}}
+	{{/each}}
+) -> {{this.return}} {
+	{{#each params}}
+	{{#if (eq type "Data")}}
+	let {{name}}Val = TWDataCreateWithNSData({{name}})
+	defer {
+		TWDataDelete({{name}}Val)
+	}
+	{{else}}
+	let {{name}}Val = TWStringCreateWithNSString({{name}})
+	defer {
+		TWStringDelete({{name}}Val)
+	}
+	{{/if}}
+	{{/each}}
+
+	return {{c_ffi_name}}(
+	{{~#each params}}
+	{{~name}}Val{{#unless @last}}, {{/unless~}}
+	{{/each~}}
+	)
+}

@@ -1,0 +1,38 @@
+public final class BitcoinAddress: Address {
+    {{#each tw_export_static_methods}}
+    {{/each}}
+
+    {{#each tw_export_property}}
+    public var {{this.name}}: {{this.return}} {
+        return TWStringNSString({{this.c_ffi_name}}(rawValue))
+    }
+    {{/each}}
+
+    {{#each tw_export_nullable_init}}
+    public init?(string: String) {
+        let stringString = TWStringCreateWithNSString(string)
+        defer {
+            TWStringDelete(stringString)
+        }
+        guard let rawValue = {{this.c_ffi_name}}(stringString) else {
+            return nil
+        }
+        self.rawValue = rawValue
+    }
+    {{/each}}
+
+    {{#each tw_export_init}}
+    public init?(publicKey: PublicKey, prefix: UInt8) {
+        guard let rawValue = TWBitcoinAddressCreateWithPublicKey(publicKey.rawValue, prefix) else {
+            return nil
+        }
+        self.rawValue = rawValue
+    }
+    {{/each}}
+
+    {{#each tw_deinit}}
+    deinit {
+        TWBitcoinAddressDelete(rawValue)
+    }
+    {{/each}}
+}
