@@ -3,30 +3,39 @@ public static func
 {{~else}}
 public func
 {{~/if}}
- {{method_name~}}
-(
-	{{~! Add each param followed by a comma, unless on the last item }}
+ {{method_name~}} ({{params_raw}}) -> {{return.type}} {
 	{{#each params}}
-		{{~name}}: {{type~}}{{#unless @last}}, {{/unless~}}
-	{{/each}}
-) -> {{this.return}} {
-	{{#each params}}
-	{{#if (eq type "Data")}}
-	let {{name}}Val = TWDataCreateWithNSData({{name}})
-	defer {
-		TWDataDelete({{name}}Val)
-	}
+	{{#if wrap_as}}
+ 	// Prepare '{{name}}'.
+	let {{name}} = {{wrap_as}}
 	{{else}}
-	let {{name}}Val = TWStringCreateWithNSString({{name}})
+    let {{name}} = {{name}}
+    {{/if}}
+	{{#if deter_as}}
+    // Deter '{{name}}'.
 	defer {
-		TWStringDelete({{name}}Val)
+		{{deter_as}}
 	}
 	{{/if}}
+    {{#unless @last}}
+    
+    {{/unless}}
 	{{/each}}
 
-	return {{c_ffi_name}}(
-	{{~#each params}}
-	{{~name}}Val{{#unless @last}}, {{/unless~}}
-	{{/each~}}
-	)
+	// Call the underlying C function.
+	let result = {{c_ffi.function_name}}({{~#each params}}{{~name}}{{#unless @last}}, {{/unless}}{{/each}})
+
+	{{#if return.is_nullable}}
+	// Check nullable result.
+	guard let result = result else {
+		return nil
+	}
+	{{/if}}
+
+	{{#if return.wrap_as}}
+	// Return with conversion function.
+	return {{return.wrap_as}}
+	{{else}}
+	return result
+	{{/if}}
 }
