@@ -7,6 +7,7 @@
 #pragma once
 
 #include "proto/LiquidStaking.pb.h"
+#include "TrustWalletCore/TWBlockchain.h"
 #include <variant>
 
 namespace TW::LiquidStaking {
@@ -16,7 +17,10 @@ class Builder {
     TAction mAction;
     std::optional<std::string> mSmartContractAddress{std::nullopt};
     Proto::Protocol mProtocol;
+    Proto::Blockchain mBlockchain;
 
+    Proto::LiquidStakingOutput buildStraderEVM() const;
+    Proto::LiquidStakingOutput buildStrader() const;
 public:
     Builder() noexcept = default;
 
@@ -24,6 +28,11 @@ public:
 
     Builder& protocol(Proto::Protocol protocol) noexcept {
         mProtocol = protocol;
+        return *this;
+    }
+
+    Builder& blockchain(Proto::Blockchain blockchain) noexcept {
+        mBlockchain = blockchain;
         return *this;
     }
 
@@ -42,12 +51,18 @@ public:
     Proto::LiquidStakingOutput build() const;
 };
 
-static inline Proto::Status generateError(Proto::StatusCode code) {
+static inline Proto::Status generateError(Proto::StatusCode code, const std::optional<std::string>& message = std::nullopt) {
     Proto::Status status;
     status.set_code(code);
     switch (code) {
     case Proto::ERROR_ACTION_NOT_SET:
-        status.set_message("Liquid staking action not set");
+        status.set_message(message.value_or("Liquid staking action not set"));
+        break;
+    case Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL:
+        status.set_message(message.value_or("The selected protocol doesn't support the targeted blockchain"));
+        break;
+    case Proto::ERROR_SMART_CONTRACT_ADDRESS_NOT_SET:
+        status.set_message(message.value_or("The selected protocol require a smart contract address to be set"));
         break;
     default:
         return status;
@@ -73,6 +88,6 @@ static inline Proto::LiquidStakingOutput build(const Proto::LiquidStakingInput& 
         return output;
     }
     }
-    return Builder::builder().action(action).protocol(input.protocol()).smartContractAddress(input.smart_contract_address()).build();
+    return Builder::builder().action(action).protocol(input.protocol()).smartContractAddress(input.smart_contract_address()).blockchain(input.blockchain()).build();
 }
 } // namespace TW::LiquidStaking

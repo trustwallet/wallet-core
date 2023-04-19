@@ -27,6 +27,8 @@ enum Protocol {
 enum StatusCode {
   OK = 0;
   ERROR_ACTION_NOT_SET = 1;
+  ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL = 2;
+  ERROR_SMART_CONTRACT_ADDRESS_NOT_SET = 3;
 }
 
 message Status {
@@ -76,6 +78,9 @@ message LiquidStakingInput {
 
   // Targeted protocol
   Protocol protocol = 5;
+
+  // Blockchain
+  Blockchain blockchain = 6;
 }
 
 message LiquidStakingOutput {
