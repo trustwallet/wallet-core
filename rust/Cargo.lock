@@ -1437,12 +1437,12 @@ dependencies = [
  "blake2b-ref",
  "digest 0.10.6",
  "groestl",
- "hex",
  "hmac 0.12.1",
  "ripemd",
  "sha1",
  "sha2 0.10.6",
  "sha3",
+ "tw_encoding",
  "tw_memory",
 ]
 
