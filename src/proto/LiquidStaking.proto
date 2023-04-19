@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package TW.LiquidStaking.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Ethereum.proto";
+import "Cosmos.proto";
+
+// Possible coin to be liquid staked
+enum Coin {
+  MATIC = 0;
+  ATOM = 1;
+}
+
+// Sometimes u may want to do liquid staking and target a different blockchain, e.g: Matic on Ethereum and so on
+enum Blockchain {
+  ETHEREUM = 0;
+  POLYGON = 1;
+  STRIDE = 2;
+}
+
+enum Protocol {
+  Strader = 0;
+  Stride = 1;
+}
+
+enum StatusCode {
+  OK = 0;
+  ERROR_ACTION_NOT_SET = 1;
+}
+
+message Status {
+  // code of the status
+  StatusCode code = 1;
+
+  // optional error message
+  string message = 2;
+}
+
+message Asset {
+  // Main Coin to be staked
+  Coin   staking_token = 1;
+  // Optional, liquid_token to be manipulated: unstake, claim rewards
+  string liquid_token = 2;
+  // Some liquid staking protocol require the denom of the asset to be manipulated
+  string denom = 3;
+
+  // to build the appropriate input
+  string from_address = 4;
+}
+
+message Stake {
+  Asset  asset = 1;
+  string amount = 2;
+}
+
+message Unstake {
+  Asset asset = 1;
+  string amount = 2;
+}
+
+message Withdraw {
+  Asset asset = 1;
+  string amount = 2;
+}
+
+message LiquidStakingInput {
+  oneof action {
+    Stake stake = 1;
+    Unstake unstake = 2;
+    Withdraw withdraw = 3;
+  }
+
+  // Optional for some chains such as EVM based
+  string smart_contract_address = 4;
+
+  // Targeted protocol
+  Protocol protocol = 5;
+}
+
+message LiquidStakingOutput {
+  // Status code, filled in case of error, OK on success
+  Status status = 1;
+
+  // Prepared unsigned transaction input, on the source chain, to THOR.  Some fields must be completed, and it has to be signed.
+  oneof signing_input_oneof {
+    Ethereum.Proto.SigningInput ethereum = 2;
+    Cosmos.Proto.SigningInput cosmos = 3;
+  }
+}
