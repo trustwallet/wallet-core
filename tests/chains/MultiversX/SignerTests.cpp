@@ -8,10 +8,11 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "HexCoding.h"
 #include "MultiversX/Address.h"
 #include "MultiversX/Codec.h"
 #include "MultiversX/Signer.h"
-#include "HexCoding.h"
+#include "MultiversX/Transaction.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "TestAccounts.h"
@@ -295,14 +296,14 @@ TEST(MultiversXSigner, SignWithUsernames) {
     input.mutable_generic_action()->set_version(1);
     input.set_gas_price(1000000000);
     input.set_gas_limit(50000);
-    input.set_chain_id("local-testnet");
+    input.set_chain_id("1");
 
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "1bed82c3f91c9d24f3a163e7b93a47453d70e8743201fe7d3656c0214569566a76503ef0968279ac942ca43b9c930bd26638dfb075a220ce80b058ab7bca140a";
+    auto expectedSignature = "dfffb303eee7a6df0a027171feffde001637e59164a8b8c61d387da7fcefccd08d90f7b0e6fd0b4bc7357517edc5b6ea4a5088e0fb0be314e7e597e5248a8a03";
     auto expectedEncoded =
-        (boost::format(R"({"nonce":89,"value":"0","receiver":"%1%","sender":"%2%","senderUsername":"%3%","receiverUsername":"%4%","gasPrice":1000000000,"gasLimit":50000,"chainID":"local-testnet","version":1,"signature":"%5%"})") % BOB_BECH32 % ALICE_BECH32
+        (boost::format(R"({"nonce":89,"value":"0","receiver":"%1%","sender":"%2%","senderUsername":"%3%","receiverUsername":"%4%","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":1,"signature":"%5%"})") % BOB_BECH32 % ALICE_BECH32
          // "alice"
          % "YWxpY2U="
          // "bob"
@@ -323,22 +324,20 @@ TEST(MultiversXSigner, SignWithOptions) {
     input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
     input.mutable_generic_action()->set_value("0");
     input.mutable_generic_action()->set_data("");
-    input.mutable_generic_action()->set_version(1);
+    input.mutable_generic_action()->set_version(2);
     // We'll set a dummy value on the "options" field (merely an example).
     // Currently, the "options" field should be ignored (not set) by applications using TW Core.
-    // In the future, TW Core will handle specific transaction options
-    // when building and signing transactions.
     input.mutable_generic_action()->set_options(42);
     input.set_gas_price(1000000000);
     input.set_gas_limit(50000);
-    input.set_chain_id("local-testnet");
+    input.set_chain_id("1");
 
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "d9a624f13960ae1cc471de48bdb43b101b9d469bb8b159f68bb629bb32d0109e1acfebb62d6d2fc5786c0b85f9e7ce2caff74988864a8285f34797c5a5fa5801";
+    auto expectedSignature = "ea478652417dc319c3e898d7f99f3a7b04fd32b62a7d43d5d6822a6a46b9346853426ac2ad5cdc710f0f3c5a6f509b21195e712ed9b3c95f454c7ed85079cb0b";
     auto expectedEncoded =
-        (boost::format(R"({"nonce":89,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"local-testnet","version":1,"options":42,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+        (boost::format(R"({"nonce":89,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":2,"signature":"%3%","options":42})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedEncoded, encoded);
     ASSERT_EQ(expectedSignature, signature);
@@ -357,9 +356,9 @@ TEST(MultiversXSigner, SignEGLDTransfer) {
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "7e1c4c63b88ea72dcf7855a54463b1a424eb357ac3feb4345221e512ce07c7a50afb6d7aec6f480b554e32cf2037082f3bc17263d1394af1f3ef240be53c930b";
+    auto expectedSignature = "0f40dec9d37bde3c67803fc535088e536344e271807bb7c1aa24af3c69bffa9b705e149ff7bcaf21678f4900c4ee72741fa6ef08bf4c67fc6da1c6b0f337730e";
     auto expectedEncoded =
-        (boost::format(R"({"nonce":7,"value":"1000000000000000000","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+        (boost::format(R"({"nonce":7,"value":"1000000000000000000","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":2,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedSignature, signature);
     ASSERT_EQ(expectedEncoded, encoded);
@@ -379,9 +378,9 @@ TEST(MultiversXSigner, SignESDTTransfer) {
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "9add6d9ac3f1a1fddb07b934e8a73cad3b8c232bdf29d723c1b38ad619905f03e864299d06eb3fe3bbb48a9f1d9b7f14e21dc5eaffe0c87f5718ad0c4198bb0c";
+    auto expectedSignature = "dd7cdc90aa09da6034b00a99e3ba0f1a2a38fa788fad018d53bf2e706f99e1a42c80063c28e6b48a5f2574c4054986f34c8eb36b1da63a22d19cf3ea5990b306";
     auto expectedEncoded =
-        (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":425000,"data":"%3%","chainID":"1","version":1,"signature":"%4%"})") % BOB_BECH32 % ALICE_BECH32
+        (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":425000,"data":"%3%","chainID":"1","version":2,"signature":"%4%"})") % BOB_BECH32 % ALICE_BECH32
          // "ESDTTransfer@4d59544f4b454e2d31323334@09184e72a000"
          % "RVNEVFRyYW5zZmVyQDRkNTk1NDRmNGI0NTRlMmQzMTMyMzMzNEAwOTE4NGU3MmEwMDA=" % expectedSignature)
             .str();
@@ -405,12 +404,62 @@ TEST(MultiversXSigner, SignESDTNFTTransfer) {
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "cc935685d5b31525e059a16a832cba98dee751983a5a93de4198f6553a2c55f5f1e0b4300fe9077376fa754546da0b0f6697e66462101a209aafd0fc775ab60a";
+    auto expectedSignature = "59af89d9a9ece1f35bc34323c42061cae27bb5f9830f5eb26772e680732cbd901a86caa7c3eadacd392fe1024bef4c1f08ce1dfcafec257d6f41444ccea30a0c";
     auto expectedEncoded =
-        (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":937500,"data":"%3%","chainID":"1","version":1,"signature":"%4%"})") % ALICE_BECH32 % ALICE_BECH32
+        (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":937500,"data":"%3%","chainID":"1","version":2,"signature":"%4%"})") % ALICE_BECH32 % ALICE_BECH32
          // "ESDTNFTTransfer@4c4b4d45582d616162393130@04@028ec3dfa01ac000@8049d639e5a6980d1cd2392abcce41029cda74a1563523a202f09641cc2618f8"
          % "RVNEVE5GVFRyYW5zZmVyQDRjNGI0ZDQ1NTgyZDYxNjE2MjM5MzEzMEAwNEAwMjhlYzNkZmEwMWFjMDAwQDgwNDlkNjM5ZTVhNjk4MGQxY2QyMzkyYWJjY2U0MTAyOWNkYTc0YTE1NjM1MjNhMjAyZjA5NjQxY2MyNjE4Zjg=" % expectedSignature)
             .str();
+
+    ASSERT_EQ(expectedSignature, signature);
+    ASSERT_EQ(expectedEncoded, encoded);
+}
+
+TEST(MultiversXSigner, SignGenericActionWithGuardian) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(42);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_guardian(CAROL_BECH32);
+    input.mutable_generic_action()->set_value("1000000000000000000");
+    input.mutable_generic_action()->set_data("");
+    input.mutable_generic_action()->set_version(2);
+    input.mutable_generic_action()->set_options(TransactionOptions::Guarded);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(100000);
+    input.set_chain_id("1");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "dae30e5cddb4a1f050009f939ce2c90843770870f9e6c77366be07e5cd7b3ebfdda38cd45d04e9070037d57761b6a68cee697e6043057f9dc565a4d0e632480d";
+    auto expectedEncoded =
+        (boost::format(R"({"nonce":42,"value":"1000000000000000000","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2,"signature":"%3%","options":2,"guardian":"%4%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature % CAROL_BECH32).str();
+
+    ASSERT_EQ(expectedEncoded, encoded);
+    ASSERT_EQ(expectedSignature, signature);
+}
+
+TEST(MultiversXSigner, SignEGLDTransferWithGuardian) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_egld_transfer()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_egld_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_egld_transfer()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_egld_transfer()->mutable_accounts()->set_guardian(CAROL_BECH32);
+    input.mutable_egld_transfer()->set_amount("1000000000000000000");
+
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "741dd0d24db4df37a050f693f8481b6e51b8dd6dfc2f01a4f90aa1af3e59c89a8b0ef9d710af33103970e353d9f0cb9fd128a2e174731cbc88265d9737ed5604";
+    auto expectedEncoded =
+        (boost::format(R"({"nonce":7,"value":"1000000000000000000","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2,"signature":"%3%","options":2,"guardian":"%4%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature % CAROL_BECH32).str();
 
     ASSERT_EQ(expectedSignature, signature);
     ASSERT_EQ(expectedEncoded, encoded);
