@@ -3,39 +3,46 @@ public static func
 {{~else}}
 public func
 {{~/if}}
- {{method_name~}} ({{params_raw}}) -> {{return.type}} {
-	{{#each params}}
-	{{#if wrap_as}}
- 	// Prepare '{{name}}'.
-	let {{name}} = {{wrap_as}}
-	{{else}}
+ {{method_name~}} (
+    {{~#each params}}
+    {{~name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless~}}
+    {{/each}}
+) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#each params}}
+    {{#if wrap_as}}
+     // Prepare '{{name}}'.
+    let {{name}} = {{wrap_as}}
+    {{else}}
     let {{name}} = {{name}}
     {{/if}}
-	{{#if deter_as}}
+    {{#if deter_as}}
     // Deter '{{name}}'.
-	defer {
-		{{deter_as}}
-	}
-	{{/if}}
+    defer {
+        {{deter_as}}
+    }
+    {{/if}}
     {{#unless @last}}
     
     {{/unless}}
-	{{/each}}
+    {{/each}}
 
-	// Call the underlying C function.
-	let result = {{c_ffi.function_name}}({{~#each params}}{{~name}}{{#unless @last}}, {{/unless}}{{/each}})
+    // Call the underlying C function.
+    let result = {{c_ffi.function_name}}(
+        {{~#each params}}
+        {{~name}}{{#unless @last}}, {{/unless~}}
+        {{/each}})
 
-	{{#if return.is_nullable}}
-	// Check nullable result.
-	guard let result = result else {
-		return nil
-	}
-	{{/if}}
+    {{#if return.is_nullable}}
+    // Check nullable result.
+    guard let result = result else {
+        return nil
+    }
+    {{/if}}
 
-	{{#if return.wrap_as}}
-	// Return with conversion function.
-	return {{return.wrap_as}}
-	{{else}}
-	return result
-	{{/if}}
+    {{#if return.wrap_as}}
+    // Return with conversion function.
+    return {{return.wrap_as}}
+    {{else}}
+    return result
+    {{/if}}
 }
