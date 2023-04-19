@@ -12,7 +12,6 @@
 #include "Ethereum/ABI/Function.h"
 #include "uint256.h"
 
-
 namespace TW::LiquidStaking {
 
 Proto::LiquidStakingOutput Builder::buildStraderEVM() const {
@@ -29,12 +28,21 @@ Proto::LiquidStakingOutput Builder::buildStraderEVM() const {
     auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
 
     auto visitFunctor = [&transfer](const TAction& value) {
+        // TODO probably need to guess function named based on the coin/blockchain, can refactor later when adding more
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
             auto func = Ethereum::ABI::Function("swapMaticForMaticXViaInstantPool");
             Data payload;
             func.encode(payload);
             transfer.set_data(payload.data(), payload.size());
             Data amountData = store(uint256_t(stake->amount()));
+            transfer.set_amount(amountData.data(), amountData.size());
+        } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
+            auto params = std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(unstake->amount()))};
+            auto func = Ethereum::ABI::Function("requestMaticXSwap", params);
+            Data payload;
+            func.encode(payload);
+            transfer.set_data(payload.data(), payload.size());
+            Data amountData = store(uint256_t(0));
             transfer.set_amount(amountData.data(), amountData.size());
         }
     };

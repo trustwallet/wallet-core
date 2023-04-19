@@ -62,4 +62,42 @@ namespace TW::LiquidStaking::tests {
         EXPECT_EQ(hex(output.encoded()), "02f87a81890185085e42c7c0858fbcc8fcd88301c52094fd225c9e6601c9d38d8f98d8731bf59efcf8c0e3880de0b6b3a764000084c78cf1a0c001a04bcf92394d53d4908130cc6d4f7b2491967f9d6c59292b84c1f56adc49f6c458a073e09f45d64078c41a7946ffdb1dee8e604eb76f318088490f8f661bb7ddfc54");
         // Successfully broadcasted https://polygonscan.com/tx/0x0f6c4f7a893c3f08be30d2ea24479d7ed4bdba40875d07cfd607cf97980b7cf0
     }
+
+    TEST(LiquidStaking, PolygonStraderUnStakeMatic) {
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::POLYGON);
+        input.set_protocol(Proto::Strader);
+        input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
+        Proto::Unstake unstake;
+        Proto::Asset asset;
+        *unstake.mutable_asset() = asset;
+        unstake.set_amount("1000000000000000000");
+        *input.mutable_unstake() = unstake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        auto tx = *ls_output.mutable_ethereum();
+        ASSERT_TRUE(tx.transaction().has_contract_generic());
+        ASSERT_EQ(hex(tx.transaction().contract_generic().data(), true), "0x48eaf6d60000000000000000000000000000000000000000000000000de0b6b3a7640000");
+
+        // Following fields must be set afterwards, before signing ...
+        const auto chainId = store(uint256_t(137));
+        tx.set_chain_id(chainId.data(), chainId.size());
+        auto nonce = store(uint256_t(4));
+        tx.set_nonce(nonce.data(), nonce.size());
+        auto maxInclusionFeePerGas = store(uint256_t(35941173184));
+        auto maxFeePerGas = store(uint256_t(617347611864));
+        tx.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+        tx.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+        auto gasLimit = store(uint256_t(200000));
+        tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+        auto privKey = parse_hex("4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab");
+        tx.set_private_key(privKey.data(), privKey.size());
+        // ... end
+
+        Ethereum::Proto::SigningOutput output;
+        ANY_SIGN(tx, TWCoinTypePolygon);
+        EXPECT_EQ(hex(output.encoded()), "02f89281890485085e42c7c0858fbcc8fcd883030d4094fd225c9e6601c9d38d8f98d8731bf59efcf8c0e380a448eaf6d60000000000000000000000000000000000000000000000000de0b6b3a7640000c001a0a0dd3f23758fbcc6f25c8e4396881ab6a1fb444e5a9531b1028b121407d4b79ca0618908f0f1aa79ce3f9e25cfe24a86fd8870c85e78b3730115c033f4f6678531");
+        // Successfully broadcasted https://polygonscan.com/tx/0xa66855e4af8e654e458915f59acd77e88706c01b59a3e4aed1363a665458368a
+    }
 }
