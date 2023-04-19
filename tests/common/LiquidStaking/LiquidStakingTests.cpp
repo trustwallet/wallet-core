@@ -31,7 +31,6 @@ namespace TW::LiquidStaking::tests {
         input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
         Proto::Stake stake;
         Proto::Asset asset;
-        asset.set_from_address("0x3DBeA3b36BEAa4a23fd377ACf83a58d39e46B403");
         asset.set_staking_token(Proto::MATIC);
         *stake.mutable_asset() = asset;
         stake.set_amount("1000000000000000000");
@@ -61,6 +60,6 @@ namespace TW::LiquidStaking::tests {
         Ethereum::Proto::SigningOutput output;
         ANY_SIGN(tx, TWCoinTypePolygon);
         EXPECT_EQ(hex(output.encoded()), "02f87a81890185085e42c7c0858fbcc8fcd88301c52094fd225c9e6601c9d38d8f98d8731bf59efcf8c0e3880de0b6b3a764000084c78cf1a0c001a04bcf92394d53d4908130cc6d4f7b2491967f9d6c59292b84c1f56adc49f6c458a073e09f45d64078c41a7946ffdb1dee8e604eb76f318088490f8f661bb7ddfc54");
-        // Successfully broadcasted
+        // Successfully broadcasted https://polygonscan.com/tx/0x0f6c4f7a893c3f08be30d2ea24479d7ed4bdba40875d07cfd607cf97980b7cf0
     }
 }
