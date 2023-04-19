@@ -1455,6 +1455,8 @@ dependencies = [
  "rfc6979 0.4.0",
  "tw_encoding",
  "tw_hash",
+ "tw_memory",
+ "tw_utils",
 ]
 
 [[package]]
@@ -1492,6 +1494,10 @@ dependencies = [
  "tw_encoding",
  "tw_memory",
 ]
+
+[[package]]
+name = "tw_utils"
+version = "0.1.0"
 
 [[package]]
 name = "typenum"

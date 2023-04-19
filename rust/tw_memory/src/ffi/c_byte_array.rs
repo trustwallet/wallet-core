@@ -43,6 +43,11 @@ impl CByteArray {
         }
     }
 
+    /// Returns an empty `CByteArray` instance.
+    pub fn empty() -> CByteArray {
+        CByteArray::new(Vec::new())
+    }
+
     /// Returns a `CByteArray` instance from the given `mut_vec` bytes.
     pub fn new(mut mut_vec: Vec<u8>) -> CByteArray {
         let data = mut_vec.as_mut_ptr();
@@ -94,6 +99,11 @@ impl CByteArray {
     /// Returns the data length.
     pub fn size(&self) -> usize {
         self.size
+    }
+
+    /// Returns the data slice.
+    pub unsafe fn as_slice(&self) -> &[u8] {
+        std::slice::from_raw_parts(self.data, self.size)
     }
 }
 

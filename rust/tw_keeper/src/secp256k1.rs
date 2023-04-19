@@ -139,7 +139,6 @@ impl From<Signature> for VerifySignature {
     }
 }
 
-#[derive(Debug)]
 pub struct PrivateKey {
     secret: SigningKey,
 }
@@ -174,7 +173,7 @@ impl PrivateKey {
         let public_affine =
             AffinePoint::try_from(public_point).expect("Expected valid 'AffinePoint'");
 
-        let secret: SharedSecret = diffie_hellman(self.secret.as_nonzero_scalar(), &public_affine);
+        let secret: SharedSecret = diffie_hellman(self.secret.as_nonzero_scalar(), public_affine);
 
         // `SharedSecret` is 32 byte array. We need to push the `compress` tag front.
         let mut secret_tagged = Vec::with_capacity(33);
@@ -204,12 +203,14 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     }
 }
 
-#[derive(Debug)]
 pub struct PublicKey {
     public: VerifyingKey,
 }
 
 impl PublicKey {
+    pub const COMPRESSED: usize = H264::len();
+    pub const UNCOMPRESSED: usize = H520::len();
+
     pub fn compressed(&self) -> H264 {
         let compressed = true;
         H264::try_from(self.public.to_encoded_point(compressed).as_bytes())
@@ -310,6 +311,7 @@ mod tests {
     }
 }
 
+#[allow(unused_imports)]
 #[cfg(test)]
 mod tests_todo {
     use super::*;
