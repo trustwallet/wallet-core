@@ -222,8 +222,8 @@ module KotlinHelper
     end
   end
 
-  def self.js_type(t, is_constructor = false)
-    nullable = "#{if t.is_nullable && !is_constructor then '?' else '' end}"
+  def self.js_type(t)
+    nullable = "#{if t.is_nullable then '?' else '' end}"
     case t.name
     when :void
       ""
@@ -240,12 +240,12 @@ module KotlinHelper
     end
   end
 
-  def self.js_return_type(t, is_constructor = false)
+  def self.js_return_type(t)
     case t.name
     when :void
       ""
     else
-      ": #{js_type(t, is_constructor)}"
+      ": #{js_type(t)}"
     end
   end
 

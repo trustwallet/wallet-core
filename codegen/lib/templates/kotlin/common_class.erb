@@ -4,7 +4,11 @@
 <% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
 <% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
 <%  if constructors.one? -%>
+<%  if constructors.first.return_type.is_nullable -%>
+expect class <%= entity.name %> @Throws(IllegalArgumentException::class) constructor(
+<%  else -%>
 expect class <%= entity.name %>(
+<%  end -%>
 <%- constructors.first.parameters.each do |parameter| -%>
     <%= KotlinHelper.parameters([parameter]) %>,
 <%- end -%>
@@ -12,10 +16,11 @@ expect class <%= entity.name %>(
 <%- else -%>
 expect class <%= entity.name %> {
 <%# Constructors -%>
-<%  if constructors.any? -%>
-
-<%  end -%>
 <%- constructors.each do |constructor| -%>
+
+<%  if constructor.return_type.is_nullable -%>
+    @Throws(IllegalArgumentException::class)
+<%  end -%>
     constructor(<%= KotlinHelper.parameters(constructor.parameters) %>)
 <%- end -%>
 <%  end -%>

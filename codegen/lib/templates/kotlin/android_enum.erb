@@ -1,12 +1,20 @@
 <%= render('kotlin/package.erb') %>
 
+<%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
 actual enum class <%= entity.name %>(
     @get:JvmName("value")
     val value: UInt,
+<%  if has_string -%>
+    actual val stringValue: String,
+<%  end -%>
 ) {
 <%# Cases -%>
 <%  entity.cases.each_with_index do |c, i| -%>
+<%  if has_string -%>
+    <%= c.name %>(<%= c.value %>u, <%= c.string %>),
+<%  else -%>
     <%= c.name %>(<%= c.value %>u),
+<%  end -%>
 <%  end -%>
     ;
 <%# Property declarations -%>
