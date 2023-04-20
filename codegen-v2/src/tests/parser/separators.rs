@@ -1,4 +1,4 @@
-use crate::grammar::{GSeparators, GSeparatorItem, ParseTree};
+use crate::grammar::{GSeparatorItem, GSeparators, ParseTree};
 use crate::must_ok;
 use crate::reader::Reader;
 

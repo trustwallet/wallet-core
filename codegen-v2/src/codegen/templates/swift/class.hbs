@@ -8,11 +8,15 @@ public class
  {{this~}} 
 {{/each}}
  {
+    {{#if init_instance}}
     let rawValue: OpaquePointer
 
     init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
+    {{else}}
+    init() {}
+    {{/if}}
 
     {{> inits}}
 

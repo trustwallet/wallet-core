@@ -8,6 +8,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+mod codegen;
 mod grammar;
 mod reader;
 #[cfg(test)]
