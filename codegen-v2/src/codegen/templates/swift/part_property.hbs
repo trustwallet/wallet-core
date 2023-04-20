@@ -5,7 +5,11 @@ public var
 {{~/if}}
  {{property_name~}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
     // Call the underlying C function.
-    let result = {{c_ffi.function_name}}(rawValue)
+    {{#if is_static}}
+    let result = {{c_ffi.function_name}}()
+    {{else}}
+    let result = {{c_ffi.function_name}}(self.rawValue)
+    {{/if}}
 
     {{#if return.is_nullable}}
     // Check nullable result.
