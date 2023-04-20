@@ -104,7 +104,6 @@ fn test_swift_method_from_json_2() {
     // Call the underlying C function.
     let result = TWSomeFunc(one, two)
 
-
     // Return with conversion function.
     return TWStringNSString(result)
 }"#;
