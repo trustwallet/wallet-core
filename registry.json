@@ -1474,7 +1474,7 @@
     "chainId": "4689",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://iotexscan.io/",
+      "url": "https://iotexscan.io",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
