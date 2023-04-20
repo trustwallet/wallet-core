@@ -1,3 +1,23 @@
-    public var {{name}}: {{return}} {
-        return TWStringNSString({{c_ffi_name}}(rawValue))
+{{#if is_static}}
+public static var
+{{~else}}
+public var
+{{~/if}}
+ {{property_name~}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    // Call the underlying C function.
+    let result = {{c_ffi.function_name}}(rawValue)
+
+    {{#if return.is_nullable}}
+    // Check nullable result.
+    guard let result = result else {
+        return nil
     }
+    {{/if}}
+
+    {{#if return.wrap_as}}
+    // Return with conversion function.
+    return {{return.wrap_as}}
+    {{else}}
+    return result
+    {{/if}}
+}
