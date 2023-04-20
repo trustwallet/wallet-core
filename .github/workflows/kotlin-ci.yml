@@ -30,9 +30,6 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        echo $PATH
-        echo $USER
-        env
         tools/install-sys-dependencies-mac
         tools/install-rust-dependencies
 
