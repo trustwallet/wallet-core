@@ -1,4 +1,5 @@
-use crate::codegen::swift::{register_renderer, MethodInfo};
+use super::{new_engine, template_path};
+use crate::codegen::swift::{self, MethodInfo};
 use handlebars::Handlebars;
 use serde_json::{json, Value};
 
@@ -28,8 +29,7 @@ const INPUT: &str = r#"{
     "c_ffi_name": "TWSomeFunc"
 }"#;
 
-const OUTPUT: &str =
-r#"public static func someFunc(one: String, two: SomeEnum) -> String? {
+const OUTPUT: &str = r#"public static func someFunc(one: String, two: SomeEnum) -> String? {
      // Prepare 'one'.
     let one = TWStringCreateWithNSString(one)
     defer {
@@ -53,14 +53,15 @@ r#"public static func someFunc(one: String, two: SomeEnum) -> String? {
 
 #[test]
 fn test_swift_method_from_json() {
-	let mut engine = Handlebars::new();
-	engine.set_strict_mode(true);
+    let mut engine = new_engine();
 
-	register_renderer(&mut engine).unwrap();
+    engine
+        .register_template_file(swift::METHOD_INFO, template_path(swift::METHOD_INFO))
+        .unwrap();
 
-	let data: MethodInfo = serde_json::from_str(INPUT).unwrap();
+    let data: MethodInfo = serde_json::from_str(INPUT).unwrap();
+    let out = engine.render("part_method.hbs", &data).unwrap();
 
-	let out = engine.render("part_method.hbs", &data).unwrap();
 	println!("{}", out);
-	assert_eq!(out, OUTPUT);
+    assert_eq!(out, OUTPUT);
 }

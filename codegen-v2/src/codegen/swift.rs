@@ -1,12 +1,7 @@
 use crate::Result;
 use handlebars::Handlebars;
 
-const ROOT_DIR: &str = "src/codegen/templates/swift/";
-const METHOD: &str = "part_method.hbs";
-
-fn file_path(file: &str) -> String {
-    format!("{}{}", ROOT_DIR, file)
-}
+pub const METHOD_INFO: &str = "part_method.hbs";
 
 #[derive(Serialize, Deserialize)]
 pub struct MethodInfo {
@@ -34,11 +29,4 @@ pub struct ParamInfo {
     is_nullable: bool,
     wrap_as: String,
     deter_as: Option<String>,
-}
-
-pub fn register_renderer(engine: &mut Handlebars) -> Result<()> {
-    engine
-        .register_template_file(METHOD, file_path(METHOD))
-        .unwrap();
-    Ok(())
 }
