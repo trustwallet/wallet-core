@@ -43,7 +43,7 @@ TEST(TWAnySignerNeutron, SignAirdropNeutron) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNeutron);
 
-    // https://www.mintscan.io/stargaze/txs/300836A5BF9002CF38EE34A8C56E8E7E6854FA64F1DEB3AE108F381A48150F7C
+    // Successfully broadcasted: https://explorer.rs-testnet.polypore.xyz/pion-1/tx/28F25164B1E2556844C227819B1D5437960B7E91181B37460EC6792588FF7E4E
     auto expectedJson = R"(
                 {
                     "mode":"BROADCAST_MODE_BLOCK",
