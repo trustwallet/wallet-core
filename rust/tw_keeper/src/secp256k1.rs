@@ -14,10 +14,14 @@ use std::ops::{Range, RangeInclusive};
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
 
+/// cbindgen:ignore
 const R_RANGE: Range<usize> = 0..32;
+/// cbindgen:ignore
 const S_RANGE: Range<usize> = 32..64;
+/// cbindgen:ignore
 const RECOVERY_LAST: usize = Signature::len() - 1;
 /// Expected signature with or without recovery byte in the end of the slice.
+/// cbindgen:ignore
 const VERIFY_SIGNATURE_LEN_RANGE: RangeInclusive<usize> = 64..=65;
 
 #[derive(Debug, PartialEq)]
@@ -56,19 +60,6 @@ impl Signature {
         })
     }
 
-    // pub fn from_vrs_bytes(sig: &[u8]) -> Result<Signature, Error> {
-    //     if sig.len() != Signature::len() {
-    //         return Err(Error::InvalidSignature);
-    //     }
-    //
-    //     let shifted = &sig[1..];
-    //     Ok(Signature {
-    //         r: H256::try_from(&shifted[R_RANGE]).expect("Expected valid R_RANGE"),
-    //         s: H256::try_from(&shifted[S_RANGE]).expect("Expected valid S_RANGE"),
-    //         v: sig[0],
-    //     })
-    // }
-
     /// Returns a standard binary signature representation:
     /// RSV, where R - 32 byte array, S - 32 byte array, V - 1 byte.
     pub fn to_bytes(&self) -> H520 {
@@ -80,19 +71,6 @@ impl Signature {
         dest[RECOVERY_LAST] = self.v;
         dest
     }
-
-    // /// Returns a VRS signature representation,
-    // /// where V - 1 byte, R - 32 byte array, S - 32 byte array.
-    // pub fn to_vrs_bytes(&self) -> H520 {
-    //     let mut dest = H520::default();
-    //     dest[0] = self.v;
-    //
-    //     let shifted = &mut dest[1..];
-    //     shifted[R_RANGE].copy_from_slice(&self.r);
-    //     shifted[S_RANGE].copy_from_slice(&self.s);
-    //
-    //     dest
-    // }
 
     /// # Panic
     ///
@@ -120,15 +98,6 @@ impl VerifySignature {
             signature: Signature::signature_from_slices(&sig[R_RANGE], &sig[S_RANGE])?,
         })
     }
-
-    // pub fn from_vrs_bytes(sig: &[u8]) -> Result<Self, Error> {
-    //     if sig.len() != Signature::len() {
-    //         return Err(Error::InvalidSignature);
-    //     }
-    //
-    //     let shifted = &sig[1..];
-    //     VerifySignature::from_bytes(shifted)
-    // }
 }
 
 impl From<Signature> for VerifySignature {
@@ -282,6 +251,24 @@ mod tests {
 
         let verify_signature = VerifySignature::from(signature);
         assert!(public.verify(verify_signature, hash_to_sign));
+    }
+
+    #[test]
+    fn test_public_key_from() {
+        let compressed = "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1";
+        let uncompressed = "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91";
+        let expected_compressed = H264::from(compressed);
+        let expected_uncompressed = H520::from(uncompressed);
+
+        // From extended public key.
+        let public = PublicKey::from(uncompressed);
+        assert_eq!(public.compressed(), expected_compressed);
+        assert_eq!(public.uncompressed(), expected_uncompressed);
+
+        // From compressed public key.
+        let public = PublicKey::from(compressed);
+        assert_eq!(public.compressed(), expected_compressed);
+        assert_eq!(public.uncompressed(), expected_uncompressed);
     }
 
     #[test]

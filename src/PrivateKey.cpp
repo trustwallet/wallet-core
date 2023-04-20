@@ -198,13 +198,23 @@ int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key,
     return ecdsa_sign_digest(curve, priv_key, digest, sig, pby, is_canonical);
 }
 
+Data rust_private_key_sign(const Data& key, const Data& hash, TWCurve curve) {
+    auto* priv = Rust::tw_private_key_create_with_data(key.data(), key.size());
+    if (priv == nullptr) {
+        return {};
+    }
+    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hash.data(), hash.size(), static_cast<uint32_t>(curve));
+    Rust::tw_private_key_delete(priv);
+    return res.data;
+}
+
 Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     Data result;
     bool success = false;
     switch (curve) {
     case TWCurveSECP256k1: {
-        result.resize(65);
-        success = ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
+        result = rust_private_key_sign(key(), digest, curve);
+        success = result.size() == 65;
     } break;
     case TWCurveED25519: {
         result.resize(64);

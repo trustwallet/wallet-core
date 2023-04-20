@@ -7,11 +7,12 @@
 use crate::ffi::pubkey::TWPublicKey;
 use crate::ffi::{TWCurve, TWPublicKeyType};
 use crate::{secp256k1, Error};
+use std::ops::Range;
 use tw_hash::H256;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
-use tw_utils::try_or_else;
+use tw_utils::{try_or_else, try_or_false};
 
 pub struct TWPrivateKey {
     bytes: Vec<u8>,
@@ -21,9 +22,9 @@ impl RawPtrTrait for TWPrivateKey {}
 
 impl TWPrivateKey {
     /// The number of bytes in a private key.
-    pub const SIZE: usize = 32;
-    /// The number of bytes in a Cardano key (two extended ed25519 keys + chain code).
-    pub const CARDANO_SIZE: usize = 2 * 3 * 32;
+    const SIZE: usize = 32;
+
+    const KEY_RANGE: Range<usize> = 0..Self::SIZE;
 
     pub fn new(bytes: Vec<u8>) -> Result<TWPrivateKey, Error> {
         if !Self::is_valid_general(&bytes) {
@@ -32,9 +33,19 @@ impl TWPrivateKey {
         Ok(TWPrivateKey { bytes })
     }
 
+    /// Returns the 32 byte array - the essential private key data.
+    pub fn key(&self) -> H256 {
+        assert!(
+            self.bytes.len() >= Self::SIZE,
+            "'TWPrivateKey::bytes' has an unexpected length"
+        );
+        H256::try_from(&self.bytes[Self::KEY_RANGE])
+            .expect("H256 and KEY_RANGE must be 32 byte length")
+    }
+
     /// Checks if the given bytes are valid in general (without a concrete curve).
     pub fn is_valid_general(bytes: &[u8]) -> bool {
-        if bytes.len() != Self::SIZE && bytes.len() != Self::CARDANO_SIZE {
+        if bytes.len() != Self::SIZE {
             return false;
         }
         // Check for zero address.
@@ -46,24 +57,26 @@ impl TWPrivateKey {
             return false;
         }
         match curve {
-            TWCurve::Secp256k1 => secp256k1::PrivateKey::try_from(bytes).is_ok(),
+            TWCurve::Secp256k1 => secp256k1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
         }
     }
 
     pub fn sign(&self, hash: &[u8], curve: TWCurve) -> Result<Vec<u8>, Error> {
-        let private = match curve {
-            TWCurve::Secp256k1 => secp256k1::PrivateKey::try_from(self.bytes.as_slice())?,
-        };
-        let hash_to_sign = H256::try_from(hash).map_err(|_| Error::InvalidSignMessage)?;
-        private
-            .sign(hash_to_sign)
-            .map(|sig| sig.to_bytes().to_vec())
+        match curve {
+            TWCurve::Secp256k1 => {
+                let private = self.secp256k1_privkey()?;
+                let hash_to_sign = H256::try_from(hash).map_err(|_| Error::InvalidSignMessage)?;
+                private
+                    .sign(hash_to_sign)
+                    .map(|sig| sig.to_bytes().to_vec())
+            },
+        }
     }
 
     pub fn get_public_key_by_type(&self, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
         match ty {
             TWPublicKeyType::Secp256k1 => {
-                let privkey = secp256k1::PrivateKey::try_from(self.bytes.as_slice())?;
+                let privkey = self.secp256k1_privkey()?;
                 let pubkey_bytes = privkey.public().compressed();
                 Ok(TWPublicKey::new_unchecked(
                     pubkey_bytes.to_vec(),
@@ -71,7 +84,7 @@ impl TWPrivateKey {
                 ))
             },
             TWPublicKeyType::Secp256k1Extended => {
-                let privkey = secp256k1::PrivateKey::try_from(self.bytes.as_slice())?;
+                let privkey = self.secp256k1_privkey()?;
                 let pubkey_bytes = privkey.public().uncompressed();
                 Ok(TWPublicKey::new_unchecked(
                     pubkey_bytes.to_vec(),
@@ -79,6 +92,10 @@ impl TWPrivateKey {
                 ))
             },
         }
+    }
+
+    fn secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
+        secp256k1::PrivateKey::try_from(self.key().as_slice())
     }
 }
 
@@ -102,21 +119,19 @@ pub unsafe extern "C" fn tw_private_key_delete(key: *mut TWPrivateKey) {
     let _ = TWPrivateKey::from_ptr(key);
 }
 
-// #[no_mangle]
-// pub unsafe fn tw_private_key_is_valid(key: *const u8, key_len: usize, curve: u32) -> bool {
-//     let curve = match TWCurve::from_raw(curve) {
-//         Some(curve) => curve,
-//         None => return false,
-//     };
-//     let priv_key_slice = match CByteArrayRef::new(key, key_len).as_slice() {
-//         Some(pk) => pk,
-//         None => return false,
-//     };
-//     TWPrivateKey::is_valid(priv_key_slice, curve)
-// }
+#[no_mangle]
+pub unsafe extern "C" fn tw_private_key_is_valid(
+    key: *const u8,
+    key_len: usize,
+    curve: u32,
+) -> bool {
+    let curve = try_or_false!(TWCurve::from_raw(curve));
+    let priv_key_slice = try_or_false!(CByteArrayRef::new(key, key_len).as_slice());
+    TWPrivateKey::is_valid(priv_key_slice, curve)
+}
 
 #[no_mangle]
-pub unsafe fn tw_private_key_sign(
+pub unsafe extern "C" fn tw_private_key_sign(
     key: *mut TWPrivateKey,
     hash: *const u8,
     hash_len: usize,
@@ -126,7 +141,7 @@ pub unsafe fn tw_private_key_sign(
         Some(curve) => curve,
         None => return CByteArray::empty(),
     };
-    let private = &*key;
+    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::empty);
     let hash_to_sign = try_or_else!(
         CByteArrayRef::new(hash, hash_len).as_slice(),
         CByteArray::empty
@@ -138,7 +153,7 @@ pub unsafe fn tw_private_key_sign(
 }
 
 #[no_mangle]
-pub unsafe fn tw_private_key_get_public_key_by_type(
+pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
     key: *mut TWPrivateKey,
     pubkey_type: u32,
 ) -> *mut TWPublicKey {
@@ -151,7 +166,7 @@ pub unsafe fn tw_private_key_get_public_key_by_type(
 }
 
 // #[no_mangle]
-// pub unsafe fn tw_private_key_get_shared_key(
+// pub unsafe extern "C" fn tw_private_key_get_shared_key(
 //     key: *mut TWPrivateKey,
 //     hash: *const u8,
 //     hash_len: usize,
@@ -161,7 +176,7 @@ pub unsafe fn tw_private_key_get_public_key_by_type(
 //         Some(curve) => curve,
 //         None => return CByteArray::empty(),
 //     };
-//     let private = &*key;
+//     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::empty);
 //
 //     let hash = CByteArrayRef::new(hash, hash_len);
 //     let hash_to_sign = match hash.as_slice() {

@@ -7,6 +7,7 @@
 use crate::ffi::TWPublicKeyType;
 use crate::{secp256k1, Error};
 use tw_hash::H256;
+use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
@@ -88,6 +89,12 @@ pub unsafe extern "C" fn tw_public_key_verify(
     let sig = try_or_false!(CByteArrayRef::new(sig, sig_len).as_slice());
     let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
     public.verify(sig, msg)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_public_key_data(key: *mut TWPublicKey) -> CByteArray {
+    let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), CByteArray::empty);
+    CByteArray::new(public.bytes.clone())
 }
 
 // #[no_mangle]
