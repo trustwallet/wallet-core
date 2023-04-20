@@ -24,6 +24,68 @@ namespace TW::LiquidStaking::tests {
         ASSERT_EQ(output.status().code(), Proto::ERROR_ACTION_NOT_SET);
     }
 
+    TEST(LiquidStaking, PolygonStrideWithdraw) {
+        // TODO: code logic
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::STRIDE);
+        input.set_protocol(Proto::Stride);
+        Proto::Withdraw withdraw;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::ATOM);
+        *withdraw.mutable_asset() = asset;
+        withdraw.set_amount("1000000");
+        *input.mutable_withdraw() = withdraw;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+    }
+
+    TEST(LiquidStaking, PolygonStride) {
+        // TODO: code logic
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::STRIDE);
+        input.set_protocol(Proto::Stride);
+        Proto::Stake stake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::ATOM);
+        *stake.mutable_asset() = asset;
+        stake.set_amount("1000000");
+        *input.mutable_stake() = stake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+    }
+
+    TEST(LiquidStaking, PolygonStraderSmartContractAddressNotSet) {
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::POLYGON);
+        input.set_protocol(Proto::Strader);
+        Proto::Stake stake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::MATIC);
+        *stake.mutable_asset() = asset;
+        stake.set_amount("1000000000000000000");
+        *input.mutable_stake() = stake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::ERROR_SMART_CONTRACT_ADDRESS_NOT_SET);
+    }
+
+    TEST(LiquidStaking, PolygonStraderStakeInvalidBlockchain) {
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::Blockchain::STRIDE);
+        input.set_protocol(Proto::Strader);
+        input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
+        Proto::Stake stake;
+        Proto::Asset asset;
+        *stake.mutable_asset() = asset;
+        stake.set_amount("1000000");
+        *input.mutable_stake() = stake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL);
+    }
+
     TEST(LiquidStaking, PolygonStraderStakeMatic) {
         Proto::LiquidStakingInput input;
         input.set_blockchain(Proto::POLYGON);
@@ -99,5 +161,79 @@ namespace TW::LiquidStaking::tests {
         ANY_SIGN(tx, TWCoinTypePolygon);
         EXPECT_EQ(hex(output.encoded()), "02f89281890485085e42c7c0858fbcc8fcd883030d4094fd225c9e6601c9d38d8f98d8731bf59efcf8c0e380a448eaf6d60000000000000000000000000000000000000000000000000de0b6b3a7640000c001a0a0dd3f23758fbcc6f25c8e4396881ab6a1fb444e5a9531b1028b121407d4b79ca0618908f0f1aa79ce3f9e25cfe24a86fd8870c85e78b3730115c033f4f6678531");
         // Successfully broadcasted https://polygonscan.com/tx/0xa66855e4af8e654e458915f59acd77e88706c01b59a3e4aed1363a665458368a
+    }
+
+    TEST(LiquidStaking, PolygonStraderStakeBnb) {
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::BNB_BSC);
+        input.set_protocol(Proto::Strader);
+        input.set_smart_contract_address("0x7276241a669489e4bbb76f63d2a43bfe63080f2f");
+        Proto::Stake stake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::BNB);
+        *stake.mutable_asset() = asset;
+        stake.set_amount("20000000000000000");
+        *input.mutable_stake() = stake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        auto tx = *ls_output.mutable_ethereum();
+        ASSERT_TRUE(tx.transaction().has_contract_generic());
+        ASSERT_EQ(hex(tx.transaction().contract_generic().data(), true), "0xd0e30db0");
+
+        // Following fields must be set afterwards, before signing ...
+        const auto chainId = store(uint256_t(56));
+        tx.set_chain_id(chainId.data(), chainId.size());
+        auto nonce = store(uint256_t(1));
+        tx.set_nonce(nonce.data(), nonce.size());
+        auto gasPrice = store(uint256_t(20000000000));
+        tx.set_gas_price(gasPrice.data(), gasPrice.size());
+        auto gasLimit = store(uint256_t(250000));
+        tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+        auto privKey = parse_hex("4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab");
+        tx.set_private_key(privKey.data(), privKey.size());
+        // ... end
+
+        Ethereum::Proto::SigningOutput output;
+        ANY_SIGN(tx, TWCoinTypeSmartChain);
+        EXPECT_EQ(hex(output.encoded()), "f871018504a817c8008303d090947276241a669489e4bbb76f63d2a43bfe63080f2f87470de4df82000084d0e30db08193a0ec9bcc1b203477b9e5af8d0f9338de2af2553bb34ba693e79183708d6025e5c9a01e1c1f5d724fa2aa55464451bc0eee45b8522091048e6ac377db0b181e412a15");
+        // Successfully broadcasted https://bscscan.com/tx/0x17014f06b267f683d03d4d9cc2e5c1b182be05c14c3b9ffa0eaa3060bc859ba6
+    }
+
+    TEST(LiquidStaking, PolygonStraderUnStakeBnb) {
+        Proto::LiquidStakingInput input;
+        input.set_blockchain(Proto::BNB_BSC);
+        input.set_protocol(Proto::Strader);
+        input.set_smart_contract_address("0x7276241a669489e4bbb76f63d2a43bfe63080f2f");
+        Proto::Unstake unstake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::BNB);
+        *unstake.mutable_asset() = asset;
+        unstake.set_amount("10000000000000000");
+        *input.mutable_unstake() = unstake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        auto tx = *ls_output.mutable_ethereum();
+        ASSERT_TRUE(tx.transaction().has_contract_generic());
+        ASSERT_EQ(hex(tx.transaction().contract_generic().data(), true), "0x745400c9000000000000000000000000000000000000000000000000002386f26fc10000");
+
+        // Following fields must be set afterwards, before signing ...
+        const auto chainId = store(uint256_t(56));
+        tx.set_chain_id(chainId.data(), chainId.size());
+        auto nonce = store(uint256_t(7));
+        tx.set_nonce(nonce.data(), nonce.size());
+        auto gasPrice = store(uint256_t(20000000000));
+        tx.set_gas_price(gasPrice.data(), gasPrice.size());
+        auto gasLimit = store(uint256_t(250000));
+        tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+        auto privKey = parse_hex("4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab");
+        tx.set_private_key(privKey.data(), privKey.size());
+        // ... end
+
+        Ethereum::Proto::SigningOutput output;
+        ANY_SIGN(tx, TWCoinTypeSmartChain);
+        EXPECT_EQ(hex(output.encoded()), "f889078504a817c8008303d090947276241a669489e4bbb76f63d2a43bfe63080f2f80a4745400c9000000000000000000000000000000000000000000000000002386f26fc100008193a0a1b72a5c368e0591c488094e5f9a431b1be915310fb47c1c9312c247044310279f5fffeaf2e1659c841f31927b0e60870b455fa35e041ae29006472c87550c9d");
+        // Successfully broadcasted https://bscscan.com/tx/0x420b203b998d4de40e78ab7c6e80399d45a20620368c11c7d7d45820eeef3096
     }
 }

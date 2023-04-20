@@ -13,8 +13,15 @@
 namespace TW::LiquidStaking {
 using TAction = std::variant<Proto::Stake, Proto::Unstake, Proto::Withdraw>;
 
+enum class Action {
+    Stake = 0,
+    Unstake = 1,
+    Withdraw = 2
+};
+
 class Builder {
     TAction mAction;
+    std::string mFromAddress;
     std::optional<std::string> mSmartContractAddress{std::nullopt};
     Proto::Protocol mProtocol;
     Proto::Blockchain mBlockchain;
@@ -82,12 +89,12 @@ static inline Proto::LiquidStakingOutput build(const Proto::LiquidStakingInput& 
     case Proto::LiquidStakingInput::kWithdraw:
         action = input.withdraw();
         break;
-    default: {
+    default:
         auto output = Proto::LiquidStakingOutput();
         *output.mutable_status() = generateError(Proto::ERROR_ACTION_NOT_SET);
         return output;
     }
-    }
+
     return Builder::builder().action(action).protocol(input.protocol()).smartContractAddress(input.smart_contract_address()).blockchain(input.blockchain()).build();
 }
 } // namespace TW::LiquidStaking

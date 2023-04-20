@@ -10,6 +10,7 @@ import "Cosmos.proto";
 enum Coin {
   MATIC = 0;
   ATOM = 1;
+  BNB = 2;
 }
 
 // Sometimes u may want to do liquid staking and target a different blockchain, e.g: Matic on Ethereum and so on
@@ -17,6 +18,7 @@ enum Blockchain {
   ETHEREUM = 0;
   POLYGON = 1;
   STRIDE = 2;
+  BNB_BSC = 3;
 }
 
 enum Protocol {
