@@ -33,12 +33,6 @@ jobs:
     - name: Run codegen tests
       run: tools/codegen-test
 
-    - name: Cache Rust
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: |
-          rust
-
     - name: Run iOS tests
       run: |
         tools/generate-files
