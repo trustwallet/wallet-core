@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use k256::ecdh::{diffie_hellman, SharedSecret};
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
@@ -13,6 +14,7 @@ use k256::{AffinePoint, EncodedPoint, FieldBytes};
 use std::ops::{Range, RangeInclusive};
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
+use tw_utils::traits::ToBytesVec;
 
 /// cbindgen:ignore
 const R_RANGE: Range<usize> = 0..32;
@@ -83,13 +85,21 @@ impl Signature {
     }
 }
 
+impl ToBytesVec for Signature {
+    fn to_vec(&self) -> Vec<u8> {
+        self.to_bytes().to_vec()
+    }
+}
+
 /// To verify the signature, it's enough to check `r` and `s` parts without the recovery ID.
 pub struct VerifySignature {
     pub signature: k256::ecdsa::Signature,
 }
 
-impl VerifySignature {
-    pub fn from_bytes(sig: &[u8]) -> Result<Self, Error> {
+impl<'a> TryFrom<&'a [u8]> for VerifySignature {
+    type Error = Error;
+
+    fn try_from(sig: &'a [u8]) -> Result<Self, Self::Error> {
         if !VERIFY_SIGNATURE_LEN_RANGE.contains(&sig.len()) {
             return Err(Error::InvalidSignature);
         }
@@ -108,6 +118,59 @@ impl From<Signature> for VerifySignature {
     }
 }
 
+pub struct KeyPair {
+    private: PrivateKey,
+    public: PublicKey,
+}
+
+impl KeyPairTrait for KeyPair {
+    type Private = PrivateKey;
+    type Public = PublicKey;
+
+    fn public(&self) -> &Self::Public {
+        &self.public
+    }
+
+    fn private(&self) -> &Self::Private {
+        &self.private
+    }
+}
+
+impl SigningKeyTrait for KeyPair {
+    type SigningHash = H256;
+    type Signature = Signature;
+
+    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
+        self.private.sign(hash)
+    }
+}
+
+impl VerifyingKeyTrait for KeyPair {
+    type SigningHash = H256;
+    type VerifySignature = VerifySignature;
+
+    fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
+        self.public.verify(signature, hash)
+    }
+}
+
+impl<'a> TryFrom<&'a [u8]> for KeyPair {
+    type Error = Error;
+
+    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
+        let private = PrivateKey::try_from(bytes)?;
+        let public = private.public();
+        Ok(KeyPair { private, public })
+    }
+}
+
+impl From<&'static str> for KeyPair {
+    fn from(hex: &'static str) -> Self {
+        let bytes = hex::decode(hex).expect("Expected valid hex");
+        KeyPair::try_from(bytes.as_slice()).expect("Expected valid secret")
+    }
+}
+
 pub struct PrivateKey {
     secret: SigningKey,
 }
@@ -118,21 +181,8 @@ impl PrivateKey {
             .expect("'PrivateKey::secret' is 32 byte length array")
     }
 
-    pub fn sign(&self, hash: H256) -> Result<Signature, Error> {
-        let (signature, recovery_id) = self
-            .secret
-            .sign_prehash_recoverable(&hash)
-            .map_err(|_| Error::SigningError)?;
-        Ok(Signature {
-            signature,
-            v: recovery_id.to_byte(),
-        })
-    }
-
     pub fn public(&self) -> PublicKey {
-        PublicKey {
-            public: *self.secret.verifying_key(),
-        }
+        PublicKey::new(*self.secret.verifying_key())
     }
 
     pub fn shared_key_hash(&self, public: &PublicKey) -> H256 {
@@ -155,6 +205,22 @@ impl PrivateKey {
     }
 }
 
+impl SigningKeyTrait for PrivateKey {
+    type SigningHash = H256;
+    type Signature = Signature;
+
+    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
+        let (signature, recovery_id) = self
+            .secret
+            .sign_prehash_recoverable(&hash)
+            .map_err(|_| Error::SigningError)?;
+        Ok(Signature {
+            signature,
+            v: recovery_id.to_byte(),
+        })
+    }
+}
+
 /// Implement `str` -> `PrivateKey` conversion for test purposes.
 impl From<&'static str> for PrivateKey {
     fn from(hex: &'static str) -> Self {
@@ -172,6 +238,12 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     }
 }
 
+impl ToBytesVec for PrivateKey {
+    fn to_vec(&self) -> Vec<u8> {
+        self.to_bytes().into_vec()
+    }
+}
+
 pub struct PublicKey {
     public: VerifyingKey,
 }
@@ -179,6 +251,10 @@ pub struct PublicKey {
 impl PublicKey {
     pub const COMPRESSED: usize = H264::len();
     pub const UNCOMPRESSED: usize = H520::len();
+
+    fn new(public: VerifyingKey) -> PublicKey {
+        PublicKey { public }
+    }
 
     pub fn compressed(&self) -> H264 {
         let compressed = true;
@@ -191,9 +267,14 @@ impl PublicKey {
         H520::try_from(self.public.to_encoded_point(compressed).as_bytes())
             .expect("Expected 65 byte array Public Key")
     }
+}
 
-    pub fn verify(&self, sig: VerifySignature, hash: H256) -> bool {
-        self.public.verify_prehash(&hash, &sig.signature).is_ok()
+impl VerifyingKeyTrait for PublicKey {
+    type SigningHash = H256;
+    type VerifySignature = VerifySignature;
+
+    fn verify(&self, sign: Self::VerifySignature, hash: Self::SigningHash) -> bool {
+        self.public.verify_prehash(&hash, &sign.signature).is_ok()
     }
 }
 
@@ -216,11 +297,48 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
     }
 }
 
+/// Return the compressed bytes representation by default.
+/// Consider using [`PublicKey::compressed`] or [`PublicKey::uncompressed`] instead.
+impl ToBytesVec for PublicKey {
+    fn to_vec(&self) -> Vec<u8> {
+        self.compressed().to_vec()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use tw_encoding::hex;
     use tw_hash::sha3::keccak256;
+
+    #[test]
+    fn test_key_pair() {
+        let secret =
+            hex::decode("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
+                .unwrap();
+        let key_pair = KeyPair::try_from(secret.as_slice()).unwrap();
+        assert_eq!(key_pair.private().to_vec(), secret);
+        assert_eq!(
+            key_pair.public().compressed(),
+            H264::from("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1")
+        );
+    }
+
+    #[test]
+    fn test_key_pair_sign() {
+        let key_pair =
+            KeyPair::from("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+
+        let hash_to_sign = keccak256(b"hello");
+        let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
+        let signature = key_pair.sign(hash_to_sign).unwrap();
+
+        let expected = H520::from("8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901");
+        assert_eq!(signature.to_bytes(), expected);
+
+        let verify_signature = VerifySignature::from(signature);
+        assert!(key_pair.verify(verify_signature, hash_to_sign));
+    }
 
     #[test]
     fn test_private_key_from() {
@@ -229,11 +347,11 @@ mod tests {
 
         // Test `From<&'static str>`.
         let private = PrivateKey::from(hex);
-        assert_eq!(private.to_bytes().as_slice(), expected);
+        assert_eq!(private.to_vec(), expected);
 
         // Test `From<&'a [u8]>`.
         let private = PrivateKey::try_from(expected.as_slice()).unwrap();
-        assert_eq!(private.to_bytes().as_slice(), expected);
+        assert_eq!(private.to_vec(), expected);
     }
 
     #[test]
@@ -277,7 +395,7 @@ mod tests {
         let private = PrivateKey::from(secret);
 
         let signature_bytes  = H520::from("375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f0801");
-        let verify_sig = VerifySignature::from_bytes(&signature_bytes).unwrap();
+        let verify_sig = VerifySignature::try_from(signature_bytes.as_slice()).unwrap();
 
         let hash_to_sign = keccak256(b"hello");
         let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
@@ -295,6 +413,27 @@ mod tests {
         let expected =
             H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_signature() {
+        let sign_bytes = H520::from("d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a00");
+        let sign = Signature::from_bytes(sign_bytes.as_slice()).unwrap();
+        assert_eq!(
+            sign.r(),
+            H256::from("d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47")
+        );
+        assert_eq!(
+            sign.s(),
+            H256::from("786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a")
+        );
+        assert_eq!(sign.v(), 0);
+        assert_eq!(sign.to_bytes(), sign_bytes);
+    }
+
+    #[test]
+    fn test_signature_from_invalid_bytes() {
+        Signature::from_bytes(b"123").unwrap_err();
     }
 }
 

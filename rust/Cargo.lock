@@ -1447,7 +1447,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "tw_keeper"
+name = "tw_keypair"
 version = "0.1.0"
 dependencies = [
  "k256",
@@ -1559,7 +1559,7 @@ version = "0.1.0"
 dependencies = [
  "tw_encoding",
  "tw_hash",
- "tw_keeper",
+ "tw_keypair",
  "tw_memory",
  "tw_move_parser",
  "tw_proto",

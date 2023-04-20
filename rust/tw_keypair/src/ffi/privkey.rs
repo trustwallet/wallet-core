@@ -6,6 +6,7 @@
 
 use crate::ffi::pubkey::TWPublicKey;
 use crate::ffi::{TWCurve, TWPublicKeyType};
+use crate::traits::SigningKeyTrait;
 use crate::{secp256k1, Error};
 use std::ops::Range;
 use tw_hash::H256;

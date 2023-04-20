@@ -8,8 +8,7 @@ extern crate core;
 
 pub mod ffi;
 pub mod secp256k1;
-
-pub type Result<T> = std::result::Result<T, Error>;
+pub mod traits;
 
 #[derive(Debug)]
 pub enum Error {

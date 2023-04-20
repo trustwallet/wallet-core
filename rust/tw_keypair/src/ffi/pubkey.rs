@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::ffi::TWPublicKeyType;
+use crate::traits::VerifyingKeyTrait;
 use crate::{secp256k1, Error};
 use tw_hash::H256;
 use tw_memory::ffi::c_byte_array::CByteArray;
@@ -47,7 +48,7 @@ impl TWPublicKey {
     pub fn verify(&self, sig: &[u8], hash: &[u8]) -> bool {
         match self.ty {
             TWPublicKeyType::Secp256k1 | TWPublicKeyType::Secp256k1Extended => {
-                let verify_sig = try_or_false!(secp256k1::VerifySignature::from_bytes(sig));
+                let verify_sig = try_or_false!(secp256k1::VerifySignature::try_from(sig));
                 let hash = try_or_false!(H256::try_from(hash));
                 let pubkey = try_or_false!(secp256k1::PublicKey::try_from(self.bytes.as_slice()));
                 pubkey.verify(verify_sig, hash)
