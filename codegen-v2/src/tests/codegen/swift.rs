@@ -5,6 +5,7 @@ use serde_json::{json, Value};
 
 #[test]
 fn test_swift_method_from_json() {
+	// TODO: Use MethodInfo directly?
 	let input = r#"{
     "method_name": "someFunc",
     "is_static": true,
@@ -67,6 +68,7 @@ fn test_swift_method_from_json() {
 
 #[test]
 fn test_swift_method_from_json_2() {
+	// TODO: Use MethodInfo directly?
     let input = r#"{
 		"method_name": "someFunc",
 		"is_static": false,
