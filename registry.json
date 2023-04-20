@@ -704,7 +704,7 @@
     "coinId": 90000118,
     "symbol": "NTRN",
     "decimals": 6,
-    "chainId": "baryon-1",
+    "chainId": "pion-1",
     "blockchain": "Cosmos",
     "derivation": [
       {
