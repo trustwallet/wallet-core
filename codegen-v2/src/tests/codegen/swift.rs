@@ -5,8 +5,8 @@ use serde_json::{json, Value};
 
 #[test]
 fn test_swift_method_from_json() {
-	// TODO: Use MethodInfo directly?
-	let input = r#"{
+    // TODO: Use MethodInfo directly?
+    let input = r#"{
     "method_name": "someFunc",
     "is_static": true,
     "return": {
@@ -32,7 +32,7 @@ fn test_swift_method_from_json() {
     "c_ffi_name": "TWSomeFunc"
 }"#;
 
-	let output = r#"public static func someFunc(one: String, two: SomeEnum) -> String? {
+    let output = r#"public static func someFunc(one: String, two: SomeEnum) -> String? {
     // Prepare 'one'.
     let one = TWStringCreateWithNSString(one)
     defer {
@@ -68,7 +68,7 @@ fn test_swift_method_from_json() {
 
 #[test]
 fn test_swift_method_from_json_2() {
-	// TODO: Use MethodInfo directly?
+    // TODO: Use MethodInfo directly?
     let input = r#"{
 		"method_name": "someFunc",
 		"is_static": false,
