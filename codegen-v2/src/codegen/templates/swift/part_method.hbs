@@ -5,12 +5,12 @@ public func
 {{~/if}}
  {{method_name~}} (
     {{~#each params}}
-    {{~name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless~}}
+    {{~name}}: {{type}}{{#unless @last}}, {{/unless~}}
     {{/each}}
 ) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
     {{#each params}}
     {{#if wrap_as}}
-     // Prepare '{{name}}'.
+    // Prepare '{{name}}'.
     let {{name}} = {{wrap_as}}
     {{else}}
     let {{name}} = {{name}}

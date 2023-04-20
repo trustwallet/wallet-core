@@ -65,3 +65,60 @@ fn test_swift_method_from_json() {
 	println!("{}", out);
     assert_eq!(out, OUTPUT);
 }
+
+
+#[test]
+fn test_swift_method_from_json_2() {
+	let input = r#"{
+		"method_name": "someFunc",
+		"is_static": false,
+		"return": {
+			"type": "String",
+			"is_nullable": false,
+			"wrap_as": "TWStringNSString(result)"
+		},
+		"params": [
+			{
+				"name": "one",
+				"type": "String",
+				"is_nullable": true,
+				"wrap_as": "TWStringCreateWithNSString(one)",
+				"deter_as": "StringDelete(one)"
+			},
+			{
+				"name": "two",
+				"type": "UInt32",
+				"is_nullable": true
+			}
+		],
+		"c_ffi_name": "TWSomeFunc"
+	}"#;
+
+    let output = "public func someFunc(one: String, two: UInt32) -> String {
+    // Prepare 'one'.
+    let one = TWStringCreateWithNSString(one)
+    defer {
+        StringDelete(one)
+    }
+
+    let two = two
+
+    // Call the underlying C function.
+    let result = TWSomeFunc(one, two)
+
+
+    // Return with conversion function.
+    return TWStringNSString(result)
+}";
+
+    let mut engine = new_engine();
+
+    engine
+        .register_template_file(swift::METHOD_INFO, template_path(swift::METHOD_INFO))
+        .unwrap();
+
+    let data: MethodInfo = serde_json::from_str(input).unwrap();
+    let out = engine.render("part_method.hbs", &data).unwrap();
+
+    assert_eq!(out, output);
+}

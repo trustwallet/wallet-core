@@ -18,7 +18,7 @@ pub struct ReturnInfo {
     #[serde(rename = "type")]
     return_type: String,
     is_nullable: bool,
-    wrap_as: String,
+    wrap_as: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -27,6 +27,6 @@ pub struct ParamInfo {
     #[serde(rename = "type")]
     param_type: String,
     is_nullable: bool,
-    wrap_as: String,
+    wrap_as: Option<String>,
     deter_as: Option<String>,
 }
