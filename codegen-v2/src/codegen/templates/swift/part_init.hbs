@@ -1,13 +1,8 @@
-{{#if is_static}}
-public static func
-{{~else}}
-public func
-{{~/if}}
- {{method_name~}} (
+public init{{#if is_nullable}}?{{/if}}(
     {{~#each params}}
     {{~name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless~}}
     {{/each}}
-) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+) {
     {{#each params}}
     {{#if wrap_as}}
      // Prepare '{{name}}'.
@@ -31,17 +26,12 @@ public func
         {{~name}}{{#unless @last}}, {{/unless~}}
         {{/each}})
 
-    {{#if return.is_nullable}}
+    {{#if is_nullable}}
     // Check nullable result.
     guard let result = result else {
         return nil
     }
     {{/if}}
 
-    {{#if return.wrap_as}}
-    // Return with conversion function.
-    return {{return.wrap_as}}
-    {{else}}
-    return result
-    {{/if}}
+	self.rawValue = result 
 }
