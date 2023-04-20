@@ -76,10 +76,29 @@ fn get_type_str(gty: &GType) -> Result<SwiftTypeContext> {
     Err(Error::Todo)
 }
 
-pub fn from_grammar(decl: GFunctionDecl) -> Result<MethodInfo> {
-    let c_ffi_name = decl.name.0;
-    // TODO:
-    let method_name = c_ffi_name.clone();
+fn get_method_name(prefix: &GKeyword, keyword: &GKeyword) -> Result<String> {
+    let prefix = &prefix.0;
+    let name = &keyword.0;
+
+    // Failure here would imply a bug. This should be catched before.
+    // TODO: Write where.
+    let name = name.strip_prefix(prefix).ok_or(Error::Todo)?;
+
+    if name.is_empty() {
+        return Err(Error::Todo);
+    }
+
+    // Lowercase first letter.
+    let mut name = name.to_string();
+    let name = name.remove(0).to_lowercase().to_string() + &name;
+
+    Ok(name)
+}
+
+pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<MethodInfo> {
+    let method_name = get_method_name(prefix, &decl.name)?;
+    let c_ffi_name = decl.name.0.to_string();
+
     let is_static = decl
         .markers
         .0
@@ -89,7 +108,7 @@ pub fn from_grammar(decl: GFunctionDecl) -> Result<MethodInfo> {
     // ### Method parameters
 
     let mut params = vec![];
-    for param in decl.params {
+    for param in &decl.params {
         // Convert grammar type to (native) Swift type.
         let ctx = get_type_str(&param.ty)?;
 
