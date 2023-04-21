@@ -36,7 +36,6 @@ enum TypeVariant {
     Float64,
     Struct(String),
     Enum(String),
-    Custom(String),
 }
 
 impl TypeInfo {
@@ -142,11 +141,6 @@ impl EnumInfo {
     }
 }
 
-enum ObjectVariant {
-    Struct,
-    Class,
-}
-
 struct ObjectInfo {
     name: String,
     is_public: bool,
@@ -154,6 +148,11 @@ struct ObjectInfo {
     fields: Vec<(String, TypeInfo)>,
     methods: Vec<MethodInfo>,
     properties: Vec<PropertyInfo>,
+}
+
+enum ObjectVariant {
+    Struct,
+    Class,
 }
 
 impl ObjectInfo {
@@ -276,11 +275,6 @@ impl PropertyInfo {
     }
 }
 
-struct ParamInfo {
-    name: String,
-    ty: TypeInfo,
-}
-
 struct MethodInfo {
     name: String,
     is_public: bool,
@@ -288,6 +282,11 @@ struct MethodInfo {
     params: Vec<ParamInfo>,
     return_type: TypeInfo,
     comments: Vec<String>,
+}
+
+struct ParamInfo {
+    name: String,
+    ty: TypeInfo,
 }
 
 impl MethodInfo {
