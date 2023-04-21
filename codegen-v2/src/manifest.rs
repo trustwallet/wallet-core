@@ -2,7 +2,6 @@ use crate::grammar::{
     GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
     GTypeCategory,
 };
-use std::convert::TryFrom;
 
 enum Error {
     BadImport,
@@ -95,14 +94,6 @@ impl TypeInfo {
     }
 }
 
-impl TryFrom<GType> for TypeInfo {
-    type Error = Error;
-
-    fn try_from(value: GType) -> Result<Self> {
-        todo!()
-    }
-}
-
 struct FileInfo {
     name: String,
     imports: Vec<ImportInfo>,
@@ -116,10 +107,8 @@ struct ImportInfo {
     path: Vec<String>,
 }
 
-impl TryFrom<GHeaderInclude> for ImportInfo {
-    type Error = Error;
-
-    fn try_from(value: GHeaderInclude) -> Result<Self> {
+impl ImportInfo {
+    fn from_g_type(value: &GHeaderInclude) -> Result<Self> {
         let path: Vec<String> = value.0.split('/').map(|s| s.to_string()).collect();
 
         if path.is_empty() {
@@ -136,15 +125,19 @@ struct EnumInfo {
     variants: Vec<(String, Option<usize>)>,
 }
 
-impl TryFrom<GEnumDecl> for EnumInfo {
-    type Error = Error;
-
-    fn try_from(value: GEnumDecl) -> Result<Self> {
+impl EnumInfo {
+    fn from_g_type(value: &GEnumDecl) -> Result<Self> {
         Ok(EnumInfo {
-            name: value.name.0,
+            name: value.name.0.to_string(),
+			// Enums are always public
             // TOOD: Should be part of GEnumDecl
             is_public: true,
-            variants: value.variants.into_iter().map(|(k, v)| (k.0, v)).collect(),
+            variants: value
+                .variants
+                .iter()
+                .cloned()
+                .map(|(k, v)| (k.0, v))
+                .collect(),
         })
     }
 }
@@ -163,10 +156,8 @@ struct ObjectInfo {
     properties: Vec<PropertyInfo>,
 }
 
-impl TryFrom<GStructDecl> for ObjectInfo {
-    type Error = Error;
-
-    fn try_from(value: GStructDecl) -> Result<Self> {
+impl ObjectInfo {
+    fn from_g_type(value: &GStructDecl) -> Result<Self> {
         let mut markers = value.markers.0.iter();
 
         // Identify whether it's a struct or a class. The object must be *one*
@@ -180,8 +171,15 @@ impl TryFrom<GStructDecl> for ObjectInfo {
         // Process fields.
         let fields = value
             .fields
-            .into_iter()
-            .map(|(k, v)| Ok((k.0, TypeInfo::try_from(v)?)))
+            .iter()
+            .map(|(k, v)| {
+                Ok((
+                    k.0.to_string(),
+                    // In this context, types inside a C struct do not support
+                    // markers.
+                    TypeInfo::from_g_type(v, &GMarkers(vec![]))?,
+                ))
+            })
             .collect::<Result<Vec<(String, TypeInfo)>>>()?;
 
         Ok(ObjectInfo {
