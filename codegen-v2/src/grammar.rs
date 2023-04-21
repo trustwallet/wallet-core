@@ -208,7 +208,7 @@ pub struct GStructDecl {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GStructName(GKeyword);
+pub struct GStructName(pub GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStruct {

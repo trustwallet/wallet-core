@@ -1,4 +1,4 @@
-use crate::grammar::GHeaderInclude;
+use crate::grammar::{GEnumDecl, GHeaderInclude, GStructDecl, GType};
 use std::convert::TryFrom;
 
 enum Error {
@@ -18,6 +18,14 @@ enum TypeInfo {
     Uint32,
     Uint64,
     Custom(String),
+}
+
+impl TryFrom<GType> for TypeInfo {
+    type Error = Error;
+
+    fn try_from(value: GType) -> Result<Self> {
+        todo!()
+    }
 }
 
 struct FileInfo {
@@ -49,7 +57,21 @@ impl TryFrom<GHeaderInclude> for ImportInfo {
 
 struct EnumInfo {
     name: String,
+    is_public: bool,
     variants: Vec<(String, Option<usize>)>,
+}
+
+impl TryFrom<GEnumDecl> for EnumInfo {
+    type Error = Error;
+
+    fn try_from(value: GEnumDecl) -> Result<Self> {
+        Ok(EnumInfo {
+            name: value.name.0,
+            // TOOD: Should be part of GEnumDecl
+            is_public: true,
+            variants: value.variants.into_iter().map(|(k, v)| (k.0, v)).collect(),
+        })
+    }
 }
 
 struct StructInfo {
@@ -58,6 +80,24 @@ struct StructInfo {
     fields: Vec<(String, TypeInfo)>,
     methods: Vec<Method>,
     properties: Vec<PropertyInfo>,
+}
+
+impl TryFrom<GStructDecl> for StructInfo {
+    type Error = Error;
+
+    fn try_from(value: GStructDecl) -> Result<Self> {
+        Ok(StructInfo {
+            name: value.name.0 .0.to_string(),
+            is_public: true,
+            fields: value
+                .fields
+                .into_iter()
+                .map(|(k, v)| Ok((k.0, TypeInfo::try_from(v)?)))
+                .collect::<Result<Vec<(String, TypeInfo)>>>()?,
+            methods: vec![],
+            properties: vec![],
+        })
+    }
 }
 
 struct PropertyInfo {
