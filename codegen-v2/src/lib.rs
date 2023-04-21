@@ -16,8 +16,8 @@ use std::{
 
 mod codegen;
 mod grammar;
-mod reader;
 mod manifest;
+mod reader;
 #[cfg(test)]
 mod tests;
 

@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::grammar::{GSeparators, GSeparatorItem, ParseTree};
+use crate::grammar::{GSeparatorItem, GSeparators, ParseTree};
 use crate::must_ok;
 use crate::reader::Reader;
 

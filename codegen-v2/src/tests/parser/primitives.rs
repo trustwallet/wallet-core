@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::grammar::GPrimitive;
-use crate::{must_ok, must_err};
+use crate::{must_err, must_ok};
 
 #[test]
 fn test_primitives() {
