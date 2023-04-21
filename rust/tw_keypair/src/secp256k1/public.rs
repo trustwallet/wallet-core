@@ -14,7 +14,7 @@ use tw_hash::{H256, H264, H520};
 use tw_utils::traits::ToBytesVec;
 
 pub struct PublicKey {
-    public: VerifyingKey,
+    pub(crate) public: VerifyingKey,
 }
 
 impl PublicKey {

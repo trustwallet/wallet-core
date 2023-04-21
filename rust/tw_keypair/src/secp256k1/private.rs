@@ -8,7 +8,9 @@ use crate::secp256k1::public::PublicKey;
 use crate::secp256k1::signature::Signature;
 use crate::traits::SigningKeyTrait;
 use crate::Error;
-use k256::ecdsa::SigningKey;
+use k256::ecdsa::{SigningKey, VerifyingKey};
+use k256::elliptic_curve::sec1::ToEncodedPoint;
+use k256::{AffinePoint, ProjectivePoint};
 use tw_hash::H256;
 use tw_utils::traits::ToBytesVec;
 
@@ -26,28 +28,26 @@ impl PrivateKey {
         PublicKey::new(*self.secret.verifying_key())
     }
 
-    // TODO try to figure out what tag (CompressedEvenY or CompressedOddY) should be pushed front.
-    // pub fn shared_key_hash(&self, public: &PublicKey) -> H256 {
-    //     use k256::ecdh::{diffie_hellman, SharedSecret};
-    //     use k256::elliptic_curve::sec1::Tag;
-    //     use k256::{AffinePoint, EncodedPoint};
-    //
-    //     let public_raw = public.compressed();
-    //     let public_point = EncodedPoint::from_bytes(public_raw.as_slice())
-    //         .expect("Expected valid 'k256::EncodedPoint'");
-    //     let public_affine =
-    //         AffinePoint::try_from(public_point).expect("Expected valid 'AffinePoint'");
-    //
-    //     let secret: SharedSecret = diffie_hellman(self.secret.as_nonzero_scalar(), public_affine);
-    //
-    //     // `SharedSecret` is 32 byte array. We need to push the `compress` tag front.
-    //     let mut secret_tagged = Vec::with_capacity(33);
-    //     secret_tagged.push(Tag::CompressedEvenY as u8);
-    //     secret_tagged.extend_from_slice(secret.raw_secret_bytes().as_slice());
-    //
-    //     let secret_hash = tw_hash::sha2::sha256(&secret_tagged);
-    //     H256::try_from(secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
-    // }
+    /// Computes an EC Diffie-Hellman secret in constant time.
+    /// The method is ported from [TW::PrivateKey::getSharedKey](https://github.com/trustwallet/wallet-core/blob/830b1c5baaf90692196163999e4ee2063c5f4e49/src/PrivateKey.cpp#L175-L191).
+    pub fn shared_key_hash(&self, pubkey: &PublicKey) -> H256 {
+        let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
+
+        // Get a compressed shared secret (33 bytes with a tag in front).
+        let compress = true;
+        let shared_secret_compressed = shared_secret.to_encoded_point(compress);
+
+        let shared_secret_hash = tw_hash::sha2::sha256(shared_secret_compressed.as_bytes());
+        H256::try_from(shared_secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
+    }
+}
+
+/// This method is inspired by [elliptic_curve::ecdh::diffie_hellman](https://github.com/RustCrypto/traits/blob/f0dbe44fea56d4c17e625ababacb580fec842137/elliptic-curve/src/ecdh.rs#L60-L70)
+fn diffie_hellman(private: &SigningKey, public: &VerifyingKey) -> AffinePoint {
+    let public_point = ProjectivePoint::from(*public.as_affine());
+    let secret_scalar = private.as_nonzero_scalar().as_ref();
+    // Multiply the secret and public to get a shared secret affine point (x, y).
+    (public_point * secret_scalar).to_affine()
 }
 
 impl SigningKeyTrait for PrivateKey {

@@ -139,15 +139,15 @@ mod tests {
         Signature::from_bytes(b"123").unwrap_err();
     }
 
-    // #[test]
-    // fn test_shared_key_hash() {
-    //     let private =
-    //         PrivateKey::from("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
-    //     let public =
-    //         PublicKey::from("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
-    //     let actual = private.shared_key_hash(&public);
-    //     let expected =
-    //         H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
-    //     assert_eq!(actual, expected);
-    // }
+    #[test]
+    fn test_shared_key_hash() {
+        let private =
+            PrivateKey::from("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+        let public =
+            PublicKey::from("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+        let actual = private.shared_key_hash(&public);
+        let expected =
+            H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
+        assert_eq!(actual, expected);
+    }
 }
