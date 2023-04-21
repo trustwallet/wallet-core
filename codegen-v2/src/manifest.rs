@@ -152,7 +152,7 @@ struct ObjectInfo {
     is_public: bool,
     variant: ObjectVariant,
     fields: Vec<(String, TypeInfo)>,
-    methods: Vec<Method>,
+    methods: Vec<MethodInfo>,
     properties: Vec<PropertyInfo>,
 }
 
@@ -247,7 +247,7 @@ impl PropertyInfo {
 
         // The parameter type must be the same as the object this property
         // belongs to.
-        if let TypeVariant::Custom(name) = ty.variant {
+        if let TypeVariant::Struct(name) = ty.variant {
             if name != object.name {
                 return Err(Error::BadProperty);
             }
@@ -281,11 +281,98 @@ struct ParamInfo {
     ty: TypeInfo,
 }
 
-struct Method {
+struct MethodInfo {
     name: String,
     is_public: bool,
     is_static: bool,
     params: Vec<ParamInfo>,
     return_type: TypeInfo,
     comments: Vec<String>,
+}
+
+impl MethodInfo {
+    fn from_g_type(object: &ObjectInfo, value: &GFunctionDecl) -> Result<Self> {
+        // ### Name
+
+        // Strip the object name from the method name.
+        // E.g. "SomeObjectIsValid" => "IsValid"
+        let name = value
+            .name
+            .0
+            .strip_prefix(&object.name)
+            .ok_or(Error::BadProperty)?
+            .to_string();
+
+        if name.is_empty() {
+            return Err(Error::BadProperty);
+        }
+
+        // ### Marker
+
+        let mut markers = value.markers.0.iter();
+
+        // Must have one marker.
+        if markers.size_hint().0 != 1 {
+            return Err(Error::BadProperty);
+        }
+
+        // The method must have one of the two available markers and is always public.
+        let (is_static, is_public) = match markers.next() {
+            Some(GMarker::TwExportMethod) => (false, true),
+            Some(GMarker::TwExportStaticMethod) => (true, true),
+            _ => return Err(Error::BadObject),
+        };
+
+        // ### Params
+
+		let mut g_params = value.params.iter();
+
+        // Must have at least one parameter.
+        if g_params.size_hint().0 < 2 {
+            return Err(Error::BadProperty);
+        }
+
+        // Convert GType to TypeInfo.
+        let g_ty = g_params.next().unwrap();
+        let ty = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
+
+        // The first parameter type must be the same as the object this property
+        // belongs to. This first parameter is *not* tracked or returned.
+        if let TypeVariant::Struct(name) = ty.variant {
+            if name != object.name {
+                return Err(Error::BadProperty);
+            }
+        } else {
+            return Err(Error::BadProperty);
+        }
+
+        // Must be a pointer and not nullable.
+        if ty.is_nullable || !ty.is_pointer {
+            return Err(Error::BadProperty);
+        }
+
+		// Convert remaining parameters.
+		let mut params = vec![];
+		while let Some(g_item) = g_params.next() {
+			params.push(ParamInfo {
+				name: g_item.name.0.to_string(),
+				ty: TypeInfo::from_g_type(&g_item.ty, &g_item.markers)?,
+			})
+		}
+
+        // ### Return value
+
+        // Extract return value.
+        let re = &value.return_value;
+        let return_type = TypeInfo::from_g_type(&re.ty, &re.markers)?;
+
+        Ok(MethodInfo {
+            name,
+            is_public,
+            is_static,
+			params,
+            return_type,
+            comments: vec![],
+        })
+    }
 }
