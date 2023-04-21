@@ -17,9 +17,7 @@ RUN apt-get update \
 # Add latest cmake
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
-    && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb && dpkg -i ./libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
+    && apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -sc) main"
 
 # Install required packages for dev
 RUN apt-get update \
@@ -73,9 +71,3 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path -y
 ENV PATH="/home/vscode/.cargo/bin:${PATH}"
 RUN cargo install --force cbindgen \
     && rustup target add wasm32-unknown-emscripten
-
-# Install dependencies
-RUN tools/install-dependencies
-
-# Build: generate files and rust lib
-RUN tools/generate-files

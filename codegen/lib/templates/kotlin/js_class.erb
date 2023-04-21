@@ -10,7 +10,11 @@ actual class <%= entity.name %> constructor(
 <%- constructors.each do |constructor| -%>
 
     actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) :
+<%  if constructor.return_type.is_nullable -%>
+        this(WalletCore.Instance.<%= entity.name %>.<%= WasmCppHelper.function_name(entity: entity, function: constructor) %>(<%= KotlinHelper.calling_parameters_js(constructor.parameters) %>) ?: throw IllegalArgumentException())
+<%  else -%>
         this(WalletCore.Instance.<%= entity.name %>.<%= WasmCppHelper.function_name(entity: entity, function: constructor) %>(<%= KotlinHelper.calling_parameters_js(constructor.parameters) %>))
+<%  end -%>
 <%  end -%>
 <%# Property declarations -%>
 <%  entity.properties.each do |property| -%>
