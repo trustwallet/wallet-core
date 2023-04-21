@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: [ self-hosted, macOS, ARM64, wallet-core ]
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
@@ -44,12 +44,6 @@ jobs:
     - name: Install internal dependencies
       run: tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
-
-    - name: Cache Rust
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: |
-          rust
 
     - name: Generate files
       run: tools/generate-files android

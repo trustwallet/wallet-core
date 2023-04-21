@@ -12,8 +12,14 @@ actual class <%= entity.name %> constructor(
 <%# Constructors -%>
 <%- constructors.each do |constructor| -%>
 
+<%  if constructor.return_type.is_nullable -%>
+    @Throws(IllegalArgumentException::class)
+    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
+        TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>) ?: throw IllegalArgumentException()
+<%  else -%>
     actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
         TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>)!!
+<%  end -%>
     )
 <%  end -%>
 <%# Property declarations -%>

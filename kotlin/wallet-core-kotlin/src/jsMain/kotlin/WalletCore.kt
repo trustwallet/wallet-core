@@ -11,7 +11,8 @@ import kotlin.js.Promise
 @JsName("WalletCoreKotlin")
 object WalletCore {
 
-    internal lateinit var Instance: JsWalletCore
+    lateinit var Instance: JsWalletCore
+        private set
 
     fun init(): Promise<JsWalletCore> =
         if (::Instance.isInitialized) {

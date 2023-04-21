@@ -23,9 +23,7 @@ message GenericAction {
     // transaction version
     uint32      version = 4;
 
-    // Currently, the "options" field should be ignored (not set) by applications using TW Core.
-    // In the future, TW Core will handle specific transaction options
-    // when building and signing transactions.
+    // Generally speaking, the "options" field can be ignored (not set) by applications using TW Core.
     uint32      options = 5;
 }
 
@@ -79,7 +77,11 @@ message Accounts {
     // Receiver address
     string      receiver = 4;
 
+    // Receiver username
     string      receiver_username = 5;
+
+    // Guardian address
+    string      guardian = 6;
 }
 
 // Input data necessary to create a signed transaction.

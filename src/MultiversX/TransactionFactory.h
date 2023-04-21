@@ -7,23 +7,21 @@
 #pragma once
 
 #include "Address.h"
-#include "GasEstimator.h"
-#include "NetworkConfig.h"
 #include "Transaction.h"
+#include "TransactionFactoryConfig.h"
 #include "uint256.h"
 #include "../proto/MultiversX.pb.h"
 
 namespace TW::MultiversX {
 
-/// Creates specific transaction objects, wrt. the provided "NetworkConfig".
+/// Creates specific transaction objects, wrt. the provided "TransactionFactoryConfig".
 class TransactionFactory {
 private:
-    NetworkConfig networkConfig;
-    GasEstimator gasEstimator;
+    TransactionFactoryConfig config;
 
 public:
     TransactionFactory();
-    TransactionFactory(const NetworkConfig& networkConfig);
+    TransactionFactory(const TransactionFactoryConfig& config);
 
     /// Creates the appropriate transaction object, with respect to the "oneof" field (substructure) of Proto::SigningInput.
     Transaction create(const Proto::SigningInput& input);
@@ -50,9 +48,11 @@ public:
     Transaction fromESDTNFTTransfer(const Proto::SigningInput& input);
 
 private:
+    uint64_t computeGasLimit(size_t dataLength, uint64_t executionGasLimit, bool hasGuardian);
     uint64_t coalesceGasLimit(uint64_t providedGasLimit, uint64_t estimatedGasLimit);
     uint64_t coalesceGasPrice(uint64_t gasPrice);
     std::string coalesceChainId(std::string chainID);
+    TransactionOptions decideOptions(const Transaction& transaction);
     std::string prepareFunctionCall(const std::string& function, std::initializer_list<const std::string> arguments);
 };
 

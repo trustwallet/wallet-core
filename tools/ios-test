@@ -11,7 +11,7 @@ xcodegen && pod install
 xcodebuild -workspace TrustWalletCore.xcworkspace \
 	-scheme WalletCore \
 	-sdk iphonesimulator \
-	-destination "platform=iOS Simulator,name=iPhone 13" \
+	-destination "platform=iOS Simulator,name=iPhone 14" \
 	test | xcbeautify
 
 popd
