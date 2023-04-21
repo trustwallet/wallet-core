@@ -101,13 +101,8 @@ impl TryFrom<GStructDecl> for ObjectInfo {
     fn try_from(value: GStructDecl) -> Result<Self> {
         let mut markers = value.markers.0.iter();
 
-        // The object must have exactly one marker.
-        if markers.size_hint().0 != 1 {
-            return Err(Error::BadObject);
-        }
-
-        // Identify whether it's a struct or a class.
-		// The object is always public
+        // Identify whether it's a struct or a class. The object must be *one*
+		// of the two available markers and is always public
         let (variant, is_public) = match markers.next() {
             Some(GMarker::TwExportStruct) => (ObjectVariant::Struct, true),
             Some(GMarker::TwExportClass) => (ObjectVariant::Class, true),
