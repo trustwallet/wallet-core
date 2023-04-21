@@ -31,7 +31,7 @@ TEST(TWNeutronCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "baryon-1");
+    assertStringsEqual(chainId, "pion-1");
     assertStringsEqual(txUrl, "https://testnet.mintscan.io/neutron-testnet/txs/E18BA087009A05EB6A15A22FE30BA99379B909F74A74120E6F92B9882C45F0D7");
     assertStringsEqual(accUrl, "https://testnet.mintscan.io/neutron-testnet/account/neutron1pm4af8pcurxssdxztqw9rexx5f8zfq7uzqfmy8");
 }
