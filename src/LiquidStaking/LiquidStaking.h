@@ -9,6 +9,7 @@
 #include "proto/LiquidStaking.pb.h"
 #include "TrustWalletCore/TWBlockchain.h"
 #include <variant>
+#include <optional>
 
 namespace TW::LiquidStaking {
 using TAction = std::variant<Proto::Stake, Proto::Unstake, Proto::Withdraw>;
