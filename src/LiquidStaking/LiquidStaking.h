@@ -71,6 +71,9 @@ static inline Proto::Status generateError(Proto::StatusCode code, const std::opt
     case Proto::ERROR_SMART_CONTRACT_ADDRESS_NOT_SET:
         status.set_message(message.value_or("The selected protocol require a smart contract address to be set"));
         break;
+    case Proto::ERROR_INPUT_PROTO_DESERIALIZATION:
+        status.set_message(message.value_or("Could not deserialize input proto"));
+        break;
     default:
         return status;
     }
