@@ -4,60 +4,114 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "boost/format.hpp"
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "MultiversX/Serialization.h"
 #include "HexCoding.h"
+#include "MultiversX/Serialization.h"
 #include "TestAccounts.h"
 
 using namespace TW;
 
 namespace TW::MultiversX::tests {
 
-TEST(MultiversXSerialization, SignableString) {
+TEST(MultiversXSerialization, SerializeTransactionWithData) {
     Transaction transaction;
     transaction.nonce = 42;
-    transaction.value = "43";
-    transaction.sender = "alice";
-    transaction.receiver = "bob";
-    transaction.data = "foo";
-    transaction.chainID = "1";
-    transaction.version = 1;
-
-    string jsonString = serializeTransaction(transaction);
-    ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"bob","sender":"alice","gasPrice":0,"gasLimit":0,"data":"Zm9v","chainID":"1","version":1})", jsonString);
-}
-
-TEST(MultiversXSerialization, SignableStringWithRealData) {
-    Transaction transaction;
-    transaction.nonce = 15;
-    transaction.value = "100";
+    transaction.value = "1000000000000000000";
     transaction.sender = ALICE_BECH32;
     transaction.receiver = BOB_BECH32;
     transaction.gasPrice = 1000000000;
-    transaction.gasLimit = 50000;
+    transaction.gasLimit = 54500;
     transaction.data = "foo";
     transaction.chainID = "1";
-    transaction.version = 1;
+    transaction.version = 2;
 
-    string expected = (boost::format(R"({"nonce":15,"value":"100","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1})") % BOB_BECH32 % ALICE_BECH32).str();
+    string expected =
+        "{"
+        R"("nonce":42,"value":"1000000000000000000",)"
+        R"("receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",)"
+        R"("sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",)"
+        R"("gasPrice":1000000000,"gasLimit":54500,"data":"Zm9v","chainID":"1","version":2)"
+        "}";
+
     string actual = serializeTransaction(transaction);
     ASSERT_EQ(expected, actual);
 }
 
-TEST(MultiversXSerialization, SignableStringWithoutData) {
+TEST(MultiversXSerialization, SerializeTransactionWithoutData) {
     Transaction transaction;
     transaction.nonce = 42;
-    transaction.value = "43";
-    transaction.sender = "feed";
-    transaction.receiver = "abba";
+    transaction.value = "1000000000000000000";
+    transaction.sender = ALICE_BECH32;
+    transaction.receiver = BOB_BECH32;
+    transaction.gasPrice = 1000000000;
+    transaction.gasLimit = 50000;
     transaction.chainID = "1";
-    transaction.version = 1;
+    transaction.version = 2;
 
-    string jsonString = serializeTransaction(transaction);
-    ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"abba","sender":"feed","gasPrice":0,"gasLimit":0,"chainID":"1","version":1})", jsonString);
+    string expected =
+        "{"
+        R"("nonce":42,"value":"1000000000000000000",)"
+        R"("receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",)"
+        R"("sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",)"
+        R"("gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":2)"
+        "}";
+
+    string actual = serializeTransaction(transaction);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(MultiversXSerialization, SerializeTransactionWithUsernames) {
+    Transaction transaction;
+    transaction.nonce = 42;
+    transaction.value = "1000000000000000000";
+    transaction.sender = ALICE_BECH32;
+    transaction.senderUsername = "alice";
+    transaction.receiver = BOB_BECH32;
+    transaction.receiverUsername = "bob";
+    transaction.gasPrice = 1000000000;
+    transaction.gasLimit = 100000;
+    transaction.chainID = "1";
+    transaction.version = 2;
+
+    string expected =
+        "{"
+        R"("nonce":42,"value":"1000000000000000000",)"
+        R"("receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",)"
+        R"("sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",)"
+        R"("senderUsername":"YWxpY2U=","receiverUsername":"Ym9i",)"
+        R"("gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2)"
+        "}";
+
+    string actual = serializeTransaction(transaction);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(MultiversXSerialization, SerializeTransactionWithGuardianAddress) {
+    Transaction transaction;
+    transaction.nonce = 42;
+    transaction.value = "1000000000000000000";
+    transaction.sender = ALICE_BECH32;
+    transaction.receiver = BOB_BECH32;
+    transaction.guardian = CAROL_BECH32;
+    transaction.gasPrice = 1000000000;
+    transaction.gasLimit = 100000;
+    transaction.chainID = "1";
+    transaction.version = 2;
+    transaction.options = TransactionOptions::Guarded;
+
+    string expected =
+        "{"
+        R"("nonce":42,"value":"1000000000000000000",)"
+        R"("receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",)"
+        R"("sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",)"
+        R"("gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2,"options":2,)"
+        R"("guardian":"erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8")"
+        "}";
+
+    string actual = serializeTransaction(transaction);
+    ASSERT_EQ(expected, actual);
 }
 
 } // namespace TW::MultiversX::tests

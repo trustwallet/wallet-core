@@ -4,11 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "boost/format.hpp"
 #include <gtest/gtest.h>
 
-#include "MultiversX/Signer.h"
 #include "HexCoding.h"
+#include "MultiversX/Signer.h"
 #include "TestAccounts.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
@@ -29,7 +28,7 @@ TEST(TWAnySignerMultiversX, Sign) {
     input.mutable_generic_action()->set_data("foo");
     input.mutable_generic_action()->set_version(1);
     input.set_gas_price(1000000000);
-    input.set_gas_limit(50000);
+    input.set_gas_limit(54500);
     input.set_chain_id("1");
 
     Proto::SigningOutput output;
@@ -37,23 +36,62 @@ TEST(TWAnySignerMultiversX, Sign) {
 
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";
-    auto expectedEncoded = (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "61362540ad012ebff8436aa7fed7567639e7ef3150434b880975d844fde8cbb4e637e5537cb895ba2d0b12014ada866080b379dd96e2a7c150818a9956fb7b00";
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"Zm9v",
+                                     "gasLimit":54500,
+                                     "gasPrice":1000000000,
+                                     "nonce":7,
+                                     "receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
+                                     "sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+                                     "signature":"61362540ad012ebff8436aa7fed7567639e7ef3150434b880975d844fde8cbb4e637e5537cb895ba2d0b12014ada866080b379dd96e2a7c150818a9956fb7b00",
+                                     "value":"0",
+                                     "version":1
+                                    })"_json;
 
     ASSERT_EQ(expectedSignature, signature);
-    ASSERT_EQ(expectedEncoded, encoded);
+    assertJSONEqual(expected, nlohmann::json::parse(encoded));
 }
 
 TEST(TWAnySignerMultiversX, SignJSON) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = STRING((boost::format(R"({"genericAction" : {"accounts": {"senderNonce": 7, "receiver": "%1%", "sender": "%2%"}, "data": "foo", "value": "0", "version": 1}, "gasPrice": 1000000000, "gasLimit": 50000, "chainId": "1"})") % BOB_BECH32 % ALICE_BECH32).str().c_str());
+    auto input = STRING(R"(
+        {
+            "genericAction" : {
+                "accounts": {
+                    "senderNonce": 7,
+                    "receiver": "erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
+                    "sender": "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"
+                },
+                "data": "foo",
+                "value": "0",
+                "version": 1
+            },
+            "gasPrice": 1000000000,
+            "gasLimit": 54500,
+            "chainId": "1"
+        })");
+
     auto privateKey = DATA(ALICE_SEED_HEX);
     auto encoded = WRAPS(TWAnySignerSignJSON(input.get(), privateKey.get(), TWCoinTypeMultiversX));
-    auto expectedSignature = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";
-    auto expectedEncoded = (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    nlohmann::json expected = R"(
+                                    {
+                                     "chainID":"1",
+                                     "data":"Zm9v",
+                                     "gasLimit":54500,
+                                     "gasPrice":1000000000,
+                                     "nonce":7,
+                                     "receiver":"erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
+                                     "sender":"erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+                                     "signature":"61362540ad012ebff8436aa7fed7567639e7ef3150434b880975d844fde8cbb4e637e5537cb895ba2d0b12014ada866080b379dd96e2a7c150818a9956fb7b00",
+                                     "value":"0",
+                                     "version":1
+                                    })"_json;
 
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeMultiversX));
-    assertStringsEqual(encoded, expectedEncoded.c_str());
+    assertJSONEqual(expected, nlohmann::json::parse(TWStringUTF8Bytes(encoded.get())));
 }
 
 } // namespace TW::MultiversX::tests

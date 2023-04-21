@@ -6,9 +6,9 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "HexCoding.h"
 #include "Serialization.h"
 #include "TransactionFactory.h"
-#include "HexCoding.h"
 
 #include <google/protobuf/util/json_util.h>
 
