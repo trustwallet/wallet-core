@@ -20,7 +20,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, ErrorActionNotSet) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         auto output = build(input);
         ASSERT_EQ(output.status().code(), Proto::ERROR_ACTION_NOT_SET);
     }
@@ -29,7 +29,7 @@ namespace TW::LiquidStaking::tests {
         const auto inputData_ = data("Invalid");
         const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
         const auto outputTWData_ = WRAPD(TWLiquidStakingBuildRequest(inputTWData_.get()));
-        Proto::LiquidStakingOutput outputProto;
+        Proto::Output outputProto;
         const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
         EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
         ASSERT_EQ(outputProto.status().code(), Proto::ERROR_INPUT_PROTO_DESERIALIZATION);
@@ -37,7 +37,7 @@ namespace TW::LiquidStaking::tests {
 
     TEST(LiquidStaking, PolygonStrideWithdraw) {
         // TODO: code logic
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::STRIDE);
         input.set_protocol(Proto::Stride);
         Proto::Withdraw withdraw;
@@ -53,7 +53,7 @@ namespace TW::LiquidStaking::tests {
 
     TEST(LiquidStaking, PolygonStride) {
         // TODO: code logic
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::STRIDE);
         input.set_protocol(Proto::Stride);
         Proto::Stake stake;
@@ -68,7 +68,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, PolygonStraderSmartContractAddressNotSet) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::POLYGON);
         input.set_protocol(Proto::Strader);
         Proto::Stake stake;
@@ -83,7 +83,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, PolygonStraderStakeInvalidBlockchain) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::Blockchain::STRIDE);
         input.set_protocol(Proto::Strader);
         input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
@@ -98,7 +98,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, PolygonStraderStakeMatic) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::POLYGON);
         input.set_protocol(Proto::Strader);
         input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
@@ -148,7 +148,7 @@ namespace TW::LiquidStaking::tests {
             const auto outputTWData_ = WRAPD(TWLiquidStakingBuildRequest(inputTWData_.get()));
             const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
             EXPECT_EQ(outputData.size(), 68ul);
-            Proto::LiquidStakingOutput outputProto;
+            Proto::Output outputProto;
             EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
             ASSERT_TRUE(outputProto.has_ethereum());
             ASSERT_EQ(outputProto.status().code(), Proto::OK);
@@ -164,7 +164,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, PolygonStraderUnStakeMatic) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::POLYGON);
         input.set_protocol(Proto::Strader);
         input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
@@ -202,7 +202,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, PolygonStraderStakeBnb) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::BNB_BSC);
         input.set_protocol(Proto::Strader);
         input.set_smart_contract_address("0x7276241a669489e4bbb76f63d2a43bfe63080f2f");
@@ -239,7 +239,7 @@ namespace TW::LiquidStaking::tests {
     }
 
     TEST(LiquidStaking, PolygonStraderUnStakeBnb) {
-        Proto::LiquidStakingInput input;
+        Proto::Input input;
         input.set_blockchain(Proto::BNB_BSC);
         input.set_protocol(Proto::Strader);
         input.set_smart_contract_address("0x7276241a669489e4bbb76f63d2a43bfe63080f2f");

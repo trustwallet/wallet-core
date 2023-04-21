@@ -26,8 +26,8 @@ class Builder {
     Proto::Protocol mProtocol;
     Proto::Blockchain mBlockchain;
 
-    Proto::LiquidStakingOutput buildStraderEVM() const;
-    Proto::LiquidStakingOutput buildStrader() const;
+    Proto::Output buildStraderEVM() const;
+    Proto::Output buildStrader() const;
 public:
     Builder() noexcept = default;
 
@@ -55,7 +55,7 @@ public:
         return *this;
     }
 
-    Proto::LiquidStakingOutput build() const;
+    Proto::Output build() const;
 };
 
 static inline Proto::Status generateError(Proto::StatusCode code, const std::optional<std::string>& message = std::nullopt) {
@@ -80,20 +80,20 @@ static inline Proto::Status generateError(Proto::StatusCode code, const std::opt
     return status;
 }
 
-static inline Proto::LiquidStakingOutput build(const Proto::LiquidStakingInput& input) {
+static inline Proto::Output build(const Proto::Input& input) {
     TAction action;
     switch (input.action_case()) {
-    case Proto::LiquidStakingInput::kStake:
+    case Proto::Input::kStake:
         action = input.stake();
         break;
-    case Proto::LiquidStakingInput::kUnstake:
+    case Proto::Input::kUnstake:
         action = input.unstake();
         break;
-    case Proto::LiquidStakingInput::kWithdraw:
+    case Proto::Input::kWithdraw:
         action = input.withdraw();
         break;
     default:
-        auto output = Proto::LiquidStakingOutput();
+        auto output = Proto::Output();
         *output.mutable_status() = generateError(Proto::ERROR_ACTION_NOT_SET);
         return output;
     }

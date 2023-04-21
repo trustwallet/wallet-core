@@ -12,8 +12,8 @@
 using namespace TW;
 
 TWData *_Nonnull TWLiquidStakingBuildRequest(TWData *_Nonnull input) {
-    LiquidStaking::Proto::LiquidStakingInput inputProto;
-    LiquidStaking::Proto::LiquidStakingOutput outputProto;
+    LiquidStaking::Proto::Input inputProto;
+    LiquidStaking::Proto::Output outputProto;
 
     if (!inputProto.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)))) {
         *outputProto.mutable_status() = LiquidStaking::generateError(LiquidStaking::Proto::ERROR_INPUT_PROTO_DESERIALIZATION);

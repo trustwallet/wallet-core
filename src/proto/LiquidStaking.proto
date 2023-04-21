@@ -77,7 +77,7 @@ message Withdraw {
 }
 
 // Message to represent the input for a liquid staking operation
-message LiquidStakingInput {
+message Input {
   // Oneof field to specify the action: stake, unstake or withdraw
   oneof action {
     Stake stake = 1;
@@ -96,7 +96,7 @@ message LiquidStakingInput {
 }
 
 // Message to represent the output of a liquid staking operation
-message LiquidStakingOutput {
+message Output {
   // Status of the liquid staking operation
   Status status = 1;
 

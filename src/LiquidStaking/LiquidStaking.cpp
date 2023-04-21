@@ -59,8 +59,8 @@ namespace internal {
     }
 }
 
-Proto::LiquidStakingOutput Builder::buildStraderEVM() const {
-    Proto::LiquidStakingOutput output;
+Proto::Output Builder::buildStraderEVM() const {
+    Proto::Output output;
     if (!mSmartContractAddress) {
         *output.mutable_status() = generateError(Proto::ERROR_SMART_CONTRACT_ADDRESS_NOT_SET, "Strader protocol require the smart contract address to be set");
         return output;
@@ -95,24 +95,24 @@ Proto::LiquidStakingOutput Builder::buildStraderEVM() const {
 }
 
 
-Proto::LiquidStakingOutput Builder::buildStrader() const {
+Proto::Output Builder::buildStrader() const {
     switch (this->mBlockchain) {
     case Proto::POLYGON:
     case Proto::BNB_BSC:
         return buildStraderEVM();
     default:
-        auto output = Proto::LiquidStakingOutput();
+        auto output = Proto::Output();
         *output.mutable_status() = generateError(Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL, "Only Strader EVM chains is supported for now");
         return output;
     }
 }
 
-Proto::LiquidStakingOutput Builder::build() const {
+Proto::Output Builder::build() const {
     switch (this->mProtocol) {
     case Proto::Strader:
         return this->buildStrader();
     default:
-        return Proto::LiquidStakingOutput();
+        return Proto::Output();
     }
 }
 
