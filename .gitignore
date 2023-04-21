@@ -65,3 +65,5 @@ samples/cpp/sample
 
 *.xcuserdatad/
 
+# Rust target build
+**/target/
