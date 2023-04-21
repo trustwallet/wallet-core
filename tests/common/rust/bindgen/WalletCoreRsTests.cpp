@@ -27,8 +27,8 @@ TEST(RustBindgen, EthSigningMessageProto) {
 
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
-    auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
-    auto gasLimit = store(uint256_t(78009));       // 130B9
+    auto gasPrice = store(uint256_t(42000000000ul)); // 0x09c7652400
+    auto gasLimit = store(uint256_t(78009ul));       // 130B9
     auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
     auto token = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
     auto amount = uint256_t(2000000000000000000);
@@ -69,17 +69,17 @@ TEST(RustBindgen, PolkadotSignTxProto) {
     Polkadot::Proto::SigningInput input;
     input.ParseFromArray(serialized.data(), static_cast<int>(serialized.size()));
 
-    ASSERT_EQ(input.nonce(), 0);
-    ASSERT_EQ(input.spec_version(), 17);
+    ASSERT_EQ(input.nonce(), 0ul);
+    ASSERT_EQ(input.spec_version(), 17ul);
     ASSERT_EQ(data(input.private_key()), privateKey);
-    ASSERT_EQ(input.network(), 0);
-    ASSERT_EQ(input.transaction_version(), 3);
+    ASSERT_EQ(input.network(), 0ul);
+    ASSERT_EQ(input.transaction_version(), 3ul);
 
-    ASSERT_EQ(input.era().block_number(), 927699);
-    ASSERT_EQ(input.era().period(), 8);
+    ASSERT_EQ(input.era().block_number(), 927699ul);
+    ASSERT_EQ(input.era().period(), 8ul);
 
     auto transfer = input.balance_call().transfer();
-    ASSERT_EQ(data(transfer.value()), store(uint256_t(12345)));
+    ASSERT_EQ(data(transfer.value()), store(uint256_t(12345ul)));
     ASSERT_EQ(transfer.to_address(), toAddress);
 
     auto output = Polkadot::Signer::sign(input);
