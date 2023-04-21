@@ -1,13 +1,20 @@
-use crate::grammar::{GEnumDecl, GHeaderInclude, GStructDecl, GType};
+use crate::grammar::{GEnumDecl, GHeaderInclude, GMarker, GStructDecl, GType};
 use std::convert::TryFrom;
 
 enum Error {
     BadImport,
+    BadObject,
 }
 
 type Result<T> = std::result::Result<T, Error>;
 
-enum TypeInfo {
+struct TypeInfo {
+	ty: TypeVariant,
+	is_nullable: bool,
+	is_pointer: bool,
+}
+
+enum TypeVariant {
     Bool,
     Int8,
     Int16,
@@ -31,7 +38,7 @@ impl TryFrom<GType> for TypeInfo {
 struct FileInfo {
     name: String,
     imports: Vec<ImportInfo>,
-    structs: Vec<StructInfo>,
+    objects: Vec<ObjectInfo>,
     enums: Vec<EnumInfo>,
 }
 
@@ -74,26 +81,51 @@ impl TryFrom<GEnumDecl> for EnumInfo {
     }
 }
 
-struct StructInfo {
+enum ObjectVariant {
+    Struct,
+    Class,
+}
+
+struct ObjectInfo {
     name: String,
     is_public: bool,
+    variant: ObjectVariant,
     fields: Vec<(String, TypeInfo)>,
     methods: Vec<Method>,
     properties: Vec<PropertyInfo>,
 }
 
-impl TryFrom<GStructDecl> for StructInfo {
+impl TryFrom<GStructDecl> for ObjectInfo {
     type Error = Error;
 
     fn try_from(value: GStructDecl) -> Result<Self> {
-        Ok(StructInfo {
+        let mut markers = value.markers.0.iter();
+
+        // The object must have exactly one marker.
+        if markers.size_hint().0 != 1 {
+            return Err(Error::BadObject);
+        }
+
+        // Identify whether it's a struct or a class.
+		// The object is always public
+        let (variant, is_public) = match markers.next() {
+            Some(GMarker::TwExportStruct) => (ObjectVariant::Struct, true),
+            Some(GMarker::TwExportClass) => (ObjectVariant::Class, true),
+            _ => return Err(Error::BadObject),
+        };
+
+		// Process fields.
+        let fields = value
+            .fields
+            .into_iter()
+            .map(|(k, v)| Ok((k.0, TypeInfo::try_from(v)?)))
+            .collect::<Result<Vec<(String, TypeInfo)>>>()?;
+
+        Ok(ObjectInfo {
             name: value.name.0 .0.to_string(),
-            is_public: true,
-            fields: value
-                .fields
-                .into_iter()
-                .map(|(k, v)| Ok((k.0, TypeInfo::try_from(v)?)))
-                .collect::<Result<Vec<(String, TypeInfo)>>>()?,
+            is_public,
+            variant,
+            fields,
             methods: vec![],
             properties: vec![],
         })
@@ -104,27 +136,20 @@ struct PropertyInfo {
     name: String,
     is_public: bool,
     is_static: bool,
-    return_type: ReturnInfo,
+    return_type: TypeInfo,
     comments: Vec<String>,
 }
 
-struct Params {
-    ty: TypeInfo,
+struct ParamInfo {
     name: String,
-    is_pointer: bool,
-    is_nullable: bool,
-}
-
-struct ReturnInfo {
     ty: TypeInfo,
-    is_pointer: bool,
-    is_nullable: bool,
 }
 
 struct Method {
     name: String,
     is_public: bool,
     is_static: bool,
-    return_type: ReturnInfo,
+	params: Vec<ParamInfo>,
+    return_type: TypeInfo,
     comments: Vec<String>,
 }
