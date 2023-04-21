@@ -5,57 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::ffi::TWPublicKeyType;
-use crate::traits::VerifyingKeyTrait;
-use crate::{secp256k1, Error};
-use tw_hash::H256;
+use crate::tw::TWPublicKey;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
-
-pub struct TWPublicKey {
-    bytes: Vec<u8>,
-    ty: TWPublicKeyType,
-}
-
-impl RawPtrTrait for TWPublicKey {}
-
-impl TWPublicKey {
-    pub fn new(bytes: Vec<u8>, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
-        if !TWPublicKey::is_valid(&bytes, ty) {
-            return Err(Error::InvalidPublicKey);
-        }
-        Ok(TWPublicKey { bytes, ty })
-    }
-
-    pub fn new_unchecked(bytes: Vec<u8>, ty: TWPublicKeyType) -> TWPublicKey {
-        TWPublicKey { bytes, ty }
-    }
-
-    pub fn is_valid(bytes: &[u8], ty: TWPublicKeyType) -> bool {
-        match ty {
-            TWPublicKeyType::Secp256k1 => {
-                secp256k1::PublicKey::COMPRESSED == bytes.len()
-                    && secp256k1::PublicKey::try_from(bytes).is_ok()
-            },
-            TWPublicKeyType::Secp256k1Extended => {
-                secp256k1::PublicKey::UNCOMPRESSED == bytes.len()
-                    && secp256k1::PublicKey::try_from(bytes).is_ok()
-            },
-        }
-    }
-
-    pub fn verify(&self, sig: &[u8], hash: &[u8]) -> bool {
-        match self.ty {
-            TWPublicKeyType::Secp256k1 | TWPublicKeyType::Secp256k1Extended => {
-                let verify_sig = try_or_false!(secp256k1::VerifySignature::try_from(sig));
-                let hash = try_or_false!(H256::try_from(hash));
-                let pubkey = try_or_false!(secp256k1::PublicKey::try_from(self.bytes.as_slice()));
-                pubkey.verify(verify_sig, hash)
-            },
-        }
-    }
-}
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_create_with_data(
@@ -95,7 +49,7 @@ pub unsafe extern "C" fn tw_public_key_verify(
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_data(key: *mut TWPublicKey) -> CByteArray {
     let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), CByteArray::empty);
-    CByteArray::new(public.bytes.clone())
+    CByteArray::new(public.to_bytes())
 }
 
 // #[no_mangle]

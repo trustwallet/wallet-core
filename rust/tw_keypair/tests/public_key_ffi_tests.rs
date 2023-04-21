@@ -8,9 +8,10 @@ use tw_encoding::hex;
 use tw_hash::sha3::keccak256;
 use tw_hash::{H256, H520};
 use tw_keypair::ffi::pubkey::{
-    tw_public_key_create_with_data, tw_public_key_delete, tw_public_key_verify, TWPublicKey,
+    tw_public_key_create_with_data, tw_public_key_delete, tw_public_key_verify,
 };
 use tw_keypair::ffi::TWPublicKeyType;
+use tw_keypair::tw::TWPublicKey;
 use tw_memory::ffi::c_byte_array::CByteArray;
 
 struct TWPublicKeyHelper {

@@ -4,101 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ffi::pubkey::TWPublicKey;
 use crate::ffi::{TWCurve, TWPublicKeyType};
-use crate::traits::SigningKeyTrait;
-use crate::{secp256k1, Error};
-use std::ops::Range;
-use tw_hash::H256;
+use crate::tw::{TWPrivateKey, TWPublicKey};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
-
-pub struct TWPrivateKey {
-    bytes: Vec<u8>,
-}
-
-impl RawPtrTrait for TWPrivateKey {}
-
-impl TWPrivateKey {
-    /// The number of bytes in a private key.
-    const SIZE: usize = 32;
-
-    const KEY_RANGE: Range<usize> = 0..Self::SIZE;
-
-    pub fn new(bytes: Vec<u8>) -> Result<TWPrivateKey, Error> {
-        if !Self::is_valid_general(&bytes) {
-            return Err(Error::InvalidSecretKey);
-        }
-        Ok(TWPrivateKey { bytes })
-    }
-
-    /// Returns the 32 byte array - the essential private key data.
-    pub fn key(&self) -> H256 {
-        assert!(
-            self.bytes.len() >= Self::SIZE,
-            "'TWPrivateKey::bytes' has an unexpected length"
-        );
-        H256::try_from(&self.bytes[Self::KEY_RANGE])
-            .expect("H256 and KEY_RANGE must be 32 byte length")
-    }
-
-    /// Checks if the given bytes are valid in general (without a concrete curve).
-    pub fn is_valid_general(bytes: &[u8]) -> bool {
-        if bytes.len() != Self::SIZE {
-            return false;
-        }
-        // Check for zero address.
-        !bytes.iter().all(|byte| *byte == 0)
-    }
-
-    pub fn is_valid(bytes: &[u8], curve: TWCurve) -> bool {
-        if !Self::is_valid_general(bytes) {
-            return false;
-        }
-        match curve {
-            TWCurve::Secp256k1 => secp256k1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
-        }
-    }
-
-    pub fn sign(&self, hash: &[u8], curve: TWCurve) -> Result<Vec<u8>, Error> {
-        match curve {
-            TWCurve::Secp256k1 => {
-                let private = self.secp256k1_privkey()?;
-                let hash_to_sign = H256::try_from(hash).map_err(|_| Error::InvalidSignMessage)?;
-                private
-                    .sign(hash_to_sign)
-                    .map(|sig| sig.to_bytes().to_vec())
-            },
-        }
-    }
-
-    pub fn get_public_key_by_type(&self, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
-        match ty {
-            TWPublicKeyType::Secp256k1 => {
-                let privkey = self.secp256k1_privkey()?;
-                let pubkey_bytes = privkey.public().compressed();
-                Ok(TWPublicKey::new_unchecked(
-                    pubkey_bytes.to_vec(),
-                    TWPublicKeyType::Secp256k1,
-                ))
-            },
-            TWPublicKeyType::Secp256k1Extended => {
-                let privkey = self.secp256k1_privkey()?;
-                let pubkey_bytes = privkey.public().uncompressed();
-                Ok(TWPublicKey::new_unchecked(
-                    pubkey_bytes.to_vec(),
-                    TWPublicKeyType::Secp256k1Extended,
-                ))
-            },
-        }
-    }
-
-    fn secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
-        secp256k1::PrivateKey::try_from(self.key().as_slice())
-    }
-}
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_create_with_data(

@@ -8,10 +8,11 @@ use tw_encoding::hex;
 use tw_hash::{H256, H520};
 use tw_keypair::ffi::privkey::{
     tw_private_key_create_with_data, tw_private_key_delete, tw_private_key_get_public_key_by_type,
-    tw_private_key_is_valid, tw_private_key_sign, TWPrivateKey,
+    tw_private_key_is_valid, tw_private_key_sign,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete};
 use tw_keypair::ffi::{TWCurve, TWPublicKeyType};
+use tw_keypair::tw::TWPrivateKey;
 use tw_memory::ffi::c_byte_array::CByteArray;
 
 struct TWPrivateKeyHelper {

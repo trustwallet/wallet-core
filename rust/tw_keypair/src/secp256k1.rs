@@ -380,11 +380,13 @@ mod tests {
 
         // From extended public key.
         let public = PublicKey::from(uncompressed);
+        assert_eq!(public.to_vec(), expected_compressed.into_vec());
         assert_eq!(public.compressed(), expected_compressed);
         assert_eq!(public.uncompressed(), expected_uncompressed);
 
         // From compressed public key.
         let public = PublicKey::from(compressed);
+        assert_eq!(public.to_vec(), expected_compressed.into_vec());
         assert_eq!(public.compressed(), expected_compressed);
         assert_eq!(public.uncompressed(), expected_uncompressed);
     }
@@ -629,7 +631,8 @@ mod tests_todo {
         // let xxxxxx: k256::PublicKey = k256::PublicKey::from_encoded_point(&);
         let secret_hash = tw_hash::sha2::sha256(&secret_tagged);
         let expected_secret =
-            hex!("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
+            hex::decode("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a")
+                .unwrap();
         assert_eq!(secret_hash, expected_secret);
 
         // actual: a07c4250acb599a1bc4c895ddd3e91ac0c773a5b63ca0e637816d2dc8e857b7a
@@ -663,7 +666,9 @@ mod tests_todo {
         println!("{}", tw_encoding::hex::encode(&secret_tagged, false));
 
         let secret_hash = tw_hash::sha2::sha256(&secret_tagged);
-        let expected = hex!("81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a");
+        let expected =
+            hex::decode("81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a")
+                .unwrap();
         assert_eq!(secret_hash, expected);
     }
 }
