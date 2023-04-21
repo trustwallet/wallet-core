@@ -7,7 +7,7 @@
 #[macro_use]
 extern crate serde;
 
-use grammar::{GHeaderFileItem, ParseTree};
+use grammar::{GHeaderFileItem, GKeyword, GStructName, GTypeCategory, ParseTree, GEnumName};
 use reader::Reader;
 use std::{
     collections::HashMap,
@@ -31,6 +31,49 @@ pub enum Error {
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct CHeaderDirectory {
     pub map: HashMap<PathBuf, Vec<GHeaderFileItem>>,
+}
+
+impl CHeaderDirectory {
+    // Searches the directory for a typedef, struct or enum of the given
+    // keyword.
+    fn find_definition(&self, keyword: &GKeyword) -> Result<(PathBuf, ())> {
+        let mut type_variant = None;
+
+        for (path, items) in &self.map {
+            for item in items {
+                if let GHeaderFileItem::Typedef(ref typedef) = item {
+                    if typedef.name == keyword.0 {
+                        // TODO:
+                        //type_variant= Some((path.clone(), GTypeCategory:))
+                        //return Ok((path.clone(), ()));
+                    }
+                }
+
+                if let GHeaderFileItem::StructDecl(ref struct_decl) = item {
+                    if &struct_decl.name.0 == keyword {
+                        type_variant = Some((
+                            path.clone(),
+                            GTypeCategory::Struct(GStructName(keyword.clone())),
+                        ))
+                    }
+                }
+
+                if let GHeaderFileItem::EnumDecl(ref enum_decl) = item {
+                    if &enum_decl.name == keyword {
+                        type_variant = Some((
+                            path.clone(),
+                            GTypeCategory::Enum(GEnumName(keyword.clone())),
+                        ))
+                    }
+                }
+            }
+        }
+
+        Err(Error::Todo)
+    }
+    pub fn post_processor(&mut self) {
+        for (_path, item) in &self.map {}
+    }
 }
 
 pub fn parse(path: &Path) -> Result<CHeaderDirectory> {

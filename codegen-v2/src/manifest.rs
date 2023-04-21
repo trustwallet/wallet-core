@@ -128,7 +128,7 @@ impl EnumInfo {
     fn from_g_type(value: &GEnumDecl) -> Result<Self> {
         Ok(EnumInfo {
             name: value.name.0.to_string(),
-			// Enums are always public
+            // Enums are always public
             // TOOD: Should be part of GEnumDecl
             is_public: true,
             variants: value
@@ -324,7 +324,7 @@ impl MethodInfo {
 
         // ### Params
 
-		let mut g_params = value.params.iter();
+        let mut g_params = value.params.iter();
 
         // Must have at least one parameter.
         if g_params.size_hint().0 < 2 {
@@ -350,14 +350,14 @@ impl MethodInfo {
             return Err(Error::BadProperty);
         }
 
-		// Convert remaining parameters.
-		let mut params = vec![];
-		while let Some(g_item) = g_params.next() {
-			params.push(ParamInfo {
-				name: g_item.name.0.to_string(),
-				ty: TypeInfo::from_g_type(&g_item.ty, &g_item.markers)?,
-			})
-		}
+        // Convert remaining parameters.
+        let mut params = vec![];
+        while let Some(g_item) = g_params.next() {
+            params.push(ParamInfo {
+                name: g_item.name.0.to_string(),
+                ty: TypeInfo::from_g_type(&g_item.ty, &g_item.markers)?,
+            })
+        }
 
         // ### Return value
 
@@ -369,7 +369,7 @@ impl MethodInfo {
             name,
             is_public,
             is_static,
-			params,
+            params,
             return_type,
             comments: vec![],
         })
