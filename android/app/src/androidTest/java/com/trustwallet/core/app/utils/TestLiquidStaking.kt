@@ -17,7 +17,6 @@ class TestLiquidStaking {
 
     @Test
     fun testStraderStakeMatic() {
-        // prepare swap input
         val input = LiquidStaking.Input.newBuilder()
         input.apply {
             blockchain = LiquidStaking.Blockchain.POLYGON
@@ -41,7 +40,6 @@ class TestLiquidStaking {
         Assert.assertTrue(outputProto.hasEthereum())
         val txInput = outputProto.ethereum
 
-        // set few fields before signing
         val txInputFull = txInput.toBuilder().apply {
             chainId = ByteString.copyFrom("0x89".toHexByteArray())
             nonce = ByteString.copyFrom("0x01".toHexByteArray())
@@ -50,8 +48,7 @@ class TestLiquidStaking {
             gasLimit = ByteString.copyFrom("0x01c520".toHexByteArray())
             privateKey = ByteString.copyFrom(PrivateKey("0x4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab".toHexByteArray()).data())
         }.build()
-
-        // sign and encode resulting input
+        
         val output = AnySigner.sign(txInputFull, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())
 
         assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "0x02f87a81890185085e42c7c0858fbcc8fcd88301c52094fd225c9e6601c9d38d8f98d8731bf59efcf8c0e3880de0b6b3a764000084c78cf1a0c001a04bcf92394d53d4908130cc6d4f7b2491967f9d6c59292b84c1f56adc49f6c458a073e09f45d64078c41a7946ffdb1dee8e604eb76f318088490f8f661bb7ddfc54")
