@@ -1,19 +1,24 @@
-use crate::grammar::{GEnumDecl, GHeaderInclude, GMarker, GStructDecl, GType};
+use crate::grammar::{
+    GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GStructDecl, GType,
+};
 use std::convert::TryFrom;
 
 enum Error {
     BadImport,
     BadObject,
+    BadProperty,
 }
 
 type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct TypeInfo {
-	ty: TypeVariant,
-	is_nullable: bool,
-	is_pointer: bool,
+    ty: TypeVariant,
+    is_nullable: bool,
+    is_pointer: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum TypeVariant {
     Bool,
     Int8,
@@ -25,6 +30,12 @@ enum TypeVariant {
     Uint32,
     Uint64,
     Custom(String),
+}
+
+impl TypeInfo {
+    fn from_g_type(ty: &GType, markers: &GMarkers) -> Result<Self> {
+        todo!()
+    }
 }
 
 impl TryFrom<GType> for TypeInfo {
@@ -102,14 +113,14 @@ impl TryFrom<GStructDecl> for ObjectInfo {
         let mut markers = value.markers.0.iter();
 
         // Identify whether it's a struct or a class. The object must be *one*
-		// of the two available markers and is always public
+        // of the two available markers and is always public
         let (variant, is_public) = match markers.next() {
             Some(GMarker::TwExportStruct) => (ObjectVariant::Struct, true),
             Some(GMarker::TwExportClass) => (ObjectVariant::Class, true),
             _ => return Err(Error::BadObject),
         };
 
-		// Process fields.
+        // Process fields.
         let fields = value
             .fields
             .into_iter()
@@ -135,6 +146,81 @@ struct PropertyInfo {
     comments: Vec<String>,
 }
 
+impl PropertyInfo {
+    fn from_g_type(object: &ObjectInfo, value: &GFunctionDecl) -> Result<Self> {
+        // ### Name
+
+		// Strip the object name from the property name.
+		// E.g. "SomeObjectIsValid" => "IsValid"
+        let name = value
+            .name
+            .0
+            .strip_prefix(&object.name)
+            .ok_or(Error::BadProperty)?
+			.to_string();
+
+        if name.is_empty() {
+            return Err(Error::BadProperty);
+        }
+
+        // ### Marker
+
+        let mut markers = value.markers.0.iter();
+
+        // Must have one marker.
+        if markers.size_hint().0 != 1 {
+            return Err(Error::BadProperty);
+        }
+
+        // The property must have one of the two available markers and is always public.
+        let (is_static, is_public) = match markers.next() {
+            Some(GMarker::TwExportProperty) => (false, true),
+            Some(GMarker::TwExportStaticProperty) => (true, true),
+            _ => return Err(Error::BadObject),
+        };
+
+        // ### Param
+
+        // Must have one parameter.
+        if value.params.len() != 1 {
+            return Err(Error::BadProperty);
+        }
+
+        let g_ty = value.params.get(0).unwrap();
+        let info = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
+
+        // The parameter type must be the same as the object this property
+        // belongs to.
+        if let TypeVariant::Custom(name) = info.ty {
+            if name != object.name {
+                return Err(Error::BadProperty);
+            }
+        } else {
+            return Err(Error::BadProperty);
+        }
+
+        // Must be a pointer and not nullable.
+        if info.is_nullable || !info.is_pointer {
+            return Err(Error::BadProperty);
+        }
+
+        // ### Return value
+
+        // Extract return value.
+        let re = &value.return_value;
+        let (re_ty, re_markers) = (&re.ty, &re.markers);
+        let return_type = TypeInfo::from_g_type(re_ty, re_markers)?;
+
+        Ok(PropertyInfo {
+            name,
+            is_public,
+            is_static,
+            return_type,
+            comments: vec![],
+        })
+    }
+}
+
 struct ParamInfo {
     name: String,
     ty: TypeInfo,
@@ -144,7 +230,7 @@ struct Method {
     name: String,
     is_public: bool,
     is_static: bool,
-	params: Vec<ParamInfo>,
+    params: Vec<ParamInfo>,
     return_type: TypeInfo,
     comments: Vec<String>,
 }
