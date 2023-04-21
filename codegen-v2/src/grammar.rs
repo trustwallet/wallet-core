@@ -217,7 +217,7 @@ pub struct GStruct {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GEnumName(GKeyword);
+pub struct GEnumName(pub GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEnumDecl {
