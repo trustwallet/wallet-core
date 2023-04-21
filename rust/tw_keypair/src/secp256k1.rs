@@ -6,11 +6,9 @@
 
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
-use k256::ecdh::{diffie_hellman, SharedSecret};
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::{SigningKey, VerifyingKey};
-use k256::elliptic_curve::sec1::Tag;
-use k256::{AffinePoint, EncodedPoint, FieldBytes};
+use k256::FieldBytes;
 use std::ops::{Range, RangeInclusive};
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
@@ -185,24 +183,28 @@ impl PrivateKey {
         PublicKey::new(*self.secret.verifying_key())
     }
 
-    pub fn shared_key_hash(&self, public: &PublicKey) -> H256 {
-        let public_raw = public.compressed();
-        let public_point = EncodedPoint::from_bytes(public_raw.as_slice())
-            .expect("Expected valid 'k256::EncodedPoint'");
-        let public_affine =
-            AffinePoint::try_from(public_point).expect("Expected valid 'AffinePoint'");
-
-        let secret: SharedSecret = diffie_hellman(self.secret.as_nonzero_scalar(), public_affine);
-
-        // `SharedSecret` is 32 byte array. We need to push the `compress` tag front.
-        let mut secret_tagged = Vec::with_capacity(33);
-        secret_tagged.push(Tag::CompressedEvenY as u8);
-        secret_tagged.extend_from_slice(secret.raw_secret_bytes().as_slice());
-
-        let secret_hash = tw_hash::sha2::sha256(&secret_tagged);
-        // TODO refactor `sha256` to return `H256`.
-        H256::try_from(secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
-    }
+    // TODO try to figure out what tag (CompressedEvenY or CompressedOddY) should be pushed front.
+    // pub fn shared_key_hash(&self, public: &PublicKey) -> H256 {
+    //     use k256::ecdh::{diffie_hellman, SharedSecret};
+    //     use k256::elliptic_curve::sec1::Tag;
+    //     use k256::{AffinePoint, EncodedPoint};
+    //
+    //     let public_raw = public.compressed();
+    //     let public_point = EncodedPoint::from_bytes(public_raw.as_slice())
+    //         .expect("Expected valid 'k256::EncodedPoint'");
+    //     let public_affine =
+    //         AffinePoint::try_from(public_point).expect("Expected valid 'AffinePoint'");
+    //
+    //     let secret: SharedSecret = diffie_hellman(self.secret.as_nonzero_scalar(), public_affine);
+    //
+    //     // `SharedSecret` is 32 byte array. We need to push the `compress` tag front.
+    //     let mut secret_tagged = Vec::with_capacity(33);
+    //     secret_tagged.push(Tag::CompressedEvenY as u8);
+    //     secret_tagged.extend_from_slice(secret.raw_secret_bytes().as_slice());
+    //
+    //     let secret_hash = tw_hash::sha2::sha256(&secret_tagged);
+    //     H256::try_from(secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
+    // }
 }
 
 impl SigningKeyTrait for PrivateKey {
@@ -405,17 +407,17 @@ mod tests {
         assert!(!private.public().verify(verify_sig, hash_to_sign));
     }
 
-    #[test]
-    fn test_shared_key_hash() {
-        let private =
-            PrivateKey::from("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
-        let public =
-            PublicKey::from("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
-        let actual = private.shared_key_hash(&public);
-        let expected =
-            H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
-        assert_eq!(actual, expected);
-    }
+    // #[test]
+    // fn test_shared_key_hash() {
+    //     let private =
+    //         PrivateKey::from("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    //     let public =
+    //         PublicKey::from("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+    //     let actual = private.shared_key_hash(&public);
+    //     let expected =
+    //         H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
+    //     assert_eq!(actual, expected);
+    // }
 
     #[test]
     fn test_signature() {
