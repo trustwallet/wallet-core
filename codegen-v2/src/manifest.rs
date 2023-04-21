@@ -42,7 +42,7 @@ enum TypeVariant {
 
 impl TypeInfo {
     fn from_g_type(ty: &GType, markers: &GMarkers) -> Result<Self> {
-        fn get_variant_nested(category: &GTypeCategory) -> Result<TypeVariant> {
+        fn get_variant(category: &GTypeCategory) -> Result<TypeVariant> {
             let variant = match category {
                 GTypeCategory::Scalar(s) => match s {
                     GPrimitive::Void => TypeVariant::Void,
@@ -59,32 +59,27 @@ impl TypeInfo {
                 },
                 GTypeCategory::Struct(s) => TypeVariant::Struct(s.0 .0.to_string()),
                 GTypeCategory::Enum(e) => TypeVariant::Enum(e.0 .0.to_string()),
-                GTypeCategory::Pointer(p) => {
-                    // Pointer-Pointer-... not supported
+                // Unrecognized types and multi-pointers are not supported
+                GTypeCategory::Pointer(_) | GTypeCategory::Unrecognized(_) => {
                     return Err(Error::BadType);
                 }
-				// TODO:
-				_ => panic!()
             };
 
             Ok(variant)
         }
 
-        fn get_variant(cat: &GTypeCategory) -> Result<(TypeVariant, bool)> {
+        fn get_variant_pointer_check(cat: &GTypeCategory) -> Result<(TypeVariant, bool)> {
             let res = match cat {
-                GTypeCategory::Struct(s) => (TypeVariant::Struct(s.0 .0.to_string()), false),
-                GTypeCategory::Enum(e) => (TypeVariant::Enum(e.0 .0.to_string()), false),
-                GTypeCategory::Pointer(p) => (get_variant_nested(&*p)?, true),
-				// TODO:
-				_ => panic!()
+                GTypeCategory::Pointer(p) => (get_variant(&*p)?, true),
+                _ => (get_variant(cat)?, false),
             };
 
             Ok(res)
         }
 
         let ((variant, is_pointer), is_constant) = match ty {
-            GType::Mutable(category) => (get_variant(category)?, false),
-            GType::Const(category) => (get_variant(category)?, true),
+            GType::Mutable(category) => (get_variant_pointer_check(category)?, false),
+            GType::Const(category) => (get_variant_pointer_check(category)?, true),
             GType::Extern(_) => {
                 return Err(Error::BadType);
                 // TODO: Where should this be handled?
