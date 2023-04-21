@@ -1,8 +1,10 @@
+@file:Suppress("NESTED_CLASS_IN_EXTERNAL_INTERFACE")
+
 <%= render('kotlin/package.erb') %>
 
 @JsModule("@trustwallet/wallet-core")
 @JsName("<%= entity.name %>")
-external class Js<%= entity.name %> {
+external interface Js<%= entity.name %> {
 <%- entity.properties.each do |property| -%>
     fun <%= KotlinHelper.fix_name(WasmCppHelper.format_name(property.name)) %>()<%= KotlinHelper.js_return_type(property.return_type) %>
 <%- end -%>
@@ -12,7 +14,7 @@ external class Js<%= entity.name %> {
 <% end -%>
     companion object {
 <%  entity.static_methods.each do |method| -%>
-        fun <%= KotlinHelper.fix_name(WasmCppHelper.function_name(entity: entity, function: method)) %>(<%= KotlinHelper.js_parameters(method.parameters) %>)<%= KotlinHelper.js_return_type(method.return_type, method.name.start_with?("Create")) %>
+        fun <%= KotlinHelper.fix_name(WasmCppHelper.function_name(entity: entity, function: method)) %>(<%= KotlinHelper.js_parameters(method.parameters) %>)<%= KotlinHelper.js_return_type(method.return_type) %>
 <%  end -%>
     }
 }
