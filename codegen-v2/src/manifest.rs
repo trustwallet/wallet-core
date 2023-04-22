@@ -123,39 +123,36 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
         };
 
         for item in items {
-            if let GHeaderFileItem::StructIndicator(decl) = item {
-                file_info.structs.push(StructInfo {
-                    name: decl.name.0.0.clone(),
-                    is_public: true,
-                    fields: vec![],
-                    tags: vec![],
-                });
-            }
-
-            if let GHeaderFileItem::StructDecl(decl) = item {
-                let x = StructInfo::from_g_type(decl).unwrap();
-                file_info.structs.push(x);
-            }
-
-            if let GHeaderFileItem::EnumDecl(decl) = item {
-                let x = EnumInfo::from_g_type(decl).unwrap();
-                file_info.enums.push(x);
-            }
-
-            if let GHeaderFileItem::FunctionDecl(decl) = item {
-                //println!("MATCHED {:?}", decl.name);
-
-                if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
-                    continue;
+            match item {
+                GHeaderFileItem::StructIndicator(decl) => {
+                    file_info.structs.push(StructInfo {
+                        name: decl.name.0.0.clone(),
+                        is_public: true,
+                        fields: vec![],
+                        tags: vec![],
+                    });
                 }
-
-                if decl.markers.0.contains(&GMarker::TwExportMethod)
-                    || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
-                {
-                    let x = MethodInfo::from_g_type(&Some(file_name.to_string()), decl).unwrap();
-                    file_info.functions.push(x);
+                GHeaderFileItem::StructDecl(decl) => {
+                    let x = StructInfo::from_g_type(decl).unwrap();
+                    file_info.structs.push(x);
                 }
+                GHeaderFileItem::EnumDecl(decl) => {
+                    let x = EnumInfo::from_g_type(decl).unwrap();
+                    file_info.enums.push(x);
+                }
+                GHeaderFileItem::FunctionDecl(decl) => {
+                    if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
+                        continue;
+                    }
 
+                    if decl.markers.0.contains(&GMarker::TwExportMethod)
+                        || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
+                    {
+                        let x = MethodInfo::from_g_type(&Some(file_name.to_string()), decl).unwrap();
+                        file_info.functions.push(x);
+                    }
+                }
+                _ => {},
             }
         }
 
