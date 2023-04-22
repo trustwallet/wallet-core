@@ -36,7 +36,7 @@ pub enum TypeVariant {
 pub struct FileInfo {
     pub name: String,
     pub imports: Vec<ImportInfo>,
-    pub objects: Vec<ObjectInfo>,
+    pub objects: Vec<StructInfo>,
     pub enums: Vec<EnumInfo>,
 }
 
@@ -50,20 +50,18 @@ pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
     pub variants: Vec<(String, Option<usize>)>,
+    pub methods: Vec<MethodInfo>,
+    pub properties: Vec<PropertyInfo>,
+    pub tags: Vec<String>,
 }
 
-pub struct ObjectInfo {
+pub struct StructInfo {
     pub name: String,
     pub is_public: bool,
-    pub variant: ObjectVariant,
     pub fields: Vec<(String, TypeInfo)>,
     pub methods: Vec<MethodInfo>,
     pub properties: Vec<PropertyInfo>,
-}
-
-pub enum ObjectVariant {
-    Struct,
-    Class,
+    pub tags: Vec<String>,
 }
 
 pub struct PropertyInfo {

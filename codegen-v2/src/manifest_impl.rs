@@ -1,8 +1,8 @@
-use crate::manifest::*;
 use crate::grammar::{
     GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
     GTypeCategory,
 };
+use crate::manifest::*;
 
 impl TypeInfo {
     fn from_g_type(ty: &GType, markers: &GMarkers) -> Result<Self> {
@@ -84,19 +84,31 @@ impl EnumInfo {
                 .cloned()
                 .map(|(k, v)| (k.0, v))
                 .collect(),
+            methods: vec![],
+            properties: vec![],
+            tags: vec![],
         })
     }
 }
 
-impl ObjectInfo {
+impl StructInfo {
     fn from_g_type(value: &GStructDecl) -> Result<Self> {
         let mut markers = value.markers.0.iter();
 
+        if markers.size_hint().0 != 1 {
+            return Err(Error::BadObject);
+        }
+
         // Identify whether it's a struct or a class. The object must be *one*
         // of the two available markers and is always public
-        let (variant, is_public) = match markers.next() {
-            Some(GMarker::TwExportStruct) => (ObjectVariant::Struct, true),
-            Some(GMarker::TwExportClass) => (ObjectVariant::Class, true),
+        let mut tags = vec![];
+        match markers.next() {
+            Some(GMarker::TwExportStruct) => {
+                tags.push("TW_EXPORT_STRUCT".to_string());
+            }
+            Some(GMarker::TwExportClass) => {
+                tags.push("TW_EXPORT_CLASS".to_string());
+            }
             _ => return Err(Error::BadObject),
         };
 
@@ -114,19 +126,19 @@ impl ObjectInfo {
             })
             .collect::<Result<Vec<(String, TypeInfo)>>>()?;
 
-        Ok(ObjectInfo {
+        Ok(StructInfo {
             name: value.name.0 .0.to_string(),
-            is_public,
-            variant,
+            is_public: true,
             fields,
             methods: vec![],
             properties: vec![],
+            tags,
         })
     }
 }
 
 impl PropertyInfo {
-    fn from_g_type(object: &ObjectInfo, value: &GFunctionDecl) -> Result<Self> {
+    fn from_g_type(object: &StructInfo, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
         // Strip the object name from the property name.
@@ -201,7 +213,7 @@ impl PropertyInfo {
 }
 
 impl MethodInfo {
-    fn from_g_type(object: &ObjectInfo, value: &GFunctionDecl) -> Result<Self> {
+    fn from_g_type(object: &StructInfo, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
         // Strip the object name from the method name.
