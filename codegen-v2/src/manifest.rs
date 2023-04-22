@@ -102,8 +102,6 @@ pub struct ParamInfo {
 // NOTE: This function is temporary
 pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
-        //println!("### {:?}", path);
-
         let file_name = path
             .to_str()
             .unwrap()
@@ -141,14 +139,16 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
+                    /*
                     if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
                         continue;
                     }
+                    */
 
                     if decl.markers.0.contains(&GMarker::TwExportMethod)
                         || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
                     {
-                        let x = MethodInfo::from_g_type(&Some(file_name.to_string()), decl).unwrap();
+                        let x = MethodInfo::from_g_type(&None, decl).unwrap();
                         file_info.functions.push(x);
                     }
                 }

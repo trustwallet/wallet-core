@@ -26,6 +26,7 @@ impl TypeInfo {
                 GTypeCategory::Pointer(_) => {
                     return Err(Error::BadType);
                 }
+                // TODO:
                 GTypeCategory::Unrecognized(name) => TypeVariant::Struct(name.0.to_string()),
             };
 
