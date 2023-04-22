@@ -11,8 +11,7 @@ use tw_keypair::ffi::privkey::{
     tw_private_key_is_valid, tw_private_key_sign,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete};
-use tw_keypair::ffi::{TWCurve, TWPublicKeyType};
-use tw_keypair::tw::TWPrivateKey;
+use tw_keypair::tw::{TWCurve, TWPrivateKey, TWPublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 
 struct TWPrivateKeyHelper {

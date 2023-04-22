@@ -4,8 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ffi::{TWCurve, TWPublicKeyType};
-use crate::tw::{TWPrivateKey, TWPublicKey};
+use crate::tw::{TWCurve, TWPrivateKey, TWPublicKey, TWPublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;

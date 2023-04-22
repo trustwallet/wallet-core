@@ -67,7 +67,7 @@ impl SigningKeyTrait for PrivateKey {
 impl From<&'static str> for PrivateKey {
     fn from(hex: &'static str) -> Self {
         let data = H256::from(hex);
-        PrivateKey::try_from(data.as_slice()).expect("Expected valid Private Key hex")
+        PrivateKey::try_from(data.as_slice()).expect("Expected a valid Private Key hex")
     }
 }
 

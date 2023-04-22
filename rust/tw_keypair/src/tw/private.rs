@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ffi::{TWCurve, TWPublicKeyType};
 use crate::traits::SigningKeyTrait;
-use crate::tw::TWPublicKey;
-use crate::{secp256k1, Error};
+use crate::tw::{TWCurve, TWPublicKey, TWPublicKeyType};
+use crate::{secp256k1, starkex, Error};
 use std::ops::Range;
 use tw_hash::H256;
 use tw_memory::ffi::RawPtrTrait;
+use tw_utils::traits::ToBytesVec;
 
 /// TODO add `secp256k1: Once<each_curve::PrivateKey>` for each curve.
 pub struct TWPrivateKey {
@@ -57,18 +57,23 @@ impl TWPrivateKey {
         }
         match curve {
             TWCurve::Secp256k1 => secp256k1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            TWCurve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
         }
     }
 
     pub fn sign(&self, hash: &[u8], curve: TWCurve) -> Result<Vec<u8>, Error> {
+        fn sign_impl<Key>(signing_key: Key, hash: &[u8]) -> Result<Vec<u8>, Error>
+        where
+            Key: SigningKeyTrait,
+        {
+            let hash_to_sign = <Key as SigningKeyTrait>::SigningHash::try_from(hash)
+                .map_err(|_| Error::InvalidSignMessage)?;
+            signing_key.sign(hash_to_sign).map(|sig| sig.to_vec())
+        }
+
         match curve {
-            TWCurve::Secp256k1 => {
-                let private = self.secp256k1_privkey()?;
-                let hash_to_sign = H256::try_from(hash).map_err(|_| Error::InvalidSignMessage)?;
-                private
-                    .sign(hash_to_sign)
-                    .map(|sig| sig.to_bytes().to_vec())
-            },
+            TWCurve::Secp256k1 => sign_impl(self.secp256k1_privkey()?, hash),
+            TWCurve::Starkex => sign_impl(self.starkex_privkey()?, hash),
         }
     }
 
@@ -82,10 +87,18 @@ impl TWPrivateKey {
                 let privkey = self.secp256k1_privkey()?;
                 Ok(TWPublicKey::Secp256k1Extended(privkey.public()))
             },
+            TWPublicKeyType::Starkex => {
+                let privkey = self.starkex_privkey()?;
+                Ok(TWPublicKey::Starkex(privkey.public()))
+            },
         }
     }
 
     fn secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
         secp256k1::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    fn starkex_privkey(&self) -> Result<starkex::PrivateKey, Error> {
+        starkex::PrivateKey::try_from(self.key().as_slice())
     }
 }

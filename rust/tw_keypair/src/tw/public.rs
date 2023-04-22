@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ffi::TWPublicKeyType;
 use crate::traits::VerifyingKeyTrait;
-use crate::{secp256k1, Error};
-use tw_hash::H256;
+use crate::tw::TWPublicKeyType;
+use crate::{secp256k1, starkex, Error};
 use tw_memory::ffi::RawPtrTrait;
+use tw_utils::traits::ToBytesVec;
 use tw_utils::try_or_false;
 
 pub enum TWPublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
+    Starkex(starkex::PublicKey),
 }
 
 impl RawPtrTrait for TWPublicKey {}
@@ -31,6 +32,10 @@ impl TWPublicKey {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(TWPublicKey::Secp256k1Extended(pubkey))
             },
+            TWPublicKeyType::Starkex => {
+                let pubkey = starkex::PublicKey::try_from(bytes.as_slice())?;
+                Ok(TWPublicKey::Starkex(pubkey))
+            },
             _ => Err(Error::InvalidPublicKey),
         }
     }
@@ -40,12 +45,21 @@ impl TWPublicKey {
     }
 
     pub fn verify(&self, sig: &[u8], hash: &[u8]) -> bool {
+        fn verify_impl<Key>(verifying_key: &Key, sig: &[u8], hash: &[u8]) -> bool
+        where
+            Key: VerifyingKeyTrait,
+        {
+            let verify_sig =
+                try_or_false!(<Key as VerifyingKeyTrait>::VerifySignature::try_from(sig));
+            let hash = try_or_false!(<Key as VerifyingKeyTrait>::SigningHash::try_from(hash));
+            verifying_key.verify(verify_sig, hash)
+        }
+
         match self {
             TWPublicKey::Secp256k1(secp) | TWPublicKey::Secp256k1Extended(secp) => {
-                let verify_sig = try_or_false!(secp256k1::VerifySignature::try_from(sig));
-                let hash = try_or_false!(H256::try_from(hash));
-                secp.verify(verify_sig, hash)
+                verify_impl(secp, sig, hash)
             },
+            TWPublicKey::Starkex(stark) => verify_impl(stark, sig, hash),
         }
     }
 
@@ -53,6 +67,7 @@ impl TWPublicKey {
         match self {
             TWPublicKey::Secp256k1(secp) => secp.compressed().into_vec(),
             TWPublicKey::Secp256k1Extended(secp) => secp.uncompressed().into_vec(),
+            TWPublicKey::Starkex(stark) => stark.to_vec(),
         }
     }
 }

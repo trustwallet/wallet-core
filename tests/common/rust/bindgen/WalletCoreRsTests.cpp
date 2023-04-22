@@ -69,14 +69,14 @@ TEST(RustBindgen, PolkadotSignTxProto) {
     Polkadot::Proto::SigningInput input;
     input.ParseFromArray(serialized.data(), static_cast<int>(serialized.size()));
 
-    ASSERT_EQ(input.nonce(), 0);
-    ASSERT_EQ(input.spec_version(), 17);
+    ASSERT_EQ(input.nonce(), 0u);
+    ASSERT_EQ(input.spec_version(), 17u);
     ASSERT_EQ(data(input.private_key()), privateKey);
-    ASSERT_EQ(input.network(), 0);
-    ASSERT_EQ(input.transaction_version(), 3);
+    ASSERT_EQ(input.network(), 0u);
+    ASSERT_EQ(input.transaction_version(), 3u);
 
-    ASSERT_EQ(input.era().block_number(), 927699);
-    ASSERT_EQ(input.era().period(), 8);
+    ASSERT_EQ(input.era().block_number(), 927699u);
+    ASSERT_EQ(input.era().period(), 8u);
 
     auto transfer = input.balance_call().transfer();
     ASSERT_EQ(data(transfer.value()), store(uint256_t(12345)));

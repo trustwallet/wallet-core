@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::secp256k1::private::PrivateKey;
-use crate::secp256k1::public::PublicKey;
-use crate::secp256k1::{Signature, VerifySignature};
+use crate::starkex::private::PrivateKey;
+use crate::starkex::public::PublicKey;
+use crate::starkex::signature::Signature;
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
-use tw_hash::H256;
 
 pub struct KeyPair {
     private: PrivateKey,
@@ -31,7 +30,7 @@ impl KeyPairTrait for KeyPair {
 }
 
 impl SigningKeyTrait for KeyPair {
-    type SigningHash = H256;
+    type SigningHash = Vec<u8>;
     type Signature = Signature;
 
     fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
@@ -40,8 +39,8 @@ impl SigningKeyTrait for KeyPair {
 }
 
 impl VerifyingKeyTrait for KeyPair {
-    type SigningHash = H256;
-    type VerifySignature = VerifySignature;
+    type SigningHash = Vec<u8>;
+    type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
         self.public.verify(signature, hash)

@@ -46,6 +46,7 @@
 
 pub mod ffi;
 pub mod secp256k1;
+pub mod starkex;
 pub mod traits;
 pub mod tw;
 

@@ -50,8 +50,8 @@ impl VerifyingKeyTrait for PublicKey {
 impl From<&'static str> for PublicKey {
     fn from(hex: &'static str) -> Self {
         // Expected either `H264` or `H520`.
-        let data = hex::decode(hex).expect("Expected valid hex");
-        PublicKey::try_from(data.as_slice()).expect("Expected valid Public Key hex")
+        let data = hex::decode(hex).expect("Expected a valid Public Key hex");
+        PublicKey::try_from(data.as_slice()).expect("Expected a valid Public Key")
     }
 }
 

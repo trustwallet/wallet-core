@@ -1452,7 +1452,9 @@ version = "0.1.0"
 dependencies = [
  "k256",
  "lazy_static",
- "rfc6979 0.4.0",
+ "starknet-crypto",
+ "starknet-ff",
+ "starknet-signers",
  "tw_encoding",
  "tw_hash",
  "tw_memory",
@@ -1479,18 +1481,6 @@ version = "0.1.0"
 dependencies = [
  "pb-rs",
  "quick-protobuf",
- "tw_encoding",
- "tw_memory",
-]
-
-[[package]]
-name = "tw_starknet"
-version = "0.1.0"
-dependencies = [
- "hex",
- "starknet-crypto",
- "starknet-ff",
- "starknet-signers",
  "tw_encoding",
  "tw_memory",
 ]
@@ -1563,7 +1553,6 @@ dependencies = [
  "tw_memory",
  "tw_move_parser",
  "tw_proto",
- "tw_starknet",
 ]
 
 [[package]]

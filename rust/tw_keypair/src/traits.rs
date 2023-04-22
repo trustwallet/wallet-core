@@ -17,19 +17,19 @@ pub trait KeyPairTrait: FromSlice + SigningKeyTrait + VerifyingKeyTrait {
 }
 
 pub trait SigningKeyTrait {
-    type SigningHash;
+    type SigningHash: FromSlice;
     type Signature: ToBytesVec;
 
     fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error>;
 }
 
 pub trait VerifyingKeyTrait {
-    type SigningHash;
+    type SigningHash: FromSlice;
     type VerifySignature: FromSlice;
 
     fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool;
 }
 
-pub trait FromSlice: for<'a> TryFrom<&'a [u8], Error = Error> {}
+pub trait FromSlice: for<'a> TryFrom<&'a [u8]> {}
 
-impl<T> FromSlice for T where for<'a> T: TryFrom<&'a [u8], Error = Error> {}
+impl<T> FromSlice for T where for<'a> T: TryFrom<&'a [u8]> {}

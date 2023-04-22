@@ -147,6 +147,7 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeStarkex:
         return rust_public_key_verify(bytes, type, signature, message);
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
@@ -173,8 +174,6 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         verifyBuffer[63] &= 127;
         return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(), verifyBuffer.data()) == 0;
     }
-    case TWPublicKeyTypeStarkex:
-        return ImmutableX::verify(this->bytes, signature, message);
     default:
         throw std::logic_error("Not yet implemented");
     }
