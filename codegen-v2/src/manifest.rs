@@ -1,8 +1,3 @@
-use crate::grammar::{
-    GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
-    GTypeCategory,
-};
-
 pub enum Error {
     BadImport,
     BadObject,
