@@ -1630,6 +1630,8 @@ impl ParseTree for GTypeCategory {
         if let Ok(res) = GKeyword::derive(checked_out) {
             let reader = pending.merge(res.branch);
 
+            println!("> {:?}", res.derived);
+
             // Prepare scala type, might get wrapped (multiple times) in pointer.
             let derived = GTypeCategory::Unrecognized(res.derived);
             let (derived, reader) = check_for_pointers(derived, reader)?;

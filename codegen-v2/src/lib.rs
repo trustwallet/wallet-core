@@ -17,6 +17,7 @@ use std::{
 mod codegen;
 mod grammar;
 mod manifest;
+mod manifest_impl;
 mod reader;
 #[cfg(test)]
 mod tests;
@@ -75,6 +76,7 @@ fn parse_file(path: &Path, mut main_dir: CHeaderDirectory) -> Result<CHeaderDire
 
     loop {
         let (pending, checked_out) = reader.checkout();
+        println!("{:?}", path);
         if let Ok(der) = GHeaderFileItem::derive(checked_out) {
             let (derived, branch) = (der.derived, der.branch);
             reader = pending.merge(branch);
