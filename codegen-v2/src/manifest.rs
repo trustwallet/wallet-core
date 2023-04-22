@@ -106,32 +106,15 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
         println!("### {:?}", path);
 
-        let mut found_struct = None;
-        let mut found_enum = None;
-
         for item in items {
             if let GHeaderFileItem::StructDecl(decl) = item {
                 let x = StructInfo::from_g_type(decl).unwrap();
-
-                if found_struct.is_some() {
-                    panic!("Found two structs in a row");
-                }
-
-                found_struct = Some(x.clone());
-
                 let x = serde_json::to_string_pretty(&x).unwrap();
                 println!("STRUCT: {}", x);
             }
 
             if let GHeaderFileItem::EnumDecl(decl) = item {
                 let x = EnumInfo::from_g_type(decl).unwrap();
-
-                if found_enum.is_some() {
-                    panic!("Found two enums in a row");
-                }
-
-                found_enum = Some(x.clone());
-
                 let x = serde_json::to_string_pretty(&x).unwrap();
                 println!("ENUM: {}", x);
             }
@@ -140,8 +123,6 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                 println!("MATCHED {:?}", decl.name);
 
                 if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
-                    found_struct = None;
-                    found_enum = None;
                     continue;
                 }
 
@@ -164,9 +145,6 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     println!("METHOD: {}", x);
                 }
             }
-
-            found_struct = None;
-            found_enum = None;
         }
     }
 }
