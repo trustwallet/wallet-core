@@ -104,23 +104,39 @@ pub struct ParamInfo {
 // NOTE: This function is temporary
 pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
-        println!("### {:?}", path);
+        //println!("### {:?}", path);
+
+        let mut file_info = FileInfo {
+            name: path.to_str().unwrap().to_string(),
+            imports: vec![],
+            objects: vec![],
+            enums: vec![],
+        };
 
         for item in items {
+            if let GHeaderFileItem::StructIndicator(decl) = item {
+                file_info.objects.push(StructInfo {
+                    name: decl.name.0.0.clone(),
+                    is_public: true,
+                    fields: vec![],
+                    methods: vec![],
+                    properties: vec![],
+                    tags: vec![],
+                });
+            }
+
             if let GHeaderFileItem::StructDecl(decl) = item {
                 let x = StructInfo::from_g_type(decl).unwrap();
-                let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("STRUCT: {}", x);
+                file_info.objects.push(x);
             }
 
             if let GHeaderFileItem::EnumDecl(decl) = item {
                 let x = EnumInfo::from_g_type(decl).unwrap();
-                let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("ENUM: {}", x);
+                file_info.enums.push(x);
             }
 
             if let GHeaderFileItem::FunctionDecl(decl) = item {
-                println!("MATCHED {:?}", decl.name);
+                //println!("MATCHED {:?}", decl.name);
 
                 if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
                     continue;
@@ -135,17 +151,19 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     .strip_suffix(".h")
                     .unwrap();
 
-                dbg!(object_name);
-
                 if decl.markers.0.contains(&GMarker::TwExportMethod)
                     || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
                 {
                     let x = MethodInfo::from_g_type(&Some(object_name.to_string()), decl).unwrap();
                     let x = serde_json::to_string_pretty(&x).unwrap();
-                    println!("METHOD: {}", x);
+                    //println!("METHOD: {}", x);
                 }
+
             }
         }
+
+        let x = serde_json::to_string_pretty(&file_info).unwrap();
+        println!("{}", x);
     }
 }
 

@@ -78,6 +78,17 @@ fn test_struct_decls_separator_handling() {
 }
 
 #[test]
+fn test_struct_no_fields() {
+    let expected = GStructDecl {
+        name: GStructName::from("SomeStruct"),
+        fields: vec![],
+        markers: GMarkers(vec![]),
+    };
+
+    must_ok!(GStructDecl, "struct SomeStruct;", expected);
+}
+
+#[test]
 fn test_struct_decls_with_comment() {
     let expected = GStructDecl {
         name: GStructName::from("SomeStruct"),
