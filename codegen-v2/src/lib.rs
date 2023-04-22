@@ -7,7 +7,7 @@
 #[macro_use]
 extern crate serde;
 
-use grammar::{GHeaderFileItem, ParseTree, GFunctionDecl, GStructDecl, GEnumDecl};
+use grammar::{GEnumDecl, GFunctionDecl, GHeaderFileItem, GStructDecl, ParseTree};
 use reader::Reader;
 use std::{
     collections::HashMap,
@@ -40,7 +40,7 @@ impl CHeaderDirectory {
         for (_, items) in self.map.iter() {
             for item in items {
                 if let GHeaderFileItem::StructDecl(decl) = item {
-                    if decl.name.0.0 == name {
+                    if decl.name.0 .0 == name {
                         return Some(decl);
                     }
                 }

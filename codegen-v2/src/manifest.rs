@@ -1,6 +1,9 @@
 use core::panic;
 
-use crate::{grammar::{GHeaderFileItem, GType, GTypeCategory}, CHeaderDirectory};
+use crate::{
+    grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory},
+    CHeaderDirectory,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Error {
@@ -107,7 +110,6 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
         let mut found_enum = None;
 
         for item in items {
-
             if let GHeaderFileItem::StructDecl(decl) = item {
                 let x = StructInfo::from_g_type(decl).unwrap();
 
@@ -132,45 +134,68 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
 
                 let x = serde_json::to_string_pretty(&x).unwrap();
                 println!("{}", x);
-
             }
 
             if let GHeaderFileItem::FunctionDecl(decl) = item {
                 println!("MATCHED {:?}", decl.name);
-                let custom_name = extract_custom(&decl.params.first().unwrap().ty);
+
+                if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
+                    found_struct = None;
+                    found_enum = None;
+                    continue;
+                }
+
+                let custom_name = if let Some(param) = decl.params.first() {
+                    extract_custom(&param.ty)
+                } else {
+                    None
+                };
+
+                dbg!(&custom_name);
 
                 //let struct_info = if let Some(target_struct) = dir.search_struct(&name) {
                 let object_name = if let Some(ref target_struct) = found_struct {
                     Some(target_struct.name.clone())
                 } else if let Some(ref target_enum) = found_enum {
                     Some(target_enum.name.clone())
-                } else if let Some(g) = dir.search_struct(custom_name.as_ref().unwrap()) {
-                    let s = StructInfo::from_g_type(&g).unwrap();
-                    Some(s.name.clone())
-                } else if let Some(g) = dir.search_enum(custom_name.as_ref().unwrap()) {
-                    let s = EnumInfo::from_g_type(&g).unwrap();
-                    Some(s.name.clone())
                 } else {
-                    None
+                    if let Some(custom_name) = custom_name {
+                        if let Some(g) = dir.search_struct(&custom_name) {
+                            let s = StructInfo::from_g_type(&g).unwrap();
+                            Some(s.name.clone())
+                        } else if let Some(g) = dir.search_enum(&custom_name) {
+                            let s = EnumInfo::from_g_type(&g).unwrap();
+                            Some(s.name.clone())
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
                 };
 
-                let x = MethodInfo::from_g_type(&object_name, decl).unwrap();
-                let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("{}", x);
+                if decl.markers.0.contains(&GMarker::TwExportMethod)
+                    || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
+                {
+                    let x = MethodInfo::from_g_type(&object_name, decl).unwrap();
+                    let x = serde_json::to_string_pretty(&x).unwrap();
+                    println!("MAN: {}", x);
+                }
             }
 
             found_struct = None;
+            found_enum = None;
         }
     }
 }
 
-fn extract_custom(ty: &GType) -> Option<String> {
+pub fn extract_custom(ty: &GType) -> Option<String> {
     match ty {
         GType::Mutable(cat) | GType::Const(cat) | GType::Extern(cat) => {
             if let GTypeCategory::Unrecognized(keyword) = cat {
                 Some(keyword.0.clone())
             } else {
-                None 
+                None
             }
         }
     }
