@@ -7,7 +7,7 @@
 #[macro_use]
 extern crate serde;
 
-use grammar::{GHeaderFileItem, ParseTree, GFunctionDecl, GStructDecl};
+use grammar::{GHeaderFileItem, ParseTree, GFunctionDecl, GStructDecl, GEnumDecl};
 use reader::Reader;
 use std::{
     collections::HashMap,
@@ -41,6 +41,20 @@ impl CHeaderDirectory {
             for item in items {
                 if let GHeaderFileItem::StructDecl(decl) = item {
                     if decl.name.0.0 == name {
+                        return Some(decl);
+                    }
+                }
+            }
+        }
+
+        None
+    }
+    pub fn search_enum(&self, name: &str) -> Option<&GEnumDecl> {
+        println!("searching for {}", name);
+        for (_, items) in self.map.iter() {
+            for item in items {
+                if let GHeaderFileItem::EnumDecl(decl) = item {
+                    if decl.name.0 == name {
                         return Some(decl);
                     }
                 }

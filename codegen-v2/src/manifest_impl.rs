@@ -213,17 +213,21 @@ impl PropertyInfo {
 }
 
 impl MethodInfo {
-    pub fn from_g_type(object: &StructInfo, value: &GFunctionDecl) -> Result<Self> {
+    pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
         // Strip the object name from the method name.
         // E.g. "SomeObjectIsValid" => "IsValid"
-        let name = value
-            .name
-            .0
-            .strip_prefix(&object.name)
-            .ok_or(Error::BadProperty)?
-            .to_string();
+		let name = if let Some(object_name) = object_name {
+			value
+				.name
+				.0
+				.strip_prefix(object_name)
+				.ok_or(Error::BadProperty)?
+				.to_string()
+		} else {
+			value.name.0.to_string()
+		};
 
         if name.is_empty() {
             return Err(Error::BadProperty);
@@ -254,24 +258,26 @@ impl MethodInfo {
             return Err(Error::BadProperty);
         }
 
-        // Convert GType to TypeInfo.
-        let g_ty = g_params.next().unwrap();
-        let ty = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
+		if let Some(object_name) = object_name {
+			// Convert GType to TypeInfo.
+			let g_ty = g_params.next().unwrap();
+			let ty = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
 
-        // The first parameter type must be the same as the object this property
-        // belongs to. This first parameter is *not* tracked or returned.
-        if let TypeVariant::Struct(name) = ty.variant {
-            if name != object.name {
-                return Err(Error::BadProperty);
-            }
-        } else {
-            return Err(Error::BadProperty);
-        }
+			// The first parameter type must be the same as the object this property
+			// belongs to. This first parameter is *not* tracked or returned.
+			if let TypeVariant::Struct(name) = ty.variant {
+				if &name != object_name {
+					return Err(Error::BadProperty);
+				}
+			} else {
+				return Err(Error::BadProperty);
+			}
 
-        // Must be a pointer and not nullable.
-        if ty.is_nullable || !ty.is_pointer {
-            return Err(Error::BadProperty);
-        }
+			// Must be a pointer and not nullable.
+			if ty.is_nullable || !ty.is_pointer {
+				return Err(Error::BadProperty);
+			}
+		}
 
         // Convert remaining parameters.
         let mut params = vec![];
