@@ -64,3 +64,6 @@ samples/cpp/*.cmake
 
 # built binary
 samples/cpp/sample
+
+# Rust target build
+**/target/
