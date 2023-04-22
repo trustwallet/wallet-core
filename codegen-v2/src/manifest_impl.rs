@@ -26,9 +26,7 @@ impl TypeInfo {
                 GTypeCategory::Pointer(_) => {
                     return Err(Error::BadType);
                 }
-                GTypeCategory::Unrecognized(name) => {
-                    TypeVariant::Struct(name.0.to_string())
-                }
+                GTypeCategory::Unrecognized(name) => TypeVariant::Struct(name.0.to_string()),
             };
 
             Ok(variant)
@@ -217,6 +215,8 @@ impl PropertyInfo {
 impl MethodInfo {
     pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
+
+        dbg!(&object_name, &value.name);
 
         // Strip the object name from the method name.
         // E.g. "SomeObjectIsValid" => "IsValid"

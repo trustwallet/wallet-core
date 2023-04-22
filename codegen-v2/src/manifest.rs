@@ -120,7 +120,7 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                 found_struct = Some(x.clone());
 
                 let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("{}", x);
+                println!("STRUCT: {}", x);
             }
 
             if let GHeaderFileItem::EnumDecl(decl) = item {
@@ -133,7 +133,7 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                 found_enum = Some(x.clone());
 
                 let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("{}", x);
+                println!("ENUM: {}", x);
             }
 
             if let GHeaderFileItem::FunctionDecl(decl) = item {
@@ -145,41 +145,23 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     continue;
                 }
 
-                let custom_name = if let Some(param) = decl.params.first() {
-                    extract_custom(&param.ty)
-                } else {
-                    None
-                };
+                let object_name = path
+                    .to_str()
+                    .unwrap()
+                    .split("/")
+                    .last()
+                    .unwrap()
+                    .strip_suffix(".h")
+                    .unwrap();
 
-                dbg!(&custom_name);
-
-                //let struct_info = if let Some(target_struct) = dir.search_struct(&name) {
-                let object_name = if let Some(ref target_struct) = found_struct {
-                    Some(target_struct.name.clone())
-                } else if let Some(ref target_enum) = found_enum {
-                    Some(target_enum.name.clone())
-                } else {
-                    if let Some(custom_name) = custom_name {
-                        if let Some(g) = dir.search_struct(&custom_name) {
-                            let s = StructInfo::from_g_type(&g).unwrap();
-                            Some(s.name.clone())
-                        } else if let Some(g) = dir.search_enum(&custom_name) {
-                            let s = EnumInfo::from_g_type(&g).unwrap();
-                            Some(s.name.clone())
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                };
+                dbg!(object_name);
 
                 if decl.markers.0.contains(&GMarker::TwExportMethod)
                     || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
                 {
-                    let x = MethodInfo::from_g_type(&object_name, decl).unwrap();
+                    let x = MethodInfo::from_g_type(&Some(object_name.to_string()), decl).unwrap();
                     let x = serde_json::to_string_pretty(&x).unwrap();
-                    println!("MAN: {}", x);
+                    println!("METHOD: {}", x);
                 }
             }
 
