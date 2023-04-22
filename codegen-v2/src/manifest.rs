@@ -45,8 +45,10 @@ pub enum TypeVariant {
 pub struct FileInfo {
     pub name: String,
     pub imports: Vec<ImportInfo>,
-    pub objects: Vec<StructInfo>,
+    pub structs: Vec<StructInfo>,
     pub enums: Vec<EnumInfo>,
+    pub functions: Vec<MethodInfo>,
+    pub properties: Vec<PropertyInfo>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,8 +63,6 @@ pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
     pub variants: Vec<(String, Option<usize>)>,
-    pub methods: Vec<MethodInfo>,
-    pub properties: Vec<PropertyInfo>,
     pub tags: Vec<String>,
 }
 
@@ -71,8 +71,6 @@ pub struct StructInfo {
     pub name: String,
     pub is_public: bool,
     pub fields: Vec<(String, TypeInfo)>,
-    pub methods: Vec<MethodInfo>,
-    pub properties: Vec<PropertyInfo>,
     pub tags: Vec<String>,
 }
 
@@ -106,28 +104,37 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
         //println!("### {:?}", path);
 
+        let file_name = path
+            .to_str()
+            .unwrap()
+            .split("/")
+            .last()
+            .unwrap()
+            .strip_suffix(".h")
+            .unwrap();
+
         let mut file_info = FileInfo {
-            name: path.to_str().unwrap().to_string(),
+            name: file_name.to_string(),
             imports: vec![],
-            objects: vec![],
+            structs: vec![],
             enums: vec![],
+            functions: vec![],
+            properties: vec![],
         };
 
         for item in items {
             if let GHeaderFileItem::StructIndicator(decl) = item {
-                file_info.objects.push(StructInfo {
+                file_info.structs.push(StructInfo {
                     name: decl.name.0.0.clone(),
                     is_public: true,
                     fields: vec![],
-                    methods: vec![],
-                    properties: vec![],
                     tags: vec![],
                 });
             }
 
             if let GHeaderFileItem::StructDecl(decl) = item {
                 let x = StructInfo::from_g_type(decl).unwrap();
-                file_info.objects.push(x);
+                file_info.structs.push(x);
             }
 
             if let GHeaderFileItem::EnumDecl(decl) = item {
@@ -142,28 +149,19 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     continue;
                 }
 
-                let object_name = path
-                    .to_str()
-                    .unwrap()
-                    .split("/")
-                    .last()
-                    .unwrap()
-                    .strip_suffix(".h")
-                    .unwrap();
-
                 if decl.markers.0.contains(&GMarker::TwExportMethod)
                     || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
                 {
-                    let x = MethodInfo::from_g_type(&Some(object_name.to_string()), decl).unwrap();
-                    let x = serde_json::to_string_pretty(&x).unwrap();
-                    //println!("METHOD: {}", x);
+                    let x = MethodInfo::from_g_type(&Some(file_name.to_string()), decl).unwrap();
+                    file_info.functions.push(x);
                 }
 
             }
         }
 
-        let x = serde_json::to_string_pretty(&file_info).unwrap();
-        println!("{}", x);
+        let content = serde_json::to_string_pretty(&file_info).unwrap();
+        let mut file = std::fs::File::create(format!("out/{}.json", file_name)).unwrap();
+        std::io::Write::write(&mut file, content.as_bytes()).unwrap();
     }
 }
 

@@ -84,8 +84,6 @@ impl EnumInfo {
                 .cloned()
                 .map(|(k, v)| (k.0, v))
                 .collect(),
-            methods: vec![],
-            properties: vec![],
             tags: vec![],
         })
     }
@@ -130,8 +128,6 @@ impl StructInfo {
             name: value.name.0 .0.to_string(),
             is_public: true,
             fields,
-            methods: vec![],
-            properties: vec![],
             tags,
         })
     }
@@ -255,7 +251,7 @@ impl MethodInfo {
 
         let mut g_params = value.params.iter();
 
-        // Convert remaining parameters.
+        // Convert parameters.
         let mut params = vec![];
         while let Some(g_item) = g_params.next() {
             params.push(ParamInfo {
