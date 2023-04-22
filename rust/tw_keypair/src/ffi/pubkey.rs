@@ -4,12 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::tw::{TWPublicKey, TWPublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
 
+/// Create a public key with the given block of data and specified public key type.
+///
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \param ty type of the public key.
+/// \note Should be deleted with \tw_public_key_delete.
+/// \return Nullable pointer to the public key.
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_create_with_data(
     input: *const u8,
@@ -25,12 +34,23 @@ pub unsafe extern "C" fn tw_public_key_create_with_data(
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
+/// Delete the given public key.
+///
+/// \param key *non-null* pointer to public key.
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_delete(key: *mut TWPublicKey) {
     // Take the ownership back to rust and drop the owner.
     let _ = TWPublicKey::from_ptr(key);
 }
 
+/// Verify the validity of a signature and a message using the given public key.
+///
+/// \param key *non-null* pointer to a Public key.
+/// \param sig *non-null* pointer to a block of data corresponding to the signature.
+/// \param sig_len the length of the `sig` array.
+/// \param msg *non-null* pointer to a block of data corresponding to the message.
+/// \param msg_len the length of the `msg` array.
+/// \return true if the signature and the message belongs to the given public key, otherwise false.
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_verify(
     key: *mut TWPublicKey,
@@ -45,6 +65,10 @@ pub unsafe extern "C" fn tw_public_key_verify(
     public.verify(sig, msg)
 }
 
+/// Returns the raw data of a given public-key.
+///
+/// \param key *non-null* pointer to a public key.
+/// \return C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_data(key: *mut TWPublicKey) -> CByteArray {
     let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), CByteArray::empty);

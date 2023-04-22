@@ -4,12 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#![allow(clippy::missing_safety_doc)]
+
 use crate::tw::{TWCurve, TWPrivateKey, TWPublicKey, TWPublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
 
+/// Create a private key with the given block of data.
+///
+/// \param input *non-null* byte array.
+/// \param input_len the length of the `input` array.
+/// \note Should be deleted with \tw_private_key_delete.
+/// \return Nullable pointer to Private Key.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_create_with_data(
     input: *const u8,
@@ -24,12 +32,21 @@ pub unsafe extern "C" fn tw_private_key_create_with_data(
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
+/// Delete the given private key.
+///
+/// \param key *non-null* pointer to private key.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_delete(key: *mut TWPrivateKey) {
     // Take the ownership back to rust and drop the owner.
     let _ = TWPrivateKey::from_ptr(key);
 }
 
+/// Determines if the given private key is valid or not.
+///
+/// \param key *non-null* byte array.
+/// \param key_len the length of the `key` array.
+/// \param curve Eliptic curve of the private key.
+/// \return true if the private key is valid, false otherwise.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_is_valid(
     key: *const u8,
@@ -41,6 +58,13 @@ pub unsafe extern "C" fn tw_private_key_is_valid(
     TWPrivateKey::is_valid(priv_key_slice, curve)
 }
 
+/// Signs a digest using ECDSA and given curve.
+///
+/// \param key *non-null* pointer to a Private key
+/// \param hash *non-null* byte array.
+/// \param hash_len the length of the `input` array.
+/// \param curve Eliptic curve.
+/// \return Signature as a C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_sign(
     key: *mut TWPrivateKey,
@@ -63,6 +87,11 @@ pub unsafe extern "C" fn tw_private_key_sign(
     CByteArray::new(sig)
 }
 
+/// Returns the public key associated with the given pubkeyType and privateKey
+///
+/// \param key *non-null* pointer to the private key.
+/// \param pubkey_type type of the public key to return.
+/// \return *non-null* pointer to the corresponding public key.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
     key: *mut TWPrivateKey,
