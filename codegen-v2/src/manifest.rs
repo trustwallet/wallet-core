@@ -96,25 +96,44 @@ pub struct ParamInfo {
     pub ty: TypeInfo,
 }
 
+// NOTE: This function is temporary
 pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
         println!("### {:?}", path);
+        let mut found_struct = None;
         for item in items {
-            let mut found_struct = None;
 
             if let GHeaderFileItem::StructDecl(decl) = item {
                 let x = StructInfo::from_g_type(decl).unwrap();
+
+                if found_struct.is_some() {
+                    panic!("Found two structs in a row");
+                }
+
                 found_struct = Some(x.clone());
+
                 let x = serde_json::to_string_pretty(&x).unwrap();
                 println!("{}", x);
             }
 
             if let GHeaderFileItem::FunctionDecl(decl) = item {
-                dbg!(decl);
-                let x = MethodInfo::from_g_type(found_struct.as_ref().unwrap(), decl).unwrap();
+                println!("MATCHED {:?}", decl.name);
+                let name = decl.params.first().unwrap().name.0.clone();
+
+                //let struct_info = if let Some(target_struct) = dir.search_struct(&name) {
+                let struct_info = if let Some(target_struct) = found_struct {
+                    target_struct
+                } else {
+                    let g = dir.search_struct(&name).unwrap().clone();
+                    StructInfo::from_g_type(&g).unwrap()
+                };
+
+                let x = MethodInfo::from_g_type(&struct_info, decl).unwrap();
                 let x = serde_json::to_string_pretty(&x).unwrap();
                 println!("{}", x);
             }
+
+            found_struct = None;
         }
     }
 }

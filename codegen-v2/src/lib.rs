@@ -7,7 +7,7 @@
 #[macro_use]
 extern crate serde;
 
-use grammar::{GHeaderFileItem, ParseTree};
+use grammar::{GHeaderFileItem, ParseTree, GFunctionDecl, GStructDecl};
 use reader::Reader;
 use std::{
     collections::HashMap,
@@ -32,6 +32,23 @@ pub enum Error {
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct CHeaderDirectory {
     pub map: HashMap<PathBuf, Vec<GHeaderFileItem>>,
+}
+
+impl CHeaderDirectory {
+    pub fn search_struct(&self, name: &str) -> Option<&GStructDecl> {
+        println!("searching for {}", name);
+        for (_, items) in self.map.iter() {
+            for item in items {
+                if let GHeaderFileItem::StructDecl(decl) = item {
+                    if decl.name.0.0 == name {
+                        return Some(decl);
+                    }
+                }
+            }
+        }
+
+        None
+    }
 }
 
 pub fn parse(path: &Path) -> Result<CHeaderDirectory> {
