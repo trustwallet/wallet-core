@@ -23,10 +23,10 @@ impl TypeInfo {
                 },
                 GTypeCategory::Struct(s) => TypeVariant::Struct(s.0 .0.to_string()),
                 GTypeCategory::Enum(e) => TypeVariant::Enum(e.0 .0.to_string()),
-                // Unrecognized types and multi-pointers are not supported
-                GTypeCategory::Pointer(_) | GTypeCategory::Unrecognized(_) => {
+                GTypeCategory::Pointer(_) => {
                     return Err(Error::BadType);
                 }
+                GTypeCategory::Unrecognized(name) => TypeVariant::Struct(name.0.to_string()),
             };
 
             Ok(variant)
@@ -84,8 +84,6 @@ impl EnumInfo {
                 .cloned()
                 .map(|(k, v)| (k.0, v))
                 .collect(),
-            methods: vec![],
-            properties: vec![],
             tags: vec![],
         })
     }
@@ -130,8 +128,6 @@ impl StructInfo {
             name: value.name.0 .0.to_string(),
             is_public: true,
             fields,
-            methods: vec![],
-            properties: vec![],
             tags,
         })
     }
@@ -216,18 +212,20 @@ impl MethodInfo {
     pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
+        dbg!(&object_name, &value.name);
+
         // Strip the object name from the method name.
         // E.g. "SomeObjectIsValid" => "IsValid"
-		let name = if let Some(object_name) = object_name {
-			value
-				.name
-				.0
-				.strip_prefix(object_name)
-				.ok_or(Error::BadProperty)?
-				.to_string()
-		} else {
-			value.name.0.to_string()
-		};
+        let name = if let Some(object_name) = object_name {
+            value
+                .name
+                .0
+                .strip_prefix(object_name)
+                .ok_or(Error::BadProperty)?
+                .to_string()
+        } else {
+            value.name.0.to_string()
+        };
 
         if name.is_empty() {
             return Err(Error::BadProperty);
@@ -237,8 +235,8 @@ impl MethodInfo {
 
         let mut markers = value.markers.0.iter();
 
-        // Must have one marker.
-        if markers.size_hint().0 != 1 {
+        // Must have at least one marker.
+        if markers.size_hint().0 < 1 {
             return Err(Error::BadProperty);
         }
 
@@ -253,33 +251,7 @@ impl MethodInfo {
 
         let mut g_params = value.params.iter();
 
-        // Must have at least one parameter.
-        if g_params.size_hint().0 < 2 {
-            return Err(Error::BadProperty);
-        }
-
-		if let Some(object_name) = object_name {
-			// Convert GType to TypeInfo.
-			let g_ty = g_params.next().unwrap();
-			let ty = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
-
-			// The first parameter type must be the same as the object this property
-			// belongs to. This first parameter is *not* tracked or returned.
-			if let TypeVariant::Struct(name) = ty.variant {
-				if &name != object_name {
-					return Err(Error::BadProperty);
-				}
-			} else {
-				return Err(Error::BadProperty);
-			}
-
-			// Must be a pointer and not nullable.
-			if ty.is_nullable || !ty.is_pointer {
-				return Err(Error::BadProperty);
-			}
-		}
-
-        // Convert remaining parameters.
+        // Convert parameters.
         let mut params = vec![];
         while let Some(g_item) = g_params.next() {
             params.push(ParamInfo {

@@ -1,6 +1,9 @@
 use core::panic;
 
-use crate::{grammar::{GHeaderFileItem, GType, GTypeCategory}, CHeaderDirectory};
+use crate::{
+    grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory},
+    CHeaderDirectory,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Error {
@@ -42,8 +45,10 @@ pub enum TypeVariant {
 pub struct FileInfo {
     pub name: String,
     pub imports: Vec<ImportInfo>,
-    pub objects: Vec<StructInfo>,
+    pub structs: Vec<StructInfo>,
     pub enums: Vec<EnumInfo>,
+    pub functions: Vec<MethodInfo>,
+    pub properties: Vec<PropertyInfo>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -58,8 +63,6 @@ pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
     pub variants: Vec<(String, Option<usize>)>,
-    pub methods: Vec<MethodInfo>,
-    pub properties: Vec<PropertyInfo>,
     pub tags: Vec<String>,
 }
 
@@ -68,8 +71,6 @@ pub struct StructInfo {
     pub name: String,
     pub is_public: bool,
     pub fields: Vec<(String, TypeInfo)>,
-    pub methods: Vec<MethodInfo>,
-    pub properties: Vec<PropertyInfo>,
     pub tags: Vec<String>,
 }
 
@@ -101,76 +102,76 @@ pub struct ParamInfo {
 // NOTE: This function is temporary
 pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
-        println!("### {:?}", path);
+        //println!("### {:?}", path);
 
-        let mut found_struct = None;
-        let mut found_enum = None;
+        let file_name = path
+            .to_str()
+            .unwrap()
+            .split("/")
+            .last()
+            .unwrap()
+            .strip_suffix(".h")
+            .unwrap();
+
+        let mut file_info = FileInfo {
+            name: file_name.to_string(),
+            imports: vec![],
+            structs: vec![],
+            enums: vec![],
+            functions: vec![],
+            properties: vec![],
+        };
 
         for item in items {
+            if let GHeaderFileItem::StructIndicator(decl) = item {
+                file_info.structs.push(StructInfo {
+                    name: decl.name.0.0.clone(),
+                    is_public: true,
+                    fields: vec![],
+                    tags: vec![],
+                });
+            }
 
             if let GHeaderFileItem::StructDecl(decl) = item {
                 let x = StructInfo::from_g_type(decl).unwrap();
-
-                if found_struct.is_some() {
-                    panic!("Found two structs in a row");
-                }
-
-                found_struct = Some(x.clone());
-
-                let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("{}", x);
+                file_info.structs.push(x);
             }
 
             if let GHeaderFileItem::EnumDecl(decl) = item {
                 let x = EnumInfo::from_g_type(decl).unwrap();
-
-                if found_enum.is_some() {
-                    panic!("Found two enums in a row");
-                }
-
-                found_enum = Some(x.clone());
-
-                let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("{}", x);
-
+                file_info.enums.push(x);
             }
 
             if let GHeaderFileItem::FunctionDecl(decl) = item {
-                println!("MATCHED {:?}", decl.name);
-                let custom_name = extract_custom(&decl.params.first().unwrap().ty);
+                //println!("MATCHED {:?}", decl.name);
 
-                //let struct_info = if let Some(target_struct) = dir.search_struct(&name) {
-                let object_name = if let Some(ref target_struct) = found_struct {
-                    Some(target_struct.name.clone())
-                } else if let Some(ref target_enum) = found_enum {
-                    Some(target_enum.name.clone())
-                } else if let Some(g) = dir.search_struct(custom_name.as_ref().unwrap()) {
-                    let s = StructInfo::from_g_type(&g).unwrap();
-                    Some(s.name.clone())
-                } else if let Some(g) = dir.search_enum(custom_name.as_ref().unwrap()) {
-                    let s = EnumInfo::from_g_type(&g).unwrap();
-                    Some(s.name.clone())
-                } else {
-                    None
-                };
+                if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
+                    continue;
+                }
 
-                let x = MethodInfo::from_g_type(&object_name, decl).unwrap();
-                let x = serde_json::to_string_pretty(&x).unwrap();
-                println!("{}", x);
+                if decl.markers.0.contains(&GMarker::TwExportMethod)
+                    || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
+                {
+                    let x = MethodInfo::from_g_type(&Some(file_name.to_string()), decl).unwrap();
+                    file_info.functions.push(x);
+                }
+
             }
-
-            found_struct = None;
         }
+
+        let content = serde_json::to_string_pretty(&file_info).unwrap();
+        let mut file = std::fs::File::create(format!("out/{}.json", file_name)).unwrap();
+        std::io::Write::write(&mut file, content.as_bytes()).unwrap();
     }
 }
 
-fn extract_custom(ty: &GType) -> Option<String> {
+pub fn extract_custom(ty: &GType) -> Option<String> {
     match ty {
         GType::Mutable(cat) | GType::Const(cat) | GType::Extern(cat) => {
             if let GTypeCategory::Unrecognized(keyword) = cat {
                 Some(keyword.0.clone())
             } else {
-                None 
+                None
             }
         }
     }
