@@ -103,16 +103,16 @@ pub struct ParamInfo {
 pub fn process_c_header_dir(dir: &CHeaderDirectory) {
     for (path, items) in &dir.map {
         let file_name = path
+            .file_name()
+            .unwrap()
             .to_str()
             .unwrap()
-            .split("/")
-            .last()
-            .unwrap()
             .strip_suffix(".h")
-            .unwrap();
+            .unwrap()
+            .to_string();
 
         let mut file_info = FileInfo {
-            name: file_name.to_string(),
+            name: file_name.clone(),
             imports: vec![],
             structs: vec![],
             enums: vec![],
@@ -157,8 +157,10 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
         }
 
         let content = serde_json::to_string_pretty(&file_info).unwrap();
-        let mut file = std::fs::File::create(format!("out/{}.json", file_name)).unwrap();
-        std::io::Write::write(&mut file, content.as_bytes()).unwrap();
+        let file_path = format!("out/{}.json", file_name);
+
+        std::fs::create_dir_all("out").unwrap();
+        std::fs::write(&file_path, content.as_bytes()).unwrap();
     }
 }
 
