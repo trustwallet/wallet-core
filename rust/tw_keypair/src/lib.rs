@@ -59,14 +59,3 @@ pub enum Error {
     SignatureVerifyError,
     SigningError,
 }
-
-#[derive(Debug)]
-pub enum Curve {
-    Secp256k1,
-}
-
-#[derive(Debug)]
-pub enum PublicKeyType {
-    Secp256k1,
-    Secp256k1Extended,
-}
