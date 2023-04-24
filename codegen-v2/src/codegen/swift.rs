@@ -73,13 +73,13 @@ impl TryFrom<TypeInfo> for SwiftReturn {
     fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
         let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
             (
-                SwiftType("TWData".to_string()),
+                SwiftType("Data".to_string()),
                 Some("TWDataCreateWithNSData(result)".to_string()),
                 Some("TWDataDelete(result)".to_string()),
             )
         } else if value.tags.iter().any(|t| t == "TW_STRING") {
             (
-                SwiftType("TWString".to_string()),
+                SwiftType("String".to_string()),
                 Some("TWStringCreateWithNSString(result)".to_string()),
                 Some("StringDelete(result)".to_string()),
             )
@@ -102,13 +102,13 @@ impl TryFrom<ParamInfo> for SwiftParam {
     fn try_from(value: ParamInfo) -> Result<Self> {
         let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
             (
-                SwiftType("TWData".to_string()),
+                SwiftType("Data".to_string()),
                 Some("TWDataCreateWithNSData(data)".to_string()),
                 Some("TWDataDelete(data)".to_string()),
             )
         } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
             (
-                SwiftType("TWString".to_string()),
+                SwiftType("String".to_string()),
                 Some("TWStringCreateWithNSString(string)".to_string()),
                 Some("StringDelete(string)".to_string()),
             )
