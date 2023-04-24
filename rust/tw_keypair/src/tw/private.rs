@@ -12,6 +12,8 @@ use tw_hash::H256;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::traits::ToBytesVec;
 
+/// Represents a private key that can be used to sign messages with different elliptic curves.
+///
 /// TODO add `secp256k1: Once<each_curve::PrivateKey>` for each curve.
 pub struct TWPrivateKey {
     bytes: Vec<u8>,
@@ -25,6 +27,7 @@ impl TWPrivateKey {
 
     const KEY_RANGE: Range<usize> = 0..Self::SIZE;
 
+    /// Validates the given `bytes` secret and creates a private key.
     pub fn new(bytes: Vec<u8>) -> Result<TWPrivateKey, Error> {
         if !Self::is_valid_general(&bytes) {
             return Err(Error::InvalidSecretKey);
@@ -42,7 +45,7 @@ impl TWPrivateKey {
             .expect("H256 and KEY_RANGE must be 32 byte length")
     }
 
-    /// Checks if the given bytes are valid in general (without a concrete curve).
+    /// Checks if the given `bytes` secret is valid in general (without a concrete curve).
     pub fn is_valid_general(bytes: &[u8]) -> bool {
         if bytes.len() != Self::SIZE {
             return false;
@@ -51,6 +54,7 @@ impl TWPrivateKey {
         !bytes.iter().all(|byte| *byte == 0)
     }
 
+    /// Checks if the given `bytes` secret is valid.
     pub fn is_valid(bytes: &[u8], curve: TWCurve) -> bool {
         if !Self::is_valid_general(bytes) {
             return false;
@@ -61,6 +65,7 @@ impl TWPrivateKey {
         }
     }
 
+    /// Signs a `hash` with using the given elliptic curve.
     pub fn sign(&self, hash: &[u8], curve: TWCurve) -> Result<Vec<u8>, Error> {
         fn sign_impl<Key>(signing_key: Key, hash: &[u8]) -> Result<Vec<u8>, Error>
         where
@@ -72,33 +77,36 @@ impl TWPrivateKey {
         }
 
         match curve {
-            TWCurve::Secp256k1 => sign_impl(self.secp256k1_privkey()?, hash),
-            TWCurve::Starkex => sign_impl(self.starkex_privkey()?, hash),
+            TWCurve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, hash),
+            TWCurve::Starkex => sign_impl(self.to_starkex_privkey()?, hash),
         }
     }
 
+    /// Returns the public key associated with the `self` private key and `ty` public key type.
     pub fn get_public_key_by_type(&self, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
         match ty {
             TWPublicKeyType::Secp256k1 => {
-                let privkey = self.secp256k1_privkey()?;
+                let privkey = self.to_secp256k1_privkey()?;
                 Ok(TWPublicKey::Secp256k1(privkey.public()))
             },
             TWPublicKeyType::Secp256k1Extended => {
-                let privkey = self.secp256k1_privkey()?;
+                let privkey = self.to_secp256k1_privkey()?;
                 Ok(TWPublicKey::Secp256k1Extended(privkey.public()))
             },
             TWPublicKeyType::Starkex => {
-                let privkey = self.starkex_privkey()?;
+                let privkey = self.to_starkex_privkey()?;
                 Ok(TWPublicKey::Starkex(privkey.public()))
             },
         }
     }
 
-    fn secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
+    /// Tries to convert [`TWPrivateKey::key`] to [`secp256k1::PrivateKey`].
+    fn to_secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
         secp256k1::PrivateKey::try_from(self.key().as_slice())
     }
 
-    fn starkex_privkey(&self) -> Result<starkex::PrivateKey, Error> {
+    /// Tries to convert [`TWPrivateKey::key`] to [`starkex::PrivateKey`].
+    fn to_starkex_privkey(&self) -> Result<starkex::PrivateKey, Error> {
         starkex::PrivateKey::try_from(self.key().as_slice())
     }
 }

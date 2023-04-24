@@ -11,6 +11,7 @@ use tw_memory::ffi::RawPtrTrait;
 use tw_utils::traits::ToBytesVec;
 use tw_utils::try_or_false;
 
+/// Represents a public key that can be used to verify signatures and messages.
 pub enum TWPublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
@@ -20,6 +21,7 @@ pub enum TWPublicKey {
 impl RawPtrTrait for TWPublicKey {}
 
 impl TWPublicKey {
+    /// Validates the given `bytes` using the `ty` public key type and creates a public key from it.
     pub fn new(bytes: Vec<u8>, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
         match ty {
             TWPublicKeyType::Secp256k1 if secp256k1::PublicKey::COMPRESSED == bytes.len() => {
@@ -40,10 +42,12 @@ impl TWPublicKey {
         }
     }
 
+    /// Checks if the given `bytes` is valid using `ty` public key type.
     pub fn is_valid(bytes: Vec<u8>, ty: TWPublicKeyType) -> bool {
         TWPublicKey::new(bytes, ty).is_ok()
     }
 
+    /// Verifies if the given `hash` was signed using a private key associated with the public key.
     pub fn verify(&self, sig: &[u8], hash: &[u8]) -> bool {
         fn verify_impl<Key>(verifying_key: &Key, sig: &[u8], hash: &[u8]) -> bool
         where
@@ -63,6 +67,7 @@ impl TWPublicKey {
         }
     }
 
+    /// Returns the raw data of the public key.
     pub fn to_bytes(&self) -> Vec<u8> {
         match self {
             TWPublicKey::Secp256k1(secp) => secp.compressed().into_vec(),

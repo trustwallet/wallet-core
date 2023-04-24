@@ -17,11 +17,13 @@ use tw_encoding::hex;
 use tw_hash::H256;
 use tw_utils::traits::ToBytesVec;
 
+/// Represents a private key that is used in `starknet` context.
 pub struct PrivateKey {
     secret: FieldElement,
 }
 
 impl PrivateKey {
+    /// Returns an associated `starknet` public key.
     pub fn public(&self) -> PublicKey {
         let public_scalar = get_public_key(&self.secret);
         PublicKey::from_scalar(public_scalar)

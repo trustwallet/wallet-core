@@ -12,6 +12,7 @@ use crate::Error;
 use tw_encoding::hex;
 use tw_hash::H256;
 
+/// Represents a pair of `secp256k1` private and public keys.
 pub struct KeyPair {
     private: PrivateKey,
     public: PublicKey,

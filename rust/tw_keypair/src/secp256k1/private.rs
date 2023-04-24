@@ -14,16 +14,19 @@ use k256::{AffinePoint, ProjectivePoint};
 use tw_hash::H256;
 use tw_utils::traits::ToBytesVec;
 
+/// Represents a `secp256k1` private key.
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
 }
 
 impl PrivateKey {
+    /// Returns the raw data of the private key.
     pub fn to_bytes(&self) -> H256 {
         H256::try_from(self.secret.to_bytes().as_slice())
             .expect("'PrivateKey::secret' is 32 byte length array")
     }
 
+    /// Returns an associated `secp256k1` public key.
     pub fn public(&self) -> PublicKey {
         PublicKey::new(*self.secret.verifying_key())
     }

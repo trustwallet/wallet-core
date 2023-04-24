@@ -20,6 +20,7 @@ pub struct PublicKey {
 }
 
 impl PublicKey {
+    /// Creates a public key from the given [`FieldElement`].
     pub(crate) fn from_scalar(public: FieldElement) -> PublicKey {
         PublicKey { public }
     }

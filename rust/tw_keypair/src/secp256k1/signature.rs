@@ -20,6 +20,7 @@ const RECOVERY_LAST: usize = Signature::len() - 1;
 /// cbindgen:ignore
 const VERIFY_SIGNATURE_LEN_RANGE: RangeInclusive<usize> = 64..=65;
 
+/// Represents an ECDSA signature.
 #[derive(Debug, PartialEq)]
 pub struct Signature {
     signature: k256::ecdsa::Signature,
@@ -27,28 +28,35 @@ pub struct Signature {
 }
 
 impl Signature {
+    /// Creates a `secp256k1` recoverable signature from the given [`k256::ecdsa::Signature`]
+    /// and the `v` recovery byte.
     pub(crate) fn new(signature: k256::ecdsa::Signature, v: u8) -> Signature {
         Signature { signature, v }
     }
 
+    /// Returns the number of bytes for a serialized signature representation.
     pub const fn len() -> usize {
         65
     }
 
+    /// Returns an r-coordinate as 32 byte array.
     pub fn r(&self) -> H256 {
         let (r, _s) = self.signature.split_bytes();
         H256::try_from(r.as_slice()).expect("Expected 'r' 32 byte length array")
     }
 
+    /// Returns an s-value as 32 byte array.
     pub fn s(&self) -> H256 {
         let (_, s) = self.signature.split_bytes();
         H256::try_from(s.as_slice()).expect("Expected 's' 32 byte length array")
     }
 
+    /// Returns a recovery ID.
     pub fn v(&self) -> u8 {
         self.v
     }
 
+    /// Tries to create a Signature from the serialized representation.
     pub fn from_bytes(sig: &[u8]) -> Result<Signature, Error> {
         if sig.len() != Signature::len() {
             return Err(Error::InvalidSignature);

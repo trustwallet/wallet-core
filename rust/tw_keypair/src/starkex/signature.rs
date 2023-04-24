@@ -15,27 +15,33 @@ const R_RANGE: Range<usize> = 0..32;
 /// cbindgen:ignore
 const S_RANGE: Range<usize> = 32..64;
 
+/// Represents a `starknet` signature.
 pub struct Signature {
     pub(crate) signature: starknet_crypto::Signature,
 }
 
 impl Signature {
+    /// Returns the number of bytes for a serialized signature representation.
     pub const fn len() -> usize {
         64
     }
 
+    /// Creates a `starknet` signature from the given [`starknet_crypto::Signature`].
     pub(crate) fn new(signature: starknet_crypto::Signature) -> Signature {
         Signature { signature }
     }
 
+    /// Returns a reference to the inner [`starknet_crypto::Signature`].
     pub(crate) fn inner(&self) -> &starknet_crypto::Signature {
         &self.signature
     }
 
+    /// Returns an r-coordinate as 32 byte array.
     pub fn r(&self) -> H256 {
         H256::from(self.signature.r.to_bytes_be())
     }
 
+    /// Returns an s-value as 32 byte array.
     pub fn s(&self) -> H256 {
         H256::from(self.signature.s.to_bytes_be())
     }

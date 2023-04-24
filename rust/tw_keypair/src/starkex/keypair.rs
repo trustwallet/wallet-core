@@ -11,6 +11,7 @@ use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
 
+/// Represents a pair of private and public keys that are used in `starknet` context.
 pub struct KeyPair {
     private: PrivateKey,
     public: PublicKey,

@@ -13,24 +13,30 @@ use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
 use tw_utils::traits::ToBytesVec;
 
+/// Represents a `secp256k1` public key.
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }
 
 impl PublicKey {
+    /// The number of bytes in a compressed public key.
     pub const COMPRESSED: usize = H264::len();
+    /// The number of bytes in an uncompressed public key.
     pub const UNCOMPRESSED: usize = H520::len();
 
+    /// Creates a public key from the given [`VerifyingKey`].
     pub(crate) fn new(public: VerifyingKey) -> PublicKey {
         PublicKey { public }
     }
 
+    /// Returns the raw data of the compressed public key (33 bytes).
     pub fn compressed(&self) -> H264 {
         let compressed = true;
         H264::try_from(self.public.to_encoded_point(compressed).as_bytes())
             .expect("Expected 33 byte array Public Key")
     }
 
+    /// Returns the raw data of the uncompressed public key (65 bytes).
     pub fn uncompressed(&self) -> H520 {
         let compressed = false;
         H520::try_from(self.public.to_encoded_point(compressed).as_bytes())

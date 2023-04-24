@@ -11,8 +11,10 @@ pub trait KeyPairTrait: FromSlice + SigningKeyTrait + VerifyingKeyTrait {
     type Private: FromSlice + ToBytesVec;
     type Public: FromSlice + ToBytesVec;
 
+    /// Returns the reference to the public key.
     fn public(&self) -> &Self::Public;
 
+    /// Returns the reference to the private key.
     fn private(&self) -> &Self::Private;
 }
 
@@ -20,6 +22,7 @@ pub trait SigningKeyTrait {
     type SigningHash: FromSlice;
     type Signature: ToBytesVec;
 
+    /// Signs the given `hash` using the private key.
     fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error>;
 }
 
@@ -27,6 +30,7 @@ pub trait VerifyingKeyTrait {
     type SigningHash: FromSlice;
     type VerifySignature: FromSlice;
 
+    /// Verifies if the given `hash` was signed using the private key.
     fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool;
 }
 
