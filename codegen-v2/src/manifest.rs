@@ -142,7 +142,7 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
             match item {
                 GHeaderFileItem::StructIndicator(decl) => {
                     file_info.structs.push(StructInfo {
-                        name: decl.name.0.0.clone(),
+                        name: decl.name.0 .0.clone(),
                         is_public: true,
                         fields: vec![],
                         tags: vec![],
@@ -157,22 +157,41 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
-                    if decl.markers.0.contains(&GMarker::TwExportMethod)
-                        || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
+                    let markers = &decl.markers.0;
+
+                    // Handle exported methods.
+                    if markers.contains(&GMarker::TwExportMethod)
+                        || markers.contains(&GMarker::TwExportStaticMethod)
                     {
+                        // Detect constructor methods.
                         if decl.name.0.contains("Create") {
                             let x = InitInfo::from_g_type(decl).unwrap();
                             file_info.inits.push(x);
-                        } else if decl.name.0.contains("Delete") {
+                        }
+                        // Delect deconstructor methods.
+                        else if decl.name.0.contains("Delete") {
                             let x = DeinitInfo::from_g_type(decl).unwrap();
                             file_info.deinits.push(x);
-                        } else {
+                        }
+                        // Any any other method is just a method.
+                        else {
                             let x = MethodInfo::from_g_type(&None, decl).unwrap();
                             file_info.functions.push(x);
                         }
                     }
+                    // Handle exported properties.
+                    else if markers.contains(&GMarker::TwExportProperty)
+                        || markers.contains(&GMarker::TwExportStaticProperty)
+                    {
+                        let x = PropertyInfo::from_g_type(decl).unwrap();
+                        file_info.properties.push(x);
+                    }
+                    // None-exported methods are skipped.
+                    else {
+                        println!("Skipped: {}", &decl.name.0);
+                    }
                 }
-                _ => {},
+                _ => {}
             }
         }
 

@@ -135,17 +135,12 @@ impl StructInfo {
 }
 
 impl PropertyInfo {
-    pub fn from_g_type(object: &StructInfo, value: &GFunctionDecl) -> Result<Self> {
+    pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
         // Strip the object name from the property name.
         // E.g. "SomeObjectIsValid" => "IsValid"
-        let name = value
-            .name
-            .0
-            .strip_prefix(&object.name)
-            .ok_or(Error::BadProperty)?
-            .to_string();
+        let name = value.name.0.clone();
 
         if name.is_empty() {
             return Err(Error::BadProperty);
@@ -169,29 +164,21 @@ impl PropertyInfo {
 
         // ### Param
 
-        // Must have one parameter.
-        if value.params.len() != 1 {
+        // Must have at least one parameter.
+        if value.params.len() < 1 {
             return Err(Error::BadProperty);
         }
 
+        /*
         // Convert GType to TypeInfo.
         let g_ty = value.params.get(0).unwrap();
         let ty = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
-
-        // The parameter type must be the same as the object this property
-        // belongs to.
-        if let TypeVariant::Struct(name) = ty.variant {
-            if name != object.name {
-                return Err(Error::BadProperty);
-            }
-        } else {
-            return Err(Error::BadProperty);
-        }
 
         // Must be a pointer and not nullable.
         if ty.is_nullable || !ty.is_pointer {
             return Err(Error::BadProperty);
         }
+        */
 
         // ### Return value
 
@@ -236,8 +223,6 @@ impl DeinitInfo {
 impl MethodInfo {
     pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
-
-        dbg!(&object_name, &value.name);
 
         // Strip the object name from the method name.
         // E.g. "SomeObjectIsValid" => "IsValid"
