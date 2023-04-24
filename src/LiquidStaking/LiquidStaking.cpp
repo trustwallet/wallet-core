@@ -33,6 +33,7 @@ using Params = std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>;
 static const StraderFunctionRegistry gStraderFunctionRegistry =
     {{std::make_pair(Proto::POLYGON, Action::Stake), "swapMaticForMaticXViaInstantPool"},
      {std::make_pair(Proto::POLYGON, Action::Unstake), "requestMaticXSwap"},
+     {std::make_pair(Proto::POLYGON, Action::Withdraw), "claimMaticXSwap"},
      {std::make_pair(Proto::BNB_BSC, Action::Stake), "deposit"},
      {std::make_pair(Proto::BNB_BSC, Action::Unstake), "requestWithdraw"}
 };
@@ -54,6 +55,14 @@ namespace internal {
         Params params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(unstake.amount())));
         auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Unstake});
+        auto func = Ethereum::ABI::Function(functionName, params);
+        func.encode(payload);
+    }
+
+    void handleWithdraw(const Proto::Withdraw& withdraw, const Proto::Blockchain& blockchain, Data& payload) {
+        Params params;
+        params.emplace_back(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(withdraw.idx())));
+        auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Withdraw});
         auto func = Ethereum::ABI::Function(functionName, params);
         func.encode(payload);
     }
@@ -82,6 +91,9 @@ Proto::Output Builder::buildStraderEVM() const {
             internal::handleStake(*stake, mBlockchain, payload, amount);
         } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
             internal::handleUnstake(*unstake, mBlockchain, payload);
+            amount = uint256_t(0);
+        } else if (auto* withdraw = std::get_if<Proto::Withdraw>(&value); withdraw) {
+            internal::handleWithdraw(*withdraw, mBlockchain, payload);
             amount = uint256_t(0);
         }
 

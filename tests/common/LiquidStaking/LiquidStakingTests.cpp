@@ -201,6 +201,44 @@ namespace TW::LiquidStaking::tests {
         // Successfully broadcasted https://polygonscan.com/tx/0xa66855e4af8e654e458915f59acd77e88706c01b59a3e4aed1363a665458368a
     }
 
+    TEST(LiquidStaking, PolygonStraderWithdrawMatic) {
+        Proto::Input input;
+        input.set_blockchain(Proto::POLYGON);
+        input.set_protocol(Proto::Strader);
+        input.set_smart_contract_address("0xfd225c9e6601c9d38d8f98d8731bf59efcf8c0e3");
+        Proto::Withdraw withdraw;
+        Proto::Asset asset;
+        *withdraw.mutable_asset() = asset;
+        withdraw.set_idx("0");
+        *input.mutable_withdraw() = withdraw;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        auto tx = *ls_output.mutable_ethereum();
+        ASSERT_TRUE(tx.transaction().has_contract_generic());
+        ASSERT_EQ(hex(tx.transaction().contract_generic().data(), true), "0x77baf2090000000000000000000000000000000000000000000000000000000000000000");
+
+        // Following fields must be set afterwards, before signing ...
+        const auto chainId = store(uint256_t(137));
+        tx.set_chain_id(chainId.data(), chainId.size());
+        auto nonce = store(uint256_t(6));
+        tx.set_nonce(nonce.data(), nonce.size());
+        auto maxInclusionFeePerGas = store(uint256_t(35941173184));
+        auto maxFeePerGas = store(uint256_t(678347611864));
+        tx.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+        tx.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+        auto gasLimit = store(uint256_t(200000));
+        tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+        auto privKey = parse_hex("4a160b803c4392ea54865d0c5286846e7ad5e68fbd78880547697472b22ea7ab");
+        tx.set_private_key(privKey.data(), privKey.size());
+        // ... end
+
+        Ethereum::Proto::SigningOutput output;
+        ANY_SIGN(tx, TWCoinTypePolygon);
+        EXPECT_EQ(hex(output.encoded()), "02f89281890685085e42c7c0859df0ab1ed883030d4094fd225c9e6601c9d38d8f98d8731bf59efcf8c0e380a477baf2090000000000000000000000000000000000000000000000000000000000000000c080a02c2440ded34fc9930e4d07a7c16d5a6d865b17e37dba61f3a94a3b78cd269a35a055cb8ba79645063f99e999b6ca44cd0ac26d6fd2b3acc8453a1c1c61de767559");
+        // Successfully broadcasted https://polygonscan.com/tx/0x61fa7b9051ddb9e2906130b0c5d94b8e3ecfc89b1fdfeff86042fbea851d8ba4
+    }
+
     TEST(LiquidStaking, PolygonStraderStakeBnb) {
         Proto::Input input;
         input.set_blockchain(Proto::BNB_BSC);
