@@ -71,29 +71,29 @@ fn test_swift_method_from_json() {
 fn test_swift_method_from_json_2() {
     // TODO: Use MethodInfo directly?
     let input = r#"{
-		"method_name": "someFunc",
-		"is_static": false,
-		"return": {
-			"type": "String",
-			"is_nullable": false,
-			"wrap_as": "TWStringNSString(result)"
-		},
-		"params": [
-			{
-				"name": "one",
-				"type": "String",
-				"is_nullable": true,
-				"wrap_as": "TWStringCreateWithNSString(one)",
-				"deter_as": "StringDelete(one)"
-			},
-			{
-				"name": "two",
-				"type": "UInt32",
-				"is_nullable": true
-			}
-		],
-		"c_ffi_name": "TWSomeFunc"
-	}"#;
+        "method_name": "someFunc",
+        "is_static": false,
+        "return": {
+            "type": "String",
+            "is_nullable": false,
+            "wrap_as": "TWStringNSString(result)"
+        },
+        "params": [
+            {
+                "name": "one",
+                "type": "String",
+                "is_nullable": true,
+                "wrap_as": "TWStringCreateWithNSString(one)",
+                "deter_as": "StringDelete(one)"
+            },
+            {
+                "name": "two",
+                "type": "UInt32",
+                "is_nullable": true
+            }
+        ],
+        "c_ffi_name": "TWSomeFunc"
+    }"#;
 
     let output = r#"public func someFunc(one: String, two: UInt32) -> String {
     // Prepare 'one'.

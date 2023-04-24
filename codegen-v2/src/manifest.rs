@@ -123,10 +123,13 @@ pub struct ParamInfo {
     pub name: String,
     #[serde(rename = "type")]
     pub ty: TypeInfo,
+    pub tags: Vec<String>,
 }
 
 // NOTE: This function is temporary
-pub fn process_c_header_dir(dir: &CHeaderDirectory) {
+pub fn process_c_header_dir(dir: &CHeaderDirectory) -> Vec<FileInfo> {
+    let mut file_infos = vec![];
+
     for (path, items) in &dir.map {
         let file_name = path
             .file_name()
@@ -165,7 +168,7 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                         Some(GMarker::TwExportClass) => {
                             tags.push("TW_EXPORT_CLASS".to_string());
                         }
-                        _ => {},
+                        _ => {}
                     };
 
                     file_info.structs.push(StructInfo {
@@ -222,12 +225,10 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
             }
         }
 
-        let content = serde_yaml::to_string(&file_info).unwrap();
-        let file_path = format!("out/{}.yaml", file_name);
-
-        std::fs::create_dir_all("out").unwrap();
-        std::fs::write(&file_path, content.as_bytes()).unwrap();
+        file_infos.push(file_info);
     }
+
+    file_infos
 }
 
 pub fn extract_custom(ty: &GType) -> Option<String> {
@@ -247,5 +248,13 @@ pub fn extract_custom(ty: &GType) -> Option<String> {
 fn test_manifest() {
     let path = std::path::Path::new("../include/");
     let dir = crate::parse(&path).unwrap();
-    process_c_header_dir(&dir);
+    let file_infos = process_c_header_dir(&dir);
+
+    for file_info in file_infos {
+        let content = serde_yaml::to_string(&file_info).unwrap();
+        let file_path = format!("out/{}.yaml", file_info.name);
+
+        std::fs::create_dir_all("out").unwrap();
+        std::fs::write(&file_path, content.as_bytes()).unwrap();
+    }
 }

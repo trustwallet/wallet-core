@@ -1,6 +1,6 @@
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
-use crate::manifest::{TypeVariant, FunctionInfo, FileInfo};
-use crate::{Error, Result};
+use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, TypeInfo, TypeVariant};
+use crate::{Error, Result, parse};
 use handlebars::Handlebars;
 
 pub const METHOD_INFO: &str = "part_method.hbs";
@@ -39,6 +39,7 @@ impl From<TypeVariant> for SwiftType {
 #[derive(Serialize, Deserialize)]
 pub struct SwiftFunction {
     pub name: String,
+    pub c_ffi_name: String,
     pub is_public: bool,
     pub is_static: bool,
     pub params: Vec<SwiftParam>,
@@ -51,7 +52,7 @@ pub struct SwiftFunction {
 pub struct SwiftParam {
     name: String,
     #[serde(rename = "type")]
-    param_type: String,
+    param_type: SwiftType,
     is_nullable: bool,
     wrap_as: Option<String>,
     deter_as: Option<String>,
@@ -59,74 +60,139 @@ pub struct SwiftParam {
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftReturn {
-    pub name: String,
     #[serde(rename = "type")]
-    pub ty: SwiftType,
-}
-
-struct SwiftTypeContext {
-    name: String,
-    ty: String,
+    param_type: SwiftType,
+    is_nullable: bool,
     wrap_as: Option<String>,
     deter_as: Option<String>,
 }
 
-// Converts the parsed grammar `GType` into the corresponding Swift type,
-// including how it should be wrapped and/or deterred. The types must be
-// specifically matched/supported, otherwise an error is returned.
-fn get_type_str(gty: &GType) -> Result<SwiftTypeContext> {
-    // Match `Uint8T` primitive.
-    if let GType::Mutable(GTypeCategory::Scalar(GPrimitive::UInt8T)) = gty {
-        return Ok(SwiftTypeContext {
-            name: "int".to_string(),
-            ty: "UInt8".to_string(),
-            wrap_as: None,
-            deter_as: None,
-        });
-    }
+impl TryFrom<TypeInfo> for SwiftReturn {
+    type Error = Error;
 
-    if let GType::Mutable(GTypeCategory::Pointer(boxed)) = gty {
-        if let GTypeCategory::Unrecognized(ref keyword) = **boxed {
-            if keyword.0 == "TWString" {
-                return Ok(SwiftTypeContext {
-                    name: "string".to_string(),
-                    ty: "String".to_string(),
-                    wrap_as: Some("TWStringCreateWithNSString(string)".to_string()),
-                    deter_as: Some("StringDelete(string)".to_string()),
-                });
-            } else if keyword.0 == "TWData" {
-                return Ok(SwiftTypeContext {
-                    name: "data".to_string(),
-                    ty: "Data".to_string(),
-                    wrap_as: Some("TWDataCreateWithNSData(data)".to_string()),
-                    deter_as: Some("TWDataDelete(data)".to_string()),
-                });
+    fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
+        let (wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+            (
+                Some("TWDataCreateWithNSData(result)".to_string()),
+                Some("TWDataDelete(result)".to_string()),
+            )
+        } else if value.tags.iter().any(|t| t == "TW_STRING") {
+            (
+                Some("TWStringCreateWithNSString(result)".to_string()),
+                Some("StringDelete(result)".to_string()),
+            )
+        } else {
+            (None, None)
+        };
+
+        Ok(SwiftReturn {
+            param_type: SwiftType::try_from(value.variant).unwrap(),
+            is_nullable: value.is_nullable,
+            wrap_as,
+            deter_as,
+        })
+    }
+}
+
+impl TryFrom<ParamInfo> for SwiftParam {
+    type Error = Error;
+
+    fn try_from(value: ParamInfo) -> Result<Self> {
+        let (wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+            (
+                Some("TWDataCreateWithNSData(data)".to_string()),
+                Some("TWDataDelete(data)".to_string()),
+            )
+        } else if value.tags.iter().any(|t| t == "TW_STRING") {
+            (
+                Some("TWStringCreateWithNSString(string)".to_string()),
+                Some("StringDelete(string)".to_string()),
+            )
+        } else {
+            (None, None)
+        };
+
+        Ok(SwiftParam {
+            name: value.name,
+            param_type: SwiftType::try_from(value.ty.variant).unwrap(),
+            is_nullable: value.ty.is_nullable,
+            wrap_as: wrap_as,
+            deter_as: deter_as,
+        })
+    }
+}
+
+fn process_file_info(info: FileInfo) {
+    let struct_names: Vec<&str> = info.structs.iter().map(|s| s.name.as_ref()).collect();
+
+    for func in info.functions {
+        let mut func_name = None;
+
+        for struct_name in &struct_names {
+            if let Some(suffix) = func.name.strip_prefix(struct_name) {
+                // We do not allow this.
+                if func_name.is_some() {
+                    panic!()
+                }
+
+                func_name = Some(suffix.to_string());
             }
         }
-    }
 
-    Err(Error::Todo)
+        let func_name = if func_name.is_none() {
+            func_name.unwrap()
+        } else {
+            func.name.clone()
+        };
+
+        // Convert parameters.
+        let mut params = vec![];
+        for param in func.params {
+            params.push(SwiftParam::try_from(param).unwrap());
+        }
+
+        // Convert return type.
+        let return_type = SwiftReturn::try_from(func.return_type).unwrap();
+
+        let func = SwiftFunction {
+            name: func_name,
+            c_ffi_name: func.name.clone(),
+            is_public: func.is_public,
+            is_static: func.is_static,
+            params,
+            return_type,
+            comments: vec![],
+        };
+
+        let mut engine = Handlebars::new();
+        engine.set_strict_mode(true);
+
+        engine
+            .register_template_file(METHOD_INFO, template_path(METHOD_INFO))
+            .unwrap();
+
+        let out = engine.render(METHOD_INFO, &func).unwrap();
+
+        println!("{}", out);
+
+        break;
+    }
 }
 
-fn get_method_name(prefix: &GKeyword, keyword: &GKeyword) -> Result<String> {
-    let prefix = &prefix.0;
-    let name = &keyword.0;
+const TEMPLATE_DIR: &str = "src/codegen/templates/swift/";
 
-    // Failure here would imply a bug. This should be catched before.
-    // TODO: Write where.
-    let name = name.strip_prefix(prefix).ok_or(Error::Todo)?;
-
-    if name.is_empty() {
-        return Err(Error::Todo);
-    }
-
-    // Lowercase first letter.
-    let mut name = name.to_string();
-    let name = name.remove(0).to_lowercase().to_string() + &name;
-
-    Ok(name)
+fn template_path(file: &str) -> String {
+    format!("{}{}", TEMPLATE_DIR, file)
 }
 
-fn process_file_info(info: &FileInfo) {
+#[test]
+#[ignore]
+fn test_swift_template() {
+    let path = std::path::Path::new("../include/");
+    let dir = crate::parse(&path).unwrap();
+    let file_infos = crate::manifest::process_c_header_dir(&dir);
 
+    for file_info in file_infos {
+        process_file_info(file_info);
+    }
 }
