@@ -58,7 +58,7 @@ pub struct FileInfo {
     pub inits: Vec<InitInfo>,
     pub deinits: Vec<DeinitInfo>,
     pub enums: Vec<EnumInfo>,
-    pub functions: Vec<MethodInfo>,
+    pub functions: Vec<FunctionInfo>,
     pub properties: Vec<PropertyInfo>,
 }
 
@@ -100,7 +100,7 @@ pub struct DeinitInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MethodInfo {
+pub struct FunctionInfo {
     pub name: String,
     pub is_public: bool,
     pub is_static: bool,
@@ -189,7 +189,7 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                         }
                         // Any any other method is just a method.
                         else {
-                            let x = MethodInfo::from_g_type(&None, decl).unwrap();
+                            let x = FunctionInfo::from_g_type(&None, decl).unwrap();
                             file_info.functions.push(x);
                         }
                     }

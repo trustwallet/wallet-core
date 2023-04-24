@@ -239,7 +239,7 @@ impl PropertyInfo {
 
 impl InitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        let func = MethodInfo::from_g_type(&None, value)?;
+        let func = FunctionInfo::from_g_type(&None, value)?;
 
         Ok(InitInfo {
             name: func.name,
@@ -251,7 +251,7 @@ impl InitInfo {
 
 impl DeinitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        let func = MethodInfo::from_g_type(&None, value)?;
+        let func = FunctionInfo::from_g_type(&None, value)?;
 
         Ok(DeinitInfo {
             name: func.name,
@@ -261,7 +261,7 @@ impl DeinitInfo {
     }
 }
 
-impl MethodInfo {
+impl FunctionInfo {
     pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
@@ -319,7 +319,7 @@ impl MethodInfo {
         let re = &value.return_value;
         let return_type = TypeInfo::from_g_type(&re.ty, &re.markers)?;
 
-        Ok(MethodInfo {
+        Ok(FunctionInfo {
             name,
             is_public,
             is_static,
