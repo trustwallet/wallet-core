@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::hash_wrapper::hasher;
-pub use sha3::{Keccak256, Keccak512, Sha3_256, Sha3_512};
+use sha3::{Keccak256, Keccak512, Sha3_256, Sha3_512};
 
 pub fn keccak256(input: &[u8]) -> Vec<u8> {
     hasher::<Keccak256>(input)

@@ -8,22 +8,20 @@ use crate::starkex::field_element_from_bytes_be;
 use crate::starkex::signature::Signature;
 use crate::traits::VerifyingKeyTrait;
 use crate::Error;
+use starknet_crypto::verify as ecdsa_verify;
 use starknet_ff::FieldElement;
-use starknet_signers::VerifyingKey;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_utils::traits::ToBytesVec;
 use tw_utils::try_or_false;
 
 pub struct PublicKey {
-    public: VerifyingKey,
+    public: FieldElement,
 }
 
 impl PublicKey {
     pub(crate) fn from_scalar(public: FieldElement) -> PublicKey {
-        PublicKey {
-            public: VerifyingKey::from_scalar(public),
-        }
+        PublicKey { public }
     }
 }
 
@@ -33,8 +31,8 @@ impl VerifyingKeyTrait for PublicKey {
 
     fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
         let hash = try_or_false!(field_element_from_bytes_be(&hash));
-        self.public
-            .verify(&hash, signature.inner())
+        let ecdsa_signature = signature.inner();
+        ecdsa_verify(&self.public, &hash, &ecdsa_signature.r, &ecdsa_signature.s)
             .unwrap_or_default()
     }
 }
@@ -59,6 +57,6 @@ impl From<&'static str> for PublicKey {
 
 impl ToBytesVec for PublicKey {
     fn to_vec(&self) -> Vec<u8> {
-        self.public.scalar().to_bytes_be().to_vec()
+        self.public.to_bytes_be().to_vec()
     }
 }
