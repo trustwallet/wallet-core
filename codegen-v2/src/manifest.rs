@@ -22,6 +22,7 @@ pub struct TypeInfo {
     pub is_constant: bool,
     pub is_nullable: bool,
     pub is_pointer: bool,
+    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]

@@ -47,8 +47,6 @@ impl TypeInfo {
             Ok(res)
         }
 
-        dbg!(ty, markers);
-
         let is_nullable = markers.0.iter().any(|m| match m {
             GMarker::Nullable => true,
             GMarker::NonNull => false,
@@ -57,14 +55,28 @@ impl TypeInfo {
 
         if let GType::Mutable(GTypeCategory::Pointer(pointer)) = ty {
             if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
-                if keyword.0 == "TWData" || keyword.0 == "TWString" {
+                if keyword.0 == "TWData" {
                     return Ok(TypeInfo {
                         variant: TypeVariant::Void,
                         is_constant: true,
                         is_nullable,
                         is_pointer: true,
+                        tags: vec![
+                            "TW_DATA".to_string(),
+                        ]
+                    });
+                } else if keyword.0 == "TWString" {
+                    return Ok(TypeInfo {
+                        variant: TypeVariant::Void,
+                        is_constant: true,
+                        is_nullable,
+                        is_pointer: true,
+                        tags: vec![
+                            "TW_STRING".to_string(),
+                        ]
                     });
                 }
+
             }
         }
 
@@ -82,6 +94,7 @@ impl TypeInfo {
             is_constant,
             is_nullable,
             is_pointer,
+            tags: vec![],
         })
     }
 }
