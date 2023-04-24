@@ -46,6 +46,8 @@ pub struct FileInfo {
     pub name: String,
     pub imports: Vec<ImportInfo>,
     pub structs: Vec<StructInfo>,
+    pub inits: Vec<InitInfo>,
+    pub deinits: Vec<DeinitInfo>,
     pub enums: Vec<EnumInfo>,
     pub functions: Vec<MethodInfo>,
     pub properties: Vec<PropertyInfo>,
@@ -75,11 +77,16 @@ pub struct StructInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PropertyInfo {
+pub struct InitInfo {
     pub name: String,
-    pub is_public: bool,
-    pub is_static: bool,
-    pub return_type: TypeInfo,
+    pub params: Vec<ParamInfo>,
+    pub comments: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeinitInfo {
+    pub name: String,
+    pub params: Vec<ParamInfo>,
     pub comments: Vec<String>,
 }
 
@@ -89,6 +96,15 @@ pub struct MethodInfo {
     pub is_public: bool,
     pub is_static: bool,
     pub params: Vec<ParamInfo>,
+    pub return_type: TypeInfo,
+    pub comments: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PropertyInfo {
+    pub name: String,
+    pub is_public: bool,
+    pub is_static: bool,
     pub return_type: TypeInfo,
     pub comments: Vec<String>,
 }
@@ -115,6 +131,8 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
             name: file_name.clone(),
             imports: vec![],
             structs: vec![],
+            inits: vec![],
+            deinits: vec![],
             enums: vec![],
             functions: vec![],
             properties: vec![],
@@ -139,17 +157,19 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
-                    /*
-                    if decl.name.0.contains("CreateWith") || decl.name.0.contains("Delete") {
-                        continue;
-                    }
-                    */
-
                     if decl.markers.0.contains(&GMarker::TwExportMethod)
                         || decl.markers.0.contains(&GMarker::TwExportStaticMethod)
                     {
-                        let x = MethodInfo::from_g_type(&None, decl).unwrap();
-                        file_info.functions.push(x);
+                        if decl.name.0.contains("Create") {
+                            let x = InitInfo::from_g_type(decl).unwrap();
+                            file_info.inits.push(x);
+                        } else if decl.name.0.contains("Delete") {
+                            let x = DeinitInfo::from_g_type(decl).unwrap();
+                            file_info.deinits.push(x);
+                        } else {
+                            let x = MethodInfo::from_g_type(&None, decl).unwrap();
+                            file_info.functions.push(x);
+                        }
                     }
                 }
                 _ => {},

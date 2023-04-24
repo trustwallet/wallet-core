@@ -209,6 +209,30 @@ impl PropertyInfo {
     }
 }
 
+impl InitInfo {
+    pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
+        let func = MethodInfo::from_g_type(&None, value)?;
+
+        Ok(InitInfo {
+            name: func.name,
+            params: func.params,
+            comments: vec![],
+        })
+    }
+}
+
+impl DeinitInfo {
+    pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
+        let func = MethodInfo::from_g_type(&None, value)?;
+
+        Ok(DeinitInfo {
+            name: func.name,
+            params: func.params,
+            comments: vec![],
+        })
+    }
+}
+
 impl MethodInfo {
     pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
