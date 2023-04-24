@@ -7,6 +7,9 @@
 #include "LiquidStaking/LiquidStaking.h"
 #include "Data.h"
 
+// Aptos
+#include "proto/Aptos.pb.h"
+
 // ETH
 #include "Ethereum/ABI/Function.h"
 #include "Ethereum/ABI/ParamAddress.h"
@@ -106,6 +109,37 @@ Proto::Output Builder::buildStraderEVM() const {
     return output;
 }
 
+Proto::Output Builder::buildTortugaAptos() const {
+    Proto::Output output;
+    if (!mSmartContractAddress) {
+        *output.mutable_status() = generateError(Proto::ERROR_SMART_CONTRACT_ADDRESS_NOT_SET, "Tortuga protocol require the smart contract address to be set");
+        return output;
+    }
+    auto input = Aptos::Proto::SigningInput();
+    auto &liquid_staking_message = *input.mutable_liquid_staking_message();
+    liquid_staking_message.set_smart_contract_address(*mSmartContractAddress);
+
+    auto visitFunctor = [&liquid_staking_message](const TAction& value) {
+        if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
+            auto& tortuga_stake = *liquid_staking_message.mutable_stake();
+            tortuga_stake.set_amount(std::strtoull(stake->amount().c_str(), nullptr, 0));
+        }
+    };
+
+    std::visit(visitFunctor, this->mAction);
+    *output.mutable_aptos() = input;
+    return output;
+}
+
+Proto::Output Builder::buildTortuga() const {
+    if (this->mBlockchain == Proto::APTOS) {
+        return buildTortugaAptos();
+    }
+    auto output = Proto::Output();
+    *output.mutable_status() = generateError(Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL, "Only Aptos blockchain is supported on tortuga for now");
+    return output;
+}
+
 
 Proto::Output Builder::buildStrader() const {
     switch (this->mBlockchain) {
@@ -123,6 +157,8 @@ Proto::Output Builder::build() const {
     switch (this->mProtocol) {
     case Proto::Strader:
         return this->buildStrader();
+    case Proto::Tortuga:
+        return this->buildTortuga();
     default:
         return Proto::Output();
     }

@@ -89,6 +89,20 @@ TransactionPayload nftOfferPayload(const Proto::OfferNftMessage& msg) {
     return payload;
 }
 
+TransactionPayload tortugaStakePayload(const std::string& smart_contract_address, const Proto::TortugaStake& msg) {
+    std::vector<Data> args;
+    serializeToArgs(args, msg.amount());
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            std::to_string(msg.amount())
+                        });
+    // clang-format on
+    ModuleId tortugaStakeModule{Address(smart_contract_address), "stake_router"};
+    TransactionPayload payload = EntryFunction(tortugaStakeModule, "stake", {}, args, argsJson);
+    return payload;
+}
+
 TransactionPayload cancelNftOfferPayload(const Proto::CancelOfferNftMessage& msg) {
     std::vector<Data> args;
     serializeToArgs(args, Address(msg.receiver()));
@@ -183,7 +197,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
             throw std::runtime_error("Nft message payload not set");
         }
     };
-    auto payloadFunctor = [&input, &nftPayloadFunctor]() {
+    auto liquidStakingFunctor = [](const Proto::LiquidStaking& liquidStakingMessage) {
+        switch (liquidStakingMessage.liquid_stake_transaction_payload_case()) {
+        case Proto::LiquidStaking::kStake:
+            return tortugaStakePayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.stake());
+        case Proto::LiquidStaking::LIQUID_STAKE_TRANSACTION_PAYLOAD_NOT_SET:
+            throw std::runtime_error("Nft message payload not set");
+        }
+    };
+    auto payloadFunctor = [&input, &nftPayloadFunctor, &liquidStakingFunctor]() {
         switch (input.transaction_payload_case()) {
         case Proto::SigningInput::kTransfer: {
             return transferPayload(input);
@@ -199,6 +221,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         }
         case Proto::SigningInput::kRegisterToken: {
             return registerTokenPayload(input);
+        }
+        case Proto::SigningInput::kLiquidStakingMessage: {
+            return liquidStakingFunctor(input.liquid_staking_message());
         }
         case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Transaction payload should be set");
