@@ -1,25 +1,50 @@
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
+use crate::manifest::{TypeVariant, FunctionInfo, FileInfo};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 
 pub const METHOD_INFO: &str = "part_method.hbs";
 
 #[derive(Serialize, Deserialize)]
-pub struct SwiftFunction {
-    method_name: String,
-    is_static: bool,
-    #[serde(rename = "return")]
-    return_info: SwiftReturn,
-    params: Vec<SwiftParam>,
-    c_ffi_name: String,
+pub struct SwiftType(String);
+
+impl From<TypeVariant> for SwiftType {
+    fn from(value: TypeVariant) -> Self {
+        let res = match value {
+            TypeVariant::Void => "()".to_string(),
+            TypeVariant::Bool => "Bool".to_string(),
+            TypeVariant::Char => "Character".to_string(),
+            TypeVariant::ShortInt => "Int16".to_string(),
+            TypeVariant::Int => "Int32".to_string(),
+            TypeVariant::UnsignedInt => "UInt32".to_string(),
+            TypeVariant::LongInt => "Int64".to_string(),
+            TypeVariant::Float => "Float".to_string(),
+            TypeVariant::Double => "Double".to_string(),
+            TypeVariant::SizeT => "Int".to_string(),
+            TypeVariant::Int8T => "Int8".to_string(),
+            TypeVariant::Int16T => "Int16".to_string(),
+            TypeVariant::Int32T => "Int32".to_string(),
+            TypeVariant::Int64T => "Int64".to_string(),
+            TypeVariant::UInt8T => "UInt8".to_string(),
+            TypeVariant::UInt16T => "UInt16".to_string(),
+            TypeVariant::UInt32T => "UInt32".to_string(),
+            TypeVariant::UInt64T => "UInt64".to_string(),
+            TypeVariant::Struct(n) | TypeVariant::Enum(n) => n,
+        };
+
+        SwiftType(res)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct SwiftReturn {
-    #[serde(rename = "type")]
-    return_type: String,
-    is_nullable: bool,
-    wrap_as: Option<String>,
+pub struct SwiftFunction {
+    pub name: String,
+    pub is_public: bool,
+    pub is_static: bool,
+    pub params: Vec<SwiftParam>,
+    #[serde(rename = "return")]
+    pub return_type: SwiftReturn,
+    pub comments: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -30,6 +55,13 @@ pub struct SwiftParam {
     is_nullable: bool,
     wrap_as: Option<String>,
     deter_as: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SwiftReturn {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub ty: SwiftType,
 }
 
 struct SwiftTypeContext {
@@ -95,60 +127,6 @@ fn get_method_name(prefix: &GKeyword, keyword: &GKeyword) -> Result<String> {
     Ok(name)
 }
 
-pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<SwiftFunction> {
-    let method_name = get_method_name(prefix, &decl.name)?;
-    let c_ffi_name = decl.name.0.to_string();
+fn process_file_info(info: &FileInfo) {
 
-    let is_static = decl
-        .markers
-        .0
-        .iter()
-        .any(|marker| matches!(marker, GMarker::TwExportMethod));
-
-    // ### Method parameters
-
-    let mut params = vec![];
-    for param in &decl.params {
-        // Convert grammar type to (native) Swift type.
-        let ctx = get_type_str(&param.ty)?;
-
-        let is_nullable = param.markers.0.iter().any(|marker| {
-            // TODO: Why do both of those markers even exist? One would be
-            // sufficient (?)
-            !matches!(marker, GMarker::NonNull) || matches!(marker, GMarker::Nullable)
-        });
-
-        params.push(SwiftParam {
-            name: ctx.name,
-            param_type: ctx.ty,
-            is_nullable,
-            wrap_as: ctx.wrap_as,
-            deter_as: ctx.deter_as,
-        })
-    }
-
-    // ### Return value
-
-    // Check marker on whether the return value is nullable.
-    let is_nullable =
-        decl.return_value.markers.0.iter().any(|marker| {
-            !matches!(marker, GMarker::NonNull) || matches!(marker, GMarker::Nullable)
-        });
-
-    // Convert grammar type to (native) Swift type.
-    let ctx = get_type_str(&decl.return_value.ty)?;
-
-    let info = SwiftFunction {
-        method_name,
-        is_static,
-        return_info: SwiftReturn {
-            return_type: ctx.ty,
-            is_nullable,
-            wrap_as: ctx.wrap_as,
-        },
-        params,
-        c_ffi_name,
-    };
-
-    Ok(info)
 }

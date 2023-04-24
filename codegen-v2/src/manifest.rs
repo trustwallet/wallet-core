@@ -155,11 +155,24 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     file_info.imports.push(x);
                 }
                 GHeaderFileItem::StructIndicator(decl) => {
+                    let markers = &decl.markers.0;
+
+                    let mut tags = vec![];
+                    match markers.first() {
+                        Some(GMarker::TwExportStruct) => {
+                            tags.push("TW_EXPORT_STRUCT".to_string());
+                        }
+                        Some(GMarker::TwExportClass) => {
+                            tags.push("TW_EXPORT_CLASS".to_string());
+                        }
+                        _ => {},
+                    };
+
                     file_info.structs.push(StructInfo {
                         name: decl.name.0 .0.clone(),
                         is_public: true,
                         fields: vec![],
-                        tags: vec![],
+                        tags,
                     });
                 }
                 GHeaderFileItem::StructDecl(decl) => {

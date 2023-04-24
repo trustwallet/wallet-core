@@ -61,9 +61,7 @@ impl TypeInfo {
                         is_constant: true,
                         is_nullable,
                         is_pointer: true,
-                        tags: vec![
-                            "TW_DATA".to_string(),
-                        ]
+                        tags: vec!["TW_DATA".to_string()],
                     });
                 } else if keyword.0 == "TWString" {
                     return Ok(TypeInfo {
@@ -71,12 +69,9 @@ impl TypeInfo {
                         is_constant: true,
                         is_nullable,
                         is_pointer: true,
-                        tags: vec![
-                            "TW_STRING".to_string(),
-                        ]
+                        tags: vec!["TW_STRING".to_string()],
                     });
                 }
-
             }
         }
 
@@ -132,6 +127,7 @@ impl EnumInfo {
 impl StructInfo {
     pub fn from_g_type(value: &GStructDecl) -> Result<Self> {
         let mut markers = value.markers.0.iter();
+        dbg!(&value);
 
         if markers.size_hint().0 != 1 {
             return Err(Error::BadObject);
@@ -180,8 +176,6 @@ impl PropertyInfo {
         // Strip the object name from the property name.
         // E.g. "SomeObjectIsValid" => "IsValid"
         let name = value.name.0.clone();
-
-        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::BadProperty);
@@ -277,8 +271,6 @@ impl FunctionInfo {
         } else {
             value.name.0.to_string()
         };
-
-        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::BadProperty);
