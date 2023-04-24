@@ -156,8 +156,8 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
             }
         }
 
-        let content = serde_json::to_string_pretty(&file_info).unwrap();
-        let file_path = format!("out/{}.json", file_name);
+        let content = serde_yaml::to_string(&file_info).unwrap();
+        let file_path = format!("out/{}.yaml", file_name);
 
         std::fs::create_dir_all("out").unwrap();
         std::fs::write(&file_path, content.as_bytes()).unwrap();
