@@ -301,8 +301,6 @@ impl FunctionInfo {
             params.push(ParamInfo {
                 name: g_item.name.0.to_string(),
                 ty: TypeInfo::from_g_type(&g_item.ty, &g_item.markers)?,
-                // TODO
-                tags: vec![],
             })
         }
 

@@ -1,6 +1,6 @@
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
 use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, TypeInfo, TypeVariant};
-use crate::{Error, Result, parse};
+use crate::{parse, Error, Result};
 use handlebars::Handlebars;
 
 pub const METHOD_INFO: &str = "part_method.hbs";
@@ -71,22 +71,24 @@ impl TryFrom<TypeInfo> for SwiftReturn {
     type Error = Error;
 
     fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
-        let (wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+        let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
             (
+                SwiftType("TWData".to_string()),
                 Some("TWDataCreateWithNSData(result)".to_string()),
                 Some("TWDataDelete(result)".to_string()),
             )
         } else if value.tags.iter().any(|t| t == "TW_STRING") {
             (
+                SwiftType("TWString".to_string()),
                 Some("TWStringCreateWithNSString(result)".to_string()),
                 Some("StringDelete(result)".to_string()),
             )
         } else {
-            (None, None)
+            (SwiftType::try_from(value.variant).unwrap(), None, None)
         };
 
         Ok(SwiftReturn {
-            param_type: SwiftType::try_from(value.variant).unwrap(),
+            param_type,
             is_nullable: value.is_nullable,
             wrap_as,
             deter_as,
@@ -98,23 +100,25 @@ impl TryFrom<ParamInfo> for SwiftParam {
     type Error = Error;
 
     fn try_from(value: ParamInfo) -> Result<Self> {
-        let (wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+        let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
             (
+                SwiftType("TWData".to_string()),
                 Some("TWDataCreateWithNSData(data)".to_string()),
                 Some("TWDataDelete(data)".to_string()),
             )
-        } else if value.tags.iter().any(|t| t == "TW_STRING") {
+        } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
             (
+                SwiftType("TWString".to_string()),
                 Some("TWStringCreateWithNSString(string)".to_string()),
                 Some("StringDelete(string)".to_string()),
             )
         } else {
-            (None, None)
+            (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
         };
 
         Ok(SwiftParam {
             name: value.name,
-            param_type: SwiftType::try_from(value.ty.variant).unwrap(),
+            param_type,
             is_nullable: value.ty.is_nullable,
             wrap_as: wrap_as,
             deter_as: deter_as,
@@ -139,7 +143,7 @@ fn process_file_info(info: FileInfo) {
             }
         }
 
-        let func_name = if func_name.is_none() {
+        let func_name = if func_name.is_some() {
             func_name.unwrap()
         } else {
             func.name.clone()

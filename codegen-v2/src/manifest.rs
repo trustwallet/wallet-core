@@ -123,7 +123,6 @@ pub struct ParamInfo {
     pub name: String,
     #[serde(rename = "type")]
     pub ty: TypeInfo,
-    pub tags: Vec<String>,
 }
 
 // NOTE: This function is temporary
