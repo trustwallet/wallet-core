@@ -18,16 +18,21 @@ impl TypeInfo {
                     GPrimitive::LongInt => TypeVariant::Int64,
                     GPrimitive::Float => TypeVariant::Float32,
                     GPrimitive::Double => TypeVariant::Float64,
+                    GPrimitive::SizeT => TypeVariant::SizeT,
+                    GPrimitive::Int8T => TypeVariant::Int8T,
+                    GPrimitive::Int16T => TypeVariant::Int16T,
+                    GPrimitive::Int32T => TypeVariant::Int32T,
+                    GPrimitive::Int64T => TypeVariant::Int64T,
                     GPrimitive::UInt8T => TypeVariant::Uint8,
+                    GPrimitive::UInt16T => TypeVariant::Uint16,
                     GPrimitive::UInt32T => TypeVariant::Uint32,
+                    GPrimitive::UInt64T => TypeVariant::Uint64,
                 },
                 GTypeCategory::Struct(s) => TypeVariant::Struct(s.0 .0.to_string()),
                 GTypeCategory::Enum(e) => TypeVariant::Enum(e.0 .0.to_string()),
-                GTypeCategory::Pointer(_) => {
+                GTypeCategory::Pointer(_) | GTypeCategory::Unrecognized(_) => {
                     return Err(Error::BadType);
                 }
-                // TODO:
-                GTypeCategory::Unrecognized(name) => TypeVariant::Struct(name.0.to_string()),
             };
 
             Ok(variant)
@@ -42,6 +47,27 @@ impl TypeInfo {
             Ok(res)
         }
 
+        dbg!(ty, markers);
+
+        let is_nullable = markers.0.iter().any(|m| match m {
+            GMarker::Nullable => true,
+            GMarker::NonNull => false,
+            _ => false,
+        });
+
+        if let GType::Mutable(GTypeCategory::Pointer(pointer)) = ty {
+            if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
+                if keyword.0 == "TWData" || keyword.0 == "TWString" {
+                    return Ok(TypeInfo {
+                        variant: TypeVariant::Void,
+                        is_constant: true,
+                        is_nullable,
+                        is_pointer: true,
+                    });
+                }
+            }
+        }
+
         let ((variant, is_pointer), is_constant) = match ty {
             GType::Mutable(category) => (get_variant_pointer_check(category)?, false),
             GType::Const(category) => (get_variant_pointer_check(category)?, true),
@@ -54,7 +80,7 @@ impl TypeInfo {
         Ok(TypeInfo {
             variant,
             is_constant,
-            is_nullable: false,
+            is_nullable,
             is_pointer,
         })
     }
@@ -141,6 +167,8 @@ impl PropertyInfo {
         // Strip the object name from the property name.
         // E.g. "SomeObjectIsValid" => "IsValid"
         let name = value.name.0.clone();
+
+        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::BadProperty);
@@ -236,6 +264,8 @@ impl MethodInfo {
         } else {
             value.name.0.to_string()
         };
+
+        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::BadProperty);

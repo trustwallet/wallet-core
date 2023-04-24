@@ -196,8 +196,15 @@ pub enum GPrimitive {
     LongInt,
     Float,
     Double,
+    SizeT,
+    Int8T,
+    Int16T,
+    Int32T,
+    Int64T,
     UInt8T,
+    UInt16T,
     UInt32T,
+    UInt64T,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -506,8 +513,15 @@ impl ParseTree for GPrimitive {
             "long" => GPrimitive::LongInt,
             "float" => GPrimitive::Float,
             "double" => GPrimitive::Double,
+            "size_t" => GPrimitive::SizeT,
+            "int8_t" => GPrimitive::Int8T,
+            "int16_t" => GPrimitive::Int16T,
+            "int32_t" => GPrimitive::Int32T,
+            "int64_t" => GPrimitive::Int64T,
             "uint8_t" => GPrimitive::UInt8T,
+            "uint16_t" => GPrimitive::UInt16T,
             "uint32_t" => GPrimitive::UInt32T,
+            "uint64_t" => GPrimitive::UInt64T,
             _ => {
                 return Err(Error::Todo);
             }
