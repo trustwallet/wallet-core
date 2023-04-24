@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 //! This module is a Proof Of Concept that proves the possibility to implement the following in Rust:
-//! https://github.com/trustwallet/wallet-core/blob/master/src/PrivateKey.cpp#L253
+//! https://github.com/trustwallet/wallet-core/blob/d9e35ec485b1366dd10509192d02d9dbb6877ab3/src/PrivateKey.cpp#L253-L282
 //!
 //! # Warning
 //!
@@ -24,7 +24,7 @@ use k256::{Scalar, Secp256k1};
 use rfc6979::{ByteArray, HmacDrbg};
 use tw_hash::H256;
 
-/// Implements https://github.com/trustwallet/wallet-core/blob/master/src/PrivateKey.cpp#L253
+/// Implements https://github.com/trustwallet/wallet-core/blob/d9e35ec485b1366dd10509192d02d9dbb6877ab3/src/PrivateKey.cpp#L253-L282
 pub(crate) fn sign_with_canonical<F>(
     private: &PrivateKey,
     hash_to_sign: H256,

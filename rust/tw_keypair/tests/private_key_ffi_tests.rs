@@ -20,7 +20,7 @@ struct TWPrivateKeyHelper {
 
 impl TWPrivateKeyHelper {
     fn with_bytes<T: Into<Vec<u8>>>(bytes: T) -> TWPrivateKeyHelper {
-        let priv_key_raw = CByteArray::new(bytes.into());
+        let priv_key_raw = CByteArray::from(bytes.into());
         let ptr =
             unsafe { tw_private_key_create_with_data(priv_key_raw.data(), priv_key_raw.size()) };
         TWPrivateKeyHelper { ptr }
@@ -70,7 +70,7 @@ fn test_tw_private_key_sign() {
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
     );
     let hash = H256::from("1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8");
-    let hash_raw = CByteArray::new(hash.to_vec());
+    let hash_raw = CByteArray::from(hash.to_vec());
     let actual = unsafe {
         tw_private_key_sign(
             tw_privkey.ptr,
@@ -90,7 +90,7 @@ fn test_tw_private_key_sign_invalid_hash() {
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
     );
     let hash = hex::decode("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080").unwrap();
-    let hash_raw = CByteArray::new(hash);
+    let hash_raw = CByteArray::from(hash);
     let actual = unsafe {
         tw_private_key_sign(
             tw_privkey.ptr,
@@ -155,7 +155,7 @@ fn test_tw_private_key_get_public_key_by_type() {
 #[test]
 fn test_tw_private_key_is_valid() {
     fn is_valid(privkey_bytes: Vec<u8>) -> bool {
-        let privkey_raw = CByteArray::new(privkey_bytes);
+        let privkey_raw = CByteArray::from(privkey_bytes);
         unsafe {
             tw_private_key_is_valid(
                 privkey_raw.data(),

@@ -16,3 +16,19 @@ where
         self.as_ref().to_vec()
     }
 }
+
+pub trait IntoOption<T> {
+    fn into_option(self) -> Option<T>;
+}
+
+impl<T, E> IntoOption<T> for Result<T, E> {
+    fn into_option(self) -> Option<T> {
+        self.ok()
+    }
+}
+
+impl<T> IntoOption<T> for Option<T> {
+    fn into_option(self) -> Option<T> {
+        self
+    }
+}

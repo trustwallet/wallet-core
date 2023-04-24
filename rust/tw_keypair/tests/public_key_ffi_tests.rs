@@ -19,7 +19,7 @@ struct TWPublicKeyHelper {
 
 impl TWPublicKeyHelper {
     fn with_bytes<T: Into<Vec<u8>>>(bytes: T, ty: TWPublicKeyType) -> TWPublicKeyHelper {
-        let public_key_raw = CByteArray::new(bytes.into());
+        let public_key_raw = CByteArray::from(bytes.into());
         let ptr = unsafe {
             tw_public_key_create_with_data(public_key_raw.data(), public_key_raw.size(), ty as u32)
         };
@@ -91,9 +91,9 @@ fn test_tw_public_key_verify() {
     assert!(!tw_public.ptr.is_null());
 
     let signature_bytes  = H520::from("8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901");
-    let signature_raw = CByteArray::new(signature_bytes.into_vec());
+    let signature_raw = CByteArray::from(signature_bytes.into_vec());
     let hash = H256::try_from(keccak256(b"hello").as_slice()).unwrap();
-    let hash_raw = CByteArray::new(hash.to_vec());
+    let hash_raw = CByteArray::from(hash.to_vec());
 
     let is_valid = unsafe {
         tw_public_key_verify(

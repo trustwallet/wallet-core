@@ -72,19 +72,16 @@ pub unsafe extern "C" fn tw_private_key_sign(
     hash_len: usize,
     curve: u32,
 ) -> CByteArray {
-    let curve = match TWCurve::from_raw(curve) {
-        Some(curve) => curve,
-        None => return CByteArray::empty(),
-    };
-    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::empty);
+    let curve = try_or_else!(TWCurve::from_raw(curve), CByteArray::default);
+    let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
     let hash_to_sign = try_or_else!(
         CByteArrayRef::new(hash, hash_len).as_slice(),
-        CByteArray::empty
+        CByteArray::default
     );
 
     // Return an empty signature if an error occurs.
     let sig = private.sign(hash_to_sign, curve).unwrap_or_default();
-    CByteArray::new(sig)
+    CByteArray::from(sig)
 }
 
 /// Returns the public key associated with the given pubkeyType and privateKey
@@ -126,5 +123,5 @@ pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
 //
 //     // Return an empty signature if an error occurs.
 //     let sig = private.sign(hash_to_sign, curve).unwrap_or_default();
-//     CByteArray::new(sig)
+//     CByteArray::from(sig)
 // }
