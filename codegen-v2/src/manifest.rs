@@ -17,6 +17,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct TypeInfo {
+    #[serde(flatten)]
     pub variant: TypeVariant,
     pub is_constant: bool,
     pub is_nullable: bool,
@@ -24,6 +25,7 @@ pub struct TypeInfo {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "variant", content = "value", rename_all = "snake_case")]
 pub enum TypeVariant {
     Void,
     Bool,
@@ -117,6 +119,7 @@ pub struct PropertyInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParamInfo {
     pub name: String,
+    #[serde(rename = "type")]
     pub ty: TypeInfo,
 }
 
