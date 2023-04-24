@@ -140,6 +140,10 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
 
         for item in items {
             match item {
+                GHeaderFileItem::HeaderInclude(decl) => {
+                    let x = ImportInfo::from_g_type(decl).unwrap();
+                    file_info.imports.push(x);
+                }
                 GHeaderFileItem::StructIndicator(decl) => {
                     file_info.structs.push(StructInfo {
                         name: decl.name.0 .0.clone(),
