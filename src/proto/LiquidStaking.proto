@@ -80,6 +80,8 @@ message Unstake {
 message Withdraw {
   Asset asset = 1;
   string amount = 2;
+  // Sometimes withdraw is just the index of a request, amount is already known by the SC
+  string idx = 3;
 }
 
 // Message to represent the input for a liquid staking operation
