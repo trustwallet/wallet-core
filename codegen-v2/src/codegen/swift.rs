@@ -5,17 +5,17 @@ use handlebars::Handlebars;
 pub const METHOD_INFO: &str = "part_method.hbs";
 
 #[derive(Serialize, Deserialize)]
-pub struct MethodInfo {
+pub struct SwiftFunction {
     method_name: String,
     is_static: bool,
     #[serde(rename = "return")]
-    return_info: ReturnInfo,
-    params: Vec<ParamInfo>,
+    return_info: SwiftReturn,
+    params: Vec<SwiftParam>,
     c_ffi_name: String,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ReturnInfo {
+pub struct SwiftReturn {
     #[serde(rename = "type")]
     return_type: String,
     is_nullable: bool,
@@ -23,7 +23,7 @@ pub struct ReturnInfo {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ParamInfo {
+pub struct SwiftParam {
     name: String,
     #[serde(rename = "type")]
     param_type: String,
@@ -95,7 +95,7 @@ fn get_method_name(prefix: &GKeyword, keyword: &GKeyword) -> Result<String> {
     Ok(name)
 }
 
-pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<MethodInfo> {
+pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<SwiftFunction> {
     let method_name = get_method_name(prefix, &decl.name)?;
     let c_ffi_name = decl.name.0.to_string();
 
@@ -118,7 +118,7 @@ pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<MethodInf
             !matches!(marker, GMarker::NonNull) || matches!(marker, GMarker::Nullable)
         });
 
-        params.push(ParamInfo {
+        params.push(SwiftParam {
             name: ctx.name,
             param_type: ctx.ty,
             is_nullable,
@@ -138,10 +138,10 @@ pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<MethodInf
     // Convert grammar type to (native) Swift type.
     let ctx = get_type_str(&decl.return_value.ty)?;
 
-    let info = MethodInfo {
+    let info = SwiftFunction {
         method_name,
         is_static,
-        return_info: ReturnInfo {
+        return_info: SwiftReturn {
             return_type: ctx.ty,
             is_nullable,
             wrap_as: ctx.wrap_as,
