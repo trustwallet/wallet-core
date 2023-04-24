@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 lazy_static = "1.4.0"
-k256 = { version = "0.13.0", features = ["ecdh"] }
+k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
 starknet-crypto = "0.4.3"
 starknet-ff = "0.3.1"
 tw_encoding = { path = "../tw_encoding" }
