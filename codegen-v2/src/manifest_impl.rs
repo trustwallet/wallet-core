@@ -11,22 +11,22 @@ impl TypeInfo {
                 GTypeCategory::Scalar(s) => match s {
                     GPrimitive::Void => TypeVariant::Void,
                     GPrimitive::Bool => TypeVariant::Bool,
-                    GPrimitive::Char => TypeVariant::Int8,
-                    GPrimitive::ShortInt => TypeVariant::Int16,
-                    GPrimitive::Int => TypeVariant::Int32,
-                    GPrimitive::UnsignedInt => TypeVariant::Uint32,
-                    GPrimitive::LongInt => TypeVariant::Int64,
-                    GPrimitive::Float => TypeVariant::Float32,
-                    GPrimitive::Double => TypeVariant::Float64,
+                    GPrimitive::Char => TypeVariant::Char,
+                    GPrimitive::ShortInt => TypeVariant::ShortInt,
+                    GPrimitive::Int => TypeVariant::Int,
+                    GPrimitive::UnsignedInt => TypeVariant::UnsignedInt,
+                    GPrimitive::LongInt => TypeVariant::LongInt,
+                    GPrimitive::Float => TypeVariant::Float,
+                    GPrimitive::Double => TypeVariant::Double,
                     GPrimitive::SizeT => TypeVariant::SizeT,
                     GPrimitive::Int8T => TypeVariant::Int8T,
                     GPrimitive::Int16T => TypeVariant::Int16T,
                     GPrimitive::Int32T => TypeVariant::Int32T,
                     GPrimitive::Int64T => TypeVariant::Int64T,
-                    GPrimitive::UInt8T => TypeVariant::Uint8,
-                    GPrimitive::UInt16T => TypeVariant::Uint16,
-                    GPrimitive::UInt32T => TypeVariant::Uint32,
-                    GPrimitive::UInt64T => TypeVariant::Uint64,
+                    GPrimitive::UInt8T => TypeVariant::UInt8T,
+                    GPrimitive::UInt16T => TypeVariant::UInt16T,
+                    GPrimitive::UInt32T => TypeVariant::UInt32T,
+                    GPrimitive::UInt64T => TypeVariant::UInt64T,
                 },
                 GTypeCategory::Struct(s) => TypeVariant::Struct(s.0 .0.to_string()),
                 GTypeCategory::Enum(e) => TypeVariant::Enum(e.0 .0.to_string()),
@@ -61,9 +61,7 @@ impl TypeInfo {
                         is_constant: true,
                         is_nullable,
                         is_pointer: true,
-                        tags: vec![
-                            "TW_DATA".to_string(),
-                        ]
+                        tags: vec!["TW_DATA".to_string()],
                     });
                 } else if keyword.0 == "TWString" {
                     return Ok(TypeInfo {
@@ -71,12 +69,9 @@ impl TypeInfo {
                         is_constant: true,
                         is_nullable,
                         is_pointer: true,
-                        tags: vec![
-                            "TW_STRING".to_string(),
-                        ]
+                        tags: vec!["TW_STRING".to_string()],
                     });
                 }
-
             }
         }
 
@@ -181,8 +176,6 @@ impl PropertyInfo {
         // E.g. "SomeObjectIsValid" => "IsValid"
         let name = value.name.0.clone();
 
-        dbg!(&name);
-
         if name.is_empty() {
             return Err(Error::BadProperty);
         }
@@ -239,10 +232,12 @@ impl PropertyInfo {
 
 impl InitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        let func = MethodInfo::from_g_type(&None, value)?;
+        let func = FunctionInfo::from_g_type(&None, value)?;
 
         Ok(InitInfo {
             name: func.name,
+            // TODO
+            is_public: true,
             params: func.params,
             comments: vec![],
         })
@@ -251,7 +246,7 @@ impl InitInfo {
 
 impl DeinitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        let func = MethodInfo::from_g_type(&None, value)?;
+        let func = FunctionInfo::from_g_type(&None, value)?;
 
         Ok(DeinitInfo {
             name: func.name,
@@ -261,7 +256,7 @@ impl DeinitInfo {
     }
 }
 
-impl MethodInfo {
+impl FunctionInfo {
     pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
         // ### Name
 
@@ -277,8 +272,6 @@ impl MethodInfo {
         } else {
             value.name.0.to_string()
         };
-
-        dbg!(&name);
 
         if name.is_empty() {
             return Err(Error::BadProperty);
@@ -319,7 +312,7 @@ impl MethodInfo {
         let re = &value.return_value;
         let return_type = TypeInfo::from_g_type(&re.ty, &re.markers)?;
 
-        Ok(MethodInfo {
+        Ok(FunctionInfo {
             name,
             is_public,
             is_static,

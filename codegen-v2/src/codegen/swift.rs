@@ -1,154 +1,327 @@
-use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
+use crate::manifest::{
+    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
+};
 use crate::{Error, Result};
-use handlebars::Handlebars;
-
-pub const METHOD_INFO: &str = "part_method.hbs";
+use handlebars::{no_escape, Handlebars};
+use serde_json::json;
 
 #[derive(Serialize, Deserialize)]
-pub struct MethodInfo {
-    method_name: String,
-    is_static: bool,
+pub struct SwiftType(String);
+
+#[derive(Serialize, Deserialize)]
+pub struct SwiftFunction {
+    pub name: String,
+    pub c_ffi_name: String,
+    pub is_public: bool,
+    pub is_static: bool,
+    pub params: Vec<SwiftParam>,
     #[serde(rename = "return")]
-    return_info: ReturnInfo,
-    params: Vec<ParamInfo>,
-    c_ffi_name: String,
+    pub return_type: SwiftReturn,
+    pub comments: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ReturnInfo {
-    #[serde(rename = "type")]
-    return_type: String,
-    is_nullable: bool,
-    wrap_as: Option<String>,
+struct SwiftProperty {
+    pub name: String,
+    pub c_ffi_name: String,
+    pub is_public: bool,
+    pub is_static: bool,
+    #[serde(rename = "return")]
+    pub return_type: SwiftReturn,
+    pub comments: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ParamInfo {
-    name: String,
+pub struct SwiftParam {
+    pub name: String,
     #[serde(rename = "type")]
-    param_type: String,
-    is_nullable: bool,
-    wrap_as: Option<String>,
-    deter_as: Option<String>,
+    pub param_type: SwiftType,
+    pub is_nullable: bool,
+    pub wrap_as: Option<String>,
+    pub deter_as: Option<String>,
 }
 
-struct SwiftTypeContext {
-    name: String,
-    ty: String,
-    wrap_as: Option<String>,
-    deter_as: Option<String>,
+#[derive(Serialize, Deserialize)]
+pub struct SwiftReturn {
+    #[serde(rename = "type")]
+    pub param_type: SwiftType,
+    pub is_nullable: bool,
+    pub wrap_as: Option<String>,
+    pub deter_as: Option<String>,
 }
 
-// Converts the parsed grammar `GType` into the corresponding Swift type,
-// including how it should be wrapped and/or deterred. The types must be
-// specifically matched/supported, otherwise an error is returned.
-fn get_type_str(gty: &GType) -> Result<SwiftTypeContext> {
-    // Match `Uint8T` primitive.
-    if let GType::Mutable(GTypeCategory::Scalar(GPrimitive::UInt8T)) = gty {
-        return Ok(SwiftTypeContext {
-            name: "int".to_string(),
-            ty: "UInt8".to_string(),
-            wrap_as: None,
-            deter_as: None,
+#[derive(Serialize, Deserialize)]
+pub struct SwiftInit {
+    pub name: String,
+    pub c_ffi_name: String,
+    pub is_public: bool,
+    pub params: Vec<SwiftParam>,
+    pub comments: Vec<String>,
+}
+
+pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<String> {
+    let mut engine = Handlebars::new();
+    // Unmatched variables should result in an error.
+    engine.set_strict_mode(true);
+
+    engine
+        .register_partial("file", no_escape(&template))
+        .unwrap();
+
+    let mut objects = vec![];
+
+    for object in info.structs {
+        let (inits, methods, properties);
+        (inits, info.inits) = process_inits(&object.name, info.inits).unwrap();
+        (methods, info.functions) = process_struct_methods(&object, info.functions).unwrap();
+        (properties, info.properties) =
+            process_struct_properties(&object, info.properties).unwrap();
+
+        // TODO: Extend
+        let payload = json!({
+            "class_name": object.name,
+            "init_instance": true,
+            "parent_classes": [],
+            "inits": inits,
+            "deinits": [],
+            "methods": methods,
+            "properties": properties,
         });
+
+        objects.push(payload);
     }
 
-    if let GType::Mutable(GTypeCategory::Pointer(boxed)) = gty {
-        if let GTypeCategory::Unrecognized(ref keyword) = **boxed {
-            if keyword.0 == "TWString" {
-                return Ok(SwiftTypeContext {
-                    name: "string".to_string(),
-                    ty: "String".to_string(),
-                    wrap_as: Some("TWStringCreateWithNSString(string)".to_string()),
-                    deter_as: Some("StringDelete(string)".to_string()),
-                });
-            } else if keyword.0 == "TWData" {
-                return Ok(SwiftTypeContext {
-                    name: "data".to_string(),
-                    ty: "Data".to_string(),
-                    wrap_as: Some("TWDataCreateWithNSData(data)".to_string()),
-                    deter_as: Some("TWDataDelete(data)".to_string()),
-                });
-            }
+    let out = engine
+        .render("file", &json!({ "objects": objects }))
+        .unwrap();
+
+    Ok(out)
+}
+
+fn process_inits(
+    object_name: &str,
+    inits: Vec<InitInfo>,
+) -> Result<(Vec<SwiftInit>, Vec<InitInfo>)> {
+    let mut swift_inits = vec![];
+    let mut info_inits = vec![];
+
+    for init in inits {
+        if !init.name.starts_with(object_name) {
+            // Init is not assciated with the object.
+            info_inits.push(init);
+            continue;
         }
-    }
 
-    Err(Error::Todo)
-}
+        let init_name = init.name.strip_prefix(object_name).unwrap().to_string();
 
-fn get_method_name(prefix: &GKeyword, keyword: &GKeyword) -> Result<String> {
-    let prefix = &prefix.0;
-    let name = &keyword.0;
+        // Convert parameters.
+        let params = init
+            .params
+            .into_iter()
+            .map(|p| SwiftParam::try_from(p))
+            .collect::<Result<Vec<SwiftParam>>>()?;
 
-    // Failure here would imply a bug. This should be catched before.
-    // TODO: Write where.
-    let name = name.strip_prefix(prefix).ok_or(Error::Todo)?;
-
-    if name.is_empty() {
-        return Err(Error::Todo);
-    }
-
-    // Lowercase first letter.
-    let mut name = name.to_string();
-    let name = name.remove(0).to_lowercase().to_string() + &name;
-
-    Ok(name)
-}
-
-pub fn from_grammar(prefix: &GKeyword, decl: &GFunctionDecl) -> Result<MethodInfo> {
-    let method_name = get_method_name(prefix, &decl.name)?;
-    let c_ffi_name = decl.name.0.to_string();
-
-    let is_static = decl
-        .markers
-        .0
-        .iter()
-        .any(|marker| matches!(marker, GMarker::TwExportMethod));
-
-    // ### Method parameters
-
-    let mut params = vec![];
-    for param in &decl.params {
-        // Convert grammar type to (native) Swift type.
-        let ctx = get_type_str(&param.ty)?;
-
-        let is_nullable = param.markers.0.iter().any(|marker| {
-            // TODO: Why do both of those markers even exist? One would be
-            // sufficient (?)
-            !matches!(marker, GMarker::NonNull) || matches!(marker, GMarker::Nullable)
+        swift_inits.push(SwiftInit {
+            name: init_name,
+            c_ffi_name: init.name.clone(),
+            is_public: init.is_public,
+            params,
+            comments: vec![],
         });
+    }
 
-        params.push(ParamInfo {
-            name: ctx.name,
-            param_type: ctx.ty,
-            is_nullable,
-            wrap_as: ctx.wrap_as,
-            deter_as: ctx.deter_as,
+    Ok((swift_inits, info_inits))
+}
+
+fn process_struct_methods(
+    object: &StructInfo,
+    functions: Vec<FunctionInfo>,
+) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
+    let mut swift_funcs = vec![];
+    let mut info_funcs = vec![];
+
+    for func in functions {
+        if !func.name.starts_with(&object.name) {
+            // Function is not assciated to the struct.
+            info_funcs.push(func);
+            continue;
+        }
+
+        let func_name = func.name.strip_prefix(&object.name).unwrap().to_string();
+
+        // Convert parameters.
+        let mut params = vec![];
+        for param in func.params {
+            // Skip struct paramater for non-static methods.
+            if let TypeVariant::Struct(ref s) = param.ty.variant {
+                if s == &object.name && !func.is_static {
+                    continue;
+                }
+            }
+
+            params.push(SwiftParam::try_from(param).unwrap());
+        }
+
+        // Convert return type.
+        let return_type = SwiftReturn::try_from(func.return_type).unwrap();
+
+        swift_funcs.push(SwiftFunction {
+            name: func_name,
+            c_ffi_name: func.name.clone(),
+            is_public: func.is_public,
+            is_static: func.is_static,
+            params,
+            return_type,
+            comments: vec![],
+        });
+    }
+
+    Ok((swift_funcs, info_funcs))
+}
+
+fn process_struct_properties(
+    object: &StructInfo,
+    properties: Vec<PropertyInfo>,
+) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {
+    let mut swift_props = vec![];
+    let mut info_props = vec![];
+
+    for prop in properties {
+        if !prop.name.starts_with(&object.name) {
+            // Function is not assciated to the struct.
+            info_props.push(prop);
+            continue;
+        }
+
+        let prop_name = prop.name.strip_prefix(&object.name).unwrap().to_string();
+
+        // Convert return type.
+        let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
+
+        swift_props.push(SwiftProperty {
+            name: prop_name,
+            c_ffi_name: prop.name.clone(),
+            is_public: prop.is_public,
+            is_static: prop.is_static,
+            return_type,
+            comments: vec![],
+        });
+    }
+
+    Ok((swift_props, info_props))
+}
+
+/*
+#[test]
+#[ignore]
+fn test_swift_template() {
+    use std::fs::read_to_string;
+
+    const OUT_DIR: &str = "out/swift/";
+    const FILE_TEMPLATE: &str = "src/codegen/templates/swift/file.hbs";
+
+    let path = std::path::Path::new("../include/");
+    let dir = crate::grammar::parse(&path).unwrap();
+    let file_infos = crate::manifest::process_c_header_dir(&dir);
+
+    let file_tempalte = read_to_string(FILE_TEMPLATE).unwrap();
+
+    for file_info in file_infos {
+        render_file_info(OUT_DIR, &file_template, file_info).unwrap();
+    }
+
+    std::fs::create_dir_all(&config.out_dir).unwrap();
+
+    let file_path = format!("{}/{}.swift", config.out_dir, info.name);
+
+    std::fs::write(&file_path, out.as_bytes()).unwrap();
+
+}
+*/
+
+impl From<TypeVariant> for SwiftType {
+    fn from(value: TypeVariant) -> Self {
+        let res = match value {
+            TypeVariant::Void => "()".to_string(),
+            TypeVariant::Bool => "Bool".to_string(),
+            TypeVariant::Char => "Character".to_string(),
+            TypeVariant::ShortInt => "Int16".to_string(),
+            TypeVariant::Int => "Int32".to_string(),
+            TypeVariant::UnsignedInt => "UInt32".to_string(),
+            TypeVariant::LongInt => "Int64".to_string(),
+            TypeVariant::Float => "Float".to_string(),
+            TypeVariant::Double => "Double".to_string(),
+            TypeVariant::SizeT => "Int".to_string(),
+            TypeVariant::Int8T => "Int8".to_string(),
+            TypeVariant::Int16T => "Int16".to_string(),
+            TypeVariant::Int32T => "Int32".to_string(),
+            TypeVariant::Int64T => "Int64".to_string(),
+            TypeVariant::UInt8T => "UInt8".to_string(),
+            TypeVariant::UInt16T => "UInt16".to_string(),
+            TypeVariant::UInt32T => "UInt32".to_string(),
+            TypeVariant::UInt64T => "UInt64".to_string(),
+            TypeVariant::Struct(n) | TypeVariant::Enum(n) => n,
+        };
+
+        SwiftType(res)
+    }
+}
+
+impl TryFrom<TypeInfo> for SwiftReturn {
+    type Error = Error;
+
+    fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
+        let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+            (
+                SwiftType("Data".to_string()),
+                Some("TWDataCreateWithNSData".to_string()),
+                Some("TWDataDelete".to_string()),
+            )
+        } else if value.tags.iter().any(|t| t == "TW_STRING") {
+            (
+                SwiftType("String".to_string()),
+                Some("TWStringCreateWithNSString".to_string()),
+                Some("StringDelete".to_string()),
+            )
+        } else {
+            (SwiftType::try_from(value.variant).unwrap(), None, None)
+        };
+
+        Ok(SwiftReturn {
+            param_type,
+            is_nullable: value.is_nullable,
+            wrap_as,
+            deter_as,
         })
     }
+}
 
-    // ### Return value
+impl TryFrom<ParamInfo> for SwiftParam {
+    type Error = Error;
 
-    // Check marker on whether the return value is nullable.
-    let is_nullable =
-        decl.return_value.markers.0.iter().any(|marker| {
-            !matches!(marker, GMarker::NonNull) || matches!(marker, GMarker::Nullable)
-        });
+    fn try_from(value: ParamInfo) -> Result<Self> {
+        let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
+            (
+                SwiftType("Data".to_string()),
+                Some("TWDataCreateWithNSData".to_string()),
+                Some("TWDataDelete".to_string()),
+            )
+        } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
+            (
+                SwiftType("String".to_string()),
+                Some("TWStringCreateWithNSString".to_string()),
+                Some("TWStringDelete".to_string()),
+            )
+        } else {
+            (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
+        };
 
-    // Convert grammar type to (native) Swift type.
-    let ctx = get_type_str(&decl.return_value.ty)?;
-
-    let info = MethodInfo {
-        method_name,
-        is_static,
-        return_info: ReturnInfo {
-            return_type: ctx.ty,
-            is_nullable,
-            wrap_as: ctx.wrap_as,
-        },
-        params,
-        c_ffi_name,
-    };
-
-    Ok(info)
+        Ok(SwiftParam {
+            name: value.name,
+            param_type,
+            is_nullable: value.ty.is_nullable,
+            wrap_as: wrap_as,
+            deter_as: deter_as,
+        })
+    }
 }

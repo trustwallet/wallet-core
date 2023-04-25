@@ -1,9 +1,5 @@
-use core::panic;
-
-use crate::{
-    grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory},
-    CHeaderDirectory,
-};
+use crate::grammar::CHeaderDirectory;
+use crate::grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Error {
@@ -30,21 +26,22 @@ pub struct TypeInfo {
 pub enum TypeVariant {
     Void,
     Bool,
-    Int8,
-    Int16,
-    Int32,
-    Int64,
+    Char,
+    ShortInt,
+    Int,
+    UnsignedInt,
+    LongInt,
+    Float,
+    Double,
     SizeT,
     Int8T,
     Int16T,
     Int32T,
     Int64T,
-    Uint8,
-    Uint16,
-    Uint32,
-    Uint64,
-    Float32,
-    Float64,
+    UInt8T,
+    UInt16T,
+    UInt32T,
+    UInt64T,
     Struct(String),
     Enum(String),
 }
@@ -57,7 +54,7 @@ pub struct FileInfo {
     pub inits: Vec<InitInfo>,
     pub deinits: Vec<DeinitInfo>,
     pub enums: Vec<EnumInfo>,
-    pub functions: Vec<MethodInfo>,
+    pub functions: Vec<FunctionInfo>,
     pub properties: Vec<PropertyInfo>,
 }
 
@@ -87,6 +84,7 @@ pub struct StructInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InitInfo {
     pub name: String,
+    pub is_public: bool,
     pub params: Vec<ParamInfo>,
     pub comments: Vec<String>,
 }
@@ -99,7 +97,7 @@ pub struct DeinitInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MethodInfo {
+pub struct FunctionInfo {
     pub name: String,
     pub is_public: bool,
     pub is_static: bool,
@@ -125,7 +123,9 @@ pub struct ParamInfo {
 }
 
 // NOTE: This function is temporary
-pub fn process_c_header_dir(dir: &CHeaderDirectory) {
+pub fn process_c_header_dir(dir: &CHeaderDirectory) -> Vec<FileInfo> {
+    let mut file_infos = vec![];
+
     for (path, items) in &dir.map {
         let file_name = path
             .file_name()
@@ -154,11 +154,24 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                     file_info.imports.push(x);
                 }
                 GHeaderFileItem::StructIndicator(decl) => {
+                    let markers = &decl.markers.0;
+
+                    let mut tags = vec![];
+                    match markers.first() {
+                        Some(GMarker::TwExportStruct) => {
+                            tags.push("TW_EXPORT_STRUCT".to_string());
+                        }
+                        Some(GMarker::TwExportClass) => {
+                            tags.push("TW_EXPORT_CLASS".to_string());
+                        }
+                        _ => {}
+                    };
+
                     file_info.structs.push(StructInfo {
                         name: decl.name.0 .0.clone(),
                         is_public: true,
                         fields: vec![],
-                        tags: vec![],
+                        tags,
                     });
                 }
                 GHeaderFileItem::StructDecl(decl) => {
@@ -188,7 +201,7 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
                         }
                         // Any any other method is just a method.
                         else {
-                            let x = MethodInfo::from_g_type(&None, decl).unwrap();
+                            let x = FunctionInfo::from_g_type(&None, decl).unwrap();
                             file_info.functions.push(x);
                         }
                     }
@@ -208,12 +221,10 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) {
             }
         }
 
-        let content = serde_yaml::to_string(&file_info).unwrap();
-        let file_path = format!("out/{}.yaml", file_name);
-
-        std::fs::create_dir_all("out").unwrap();
-        std::fs::write(&file_path, content.as_bytes()).unwrap();
+        file_infos.push(file_info);
     }
+
+    file_infos
 }
 
 pub fn extract_custom(ty: &GType) -> Option<String> {
@@ -226,12 +237,4 @@ pub fn extract_custom(ty: &GType) -> Option<String> {
             }
         }
     }
-}
-
-#[test]
-#[ignore]
-fn test_manifest() {
-    let path = std::path::Path::new("../include/");
-    let dir = crate::parse(&path).unwrap();
-    process_c_header_dir(&dir);
 }
