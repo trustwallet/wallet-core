@@ -123,6 +123,9 @@ Proto::Output Builder::buildTortugaAptos() const {
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
             auto& tortuga_stake = *liquid_staking_message.mutable_stake();
             tortuga_stake.set_amount(std::strtoull(stake->amount().c_str(), nullptr, 0));
+        } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
+            auto& tortuga_unstake = *liquid_staking_message.mutable_unstake();
+            tortuga_unstake.set_amount(std::strtoull(unstake->amount().c_str(), nullptr, 0));
         }
     };
 

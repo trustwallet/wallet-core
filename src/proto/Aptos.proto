@@ -98,12 +98,18 @@ message TortugaStake {
   uint64 amount = 1;
 }
 
+message TortugaUnstake {
+  // Amount to be stake
+  uint64 amount = 1;
+}
+
 message LiquidStaking {
   // Smart contract address of liquid staking module
   string smart_contract_address = 1;
 
   oneof liquid_stake_transaction_payload {
     TortugaStake stake = 2;
+    TortugaUnstake unstake = 3;
   }
 }
 

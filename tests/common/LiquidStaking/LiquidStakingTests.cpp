@@ -398,4 +398,90 @@ namespace TW::LiquidStaking::tests {
             verify_tx_functor(output);
         }
     }
+
+    TEST(LiquidStaking, AptosTortugaUnstakeApt) {
+        // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968?network=mainnet
+        Proto::Input input;
+        input.set_blockchain(Proto::APTOS);
+        input.set_protocol(Proto::Tortuga);
+        input.set_smart_contract_address("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f");
+        Proto::Unstake unstake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::APT);
+        *unstake.mutable_asset() = asset;
+        unstake.set_amount("99178100");
+        *input.mutable_unstake() = unstake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        auto& tx = *ls_output.mutable_aptos();
+
+        auto fill_tx_functor = [](auto& tx){
+            // Following fields must be set afterwards, before signing ...
+            tx.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+            tx.set_sequence_number(20);
+            tx.set_max_gas_amount(2371);
+            tx.set_gas_unit_price(120);
+            tx.set_expiration_timestamp_secs(1670304949);
+            tx.set_chain_id(1);
+            auto privateKey = parse_hex("786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05");
+            tx.set_private_key(privateKey.data(), privateKey.size());
+        };
+
+        auto verify_tx_functor = [](auto& tx) {
+            EXPECT_EQ(hex(tx.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001");
+            EXPECT_EQ(hex(tx.authenticator().signature()), "6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c");
+            EXPECT_EQ(hex(tx.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4406994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c");
+            nlohmann::json expectedJson = R"(
+                {
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "20",
+                    "max_gas_amount": "2371",
+                    "gas_unit_price": "120",
+                    "expiration_timestamp_secs": "1670304949",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+                        "type_arguments": [],
+                        "arguments": [
+                            "99178100"
+                        ],
+                    "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0x6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+            nlohmann::json parsedJson = nlohmann::json::parse(tx.json());
+            assertJSONEqual(expectedJson, parsedJson);
+        };
+
+        {
+            fill_tx_functor(tx);
+            Aptos::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeAptos);
+            verify_tx_functor(output);
+        }
+
+        // TW interface
+        {
+            const auto inputData_ = input.SerializeAsString();
+            EXPECT_EQ(hex(inputData_), "120e0a02080312083939313738313030224230783866333936653432343662326261383762353163303733396566356561346632363531356139383337353330386333316163326563316534323134326135376628023004");
+            const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+            const auto outputTWData_ = WRAPD(TWLiquidStakingBuildRequest(inputTWData_.get()));
+            const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+            EXPECT_EQ(outputData.size(), 79ul);
+            Proto::Output outputProto;
+            EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+            ASSERT_TRUE(outputProto.has_aptos());
+            ASSERT_EQ(outputProto.status().code(), Proto::OK);
+            auto aptos_tx = *ls_output.mutable_aptos();
+            fill_tx_functor(aptos_tx);
+            Aptos::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeAptos);
+            verify_tx_functor(output);
+        }
+    }
 }
