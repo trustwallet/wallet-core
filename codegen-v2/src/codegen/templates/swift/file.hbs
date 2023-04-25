@@ -48,14 +48,14 @@ import Foundation
         {{/if}}
         self.rawValue = result
     }
-    {{/each}}
 
+    {{/each}}
     {{#each deinits}}
     deinit {
         {{c_ffi_name}}(rawValue)
     }
-    {{/each}}
 
+    {{/each}}
     {{#each methods}}
     {{#if is_static}}public static func{{else}}public func{{/if}} {{name}} ({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each params}}
@@ -88,8 +88,8 @@ import Foundation
         return result
         {{/if}}
     }
-    {{/each}}
 
+    {{/each}}
     {{#each properties}}
     {{#if is_static}}public static var{{else}}public var{{/if}} {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         // Call the underlying C function.
@@ -113,6 +113,8 @@ import Foundation
         return result
         {{/if}}
     }
+
     {{/each}}
 }
+
 {{/each}}

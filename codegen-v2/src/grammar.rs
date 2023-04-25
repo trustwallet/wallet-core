@@ -14,7 +14,7 @@ pub struct CHeaderDirectory {
     pub map: HashMap<PathBuf, Vec<GHeaderFileItem>>,
 }
 
-pub fn parse(path: &Path) -> Result<CHeaderDirectory> {
+pub fn parse_headers(path: &Path) -> Result<CHeaderDirectory> {
     let dir = CHeaderDirectory {
         map: HashMap::new(),
     };
