@@ -3,12 +3,12 @@ public static var
 {{~else}}
 public var
 {{~/if}}
- {{property_name~}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+ {{name~}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
     // Call the underlying C function.
     {{#if is_static}}
-    let result = {{c_ffi.function_name}}()
+    let result = {{c_ffi_name}}()
     {{else}}
-    let result = {{c_ffi.function_name}}(self.rawValue)
+    let result = {{c_ffi_name}}(self.rawValue)
     {{/if}}
 
     {{#if return.is_nullable}}

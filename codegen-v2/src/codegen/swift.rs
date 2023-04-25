@@ -1,9 +1,10 @@
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
-use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, StructInfo, TypeInfo, TypeVariant};
+use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, StructInfo, TypeInfo, TypeVariant, PropertyInfo};
 use crate::{parse, Error, Result};
 use handlebars::Handlebars;
 
 pub const METHOD_INFO: &str = "part_method.hbs";
+pub const PROPERTY_INFO: &str = "part_property.hbs";
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftType(String);
@@ -43,6 +44,17 @@ pub struct SwiftFunction {
     pub is_public: bool,
     pub is_static: bool,
     pub params: Vec<SwiftParam>,
+    #[serde(rename = "return")]
+    pub return_type: SwiftReturn,
+    pub comments: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct SwiftProperty {
+    pub name: String,
+    pub c_ffi_name: String,
+    pub is_public: bool,
+    pub is_static: bool,
     #[serde(rename = "return")]
     pub return_type: SwiftReturn,
     pub comments: Vec<String>,
@@ -127,7 +139,7 @@ impl TryFrom<ParamInfo> for SwiftParam {
 }
 
 fn process_struct_methods(
-    object: StructInfo,
+    object: &StructInfo,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
     let mut swift_funcs = vec![];
@@ -172,12 +184,43 @@ fn process_struct_methods(
     Ok((swift_funcs, info_funcs))
 }
 
-struct SwiftProperty;
+fn process_struct_properties(
+    object: &StructInfo,
+    properties: Vec<PropertyInfo>,
+) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {
+    let mut swift_props = vec![];
+    let mut info_props = vec![];
+
+    for prop in properties {
+        if !prop.name.starts_with(&object.name) {
+            // Function is not assciated to the struct.
+            info_props.push(prop);
+            continue;
+        }
+
+        let prop_name = prop.name.strip_prefix(&object.name).unwrap().to_string();
+
+        // Convert return type.
+        let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
+
+        swift_props.push(SwiftProperty {
+            name: prop_name,
+            c_ffi_name: prop.name.clone(),
+            is_public: prop.is_public,
+            is_static: prop.is_static,
+            return_type,
+            comments: vec![],
+        });
+    }
+
+    Ok((swift_props, info_props))
+}
 
 fn process_file_info(mut info: FileInfo) {
     for object in info.structs {
-        let methods;
-        (methods, info.functions) = process_struct_methods(object, info.functions).unwrap();
+        let (methods, properties);
+        (methods, info.functions) = process_struct_methods(&object, info.functions).unwrap();
+        (properties, info.properties) = process_struct_properties(&object, info.properties).unwrap();
 
         for method in methods {
             let mut engine = Handlebars::new();
@@ -190,8 +233,19 @@ fn process_file_info(mut info: FileInfo) {
             let out = engine.render(METHOD_INFO, &method).unwrap();
 
             println!("{}", out);
+        }
 
-            break;
+        for property in properties {
+            let mut engine = Handlebars::new();
+            engine.set_strict_mode(true);
+
+            engine
+                .register_template_file(PROPERTY_INFO, template_path(PROPERTY_INFO))
+                .unwrap();
+
+            let out = engine.render(PROPERTY_INFO, &property).unwrap();
+
+            println!("{}", out);
         }
     }
 }
