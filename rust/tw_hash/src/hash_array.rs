@@ -112,6 +112,32 @@ impl<const N: usize> fmt::Display for Hash<N> {
     }
 }
 
+#[cfg(feature = "serde")]
+mod impl_serde {
+    use super::Hash;
+    use serde::de::Error;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    impl<'de, const N: usize> Deserialize<'de> for Hash<N> {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let hex = String::deserialize(deserializer)?;
+            hex.parse().map_err(|e| Error::custom(format!("{e:?}")))
+        }
+    }
+
+    impl<const N: usize> Serialize for Hash<N> {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            self.to_string().serialize(serializer)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -159,5 +185,41 @@ mod tests {
             Error::InvalidHashLength => (),
             other => panic!("Expected 'Error::InvalidHashLength', found: {other:?}"),
         }
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod serde_tests {
+    use super::Hash;
+    use serde_json::json;
+
+    const BYTES_32: [u8; 32] = [
+        175u8, 238, 252, 167, 77, 154, 50, 92, 241, 214, 182, 145, 29, 97, 166, 92, 50, 175, 168,
+        224, 43, 213, 231, 142, 46, 74, 194, 145, 11, 171, 69, 245,
+    ];
+    const HEX_32: &str = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+
+    #[test]
+    fn test_hash_deserialize() {
+        let unprefixed: Hash<32> = serde_json::from_value(json!(HEX_32)).unwrap();
+        assert_eq!(unprefixed.0, BYTES_32);
+
+        let prefixed: Hash<32> = serde_json::from_value(json!(HEX_32)).unwrap();
+        assert_eq!(prefixed.0, BYTES_32);
+    }
+
+    #[test]
+    fn test_hash_deserialize_error() {
+        serde_json::from_value::<Hash<32>>(json!(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45"
+        ))
+        .unwrap_err();
+    }
+
+    #[test]
+    fn test_hash_serialize() {
+        let hash = Hash::<32>::from(HEX_32);
+        let actual = serde_json::to_value(&hash).unwrap();
+        assert_eq!(actual, json!(HEX_32));
     }
 }
