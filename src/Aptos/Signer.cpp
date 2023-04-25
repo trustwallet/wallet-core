@@ -89,6 +89,20 @@ TransactionPayload nftOfferPayload(const Proto::OfferNftMessage& msg) {
     return payload;
 }
 
+TransactionPayload tortugaClaimPayload(const std::string& smart_contract_address, const Proto::TortugaClaim& msg) {
+    std::vector<Data> args;
+    serializeToArgs(args, msg.idx());
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            std::to_string(msg.idx())
+                        });
+    // clang-format on
+    ModuleId tortugaStakeModule{Address(smart_contract_address), "stake_router"};
+    TransactionPayload payload = EntryFunction(tortugaStakeModule, "claim", {}, args, argsJson);
+    return payload;
+}
+
 TransactionPayload tortugaStakePayload(const std::string& smart_contract_address, const Proto::TortugaStake& msg) {
     std::vector<Data> args;
     serializeToArgs(args, msg.amount());
@@ -217,6 +231,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
             return tortugaStakePayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.stake());
         case Proto::LiquidStaking::kUnstake:
             return tortugaUnStakePayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.unstake());
+        case Proto::LiquidStaking::kClaim:
+            return tortugaClaimPayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.claim());
         case Proto::LiquidStaking::LIQUID_STAKE_TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Nft message payload not set");
         }
