@@ -22,6 +22,7 @@ TEST(TheOpenNetworkSigner, TransferAndDeploy) {
     transfer.set_amount(10);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1671135440);
+    transfer.set_bounceable(true);
 
     const auto privateKey = parse_hex("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -44,6 +45,7 @@ TEST(TheOpenNetworkSigner, TransferOrdinary) {
     transfer.set_sequence_number(6);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1671132440);
+    transfer.set_bounceable(true);
 
     const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -66,6 +68,7 @@ TEST(TheOpenNetworkSigner, TransferAllBalance) {
     transfer.set_sequence_number(7);
     transfer.set_mode(Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
+    transfer.set_bounceable(true);
 
     const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -88,6 +91,7 @@ TEST(TheOpenNetworkSigner, TransferAllBalanceNonBounceable) {
     transfer.set_sequence_number(8);
     transfer.set_mode(Proto::SendMode::ATTACH_ALL_CONTRACT_BALANCE | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
+    transfer.set_bounceable(false);
 
     const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -111,6 +115,7 @@ TEST(TheOpenNetworkSigner, TransferWithASCIIComment) {
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
     transfer.set_comment("test comment");
+    transfer.set_bounceable(true);
 
     const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -134,6 +139,7 @@ TEST(TheOpenNetworkSigner, TransferWithUTF8Comment) {
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1681102222);
     transfer.set_comment("тестовый комментарий");
+    transfer.set_bounceable(true);
 
     const auto privateKey = parse_hex("c38f49de2fb13223a9e7d37d5d0ffbdd89a5eb7c8b0ee4d1c299f2cefe7dc4a0");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -155,6 +161,7 @@ TEST(TheOpenNetworkSigner, InvalidWalletVersion) {
     transfer.set_amount(10);
     transfer.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
     transfer.set_expire_at(1671135440);
+    transfer.set_bounceable(true);
 
     const auto privateKey = parse_hex("63474e5fe9511f1526a50567ce142befc343e71a49b865ac3908f58667319cb8");
     input.set_private_key(privateKey.data(), privateKey.size());

@@ -16,7 +16,7 @@ namespace TW::TheOpenNetwork {
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer) {
     const auto msg = wallet->createTransferMessage(
         privateKey,
-        Address(transfer.dest()),
+        Address(transfer.dest(), transfer.bounceable()),
         transfer.amount(),
         transfer.sequence_number(),
         static_cast<uint8_t>(transfer.mode()),
