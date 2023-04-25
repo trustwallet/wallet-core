@@ -1,5 +1,5 @@
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
-use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, TypeInfo, TypeVariant};
+use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, StructInfo, TypeInfo, TypeVariant};
 use crate::{parse, Error, Result};
 use handlebars::Handlebars;
 
@@ -126,64 +126,73 @@ impl TryFrom<ParamInfo> for SwiftParam {
     }
 }
 
-fn process_func(struct_names: &[&str], func: FunctionInfo) -> Result<SwiftFunction> {
-    let mut func_name = None;
+fn process_struct_methods(
+    object: StructInfo,
+    functions: Vec<FunctionInfo>,
+) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
+    let mut swift_funcs = vec![];
+    let mut info_funcs = vec![];
 
-    for struct_name in struct_names {
-        if let Some(suffix) = func.name.strip_prefix(struct_name) {
-            // We do not allow this.
-            if func_name.is_some() {
-                panic!()
+    for func in functions {
+        if !func.name.starts_with(&object.name) {
+            // Function is not assciated to the struct.
+            info_funcs.push(func);
+            continue;
+        }
+
+        let func_name = func.name.strip_prefix(&object.name).unwrap().to_string();
+
+        // Convert parameters.
+        let mut params = vec![];
+        for param in func.params {
+            // Skip struct paramater for non-static methods.
+            if let TypeVariant::Struct(ref s) = param.ty.variant {
+                if s == &object.name && !func.is_static {
+                    continue;
+                }
             }
 
-            func_name = Some(suffix.to_string());
+            params.push(SwiftParam::try_from(param).unwrap());
         }
+
+        // Convert return type.
+        let return_type = SwiftReturn::try_from(func.return_type).unwrap();
+
+        swift_funcs.push(SwiftFunction {
+            name: func_name,
+            c_ffi_name: func.name.clone(),
+            is_public: func.is_public,
+            is_static: func.is_static,
+            params,
+            return_type,
+            comments: vec![],
+        });
     }
 
-    let func_name = if func_name.is_some() {
-        func_name.unwrap()
-    } else {
-        func.name.clone()
-    };
-
-    // Convert parameters.
-    let mut params = vec![];
-    for param in func.params {
-        params.push(SwiftParam::try_from(param).unwrap());
-    }
-
-    // Convert return type.
-    let return_type = SwiftReturn::try_from(func.return_type).unwrap();
-
-    Ok(SwiftFunction {
-        name: func_name,
-        c_ffi_name: func.name.clone(),
-        is_public: func.is_public,
-        is_static: func.is_static,
-        params,
-        return_type,
-        comments: vec![],
-    })
+    Ok((swift_funcs, info_funcs))
 }
 
-fn process_file_info(info: FileInfo) {
-    let struct_names: Vec<&str> = info.structs.iter().map(|s| s.name.as_ref()).collect();
+struct SwiftProperty;
 
-    for func in info.functions {
-        let func = process_func(&struct_names, func).unwrap();
+fn process_file_info(mut info: FileInfo) {
+    for object in info.structs {
+        let methods;
+        (methods, info.functions) = process_struct_methods(object, info.functions).unwrap();
 
-        let mut engine = Handlebars::new();
-        engine.set_strict_mode(true);
+        for method in methods {
+            let mut engine = Handlebars::new();
+            engine.set_strict_mode(true);
 
-        engine
-            .register_template_file(METHOD_INFO, template_path(METHOD_INFO))
-            .unwrap();
+            engine
+                .register_template_file(METHOD_INFO, template_path(METHOD_INFO))
+                .unwrap();
 
-        let out = engine.render(METHOD_INFO, &func).unwrap();
+            let out = engine.render(METHOD_INFO, &method).unwrap();
 
-        println!("{}", out);
+            println!("{}", out);
 
-        break;
+            break;
+        }
     }
 }
 
