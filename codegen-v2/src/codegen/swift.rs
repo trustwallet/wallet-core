@@ -126,47 +126,51 @@ impl TryFrom<ParamInfo> for SwiftParam {
     }
 }
 
+fn process_func(struct_names: &[&str], func: FunctionInfo) -> Result<SwiftFunction> {
+    let mut func_name = None;
+
+    for struct_name in struct_names {
+        if let Some(suffix) = func.name.strip_prefix(struct_name) {
+            // We do not allow this.
+            if func_name.is_some() {
+                panic!()
+            }
+
+            func_name = Some(suffix.to_string());
+        }
+    }
+
+    let func_name = if func_name.is_some() {
+        func_name.unwrap()
+    } else {
+        func.name.clone()
+    };
+
+    // Convert parameters.
+    let mut params = vec![];
+    for param in func.params {
+        params.push(SwiftParam::try_from(param).unwrap());
+    }
+
+    // Convert return type.
+    let return_type = SwiftReturn::try_from(func.return_type).unwrap();
+
+    Ok(SwiftFunction {
+        name: func_name,
+        c_ffi_name: func.name.clone(),
+        is_public: func.is_public,
+        is_static: func.is_static,
+        params,
+        return_type,
+        comments: vec![],
+    })
+}
+
 fn process_file_info(info: FileInfo) {
     let struct_names: Vec<&str> = info.structs.iter().map(|s| s.name.as_ref()).collect();
 
     for func in info.functions {
-        let mut func_name = None;
-
-        for struct_name in &struct_names {
-            if let Some(suffix) = func.name.strip_prefix(struct_name) {
-                // We do not allow this.
-                if func_name.is_some() {
-                    panic!()
-                }
-
-                func_name = Some(suffix.to_string());
-            }
-        }
-
-        let func_name = if func_name.is_some() {
-            func_name.unwrap()
-        } else {
-            func.name.clone()
-        };
-
-        // Convert parameters.
-        let mut params = vec![];
-        for param in func.params {
-            params.push(SwiftParam::try_from(param).unwrap());
-        }
-
-        // Convert return type.
-        let return_type = SwiftReturn::try_from(func.return_type).unwrap();
-
-        let func = SwiftFunction {
-            name: func_name,
-            c_ffi_name: func.name.clone(),
-            is_public: func.is_public,
-            is_static: func.is_static,
-            params,
-            return_type,
-            comments: vec![],
-        };
+        let func = process_func(&struct_names, func).unwrap();
 
         let mut engine = Handlebars::new();
         engine.set_strict_mode(true);
