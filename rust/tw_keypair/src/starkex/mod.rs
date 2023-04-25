@@ -14,14 +14,15 @@ pub use private::PrivateKey;
 pub use public::PublicKey;
 pub use signature::Signature;
 use starknet_ff::FieldElement;
-use tw_hash::H256;
 
 fn field_element_from_bytes_be(bytes: &[u8]) -> Result<FieldElement, ()> {
-    if bytes.len() > H256::len() {
+    const FIELD_ELEMENT_LEN: usize = 32;
+
+    if bytes.len() > FIELD_ELEMENT_LEN {
         return Err(());
     }
-    let mut buffer = [0u8; 32];
-    buffer[(32 - bytes.len())..].copy_from_slice(bytes);
+    let mut buffer = [0u8; FIELD_ELEMENT_LEN];
+    buffer[(FIELD_ELEMENT_LEN - bytes.len())..].copy_from_slice(bytes);
     FieldElement::from_bytes_be(&buffer).map_err(|_| ())
 }
 
