@@ -1,3 +1,4 @@
+use std::fmt::format;
 use std::io::read_to_string;
 
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
@@ -264,7 +265,7 @@ fn process_struct_properties(
 
 pub struct RenderConfig {
     pub out_dir: String,
-    pub struct_template: String,
+    pub file_template: String,
     pub init_template: String,
     pub method_template: String,
     pub property_template: String,
@@ -275,8 +276,10 @@ pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()>
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
 
+    std::fs::create_dir_all(&config.out_dir).unwrap();
+
     engine
-        .register_partial("struct", &config.struct_template)
+        .register_partial("file", &config.file_template)
         .unwrap();
     engine
         .register_partial("init", &config.init_template)
@@ -287,6 +290,8 @@ pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()>
     engine
         .register_partial("property", &config.property_template)
         .unwrap();
+
+    let mut classes = vec![];
 
     for object in info.structs {
         let (inits, methods, properties);
@@ -305,9 +310,15 @@ pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()>
             "properties": properties,
         });
 
-        let out = engine.render("struct", &payload).unwrap();
-        println!("{out}");
+        classes.push(payload);
     }
+
+    let file_path = format!("{}/{}.swift", config.out_dir, info.name);
+
+    let out = engine
+        .render("file", &json!({ "classes": classes }))
+        .unwrap();
+    std::fs::write(&file_path, out.as_bytes()).unwrap();
 
     Ok(())
 }
@@ -322,8 +333,8 @@ fn test_swift_template() {
     let file_infos = crate::manifest::process_c_header_dir(&dir);
 
     let config = RenderConfig {
-        out_dir: "out/swift".to_string(),
-        struct_template: read_to_string("src/codegen/templates/swift/class.hbs").unwrap(),
+        out_dir: "out/swift/".to_string(),
+        file_template: read_to_string("src/codegen/templates/swift/file.hbs").unwrap(),
         init_template: read_to_string("src/codegen/templates/swift/part_init.hbs").unwrap(),
         method_template: read_to_string("src/codegen/templates/swift/part_method.hbs").unwrap(),
         property_template: read_to_string("src/codegen/templates/swift/part_property.hbs").unwrap(),
