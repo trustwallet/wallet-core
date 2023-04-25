@@ -53,6 +53,35 @@ impl TypeInfo {
             _ => false,
         });
 
+        // Special handler for `TW_DATA` and `TW_STRING`.
+        match ty {
+            GType::Mutable(GTypeCategory::Pointer(pointer))
+            | GType::Const(GTypeCategory::Pointer(pointer)) => {
+                if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
+                    if keyword.0 == "TWData" {
+                        return Ok(TypeInfo {
+                            variant: TypeVariant::Void,
+                            // Is always const
+                            is_constant: true,
+                            is_nullable,
+                            is_pointer: true,
+                            tags: vec!["TW_DATA".to_string()],
+                        });
+                    } else if keyword.0 == "TWString" {
+                        return Ok(TypeInfo {
+                            variant: TypeVariant::Void,
+                            // Is always const
+                            is_constant: true,
+                            is_nullable,
+                            is_pointer: true,
+                            tags: vec!["TW_STRING".to_string()],
+                        });
+                    }
+                }
+            }
+            _ => {}
+        }
+
         if let GType::Mutable(GTypeCategory::Pointer(pointer)) = ty {
             if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
                 if keyword.0 == "TWData" {
@@ -267,30 +296,27 @@ impl FunctionInfo {
                 .name
                 .0
                 .strip_prefix(object_name)
-                .ok_or(Error::BadProperty)?
+                .ok_or(Error::BadType)?
                 .to_string()
         } else {
             value.name.0.to_string()
         };
 
         if name.is_empty() {
-            return Err(Error::BadProperty);
+            return Err(Error::BadType);
         }
 
         // ### Marker
 
         let mut markers = value.markers.0.iter();
 
-        // Must have at least one marker.
-        if markers.size_hint().0 < 1 {
-            return Err(Error::BadProperty);
-        }
-
         // The method must have one of the two available markers and is always public.
         let (is_static, is_public) = match markers.next() {
             Some(GMarker::TwExportMethod) => (false, true),
             Some(GMarker::TwExportStaticMethod) => (true, true),
-            _ => return Err(Error::BadObject),
+            // TODO:?
+            //_ => return Err(Error::BadObject),
+            _ => (false, false),
         };
 
         // ### Params

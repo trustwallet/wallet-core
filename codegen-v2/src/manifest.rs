@@ -183,12 +183,22 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
+                    if decl.name.0.starts_with("TWAnySigner") {
+                        println!("Skipped function:  {}", decl.name.0);
+                        continue;
+                    }
+
                     let markers = &decl.markers.0;
 
-                    // Handle exported methods.
-                    if markers.contains(&GMarker::TwExportMethod)
-                        || markers.contains(&GMarker::TwExportStaticMethod)
+                    // Handle exported properties.
+                    if markers.contains(&GMarker::TwExportProperty)
+                        || markers.contains(&GMarker::TwExportStaticProperty)
                     {
+                        let x = PropertyInfo::from_g_type(decl).unwrap();
+                        file_info.properties.push(x);
+                    }
+                    // None-exported methods are skipped.
+                    else {
                         // Detect constructor methods.
                         if decl.name.0.contains("Create") {
                             let x = InitInfo::from_g_type(decl).unwrap();
@@ -204,17 +214,6 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                             let x = FunctionInfo::from_g_type(&None, decl).unwrap();
                             file_info.functions.push(x);
                         }
-                    }
-                    // Handle exported properties.
-                    else if markers.contains(&GMarker::TwExportProperty)
-                        || markers.contains(&GMarker::TwExportStaticProperty)
-                    {
-                        let x = PropertyInfo::from_g_type(decl).unwrap();
-                        file_info.properties.push(x);
-                    }
-                    // None-exported methods are skipped.
-                    else {
-                        println!("Skipped: {}", &decl.name.0);
                     }
                 }
                 _ => {}
