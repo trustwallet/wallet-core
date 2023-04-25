@@ -6,7 +6,7 @@ use crate::manifest::{
     FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
 };
 use crate::{parse, Error, Result};
-use handlebars::{Handlebars, no_escape};
+use handlebars::{no_escape, Handlebars};
 use serde_json::json;
 
 #[derive(Serialize, Deserialize)]

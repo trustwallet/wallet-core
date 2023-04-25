@@ -51,7 +51,9 @@ import Foundation
     {{/each}}
 
     {{#each deinits}}
-    {{> deinit}}
+    deinit {
+        {{c_ffi_name}}(rawValue)
+    }
     {{/each}}
 
     {{#each methods}}
