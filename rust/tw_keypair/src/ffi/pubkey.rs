@@ -6,11 +6,15 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::tw::{TWPublicKey, TWPublicKeyType};
+use crate::tw::{PublicKey, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
+
+pub struct TWPublicKey(pub(crate) PublicKey);
+
+impl RawPtrTrait for TWPublicKey {}
 
 /// Create a public key with the given block of data and specified public key type.
 ///
@@ -27,9 +31,9 @@ pub unsafe extern "C" fn tw_public_key_create_with_data(
 ) -> *mut TWPublicKey {
     let bytes_ref = CByteArrayRef::new(input, input_len);
     let bytes = try_or_else!(bytes_ref.to_vec(), std::ptr::null_mut);
-    let ty = try_or_else!(TWPublicKeyType::from_raw(ty), std::ptr::null_mut);
-    TWPublicKey::new(bytes, ty)
-        .map(TWPublicKey::into_ptr)
+    let ty = try_or_else!(PublicKeyType::from_raw(ty), std::ptr::null_mut);
+    PublicKey::new(bytes, ty)
+        .map(|public| TWPublicKey(public).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
@@ -61,7 +65,7 @@ pub unsafe extern "C" fn tw_public_key_verify(
     let public = try_or_false!(TWPublicKey::from_ptr_as_ref(key));
     let sig = try_or_false!(CByteArrayRef::new(sig, sig_len).as_slice());
     let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
-    public.verify(sig, msg)
+    public.0.verify(sig, msg)
 }
 
 /// Returns the raw data of a given public-key.
@@ -71,7 +75,7 @@ pub unsafe extern "C" fn tw_public_key_verify(
 #[no_mangle]
 pub unsafe extern "C" fn tw_public_key_data(key: *mut TWPublicKey) -> CByteArray {
     let public = try_or_else!(TWPublicKey::from_ptr_as_ref(key), CByteArray::default);
-    CByteArray::from(public.to_bytes())
+    CByteArray::from(public.0.to_bytes())
 }
 
 // #[no_mangle]

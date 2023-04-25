@@ -188,6 +188,7 @@ mod tests {
     }
 }
 
+/// cbindgen:ignore
 #[cfg(all(test, feature = "serde"))]
 mod serde_tests {
     use super::Hash;

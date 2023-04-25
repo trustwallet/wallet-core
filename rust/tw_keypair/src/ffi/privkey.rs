@@ -6,11 +6,16 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::tw::{TWCurve, TWPrivateKey, TWPublicKey, TWPublicKeyType};
+use crate::ffi::pubkey::TWPublicKey;
+use crate::tw::{Curve, PrivateKey, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::{try_or_else, try_or_false};
+
+pub struct TWPrivateKey(pub(crate) PrivateKey);
+
+impl RawPtrTrait for TWPrivateKey {}
 
 /// Create a private key with the given block of data.
 ///
@@ -26,8 +31,8 @@ pub unsafe extern "C" fn tw_private_key_create_with_data(
     let bytes_ref = CByteArrayRef::new(input, input_len);
     let bytes = try_or_else!(bytes_ref.to_vec(), std::ptr::null_mut);
 
-    TWPrivateKey::new(bytes)
-        .map(TWPrivateKey::into_ptr)
+    PrivateKey::new(bytes)
+        .map(|private| TWPrivateKey(private).into_ptr())
         // Return null if the private key is invalid.
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
@@ -53,9 +58,9 @@ pub unsafe extern "C" fn tw_private_key_is_valid(
     key_len: usize,
     curve: u32,
 ) -> bool {
-    let curve = try_or_false!(TWCurve::from_raw(curve));
+    let curve = try_or_false!(Curve::from_raw(curve));
     let priv_key_slice = try_or_false!(CByteArrayRef::new(key, key_len).as_slice());
-    TWPrivateKey::is_valid(priv_key_slice, curve)
+    PrivateKey::is_valid(priv_key_slice, curve)
 }
 
 /// Signs a digest using ECDSA and given curve.
@@ -72,7 +77,7 @@ pub unsafe extern "C" fn tw_private_key_sign(
     hash_len: usize,
     curve: u32,
 ) -> CByteArray {
-    let curve = try_or_else!(TWCurve::from_raw(curve), CByteArray::default);
+    let curve = try_or_else!(Curve::from_raw(curve), CByteArray::default);
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
     let hash_to_sign = try_or_else!(
         CByteArrayRef::new(hash, hash_len).as_slice(),
@@ -80,7 +85,7 @@ pub unsafe extern "C" fn tw_private_key_sign(
     );
 
     // Return an empty signature if an error occurs.
-    let sig = private.sign(hash_to_sign, curve).unwrap_or_default();
+    let sig = private.0.sign(hash_to_sign, curve).unwrap_or_default();
     CByteArray::from(sig)
 }
 
@@ -94,11 +99,12 @@ pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
     key: *mut TWPrivateKey,
     pubkey_type: u32,
 ) -> *mut TWPublicKey {
-    let ty = try_or_else!(TWPublicKeyType::from_raw(pubkey_type), std::ptr::null_mut);
+    let ty = try_or_else!(PublicKeyType::from_raw(pubkey_type), std::ptr::null_mut);
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), std::ptr::null_mut);
     private
+        .0
         .get_public_key_by_type(ty)
-        .map(TWPublicKey::into_ptr)
+        .map(|public| TWPublicKey(public).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
@@ -109,7 +115,7 @@ pub unsafe extern "C" fn tw_private_key_get_public_key_by_type(
 //     hash_len: usize,
 //     curve: u32,
 // ) -> CByteArray {
-//     let curve = match TWCurve::from_raw(curve) {
+//     let curve = match Curve::from_raw(curve) {
 //         Some(curve) => curve,
 //         None => return CByteArray::empty(),
 //     };

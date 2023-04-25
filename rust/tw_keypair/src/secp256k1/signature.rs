@@ -27,6 +27,7 @@ pub struct Signature {
     v: u8,
 }
 
+/// cbindgen:ignore
 impl Signature {
     /// The number of bytes for a serialized signature representation.
     pub const LEN: usize = 65;

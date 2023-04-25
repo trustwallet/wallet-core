@@ -8,10 +8,10 @@ use tw_encoding::hex;
 use tw_hash::{H256, H520};
 use tw_keypair::ffi::privkey::{
     tw_private_key_create_with_data, tw_private_key_delete, tw_private_key_get_public_key_by_type,
-    tw_private_key_is_valid, tw_private_key_sign,
+    tw_private_key_is_valid, tw_private_key_sign, TWPrivateKey,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete};
-use tw_keypair::tw::{TWCurve, TWPrivateKey, TWPublicKeyType};
+use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 
 struct TWPrivateKeyHelper {
@@ -76,7 +76,7 @@ fn test_tw_private_key_sign() {
             tw_privkey.ptr,
             hash_raw.data(),
             hash_raw.size(),
-            TWCurve::Secp256k1 as u32,
+            Curve::Secp256k1 as u32,
         )
         .into_vec()
     };
@@ -96,7 +96,7 @@ fn test_tw_private_key_sign_invalid_hash() {
             tw_privkey.ptr,
             hash_raw.data(),
             hash_raw.size(),
-            TWCurve::Secp256k1 as u32,
+            Curve::Secp256k1 as u32,
         )
         .into_vec()
     };
@@ -109,13 +109,7 @@ fn test_tw_private_key_sign_null_hash() {
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
     );
     let actual = unsafe {
-        tw_private_key_sign(
-            tw_privkey.ptr,
-            std::ptr::null(),
-            0,
-            TWCurve::Secp256k1 as u32,
-        )
-        .into_vec()
+        tw_private_key_sign(tw_privkey.ptr, std::ptr::null(), 0, Curve::Secp256k1 as u32).into_vec()
     };
     assert!(actual.is_empty());
 }
@@ -123,10 +117,7 @@ fn test_tw_private_key_sign_null_hash() {
 #[test]
 fn test_tw_private_key_get_public_key_by_type() {
     #[track_caller]
-    fn test_get_public_key_data_hex(
-        tw_privkey: &TWPrivateKeyHelper,
-        ty: TWPublicKeyType,
-    ) -> String {
+    fn test_get_public_key_data_hex(tw_privkey: &TWPrivateKeyHelper, ty: PublicKeyType) -> String {
         let tw_pubkey = unsafe { tw_private_key_get_public_key_by_type(tw_privkey.ptr, ty as u32) };
         assert!(!tw_pubkey.is_null());
 
@@ -141,14 +132,14 @@ fn test_tw_private_key_get_public_key_by_type() {
     assert!(!tw_privkey.ptr.is_null());
 
     // secp256k1 compressed
-    let actual = test_get_public_key_data_hex(&tw_privkey, TWPublicKeyType::Secp256k1);
+    let actual = test_get_public_key_data_hex(&tw_privkey, PublicKeyType::Secp256k1);
     assert_eq!(
         actual,
         "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1"
     );
 
     // secp256k1 uncompressed
-    let actual = test_get_public_key_data_hex(&tw_privkey, TWPublicKeyType::Secp256k1Extended);
+    let actual = test_get_public_key_data_hex(&tw_privkey, PublicKeyType::Secp256k1Extended);
     assert_eq!(actual, "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
 }
 
@@ -160,7 +151,7 @@ fn test_tw_private_key_is_valid() {
             tw_private_key_is_valid(
                 privkey_raw.data(),
                 privkey_raw.size(),
-                TWCurve::Secp256k1 as u32,
+                Curve::Secp256k1 as u32,
             )
         }
     }

@@ -20,6 +20,7 @@ pub struct Signature {
     pub(crate) signature: starknet_crypto::Signature,
 }
 
+/// cbindgen:ignore
 impl Signature {
     /// The number of bytes for a serialized signature representation.
     pub const LEN: usize = 64;

@@ -6,7 +6,7 @@
 
 use tw_encoding::hex;
 use tw_hash::H512;
-use tw_keypair::tw::{TWCurve, TWPrivateKey, TWPublicKeyType};
+use tw_keypair::tw::{Curve, PrivateKey, PublicKeyType};
 
 #[test]
 fn test_starkex_tw_private_key() {
@@ -15,11 +15,11 @@ fn test_starkex_tw_private_key() {
     let pubkey_bytes =
         hex::decode("02a4c7332c55d6c1c510d24272d1db82878f2302f05b53bcc38695ed5f78fffd").unwrap();
 
-    let privkey = TWPrivateKey::new(privkey_bytes.clone()).unwrap();
+    let privkey = PrivateKey::new(privkey_bytes.clone()).unwrap();
     assert_eq!(privkey.key().into_vec(), privkey_bytes);
 
     let public = privkey
-        .get_public_key_by_type(TWPublicKeyType::Starkex)
+        .get_public_key_by_type(PublicKeyType::Starkex)
         .unwrap();
     assert_eq!(public.to_bytes(), pubkey_bytes);
 }
@@ -31,8 +31,8 @@ fn test_starkex_tw_private_key_sign() {
     let hash_to_sign =
         hex::decode("06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76").unwrap();
 
-    let privkey = TWPrivateKey::new(privkey_bytes).unwrap();
-    let actual = privkey.sign(&hash_to_sign, TWCurve::Starkex).unwrap();
+    let privkey = PrivateKey::new(privkey_bytes).unwrap();
+    let actual = privkey.sign(&hash_to_sign, Curve::Starkex).unwrap();
     let expected = H512::from("061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a");
     assert_eq!(actual, expected.into_vec());
 }

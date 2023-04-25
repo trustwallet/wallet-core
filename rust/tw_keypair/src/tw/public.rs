@@ -5,46 +5,43 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::traits::VerifyingKeyTrait;
-use crate::tw::TWPublicKeyType;
+use crate::tw::PublicKeyType;
 use crate::{secp256k1, starkex, Error};
-use tw_memory::ffi::RawPtrTrait;
 use tw_utils::traits::ToBytesVec;
 use tw_utils::try_or_false;
 
 /// Represents a public key that can be used to verify signatures and messages.
-pub enum TWPublicKey {
+pub enum PublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
     Starkex(starkex::PublicKey),
 }
 
-impl RawPtrTrait for TWPublicKey {}
-
-impl TWPublicKey {
+impl PublicKey {
     /// Validates the given `bytes` using the `ty` public key type and creates a public key from it.
-    pub fn new(bytes: Vec<u8>, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
+    pub fn new(bytes: Vec<u8>, ty: PublicKeyType) -> Result<PublicKey, Error> {
         match ty {
-            TWPublicKeyType::Secp256k1 if secp256k1::PublicKey::COMPRESSED == bytes.len() => {
+            PublicKeyType::Secp256k1 if secp256k1::PublicKey::COMPRESSED == bytes.len() => {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
-                Ok(TWPublicKey::Secp256k1(pubkey))
+                Ok(PublicKey::Secp256k1(pubkey))
             },
-            TWPublicKeyType::Secp256k1Extended
+            PublicKeyType::Secp256k1Extended
                 if secp256k1::PublicKey::UNCOMPRESSED == bytes.len() =>
             {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
-                Ok(TWPublicKey::Secp256k1Extended(pubkey))
+                Ok(PublicKey::Secp256k1Extended(pubkey))
             },
-            TWPublicKeyType::Starkex => {
+            PublicKeyType::Starkex => {
                 let pubkey = starkex::PublicKey::try_from(bytes.as_slice())?;
-                Ok(TWPublicKey::Starkex(pubkey))
+                Ok(PublicKey::Starkex(pubkey))
             },
             _ => Err(Error::InvalidPublicKey),
         }
     }
 
     /// Checks if the given `bytes` is valid using `ty` public key type.
-    pub fn is_valid(bytes: Vec<u8>, ty: TWPublicKeyType) -> bool {
-        TWPublicKey::new(bytes, ty).is_ok()
+    pub fn is_valid(bytes: Vec<u8>, ty: PublicKeyType) -> bool {
+        PublicKey::new(bytes, ty).is_ok()
     }
 
     /// Verifies if the given `hash` was signed using a private key associated with the public key.
@@ -60,19 +57,19 @@ impl TWPublicKey {
         }
 
         match self {
-            TWPublicKey::Secp256k1(secp) | TWPublicKey::Secp256k1Extended(secp) => {
+            PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
                 verify_impl(secp, sig, hash)
             },
-            TWPublicKey::Starkex(stark) => verify_impl(stark, sig, hash),
+            PublicKey::Starkex(stark) => verify_impl(stark, sig, hash),
         }
     }
 
     /// Returns the raw data of the public key.
     pub fn to_bytes(&self) -> Vec<u8> {
         match self {
-            TWPublicKey::Secp256k1(secp) => secp.compressed().into_vec(),
-            TWPublicKey::Secp256k1Extended(secp) => secp.uncompressed().into_vec(),
-            TWPublicKey::Starkex(stark) => stark.to_vec(),
+            PublicKey::Secp256k1(secp) => secp.compressed().into_vec(),
+            PublicKey::Secp256k1Extended(secp) => secp.uncompressed().into_vec(),
+            PublicKey::Starkex(stark) => stark.to_vec(),
         }
     }
 }

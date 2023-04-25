@@ -5,11 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::traits::SigningKeyTrait;
-use crate::tw::{TWCurve, TWPublicKey, TWPublicKeyType};
+use crate::tw::{Curve, PublicKey, PublicKeyType};
 use crate::{secp256k1, starkex, Error};
 use std::ops::Range;
 use tw_hash::H256;
-use tw_memory::ffi::RawPtrTrait;
 use tw_utils::traits::ToBytesVec;
 use zeroize::ZeroizeOnDrop;
 
@@ -17,31 +16,30 @@ use zeroize::ZeroizeOnDrop;
 ///
 /// TODO add `secp256k1: Once<each_curve::PrivateKey>` for each curve.
 #[derive(ZeroizeOnDrop)]
-pub struct TWPrivateKey {
+pub struct PrivateKey {
     bytes: Vec<u8>,
 }
 
-impl RawPtrTrait for TWPrivateKey {}
-
-impl TWPrivateKey {
+/// cbindgen:ignore
+impl PrivateKey {
     /// The number of bytes in a private key.
     const SIZE: usize = 32;
 
     const KEY_RANGE: Range<usize> = 0..Self::SIZE;
 
     /// Validates the given `bytes` secret and creates a private key.
-    pub fn new(bytes: Vec<u8>) -> Result<TWPrivateKey, Error> {
+    pub fn new(bytes: Vec<u8>) -> Result<PrivateKey, Error> {
         if !Self::is_valid_general(&bytes) {
             return Err(Error::InvalidSecretKey);
         }
-        Ok(TWPrivateKey { bytes })
+        Ok(PrivateKey { bytes })
     }
 
     /// Returns the 32 byte array - the essential private key data.
     pub fn key(&self) -> H256 {
         assert!(
             self.bytes.len() >= Self::SIZE,
-            "'TWPrivateKey::bytes' has an unexpected length"
+            "'PrivateKey::bytes' has an unexpected length"
         );
         H256::try_from(&self.bytes[Self::KEY_RANGE])
             .expect("H256 and KEY_RANGE must be 32 byte length")
@@ -57,18 +55,18 @@ impl TWPrivateKey {
     }
 
     /// Checks if the given `bytes` secret is valid.
-    pub fn is_valid(bytes: &[u8], curve: TWCurve) -> bool {
+    pub fn is_valid(bytes: &[u8], curve: Curve) -> bool {
         if !Self::is_valid_general(bytes) {
             return false;
         }
         match curve {
-            TWCurve::Secp256k1 => secp256k1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
-            TWCurve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::Secp256k1 => secp256k1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
         }
     }
 
     /// Signs a `hash` with using the given elliptic curve.
-    pub fn sign(&self, hash: &[u8], curve: TWCurve) -> Result<Vec<u8>, Error> {
+    pub fn sign(&self, hash: &[u8], curve: Curve) -> Result<Vec<u8>, Error> {
         fn sign_impl<Key>(signing_key: Key, hash: &[u8]) -> Result<Vec<u8>, Error>
         where
             Key: SigningKeyTrait,
@@ -79,35 +77,35 @@ impl TWPrivateKey {
         }
 
         match curve {
-            TWCurve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, hash),
-            TWCurve::Starkex => sign_impl(self.to_starkex_privkey()?, hash),
+            Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, hash),
+            Curve::Starkex => sign_impl(self.to_starkex_privkey()?, hash),
         }
     }
 
     /// Returns the public key associated with the `self` private key and `ty` public key type.
-    pub fn get_public_key_by_type(&self, ty: TWPublicKeyType) -> Result<TWPublicKey, Error> {
+    pub fn get_public_key_by_type(&self, ty: PublicKeyType) -> Result<PublicKey, Error> {
         match ty {
-            TWPublicKeyType::Secp256k1 => {
+            PublicKeyType::Secp256k1 => {
                 let privkey = self.to_secp256k1_privkey()?;
-                Ok(TWPublicKey::Secp256k1(privkey.public()))
+                Ok(PublicKey::Secp256k1(privkey.public()))
             },
-            TWPublicKeyType::Secp256k1Extended => {
+            PublicKeyType::Secp256k1Extended => {
                 let privkey = self.to_secp256k1_privkey()?;
-                Ok(TWPublicKey::Secp256k1Extended(privkey.public()))
+                Ok(PublicKey::Secp256k1Extended(privkey.public()))
             },
-            TWPublicKeyType::Starkex => {
+            PublicKeyType::Starkex => {
                 let privkey = self.to_starkex_privkey()?;
-                Ok(TWPublicKey::Starkex(privkey.public()))
+                Ok(PublicKey::Starkex(privkey.public()))
             },
         }
     }
 
-    /// Tries to convert [`TWPrivateKey::key`] to [`secp256k1::PrivateKey`].
+    /// Tries to convert [`PrivateKey::key`] to [`secp256k1::PrivateKey`].
     fn to_secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
         secp256k1::PrivateKey::try_from(self.key().as_slice())
     }
 
-    /// Tries to convert [`TWPrivateKey::key`] to [`starkex::PrivateKey`].
+    /// Tries to convert [`PrivateKey::key`] to [`starkex::PrivateKey`].
     fn to_starkex_privkey(&self) -> Result<starkex::PrivateKey, Error> {
         starkex::PrivateKey::try_from(self.key().as_slice())
     }

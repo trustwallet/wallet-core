@@ -18,6 +18,7 @@ pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }
 
+/// cbindgen:ignore
 impl PublicKey {
     /// The number of bytes in a compressed public key.
     pub const COMPRESSED: usize = H264::len();

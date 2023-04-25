@@ -10,12 +10,12 @@
 //! # Usage - Generic TW solution
 //!
 //! If you plan to work with different curves in the same app by using the same private key,
-//! consider using [`tw::TWPrivateKey`], [`tw::TWPublicKey`], [`tw::TWKeyPair`] (TODO).
+//! consider using [`tw::PrivateKey`], [`tw::PublicKey`], [`tw::KeyPair`] (TODO).
 //!
 //! ```rust,ignore
-//! use tw_keypair::{tw::TWPrivateKey, Curve};
+//! use tw_keypair::{tw::PrivateKey, Curve};
 //!
-//! let private = TWPrivateKey::try_from(YOUR_SECRET_BYTES).unwrap();
+//! let private = PrivateKey::try_from(YOUR_SECRET_BYTES).unwrap();
 //!
 //! // Sign an ETH transaction hash with the `private` key.
 //! let eth_signature = private.sign(ETH_TX_HASH, Curve::Secp256k1).unwrap();
