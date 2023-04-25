@@ -6,7 +6,7 @@ use crate::manifest::{
     FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
 };
 use crate::{parse, Error, Result};
-use handlebars::Handlebars;
+use handlebars::{Handlebars, no_escape};
 use serde_json::json;
 
 #[derive(Serialize, Deserialize)]
@@ -98,14 +98,14 @@ impl TryFrom<TypeInfo> for SwiftReturn {
         let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
             (
                 SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData(result)".to_string()),
-                Some("TWDataDelete(result)".to_string()),
+                Some("TWDataCreateWithNSData".to_string()),
+                Some("TWDataDelete".to_string()),
             )
         } else if value.tags.iter().any(|t| t == "TW_STRING") {
             (
                 SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString(result)".to_string()),
-                Some("StringDelete(result)".to_string()),
+                Some("TWStringCreateWithNSString".to_string()),
+                Some("StringDelete".to_string()),
             )
         } else {
             (SwiftType::try_from(value.variant).unwrap(), None, None)
@@ -127,14 +127,14 @@ impl TryFrom<ParamInfo> for SwiftParam {
         let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
             (
                 SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData(data)".to_string()),
-                Some("TWDataDelete(data)".to_string()),
+                Some("TWDataCreateWithNSData".to_string()),
+                Some("TWDataDelete".to_string()),
             )
         } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
             (
                 SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString(string)".to_string()),
-                Some("StringDelete(string)".to_string()),
+                Some("TWStringCreateWithNSString".to_string()),
+                Some("TWStringDelete".to_string()),
             )
         } else {
             (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
@@ -279,16 +279,16 @@ pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()>
     std::fs::create_dir_all(&config.out_dir).unwrap();
 
     engine
-        .register_partial("file", &config.file_template)
+        .register_partial("file", no_escape(&config.file_template))
         .unwrap();
     engine
-        .register_partial("init", &config.init_template)
+        .register_partial("init", no_escape(&config.init_template))
         .unwrap();
     engine
-        .register_partial("method", &config.method_template)
+        .register_partial("method", no_escape(&config.method_template))
         .unwrap();
     engine
-        .register_partial("property", &config.property_template)
+        .register_partial("property", no_escape(&config.property_template))
         .unwrap();
 
     let mut classes = vec![];

@@ -1,46 +1,31 @@
-{{#if is_static}}
-public static func
-{{~else}}
-public func
-{{~/if}}
- {{name~}} (
-    {{~#each params}}
-    {{~name}}: {{type}}{{#unless @last}}, {{/unless~}}
-    {{/each}}
-) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-    {{#each params}}
-    {{#if wrap_as}}
-    let {{name}} = {{wrap_as}}
-    {{else}}
-    let {{name}} = {{name}}
-    {{/if}}
-    {{#if deter_as}}
-    defer {
-        {{deter_as}}
-    }
-    {{/if}}
-    {{#unless @last}}
+{{#if is_static}}public static func{{else}}public func{{/if}} {{name}} ({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+	{{#each params}}
+	{{#if wrap_as}}
+	let {{name}} = {{wrap_as}}({{name}})
+	{{else}}
+	let {{name}} = {{name}}
+	{{/if}}
+	{{#if deter_as}}
+	defer {
+		{{deter_as}}({{name}})
+	}
+	{{/if}}
+	{{/each}}
 
-    {{/unless}}
-    {{/each}}
+	// Call the underlying C function.
+	let result = {{c_ffi_name}}({{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
 
-    // Call the underlying C function.
-    let result = {{c_ffi_name}}(
-        {{~#each params}}
-        {{~name}}{{#unless @last}}, {{/unless~}}
-        {{/each}})
+	{{#if return.is_nullable}}
+	// Check nullable result.
+	guard let result = result else {
+		return nil
+	}
 
-    {{#if return.is_nullable}}
-    // Check nullable result.
-    guard let result = result else {
-        return nil
-    }
-
-    {{/if}}
-    {{#if return.wrap_as}}
-    // Return with conversion function.
-    return {{return.wrap_as}}
-    {{else}}
-    return result
-    {{/if}}
+	{{/if}}
+	{{#if return.wrap_as}}
+	// Return with conversion function.
+	return {{return.wrap_as}}(result)
+	{{else}}
+		return result
+	{{/if}}
 }

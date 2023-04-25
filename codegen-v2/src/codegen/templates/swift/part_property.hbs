@@ -20,7 +20,7 @@ public var
 
     {{#if return.wrap_as}}
     // Return with conversion function.
-    return {{return.wrap_as}}
+    return {{return.wrap_as}}(result)
     {{else}}
     return result
     {{/if}}
