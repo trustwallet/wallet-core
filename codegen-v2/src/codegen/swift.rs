@@ -281,15 +281,6 @@ pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()>
     engine
         .register_partial("file", no_escape(&config.file_template))
         .unwrap();
-    engine
-        .register_partial("init", no_escape(&config.init_template))
-        .unwrap();
-    engine
-        .register_partial("method", no_escape(&config.method_template))
-        .unwrap();
-    engine
-        .register_partial("property", no_escape(&config.property_template))
-        .unwrap();
 
     let mut classes = vec![];
 
