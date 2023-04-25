@@ -236,6 +236,8 @@ impl InitInfo {
 
         Ok(InitInfo {
             name: func.name,
+            // TODO
+            is_public: true,
             params: func.params,
             comments: vec![],
         })

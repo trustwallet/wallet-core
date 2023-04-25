@@ -88,6 +88,7 @@ pub struct StructInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InitInfo {
     pub name: String,
+    pub is_public: bool,
     pub params: Vec<ParamInfo>,
     pub comments: Vec<String>,
 }

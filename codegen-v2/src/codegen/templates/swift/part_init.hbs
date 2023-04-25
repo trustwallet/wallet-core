@@ -21,7 +21,7 @@ public init{{#if is_nullable}}?{{/if}}(
     {{/each}}
 
     // Call the underlying C function.
-    let result = {{c_ffi.function_name}}(
+    let result = {{c_ffi_name}}(
         {{~#each params}}
         {{~name}}{{#unless @last}}, {{/unless~}}
         {{/each}})

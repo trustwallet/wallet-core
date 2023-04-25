@@ -1,8 +1,11 @@
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
-use crate::manifest::{FileInfo, FunctionInfo, ParamInfo, StructInfo, TypeInfo, TypeVariant, PropertyInfo};
+use crate::manifest::{
+    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
+};
 use crate::{parse, Error, Result};
 use handlebars::Handlebars;
 
+pub const INIT_INFO: &str = "part_init.hbs";
 pub const METHOD_INFO: &str = "part_method.hbs";
 pub const PROPERTY_INFO: &str = "part_property.hbs";
 
@@ -79,6 +82,15 @@ pub struct SwiftReturn {
     deter_as: Option<String>,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct SwiftInit {
+    name: String,
+    c_ffi_name: String,
+    is_public: bool,
+    params: Vec<SwiftParam>,
+    comments: Vec<String>,
+}
+
 impl TryFrom<TypeInfo> for SwiftReturn {
     type Error = Error;
 
@@ -136,6 +148,41 @@ impl TryFrom<ParamInfo> for SwiftParam {
             deter_as: deter_as,
         })
     }
+}
+
+fn process_inits(
+    object_name: &str,
+    inits: Vec<InitInfo>,
+) -> Result<(Vec<SwiftInit>, Vec<InitInfo>)> {
+    let mut swift_inits = vec![];
+    let mut info_inits = vec![];
+
+    for init in inits {
+        if !init.name.starts_with(object_name) {
+            // Init is not assciated with the object.
+            info_inits.push(init);
+            continue;
+        }
+
+        let init_name = init.name.strip_prefix(object_name).unwrap().to_string();
+
+        // Convert parameters.
+        let params = init
+            .params
+            .into_iter()
+            .map(|p| SwiftParam::try_from(p))
+            .collect::<Result<Vec<SwiftParam>>>()?;
+
+        swift_inits.push(SwiftInit {
+            name: init_name,
+            c_ffi_name: init.name.clone(),
+            is_public: init.is_public,
+            params,
+            comments: vec![],
+        });
+    }
+
+    Ok((swift_inits, info_inits))
 }
 
 fn process_struct_methods(
@@ -218,9 +265,24 @@ fn process_struct_properties(
 
 fn process_file_info(mut info: FileInfo) {
     for object in info.structs {
-        let (methods, properties);
+        let (inits, methods, properties);
+        (inits, info.inits) = process_inits(&object.name, info.inits).unwrap();
         (methods, info.functions) = process_struct_methods(&object, info.functions).unwrap();
-        (properties, info.properties) = process_struct_properties(&object, info.properties).unwrap();
+        (properties, info.properties) =
+            process_struct_properties(&object, info.properties).unwrap();
+
+        for init in inits {
+            let mut engine = Handlebars::new();
+            engine.set_strict_mode(true);
+
+            engine
+                .register_template_file(INIT_INFO, template_path(INIT_INFO))
+                .unwrap();
+
+            let out = engine.render(INIT_INFO, &init).unwrap();
+
+            println!("{}", out);
+        }
 
         for method in methods {
             let mut engine = Handlebars::new();
