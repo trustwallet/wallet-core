@@ -18,11 +18,19 @@ public class
     init() {}
     {{/if}}
 
-    {{> inits}}
+    {{#each inits}}
+    {{> init}}
+    {{/each}}
 
-    {{> deinits}}
+    {{#each deinits}}
+    {{> deinit}}
+    {{/each}}
 
-    {{> methods}}
+    {{#each methods}}
+    {{> method}}
+    {{/each}}
 
-    {{> properties}}
+    {{#each properties}}
+    {{> property}}
+    {{/each}}
 }

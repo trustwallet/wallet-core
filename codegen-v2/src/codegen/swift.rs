@@ -1,13 +1,12 @@
+use std::io::read_to_string;
+
 use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
 use crate::manifest::{
     FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
 };
 use crate::{parse, Error, Result};
 use handlebars::Handlebars;
-
-pub const INIT_INFO: &str = "part_init.hbs";
-pub const METHOD_INFO: &str = "part_method.hbs";
-pub const PROPERTY_INFO: &str = "part_property.hbs";
+use serde_json::json;
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftType(String);
@@ -263,7 +262,32 @@ fn process_struct_properties(
     Ok((swift_props, info_props))
 }
 
-fn process_file_info(mut info: FileInfo) {
+pub struct RenderConfig {
+    pub out_dir: String,
+    pub struct_template: String,
+    pub init_template: String,
+    pub method_template: String,
+    pub property_template: String,
+}
+
+pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()> {
+    let mut engine = Handlebars::new();
+    // Unmatched variables should result in an error.
+    engine.set_strict_mode(true);
+
+    engine
+        .register_partial("struct", &config.struct_template)
+        .unwrap();
+    engine
+        .register_partial("init", &config.init_template)
+        .unwrap();
+    engine
+        .register_partial("method", &config.method_template)
+        .unwrap();
+    engine
+        .register_partial("property", &config.property_template)
+        .unwrap();
+
     for object in info.structs {
         let (inits, methods, properties);
         (inits, info.inits) = process_inits(&object.name, info.inits).unwrap();
@@ -271,61 +295,41 @@ fn process_file_info(mut info: FileInfo) {
         (properties, info.properties) =
             process_struct_properties(&object, info.properties).unwrap();
 
-        for init in inits {
-            let mut engine = Handlebars::new();
-            engine.set_strict_mode(true);
+        let payload = json!({
+            "class_name": object.name,
+            "init_instance": true,
+            "parent_classes": [],
+            "inits": inits,
+            "deinits": [],
+            "methods": methods,
+            "properties": properties,
+        });
 
-            engine
-                .register_template_file(INIT_INFO, template_path(INIT_INFO))
-                .unwrap();
-
-            let out = engine.render(INIT_INFO, &init).unwrap();
-
-            println!("{}", out);
-        }
-
-        for method in methods {
-            let mut engine = Handlebars::new();
-            engine.set_strict_mode(true);
-
-            engine
-                .register_template_file(METHOD_INFO, template_path(METHOD_INFO))
-                .unwrap();
-
-            let out = engine.render(METHOD_INFO, &method).unwrap();
-
-            println!("{}", out);
-        }
-
-        for property in properties {
-            let mut engine = Handlebars::new();
-            engine.set_strict_mode(true);
-
-            engine
-                .register_template_file(PROPERTY_INFO, template_path(PROPERTY_INFO))
-                .unwrap();
-
-            let out = engine.render(PROPERTY_INFO, &property).unwrap();
-
-            println!("{}", out);
-        }
+        let out = engine.render("struct", &payload).unwrap();
+        println!("{out}");
     }
-}
 
-const TEMPLATE_DIR: &str = "src/codegen/templates/swift/";
-
-fn template_path(file: &str) -> String {
-    format!("{}{}", TEMPLATE_DIR, file)
+    Ok(())
 }
 
 #[test]
 #[ignore]
 fn test_swift_template() {
+    use std::fs::read_to_string;
+
     let path = std::path::Path::new("../include/");
     let dir = crate::parse(&path).unwrap();
     let file_infos = crate::manifest::process_c_header_dir(&dir);
 
+    let config = RenderConfig {
+        out_dir: "out/swift".to_string(),
+        struct_template: read_to_string("src/codegen/templates/swift/class.hbs").unwrap(),
+        init_template: read_to_string("src/codegen/templates/swift/part_init.hbs").unwrap(),
+        method_template: read_to_string("src/codegen/templates/swift/part_method.hbs").unwrap(),
+        property_template: read_to_string("src/codegen/templates/swift/part_property.hbs").unwrap(),
+    };
+
     for file_info in file_infos {
-        process_file_info(file_info);
+        render_file_info(&config, file_info).unwrap();
     }
 }

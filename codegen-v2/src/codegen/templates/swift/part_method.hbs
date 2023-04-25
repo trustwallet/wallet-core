@@ -10,7 +10,6 @@ public func
 ) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
     {{#each params}}
     {{#if wrap_as}}
-    // Prepare '{{name}}'.
     let {{name}} = {{wrap_as}}
     {{else}}
     let {{name}} = {{name}}

@@ -5,7 +5,6 @@ public init{{#if is_nullable}}?{{/if}}(
 ) {
     {{#each params}}
     {{#if wrap_as}}
-     // Prepare '{{name}}'.
     let {{name}} = {{wrap_as}}
     {{else}}
     let {{name}} = {{name}}
@@ -33,5 +32,5 @@ public init{{#if is_nullable}}?{{/if}}(
     }
     {{/if}}
 
-	self.rawValue = result 
+    self.rawValue = result 
 }
