@@ -5,7 +5,7 @@ use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeC
 use crate::manifest::{
     FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
 };
-use crate::{parse, Error, Result};
+use crate::{Error, Result};
 use handlebars::{no_escape, Handlebars};
 use serde_json::json;
 
@@ -320,7 +320,7 @@ fn test_swift_template() {
     use std::fs::read_to_string;
 
     let path = std::path::Path::new("../include/");
-    let dir = crate::parse(&path).unwrap();
+    let dir = crate::grammar::parse(&path).unwrap();
     let file_infos = crate::manifest::process_c_header_dir(&dir);
 
     let config = RenderConfig {

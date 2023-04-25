@@ -1,9 +1,5 @@
-use core::panic;
-
-use crate::{
-    grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory},
-    CHeaderDirectory,
-};
+use crate::grammar::CHeaderDirectory;
+use crate::grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Error {
@@ -240,21 +236,5 @@ pub fn extract_custom(ty: &GType) -> Option<String> {
                 None
             }
         }
-    }
-}
-
-#[test]
-#[ignore]
-fn test_manifest() {
-    let path = std::path::Path::new("../include/");
-    let dir = crate::parse(&path).unwrap();
-    let file_infos = process_c_header_dir(&dir);
-
-    for file_info in file_infos {
-        let content = serde_yaml::to_string(&file_info).unwrap();
-        let file_path = format!("out/{}.yaml", file_info.name);
-
-        std::fs::create_dir_all("out").unwrap();
-        std::fs::write(&file_path, content.as_bytes()).unwrap();
     }
 }
