@@ -7,9 +7,9 @@
 #[macro_use]
 extern crate serde;
 
-mod codegen;
+pub mod codegen;
 pub mod grammar;
-mod manifest;
+pub mod manifest;
 mod manifest_impl;
 mod reader;
 #[cfg(test)]

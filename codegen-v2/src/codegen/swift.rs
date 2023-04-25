@@ -63,7 +63,7 @@ pub struct SwiftInit {
     pub comments: Vec<String>,
 }
 
-pub fn render_file_info(out_dir: &str, template: &str, mut info: FileInfo) -> Result<String> {
+pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<String> {
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
