@@ -11,8 +11,10 @@ use crate::Error;
 use k256::ecdsa::{SigningKey, VerifyingKey};
 use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
+use tw_encoding::hex;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesVec;
+use tw_utils::traits::ToBytesZeroizing;
+use zeroize::Zeroizing;
 
 /// Represents a `secp256k1` private key.
 pub struct PrivateKey {
@@ -20,12 +22,6 @@ pub struct PrivateKey {
 }
 
 impl PrivateKey {
-    /// Returns the raw data of the private key.
-    pub fn to_bytes(&self) -> H256 {
-        H256::try_from(self.secret.to_bytes().as_slice())
-            .expect("'PrivateKey::secret' is 32 byte length array")
-    }
-
     /// Returns an associated `secp256k1` public key.
     pub fn public(&self) -> PublicKey {
         PublicKey::new(*self.secret.verifying_key())
@@ -69,8 +65,9 @@ impl SigningKeyTrait for PrivateKey {
 /// Implement `str` -> `PrivateKey` conversion for test purposes.
 impl From<&'static str> for PrivateKey {
     fn from(hex: &'static str) -> Self {
-        let data = H256::from(hex);
-        PrivateKey::try_from(data.as_slice()).expect("Expected a valid Private Key hex")
+        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
+        let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
+        PrivateKey::try_from(data.as_slice()).expect("Expected a valid Secret Key")
     }
 }
 
@@ -83,8 +80,9 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     }
 }
 
-impl ToBytesVec for PrivateKey {
-    fn to_vec(&self) -> Vec<u8> {
-        self.to_bytes().into_vec()
+impl ToBytesZeroizing for PrivateKey {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        let secret = Zeroizing::new(self.secret.to_bytes());
+        Zeroizing::new(secret.as_slice().to_vec())
     }
 }

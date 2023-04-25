@@ -61,6 +61,7 @@ impl<'a> TryFrom<&'a [u8]> for KeyPair {
 
 impl From<&'static str> for KeyPair {
     fn from(hex: &'static str) -> Self {
+        // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).
         let bytes = hex::decode(hex).expect("Expected a valid Secret Key hex");
         KeyPair::try_from(bytes.as_slice()).expect("Expected a valid Secret Key")
     }

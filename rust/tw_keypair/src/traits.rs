@@ -5,10 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::Error;
-use tw_utils::traits::ToBytesVec;
+use tw_utils::traits::{ToBytesVec, ToBytesZeroizing};
 
 pub trait KeyPairTrait: FromSlice + SigningKeyTrait + VerifyingKeyTrait {
-    type Private: FromSlice + ToBytesVec;
+    type Private: FromSlice + ToBytesZeroizing;
     type Public: FromSlice + ToBytesVec;
 
     /// Returns the reference to the public key.

@@ -9,6 +9,7 @@ use std::fmt;
 use std::ops::{Deref, DerefMut};
 use std::str::FromStr;
 use tw_encoding::hex;
+use zeroize::DefaultIsZeroes;
 
 pub type H256 = Hash<32>;
 pub type H264 = Hash<33>;
@@ -17,6 +18,8 @@ pub type H520 = Hash<65>;
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Hash<const N: usize>([u8; N]);
+
+impl<const N: usize> DefaultIsZeroes for Hash<N> {}
 
 impl<const N: usize> Hash<N> {
     pub const fn new() -> Self {

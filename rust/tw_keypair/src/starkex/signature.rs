@@ -21,9 +21,12 @@ pub struct Signature {
 }
 
 impl Signature {
+    /// The number of bytes for a serialized signature representation.
+    pub const LEN: usize = 64;
+
     /// Returns the number of bytes for a serialized signature representation.
     pub const fn len() -> usize {
-        64
+        Self::LEN
     }
 
     /// Creates a `starknet` signature from the given [`starknet_crypto::Signature`].

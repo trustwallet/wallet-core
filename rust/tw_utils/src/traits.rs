@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use zeroize::Zeroizing;
+
 pub trait ToBytesVec {
     fn to_vec(&self) -> Vec<u8>;
 }
@@ -15,6 +17,10 @@ where
     fn to_vec(&self) -> Vec<u8> {
         self.as_ref().to_vec()
     }
+}
+
+pub trait ToBytesZeroizing {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>>;
 }
 
 pub trait IntoOption<T> {

@@ -11,10 +11,12 @@ use std::ops::Range;
 use tw_hash::H256;
 use tw_memory::ffi::RawPtrTrait;
 use tw_utils::traits::ToBytesVec;
+use zeroize::ZeroizeOnDrop;
 
 /// Represents a private key that can be used to sign messages with different elliptic curves.
 ///
 /// TODO add `secp256k1: Once<each_curve::PrivateKey>` for each curve.
+#[derive(ZeroizeOnDrop)]
 pub struct TWPrivateKey {
     bytes: Vec<u8>,
 }

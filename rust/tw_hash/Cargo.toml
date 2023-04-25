@@ -16,3 +16,4 @@ sha2 = "0.10.6"
 sha3 = "0.10.6"
 tw_encoding = { path = "../tw_encoding" }
 tw_memory = { path = "../tw_memory" }
+zeroize = "1.6.0"

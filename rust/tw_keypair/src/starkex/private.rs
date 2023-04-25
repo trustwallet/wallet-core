@@ -15,7 +15,8 @@ use starknet_crypto::{
 use starknet_ff::FieldElement;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesVec;
+use tw_utils::traits::ToBytesZeroizing;
+use zeroize::Zeroizing;
 
 /// Represents a private key that is used in `starknet` context.
 pub struct PrivateKey {
@@ -55,14 +56,16 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
 
 impl From<&'static str> for PrivateKey {
     fn from(hex: &'static str) -> Self {
+        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
         let bytes = hex::decode(hex).expect("Expected a valid Private Key hex");
         PrivateKey::try_from(bytes.as_slice()).expect("Expected a valid Private Key")
     }
 }
 
-impl ToBytesVec for PrivateKey {
-    fn to_vec(&self) -> Vec<u8> {
-        self.secret.to_bytes_be().to_vec()
+impl ToBytesZeroizing for PrivateKey {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        let secret = Zeroizing::new(self.secret.to_bytes_be());
+        Zeroizing::new(secret.to_vec())
     }
 }
 

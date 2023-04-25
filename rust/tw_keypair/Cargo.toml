@@ -12,3 +12,4 @@ tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
 tw_utils = { path = "../tw_utils" }
+zeroize = "1.6.0"

@@ -31,7 +31,7 @@ mod tests {
     use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
     use tw_encoding::hex;
     use tw_hash::{H256, H512};
-    use tw_utils::traits::ToBytesVec;
+    use tw_utils::traits::{ToBytesVec, ToBytesZeroizing};
 
     #[test]
     fn test_key_pair_sign_verify() {
@@ -59,7 +59,10 @@ mod tests {
                 .unwrap();
 
         let keypair = KeyPair::try_from(privkey_bytes.as_slice()).unwrap();
-        assert_eq!(keypair.private().to_vec(), privkey_bytes);
+        assert_eq!(
+            keypair.private().to_zeroizing_vec().as_slice(),
+            privkey_bytes
+        );
         assert_eq!(keypair.public().to_vec(), pubkey_bytes);
     }
 
@@ -76,7 +79,7 @@ mod tests {
         let bytes = hex::decode("058ab7989d625b1a690400dcbe6e070627adedceff7bd196e58d4791026a8afe")
             .unwrap();
         let private = PrivateKey::try_from(bytes.as_slice()).unwrap();
-        assert_eq!(private.to_vec(), bytes);
+        assert_eq!(private.to_zeroizing_vec().as_slice(), bytes);
     }
 
     #[test]

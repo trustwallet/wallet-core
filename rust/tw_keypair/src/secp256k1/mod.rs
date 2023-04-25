@@ -22,7 +22,7 @@ mod tests {
     use tw_encoding::hex;
     use tw_hash::sha3::keccak256;
     use tw_hash::{H256, H264, H520};
-    use tw_utils::traits::ToBytesVec;
+    use tw_utils::traits::{ToBytesVec, ToBytesZeroizing};
 
     #[test]
     fn test_key_pair() {
@@ -30,7 +30,7 @@ mod tests {
             hex::decode("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
                 .unwrap();
         let key_pair = KeyPair::try_from(secret.as_slice()).unwrap();
-        assert_eq!(key_pair.private().to_vec(), secret);
+        assert_eq!(key_pair.private().to_zeroizing_vec().as_slice(), secret);
         assert_eq!(
             key_pair.public().compressed(),
             H264::from("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1")
@@ -60,11 +60,11 @@ mod tests {
 
         // Test `From<&'static str>`.
         let private = PrivateKey::from(hex);
-        assert_eq!(private.to_vec(), expected);
+        assert_eq!(private.to_zeroizing_vec().as_slice(), expected);
 
         // Test `From<&'a [u8]>`.
         let private = PrivateKey::try_from(expected.as_slice()).unwrap();
-        assert_eq!(private.to_vec(), expected);
+        assert_eq!(private.to_zeroizing_vec().as_slice(), expected);
     }
 
     #[test]

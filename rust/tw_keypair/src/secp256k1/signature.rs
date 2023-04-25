@@ -28,6 +28,9 @@ pub struct Signature {
 }
 
 impl Signature {
+    /// The number of bytes for a serialized signature representation.
+    pub const LEN: usize = 65;
+
     /// Creates a `secp256k1` recoverable signature from the given [`k256::ecdsa::Signature`]
     /// and the `v` recovery byte.
     pub(crate) fn new(signature: k256::ecdsa::Signature, v: u8) -> Signature {
@@ -36,7 +39,7 @@ impl Signature {
 
     /// Returns the number of bytes for a serialized signature representation.
     pub const fn len() -> usize {
-        65
+        Self::LEN
     }
 
     /// Returns an r-coordinate as 32 byte array.
