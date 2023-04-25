@@ -232,17 +232,6 @@ impl PropertyInfo {
             return Err(Error::BadProperty);
         }
 
-        /*
-        // Convert GType to TypeInfo.
-        let g_ty = value.params.get(0).unwrap();
-        let ty = TypeInfo::from_g_type(&g_ty.ty, &g_ty.markers)?;
-
-        // Must be a pointer and not nullable.
-        if ty.is_nullable || !ty.is_pointer {
-            return Err(Error::BadProperty);
-        }
-        */
-
         // ### Return value
 
         // Extract return value.
