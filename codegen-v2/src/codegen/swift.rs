@@ -12,34 +12,6 @@ use serde_json::json;
 #[derive(Serialize, Deserialize)]
 pub struct SwiftType(String);
 
-impl From<TypeVariant> for SwiftType {
-    fn from(value: TypeVariant) -> Self {
-        let res = match value {
-            TypeVariant::Void => "()".to_string(),
-            TypeVariant::Bool => "Bool".to_string(),
-            TypeVariant::Char => "Character".to_string(),
-            TypeVariant::ShortInt => "Int16".to_string(),
-            TypeVariant::Int => "Int32".to_string(),
-            TypeVariant::UnsignedInt => "UInt32".to_string(),
-            TypeVariant::LongInt => "Int64".to_string(),
-            TypeVariant::Float => "Float".to_string(),
-            TypeVariant::Double => "Double".to_string(),
-            TypeVariant::SizeT => "Int".to_string(),
-            TypeVariant::Int8T => "Int8".to_string(),
-            TypeVariant::Int16T => "Int16".to_string(),
-            TypeVariant::Int32T => "Int32".to_string(),
-            TypeVariant::Int64T => "Int64".to_string(),
-            TypeVariant::UInt8T => "UInt8".to_string(),
-            TypeVariant::UInt16T => "UInt16".to_string(),
-            TypeVariant::UInt32T => "UInt32".to_string(),
-            TypeVariant::UInt64T => "UInt64".to_string(),
-            TypeVariant::Struct(n) | TypeVariant::Enum(n) => n,
-        };
-
-        SwiftType(res)
-    }
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct SwiftFunction {
     pub name: String,
@@ -65,89 +37,69 @@ struct SwiftProperty {
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftParam {
-    name: String,
+    pub name: String,
     #[serde(rename = "type")]
-    param_type: SwiftType,
-    is_nullable: bool,
-    wrap_as: Option<String>,
-    deter_as: Option<String>,
+    pub param_type: SwiftType,
+    pub is_nullable: bool,
+    pub wrap_as: Option<String>,
+    pub deter_as: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftReturn {
     #[serde(rename = "type")]
-    param_type: SwiftType,
-    is_nullable: bool,
-    wrap_as: Option<String>,
-    deter_as: Option<String>,
+    pub param_type: SwiftType,
+    pub is_nullable: bool,
+    pub wrap_as: Option<String>,
+    pub deter_as: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftInit {
-    name: String,
-    c_ffi_name: String,
-    is_public: bool,
-    params: Vec<SwiftParam>,
-    comments: Vec<String>,
+    pub name: String,
+    pub c_ffi_name: String,
+    pub is_public: bool,
+    pub params: Vec<SwiftParam>,
+    pub comments: Vec<String>,
 }
 
-impl TryFrom<TypeInfo> for SwiftReturn {
-    type Error = Error;
+pub fn render_file_info(out_dir: &str, template: &str, mut info: FileInfo) -> Result<String> {
+    let mut engine = Handlebars::new();
+    // Unmatched variables should result in an error.
+    engine.set_strict_mode(true);
 
-    fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
-        let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
-            (
-                SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData".to_string()),
-                Some("TWDataDelete".to_string()),
-            )
-        } else if value.tags.iter().any(|t| t == "TW_STRING") {
-            (
-                SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString".to_string()),
-                Some("StringDelete".to_string()),
-            )
-        } else {
-            (SwiftType::try_from(value.variant).unwrap(), None, None)
-        };
+    engine
+        .register_partial("file", no_escape(&template))
+        .unwrap();
 
-        Ok(SwiftReturn {
-            param_type,
-            is_nullable: value.is_nullable,
-            wrap_as,
-            deter_as,
-        })
+    let mut objects = vec![];
+
+    for object in info.structs {
+        let (inits, methods, properties);
+        (inits, info.inits) = process_inits(&object.name, info.inits).unwrap();
+        (methods, info.functions) = process_struct_methods(&object, info.functions).unwrap();
+        (properties, info.properties) =
+            process_struct_properties(&object, info.properties).unwrap();
+
+        // TODO: Extend
+        let payload = json!({
+            "class_name": object.name,
+            "init_instance": true,
+            "parent_classes": [],
+            "inits": inits,
+            "deinits": [],
+            "methods": methods,
+            "properties": properties,
+        });
+
+        objects.push(payload);
     }
-}
 
-impl TryFrom<ParamInfo> for SwiftParam {
-    type Error = Error;
+    let out = engine
+        .render("file", &json!({ "objects": objects }))
+        .unwrap();
 
-    fn try_from(value: ParamInfo) -> Result<Self> {
-        let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
-            (
-                SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData".to_string()),
-                Some("TWDataDelete".to_string()),
-            )
-        } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
-            (
-                SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString".to_string()),
-                Some("TWStringDelete".to_string()),
-            )
-        } else {
-            (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
-        };
-
-        Ok(SwiftParam {
-            name: value.name,
-            param_type,
-            is_nullable: value.ty.is_nullable,
-            wrap_as: wrap_as,
-            deter_as: deter_as,
-        })
-    }
+    Ok(out)
 }
 
 fn process_inits(
@@ -263,75 +215,117 @@ fn process_struct_properties(
     Ok((swift_props, info_props))
 }
 
-pub struct RenderConfig {
-    pub out_dir: String,
-    pub file_template: String,
-    pub init_template: String,
-    pub method_template: String,
-    pub property_template: String,
-}
-
-pub fn render_file_info(config: &RenderConfig, mut info: FileInfo) -> Result<()> {
-    let mut engine = Handlebars::new();
-    // Unmatched variables should result in an error.
-    engine.set_strict_mode(true);
-
-    std::fs::create_dir_all(&config.out_dir).unwrap();
-
-    engine
-        .register_partial("file", no_escape(&config.file_template))
-        .unwrap();
-
-    let mut classes = vec![];
-
-    for object in info.structs {
-        let (inits, methods, properties);
-        (inits, info.inits) = process_inits(&object.name, info.inits).unwrap();
-        (methods, info.functions) = process_struct_methods(&object, info.functions).unwrap();
-        (properties, info.properties) =
-            process_struct_properties(&object, info.properties).unwrap();
-
-        let payload = json!({
-            "class_name": object.name,
-            "init_instance": true,
-            "parent_classes": [],
-            "inits": inits,
-            "deinits": [],
-            "methods": methods,
-            "properties": properties,
-        });
-
-        classes.push(payload);
-    }
-
-    let file_path = format!("{}/{}.swift", config.out_dir, info.name);
-
-    let out = engine
-        .render("file", &json!({ "classes": classes }))
-        .unwrap();
-    std::fs::write(&file_path, out.as_bytes()).unwrap();
-
-    Ok(())
-}
-
+/*
 #[test]
 #[ignore]
 fn test_swift_template() {
     use std::fs::read_to_string;
 
+    const OUT_DIR: &str = "out/swift/";
+    const FILE_TEMPLATE: &str = "src/codegen/templates/swift/file.hbs";
+
     let path = std::path::Path::new("../include/");
     let dir = crate::grammar::parse(&path).unwrap();
     let file_infos = crate::manifest::process_c_header_dir(&dir);
 
-    let config = RenderConfig {
-        out_dir: "out/swift/".to_string(),
-        file_template: read_to_string("src/codegen/templates/swift/file.hbs").unwrap(),
-        init_template: read_to_string("src/codegen/templates/swift/part_init.hbs").unwrap(),
-        method_template: read_to_string("src/codegen/templates/swift/part_method.hbs").unwrap(),
-        property_template: read_to_string("src/codegen/templates/swift/part_property.hbs").unwrap(),
-    };
+    let file_tempalte = read_to_string(FILE_TEMPLATE).unwrap();
 
     for file_info in file_infos {
-        render_file_info(&config, file_info).unwrap();
+        render_file_info(OUT_DIR, &file_template, file_info).unwrap();
+    }
+
+    std::fs::create_dir_all(&config.out_dir).unwrap();
+
+    let file_path = format!("{}/{}.swift", config.out_dir, info.name);
+
+    std::fs::write(&file_path, out.as_bytes()).unwrap();
+
+}
+*/
+
+impl From<TypeVariant> for SwiftType {
+    fn from(value: TypeVariant) -> Self {
+        let res = match value {
+            TypeVariant::Void => "()".to_string(),
+            TypeVariant::Bool => "Bool".to_string(),
+            TypeVariant::Char => "Character".to_string(),
+            TypeVariant::ShortInt => "Int16".to_string(),
+            TypeVariant::Int => "Int32".to_string(),
+            TypeVariant::UnsignedInt => "UInt32".to_string(),
+            TypeVariant::LongInt => "Int64".to_string(),
+            TypeVariant::Float => "Float".to_string(),
+            TypeVariant::Double => "Double".to_string(),
+            TypeVariant::SizeT => "Int".to_string(),
+            TypeVariant::Int8T => "Int8".to_string(),
+            TypeVariant::Int16T => "Int16".to_string(),
+            TypeVariant::Int32T => "Int32".to_string(),
+            TypeVariant::Int64T => "Int64".to_string(),
+            TypeVariant::UInt8T => "UInt8".to_string(),
+            TypeVariant::UInt16T => "UInt16".to_string(),
+            TypeVariant::UInt32T => "UInt32".to_string(),
+            TypeVariant::UInt64T => "UInt64".to_string(),
+            TypeVariant::Struct(n) | TypeVariant::Enum(n) => n,
+        };
+
+        SwiftType(res)
+    }
+}
+
+impl TryFrom<TypeInfo> for SwiftReturn {
+    type Error = Error;
+
+    fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
+        let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+            (
+                SwiftType("Data".to_string()),
+                Some("TWDataCreateWithNSData".to_string()),
+                Some("TWDataDelete".to_string()),
+            )
+        } else if value.tags.iter().any(|t| t == "TW_STRING") {
+            (
+                SwiftType("String".to_string()),
+                Some("TWStringCreateWithNSString".to_string()),
+                Some("StringDelete".to_string()),
+            )
+        } else {
+            (SwiftType::try_from(value.variant).unwrap(), None, None)
+        };
+
+        Ok(SwiftReturn {
+            param_type,
+            is_nullable: value.is_nullable,
+            wrap_as,
+            deter_as,
+        })
+    }
+}
+
+impl TryFrom<ParamInfo> for SwiftParam {
+    type Error = Error;
+
+    fn try_from(value: ParamInfo) -> Result<Self> {
+        let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
+            (
+                SwiftType("Data".to_string()),
+                Some("TWDataCreateWithNSData".to_string()),
+                Some("TWDataDelete".to_string()),
+            )
+        } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
+            (
+                SwiftType("String".to_string()),
+                Some("TWStringCreateWithNSString".to_string()),
+                Some("TWStringDelete".to_string()),
+            )
+        } else {
+            (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
+        };
+
+        Ok(SwiftParam {
+            name: value.name,
+            param_type,
+            is_nullable: value.ty.is_nullable,
+            wrap_as: wrap_as,
+            deter_as: deter_as,
+        })
     }
 }

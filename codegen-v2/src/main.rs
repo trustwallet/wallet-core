@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use libparser::parse;
+use libparser::grammar::parse;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;

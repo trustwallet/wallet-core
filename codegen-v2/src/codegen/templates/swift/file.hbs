@@ -9,7 +9,7 @@
 
 import Foundation
 
-{{#each classes}}
+{{#each objects}}
 {{#if is_final}}public final class{{else}}public class{{/if}} {{class_name}}{{#each parent_classes}} {{this}} {{/each}} {
     {{#if init_instance}}
     let rawValue: OpaquePointer

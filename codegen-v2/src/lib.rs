@@ -8,7 +8,7 @@
 extern crate serde;
 
 mod codegen;
-mod grammar;
+pub mod grammar;
 mod manifest;
 mod manifest_impl;
 mod reader;
