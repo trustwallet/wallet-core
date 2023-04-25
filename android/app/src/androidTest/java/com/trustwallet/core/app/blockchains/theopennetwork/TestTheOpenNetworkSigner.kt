@@ -33,6 +33,7 @@ class TestTheOpenNetworkSigner {
             .setSequenceNumber(6)
             .setMode(TheOpenNetwork.SendMode.PAY_FEES_SEPARATELY_VALUE or TheOpenNetwork.SendMode.IGNORE_ACTION_PHASE_ERRORS_VALUE)
             .setExpireAt(1671132440)
+            .setBounceable(true)
             .build()
 
         val input = TheOpenNetwork.SigningInput.newBuilder()
