@@ -1,7 +1,3 @@
-use std::fmt::format;
-use std::io::read_to_string;
-
-use crate::grammar::{GFunctionDecl, GKeyword, GMarker, GPrimitive, GType, GTypeCategory};
 use crate::manifest::{
     FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
 };

@@ -4,13 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::env;
-use std::fs::{read_to_string, File};
-use std::io::Write;
 use std::path::Path;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = std::env::args().collect();
 
     if args.len() < 2 {
         panic!("Invalid command");
@@ -59,7 +56,7 @@ fn generate_swift_bindings() {
     let dir = libparser::grammar::parse_headers(&path).unwrap();
     let file_infos = libparser::manifest::process_c_header_dir(&dir);
 
-    let file_template = read_to_string("src/codegen/templates/swift/file.hbs").unwrap();
+    let file_template = std::fs::read_to_string("src/codegen/templates/swift/file.hbs").unwrap();
 
     std::fs::create_dir_all("out/swift_bindings/").unwrap();
 
