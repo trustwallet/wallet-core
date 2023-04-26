@@ -7,8 +7,8 @@
 use crate::traits::VerifyingKeyTrait;
 use crate::tw::PublicKeyType;
 use crate::{secp256k1, starkex, Error};
-use tw_utils::traits::ToBytesVec;
-use tw_utils::try_or_false;
+use tw_misc::traits::ToBytesVec;
+use tw_misc::try_or_false;
 
 /// Represents a public key that can be used to verify signatures and messages.
 pub enum PublicKey {

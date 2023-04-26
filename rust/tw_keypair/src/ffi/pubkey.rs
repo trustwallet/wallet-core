@@ -10,7 +10,7 @@ use crate::tw::{PublicKey, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
-use tw_utils::{try_or_else, try_or_false};
+use tw_misc::{try_or_else, try_or_false};
 
 pub struct TWPublicKey(pub(crate) PublicKey);
 

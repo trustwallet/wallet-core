@@ -15,7 +15,7 @@ use starknet_crypto::{
 use starknet_ff::FieldElement;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesZeroizing;
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
 /// Represents a private key that is used in `starknet` context.

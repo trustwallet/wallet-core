@@ -12,8 +12,8 @@ use starknet_crypto::verify as ecdsa_verify;
 use starknet_ff::FieldElement;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesVec;
-use tw_utils::try_or_false;
+use tw_misc::traits::ToBytesVec;
+use tw_misc::try_or_false;
 
 pub struct PublicKey {
     public: FieldElement,

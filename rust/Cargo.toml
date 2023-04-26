@@ -4,8 +4,8 @@ members = [
     "tw_hash",
     "tw_keypair",
     "tw_memory",
+    "tw_misc",
     "tw_move_parser",
     "tw_proto",
-    "tw_utils",
     "wallet_core_rs",
 ]

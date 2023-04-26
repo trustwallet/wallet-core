@@ -109,7 +109,7 @@ where
 mod tests {
     use super::*;
     use tw_hash::H520;
-    use tw_utils::traits::ToBytesVec;
+    use tw_misc::traits::ToBytesVec;
 
     fn is_unsigned(byte: u8) -> bool {
         byte & 0x80 == 0

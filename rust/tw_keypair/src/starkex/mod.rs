@@ -32,7 +32,7 @@ mod tests {
     use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
     use tw_encoding::hex;
     use tw_hash::{H256, H512};
-    use tw_utils::traits::{ToBytesVec, ToBytesZeroizing};
+    use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 
     #[test]
     fn test_key_pair_sign_verify() {

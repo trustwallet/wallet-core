@@ -8,7 +8,7 @@ use crate::Error;
 use k256::FieldBytes;
 use std::ops::{Range, RangeInclusive};
 use tw_hash::{H256, H520};
-use tw_utils::traits::ToBytesVec;
+use tw_misc::traits::ToBytesVec;
 
 /// cbindgen:ignore
 const R_RANGE: Range<usize> = 0..32;

@@ -8,7 +8,7 @@ use crate::Error;
 use starknet_ff::FieldElement;
 use std::ops::Range;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesVec;
+use tw_misc::traits::ToBytesVec;
 
 /// cbindgen:ignore
 const R_RANGE: Range<usize> = 0..32;

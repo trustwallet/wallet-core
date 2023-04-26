@@ -9,7 +9,7 @@ use crate::tw::{Curve, PublicKey, PublicKeyType};
 use crate::{secp256k1, starkex, Error};
 use std::ops::Range;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesVec;
+use tw_misc::traits::ToBytesVec;
 use zeroize::ZeroizeOnDrop;
 
 /// Represents a private key that can be used to sign messages with different elliptic curves.

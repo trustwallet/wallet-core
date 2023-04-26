@@ -13,7 +13,7 @@ use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_utils::traits::ToBytesZeroizing;
+use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
 /// Represents a `secp256k1` private key.

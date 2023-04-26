@@ -11,7 +11,7 @@ use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
-use tw_utils::traits::ToBytesVec;
+use tw_misc::traits::ToBytesVec;
 
 /// Represents a `secp256k1` public key.
 pub struct PublicKey {
