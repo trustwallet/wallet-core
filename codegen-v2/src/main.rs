@@ -31,8 +31,10 @@ fn parse_headers() {
     let dir = libparser::grammar::parse_headers(&path).expect("Failed to parse path");
     let json = serde_json::to_string_pretty(&dir.map).expect("Failed to generate JSON");
 
-    std::fs::write("header_grammar.json", json.as_bytes()).unwrap();
-    println!("Created header_grammar.json");
+    std::fs::create_dir_all("out/").unwrap();
+
+    std::fs::write("out/header_grammar.json", json.as_bytes()).unwrap();
+    println!("Created out/header_grammar.json");
 }
 
 fn create_manifest() {
