@@ -40,6 +40,9 @@ jobs:
         run: |
           tools/install-rust-dependencies dev
 
+      - name: Install emsdk
+        run: tools/install-wasm-dependencies
+
       - name: Check code formatting
         run: |
           cargo fmt --check
@@ -53,6 +56,14 @@ jobs:
       - name: Run tests
         run: |
           cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
+        working-directory: rust
+
+      - name: Run tests in WASM
+        run: |
+          source ../emsdk/emsdk_env.sh
+          cargo test --target wasm32-unknown-emscripten --release
+        env:
+          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER: node
         working-directory: rust
 
       - name: Rust Test Report

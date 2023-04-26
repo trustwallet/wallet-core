@@ -284,7 +284,7 @@ TEST(EthereumSigner, EIP4337_ERC1155_Transfer_Account_Deployed) {
 
 TEST(EthereumSigner, SignatureBreakdownNoEip155) {
     const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
-    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac49527");
     const auto signature = Signer::sign(key, hash, false, 5);
 
     const auto r = store(signature.r);
@@ -302,7 +302,7 @@ TEST(EthereumSigner, SignatureBreakdownNoEip155) {
 
 TEST(EthereumSigner, SignatureBreakdownEip155Legacy) {
     const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
-    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac49527");
     const auto signature = Signer::sign(key, hash, true, 0);
 
     const auto r = store(signature.r);
@@ -320,7 +320,7 @@ TEST(EthereumSigner, SignatureBreakdownEip155Legacy) {
 
 TEST(EthereumSigner, SignatureBreakdownEip155) {
     const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
-    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac49527");
     const auto signature = Signer::sign(key, hash, true, 1);
 
     const auto r = store(signature.r);

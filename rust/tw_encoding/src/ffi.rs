@@ -104,7 +104,7 @@ pub unsafe extern "C" fn decode_base32(
     };
 
     base32::decode(input, alphabet, padding)
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
@@ -141,7 +141,7 @@ pub unsafe extern "C" fn decode_base58(
     };
 
     base58::decode(input, alphabet.into())
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
@@ -172,7 +172,7 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
     base64::decode(str_slice, is_url)
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
@@ -191,7 +191,7 @@ pub unsafe extern "C" fn decode_hex(data: *const c_char) -> CByteArrayResult {
     };
 
     hex::decode(hex_string)
-        .map(CByteArray::new)
+        .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()
 }
