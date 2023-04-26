@@ -11,8 +11,8 @@ pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
     hex::decode(hex_string)
 }
 
-pub fn encode(data: &[u8], prefixed: bool) -> String {
-    let encoded = hex::encode(data);
+pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
+    let encoded = hex::encode(data.as_ref());
     if prefixed {
         return format!("0x{encoded}");
     }
