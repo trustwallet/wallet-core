@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use tw_encoding::hex;
 use tw_hash::ffi::{
     blake2_b, blake2_b_personal, blake_256, groestl_512, hmac__sha256, keccak256, keccak512,
     ripemd_160, sha1, sha256, sha3__256, sha3__512, sha512, sha512_256,
@@ -15,7 +16,7 @@ type ExternFn = unsafe extern "C" fn(*const u8, usize) -> CByteArray;
 #[track_caller]
 pub fn test_hash_helper(hash: ExternFn, input: &[u8], expected: &str) {
     let decoded = unsafe { hash(input.as_ptr(), input.len()).into_vec() };
-    assert_eq!(hex::encode(decoded), expected);
+    assert_eq!(hex::encode(decoded, false), expected);
 }
 
 #[test]
@@ -47,7 +48,7 @@ fn test_blake2b_personal() {
         .into_vec()
     };
     let expected = "20d9cd024d4fb086aae819a1432dd2466de12947831b75c5a30cf2676095d3b4";
-    assert_eq!(hex::encode(actual), expected);
+    assert_eq!(hex::encode(actual, false), expected);
 }
 
 #[test]
@@ -81,7 +82,7 @@ fn test_hmac_sha256() {
     let actual =
         unsafe { hmac__sha256(key.as_ptr(), key.len(), data.as_ptr(), data.len()).into_vec() };
     let expected = "a7301d5563614e3955750e4480aabf7753f44b4975308aeb8e23c31e114962ab".to_string();
-    assert_eq!(hex::encode(actual), expected);
+    assert_eq!(hex::encode(actual, false), expected);
 }
 
 #[test]

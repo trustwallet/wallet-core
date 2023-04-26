@@ -10,6 +10,7 @@ use std::cell::RefCell;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
+/// cbindgen:ignore
 const ALPHABET_RFC4648: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 type EncodingMap = HashMap<EncodingParams, Encoding>;

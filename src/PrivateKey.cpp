@@ -25,6 +25,36 @@
 
 using namespace TW;
 
+Data rust_get_public_from_private(const Data& key, TWPublicKeyType public_type) {
+    auto* privkey = Rust::tw_private_key_create_with_data(key.data(), key.size());
+    if (privkey == nullptr) {
+        return {};
+    }
+    Data toReturn;
+
+    auto* pubkey = Rust::tw_private_key_get_public_key_by_type(privkey, static_cast<uint32_t>(public_type));
+    if (pubkey == nullptr) {
+        Rust::tw_private_key_delete(privkey);
+        return {};
+    }
+
+    Rust::CByteArrayWrapper res = Rust::tw_public_key_data(pubkey);
+
+    Rust::tw_public_key_delete(pubkey);
+    Rust::tw_private_key_delete(privkey);
+    return res.data;
+}
+
+Data rust_private_key_sign(const Data& key, const Data& hash, TWCurve curve) {
+    auto* priv = Rust::tw_private_key_create_with_data(key.data(), key.size());
+    if (priv == nullptr) {
+        return {};
+    }
+    Rust::CByteArrayWrapper res = Rust::tw_private_key_sign(priv, hash.data(), hash.size(), static_cast<uint32_t>(curve));
+    Rust::tw_private_key_delete(priv);
+    return res.data;
+}
+
 bool PrivateKey::isValid(const Data& data) {
     // Check length
     if (data.size() != _size && data.size() != cardanoKeySize) {
@@ -162,10 +192,7 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     }
 
     case TWPublicKeyTypeStarkex: {
-        result = ImmutableX::getPublicKeyFromPrivateKey(this->bytes);
-        if (result.size() == PublicKey::starkexSize - 1) {
-            result.insert(result.begin(), 0);
-        }
+        result = rust_get_public_from_private(this->bytes, type);
         break;
     }
     }
@@ -203,8 +230,12 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     bool success = false;
     switch (curve) {
     case TWCurveSECP256k1: {
-        result.resize(65);
-        success = ecdsa_sign_digest_checked(&secp256k1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
+        result = rust_private_key_sign(key(), digest, curve);
+        success = result.size() == 65;
+    } break;
+    case TWCurveStarkex: {
+        result = rust_private_key_sign(key(), digest, curve);
+        success = result.size() == 64;
     } break;
     case TWCurveED25519: {
         result.resize(64);
@@ -234,11 +265,6 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result.resize(65);
         success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
     } break;
-    case TWCurveStarkex: {
-        result = ImmutableX::sign(this->bytes, digest);
-        success = true;
-        break;
-    }
     case TWCurveNone:
     default:
         break;
