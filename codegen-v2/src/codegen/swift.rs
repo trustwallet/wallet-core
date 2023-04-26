@@ -1,11 +1,8 @@
-use std::path::PathBuf;
-
 use crate::manifest::{
-    EnumInfo, FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo,
-    TypeVariant,
+    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
 };
 use crate::{Error, Result};
-use handlebars::{no_escape, Handlebars};
+use handlebars::Handlebars;
 use serde_json::json;
 
 #[derive(Serialize, Deserialize)]
@@ -62,20 +59,11 @@ pub struct SwiftInit {
     pub comments: Vec<String>,
 }
 
-pub struct SwiftEnum {
-    pub name: String,
-    pub is_public: bool,
-    pub variants: Vec<(String, Option<usize>)>,
-    pub comments: Vec<String>,
-}
-
 pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<String>> {
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
-    engine
-        .register_partial("file", &template)
-        .unwrap();
+    engine.register_partial("file", &template).unwrap();
 
     let mut structs = vec![];
     for strct in info.structs {
@@ -88,7 +76,7 @@ pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<Str
 
         // TODO: Extend
         let payload = json!({
-            "name": strct.name,
+            "name": strct.name.strip_prefix("TW").ok_or(Error::Todo)?,
             "is_class": is_class,
             "init_instance": true,
             "parent_classes": [],
@@ -105,7 +93,7 @@ pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<Str
     for enm in info.enums {
         // TODO: Extend
         let payload = json!({
-            "name": enm.name,
+            "name": enm.name.strip_prefix("TW").ok_or(Error::Todo)?,
             "parent_classes": [],
             "variants": enm.variants,
         });

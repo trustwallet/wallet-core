@@ -59,7 +59,7 @@ fn generate_swift_bindings() {
     std::fs::create_dir_all("out/swift_bindings/").unwrap();
 
     for file_info in file_infos {
-        let file_name = file_info.name.to_string();
+        let file_name = file_info.name.strip_prefix("TW").unwrap().to_string();
         let rendered = libparser::codegen::swift::render_file_info(
             &std::fs::read_to_string("src/codegen/templates/swift/file.hbs").unwrap(),
             file_info,

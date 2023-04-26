@@ -202,7 +202,10 @@ pub fn process_c_header_dir(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
                     if decl.name.0.starts_with("TWAnySigner") {
-                        println!("Skipped function from manifest (non-export):  {}", decl.name.0);
+                        println!(
+                            "Skipped function from manifest (non-export):  {}",
+                            decl.name.0
+                        );
                         continue;
                     }
 
