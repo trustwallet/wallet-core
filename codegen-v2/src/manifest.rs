@@ -18,6 +18,7 @@ pub struct TypeInfo {
     pub is_constant: bool,
     pub is_nullable: bool,
     pub is_pointer: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
 }
 
