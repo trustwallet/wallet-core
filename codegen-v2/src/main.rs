@@ -56,14 +56,15 @@ fn generate_swift_bindings() {
     let dir = libparser::grammar::parse_headers(&path).unwrap();
     let file_infos = libparser::manifest::process_c_header_dir(&dir);
 
-    let file_template = std::fs::read_to_string("src/codegen/templates/swift/file.hbs").unwrap();
-
     std::fs::create_dir_all("out/swift_bindings/").unwrap();
 
     for file_info in file_infos {
         let file_name = file_info.name.to_string();
-        let rendered =
-            libparser::codegen::swift::render_file_info(&file_template, file_info).unwrap();
+        let rendered = libparser::codegen::swift::render_file_info(
+            &std::fs::read_to_string("src/codegen/templates/swift/file.hbs").unwrap(),
+            file_info,
+        )
+        .unwrap();
 
         let file_path = format!("out/swift_bindings/{}.swift", file_name);
         std::fs::write(&file_path, rendered.as_bytes()).unwrap();

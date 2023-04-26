@@ -1,5 +1,8 @@
+use std::path::PathBuf;
+
 use crate::manifest::{
-    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
+    EnumInfo, FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo,
+    TypeVariant,
 };
 use crate::{Error, Result};
 use handlebars::{no_escape, Handlebars};
@@ -59,27 +62,34 @@ pub struct SwiftInit {
     pub comments: Vec<String>,
 }
 
+pub struct SwiftEnum {
+    pub name: String,
+    pub is_public: bool,
+    pub variants: Vec<(String, Option<usize>)>,
+    pub comments: Vec<String>,
+}
+
 pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<String> {
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
-
     engine
         .register_partial("file", no_escape(&template))
         .unwrap();
 
-    let mut objects = vec![];
+    let mut structs = vec![];
+    for strct in info.structs {
+        let is_class = strct.tags.iter().any(|t| t == "TW_EXPORT_CLASS");
 
-    for object in info.structs {
         let (inits, methods, properties);
-        (inits, info.inits) = process_inits(&object.name, info.inits).unwrap();
-        (methods, info.functions) = process_struct_methods(&object, info.functions).unwrap();
-        (properties, info.properties) =
-            process_struct_properties(&object, info.properties).unwrap();
+        (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
+        (methods, info.functions) = process_struct_methods(&strct, info.functions).unwrap();
+        (properties, info.properties) = process_struct_properties(&strct, info.properties).unwrap();
 
         // TODO: Extend
         let payload = json!({
-            "class_name": object.name,
+            "name": strct.name,
+            "is_class": is_class,
             "init_instance": true,
             "parent_classes": [],
             "inits": inits,
@@ -88,14 +98,26 @@ pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<String> {
             "properties": properties,
         });
 
-        objects.push(payload);
+        structs.push(payload);
     }
 
-    let out = engine
-        .render("file", &json!({ "objects": objects }))
+    let mut enums = vec![];
+    for enm in info.enums {
+        // TODO: Extend
+        let payload = json!({
+            "name": enm.name,
+            "parent_classes": [],
+            "variants": enm.variants,
+        });
+
+        enums.push(payload);
+    }
+
+    let rendered = engine
+        .render("file", &json!({ "structs": structs, "enums": enums }))
         .unwrap();
 
-    Ok(out)
+    Ok(rendered)
 }
 
 fn process_inits(
