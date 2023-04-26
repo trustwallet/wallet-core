@@ -49,12 +49,19 @@ pub enum TypeVariant {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileInfo {
     pub name: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub imports: Vec<ImportInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub structs: Vec<StructInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub inits: Vec<InitInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub deinits: Vec<DeinitInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub enums: Vec<EnumInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub functions: Vec<FunctionInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub properties: Vec<PropertyInfo>,
 }
 
@@ -69,7 +76,9 @@ pub struct ImportInfo {
 pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub variants: Vec<(String, Option<usize>)>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
 }
 
@@ -77,7 +86,9 @@ pub struct EnumInfo {
 pub struct StructInfo {
     pub name: String,
     pub is_public: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub fields: Vec<(String, TypeInfo)>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
 }
 
@@ -85,14 +96,18 @@ pub struct StructInfo {
 pub struct InitInfo {
     pub name: String,
     pub is_public: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub params: Vec<ParamInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub comments: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeinitInfo {
     pub name: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub params: Vec<ParamInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub comments: Vec<String>,
 }
 
@@ -101,8 +116,10 @@ pub struct FunctionInfo {
     pub name: String,
     pub is_public: bool,
     pub is_static: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub params: Vec<ParamInfo>,
     pub return_type: TypeInfo,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub comments: Vec<String>,
 }
 
@@ -112,6 +129,7 @@ pub struct PropertyInfo {
     pub is_public: bool,
     pub is_static: bool,
     pub return_type: TypeInfo,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub comments: Vec<String>,
 }
 

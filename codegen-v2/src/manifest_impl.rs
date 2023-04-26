@@ -125,10 +125,17 @@ impl TypeInfo {
 
 impl ImportInfo {
     pub fn from_g_type(value: &GHeaderInclude) -> Result<Self> {
-        let path: Vec<String> = value.0.split('/').map(|s| s.to_string()).collect();
+        let mut path: Vec<String> = value.0.split('/').map(|s| s.to_string()).collect();
 
         if path.is_empty() {
             return Err(Error::BadImport);
+        }
+
+        if let Some(file_name) = path.last_mut() {
+            *file_name = file_name
+                .strip_suffix(".h")
+                .ok_or(Error::BadImport)
+                .map(|s| s.to_string())?;
         }
 
         Ok(ImportInfo { path })
