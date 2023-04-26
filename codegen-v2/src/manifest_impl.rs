@@ -82,28 +82,6 @@ impl TypeInfo {
             _ => {}
         }
 
-        if let GType::Mutable(GTypeCategory::Pointer(pointer)) = ty {
-            if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
-                if keyword.0 == "TWData" {
-                    return Ok(TypeInfo {
-                        variant: TypeVariant::Void,
-                        is_constant: true,
-                        is_nullable,
-                        is_pointer: true,
-                        tags: vec!["TW_DATA".to_string()],
-                    });
-                } else if keyword.0 == "TWString" {
-                    return Ok(TypeInfo {
-                        variant: TypeVariant::Void,
-                        is_constant: true,
-                        is_nullable,
-                        is_pointer: true,
-                        tags: vec!["TW_STRING".to_string()],
-                    });
-                }
-            }
-        }
-
         let ((variant, is_pointer), is_constant) = match ty {
             GType::Mutable(category) => (get_variant_pointer_check(category)?, false),
             GType::Const(category) => (get_variant_pointer_check(category)?, true),
