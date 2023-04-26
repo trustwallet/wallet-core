@@ -10,6 +10,7 @@
 #include "PublicKey.h"
 
 #include "Everscale/CommonTON/RawAddress.h"
+#include <optional>
 
 #include <string>
 
@@ -44,7 +45,7 @@ public:
     [[nodiscard]] static bool isValid(const std::string& string) noexcept;
 
     /// Initializes an address with a string representation.
-    explicit Address(const std::string& string);
+    explicit Address(const std::string& string, std::optional<bool> bounceable = std::nullopt);
 
     /// Initializes an address with its parts
     explicit Address(

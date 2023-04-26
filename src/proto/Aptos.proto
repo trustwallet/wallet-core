@@ -93,6 +93,32 @@ message ClaimNftMessage {
   uint64 property_version = 5;
 }
 
+message TortugaClaim {
+  // idx of ticket to claim
+  uint64 idx = 1;
+}
+
+message TortugaStake {
+  // Amount to be stake
+  uint64 amount = 1;
+}
+
+message TortugaUnstake {
+  // Amount to be stake
+  uint64 amount = 1;
+}
+
+message LiquidStaking {
+  // Smart contract address of liquid staking module
+  string smart_contract_address = 1;
+
+  oneof liquid_stake_transaction_payload {
+    TortugaStake stake = 2;
+    TortugaUnstake unstake = 3;
+    TortugaClaim claim = 4;
+  }
+}
+
 message NftMessage {
   oneof nft_transaction_payload {
     OfferNftMessage offer_nft = 1;
@@ -126,6 +152,7 @@ message SigningInput {
     CreateAccountMessage create_account = 11;
     NftMessage nft_message = 12;
     ManagedTokensRegisterMessage register_token = 13;
+    LiquidStaking liquid_staking_message = 14;
   }
 }
 

@@ -70,7 +70,7 @@ bool Address::isValid(const std::string& string) noexcept {
     return true;
 }
 
-Address::Address(const std::string& string) {
+Address::Address(const std::string& string, std::optional<bool> bounceable) {
     if (!Address::isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -83,12 +83,16 @@ Address::Address(const std::string& string) {
         Data decoded = decodeUserFriendlyAddress(string);
         addressData.workchainId = decoded[1];
 
-        byte tag = decoded[0];
-        if (tag & AddressTag::TEST_ONLY) {
-            isTestOnly = true;
-            tag ^= AddressTag::TEST_ONLY;
+        if (!bounceable.has_value()) {
+            byte tag = decoded[0];
+            if (tag & AddressTag::TEST_ONLY) {
+                isTestOnly = true;
+                tag ^= AddressTag::TEST_ONLY;
+            }
+            isBounceable = (tag == AddressTag::BOUNCEABLE);
+        } else {
+            isBounceable = *bounceable;
         }
-        isBounceable = (tag == AddressTag::BOUNCEABLE);
 
         std::copy(decoded.begin() + 2, decoded.end() - 2, addressData.hash.begin());
     }

@@ -7,6 +7,9 @@
 #include "LiquidStaking/LiquidStaking.h"
 #include "Data.h"
 
+// Aptos
+#include "proto/Aptos.pb.h"
+
 // ETH
 #include "Ethereum/ABI/Function.h"
 #include "Ethereum/ABI/ParamAddress.h"
@@ -33,6 +36,7 @@ using Params = std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>;
 static const StraderFunctionRegistry gStraderFunctionRegistry =
     {{std::make_pair(Proto::POLYGON, Action::Stake), "swapMaticForMaticXViaInstantPool"},
      {std::make_pair(Proto::POLYGON, Action::Unstake), "requestMaticXSwap"},
+     {std::make_pair(Proto::POLYGON, Action::Withdraw), "claimMaticXSwap"},
      {std::make_pair(Proto::BNB_BSC, Action::Stake), "deposit"},
      {std::make_pair(Proto::BNB_BSC, Action::Unstake), "requestWithdraw"}
 };
@@ -54,6 +58,14 @@ namespace internal {
         Params params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(unstake.amount())));
         auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Unstake});
+        auto func = Ethereum::ABI::Function(functionName, params);
+        func.encode(payload);
+    }
+
+    void handleWithdraw(const Proto::Withdraw& withdraw, const Proto::Blockchain& blockchain, Data& payload) {
+        Params params;
+        params.emplace_back(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(withdraw.idx())));
+        auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Withdraw});
         auto func = Ethereum::ABI::Function(functionName, params);
         func.encode(payload);
     }
@@ -83,6 +95,9 @@ Proto::Output Builder::buildStraderEVM() const {
         } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
             internal::handleUnstake(*unstake, mBlockchain, payload);
             amount = uint256_t(0);
+        } else if (auto* withdraw = std::get_if<Proto::Withdraw>(&value); withdraw) {
+            internal::handleWithdraw(*withdraw, mBlockchain, payload);
+            amount = uint256_t(0);
         }
 
         internal::setTransferDataAndAmount(transfer, payload, amount);
@@ -91,6 +106,43 @@ Proto::Output Builder::buildStraderEVM() const {
     std::visit(visitFunctor, this->mAction);
 
     *output.mutable_ethereum() = input;
+    return output;
+}
+
+Proto::Output Builder::buildTortugaAptos() const {
+    Proto::Output output;
+    if (!mSmartContractAddress) {
+        *output.mutable_status() = generateError(Proto::ERROR_SMART_CONTRACT_ADDRESS_NOT_SET, "Tortuga protocol require the smart contract address to be set");
+        return output;
+    }
+    auto input = Aptos::Proto::SigningInput();
+    auto &liquid_staking_message = *input.mutable_liquid_staking_message();
+    liquid_staking_message.set_smart_contract_address(*mSmartContractAddress);
+
+    auto visitFunctor = [&liquid_staking_message](const TAction& value) {
+        if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
+            auto& tortuga_stake = *liquid_staking_message.mutable_stake();
+            tortuga_stake.set_amount(std::strtoull(stake->amount().c_str(), nullptr, 0));
+        } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
+            auto& tortuga_unstake = *liquid_staking_message.mutable_unstake();
+            tortuga_unstake.set_amount(std::strtoull(unstake->amount().c_str(), nullptr, 0));
+        } else if (auto* withdraw = std::get_if<Proto::Withdraw>(&value); withdraw) {
+            auto& tortuga_claim = *liquid_staking_message.mutable_claim();
+            tortuga_claim.set_idx(std::strtoull(withdraw->idx().c_str(), nullptr, 0));
+        }
+    };
+
+    std::visit(visitFunctor, this->mAction);
+    *output.mutable_aptos() = input;
+    return output;
+}
+
+Proto::Output Builder::buildTortuga() const {
+    if (this->mBlockchain == Proto::APTOS) {
+        return buildTortugaAptos();
+    }
+    auto output = Proto::Output();
+    *output.mutable_status() = generateError(Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL, "Only Aptos blockchain is supported on tortuga for now");
     return output;
 }
 
@@ -111,6 +163,8 @@ Proto::Output Builder::build() const {
     switch (this->mProtocol) {
     case Proto::Strader:
         return this->buildStrader();
+    case Proto::Tortuga:
+        return this->buildTortuga();
     default:
         return Proto::Output();
     }
