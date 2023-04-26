@@ -69,7 +69,7 @@ pub struct SwiftEnum {
     pub comments: Vec<String>,
 }
 
-pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<String> {
+pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<String>> {
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
@@ -113,11 +113,15 @@ pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<String> {
         enums.push(payload);
     }
 
+    if structs.is_empty() && enums.is_empty() {
+        return Ok(None);
+    }
+
     let rendered = engine
         .render("file", &json!({ "structs": structs, "enums": enums }))
         .unwrap();
 
-    Ok(rendered)
+    Ok(Some(rendered))
 }
 
 fn process_inits(

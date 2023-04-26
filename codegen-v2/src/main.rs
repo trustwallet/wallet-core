@@ -66,8 +66,13 @@ fn generate_swift_bindings() {
         )
         .unwrap();
 
-        let file_path = format!("out/swift_bindings/{}.swift", file_name);
-        std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+        if let Some(rendered) = rendered {
+            let file_path = format!("out/swift_bindings/{}.swift", file_name);
+            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+        } else {
+            // TODO...
+            println!("Skipped binding: {}", file_name);
+        }
     }
 
     println!("Created bindings in out/swift/!");
