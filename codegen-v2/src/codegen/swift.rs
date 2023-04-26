@@ -211,34 +211,6 @@ fn process_struct_properties(
     Ok((swift_props, info_props))
 }
 
-/*
-#[test]
-#[ignore]
-fn test_swift_template() {
-    use std::fs::read_to_string;
-
-    const OUT_DIR: &str = "out/swift/";
-    const FILE_TEMPLATE: &str = "src/codegen/templates/swift/file.hbs";
-
-    let path = std::path::Path::new("../include/");
-    let dir = crate::grammar::parse(&path).unwrap();
-    let file_infos = crate::manifest::process_c_header_dir(&dir);
-
-    let file_tempalte = read_to_string(FILE_TEMPLATE).unwrap();
-
-    for file_info in file_infos {
-        render_file_info(OUT_DIR, &file_template, file_info).unwrap();
-    }
-
-    std::fs::create_dir_all(&config.out_dir).unwrap();
-
-    let file_path = format!("{}/{}.swift", config.out_dir, info.name);
-
-    std::fs::write(&file_path, out.as_bytes()).unwrap();
-
-}
-*/
-
 impl From<TypeVariant> for SwiftType {
     fn from(value: TypeVariant) -> Self {
         let res = match value {
