@@ -234,7 +234,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::LiquidStaking::kClaim:
             return tortugaClaimPayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.claim());
         case Proto::LiquidStaking::LIQUID_STAKE_TRANSACTION_PAYLOAD_NOT_SET:
-            throw std::runtime_error("Nft message payload not set");
+            return TransactionPayload();
         }
     };
     auto payloadFunctor = [&input, &nftPayloadFunctor, &liquidStakingFunctor]() {
