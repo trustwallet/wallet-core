@@ -74,7 +74,7 @@ pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<Str
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
     engine
-        .register_partial("file", no_escape(&template))
+        .register_partial("file", &template)
         .unwrap();
 
     let mut structs = vec![];
