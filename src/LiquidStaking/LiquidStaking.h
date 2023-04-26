@@ -29,6 +29,8 @@ class Builder {
 
     Proto::Output buildStraderEVM() const;
     Proto::Output buildStrader() const;
+    Proto::Output buildTortugaAptos() const;
+    Proto::Output buildTortuga() const;
 public:
     Builder() noexcept = default;
 

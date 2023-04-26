@@ -11,12 +11,14 @@ option java_package = "wallet.core.jni.proto";
 
 import "Ethereum.proto";
 import "Cosmos.proto";
+import "Aptos.proto";
 
 // Enum for supported coins for liquid staking
 enum Coin {
   MATIC = 0;
   ATOM = 1;
   BNB = 2;
+  APT = 3;
 }
 
 // Enum for supported target blockchains for liquid staking
@@ -25,12 +27,14 @@ enum Blockchain {
   POLYGON = 1;
   STRIDE = 2;
   BNB_BSC = 3;
+  APTOS = 4;
 }
 
 // Enum for supported liquid staking protocols
 enum Protocol {
   Strader = 0;
   Stride = 1;
+  Tortuga = 2;
 }
 
 // Enum for status codes to indicate the result of an operation
@@ -112,5 +116,6 @@ message Output {
   oneof signing_input_oneof {
     Ethereum.Proto.SigningInput ethereum = 2;
     Cosmos.Proto.SigningInput cosmos = 3;
+    Aptos.Proto.SigningInput aptos = 4;
   }
 }
