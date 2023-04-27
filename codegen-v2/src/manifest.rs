@@ -142,7 +142,7 @@ pub struct ParamInfo {
 }
 
 // NOTE: This function is temporary
-pub fn process_c_header_dir(dir: &CHeaderDirectory) -> Vec<FileInfo> {
+pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
     let mut file_infos = vec![];
 
     for (path, items) in &dir.map {

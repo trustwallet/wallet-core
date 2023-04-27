@@ -34,21 +34,22 @@ fn parse_headers() {
     let json = serde_json::to_string_pretty(&dir.map).expect("Failed to generate JSON");
 
     std::fs::create_dir_all("out/").unwrap();
-
     std::fs::write("out/header_grammar.json", json.as_bytes()).unwrap();
+
     println!("Created out/header_grammar.json");
 }
 
 fn create_manifest() {
     let path = Path::new("../include/");
     let headers = libparser::grammar::parse_headers(&path).expect("Failed to parse path");
-    let file_infos = libparser::manifest::process_c_header_dir(&headers);
+    let file_infos = libparser::manifest::process_c_grammar(&headers);
 
     std::fs::create_dir_all("out/manifest/").unwrap();
 
     for file_info in file_infos {
         let file_path = format!("out/manifest/{}.yaml", file_info.name);
         let yaml = serde_yaml::to_string(&file_info).unwrap();
+
         std::fs::write(&file_path, yaml.as_bytes()).unwrap();
     }
 
@@ -58,7 +59,7 @@ fn create_manifest() {
 fn generate_swift_bindings() {
     let path = Path::new("../include/");
     let dir = libparser::grammar::parse_headers(&path).unwrap();
-    let file_infos = libparser::manifest::process_c_header_dir(&dir);
+    let file_infos = libparser::manifest::process_c_grammar(&dir);
 
     std::fs::create_dir_all("out/swift_bindings/").unwrap();
 
