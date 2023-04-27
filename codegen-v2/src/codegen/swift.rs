@@ -1,9 +1,10 @@
 use crate::manifest::{
-    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, StructInfo, TypeInfo, TypeVariant,
+    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, TypeInfo, TypeVariant,
 };
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftType(String);
@@ -59,20 +60,46 @@ pub struct SwiftInit {
     pub comments: Vec<String>,
 }
 
-pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<String>> {
+pub struct RenderIntput<'a> {
+    pub file_info: FileInfo,
+    pub struct_template: &'a str,
+    pub enum_template: &'a str,
+    pub extension_template: &'a str,
+}
+
+#[derive(Default)]
+pub struct RenderOutput {
+    pub structs: Vec<(PathBuf, String)>,
+    pub enums: Vec<(PathBuf, String)>,
+    pub extensions: Vec<(PathBuf, String)>,
+}
+
+pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
-    engine.register_partial("file", &template).unwrap();
 
-    let mut structs = vec![];
+    engine
+        .register_partial("struct", input.struct_template)
+        .unwrap();
+    engine
+        .register_partial("enum", input.enum_template)
+        .unwrap();
+    engine
+        .register_partial("extension", input.extension_template)
+        .unwrap();
+
+    let mut info = input.file_info;
+    let mut outputs = RenderOutput::default();
+
     for strct in info.structs {
         let is_class = strct.tags.iter().any(|t| t == "TW_EXPORT_CLASS");
 
         let (inits, methods, properties);
         (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
-        (methods, info.functions) = process_struct_methods(&strct, info.functions).unwrap();
-        (properties, info.properties) = process_struct_properties(&strct, info.properties).unwrap();
+        (methods, info.functions) = process_struct_methods(&strct.name, info.functions).unwrap();
+        (properties, info.properties) =
+            process_struct_properties(&strct.name, info.properties).unwrap();
 
         // TODO: Extend
         let payload = json!({
@@ -86,30 +113,45 @@ pub fn render_file_info(template: &str, mut info: FileInfo) -> Result<Option<Str
             "properties": properties,
         });
 
-        structs.push(payload);
+        let out = engine.render("struct", &payload).unwrap();
+
+        outputs.structs.push((PathBuf::from(&strct.name), out));
     }
 
-    let mut enums = vec![];
     for enm in info.enums {
+        let (inits, methods, properties);
+        (inits, info.inits) = process_inits(&enm.name, info.inits).unwrap();
+        (methods, info.functions) = process_struct_methods(&enm.name, info.functions).unwrap();
+        (properties, info.properties) =
+            process_struct_properties(&enm.name, info.properties).unwrap();
+
         // TODO: Extend
-        let payload = json!({
+        let enum_payload = json!({
             "name": enm.name.strip_prefix("TW").ok_or(Error::Todo)?,
             "parent_classes": [],
             "variants": enm.variants,
         });
 
-        enums.push(payload);
+        let extension_payload = json!({
+            "name": enm.name.strip_prefix("TW").ok_or(Error::Todo)?,
+            "init_instance": true,
+            "parent_classes": [],
+            "inits": inits,
+            "deinits": [],
+            "methods": methods,
+            "properties": properties,
+        });
+
+        let out = engine.render("enum", &enum_payload).unwrap();
+
+        outputs.enums.push((PathBuf::from(&enm.name), out));
+
+        let out = engine.render("extension", &extension_payload).unwrap();
+
+        outputs.extensions.push((PathBuf::from(&enm.name), out));
     }
 
-    if structs.is_empty() && enums.is_empty() {
-        return Ok(None);
-    }
-
-    let rendered = engine
-        .render("file", &json!({ "structs": structs, "enums": enums }))
-        .unwrap();
-
-    Ok(Some(rendered))
+    Ok(outputs)
 }
 
 fn process_inits(
@@ -148,27 +190,27 @@ fn process_inits(
 }
 
 fn process_struct_methods(
-    object: &StructInfo,
+    object_name: &str,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
     let mut swift_funcs = vec![];
     let mut info_funcs = vec![];
 
     for func in functions {
-        if !func.name.starts_with(&object.name) {
+        if !func.name.starts_with(object_name) {
             // Function is not assciated to the struct.
             info_funcs.push(func);
             continue;
         }
 
-        let func_name = func.name.strip_prefix(&object.name).unwrap().to_string();
+        let func_name = func.name.strip_prefix(object_name).unwrap().to_string();
 
         // Convert parameters.
         let mut params = vec![];
         for param in func.params {
             // Skip struct paramater for non-static methods.
             if let TypeVariant::Struct(ref s) = param.ty.variant {
-                if s == &object.name && !func.is_static {
+                if s == object_name && !func.is_static {
                     continue;
                 }
             }
@@ -194,20 +236,20 @@ fn process_struct_methods(
 }
 
 fn process_struct_properties(
-    object: &StructInfo,
+    object_name: &str,
     properties: Vec<PropertyInfo>,
 ) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {
     let mut swift_props = vec![];
     let mut info_props = vec![];
 
     for prop in properties {
-        if !prop.name.starts_with(&object.name) {
+        if !prop.name.starts_with(object_name) {
             // Function is not assciated to the struct.
             info_props.push(prop);
             continue;
         }
 
-        let prop_name = prop.name.strip_prefix(&object.name).unwrap().to_string();
+        let prop_name = prop.name.strip_prefix(object_name).unwrap().to_string();
 
         // Convert return type.
         let return_type = SwiftReturn::try_from(prop.return_type).unwrap();

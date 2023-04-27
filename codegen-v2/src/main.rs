@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use libparser::codegen::swift::RenderIntput;
+use std::fs::read_to_string;
 use std::path::Path;
 
 fn main() {
@@ -60,21 +62,21 @@ fn generate_swift_bindings() {
 
     std::fs::create_dir_all("out/swift_bindings/").unwrap();
 
-    for file_info in file_infos {
-        let file_name = file_info.name.strip_prefix("TW").unwrap().to_string();
-        let rendered = libparser::codegen::swift::render_file_info(
-            &std::fs::read_to_string("src/codegen/templates/swift/file.hbs").unwrap(),
-            file_info,
-        )
-        .unwrap();
+    let struct_t = read_to_string("src/codegen/templates/swift/struct.hbs").unwrap();
+    let enum_t = read_to_string("src/codegen/templates/swift/enum.hbs").unwrap();
+    let ext_t = read_to_string("src/codegen/templates/swift/extension.hbs").unwrap();
 
-        if let Some(rendered) = rendered {
-            let file_path = format!("out/swift_bindings/{}.swift", file_name);
-            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
-        } else {
-            // TODO...
-            println!("Skipped binding: {}", file_name);
-        }
+    for file_info in file_infos {
+        let input = RenderIntput {
+            file_info,
+            struct_template: &struct_t,
+            enum_template: &enum_t,
+            extension_template: &ext_t,
+        };
+
+        let _rendered = libparser::codegen::swift::render_file_info(input).unwrap();
+
+        // TODO...
     }
 
     println!("Created bindings in out/swift/!");
