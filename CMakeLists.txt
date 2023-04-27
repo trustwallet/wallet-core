@@ -51,7 +51,7 @@ include(cmake/Protobuf.cmake)
 # Source files
 if (${ANDROID})
     message("Configuring for JNI")
-    file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
+    file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.cpp jni/cpp/*.h)
     if (${KOTLIN})
         file(GLOB_RECURSE specific_sources
                 jni/kotlin/*.h
