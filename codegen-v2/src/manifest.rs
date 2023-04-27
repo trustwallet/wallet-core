@@ -1,5 +1,5 @@
 use crate::grammar::CHeaderDirectory;
-use crate::grammar::{GHeaderFileItem, GMarker, GType, GTypeCategory};
+use crate::grammar::{GHeaderFileItem, GMarker};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Error {
@@ -64,6 +64,8 @@ pub struct FileInfo {
     pub functions: Vec<FunctionInfo>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub properties: Vec<PropertyInfo>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub protos: Vec<ProtoInfo>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -72,6 +74,9 @@ pub struct ImportInfo {
     // E.g. `to/some/file.h` ~= ["to", "some", "file.h"]
     pub path: Vec<String>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProtoInfo(pub String);
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EnumInfo {
@@ -164,6 +169,7 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
             enums: vec![],
             functions: vec![],
             properties: vec![],
+            protos: vec![],
         };
 
         for item in items {
@@ -171,6 +177,12 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                 GHeaderFileItem::HeaderInclude(decl) => {
                     let x = ImportInfo::from_g_type(decl).unwrap();
                     file_info.imports.push(x);
+                }
+                GHeaderFileItem::Typedef(decl) => {
+                    if decl.name.contains("Proto") {
+                        let x = ProtoInfo::from_g_type(decl).unwrap();
+                        file_info.protos.push(x);
+                    }
                 }
                 GHeaderFileItem::StructIndicator(decl) => {
                     let markers = &decl.markers.0;
@@ -246,16 +258,4 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
     }
 
     file_infos
-}
-
-pub fn extract_custom(ty: &GType) -> Option<String> {
-    match ty {
-        GType::Mutable(cat) | GType::Const(cat) | GType::Extern(cat) => {
-            if let GTypeCategory::Unrecognized(keyword) = cat {
-                Some(keyword.0.clone())
-            } else {
-                None
-            }
-        }
-    }
 }

@@ -1,6 +1,6 @@
 use crate::grammar::{
     GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
-    GTypeCategory,
+    GTypeCategory, GTypedef,
 };
 use crate::manifest::*;
 
@@ -117,6 +117,30 @@ impl ImportInfo {
         }
 
         Ok(ImportInfo { path })
+    }
+}
+
+impl ProtoInfo {
+    pub fn from_g_type(value: &GTypedef) -> Result<Self> {
+        let mut found = false;
+        match value.ty {
+            GType::Mutable(ref cat) | GType::Const(ref cat) => {
+                if let GTypeCategory::Pointer(p) = cat {
+                    if let GTypeCategory::Unrecognized(ref keyword) = **p {
+                        if keyword.0 == "TWData" {
+                            found = true;
+                        }
+                    }
+                }
+            }
+            _ => return Err(Error::BadObject),
+        }
+
+        if !found {
+            return Err(Error::BadObject);
+        }
+
+        Ok(ProtoInfo(value.name.clone()))
     }
 }
 

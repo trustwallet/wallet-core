@@ -134,10 +134,6 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
-        if enum_name == "CoinType" {
-            dbg!(&methods);
-        }
-
         // TODO: Extend
         let enum_payload = json!({
             "name": enum_name,
