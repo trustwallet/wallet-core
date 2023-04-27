@@ -51,8 +51,6 @@ pub enum TypeVariant {
 pub struct FileInfo {
     pub name: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub imports: Vec<ImportInfo>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub structs: Vec<StructInfo>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub inits: Vec<InitInfo>,
@@ -162,7 +160,6 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
 
         let mut file_info = FileInfo {
             name: file_name.clone(),
-            imports: vec![],
             structs: vec![],
             inits: vec![],
             deinits: vec![],
@@ -174,10 +171,6 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
 
         for item in items {
             match item {
-                GHeaderFileItem::HeaderInclude(decl) => {
-                    let x = ImportInfo::from_g_type(decl).unwrap();
-                    file_info.imports.push(x);
-                }
                 GHeaderFileItem::Typedef(decl) => {
                     if decl.name.contains("Proto") {
                         let x = ProtoInfo::from_g_type(decl).unwrap();
