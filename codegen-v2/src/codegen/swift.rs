@@ -5,10 +5,10 @@ use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftType(String);
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftFunction {
     pub name: String,
     pub c_ffi_name: String,
@@ -20,7 +20,7 @@ pub struct SwiftFunction {
     pub comments: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct SwiftProperty {
     pub name: String,
     pub c_ffi_name: String,
@@ -31,7 +31,7 @@ struct SwiftProperty {
     pub comments: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftParam {
     pub name: String,
     #[serde(rename = "type")]
@@ -42,7 +42,7 @@ pub struct SwiftParam {
     pub deter_as: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftReturn {
     #[serde(rename = "type")]
     pub param_type: SwiftType,
@@ -51,7 +51,7 @@ pub struct SwiftReturn {
     pub deter_as: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftInit {
     pub name: String,
     pub c_ffi_name: String,
@@ -60,6 +60,7 @@ pub struct SwiftInit {
     pub comments: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
     pub file_info: FileInfo,
     pub struct_template: &'a str,
@@ -67,7 +68,7 @@ pub struct RenderIntput<'a> {
     pub extension_template: &'a str,
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct RenderOutput {
     pub structs: Vec<(String, String)>,
     pub enums: Vec<(String, String)>,
@@ -106,9 +107,11 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             continue;
         }
 
+        let struct_name = strct.name.strip_prefix("TW").ok_or(Error::Todo)?;
+
         // TODO: Extend
         let payload = json!({
-            "name": strct.name.strip_prefix("TW").ok_or(Error::Todo)?,
+            "name": struct_name,
             "is_class": is_class,
             "init_instance": is_class,
             "parent_classes": [],
@@ -120,7 +123,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let out = engine.render("struct", &payload).unwrap();
 
-        outputs.structs.push((strct.name.to_string(), out));
+        outputs.structs.push((struct_name.to_string(), out));
     }
 
     for enm in info.enums {
@@ -131,6 +134,10 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
+        if enum_name == "CoinType" {
+            dbg!(&methods);
+        }
+
         // TODO: Extend
         let enum_payload = json!({
             "name": enum_name,
@@ -139,7 +146,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         });
 
         let out = engine.render("enum", &enum_payload).unwrap();
-        outputs.enums.push((enm.name.to_string(), out));
+        outputs.enums.push((enum_name.to_string(), out));
 
         // Avoid rendering empty extension for enums.
         if methods.is_empty() && properties.is_empty() {
@@ -155,7 +162,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         });
 
         let out = engine.render("extension", &extension_payload).unwrap();
-        outputs.extensions.push((enm.name.to_string(), out));
+        outputs.extensions.push((enum_name.to_string(), out));
     }
 
     Ok(outputs)
@@ -222,18 +229,17 @@ fn process_struct_methods(
                 }
             }
 
+            let ty_variant = param.ty.variant.clone();
+            // Convert parameter to Swift parameter.
+            let mut swift_param = SwiftParam::try_from(param).unwrap();
+
             // Skip self-referencing enum parameter and wrap accordingly
-            let (mut wrap_as, mut skip_self) = (None, false);
-            if let TypeVariant::Enum(ref enum_name) = param.ty.variant {
+            if let TypeVariant::Enum(ref enum_name) = ty_variant {
                 if enum_name == object_name {
-                    wrap_as = Some(format!("{}(rawValue: rawValue)", enum_name));
-                    skip_self = true;
+                    swift_param.wrap_as = Some(format!("{enum_name}(rawValue: rawValue)"));
+                    swift_param.skip_self = true;
                 }
             }
-
-            let mut swift_param = SwiftParam::try_from(param).unwrap();
-            swift_param.wrap_as = wrap_as;
-            swift_param.skip_self = skip_self;
 
             params.push(swift_param);
         }
@@ -322,14 +328,14 @@ impl TryFrom<TypeInfo> for SwiftReturn {
         let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
             (
                 SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData".to_string()),
-                Some("TWDataDelete".to_string()),
+                Some("TWDataCreateWithNSData(result)".to_string()),
+                Some("TWDataDelete(result)".to_string()),
             )
         } else if value.tags.iter().any(|t| t == "TW_STRING") {
             (
                 SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString".to_string()),
-                Some("StringDelete".to_string()),
+                Some("TWStringCreateWithNSString(result)".to_string()),
+                Some("StringDelete(result)".to_string()),
             )
         } else {
             (SwiftType::try_from(value.variant).unwrap(), None, None)
@@ -351,14 +357,14 @@ impl TryFrom<ParamInfo> for SwiftParam {
         let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
             (
                 SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData".to_string()),
-                Some("TWDataDelete".to_string()),
+                Some(format!("TWDataCreateWithNSData({})", value.name)),
+                Some(format!("TWDataDelete({})", value.name)),
             )
         } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
             (
                 SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString".to_string()),
-                Some("TWStringDelete".to_string()),
+                Some(format!("TWStringCreateWithNSString({})", value.name)),
+                Some(format!("TWStringDelete({})", value.name)),
             )
         } else {
             (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
