@@ -37,6 +37,7 @@ pub struct SwiftParam {
     #[serde(rename = "type")]
     pub param_type: SwiftType,
     pub is_nullable: bool,
+    pub skip_self: bool,
     pub wrap_as: Option<String>,
     pub deter_as: Option<String>,
 }
@@ -204,14 +205,27 @@ fn process_struct_methods(
         // Convert parameters.
         let mut params = vec![];
         for param in func.params {
-            // Skip struct paramater for non-static methods.
-            if let TypeVariant::Struct(ref s) = param.ty.variant {
-                if s == object_name && !func.is_static {
+            // Skip self-referencing struct paramater for non-static methods.
+            if let TypeVariant::Struct(ref struct_name) = param.ty.variant {
+                if struct_name == object_name && !func.is_static {
                     continue;
                 }
             }
 
-            params.push(SwiftParam::try_from(param).unwrap());
+            // Skip self-referencing enum parameter and wrap accordingly
+            let (mut wrap_as, mut skip_self) = (None, false);
+            if let TypeVariant::Enum(ref enum_name) = param.ty.variant {
+                if enum_name == object_name {
+                    wrap_as = Some(format!("{}(rawValue: rawValue)", enum_name));
+                    skip_self = true;
+                }
+            }
+
+            let mut swift_param = SwiftParam::try_from(param).unwrap();
+            swift_param.wrap_as = wrap_as;
+            swift_param.skip_self = skip_self;
+
+            params.push(swift_param);
         }
 
         // Convert return type.
@@ -344,6 +358,7 @@ impl TryFrom<ParamInfo> for SwiftParam {
             name: value.name,
             param_type,
             is_nullable: value.ty.is_nullable,
+            skip_self: false,
             wrap_as: wrap_as,
             deter_as: deter_as,
         })

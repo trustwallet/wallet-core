@@ -98,7 +98,6 @@ fn generate_swift_bindings() {
             std::fs::write(&file_path, rendered.as_bytes()).unwrap();
         }
 
-
         // TODO...
     }
 
