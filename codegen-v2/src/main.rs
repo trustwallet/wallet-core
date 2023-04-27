@@ -57,11 +57,13 @@ fn create_manifest() {
 }
 
 fn generate_swift_bindings() {
+    const OUT_DIR: &str = "out/swift_bindings";
+
     let path = Path::new("../include/");
     let dir = libparser::grammar::parse_headers(&path).unwrap();
     let file_infos = libparser::manifest::process_c_grammar(&dir);
 
-    std::fs::create_dir_all("out/swift_bindings/").unwrap();
+    std::fs::create_dir_all(OUT_DIR).unwrap();
 
     let struct_t = read_to_string("src/codegen/templates/swift/struct.hbs").unwrap();
     let enum_t = read_to_string("src/codegen/templates/swift/enum.hbs").unwrap();
@@ -75,7 +77,27 @@ fn generate_swift_bindings() {
             extension_template: &ext_t,
         };
 
-        let _rendered = libparser::codegen::swift::render_file_info(input).unwrap();
+        let rendered = libparser::codegen::swift::render_file_info(input).unwrap();
+
+        for (name, rendered) in rendered.structs {
+            let file_path = format!("{}/{}.swift", OUT_DIR, name);
+            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+        }
+
+        if !rendered.enums.is_empty() {
+            std::fs::create_dir_all(format!("{}/enums", OUT_DIR)).unwrap();
+        }
+
+        for (name, rendered) in rendered.enums {
+            let file_path = format!("{}/enums/{}.swift", OUT_DIR, name);
+            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+        }
+
+        for (name, rendered) in rendered.extensions {
+            let file_path = format!("{}/{}+Extension.swift", OUT_DIR, name);
+            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+        }
+
 
         // TODO...
     }

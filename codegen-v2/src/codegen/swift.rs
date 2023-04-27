@@ -4,7 +4,6 @@ use crate::manifest::{
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
-use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize)]
 pub struct SwiftType(String);
@@ -69,9 +68,9 @@ pub struct RenderIntput<'a> {
 
 #[derive(Default)]
 pub struct RenderOutput {
-    pub structs: Vec<(PathBuf, String)>,
-    pub enums: Vec<(PathBuf, String)>,
-    pub extensions: Vec<(PathBuf, String)>,
+    pub structs: Vec<(String, String)>,
+    pub enums: Vec<(String, String)>,
+    pub extensions: Vec<(String, String)>,
 }
 
 pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
@@ -115,40 +114,37 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let out = engine.render("struct", &payload).unwrap();
 
-        outputs.structs.push((PathBuf::from(&strct.name), out));
+        outputs.structs.push((strct.name.to_string(), out));
     }
 
     for enm in info.enums {
-        let (inits, methods, properties);
-        (inits, info.inits) = process_inits(&enm.name, info.inits).unwrap();
+        let (methods, properties);
         (methods, info.functions) = process_struct_methods(&enm.name, info.functions).unwrap();
         (properties, info.properties) =
             process_struct_properties(&enm.name, info.properties).unwrap();
 
+        let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
+
         // TODO: Extend
         let enum_payload = json!({
-            "name": enm.name.strip_prefix("TW").ok_or(Error::Todo)?,
+            "name": enum_name,
             "parent_classes": [],
             "variants": enm.variants,
         });
 
         let extension_payload = json!({
-            "name": enm.name.strip_prefix("TW").ok_or(Error::Todo)?,
+            "name": enum_name,
             "init_instance": true,
             "parent_classes": [],
-            "inits": inits,
-            "deinits": [],
             "methods": methods,
             "properties": properties,
         });
 
         let out = engine.render("enum", &enum_payload).unwrap();
-
-        outputs.enums.push((PathBuf::from(&enm.name), out));
+        outputs.enums.push((enm.name.to_string(), out));
 
         let out = engine.render("extension", &extension_payload).unwrap();
-
-        outputs.extensions.push((PathBuf::from(&enm.name), out));
+        outputs.extensions.push((enm.name.to_string(), out));
     }
 
     Ok(outputs)
