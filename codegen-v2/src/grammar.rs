@@ -6,6 +6,91 @@
 
 use super::reader::{Reader, ReaderBranch};
 use super::{Error, Result};
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct CHeaderDirectory {
+    pub map: HashMap<PathBuf, Vec<GHeaderFileItem>>,
+}
+
+pub fn parse_headers(path: &Path) -> Result<CHeaderDirectory> {
+    let dir = CHeaderDirectory {
+        map: HashMap::new(),
+    };
+
+    let dir = parse_dir(path, dir)?;
+    Ok(dir)
+}
+
+fn parse_dir(path: &Path, mut main_dir: CHeaderDirectory) -> Result<CHeaderDirectory> {
+    let entries = std::fs::read_dir(path).map_err(|_| Error::Todo)?;
+    for entry in entries {
+        let child_path = entry.map_err(|_| Error::Todo)?.path();
+
+        if child_path.is_dir() {
+            main_dir = parse_dir(&child_path, main_dir)?;
+        } else if child_path.is_file() {
+            main_dir = parse_file(&child_path, main_dir)?;
+        } else {
+            panic!()
+        }
+    }
+
+    Ok(main_dir)
+}
+
+fn parse_file(path: &Path, mut main_dir: CHeaderDirectory) -> Result<CHeaderDirectory> {
+    if !path.is_file() {
+        return Err(Error::Todo);
+    }
+
+    let parent = path.parent().ok_or(Error::Todo)?;
+
+    let content = std::fs::read_to_string(path).map_err(|_err| Error::Todo)?;
+    // TODO: Find a better solution for this.
+    let content: String = content.chars().filter(|c| c.is_ascii()).collect();
+
+    let mut reader = Reader::from(content.as_str());
+    let mut items = vec![];
+
+    loop {
+        let (pending, checked_out) = reader.checkout();
+        if let Ok(der) = GHeaderFileItem::derive(checked_out) {
+            let (derived, branch) = (der.derived, der.branch);
+            reader = pending.merge(branch);
+
+            if let GHeaderFileItem::HeaderInclude(include) = &derived {
+                let child_path = parent.join(Path::new(&include.0));
+
+                // Skip self-referencing includes.
+                if child_path == path {
+                    continue;
+                }
+
+                // If the `#include`d file is not yet parsed, parse it.
+                // Otherwise, skip it.
+                if !main_dir.map.contains_key(&child_path) {
+                    main_dir = parse_file(&child_path, main_dir)?;
+                }
+            }
+
+            // Indicates EOF, implying this loop must exit.
+            if let GHeaderFileItem::Eof = derived {
+                break;
+            }
+
+            items.push(derived);
+        } else {
+            reader = pending.discard();
+        }
+    }
+
+    // Update the map with newly parsed items.
+    main_dir.map.insert(path.to_path_buf(), items);
+
+    Ok(main_dir)
+}
 
 macro_rules! define_char {
     ($name:ident, $char:expr) => {
@@ -196,8 +281,15 @@ pub enum GPrimitive {
     LongInt,
     Float,
     Double,
+    SizeT,
+    Int8T,
+    Int16T,
+    Int32T,
+    Int64T,
     UInt8T,
+    UInt16T,
     UInt32T,
+    UInt64T,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -208,7 +300,7 @@ pub struct GStructDecl {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GStructName(GKeyword);
+pub struct GStructName(pub GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GStruct {
@@ -217,7 +309,7 @@ pub struct GStruct {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GEnumName(GKeyword);
+pub struct GEnumName(pub GKeyword);
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GEnumDecl {
@@ -506,8 +598,15 @@ impl ParseTree for GPrimitive {
             "long" => GPrimitive::LongInt,
             "float" => GPrimitive::Float,
             "double" => GPrimitive::Double,
+            "size_t" => GPrimitive::SizeT,
+            "int8_t" => GPrimitive::Int8T,
+            "int16_t" => GPrimitive::Int16T,
+            "int32_t" => GPrimitive::Int32T,
+            "int64_t" => GPrimitive::Int64T,
             "uint8_t" => GPrimitive::UInt8T,
+            "uint16_t" => GPrimitive::UInt16T,
             "uint32_t" => GPrimitive::UInt32T,
+            "uint64_t" => GPrimitive::UInt64T,
             _ => {
                 return Err(Error::Todo);
             }
