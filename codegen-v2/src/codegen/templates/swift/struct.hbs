@@ -1,0 +1,118 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+import Foundation
+
+public {{#if is_final}}final {{/if}}{{#if is_class}}class {{else}}struct {{/if}}{{name}}
+    {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}}{{/each}} {
+    {{#if init_instance}}
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
+        self.rawValue = rawValue
+    }
+    {{else}}
+    init() {}
+    {{/if}}
+
+    {{#each inits}}
+    public init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
+        {{#each params}}
+        {{#if wrap_as}}
+        let {{name}} = {{wrap_as}}({{name}})
+        {{else}}
+        let {{name}} = {{name}}
+        {{/if}}
+        {{#if deter_as}}
+        defer {
+            {{deter_as}}({{name}})
+        }
+        {{/if}}
+        {{/each}}
+
+        // Call the underlying C function.
+        let result = {{c_ffi_name}}({{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
+
+        {{#if is_nullable}}
+        // Check nullable result.
+        guard let result = result else {
+            return nil
+        }
+
+        {{/if}}
+        self.rawValue = result
+    }
+
+    {{/each}}
+    {{#each deinits}}
+    deinit {
+        {{c_ffi_name}}(rawValue)
+    }
+
+    {{/each}}
+    {{#each methods}}
+    {{#if is_static}}public static func{{else}}public func{{/if}} {{name}} ({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+        {{#each params}}
+        {{#if wrap_as}}
+        let {{name}} = {{wrap_as}}({{name}})
+        {{else}}
+        let {{name}} = {{name}}
+        {{/if}}
+        {{#if deter_as}}
+        defer {
+            {{deter_as}}({{name}})
+        }
+        {{/if}}
+        {{/each}}
+
+        // Call the underlying C function.
+        let result = {{c_ffi_name}}({{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
+
+        {{#if return.is_nullable}}
+        // Check nullable result.
+        guard let result = result else {
+            return nil
+        }
+
+        {{/if}}
+        {{#if return.wrap_as}}
+        // Return with conversion function.
+        return {{return.wrap_as}}(result)
+        {{else}}
+        return result
+        {{/if}}
+    }
+
+    {{/each}}
+    {{#each properties}}
+    {{#if is_static}}public static var{{else}}public var{{/if}} {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+        // Call the underlying C function.
+        {{#if is_static}}
+        let result = {{c_ffi_name}}()
+        {{else}}
+        let result = {{c_ffi_name}}(self.rawValue)
+        {{/if}}
+
+        {{#if return.is_nullable}}
+        // Check nullable result.
+        guard let result = result else {
+            return nil
+        }
+        {{/if}}
+
+        {{#if return.wrap_as}}
+        // Return with conversion function.
+        return {{return.wrap_as}}(result)
+        {{else}}
+        return result
+        {{/if}}
+    }
+
+    {{/each}}
+}
