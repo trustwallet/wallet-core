@@ -2,9 +2,9 @@ name: Linux CI Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ dev, master ]
 
 env:
   SCCACHE_GHA_ENABLED: "true"

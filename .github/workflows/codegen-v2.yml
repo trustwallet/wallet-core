@@ -2,13 +2,11 @@ name: Codegen-v2 Tests
 
 on:
   push:
-    branches:
-      - master
+    branches: [ dev, master ]
     paths:
       - 'codegen-v2/**'
   pull_request:
-    branches:
-      - master
+    branches: [ dev, master ]
     paths:
       - 'codegen-v2/**'
 

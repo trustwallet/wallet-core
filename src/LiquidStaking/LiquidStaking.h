@@ -9,6 +9,7 @@
 #include "proto/LiquidStaking.pb.h"
 #include "TrustWalletCore/TWBlockchain.h"
 #include <variant>
+#include <optional>
 
 namespace TW::LiquidStaking {
 using TAction = std::variant<Proto::Stake, Proto::Unstake, Proto::Withdraw>;
@@ -28,6 +29,8 @@ class Builder {
 
     Proto::Output buildStraderEVM() const;
     Proto::Output buildStrader() const;
+    Proto::Output buildTortugaAptos() const;
+    Proto::Output buildTortuga() const;
 public:
     Builder() noexcept = default;
 

@@ -50,6 +50,9 @@ message Transfer {
 
     // Transfer comment message (optional, empty by default)
     string comment = 7;
+
+    // If the address is bounceable
+    bool bounceable = 8;
 }
 
 message SigningInput {
