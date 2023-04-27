@@ -101,11 +101,16 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         (properties, info.properties) =
             process_struct_properties(&strct.name, info.properties).unwrap();
 
+        // Avoid rendering empty structs.
+        if inits.is_empty() && methods.is_empty() && properties.is_empty() {
+            continue;
+        }
+
         // TODO: Extend
         let payload = json!({
             "name": strct.name.strip_prefix("TW").ok_or(Error::Todo)?,
             "is_class": is_class,
-            "init_instance": true,
+            "init_instance": is_class,
             "parent_classes": [],
             "inits": inits,
             "deinits": [],
@@ -133,6 +138,14 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "variants": enm.variants,
         });
 
+        let out = engine.render("enum", &enum_payload).unwrap();
+        outputs.enums.push((enm.name.to_string(), out));
+
+        // Avoid rendering empty extension for enums.
+        if methods.is_empty() && properties.is_empty() {
+            continue;
+        }
+
         let extension_payload = json!({
             "name": enum_name,
             "init_instance": true,
@@ -140,9 +153,6 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "methods": methods,
             "properties": properties,
         });
-
-        let out = engine.render("enum", &enum_payload).unwrap();
-        outputs.enums.push((enm.name.to_string(), out));
 
         let out = engine.render("extension", &extension_payload).unwrap();
         outputs.extensions.push((enm.name.to_string(), out));
