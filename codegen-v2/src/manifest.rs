@@ -80,6 +80,7 @@ pub struct ProtoInfo(pub String);
 pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
+    pub value_type: TypeVariant,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub variants: Vec<EnumVariantInfo>,
     #[serde(skip_serializing_if = "Vec::is_empty")]

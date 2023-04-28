@@ -150,17 +150,27 @@ impl EnumInfo {
         // Read the docs of the custom function for more info.
         if value.name.0 == "TWStellarPassphrase" {
             return Ok(crate::manifest_impl_custom::custom_handle_stellar_passphrase());
-        }
-
-        if value.name.0 == "TWHRP" {
+        } else if value.name.0 == "TWHRP" {
             return Ok(crate::manifest_impl_custom::custom_handle_hrp());
         }
+
+        if value.markers.0.len() != 1 {
+            return Err(Error::BadObject);
+        }
+
+        let marker = value.markers.0.first().unwrap();
+        let value_ty = if let GMarker::TwExportEnum(ty) = marker {
+            TypeInfo::from_g_type(ty, &GMarkers(vec![]))?.variant
+        } else {
+            return Err(Error::BadObject);
+        };
 
         Ok(EnumInfo {
             name: value.name.0.to_string(),
             // Enums are always public
             // TOOD: Should be part of GEnumDecl
             is_public: true,
+            value_type: value_ty,
             variants: value
                 .variants
                 .iter()

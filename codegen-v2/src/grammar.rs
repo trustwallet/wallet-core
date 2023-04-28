@@ -354,7 +354,7 @@ pub enum GMarker {
     TWVisibilityDefault,
     TwExportClass,
     TwExportStruct,
-    TwExportEnum(String),
+    TwExportEnum(GType),
     TwExportFunc,
     TwExportMethod,
     TwExportProperty,
@@ -889,11 +889,11 @@ impl ParseTree for GMarker {
                 let (_, reader) = optional::<GSeparators>(handle.commit());
 
                 let (_, reader) = ensure::<GOpenBracket>(reader)?;
-                let (string, handle) = reader.read_until::<GCloseBracket>()?;
-                let (_, reader) = ensure::<GCloseBracket>(handle.commit())?;
+                let (ty, reader) = optional::<GType>(reader);
+                let (_, reader) = ensure::<GCloseBracket>(reader)?;
 
                 return Ok(DerivationResult {
-                    derived: GMarker::TwExportEnum(string),
+                    derived: GMarker::TwExportEnum(ty.unwrap_or(GType::Mutable(GTypeCategory::Scalar(GPrimitive::UInt32T)))),
                     branch: reader.into_branch(),
                 });
             }

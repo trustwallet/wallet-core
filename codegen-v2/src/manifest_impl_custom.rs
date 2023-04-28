@@ -8,7 +8,7 @@
 //!
 //! See https://github.com/trustwallet/wallet-core/pull/3122 for more info.
 
-use crate::manifest::{EnumInfo, EnumVariantInfo};
+use crate::manifest::{EnumInfo, EnumVariantInfo, TypeVariant};
 
 pub fn custom_handle_stellar_passphrase() -> EnumInfo {
     let variants = vec![
@@ -27,6 +27,7 @@ pub fn custom_handle_stellar_passphrase() -> EnumInfo {
     EnumInfo {
         name: "TWStellarPassphrase".to_string(),
         is_public: true,
+        value_type: TypeVariant::UInt32T,
         variants,
         tags: vec![],
     }
@@ -99,6 +100,7 @@ pub fn custom_handle_hrp() -> EnumInfo {
     EnumInfo {
         name: "TWHRP".to_string(),
         is_public: true,
+        value_type: TypeVariant::UInt32T,
         variants,
         tags: vec![],
     }
