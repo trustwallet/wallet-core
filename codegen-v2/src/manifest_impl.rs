@@ -1,3 +1,4 @@
+use crate::codegen::swift::first_char_to_lowercase;
 use crate::grammar::{
     GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
     GTypeCategory, GTypedef,
@@ -155,7 +156,14 @@ impl EnumInfo {
                 .variants
                 .iter()
                 .cloned()
-                .map(|(k, v)| (k.0, v))
+                .map(|(k, v)| {
+                    (
+                        first_char_to_lowercase(
+                            k.0.strip_prefix(&value.name.0).unwrap().to_string(),
+                        ),
+                        v,
+                    )
+                })
                 .collect(),
             tags: vec![],
         })

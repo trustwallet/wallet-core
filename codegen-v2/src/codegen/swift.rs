@@ -325,7 +325,7 @@ fn process_struct_properties(
     Ok((swift_props, info_props))
 }
 
-fn first_char_to_lowercase(input_str: String) -> String {
+pub fn first_char_to_lowercase(input_str: String) -> String {
     let mut chars = input_str.chars();
     match chars.next() {
         None => String::new(),
