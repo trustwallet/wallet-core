@@ -19,7 +19,7 @@ extension {{name}}
         {{/if}}
         {{#if deter_as}}
         defer {
-            {{deter_as}}({{name}})
+            {{deter_as}}
         }
         {{/if}}
         {{/each}}
@@ -36,7 +36,7 @@ extension {{name}}
         {{/if}}
         {{#if return.wrap_as}}
         // Return with conversion function.
-        return {{return.wrap_as}}(result)
+        return {{return.wrap_as}}
         {{else}}
         return result
         {{/if}}
@@ -61,7 +61,7 @@ extension {{name}}
 
         {{#if return.wrap_as}}
         // Return with conversion function.
-        return {{return.wrap_as}}(result)
+        return {{return.wrap_as}}
         {{else}}
         return result
         {{/if}}
