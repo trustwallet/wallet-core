@@ -120,12 +120,19 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let struct_name = strct.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
+        // Inherited parents.
+        let parents = if struct_name.ends_with("Address") {
+            vec!["Address"]
+        } else {
+            vec![]
+        };
+
         // TODO: Extend
         let payload = json!({
             "name": struct_name,
             "is_class": is_class,
             "init_instance": is_class,
-            "parent_classes": [],
+            "parents": parents,
             "inits": inits,
             "deinits": [],
             "methods": methods,
