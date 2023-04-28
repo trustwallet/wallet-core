@@ -11,6 +11,7 @@ pub mod codegen;
 pub mod grammar;
 pub mod manifest;
 mod manifest_impl;
+mod manifest_impl_custom;
 mod reader;
 #[cfg(test)]
 mod tests;

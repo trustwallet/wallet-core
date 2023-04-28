@@ -147,6 +147,11 @@ impl ProtoInfo {
 
 impl EnumInfo {
     pub fn from_g_type(value: &GEnumDecl) -> Result<Self> {
+        // Read the docs of the custom function for more info.
+        if value.name.0 == "TWStellarPassphrase" {
+            return Ok(crate::manifest_impl_custom::custom_handle_stellar_passphrase());
+        }
+
         Ok(EnumInfo {
             name: value.name.0.to_string(),
             // Enums are always public
