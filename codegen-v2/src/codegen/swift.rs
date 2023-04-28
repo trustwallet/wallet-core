@@ -104,14 +104,15 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     let mut info = input.file_info;
     let mut outputs = RenderOutput::default();
 
+    // Render structs/classes.
     for strct in info.structs {
         let is_class = strct.tags.iter().any(|t| t == "TW_EXPORT_CLASS");
 
         let (inits, methods, properties);
         (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
-        (methods, info.functions) = process_struct_methods(&strct.name, info.functions).unwrap();
+        (methods, info.functions) = process_object_methods(&strct.name, info.functions).unwrap();
         (properties, info.properties) =
-            process_struct_properties(&strct.name, info.properties).unwrap();
+            process_object_properties(&strct.name, info.properties).unwrap();
 
         // Avoid rendering empty structs.
         if inits.is_empty() && methods.is_empty() && properties.is_empty() {
@@ -144,11 +145,12 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         outputs.structs.push((struct_name.to_string(), out));
     }
 
+    // Render enums.
     for enm in info.enums {
         let (methods, properties);
-        (methods, info.functions) = process_struct_methods(&enm.name, info.functions).unwrap();
+        (methods, info.functions) = process_object_methods(&enm.name, info.functions).unwrap();
         (properties, info.properties) =
-            process_struct_properties(&enm.name, info.properties).unwrap();
+            process_object_properties(&enm.name, info.properties).unwrap();
 
         let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
@@ -200,7 +202,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         outputs.extensions.push((enum_name.to_string(), out));
     }
 
-    // Process Protobuf declarations.
+    // Render Protobufs.
     if !info.protos.is_empty() {
         // TODO: Should this convention be enforced?
         let file_name = info
@@ -263,7 +265,7 @@ fn process_inits(
     Ok((swift_inits, info_inits))
 }
 
-fn process_struct_methods(
+fn process_object_methods(
     object_name: &str,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
@@ -321,7 +323,7 @@ fn process_struct_methods(
     Ok((swift_funcs, info_funcs))
 }
 
-fn process_struct_properties(
+fn process_object_properties(
     object_name: &str,
     properties: Vec<PropertyInfo>,
 ) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {
