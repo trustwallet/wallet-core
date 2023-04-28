@@ -121,8 +121,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let struct_name = strct.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
-        // Inherited parents.
-        let parents = if struct_name.ends_with("Address") {
+        // Add superclasses.
+        let superclasses = if struct_name.ends_with("Address") {
             vec!["Address"]
         } else {
             vec![]
@@ -133,7 +133,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "name": struct_name,
             "is_class": is_class,
             "init_instance": is_class,
-            "parents": parents,
+            "superclasses": superclasses,
             "inits": inits,
             "deinits": [],
             "methods": methods,
@@ -154,14 +154,14 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
-        // Inherited parents.
+        // Add superclasses.
         let value_type = SwiftType::from(enm.value_type);
-        let mut parents = vec!["CaseIterable", value_type.0.as_str()];
+        let mut superclasses = vec!["CaseIterable", value_type.0.as_str()];
 
         // If the enum has `as_string` fields, we can generate a description.
         let description: Option<Vec<(&str, &str)>> =
             if enm.variants.iter().any(|e| e.as_string.is_some()) {
-                parents.push("CustomStringConvertible");
+                superclasses.push("CustomStringConvertible");
 
                 Some(
                     enm.variants
@@ -177,7 +177,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         let enum_payload = json!({
             "name": enum_name,
             "is_public": enm.is_public,
-            "parents": parents,
+            "superclasses": superclasses,
             "variants": enm.variants,
             "description": description,
         });

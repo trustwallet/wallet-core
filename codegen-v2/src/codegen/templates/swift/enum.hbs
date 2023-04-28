@@ -10,7 +10,7 @@
 import Foundation
 
 {{#if is_public}}public {{/if}}enum {{name}}
-    {{~#if parents}}: {{/if}}{{#each parents}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
+    {{~#if superclasses}}: {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
     {{#each variants}}
     case {{this.name}} = {{this.value}}
     {{/each}}
