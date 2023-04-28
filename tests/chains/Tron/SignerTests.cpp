@@ -57,6 +57,7 @@ TEST(TronSigner, SignTransferAsset) {
 
     ASSERT_EQ(hex(output.id()), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
     ASSERT_EQ(hex(output.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
+    ASSERT_EQ(hex(output.ref_block_hash()), "a7e69e9144e3d16f");
 }
 
 TEST(TronSigner, SignTransfer) {
@@ -89,6 +90,7 @@ TEST(TronSigner, SignTransfer) {
 
     ASSERT_EQ(hex(output.id()), "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451");
     ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignFreezeBalanceV2) {
@@ -122,6 +124,7 @@ TEST(TronSigner, SignFreezeBalanceV2) {
 
     ASSERT_EQ(hex(output.id()), "3a46321487ce1fd115da38b3431006ea529f65ef2507f19233f5a23c05abd01d");
     ASSERT_EQ(hex(output.signature()), "d4b539a389f6721b4e9d0eb9f39b62a539069060e1af2a118f06b81737ad9cdb49d5b4fda85f10603012f8de3996da2a1234c21d74ac6ea5e60217d3c10b630900");
+    ASSERT_EQ(hex(output.ref_block_hash()), "3a67497a3a433a31");
 }
 
 TEST(TronSigner, WithdrawExpireUnfreezeContract) {
@@ -153,6 +156,7 @@ TEST(TronSigner, WithdrawExpireUnfreezeContract) {
 
     ASSERT_EQ(hex(output.id()), "65ff34192eebda9ba7013771ff2da1010615e348b70c046647f41afe865f00eb");
     ASSERT_EQ(hex(output.signature()), "ef0361248c118b8afae9c4c8e6dfad1e63eec4fb6c182ae369fa3bbecc2ac29a292838949ad74300b2b7322a110ffd4458224e283181cf6d64df0324b068bb0001");
+    ASSERT_EQ(hex(output.ref_block_hash()), "738ef00be07c350c");
 }
 
 TEST(TronSigner, SignUnFreezeBalanceV2) {
@@ -186,6 +190,7 @@ TEST(TronSigner, SignUnFreezeBalanceV2) {
 
     ASSERT_EQ(hex(output.id()), "3070adc1743e6fdd20e04a749cc2af691ca26d2ce70e40cc0886be03595f9eeb");
     ASSERT_EQ(hex(output.signature()), "10bc05c47102f1db1a3a4c0b4a6aba028d5a35dda4e505563c3f0ccf95a562cf18b53f7f7053c485299cfc599a432d1f0ee5554a56cd5981ccfff31d79b9868b00");
+    ASSERT_EQ(hex(output.ref_block_hash()), "354fbb346d676de2");
 }
 
 TEST(TronSigner, DelegateResourceContract) {
@@ -220,6 +225,7 @@ TEST(TronSigner, DelegateResourceContract) {
 
     ASSERT_EQ(hex(output.id()), "ceabcd0f105854c13aae12ba35c0766945713c29cee540be1239bb0f1f0cde2c");
     ASSERT_EQ(hex(output.signature()), "664500a76466497a442cecc0e9282a9234483f047c12a997b6206d7f6a9030c70b700c879d7948c4cbdfe339c2c81a29dea18e00e9916504196c1b20cf045ca300");
+    ASSERT_EQ(hex(output.ref_block_hash()), "0ff2357d81414110");
 }
 
 TEST(TronSigner, UnDelegateResourceContract) {
@@ -254,6 +260,7 @@ TEST(TronSigner, UnDelegateResourceContract) {
 
     ASSERT_EQ(hex(output.id()), "3609519cc700cf2446b5e048864abc4b45e2ba6b7f9f8890d471ba2876599d3b");
     ASSERT_EQ(hex(output.signature()), "b08e32a704d5a366df499d283d407c428dd50e60665f54ecf967226b75bec37157e6bc23312af07fad9dd3551cd668ce027cc280932fd4772af89d6f0fecf11900");
+    ASSERT_EQ(hex(output.ref_block_hash()), "4d7f36fcbb3d96dd");
 }
 
 TEST(TronSigner, SignFreezeBalance) {
@@ -288,6 +295,7 @@ TEST(TronSigner, SignFreezeBalance) {
 
     ASSERT_EQ(hex(output.id()), "d314967bc1d153d649d9f54a1cc78033f0d696a58ff6922f490ddaec82558c83");
     ASSERT_EQ(hex(output.signature()), "aa7cf79fb1692ff432a1a3e520be3355c3e8168c5fa22f6e3b96c2a9f2e2827b49d67d5e6eea5c7e7cf872047d422ce5d4d149c4df752b176d13f8f48920271201");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignUnFreezeBalance) {
@@ -320,6 +328,7 @@ TEST(TronSigner, SignUnFreezeBalance) {
 
     ASSERT_EQ(hex(output.id()), "c5bd624bb53fed8ce4a7361475263b3a91ae71ef389630e0b3b8693c8c56d7a1");
     ASSERT_EQ(hex(output.signature()), "4b4b12b5fd091d5343335f14ac90bf23ea9a8167d648dd9d10d00c9c9b24731c484937bf133e5010f0338fb70a679a9a2eca8b945574005bc4015b419a68897300");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignUnFreezeAsset) {
@@ -350,6 +359,7 @@ TEST(TronSigner, SignUnFreezeAsset) {
 
     ASSERT_EQ(hex(output.id()), "432bd5cf77ff134787712724709a672fc6e51763de00292438db02d23931e13d");
     ASSERT_EQ(hex(output.signature()), "f493d8f275538a50bb8a832d759df9cad535bb2c5cc73296b04983f551d8398b6d7a30fc0fdfd73e8a9cac77a1a6a9435dc6309bb98fbb219035e88809a0b65901");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignWithdrawBalance) {
@@ -380,6 +390,7 @@ TEST(TronSigner, SignWithdrawBalance) {
 
     ASSERT_EQ(hex(output.id()), "69aaa954dcd61f28a6a73e979addece6e36541522e5b3374b18b4ef9bc3de4cb");
     ASSERT_EQ(hex(output.signature()), "cb7d23a5eb23284a25ba6deaa231de0f18d8d103592e3312bff101a4219a3e02167eca24b3f4ce78b34f0c1842b6f7fb8d813f530c4c54342cdedef9f8e1f85100");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignVoteAsset) {
@@ -413,6 +424,7 @@ TEST(TronSigner, SignVoteAsset) {
 
     ASSERT_EQ(hex(output.id()), "59b5736fb9756124f9470e4fadbcdafdc8c970da7157fa0ad34a41559418bf0a");
     ASSERT_EQ(hex(output.signature()), "501e04b08f359116a26d9ec784abc50830f92a9dc05d2c1aceefe0eba79466d2730b63b6739edf0f1f1972181618b201ce0b4167d14a66abf40eba4097c39ec400");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignVoteWitness) {
@@ -448,6 +460,7 @@ TEST(TronSigner, SignVoteWitness) {
 
     ASSERT_EQ(hex(output.id()), "3f923e9dd9571a66624fafeda27baa3e00aba1709d3fdc5c97c77b81fda18c1f");
     ASSERT_EQ(hex(output.signature()), "79ec1073ae1319ef9303a2f5a515876cfd67f8f0e155bdbde1115d391c05358a3c32f148bfafacf07e1619aaed728d9ffbc2c7e4a5046003c7b74feb86fc68e400");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignTriggerSmartContract) {
@@ -483,6 +496,7 @@ TEST(TronSigner, SignTriggerSmartContract) {
 
     ASSERT_EQ(hex(output.id()), "9927d3daae10ad001b25ef3c1bb03073c928cc0e0823f6f3ce404c2b03ce3570");
     ASSERT_EQ(hex(output.signature()), "21a99aafeabdddfdfae86538df048d120a83eb36bbcf5656595919ba6afddacd0a07d0ba051ae80337613174b109f36cb583b6e46ee5aecf6ffe3392fdbb8a2a01");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 
 TEST(TronSigner, SignTransferTrc20Contract) {
@@ -515,5 +529,6 @@ TEST(TronSigner, SignTransferTrc20Contract) {
 
     ASSERT_EQ(hex(output.id()), "0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058");
     ASSERT_EQ(hex(output.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
+    ASSERT_EQ(hex(output.ref_block_hash()), "f4f5f8b9e23a30c5");
 }
 } // namespace TW::Tron
