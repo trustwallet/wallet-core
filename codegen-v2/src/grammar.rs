@@ -315,6 +315,7 @@ pub struct GEnumName(pub GKeyword);
 pub struct GEnumDecl {
     pub name: GKeyword,
     pub variants: Vec<(GKeyword, Option<usize>)>,
+    pub markers: GMarkers,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -429,6 +430,9 @@ impl ParseTree for GEnumDecl {
     fn derive<'a>(reader: Reader<'_>) -> Result<DerivationResult<'_, Self::Derivation>> {
         // Ignore leading spaces.
         let (_, reader) = optional::<GSpaces>(reader);
+
+        // Derive (optional) markers.
+        let (markers, reader) = ensure::<GMarkers>(reader)?;
 
         let (string, handle) = reader.read_until::<GSeparators>()?;
 
@@ -556,6 +560,7 @@ impl ParseTree for GEnumDecl {
             derived: GEnumDecl {
                 name: enum_name,
                 variants,
+                markers,
             },
             branch: reader.into_branch(),
         })
