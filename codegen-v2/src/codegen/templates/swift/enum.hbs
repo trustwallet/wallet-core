@@ -14,8 +14,8 @@ import Foundation
     {{#each variants}}
     case {{this.name}} = {{this.value}}
     {{/each}}
-
     {{#if description}}
+
     public var description: String {
         switch self {
         {{#each description}}
