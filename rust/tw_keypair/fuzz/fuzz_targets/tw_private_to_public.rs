@@ -6,11 +6,10 @@
 
 #![no_main]
 
-use arbitrary::Arbitrary;
-use libfuzzer_sys::fuzz_target;
+use libfuzzer_sys::{arbitrary, fuzz_target};
 use tw_keypair::tw::{PrivateKey, PublicKeyType};
 
-#[derive(Arbitrary, Debug)]
+#[derive(arbitrary::Arbitrary, Debug)]
 struct TWPrivateToPublicInput {
     private: Vec<u8>,
     public_key_type: PublicKeyType,

@@ -6,12 +6,10 @@
 
 #![no_main]
 
-use arbitrary::Arbitrary;
-use libfuzzer_sys::fuzz_target;
-use std::io::Write;
+use libfuzzer_sys::{arbitrary, fuzz_target};
 use tw_keypair::tw::{PublicKey, PublicKeyType};
 
-#[derive(Arbitrary, Debug)]
+#[derive(arbitrary::Arbitrary, Debug)]
 struct TWPublicVerifyInput {
     public: Vec<u8>,
     hash: Vec<u8>,

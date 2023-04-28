@@ -1046,6 +1046,7 @@ dependencies = [
 name = "tw_encoding"
 version = "0.1.0"
 dependencies = [
+ "arbitrary",
  "bs58",
  "data-encoding",
  "hex",

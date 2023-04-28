@@ -829,7 +829,6 @@ dependencies = [
 name = "tw_keypair-fuzz"
 version = "0.0.0"
 dependencies = [
- "arbitrary",
  "libfuzzer-sys",
  "tw_hash",
  "tw_keypair",

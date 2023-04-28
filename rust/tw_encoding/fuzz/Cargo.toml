@@ -1,5 +1,5 @@
 [package]
-name = "tw_keypair-fuzz"
+name = "tw_encoding-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2021"
@@ -9,9 +9,8 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
-tw_hash = { path = "../../tw_hash", features = ["arbitrary"] }
 
-[dependencies.tw_keypair]
+[dependencies.tw_encoding]
 path = ".."
 features = ["arbitrary"]
 
@@ -23,19 +22,13 @@ members = ["."]
 debug = 1
 
 [[bin]]
-name = "tw_private_sign"
-path = "fuzz_targets/tw_private_sign.rs"
+name = "base_encode"
+path = "fuzz_targets/base_encode.rs"
 test = false
 doc = false
 
 [[bin]]
-name = "tw_public_verify"
-path = "fuzz_targets/tw_public_verify.rs"
-test = false
-doc = false
-
-[[bin]]
-name = "tw_private_to_public"
-path = "fuzz_targets/tw_private_to_public.rs"
+name = "base_decode"
+path = "fuzz_targets/base_decode.rs"
 test = false
 doc = false

@@ -6,12 +6,10 @@
 
 #![no_main]
 
-use arbitrary::Arbitrary;
-use libfuzzer_sys::fuzz_target;
-use tw_hash::H256;
+use libfuzzer_sys::{arbitrary, fuzz_target};
 use tw_keypair::tw::{Curve, PrivateKey};
 
-#[derive(Arbitrary, Debug)]
+#[derive(arbitrary::Arbitrary, Debug)]
 struct TWPrivateSignInput {
     private: Vec<u8>,
     hash: Vec<u8>,
