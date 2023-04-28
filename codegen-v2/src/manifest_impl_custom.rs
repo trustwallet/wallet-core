@@ -25,7 +25,7 @@ pub fn custom_handle_stellar_passphrase() -> EnumInfo {
     ];
 
     EnumInfo {
-        name: "StellarPassphrase".to_string(),
+        name: "TWStellarPassphrase".to_string(),
         is_public: true,
         variants,
         tags: vec![],
@@ -97,7 +97,7 @@ pub fn custom_handle_hrp() -> EnumInfo {
         .collect();
 
     EnumInfo {
-        name: "HRP".to_string(),
+        name: "TWHRP".to_string(),
         is_public: true,
         variants,
         tags: vec![],

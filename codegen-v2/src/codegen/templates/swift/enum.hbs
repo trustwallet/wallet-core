@@ -12,6 +12,6 @@ import Foundation
 {{#if is_public}}public {{/if}}enum {{name}}
     {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}} {{/each}} {
     {{#each variants}}
-    case {{ this.[0] }} = {{this.[1]}}
+    case {{this.name}} = {{this.value}}
     {{/each}}
 }
