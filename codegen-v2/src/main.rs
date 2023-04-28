@@ -68,6 +68,7 @@ fn generate_swift_bindings() {
     let struct_t = read_to_string("src/codegen/templates/swift/struct.hbs").unwrap();
     let enum_t = read_to_string("src/codegen/templates/swift/enum.hbs").unwrap();
     let ext_t = read_to_string("src/codegen/templates/swift/extension.hbs").unwrap();
+    let proto_t = read_to_string("src/codegen/templates/swift/proto.hbs").unwrap();
 
     for file_info in file_infos {
         let input = RenderIntput {
@@ -75,17 +76,22 @@ fn generate_swift_bindings() {
             struct_template: &struct_t,
             enum_template: &enum_t,
             extension_template: &ext_t,
+            proto_template: &proto_t,
         };
 
         let rendered = libparser::codegen::swift::render_file_info(input).unwrap();
 
+        if !rendered.enums.is_empty() {
+            std::fs::create_dir_all(format!("{}/enums", OUT_DIR)).unwrap();
+        }
+
+        if !rendered.protos.is_empty() {
+            std::fs::create_dir_all(format!("{}/Protobuf", OUT_DIR)).unwrap();
+        }
+
         for (name, rendered) in rendered.structs {
             let file_path = format!("{}/{}.swift", OUT_DIR, name);
             std::fs::write(&file_path, rendered.as_bytes()).unwrap();
-        }
-
-        if !rendered.enums.is_empty() {
-            std::fs::create_dir_all(format!("{}/enums", OUT_DIR)).unwrap();
         }
 
         for (name, rendered) in rendered.enums {
@@ -95,6 +101,11 @@ fn generate_swift_bindings() {
 
         for (name, rendered) in rendered.extensions {
             let file_path = format!("{}/{}+Extension.swift", OUT_DIR, name);
+            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+        }
+
+        for (name, rendered) in rendered.protos {
+            let file_path = format!("{}/Protobuf/{}+Proto.swift", OUT_DIR, name);
             std::fs::write(&file_path, rendered.as_bytes()).unwrap();
         }
 

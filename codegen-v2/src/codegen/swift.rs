@@ -1,5 +1,5 @@
 use crate::manifest::{
-    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, TypeInfo, TypeVariant,
+    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, ProtoInfo, TypeInfo, TypeVariant,
 };
 use crate::{Error, Result};
 use handlebars::Handlebars;
@@ -60,12 +60,19 @@ pub struct SwiftInit {
     pub comments: Vec<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftProto {
+    pub name: String,
+    pub c_ffi_name: String,
+}
+
 #[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
     pub file_info: FileInfo,
     pub struct_template: &'a str,
     pub enum_template: &'a str,
     pub extension_template: &'a str,
+    pub proto_template: &'a str,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -73,6 +80,7 @@ pub struct RenderOutput {
     pub structs: Vec<(String, String)>,
     pub enums: Vec<(String, String)>,
     pub extensions: Vec<(String, String)>,
+    pub protos: Vec<(String, String)>,
 }
 
 pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
@@ -88,6 +96,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         .unwrap();
     engine
         .register_partial("extension", input.extension_template)
+        .unwrap();
+    engine
+        .register_partial("proto", input.proto_template)
         .unwrap();
 
     let mut info = input.file_info;
@@ -159,6 +170,31 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let out = engine.render("extension", &extension_payload).unwrap();
         outputs.extensions.push((enum_name.to_string(), out));
+    }
+
+    // Process Protobuf declarations.
+    if !info.protos.is_empty() {
+        // TODO: Should this convention be enforced?
+        let file_name = info
+            .name
+            .strip_prefix("TW")
+            .ok_or(Error::Todo)?
+            .strip_suffix("Proto")
+            .ok_or(Error::Todo)?
+            .to_string();
+
+        let protos = info
+            .protos
+            .into_iter()
+            .map(SwiftProto::try_from)
+            .collect::<Result<Vec<_>>>()?;
+
+        let payload = json!({
+            "protos": protos,
+        });
+
+        let out = engine.render("proto", &payload).unwrap();
+        outputs.protos.push((file_name, out));
     }
 
     Ok(outputs)
@@ -373,6 +409,21 @@ impl TryFrom<ParamInfo> for SwiftParam {
             skip_self: false,
             wrap_as: wrap_as,
             deter_as: deter_as,
+        })
+    }
+}
+
+impl TryFrom<ProtoInfo> for SwiftProto {
+    type Error = Error;
+
+    fn try_from(value: ProtoInfo) -> std::result::Result<Self, Self::Error> {
+        let mut name = value.0.replace("_", "");
+        name = name.replace("TW", "");
+        name = name.replace("Proto", "");
+
+        Ok(SwiftProto {
+            name,
+            c_ffi_name: value.0,
         })
     }
 }
