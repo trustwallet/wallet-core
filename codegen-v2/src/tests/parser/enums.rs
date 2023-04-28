@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::grammar::{GEnumDecl, GKeyword};
+use crate::grammar::{GEnumDecl, GKeyword, GMarkers};
 use crate::{must_err, must_ok};
 
 #[test]
@@ -17,6 +17,7 @@ fn test_enum_decls_separator_handling() {
             (GKeyword::from("TWO"), None),
             (GKeyword::from("THREE"), None),
         ],
+        markers: GMarkers(vec![]),
     };
 
     must_ok!(GEnumDecl, "enum SomeEnum { ONE, TWO, THREE };", expected);
@@ -47,6 +48,7 @@ fn test_enum_decls_separator_handling() {
             (GKeyword::from("TWO"), Some(2)),
             (GKeyword::from("THREE"), Some(3)),
         ],
+        markers: GMarkers(vec![]),
     };
 
     must_ok!(
@@ -106,6 +108,7 @@ fn test_enum_decls_with_comment() {
             (GKeyword::from("TWO"), None),
             (GKeyword::from("THREE"), None),
         ],
+        markers: GMarkers(vec![]),
     };
 
     must_ok!(
@@ -157,6 +160,7 @@ fn test_enum_decls_with_comment() {
             (GKeyword::from("TWO"), Some(2)),
             (GKeyword::from("THREE"), Some(3)),
         ],
+        markers: GMarkers(vec![]),
     };
 
     must_ok!(
