@@ -81,7 +81,7 @@ pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub variants: Vec<(String, Option<usize>)>,
+    pub variants: Vec<(String, usize)>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
 }

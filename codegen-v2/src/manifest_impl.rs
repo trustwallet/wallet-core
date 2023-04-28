@@ -156,12 +156,15 @@ impl EnumInfo {
                 .variants
                 .iter()
                 .cloned()
-                .map(|(k, v)| {
+                .enumerate()
+                .map(|(idx, (k, v))| {
                     (
+                        // Remove prefix from enum variant.
                         first_char_to_lowercase(
                             k.0.strip_prefix(&value.name.0).unwrap().to_string(),
                         ),
-                        v,
+                        // In the old codegen, non-values result in a simple counter.
+                        v.unwrap_or(idx),
                     )
                 })
                 .collect(),
