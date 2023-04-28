@@ -280,7 +280,7 @@ fn process_struct_methods(
         let return_type = SwiftReturn::try_from(func.return_type).unwrap();
 
         swift_funcs.push(SwiftFunction {
-            name: func_name,
+            name: first_char_to_lowercase(func_name),
             c_ffi_name: func.name.clone(),
             is_public: func.is_public,
             is_static: func.is_static,
@@ -313,7 +313,7 @@ fn process_struct_properties(
         let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
 
         swift_props.push(SwiftProperty {
-            name: prop_name,
+            name: first_char_to_lowercase(prop_name),
             c_ffi_name: prop.name.clone(),
             is_public: prop.is_public,
             is_static: prop.is_static,
@@ -323,6 +323,14 @@ fn process_struct_properties(
     }
 
     Ok((swift_props, info_props))
+}
+
+fn first_char_to_lowercase(input_str: String) -> String {
+    let mut chars = input_str.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(f) => f.to_lowercase().chain(chars).collect(),
+    }
 }
 
 impl From<TypeVariant> for SwiftType {
