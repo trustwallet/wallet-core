@@ -148,6 +148,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         // TODO: Extend
         let enum_payload = json!({
             "name": enum_name,
+            "is_public": enm.is_public,
             "parent_classes": [],
             "variants": enm.variants,
         });
