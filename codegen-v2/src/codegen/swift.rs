@@ -145,12 +145,32 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
-        // TODO: Extend
+        // Inherited parents.
+        let value_type = SwiftType::from(enm.value_type);
+        let mut parents = vec!["CaseIterable", value_type.0.as_str()];
+
+        // If the enum has `as_string` fields, we can generate a description.
+        let description: Option<Vec<(&str, &str)>> =
+            if enm.variants.iter().any(|e| e.as_string.is_some()) {
+                parents.push("CustomStringConvertible");
+
+                Some(
+                    enm.variants
+                        .iter()
+                        // TODO: Unwrap must be handled:
+                        .map(|e| (e.name.as_str(), e.as_string.as_ref().unwrap().as_str()))
+                        .collect(),
+                )
+            } else {
+                None
+            };
+
         let enum_payload = json!({
             "name": enum_name,
             "is_public": enm.is_public,
-            "parent_classes": [],
+            "parents": parents,
             "variants": enm.variants,
+            "description": description,
         });
 
         let out = engine.render("enum", &enum_payload).unwrap();

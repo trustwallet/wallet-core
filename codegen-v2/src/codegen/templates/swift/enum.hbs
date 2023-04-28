@@ -10,8 +10,18 @@
 import Foundation
 
 {{#if is_public}}public {{/if}}enum {{name}}
-    {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}} {{/each}} {
+    {{~#if parents}}: {{/if}}{{#each parents}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
     {{#each variants}}
     case {{this.name}} = {{this.value}}
     {{/each}}
+
+    {{#if description}}
+    public var description: String {
+        switch self {
+        {{#each description}}
+        case .{{this.[0]}}: return "{{this.[1]}}"
+        {{/each}}
+        }
+    }
+    {{/if}}
 }

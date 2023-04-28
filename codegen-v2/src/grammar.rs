@@ -893,7 +893,9 @@ impl ParseTree for GMarker {
                 let (_, reader) = ensure::<GCloseBracket>(reader)?;
 
                 return Ok(DerivationResult {
-                    derived: GMarker::TwExportEnum(ty.unwrap_or(GType::Mutable(GTypeCategory::Scalar(GPrimitive::UInt32T)))),
+                    derived: GMarker::TwExportEnum(
+                        ty.unwrap_or(GType::Mutable(GTypeCategory::Scalar(GPrimitive::UInt32T))),
+                    ),
                     branch: reader.into_branch(),
                 });
             }
