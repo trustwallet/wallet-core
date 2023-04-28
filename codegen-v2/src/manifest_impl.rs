@@ -152,6 +152,10 @@ impl EnumInfo {
             return Ok(crate::manifest_impl_custom::custom_handle_stellar_passphrase());
         }
 
+        if value.name.0 == "TWHRP" {
+            return Ok(crate::manifest_impl_custom::custom_handle_hrp());
+        }
+
         Ok(EnumInfo {
             name: value.name.0.to_string(),
             // Enums are always public
