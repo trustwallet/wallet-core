@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,16 +25,18 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const Bitcoin::TransactionPlan& plan, const Bitcoin::SigningInput& input) {
-        Transaction tx =
-            Bitcoin::TransactionBuilder::build<Transaction>(plan, input);
+    static Result<Transaction, Common::Proto::SigningError> build(const Bitcoin::TransactionPlan& plan,
+                             const Bitcoin::SigningInput& input) {
+        auto tx_result = Bitcoin::TransactionBuilder::build<Transaction>(plan, input);
+        if (!tx_result) { return Result<Transaction, Common::Proto::SigningError>::failure(tx_result.error()); }
+        Transaction tx = tx_result.payload();
         
         tx.time = input.time;
         // if not set, always use latest time
         if (tx.time == 0) {
             tx.time = (uint32_t)std::time(nullptr);
         }
-        return tx;
+        return Result<Transaction, Common::Proto::SigningError>(tx);
     }
 };
 

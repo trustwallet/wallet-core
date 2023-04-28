@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,13 +8,12 @@
 #include "HexCoding.h"
 #include "PublicKey.h"
 
-#include "Everscale/Cell.h"
-#include "Everscale/CellBuilder.h"
+#include "Everscale/CommonTON/Cell.h"
+#include "Everscale/CommonTON/CellBuilder.h"
 #include "Everscale/Wallet.h"
 
 #include <gtest/gtest.h>
 
-using namespace TW;
 using boost::multiprecision::uint128_t;
 
 namespace TW::Everscale {

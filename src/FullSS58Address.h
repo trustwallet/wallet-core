@@ -31,7 +31,7 @@ class FullSS58Address {
 
     /// Determines whether a string makes a valid address
     static bool isValid(const std::string& string, int32_t network) {
-        const auto decoded = Base58::bitcoin.decode(string);
+        const auto decoded = Base58::decode(string);
         if (decoded.size() != (simpleFormatSize + checksumSize) && decoded.size() != (fullFormatSize + checksumSize)) {
             return false;
         }
@@ -73,7 +73,7 @@ class FullSS58Address {
         if (!isValid(string, network)) {
             throw std::invalid_argument("Invalid address string");
         }
-        const auto decoded = Base58::bitcoin.decode(string);
+        const auto decoded = Base58::decode(string);
         bytes.resize(decoded.size() - checksumSize);
         std::copy(decoded.begin(), decoded.end() - checksumSize, bytes.begin());
     }
@@ -109,7 +109,7 @@ class FullSS58Address {
         auto result = Data(bytes.begin(), bytes.end());
         auto checksum = computeChecksum(bytes);
         append(result, checksum);
-        return Base58::bitcoin.encode(result);
+        return Base58::encode(result);
     }
 
     /// Returns public key bytes

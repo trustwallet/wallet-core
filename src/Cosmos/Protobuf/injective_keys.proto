@@ -1,0 +1,6 @@
+syntax = "proto3";
+package injective.crypto.v1beta1.ethsecp256k1;
+
+message PubKey {
+  bytes key = 1;
+}

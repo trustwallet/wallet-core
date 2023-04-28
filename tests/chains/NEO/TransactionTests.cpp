@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -219,8 +219,7 @@ TEST(NEOTransaction, SerializeDeserializeMiner) {
     string notMiner = "1000d11f7a2800000000";
     EXPECT_THROW(
         std::unique_ptr<Transaction> _deserializedTransaction(Transaction::deserializeFrom(parse_hex(notMiner))),
-        std::invalid_argument
-    );
+        std::invalid_argument);
 }
 
 TEST(NEOTransaction, SerializeDeserializeInvocation) {

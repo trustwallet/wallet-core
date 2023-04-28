@@ -69,14 +69,14 @@ TEST(ZenTransactionBuilder, Build) {
     plan.useMaxAmount = true;
 
     // plan1
-    auto result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input);
+    auto result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input).payload();
   
     ASSERT_GT(result.outputs.size(), 0ul);
     ASSERT_EQ(result.outputs[0].value, plan.amount);
 
     // plan2
     plan.useMaxAmount = false;
-    result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input);
+    result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input).payload();
   
     ASSERT_EQ(result.outputs.size(), 4ul);
     ASSERT_EQ(result.outputs[3].value, 7000);

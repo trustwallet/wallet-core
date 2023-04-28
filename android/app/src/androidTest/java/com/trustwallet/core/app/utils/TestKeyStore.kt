@@ -4,6 +4,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.jni.StoredKey
 import wallet.core.jni.CoinType
+import wallet.core.jni.StoredKeyEncryption
 
 class TestKeyStore {
 
@@ -14,6 +15,16 @@ class TestKeyStore {
     @Test
     fun testDecryptMnemonic() {
         val keyStore = StoredKey("Test Wallet", "password".toByteArray())
+        val result = keyStore.decryptMnemonic("wrong".toByteArray())
+        val result2 = keyStore.decryptMnemonic("password".toByteArray())
+
+        assertNull(result)
+        assertNotNull(result2)
+    }
+
+    @Test
+    fun testDecryptMnemonicAes256() {
+        val keyStore = StoredKey("Test Wallet", "password".toByteArray(), StoredKeyEncryption.AES256CTR)
         val result = keyStore.decryptMnemonic("wrong".toByteArray())
         val result2 = keyStore.decryptMnemonic("password".toByteArray())
 

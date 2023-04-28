@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,11 +7,9 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Messages.h"
+#include "Wallet.h"
 
-#include "../Base64.h"
-
-using namespace TW;
-using namespace std::chrono;
+#include "Base64.h"
 
 namespace TW::Everscale {
 
@@ -56,7 +54,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             transfer.expired_at(),
             Address(transfer.to()),
             contractData);
-        protoOutput.set_encoded(TW::Base64::encode(signedMessage));
+        Data result{};
+        Message(signedMessage).intoCell()->serialize(result);
+
+        protoOutput.set_encoded(TW::Base64::encode(result));
         break;
     }
     default:

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -35,7 +35,7 @@ bool Address::isValid(const std::string& addrStr) {
     }
 
     std::string address = addrStr.substr(addrPrefix.length(), addrStr.length() - addrPrefix.length());
-    Data decoded = Base58::bitcoin.decode(address);
+    Data decoded = Base58::decode(address);
     if (decoded.size() != size) {
         return false;
     }
@@ -77,7 +77,7 @@ Address::Address(const std::string& addrStr) {
         throw std::invalid_argument("Invalid address string");
     }
     std::string address = addrStr.substr(prefix.length(), addrStr.length() - prefix.length());
-    const auto decoded = Base58::bitcoin.decode(address);
+    const auto decoded = Base58::decode(address);
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
@@ -90,7 +90,7 @@ uint8_t Address::type() const {
 }
 
 std::string Address::string() const {
-    return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
+    return prefix + Base58::encode(bytes);
 }
 
 uint8_t Address::checksum(std::array<TW::byte, size>& byteArray) const {

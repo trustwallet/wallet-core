@@ -112,7 +112,7 @@ message Message {
         string type_prefix = 5;
     }
 
-    // transfer within wasm/MsgExecuteContract, used by Terra
+    // transfer within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractTransfer {
         // sender address
         string sender_address = 1;

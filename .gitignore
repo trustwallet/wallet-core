@@ -10,6 +10,7 @@ cmake-build-debug/
 .cxx/
 .cache/
 build_pvs_studio/
+target/
 
 # Dependencies
 node_modules
@@ -23,11 +24,12 @@ lib/protobuf
 .vscode/
 .project
 .history/
+*.xcuserdatad/
 
 # Generated files
 jni/cpp/generated
 jni/java/wallet/core/jni
-jni/java/wallet/core/proto
+jni/proto/wallet
 jni/dokka-out
 swift/Sources/Generated
 swift/wallet-core/
@@ -63,5 +65,5 @@ samples/cpp/*.cmake
 # built binary
 samples/cpp/sample
 
-*.xcuserdatad/
-
+# Rust target build
+**/target/

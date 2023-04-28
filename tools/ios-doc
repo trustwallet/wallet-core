@@ -9,7 +9,7 @@ pushd swift
 mkdir -p build && rm -rf build/*.doccarchive
 
 export DOCC_JSON_PRETTYPRINT="YES"
-xcodebuild -workspace TrustWalletCore.xcworkspace -derivedDataPath build/docsData -scheme WalletCore -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -parallelizeTargets docbuild | xcbeautify
+xcodebuild -workspace TrustWalletCore.xcworkspace -derivedDataPath build/docsData -scheme WalletCore -destination 'platform=iOS Simulator,name=iPhone 14' -parallelizeTargets docbuild | xcbeautify
 
 pushd build
 

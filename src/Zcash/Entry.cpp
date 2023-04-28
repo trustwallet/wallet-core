@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,7 +20,8 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
     return TAddress::isValid(address);
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    byte p2pkh = getFromPrefixPkhOrDefault(addressPrefix, coin);
     if (coin == TWCoinTypeKomodo) {
         return Bitcoin::Address(publicKey, p2pkh).string();
     }

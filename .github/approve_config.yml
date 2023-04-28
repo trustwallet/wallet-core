@@ -9,6 +9,7 @@ approvals:
         - markzhou26
         - liqunn
         - deagle9413
+        - junyulah
     - name: zts
       minimum: 2
       from:

@@ -21,19 +21,22 @@
 
 namespace TW::Ripple::tests {
 
-TEST(RippleCompiler, CompileWithSignatures) {
+TEST(RippleCompiler, CompileRippleWithSignatures) {
     const auto coin = TWCoinTypeXRP;
     /// Step 1: Prepare transaction input (protobuf)
-    auto key = parse_hex("ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764");
+    auto key = parse_hex("acf1bbf6264e699da0cc65d17ac03fcca6ded1522d19529df7762db46097ff9f");
     auto input = TW::Ripple::Proto::SigningInput();
     auto privateKey = TW::PrivateKey(key);
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    input.set_amount(29000000);
-    input.set_fee(200000);
-    input.set_sequence(1);
-    input.set_account("rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF");
-    input.set_destination("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF");
+
+    input.mutable_op_payment()->set_amount(1000000);
+    input.set_fee(10);
+    input.set_sequence(75674534);
+    input.set_last_ledger_sequence(75674797);
+    input.set_account("rGV1v1xw23PHcRn4Km4tF8R2mfh6yTZkcP");
+    input.mutable_op_payment()->set_destination("rNLpgsBTCwiaZAnHe2ZViAN1GcXZtYW6rg");
     input.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+
     auto inputString = input.SerializeAsString();
     auto inputStrData = TW::Data(inputString.begin(), inputString.end());
     /// Step 2: Obtain preimage hash
@@ -41,34 +44,24 @@ TEST(RippleCompiler, CompileWithSignatures) {
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
     auto preImage = preSigningOutput.data();
-    EXPECT_EQ(hex(preImage),
-              "5354580012000022800000002400000001614000000001ba8140684000000000030d407321026cc34b92"
-              "cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b681148400b6b6d08d5d495653d73e"
-              "da6804c249a5148883148132e4e20aecf29090ac428a9c43f230a829220d");
+    EXPECT_EQ(hex(preImage), "535458001200002200000000240482b3a6201b0482b4ad6140000000000f424068400000000000000a7321027efc5f15071d2ae5e73ee09a0c17456c5d9170a41d67e3297c554829199be80b8114aa000c09c692ef1f82787e51e22833149941ea2083149232ef60695add51f0f84534cc4084e4fdfc698e");
     auto preImageHash = preSigningOutput.data_hash();
-    EXPECT_EQ(hex(preImageHash),
-              "8624dbbd5da9ccc8f7a50faf8af8709837db72f51a50cac15a6cd28ce6107b3d");
+    EXPECT_EQ(hex(preImageHash), "86ef78df7a4aad29e6b3730f7965c1bd5ccd2439426cb738d7c494a64cfaf4af");
     // Simulate signature, normally obtained from signature server
-    const auto signature = privateKey.sign(parse_hex("8624dbbd5da9ccc8f7a50faf8af8709837db72f51a50cac15a6cd28ce6107b3d"), TWCurveSECP256k1);
+    const auto signature = privateKey.signAsDER(TW::data(preImageHash));
     // Verify signature (pubkey & hash & signature)
-    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+    EXPECT_TRUE(publicKey.verifyAsDER(signature, TW::data(preImageHash)));
+
     /// Step 3: Compile transaction info
     auto outputData =
         TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {publicKey.bytes});
-    const auto ExpectedTx = std::string(
-        "12000022800000002400000001614000000001ba8140684000000000030d407321026cc34b92cefb3a45"
-        "37b3edb0b6044c04af27c01583c577823ecc69a9a21119b6744630440220067f20b3eebfc7107dd0bcc7"
-        "2337a236ac3be042c0469f2341d76694a17d4bb9022048393d7ee7dcb729783b33f5038939ddce1bb833"
-        "7e66d752974626854556bbb681148400b6b6d08d5d495653d73eda6804c249a5148883148132e4e20aec"
-        "f29090ac428a9c43f230a829220d");
-    EXPECT_EQ(outputData.size(), 185ul);
+    const auto ExpectedTx = std::string("1200002200000000240482b3a6201b0482b4ad6140000000000f424068400000000000000a7321027efc5f15071d2ae5e73ee09a0c17456c5d9170a41d67e3297c554829199be80b74473045022100e1c746c3aeebc8278c627ee4c2ce5cae97e3856292c7fe5388f803920230a37b02207d2eccb76cd35dd379d6b24c2cabd786e62d34a564cf083e863176109c5b6bb48114aa000c09c692ef1f82787e51e22833149941ea2083149232ef60695add51f0f84534cc4084e4fdfc698e");
 
     {
         TW::Ripple::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
-        EXPECT_EQ(output.encoded().size(), 182ul);
         ASSERT_EQ(output.error(), TW::Common::Proto::SigningError::OK);
     }
 

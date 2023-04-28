@@ -24,14 +24,20 @@ include(cmake/CompilerWarnings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(cmake/FindHostPackage.cmake)
 
+set(WALLET_CORE_RS_TARGET_DIR ${CMAKE_SOURCE_DIR}/rust/target)
 add_library(${PROJECT_NAME}_INTERFACE INTERFACE)
 target_include_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/include)
 target_link_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/lib)
+target_link_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${WALLET_CORE_RS_TARGET_DIR}/release)
 set_project_warnings(${PROJECT_NAME}_INTERFACE)
 
 add_subdirectory(trezor-crypto)
+set(WALLET_CORE_RS_LIB libwallet_core_rs.a)
+
+set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/release/${WALLET_CORE_RS_LIB})
 if (TW_COMPILE_WASM)
     message(STATUS "Wasm build enabled")
+    set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/wasm32-unknown-emscripten/release/${WALLET_CORE_RS_LIB})
     add_subdirectory(wasm)
 endif ()
 
@@ -45,16 +51,35 @@ include(cmake/Protobuf.cmake)
 # Source files
 if (${ANDROID})
     message("Configuring for JNI")
-    file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h jni/cpp/*.c)
+    file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
+    if (${KOTLIN})
+        file(GLOB_RECURSE specific_sources
+                jni/kotlin/*.h
+                jni/kotlin/*.c
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.h
+                kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.c
+                )
+    else ()
+        file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
+    endif ()
+    set(sources ${core_sources} ${specific_sources})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
+    if (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
+        set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/aarch64-linux-android/release/${WALLET_CORE_RS_LIB})
+    elseif (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "x86")
+        set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/i686-linux-android/release/${WALLET_CORE_RS_LIB})
+    elseif (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "armeabi-v7a")
+        set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/armv7-linux-androideabi/release/${WALLET_CORE_RS_LIB})
+    elseif (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "x86_64")
+        set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/x86_64-linux-android/release/${WALLET_CORE_RS_LIB})
+    endif ()
+    target_link_libraries(TrustWalletCore PUBLIC ${WALLET_CORE_BINDGEN} ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
 else ()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
-    add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
-
-    target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
+    add_library(TrustWalletCore STATIC ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
+    target_link_libraries(TrustWalletCore PUBLIC ${WALLET_CORE_BINDGEN} ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
 endif ()
 
 if (TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -94,15 +119,15 @@ if (TW_ENABLE_CLANG_TIDY)
     tw_add_clang_tidy_target(TrustWalletCore)
 endif ()
 
-if (NOT ANDROID AND TW_UNITY_BUILD)
+if (TW_UNITY_BUILD)
     set_target_properties(TrustWalletCore PROPERTIES UNITY_BUILD ON)
 
     file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/Hedera/Protobuf/*.pb.cc src/proto/*.pb.cc)
-    foreach(file ${PROTOBUF_SOURCE_FILES})
+    foreach (file ${PROTOBUF_SOURCE_FILES})
         set_property(SOURCE ${file} PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
-    endforeach()
+    endforeach ()
     message(STATUS "Unity build activated")
-endif()
+endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 

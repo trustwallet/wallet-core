@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,7 +25,7 @@ const std::array<TW::byte, 3> ktPrefix{2, 90, 121};
 const std::array<TW::byte, 3> kt1Prefix{2, 90, 121};
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -65,7 +65,7 @@ Address::Address(const PublicKey& publicKey) {
 
 std::string Address::deriveOriginatedAddress(const std::string& operationHash, int operationIndex) {
     // Decode and remove 2 byte prefix.
-    auto decoded = Base58::bitcoin.decodeCheck(operationHash);
+    auto decoded = Base58::decodeCheck(operationHash);
     decoded.erase(decoded.begin(), decoded.begin() + 2);
     TW::encode32BE(operationIndex, decoded);
 
@@ -74,7 +74,7 @@ std::string Address::deriveOriginatedAddress(const std::string& operationHash, i
     auto prefix = Data({2, 90, 121});
     prefix.insert(prefix.end(), hash.begin(), hash.end());
 
-    return Base58::bitcoin.encodeCheck(prefix);
+    return Base58::encodeCheck(prefix);
 }
 
 Data Address::forgePKH() const {

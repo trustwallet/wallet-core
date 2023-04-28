@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -57,7 +57,7 @@ std::string Signature::string() const noexcept {
         buffer.push_back(hash[i]);
     }
 
-    return prefix + TW::Base58::bitcoin.encode(buffer);
+    return prefix + TW::Base58::encode(buffer);
 }
 
 void Extension::serialize(Data& os) const noexcept {

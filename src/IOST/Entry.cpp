@@ -20,13 +20,12 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& addr
     return Account::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte,
-                            const char*) const {
+string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return Account::encodePubKey(publicKey);
 }
 
 TW::Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& str) const {
-    return {Base58::bitcoin.decode(str)};
+    return {Base58::decode(str)};
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

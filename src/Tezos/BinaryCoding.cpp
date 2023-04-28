@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,15 +16,16 @@
 namespace TW::Tezos {
 
 std::string base58ToHex(const std::string& string, size_t prefixLength) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::decodeCheck(string);
     if (decoded.size() < prefixLength) {
         return "";
     }
-    return TW::hex(decoded.data() + prefixLength, decoded.data() + decoded.size());
+    Data v(decoded.data() + prefixLength, decoded.data() + decoded.size());
+    return TW::hex(v);
 }
 
 PublicKey parsePublicKey(const std::string& publicKey) {
-    const auto decoded = Base58::bitcoin.decodeCheck(publicKey);
+    const auto decoded = Base58::decodeCheck(publicKey);
 
     std::array<TW::byte, 4> prefix;
     enum TWPublicKeyType type;
@@ -53,7 +54,7 @@ PublicKey parsePublicKey(const std::string& publicKey) {
 }
 
 PrivateKey parsePrivateKey(const std::string& privateKey) {
-    const auto decoded = Base58::bitcoin.decodeCheck(privateKey);
+    const auto decoded = Base58::decodeCheck(privateKey);
     auto pk = Data();
     auto prefix_size = 4ul;
 

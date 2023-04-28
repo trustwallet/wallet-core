@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -29,7 +29,7 @@ TEST(TWCoinType, TWPurpose) {
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeBandChain));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeBluzelle));
     ASSERT_EQ(TWPurposeBIP1852, TWCoinTypePurpose(TWCoinTypeCardano));
-    ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeElrond));
+    ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeMultiversX));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeOasis));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeTHORChain));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeCryptoOrg));
@@ -56,7 +56,7 @@ TEST(TWCoinType, TWPurpose) {
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeStellar));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeTezos));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeTheta));
-    ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeThunderToken));
+    ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeThunderCore));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeTomoChain));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeTron));
     ASSERT_EQ(TWPurposeBIP44, TWCoinTypePurpose(TWCoinTypeVeChain));
@@ -102,7 +102,7 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeBandChain));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeBluzelle));
     ASSERT_EQ(TWPublicKeyTypeED25519Cardano, TWCoinTypePublicKeyType(TWCoinTypeCardano));
-    ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeElrond));
+    ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeMultiversX));
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeOasis));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeTHORChain));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeCryptoOrg));
@@ -129,7 +129,7 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeStellar));
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeTezos));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1Extended, TWCoinTypePublicKeyType(TWCoinTypeTheta));
-    ASSERT_EQ(TWPublicKeyTypeSECP256k1Extended, TWCoinTypePublicKeyType(TWCoinTypeThunderToken));
+    ASSERT_EQ(TWPublicKeyTypeSECP256k1Extended, TWCoinTypePublicKeyType(TWCoinTypeThunderCore));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1Extended, TWCoinTypePublicKeyType(TWCoinTypeTomoChain));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1Extended, TWCoinTypePublicKeyType(TWCoinTypeTron));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1Extended, TWCoinTypePublicKeyType(TWCoinTypeVeChain));

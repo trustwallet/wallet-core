@@ -8,7 +8,6 @@ options:
     macOS: 10.14
 settings:
   base:
-    ENABLE_BITCODE: YES
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include /opt/homebrew/include
     CLANG_CXX_LANGUAGE_STANDARD: c++20
@@ -35,12 +34,15 @@ targets:
         - "proto/*.proto"
         - "Tron/Protobuf/*.proto"
         - "Zilliqa/Protobuf/*.proto"
+        - "Cosmos/Protobuf/*.proto"
+        - "Hedera/Protobuf/*.proto"
     dependencies:
       - target: trezor-crypto_${platform}
         link: true
       - target: protobuf_${platform}
         link: true
       - sdk: libc++.tbd
+      - framework: WalletCoreRs.xcframework
     settings:
       SKIP_INSTALL: false
       SUPPORTS_MACCATALYST: true

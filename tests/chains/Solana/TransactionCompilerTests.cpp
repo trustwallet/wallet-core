@@ -120,14 +120,14 @@ TEST(SolanaCompiler, CompileCreateNonceAccountWithSignatures) {
         "0000000000000000000000000000000000000000000000000000000000040301020324060000000d044a62d0a4"
         "dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0");
     // Simulate signature, normally obtained from signature server
-    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const Data publicKeyData = Base58::decode(sender);
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
-    const Data nonceAccountPublicKeyData = Base58::bitcoin.decode(nonceAccount);
+    const Data nonceAccountPublicKeyData = Base58::decode(nonceAccount);
     const PublicKey nonceAccountPublicKey =
         PublicKey(nonceAccountPublicKeyData, TWPublicKeyTypeED25519);
-    const auto signature = Base58::bitcoin.decode(
+    const auto signature = Base58::decode(
         "3dbiGHLsFqnwA1PXx7xmoikzv6v9g9BXvZts2126qyE163BypurkvgbDiF5RmrEZRiT2MG88v6xwyJTkhhDRuFc9");
-    const auto nonceAccountSignature = Base58::bitcoin.decode(
+    const auto nonceAccountSignature = Base58::decode(
         "jFq4PbbEM1fuPbq5CkUYgzs7a21g6rvFkfLJAUUGP5QMKYhHBE6nB1dqtwaJsABgyUvrR8QjT2Ej73cXNz7Vur1");
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
@@ -206,9 +206,9 @@ TEST(SolanaCompiler, CompileWithdrawNonceAccountWithSignatures) {
               "00000000000000000000000000000000000000000000000000000000448e50d73f42e3163f5926922aad"
               "d2bca6bdd91f97b3eb7b750e2cecfd810f6d01050501020304000c050000008096980000000000");
     // Simulate signature, normally obtained from signature server
-    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const Data publicKeyData = Base58::decode(sender);
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
-    const auto signature = Base58::bitcoin.decode(
+    const auto signature = Base58::decode(
         "MxbTCAUmBLiESDLK1NiK5ab41mL2SpAPKSbvGdYQQD5eKgAJRdFEJ8MV9HqBhDQHdsS2LG3QMQQVJp51ekGu6KM");
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
@@ -285,9 +285,9 @@ TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithSignatures) {
         "1029148e0d830b5a1399daff1084048e7bd8dbe9f8598fb6d19edbbae20ebbc767fba1da4d4b40a4b97479fe52"
         "6a82325cba7cee506802080700010304050607000604020401000a0ca00f00000000000006");
     // Simulate signature, normally obtained from signature server
-    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const Data publicKeyData = Base58::decode(sender);
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
-    const auto signature = Base58::bitcoin.decode(
+    const auto signature = Base58::decode(
         "pL1m11UEDWn3jMkrNMqLeGwNpKzmhQzJiYaCocgPy7vXKA1tnvEjJbuVq9hTeM9kqMAmxhRpwRY157jDgkRdUZw");
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
@@ -314,7 +314,7 @@ TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithSignatures) {
       // keys were not used anywhere up to this point.
         Solana::Proto::SigningInput signingInput;
         ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
-        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        auto key = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
         signingInput.set_private_key(key.data(), key.size());
 
         Solana::Proto::SigningOutput output;
@@ -351,9 +351,9 @@ TEST(SolanaCompiler, SolanaCompileAdvanceNonceAccountWithSignatures) {
         "1ab344d8062ea940000000000000000000000000000000000000000000000000000000000000000000003149e6"
         "70959884ea98bb33bca21c9505f1fc17b1d51ca59555a5d58c93f0f9c90103030102000404000000");
     // Simulate signature, normally obtained from signature server
-    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const Data publicKeyData = Base58::decode(sender);
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
-    const auto signature = Base58::bitcoin.decode(
+    const auto signature = Base58::decode(
         "2gwuvwJ3mdEsjA8Gid6FXYuSwa2AAyFY6Btw8ifwSc2SPsfKBnD859C5mX4tLy6zQFHhKxSMMsW49o3dbJNiXDMo");
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
@@ -379,7 +379,7 @@ TEST(SolanaCompiler, SolanaCompileAdvanceNonceAccountWithSignatures) {
       // keys were not used anywhere up to this point.
         Solana::Proto::SigningInput signingInput;
         ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
-        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        auto key = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
         signingInput.set_private_key(key.data(), key.size());
 
         Solana::Proto::SigningOutput output;
@@ -428,15 +428,15 @@ TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithExternalFeePayerWit
         "0200060acb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a9418c9576a9c00c6bd8fc223f471573f7172488de10aa84dbf63c53a20bae717485a24ffb4070461bb6d7f1c8b758c6b2dc90029d551b5fd4eacd82d65e30220c231dc02f482980f7d9915c1ecf53374091d38c060b49487f9c5d932e077ed763b442cb3912157f13a933d0134282d032b5ffecd01a2dbf1b7790608df002ea7000000000000000000000000000000000000000000000000000000000000000006ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a906a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a000000008c97258f4e2489f1bb3d1029148e0d830b5a1399daff1084048e7bd8dbe9f859ce2a4331bce3670e6ea8bedff5908c6d91f833a31a7fdeac16978c261a1801d502090700020405060708000704030502010a0ca00f00000000000006");
     // Simulate signature, normally obtained from signature server
     // Verify signature (pubkey & hash & signature)
-    const Data feePayerPublicKeyData = Base58::bitcoin.decode(feePayer);
+    const Data feePayerPublicKeyData = Base58::decode(feePayer);
     const PublicKey feePayerPublicKey = PublicKey(feePayerPublicKeyData, TWPublicKeyTypeED25519);
-    const auto signature1 = Base58::bitcoin.decode(
+    const auto signature1 = Base58::decode(
         "7GZGFT2VA4dpJBBwjiMqj1o8yChDvoCsqnQ7xz4GxY513W3efxRqbB8y7g4tH2GEGQRx4vCkKipG1sMaDEen1A2");
     EXPECT_TRUE(feePayerPublicKey.verify(signature1, TW::data(preImageHash)));
 
-    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const Data publicKeyData = Base58::decode(sender);
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
-    const auto signature2 = Base58::bitcoin.decode(
+    const auto signature2 = Base58::decode(
         "3n7RHTCBAtnFVuDn5eRbyQB24h6AqajJi5nGMPrfnUVFUDh2Cb8AoaJ7mVtjnv73V4HaJCzSwCLAj3zcGEaFftWZ");
     EXPECT_TRUE(publicKey.verify(signature2, TW::data(preImageHash)));
 
@@ -457,9 +457,9 @@ TEST(SolanaCompiler, CompileCreateTokenAccountAndTransferWithExternalFeePayerWit
       // keys were not used anywhere up to this point.
         Solana::Proto::SigningInput signingInput;
         ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
-        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        auto key = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
         signingInput.set_private_key(key.data(), key.size());
-        auto feePayerKey = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+        auto feePayerKey = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
         signingInput.set_fee_payer_private_key(feePayerKey.data(), feePayerKey.size());
 
         Solana::Proto::SigningOutput output;
@@ -507,15 +507,15 @@ TEST(SolanaCompiler, CompileTokenTransferWithExternalFeePayerWithSignatures) {
         "02000206cb2af089b56a557737bc1718e0cbf232cf5b02e14ee0aa7c6675233f5f6f9b5794c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a485a24ffb4070461bb6d7f1c8b758c6b2dc90029d551b5fd4eacd82d65e302208e12027e9261a6a276b5ff00ddecfda567ff3ae510a5b47045086ad1d50cab573b442cb3912157f13a933d0134282d032b5ffecd01a2dbf1b7790608df002ea706ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a9ecc01200a43c87ad04ab8b382c0934a54e585e7dcd9cdef6d1cacd52718981c4010504020403010a0ca00f00000000000006");
     // Simulate signature, normally obtained from signature server
     // Verify signature (pubkey & hash & signature)
-    const Data feePayerPublicKeyData = Base58::bitcoin.decode(feePayer);
+    const Data feePayerPublicKeyData = Base58::decode(feePayer);
     const PublicKey feePayerPublicKey = PublicKey(feePayerPublicKeyData, TWPublicKeyTypeED25519);
-    const auto signature1 = Base58::bitcoin.decode(
+    const auto signature1 = Base58::decode(
         "2LbovMDuKoR2LFcV5NbK9bCQZcTG99W6VE1urvdWFWvRhNg9ocDGhayyeBGisoqZgYZtcD3b6LJDTmPx9Gp3T6qd");
     EXPECT_TRUE(feePayerPublicKey.verify(signature1, TW::data(preImageHash)));
 
-    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const Data publicKeyData = Base58::decode(sender);
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
-    const auto signature2 = Base58::bitcoin.decode(
+    const auto signature2 = Base58::decode(
         "2hUHMS9rwbUbXrpC7sK7utL2M4soTyQ7EX3sBYvdee9wraJvYoPH2XjovHDn8eRFY8z5uCx9DCj2Zfjpmzfa81Db");
     EXPECT_TRUE(publicKey.verify(signature2, TW::data(preImageHash)));
 
@@ -536,9 +536,9 @@ TEST(SolanaCompiler, CompileTokenTransferWithExternalFeePayerWithSignatures) {
       // keys were not used anywhere up to this point.
         Solana::Proto::SigningInput signingInput;
         ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
-        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        auto key = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
         signingInput.set_private_key(key.data(), key.size());
-        auto feePayerKey = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+        auto feePayerKey = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
         signingInput.set_fee_payer_private_key(feePayerKey.data(), feePayerKey.size());
 
         Solana::Proto::SigningOutput output;

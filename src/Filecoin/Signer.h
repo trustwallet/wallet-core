@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust.
+// Copyright © 2017-2023 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -36,7 +36,14 @@ class Signer {
     static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
   
   private:
+    /// Get transaction data for secp256k1 to be signed
     static Transaction buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+
+    /// Signs a Proto::SigningInput transaction.
+    static Proto::SigningOutput signSecp256k1(const Proto::SigningInput& input);
+
+    /// Signs a Proto::SigningInput transaction.
+    static Proto::SigningOutput signDelegated(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Filecoin

@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,17 +15,13 @@ TEST(AeternityAddress, FromPublicKey) {
     auto publicKey = PublicKey(parse_hex("ee93a4f66f8d16b819bb9beb9ffccdfcdc1412e87fee6a324c2a99a1e0e67148"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
-
-    const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
-    const auto publicKey2 = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    EXPECT_ANY_THROW(new Address(publicKey2));
+    ASSERT_ANY_THROW(Address(PublicKey(parse_hex("03df9a5e4089f89d45913fb2b856de984c7e8bf1344cc6444cc9705899a48c939d"), TWPublicKeyTypeSECP256k1)));
 }
 
 TEST(AeternityAddress, FromString) {
     auto address = Address("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
     ASSERT_EQ(address.string(), "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
-
-    EXPECT_ANY_THROW(new Address(""));
+    ASSERT_ANY_THROW(Address("invalid"));
 }
 
 } // namespace TW::Aeternity::tests

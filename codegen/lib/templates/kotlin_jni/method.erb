@@ -1,0 +1,8 @@
+<%  method = locals[:method] -%>
+<%= render('kotlin_jni/method_prototype.erb', { method: method }) %> {
+<%  if !method.static -%>
+<%=   render('kotlin_jni/instance_access.erb', { entity: entity }) %>
+<%  end -%>
+<%= render('kotlin_jni/parameter_access.erb', { method: method }) -%>
+<%= render('kotlin_jni/method_forward.erb', { method: method }) -%>
+}

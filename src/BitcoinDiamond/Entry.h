@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,7 @@ namespace TW::BitcoinDiamond {
 class Entry: public CoinEntry {
 public:
     virtual bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-    virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const;
     virtual Data addressToData(TWCoinType coin, const std::string& address) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;

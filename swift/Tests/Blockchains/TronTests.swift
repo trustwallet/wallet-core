@@ -13,6 +13,18 @@ class TronTests: XCTestCase {
         let address = AnyAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3", coin: .tron)!
         XCTAssertEqual(address.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
     }
+    
+    func testSignDirect() {
+        let input = TronSigningInput.with {
+            $0.privateKey = Data(hexString: "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54")!
+            $0.txID = "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"
+        }
+        
+        let output: TronSigningOutput = AnySigner.sign(input: input, coin: .tron)
+        
+        XCTAssertEqual(output.id, Data(hexString: "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"))
+        XCTAssertEqual(output.signature, Data(hexString: "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00"))
+    }
 
     func testSign() {
         let contract = TronTransferContract.with {
@@ -63,5 +75,14 @@ class TronTests: XCTestCase {
         }
         """
         XCTAssertJSONEqual(output.json, expectedJSON)
+    }
+    
+    func testMessageAndVerifySigner() {
+        let privateKey = PrivateKey(data: Data(hexString: "75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a")!)!
+        let msg = "Hello World"
+        let signature = TronMessageSigner.signMessage(privateKey: privateKey, message: msg)
+        XCTAssertEqual(signature, "9bb6d11ec8a6a3fb686a8f55b123e7ec4e9746a26157f6f9e854dd72f5683b450397a7b0a9653865658de8f9243f877539882891bad30c7286c3bf5622b900471b")
+        let pubKey = privateKey.getPublicKey(coinType: .tron)
+        XCTAssertTrue(TronMessageSigner.verifyMessage(pubKey: pubKey, message: msg, signature: signature))
     }
 }

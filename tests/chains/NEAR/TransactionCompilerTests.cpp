@@ -23,16 +23,16 @@
 using namespace TW;
 
 TEST(NEARCompiler, CompileWithSignatures) {
-    auto privateKeyBytes = Base58::bitcoin.decode(
+    auto privateKeyBytes = Base58::decode(
         "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
-    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
     const auto coin = TWCoinTypeNEAR;
     /// Step 1: Prepare transaction input (protobuf)
     auto input = TW::NEAR::Proto::SigningInput();
     input.set_signer_id("test.near");
     input.set_receiver_id("whatever.near");
     input.set_nonce(1);
-    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
     input.set_public_key(publicKey.data(), publicKey.size());
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 #include "Transaction.h"
 #include "TransactionPlan.h"
 #include "InputSelector.h"
+#include "../Result.h"
 #include "../proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -26,7 +27,7 @@ public:
 
     /// Builds a transaction with the selected input UTXOs, and one main output and an optional change output.
     template <typename Transaction>
-    static Transaction build(const TransactionPlan& plan, const SigningInput& input) {
+    static Result<Transaction, Common::Proto::SigningError> build(const TransactionPlan& plan, const SigningInput& input) {
         Transaction tx;
         tx.lockTime = input.lockTime;
 
@@ -35,12 +36,16 @@ public:
             outputToAmount = plan.amount;
         }
         auto outputTo = prepareOutputWithScript(input.toAddress, outputToAmount, input.coinType);
-        if (!outputTo.has_value()) { return {}; }
+        if (!outputTo.has_value()) { 
+            return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_address);
+        }
         tx.outputs.push_back(outputTo.value());
 
         if (plan.change > 0) {
             auto outputChange = prepareOutputWithScript(input.changeAddress, plan.change, input.coinType);
-            if (!outputChange.has_value()) { return {}; }
+            if (!outputChange.has_value()) { 
+                return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_address);
+            }
             tx.outputs.push_back(outputChange.value());
         }
 
@@ -52,17 +57,22 @@ public:
         // Optional OP_RETURN output
         if (plan.outputOpReturn.size() > 0) {
             auto lockingScriptOpReturn = Script::buildOpReturnScript(plan.outputOpReturn);
+            if (lockingScriptOpReturn.bytes.size() == 0) {
+                return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_memo);
+            }
             tx.outputs.emplace_back(0, lockingScriptOpReturn);
         }
 
         // extra outputs
         for (auto& o : input.extraOutputs) {
             auto output = prepareOutputWithScript(o.first, o.second, input.coinType);
-            if (!output.has_value()) { return {}; }
+            if (!output.has_value()) { 
+                return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_address);
+            }
             tx.outputs.push_back(output.value());
         }
-        
-        return tx;
+
+        return Result<Transaction, Common::Proto::SigningError>(tx);
     }
 
     /// Prepares a TransactionOutput with given address and amount, prepares script for it

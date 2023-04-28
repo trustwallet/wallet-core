@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,7 +30,7 @@ TEST(FIOSigner, SignInternals) {
     {
         Data pk2 = parse_hex("80");
         append(pk2, pk.bytes);
-        EXPECT_EQ("5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri", Base58::bitcoin.encodeCheck(pk2));
+        EXPECT_EQ("5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri", Base58::encodeCheck(pk2));
     }
     Data rawData = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c6574000000000000000000000000000000000000000000000000000000000000000000");
     Data hash = Hash::sha256(rawData);

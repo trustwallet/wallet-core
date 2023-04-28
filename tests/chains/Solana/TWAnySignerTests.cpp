@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,7 +26,7 @@ const auto expectedString1 =
     "sW9kYUtRDW1UC2LgHr7npgq5W9TBmHf9hSmRgM9XXucjXLqubNWE7HUMhbKjuBqkirRM";
 
 TEST(TWAnySignerSolana, SignTransfer) {
-    auto privateKey = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
+    auto privateKey = Base58::decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
     auto input = Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
@@ -42,8 +42,26 @@ TEST(TWAnySignerSolana, SignTransfer) {
     ASSERT_EQ(output.unsigned_tx(), "87PYsiS4MUU1UqXrsDoCBmD5FcKsXhwEBD8hc4zbq78yePu7bLENmbnmjmVbsj4VvaxnZhy4bERndPFzjSRH5WpwKwMLSCKvn9eSDmPESNcdkqne2UdMfWiFoq8ZeQBnF9h98dP8GM9kfzWPjvLmhjwuwA1E2k5WCtfii7LKQ34v6AtmFQGZqgdKiNqygP7ZKusHWGT8ZkTZ");
 }
 
+TEST(TWAnySignerSolana, SignV0Transfer) {
+    // Successfully broadcasted: https://explorer.solana.com/tx/4ffBzXxLPYEEdCYpQGETkCTCCsH6iTdmKzwUZXZZgFemdhRpxQwboguFFoKCeGF3SsZPzuwwE7LbRwLgJbsyRqyP?cluster=testnet
+    auto privateKey = parse_hex("833a053c59e78138a3ed090459bc6743cca6a9cbc2809a7bf5dbc7939b8775c8");
+    auto input = Proto::SigningInput();
+
+    auto& message = *input.mutable_transfer_transaction();
+    message.set_recipient("6pEfiZjMycJY4VA2FtAbKgYvRwzXDpxY58Xp4b7FQCz9");
+    message.set_value((uint64_t)5000L);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("HxKwWFTHixCu8aw35J1uxAX6yUhLHkFCdJJdK4y98Gyj");
+    input.set_v0_msg(true);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    ASSERT_EQ(output.encoded(), "6NijVxwQoDjqt6A41HXCK9kXwNDp48uLgvRyE8uz6NY5dEzaEDLzjzuMnc5TGatHZZUXehKrzUGzbg9jPSdn6pVsMc9TXNH6JGe5RJLmHwWey3MC1p8Hs2zhjw5P439P57NToatraDX9ZwvBtK4EzZzRjWbyGdicheTPjeYKCzvPCLxDkTFtPCM9VZGGXSN2Bne92NLDvf6ntNm5pxsPkZGxPe4w9Eq26gkE83hZyrYXKaiDh8TbqbHatSkw");
+}
+
 TEST(TWAnySignerSolana, SignTransferToSelf) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
@@ -63,7 +81,7 @@ TEST(TWAnySignerSolana, SignTransferToSelf) {
 }
 
 TEST(TWAnySignerSolana, SignTransferWithMemoAndReference) {
-    const auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    const auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
@@ -83,7 +101,7 @@ TEST(TWAnySignerSolana, SignTransferWithMemoAndReference) {
 }
 
 TEST(TWAnySignerSolana, SignDelegateStakeTransaction_noStakeAccount) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_delegate_stake_transaction();
@@ -101,7 +119,7 @@ TEST(TWAnySignerSolana, SignDelegateStakeTransaction_noStakeAccount) {
 }
 
 TEST(TWAnySignerSolana, SignDelegateStakeTransaction_withAccount) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_delegate_stake_transaction();
@@ -119,7 +137,7 @@ TEST(TWAnySignerSolana, SignDelegateStakeTransaction_withAccount) {
 }
 
 TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_stake_transaction();
@@ -135,7 +153,7 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignDeactivateAllStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_all_stake_transaction();
@@ -152,7 +170,7 @@ TEST(TWAnySignerSolana, SignDeactivateAllStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_transaction();
@@ -169,7 +187,7 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignWithdrawAllStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_all_transaction();
@@ -190,7 +208,7 @@ TEST(TWAnySignerSolana, SignWithdrawAllStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignDeactivateStakeTransaction_1) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_stake_transaction();
@@ -211,7 +229,7 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransaction_1) {
 }
 
 TEST(TWAnySignerSolana, SignWithdrawStakeTransaction_1) {
-    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_transaction();
@@ -228,7 +246,7 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction_1) {
 }
 
 TEST(TWAnySignerSolana, SignCreateTokenAccount1) {
-    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto input = Solana::Proto::SigningInput();
@@ -290,7 +308,7 @@ TEST(TWAnySignerSolana, SignCreateTokenAccountForOther_3E6UFV) {
 }
 
 TEST(TWAnySignerSolana, SignTokenTransfer1_3vZ67C) {
-    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto input = Solana::Proto::SigningInput();
@@ -313,7 +331,7 @@ TEST(TWAnySignerSolana, SignTokenTransfer1_3vZ67C) {
 }
 
 TEST(TWAnySignerSolana, SignTokenTransfer2_2pMvzp) {
-    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
     auto input = Solana::Proto::SigningInput();
@@ -336,7 +354,7 @@ TEST(TWAnySignerSolana, SignTokenTransfer2_2pMvzp) {
 }
 
 TEST(TWAnySignerSolana, SignCreateAndTransferToken_449VaY) {
-    auto privateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    auto privateKeyData = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
 
     auto input = Solana::Proto::SigningInput();
@@ -360,7 +378,7 @@ TEST(TWAnySignerSolana, SignCreateAndTransferToken_449VaY) {
 }
 
 TEST(TWAnySignerSolana, SignCreateAndTransferTokenWithMemoReferences) {
-    const auto privateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    const auto privateKeyData = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
     EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
 
     auto input = Solana::Proto::SigningInput();
@@ -386,7 +404,7 @@ TEST(TWAnySignerSolana, SignCreateAndTransferTokenWithMemoReferences) {
 
 TEST(TWAnySignerSolana, SignJSON) {
     auto json = STRING(R"({"recentBlockhash":"11111111111111111111111111111111","transferTransaction":{"recipient":"EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd","value":"42"}})");
-    Data keyData = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
+    Data keyData = Base58::decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
     EXPECT_EQ(hex(keyData), "8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63");
     auto key = WRAPD(TWDataCreateWithBytes(keyData.data(), keyData.size()));
 
@@ -457,7 +475,7 @@ TEST(TWAnySignerSolana, SignWithdrawNonceAccount) {
 }
 
 TEST(TWAnySignerSolana, SignCreateTokenAccountAndTransfer) {
-    const auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    const auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     const auto privateKey = PrivateKey(privateKeyData);
     EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
@@ -494,7 +512,7 @@ TEST(TWAnySignerSolana, SignCreateTokenAccountAndTransfer) {
 }
 
 TEST(TWAnySignerSolana, SignAdvanceNonceAccount) {
-    const auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    const auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     const auto privateKey = PrivateKey(privateKeyData);
     EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
 
@@ -517,9 +535,9 @@ TEST(TWAnySignerSolana, SignAdvanceNonceAccount) {
 }
 
 TEST(TWAnySignerSolana, SignTokenTransferWithExternalFeePayer) {
-    const auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    const auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
-    const auto feePayerPrivateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    const auto feePayerPrivateKeyData = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
     ASSERT_EQ(Address(PrivateKey(feePayerPrivateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
 
     auto input = Solana::Proto::SigningInput();
@@ -544,10 +562,10 @@ TEST(TWAnySignerSolana, SignTokenTransferWithExternalFeePayer) {
 }
 
 TEST(TWAnySignerSolana, SignCreateTokenAccountAndTransferWithExternalFeePayer) {
-    const auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    const auto privateKeyData = Base58::decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     const auto privateKey = PrivateKey(privateKeyData);
     EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
-    const auto feePayerPrivateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    const auto feePayerPrivateKeyData = Base58::decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
     EXPECT_EQ(Address(PrivateKey(feePayerPrivateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
 
     auto input = TW::Solana::Proto::SigningInput();

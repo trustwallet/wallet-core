@@ -1,0 +1,44 @@
+<%= render('kotlin/package.erb') %>
+
+<%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
+actual enum class <%= entity.name %>(
+    @get:JvmName("value")
+    val value: UInt,
+<%  if has_string -%>
+    actual val stringValue: String,
+<%  end -%>
+) {
+<%# Cases -%>
+<%  entity.cases.each_with_index do |c, i| -%>
+<%  if has_string -%>
+    <%= c.name %>(<%= c.value %>u, <%= c.string %>),
+<%  else -%>
+    <%= c.name %>(<%= c.value %>u),
+<%  end -%>
+<%  end -%>
+    ;
+<%# Property declarations -%>
+<%- entity.properties.each do |property| -%>
+
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        @JvmName("<%= KotlinHelper.format_name(property.name) %>")
+        external get
+<%- end -%>
+<%# Method declarations -%>
+<%- entity.methods.each do |method| -%>
+<%-   next if method.name.start_with?('Delete') -%>
+
+    @JvmName("<%= KotlinHelper.format_name(method.name) %>")
+    actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%- end -%>
+<%# Value -%>
+<%  if entity.cases.any? { |e| !e.value.nil? } -%>
+
+    companion object {
+        @JvmStatic
+        @JvmName("createFromValue")
+        fun fromValue(value: UInt): <%= entity.name %>? =
+            values().firstOrNull { it.value == value }
+    }
+<%  end -%>
+}

@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,6 +7,8 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Program.h"
+#include "Solana/Encoding.h"
+#include "Solana/VersionedTransaction.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -14,13 +16,12 @@
 
 namespace TW::Solana {
 
-void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction) {
+void Signer::sign(const std::vector<PrivateKey>& privateKeys, VersionedTransaction& transaction) {
     for (auto privateKey : privateKeys) {
         auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
         auto index = transaction.getAccountIndex(address);
         auto message = transaction.messageData();
-        auto signature = Signature(privateKey.sign(message, TWCurveED25519));
-        transaction.signatures[index] = signature;
+        transaction.signatures[index] = privateKey.sign(message, TWCurveED25519);
     }
 }
 
@@ -37,9 +38,9 @@ convertReferences(const google::protobuf::RepeatedPtrField<std::string>& referen
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto blockhash = Solana::Hash(input.recent_blockhash());
+    auto blockhash = Base58::decode(input.recent_blockhash());
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    Message message;
+    LegacyMessage message;
     std::vector<PrivateKey> signerKeys;
 
     if (Address::isValid(input.fee_payer())) {
@@ -50,7 +51,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     switch (input.transaction_type_case()) {
     case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
         auto protoMessage = input.transfer_transaction();
-        message = Message::createTransfer(
+        message = LegacyMessage::createTransfer(
             /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
             /* to */ Address(protoMessage.recipient()),
             /* value */ protoMessage.value(),
@@ -73,7 +74,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             // stake address specified, use it
             stakeAddress = Address(protoMessage.stake_account());
         }
-        message = Message::createStake(
+        message = LegacyMessage::createStake(
             /* signer */ userAddress,
             /* stakeAddress */ stakeAddress.value(),
             /* voteAddress */ validatorAddress,
@@ -86,7 +87,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto protoMessage = input.deactivate_stake_transaction();
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto stakeAddress = Address(protoMessage.stake_account());
-        message = Message::createStakeDeactivate(
+        message = LegacyMessage::createStakeDeactivate(
             /* signer */ userAddress,
             /* stakeAddress */ stakeAddress,
             /* recent_blockhash */ blockhash);
@@ -100,7 +101,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
             addresses.emplace_back(Address(protoMessage.stake_accounts(i)));
         }
-        message = Message::createStakeDeactivateAll(userAddress, addresses, blockhash);
+        message = LegacyMessage::createStakeDeactivateAll(userAddress, addresses, blockhash);
         signerKeys.push_back(key);
     } break;
 
@@ -108,7 +109,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto protoMessage = input.withdraw_transaction();
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto stakeAddress = Address(protoMessage.stake_account());
-        message = Message::createStakeWithdraw(
+        message = LegacyMessage::createStakeWithdraw(
             /* signer */ userAddress,
             /* stakeAddress */ stakeAddress,
             /* value */ protoMessage.value(),
@@ -125,7 +126,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 Address(protoMessage.stake_accounts(i).stake_account()),
                 protoMessage.stake_accounts(i).value()));
         }
-        message = Message::createStakeWithdrawAll(userAddress, stakes, blockhash);
+        message = LegacyMessage::createStakeWithdrawAll(userAddress, stakes, blockhash);
         signerKeys.push_back(key);
     } break;
 
@@ -135,7 +136,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto mainAddress = Address(protoMessage.main_address());
         auto tokenMintAddress = Address(protoMessage.token_mint_address());
         auto tokenAddress = Address(protoMessage.token_address());
-        message = Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
+        message = LegacyMessage::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
                                                     tokenAddress, blockhash, input.nonce_account());
         signerKeys.push_back(key);
     } break;
@@ -149,7 +150,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto amount = protoMessage.amount();
         auto decimals = static_cast<uint8_t>(protoMessage.decimals());
         const auto memo = protoMessage.memo();
-        message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress,
+        message = LegacyMessage::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress,
                                                recipientTokenAddress, amount, decimals, blockhash,
                                                memo, convertReferences(protoMessage.references()),
                                                input.nonce_account(), input.fee_payer());
@@ -166,7 +167,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto amount = protoMessage.amount();
         auto decimals = static_cast<uint8_t>(protoMessage.decimals());
         const auto memo = protoMessage.memo();
-        message = Message::createTokenCreateAndTransfer(
+        message = LegacyMessage::createTokenCreateAndTransfer(
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, blockhash, memo,
             convertReferences(protoMessage.references()), input.nonce_account(), input.fee_payer());
@@ -178,7 +179,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto nonceAccountKey =
             PrivateKey(Data(createNonceAccountTransaction.nonce_account_private_key().begin(),
                             createNonceAccountTransaction.nonce_account_private_key().end()));
-        message = Message::createNonceAccount(
+        message = LegacyMessage::createNonceAccount(
             /* owner */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
             /* new nonce_account */ Address(nonceAccountKey.getPublicKey(TWPublicKeyTypeED25519)),
             /* rent */ createNonceAccountTransaction.rent(),
@@ -190,7 +191,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
         auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
-        message = Message::createWithdrawNonceAccount(
+        message = LegacyMessage::createWithdrawNonceAccount(
             /* owner */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
             /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
             /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
@@ -203,14 +204,18 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto advanceNonceAccountTransaction = input.advance_nonce_account();
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto nonceAccountAddress = Address(advanceNonceAccountTransaction.nonce_account());
-        message = Message::advanceNonceAccount(userAddress, nonceAccountAddress, blockhash);
+        message = LegacyMessage::advanceNonceAccount(userAddress, nonceAccountAddress, blockhash);
         signerKeys.push_back(key);
     } break;
 
     default:
         assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
-    auto transaction = Transaction(message);
+    auto msg = VersionedMessage(message);
+    if (input.v0_msg()) {
+        msg = VersionedMessage(V0Message{.msg = message});
+    }
+    auto transaction = VersionedTransaction(msg);
 
     sign(signerKeys, transaction);
 
@@ -218,31 +223,29 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto encoded = transaction.serialize();
     protoOutput.set_encoded(encoded);
 
-    auto unsignedTx = Base58::bitcoin.encode(transaction.messageData());
+    auto unsignedTx = Base58::encode(transaction.messageData());
     protoOutput.set_unsigned_tx(unsignedTx.data(), unsignedTx.size());
 
     return protoOutput;
 }
 
 void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
-                                 Transaction& transaction, Solana::Hash& recentBlockhash) {
-    transaction.message.recentBlockhash = recentBlockhash;
+                                 VersionedTransaction& transaction, Data& recentBlockhash) {
+    updateRecentHash(transaction.message, recentBlockhash);
     Signer::sign(privateKeys, transaction);
 }
 
 // This method does not confirm that PrivateKey order matches that encoded in the messageData
 // That order must be correct for the Transaction to succeed on Solana
 Data Signer::signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData) {
-    std::vector<Signature> signatures;
-    for (auto privateKey : privateKeys) {
-        auto signature = Signature(privateKey.sign(messageData, TWCurveED25519));
-        signatures.push_back(signature);
+    std::vector<Data> signatures;
+    for (auto &&privateKey : privateKeys) {
+        signatures.emplace_back(privateKey.sign(messageData, TWCurveED25519));
     }
     Data buffer;
-    append(buffer, shortVecLength<Signature>(signatures));
-    for (auto signature : signatures) {
-        Data signature_vec(signature.bytes.begin(), signature.bytes.end());
-        append(buffer, signature_vec);
+    append(buffer, shortVecLength<Data>(signatures));
+    for (auto &&signature : signatures) {
+        append(buffer, signature);
     }
     append(buffer, messageData);
 
@@ -258,12 +261,12 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
 
 TW::Data Signer::preImageHash() const {
     TW::Data preImageHash;
-    auto recentBlockhash = Hash(input.recent_blockhash());
+    auto recentBlockhash = Base58::decode(input.recent_blockhash());
     switch (input.transaction_type_case()) {
     case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
         auto transferTransaction = input.transfer_transaction();
         auto from = input.sender();
-        auto message = Message::createTransfer(
+        auto message = LegacyMessage::createTransfer(
             /* from */ Address(from),
             /* to */ Address(transferTransaction.recipient()),
             /* value */ transferTransaction.value(),
@@ -278,7 +281,7 @@ TW::Data Signer::preImageHash() const {
         auto createNonceAccountTransaction = input.create_nonce_account();
         auto from = input.sender();
         auto nonceAccount = createNonceAccountTransaction.nonce_account();
-        auto message = Message::createNonceAccount(
+        auto message = LegacyMessage::createNonceAccount(
             /* owner */ Address(from),
             /* new nonce_account */ Address(createNonceAccountTransaction.nonce_account()),
             /* rent */ createNonceAccountTransaction.rent(),
@@ -290,7 +293,7 @@ TW::Data Signer::preImageHash() const {
     case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
         auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
         auto owner = input.sender();
-        auto message = Message::createWithdrawNonceAccount(
+        auto message = LegacyMessage::createWithdrawNonceAccount(
             /* owner */ Address(owner),
             /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
             /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
@@ -307,7 +310,7 @@ TW::Data Signer::preImageHash() const {
         auto tokenMintAddress = Address(createTokenAccontTransaction.token_mint_address());
         auto tokenAddress = Address(createTokenAccontTransaction.token_address());
         auto message =
-            Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
+            LegacyMessage::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
                                               tokenAddress, recentBlockhash, input.nonce_account());
         auto transaction = Transaction(message);
         preImageHash = transaction.messageData();
@@ -321,7 +324,7 @@ TW::Data Signer::preImageHash() const {
         auto amount = tokenTransferTransaction.amount();
         auto decimals = static_cast<uint8_t>(tokenTransferTransaction.decimals());
         const auto memo = tokenTransferTransaction.memo();
-        auto message = Message::createTokenTransfer(
+        auto message = LegacyMessage::createTokenTransfer(
             userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount,
             decimals, recentBlockhash, memo,
             convertReferences(tokenTransferTransaction.references()), input.nonce_account(), input.fee_payer());
@@ -340,7 +343,7 @@ TW::Data Signer::preImageHash() const {
         auto amount = createAndTransferTokenTransaction.amount();
         auto decimals = static_cast<uint8_t>(createAndTransferTokenTransaction.decimals());
         const auto memo = createAndTransferTokenTransaction.memo();
-        auto message = Message::createTokenCreateAndTransfer(
+        auto message = LegacyMessage::createTokenCreateAndTransfer(
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, recentBlockhash, memo,
             convertReferences(createAndTransferTokenTransaction.references()),
@@ -353,7 +356,7 @@ TW::Data Signer::preImageHash() const {
         auto userAddress = Address(input.sender());
         auto nonceAccountAddress = Address(advanceNonceAccountTransaction.nonce_account());
         auto message =
-            Message::advanceNonceAccount(userAddress, nonceAccountAddress, recentBlockhash);
+            LegacyMessage::advanceNonceAccount(userAddress, nonceAccountAddress, recentBlockhash);
         auto transaction = Transaction(message);
         preImageHash = transaction.messageData();
     } break;
@@ -400,15 +403,15 @@ std::vector<std::string> Signer::signers() const {
 Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
                                      const std::vector<PublicKey>& publicKeys) const {
     auto output = Proto::SigningOutput();
-    Message message;
-    auto recentBlockhash = Hash(input.recent_blockhash());
+    LegacyMessage message;
+    auto recentBlockhash = Base58::decode(input.recent_blockhash());
     switch (input.transaction_type_case()) {
     case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
         if (signatures.size() < 1) {
             throw std::invalid_argument("too few signatures");
         }
         auto transferTransaction = input.transfer_transaction();
-        message = Message::createTransfer(
+        message = LegacyMessage::createTransfer(
             /* from */ Address(input.sender()),
             /* to */ Address(transferTransaction.recipient()),
             /* value */ transferTransaction.value(),
@@ -424,7 +427,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         auto createNonceAccountTransaction = input.create_nonce_account();
         auto from = input.sender();
         auto nonceAccount = createNonceAccountTransaction.nonce_account();
-        message = Message::createNonceAccount(
+        message = LegacyMessage::createNonceAccount(
             /* owner */ Address(from),
             /* nonce_account */ Address(createNonceAccountTransaction.nonce_account()),
             /* rent */ createNonceAccountTransaction.rent(),
@@ -436,7 +439,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
             throw std::invalid_argument("too few signatures");
         }
         auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
-        message = Message::createWithdrawNonceAccount(
+        message = LegacyMessage::createWithdrawNonceAccount(
             /* owner */ Address(input.sender()),
             /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
             /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
@@ -454,7 +457,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         auto tokenMintAddress = Address(createTokenAccontTransaction.token_mint_address());
         auto tokenAddress = Address(createTokenAccontTransaction.token_address());
         message =
-            Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
+            LegacyMessage::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
                                               tokenAddress, recentBlockhash, input.nonce_account());
     } break;
     case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction: {
@@ -469,7 +472,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         auto amount = tokenTransferTransaction.amount();
         auto decimals = static_cast<uint8_t>(tokenTransferTransaction.decimals());
         const auto memo = tokenTransferTransaction.memo();
-        message = Message::createTokenTransfer(
+        message = LegacyMessage::createTokenTransfer(
             userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount,
             decimals, recentBlockhash, memo,
             convertReferences(tokenTransferTransaction.references()), input.nonce_account(), input.fee_payer());
@@ -486,7 +489,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         auto amount = createAndTransferTokenTransaction.amount();
         auto decimals = static_cast<uint8_t>(createAndTransferTokenTransaction.decimals());
         const auto memo = createAndTransferTokenTransaction.memo();
-        message = Message::createTokenCreateAndTransfer(
+        message = LegacyMessage::createTokenCreateAndTransfer(
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, recentBlockhash, memo,
             convertReferences(createAndTransferTokenTransaction.references()),
@@ -499,7 +502,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         auto advanceNonceAccountTransaction = input.advance_nonce_account();
         auto userAddress = Address(input.sender());
         auto nonceAccountAddress = Address(advanceNonceAccountTransaction.nonce_account());
-        message = Message::advanceNonceAccount(userAddress, nonceAccountAddress, recentBlockhash);
+        message = LegacyMessage::advanceNonceAccount(userAddress, nonceAccountAddress, recentBlockhash);
     } break;
     default:
         if (input.transaction_type_case() ==
@@ -518,7 +521,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
             throw std::invalid_argument("invalid signature at " + std::to_string(i));
         }
         auto addressIdx = transaction.getAccountIndex(Address(publicKeys[i]));
-        transaction.signatures[addressIdx] = Signature(signatures[i]);
+        transaction.signatures[addressIdx] = signatures[i];
     }
     // construst the output
     auto encoded = transaction.serialize();

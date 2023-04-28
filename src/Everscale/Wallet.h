@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,14 +9,17 @@
 #include <boost/integer.hpp>
 #include <utility>
 
-#include "../PublicKey.h"
+#include "PublicKey.h"
 
 #include "Address.h"
-#include "Cell.h"
-#include "CellBuilder.h"
-#include "CellSlice.h"
+#include "CommonTON/Cell.h"
+#include "CommonTON/CellBuilder.h"
+#include "CommonTON/CellSlice.h"
+#include "CommonTON/Messages.h"
 
 const uint32_t WALLET_ID = 0x4BA92D8A;
+
+using namespace TW::CommonTON;
 
 namespace TW::Everscale {
 
@@ -49,14 +52,6 @@ public:
     static const Data code;
 };
 
-class StateInit {
-public:
-    Cell::Ref code;
-    Cell::Ref data;
-
-    [[nodiscard]] CellBuilder writeTo() const;
-};
-
 class InitData {
     uint32_t _seqno;
     uint32_t _walletId;
@@ -70,7 +65,7 @@ public:
 
     [[nodiscard]] CellBuilder writeTo() const;
     [[nodiscard]] StateInit makeStateInit() const;
-    [[nodiscard]] Address computeAddr(int8_t workchainId) const;
+    [[nodiscard]] AddressData computeAddr(int8_t workchainId) const;
     [[nodiscard]] CellBuilder makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const;
 };
 

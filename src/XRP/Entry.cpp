@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,7 +10,6 @@
 #include "XAddress.h"
 #include "Signer.h"
 #include "../proto/TransactionCompiler.pb.h"
-#include <TrezorCrypto/ecdsa.h>
 
 namespace TW::Ripple {
 
@@ -20,7 +19,7 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string&
     return Address::isValid(address) || XAddress::isValid(address);
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     return Address(publicKey).string();
 }
 
@@ -57,14 +56,8 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
                 return;
             }
 
-            // Ripple signature is special, so we have to convert to Der format
-            std::array<uint8_t, 72> sigBytes;
-            size_t size = ecdsa_sig_to_der(signatures[0].data(), sigBytes.data());
-            auto sig = Data{};
-            std::copy(sigBytes.begin(), sigBytes.begin() + size, std::back_inserter(sig));
-
             auto signer = Signer(input);
-            output = signer.compile(sig, publicKeys[0]);
+            output = signer.compile(signatures[0], publicKeys[0]);
         });
 }
 } // namespace TW::Ripple

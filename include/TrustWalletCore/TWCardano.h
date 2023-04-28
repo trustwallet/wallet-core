@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,11 +18,22 @@ struct TWCardano;
 
 /// Calculates the minimum ADA amount needed for a UTXO.
 ///
+/// \deprecated consider using `TWCardanoOutputMinAdaAmount` instead.
 /// \see reference https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
 /// \param tokenBundle serialized data of TW.Cardano.Proto.TokenBundle.
 /// \return the minimum ADA amount.
 TW_EXPORT_STATIC_METHOD
 uint64_t TWCardanoMinAdaAmount(TWData *_Nonnull tokenBundle) TW_VISIBILITY_DEFAULT;
+
+/// Calculates the minimum ADA amount needed for an output.
+///
+/// \see reference https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+/// \param toAddress valid destination address, as string.
+/// \param tokenBundle serialized data of TW.Cardano.Proto.TokenBundle.
+/// \param coinsPerUtxoByte cost per one byte of a serialized UTXO.
+/// \return the minimum ADA amount.
+TW_EXPORT_STATIC_METHOD
+uint64_t TWCardanoOutputMinAdaAmount(TWString *_Nonnull toAddress, TWData *_Nonnull tokenBundle, uint64_t coinsPerUtxoByte) TW_VISIBILITY_DEFAULT;
 
 /// Return the staking address associated to (contained in) this address. Must be a Base address.
 /// Empty string is returned on error. Result must be freed.

@@ -1,0 +1,10 @@
+[package]
+name = "tw_move_parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bcs = "0.1.4"
+hex = "0.4.3"
+move-core-types = { git = "https://github.com/move-language/move", rev = "f7137eabc2046f76fdad3ded2c51e03a3b1fbd01", features = ["address32"] }
+tw_memory = { path = "../tw_memory" }

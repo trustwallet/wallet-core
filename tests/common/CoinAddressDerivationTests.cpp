@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -58,6 +58,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeMoonriver:
         case TWCoinTypeOptimism:
         case TWCoinTypeZksync:
+        case TWCoinTypePolygonzkEVM:
         case TWCoinTypeOKXChain:
         case TWCoinTypePOANetwork:
         case TWCoinTypePolygon:
@@ -65,11 +66,12 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeSmartChain:
         case TWCoinTypeSmartChainLegacy:
         case TWCoinTypeTheta:
-        case TWCoinTypeThunderToken:
+        case TWCoinTypeThunderCore:
         case TWCoinTypeTomoChain:
         case TWCoinTypeVeChain:
         case TWCoinTypeWanchain:
         case TWCoinTypeXDai:
+        case TWCoinTypeIoTeXEVM:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 
@@ -155,13 +157,17 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "ecash:qz7eyzytkl5z6cg6nw20hd62pyyp22mcfuywezks2y");
             break;
         case TWCoinTypeEOS:
+        case TWCoinTypeWAX:
             EXPECT_EQ(address, "EOS5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
             break;
-        case TWCoinTypeElrond:
+        case TWCoinTypeMultiversX:
             EXPECT_EQ(address, "erd1a6f6fan035ttsxdmn04ellxdlnwpgyhg0lhx5vjv92v6rc8xw9yq83344f");
             break;
         case TWCoinTypeEverscale:
             EXPECT_EQ(address, "0:ef64d51f95ef17973b737277cfecbd2a8d551141be2f58f5fb362575fc3eb5b0");
+            break;
+        case TWCoinTypeTON:
+            EXPECT_EQ(address, "EQAoYT8nMLfeNh6h0uIoK_wLm9JkvxiGxJDr6GRXJGu2ZhpY");
             break;
         case TWCoinTypeFIO:
             EXPECT_EQ(address, "FIO5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
@@ -283,8 +289,74 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeNebl:
             EXPECT_EQ(address, "NdCKqb8BQoavA5PZ5b4APxKmSpmBA6yMSi");
             break;
+        case TWCoinTypeSui:
+            EXPECT_EQ(address, "0x870deb25d5c0a4d7250d52d5cd58dacca2d51eb2a120a979b13384cd52e21e1b");
+            break;
         case TWCoinTypeHedera:
             EXPECT_EQ(address, "0.0.302a300506032b6570032100ee93a4f66f8d16b819bb9beb9ffccdfcdc1412e87fee6a324c2a99a1e0e67148");
+            break;
+        case TWCoinTypeSecret:
+            EXPECT_EQ(address, "secret1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0m7t23a");
+            break;
+        case TWCoinTypeNativeInjective:
+            EXPECT_EQ(address, "inj1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0knl55v");
+            break;
+        case TWCoinTypeAgoric:
+            EXPECT_EQ(address, "agoric1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0txauuh");
+            break;
+        case TWCoinTypeStargaze:
+            EXPECT_EQ(address, "stars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0d8g78s");
+            break;
+        case TWCoinTypeJuno:
+            EXPECT_EQ(address, "juno1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z00fucta");
+            break;
+        case TWCoinTypeStride:
+            EXPECT_EQ(address, "stride1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z06sllcd");
+            break;
+        case TWCoinTypeAxelar:
+            EXPECT_EQ(address, "axelar1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0a4ft8q");
+            break;
+        case TWCoinTypeCrescent:
+            EXPECT_EQ(address, "cre1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0anvxev");
+            break;
+        case TWCoinTypeKujira:
+            EXPECT_EQ(address, "kujira1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0gnampt");
+            break;
+        case TWCoinTypeNativeCanto:
+            EXPECT_EQ(address, "canto1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0wvfqju");
+            break;
+        case TWCoinTypeComdex:
+            EXPECT_EQ(address, "comdex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z075ap4k");
+            break;
+        case TWCoinTypeNeutron:
+            EXPECT_EQ(address, "neutron1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0aykpkx");
+            break;
+        case TWCoinTypeSommelier:
+            EXPECT_EQ(address, "somm1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z048s0at");
+            break;
+        case TWCoinTypeFetchAI:
+            EXPECT_EQ(address, "fetch1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z02xk8wk");
+            break;
+        case TWCoinTypeMars:
+            EXPECT_EQ(address, "mars1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0yxx6e6");
+            break;
+        case TWCoinTypeUmee:
+            EXPECT_EQ(address, "umee1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tdzugn");
+            break;
+        case TWCoinTypeCoreum:
+            EXPECT_EQ(address, "core1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0248ct6");
+            break;
+        case TWCoinTypeQuasar:
+            EXPECT_EQ(address, "quasar1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0hc97py");
+            break;
+        case TWCoinTypePersistence:
+            EXPECT_EQ(address, "persistence1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0hhesz9");
+            break;
+        case TWCoinTypeAkash:
+            EXPECT_EQ(address, "akash1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z05qjy4m");
+            break;
+        case TWCoinTypeNoble:
+            EXPECT_EQ(address, "noble1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z03c2t50");
             break;
             // no default branch here, intentionally, to better notice any missing coins
         }

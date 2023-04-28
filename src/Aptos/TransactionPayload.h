@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,6 +21,7 @@ public:
     [[nodiscard]] const std::vector<TypeTag>& tyArgs() const noexcept { return mTyArgs; }
     [[nodiscard]] const std::vector<Data>& args() const noexcept { return mArgs; }
     [[nodiscard]] nlohmann::json json() const noexcept;
+    static EntryFunction from_json(const nlohmann::json& json) noexcept;
 
 private:
     ModuleId mModule;

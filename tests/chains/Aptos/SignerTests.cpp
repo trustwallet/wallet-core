@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -243,6 +243,311 @@ TEST(AptosSigner, CreateAccount) {
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
     assertJSONEqual(expectedJson, parsedJson);
 }
+
+TEST(AptosSigner, BlindSignFromJson) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x7efd69e7f9462774b932ce500ab51c0d0dcc004cf272e09f8ffd5804c2a84e33?network=mainnet
+    auto payloadJson = R"(
+    {
+       "function": "0x16fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c::AnimeSwapPoolV1::swap_exact_coins_for_coins_3_pair_entry",
+       "type_arguments": [
+                "0x1::aptos_coin::AptosCoin",
+                "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
+            ],
+       "arguments": [
+                "1000000",
+                "49329"
+            ],
+       "type": "entry_function_payload"
+    })"_json;
+    Proto::SigningInput input;
+    input.set_sequence_number(42);
+    input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_gas_unit_price(100);
+    input.set_max_gas_amount(100011);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_any_encoded(payloadJson.dump());
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_chain_id(1);
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a000000000000000216fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c0f416e696d6553776170506f6f6c563127737761705f65786163745f636f696e735f666f725f636f696e735f335f706169725f656e747279040700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e0007881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f404636f696e044d4f4a4f0007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa05617373657404555344540007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa056173736574045553444300020840420f000000000008b1c0000000000000ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "42cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b");
+    ASSERT_EQ(hex(result.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f302a000000000000000216fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c0f416e696d6553776170506f6f6c563127737761705f65786163745f636f696e735f666f725f636f696e735f335f706169725f656e747279040700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e0007881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f404636f696e044d4f4a4f0007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa05617373657404555344540007f22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa056173736574045553444300020840420f000000000008b1c0000000000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c4042cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b");
+    nlohmann::json expectedJson = R"(
+{
+        "expiration_timestamp_secs": "3664390082",
+        "gas_unit_price": "100",
+        "max_gas_amount": "100011",
+        "payload": {
+            "function": "0x16fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c::AnimeSwapPoolV1::swap_exact_coins_for_coins_3_pair_entry",
+            "type_arguments": [
+                "0x1::aptos_coin::AptosCoin",
+                "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT",
+                "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
+            ],
+            "arguments": [
+                "1000000",
+                "49329"
+            ],
+            "type": "entry_function_payload"
+        },
+        "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+        "sequence_number": "42",
+        "signature": {
+            "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+            "signature": "0x42cd67406e85afd1e948e7ad7f5f484fb4c60d82b267c6b6b28a92301e228b983206d2b87cd5487cf9acfb0effbd183ab90123570eb2e047cb152d337152210b",
+            "type": "ed25519_signature"
+        }
+}
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, TortugaLiquidStakingStake) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/userTxnOverview?network=mainnet
+    Proto::SigningInput input;
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_sequence_number(19);
+    auto& ls = *input.mutable_liquid_staking_message();
+    ls.set_smart_contract_address("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f");
+    auto& ls_stake = *ls.mutable_stake();
+    ls_stake.set_amount(100000000);
+    input.set_max_gas_amount(5554);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(1670240203);
+    input.set_chain_id(1);
+    auto privateKey = PrivateKey(parse_hex("786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+
+    EXPECT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1300000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000b2150000000000006400000000000000cbd78d630000000001");
+    EXPECT_EQ(hex(result.authenticator().signature()), "22d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d");
+    EXPECT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1300000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000b2150000000000006400000000000000cbd78d630000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc44022d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d");
+    nlohmann::json expectedJson = R"(
+                {
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "19",
+                    "max_gas_amount": "5554",
+                    "gas_unit_price": "100",
+                    "expiration_timestamp_secs": "1670240203",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+                        "type_arguments": [],
+                        "arguments": [
+                            "100000000"
+                        ],
+                    "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0x22d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, TortugaLiquidStakingUnstake) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968?network=mainnet
+    Proto::SigningInput input;
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_sequence_number(20);
+    auto& ls = *input.mutable_liquid_staking_message();
+    ls.set_smart_contract_address("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f");
+    auto& ls_unstake = *ls.mutable_unstake();
+    ls_unstake.set_amount(99178100);
+    input.set_max_gas_amount(2371);
+    input.set_gas_unit_price(120);
+    input.set_expiration_timestamp_secs(1670304949);
+    input.set_chain_id(1);
+    auto privateKey = PrivateKey(parse_hex("786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+
+    EXPECT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001");
+    EXPECT_EQ(hex(result.authenticator().signature()), "6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c");
+    EXPECT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4406994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c");
+    nlohmann::json expectedJson = R"(
+                {
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "20",
+                    "max_gas_amount": "2371",
+                    "gas_unit_price": "120",
+                    "expiration_timestamp_secs": "1670304949",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+                        "type_arguments": [],
+                        "arguments": [
+                            "99178100"
+                        ],
+                    "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0x6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, TortugaLiquidStakingClaim) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x9fc874de7a7d3e813d9a1658d896023de270a0096a5e258c196005656ace7d54?network=mainnet
+    Proto::SigningInput input;
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_sequence_number(28);
+    auto& ls = *input.mutable_liquid_staking_message();
+    ls.set_smart_contract_address("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f");
+    auto& ls_claim = *ls.mutable_claim();
+    ls_claim.set_idx(0);
+    input.set_max_gas_amount(10);
+    input.set_gas_unit_price(148);
+    input.set_expiration_timestamp_secs(1682066783);
+    input.set_chain_id(1);
+    auto privateKey = PrivateKey(parse_hex("786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+
+    EXPECT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001");
+    EXPECT_EQ(hex(result.authenticator().signature()), "c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03");
+    EXPECT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc440c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03");
+    nlohmann::json expectedJson = R"(
+                {
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "28",
+                    "max_gas_amount": "10",
+                    "gas_unit_price": "148",
+                    "expiration_timestamp_secs": "1682066783",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::claim",
+                        "type_arguments": [],
+                        "arguments": [
+                            "0"
+                        ],
+                        "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0xc936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, BlindSignStaking) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/payload
+    auto payloadJson = R"(
+    {
+        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+        "type_arguments": [],
+        "arguments": [
+        "100000000"
+        ],
+        "type": "entry_function_payload"
+    })"_json;
+
+    Proto::SigningInput input;
+    input.set_sequence_number(43);
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_gas_unit_price(100);
+    input.set_max_gas_amount(100011);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_any_encoded(payloadJson.dump());
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_chain_id(1);
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b");
+    ASSERT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b");
+    nlohmann::json expectedJson = R"(
+{
+        "expiration_timestamp_secs": "3664390082",
+        "gas_unit_price": "100",
+        "max_gas_amount": "100011",
+        "payload": {
+            "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+            "type_arguments": [],
+            "arguments": [
+            "100000000"
+            ],
+            "type": "entry_function_payload"
+        },
+        "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+        "sequence_number": "43",
+        "signature": {
+            "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+            "signature": "0xa41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b",
+            "type": "ed25519_signature"
+        }
+}
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, BlindSignUnStaking) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968/payload
+    auto payloadJson = R"(
+    {
+        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+        "type_arguments": [],
+        "arguments": [
+        "99178100"
+        ],
+        "type": "entry_function_payload"
+    })"_json;
+    Proto::SigningInput input;
+    input.set_sequence_number(44);
+    input.set_sender("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc");
+    input.set_gas_unit_price(100);
+    input.set_max_gas_amount(100011);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_any_encoded(payloadJson.dump());
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_chain_id(1);
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a");
+    ASSERT_EQ(hex(result.encoded()), "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a");
+    nlohmann::json expectedJson = R"(
+{
+        "expiration_timestamp_secs": "3664390082",
+        "gas_unit_price": "100",
+        "max_gas_amount": "100011",
+        "payload": {
+            "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+            "type_arguments": [],
+            "arguments": [
+            "99178100"
+            ],
+            "type": "entry_function_payload"
+        },
+        "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+        "sequence_number": "44",
+        "signature": {
+            "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+            "signature": "0xa58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a",
+            "type": "ed25519_signature"
+        }
+}
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
 
 TEST(AptosSigner, BlindSign) {
     // successfully broadcasted https://explorer.aptoslabs.com/txn/0xd95857a9e644528708778a3a0a6e13986751944fca30eaac98853c1655de0422?network=Devnet

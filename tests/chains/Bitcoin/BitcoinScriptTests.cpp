@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -327,26 +327,54 @@ TEST(BitcoinScript, OpReturn) {
     {
         Data data = parse_hex("00010203");
         Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 2 + data.size());
         EXPECT_EQ(hex(script.bytes), "6a0400010203");
     }
     {
         Data data = parse_hex("535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a");
         Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 2 + data.size());
         EXPECT_EQ(hex(script.bytes), "6a3b535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a");
     }
     {
         Data data = Data(69);
         data.push_back(0xab);
         Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 2 + data.size());
         EXPECT_EQ(hex(script.bytes), "6a46000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
     }
     {
-        // too long, truncated
-        Data data = Data(89);
+        Data data = Data(74);
         data.push_back(0xab);
         Script script = Script::buildOpReturnScript(data);
-        EXPECT_EQ(hex(script.bytes), "6a500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+        EXPECT_EQ(script.bytes.size(), 2 + data.size());
+        EXPECT_EQ(hex(script.bytes), 
+            "6a4b"
+            "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
     }
+    {
+        // >75 bytes, with OP_PUSHDATA1
+        Data data = Data(79);
+        data.push_back(0xab);
+        Script script = Script::buildOpReturnScript(data);
+        EXPECT_EQ(script.bytes.size(), 3 + data.size());
+        EXPECT_EQ(hex(script.bytes), 
+            "6a4c50"
+            "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ab");
+    }
+    {
+        // >80 bytes, fails
+        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(81)).bytes), "");
+        EXPECT_EQ(hex(Script::buildOpReturnScript(Data(255)).bytes), "");
+    }
+}
+
+TEST(BitcoinScript, OpReturnTooLong) {
+    // too long, truncated
+    Data data = Data(89);
+    data.push_back(0xab);
+    Script script = Script::buildOpReturnScript(data);
+    EXPECT_EQ(hex(script.bytes), "");
 }
 
 TEST(BitcoinTransactionSigner, PushAllEmpty) {

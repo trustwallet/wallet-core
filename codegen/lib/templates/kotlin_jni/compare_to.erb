@@ -1,0 +1,22 @@
+<%  less = locals[:less] -%>
+<%  equal = locals[:equal] -%>
+<%  compareMethod = KotlinJniHelper.compareMethod(entity) -%>
+<%= render('kotlin_jni/method_prototype.erb', { method: compareMethod }) %> {
+<%= render('kotlin_jni/instance_access.erb', { entity: entity }) %>
+<%= render('kotlin_jni/parameter_access.erb', { method: compareMethod }) -%>
+<%  if entity.struct? -%>
+    jboolean equal = (jboolean) TW<%= entity.name %>Equal(*instance, *otherInstance);
+<%  else -%>
+    jboolean equal = (jboolean) TW<%= entity.name %>Equal(instance, otherInstance);
+<%  end -%>
+    if (equal) {
+        return 0;
+    }
+<%  if entity.struct? -%>
+    jboolean less = (jboolean) TW<%= entity.name %>Less(*instance, *otherInstance);
+<%  else -%>
+    jboolean less = (jboolean) TW<%= entity.name %>Less(instance, otherInstance);
+<%  end -%>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+    return less ? -1 : 1;
+}

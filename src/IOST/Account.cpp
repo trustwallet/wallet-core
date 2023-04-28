@@ -18,7 +18,7 @@ bool isAccountValid(const std::string& account) {
 }
 
 bool isBase58AddressValid(const std::string& address) {
-    auto decoded = Base58::bitcoin.decode(address);
+    auto decoded = Base58::decode(address);
     return decoded.size() == Base58Address<32>::size;
 }
 
@@ -27,7 +27,7 @@ bool Account::isValid(const std::string& s) {
 }
 
 std::string Account::encodePubKey(const PublicKey& publicKey) {
-    return Base58::bitcoin.encode(publicKey.bytes);
+    return Base58::encode(publicKey.bytes);
 }
 
 Account::Account(const Proto::AccountInfo& account) {
@@ -56,5 +56,5 @@ Data Account::publicOwnerKey() const {
 
 std::string Account::address(const std::string& publickey) {
     auto publicKeyData = TW::data(publickey);
-    return Base58::bitcoin.encode(publicKeyData);
+    return Base58::encode(publicKeyData);
 }

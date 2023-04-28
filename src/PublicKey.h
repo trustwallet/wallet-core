@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,6 +23,9 @@ class PublicKey {
 
     /// The number of bytes in an ed25519 public key.
     static const size_t ed25519Size = 32;
+
+    /// The number of bytes in an starkex public key.
+    static const size_t starkexSize = 32;
 
     /// The number of bytes in a Cardano public key (two ed25519 public key + chain code).
     static const size_t cardanoKeySize = 2 * 2 * 32;

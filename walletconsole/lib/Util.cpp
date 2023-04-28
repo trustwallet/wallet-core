@@ -38,14 +38,13 @@ bool Util::base64Encode(const string& p, string& res) {
 }
 
 bool Util::base64Decode(const string& p, string& res) {
-    try {
-        auto dec = Base64::decode(p);
-        res = TW::hex(dec);
-        return true;
-    } catch (exception& ex) {
+    auto dec = Base64::decode(p);
+    if (dec.empty()) {
         _out << "Error while Base64 decode" << endl;
         return false;
     }
+    res = TW::hex(dec);
+    return true;
 }
 
 bool Util::fileW(const string& fileName, const string& data, [[maybe_unused]] string& res) {

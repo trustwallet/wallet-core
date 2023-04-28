@@ -26,7 +26,7 @@ using namespace TW;
 TEST(IostCompiler, CompileWithSignatures) {
     const auto coin = TWCoinTypeIOST;
     /// Step 1: Prepare transaction input (protobuf)
-    const auto privKeyBytes = Base58::bitcoin.decode(
+    const auto privKeyBytes = Base58::decode(
         "4TQwN7wWXg26ByuU5WkUPErd5v6PD6HsDuULyGNJgpS979wXF7jRU8NKviJs5boHrRKbLMomKycbek4NyDy6cLb8");
     const auto pkFrom = PrivateKey(Data(privKeyBytes.begin(), privKeyBytes.begin() + 32));
     const auto publicKey = pkFrom.getPublicKey(TWPublicKeyTypeED25519);

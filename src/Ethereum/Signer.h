@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -52,6 +52,10 @@ class Signer {
     /// Break up the signature into the R, S, and V values, with no replay protection.
     /// \returns the r, s, and v values of the transaction signature
     static Signature signatureDataToStructSimple(const Data& signature) noexcept;
+
+    /// Converts R, S, and V values into the full signature, with no replay protection.
+    /// \returns the full signature bytes
+    static Data simpleStructToSignatureData(const Signature& signature) noexcept;
 
     /// Break up the signature into the R, S, and V values, and include chainID in V for replay protection (Eip155)
     /// \returns the r, s, and v values of the transaction signature

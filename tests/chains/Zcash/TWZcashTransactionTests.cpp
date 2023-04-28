@@ -1,5 +1,5 @@
 
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,7 +43,7 @@ TEST(TWZcashTransaction, Encode) {
     auto unsignedData = Data{};
     transaction.encode(unsignedData);
 
-    ASSERT_EQ(hex(unsignedData.begin(), unsignedData.end()),
+    ASSERT_EQ(hex(unsignedData),
         /* header */          "04000080"
         /* versionGroupId */  "85202f89"
         /* vin */             "01""a8c685478265f4c14dada651969c45a65e1aeb8cd6791f2f5bb6a1d9952104d9""01000000""6b483045022100a61e5d557568c2ddc1d9b03a7173c6ce7c996c4daecab007ac8f34bee01e6b9702204d38fdc0bcf2728a69fde78462a10fb45a9baa27873e6a5fc45fb5c76764202a01210365ffea3efa3908918a8b8627724af852fc9b86d7375b103ab0543cf418bcaa7f""feffffff"
@@ -59,7 +59,7 @@ TEST(TWZcashTransaction, Encode) {
 
     auto scriptCode = Bitcoin::Script(parse_hex("76a914507173527b4c3318a2aecd793bf1cfed705950cf88ac"));
     auto preImage = transaction.getPreImage(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080);
-    ASSERT_EQ(hex(preImage.begin(), preImage.end()),
+    ASSERT_EQ(hex(preImage),
         /* header */              "04000080"
         /* versionGroupId */      "85202f89"
         /* hashPrevouts */        "fae31b8dec7b0b77e2c8d6b6eb0e7e4e55abc6574c26dd44464d9408a8e33f11"
@@ -79,25 +79,25 @@ TEST(TWZcashTransaction, Encode) {
     );
 
     auto sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080, Bitcoin::BASE);
-    ASSERT_EQ(hex(sighash.begin(), sighash.end()), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
+    ASSERT_EQ(hex(sighash), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
 
     // AnyoneCanPay|none
     preImage = transaction.getPreImage(scriptCode, 0, TWBitcoinSigHashType(TWBitcoinSigHashTypeAnyoneCanPay | TWBitcoinSigHashTypeNone), 0x02faf080);
-    EXPECT_EQ(hex(preImage.begin(), preImage.end()),
+    EXPECT_EQ(hex(preImage),
         "0400008085202f8900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000029b0040048b00400000000000000000082000000a8c685478265f4c14dada651969c45a65e1aeb8cd6791f2f5bb6a1d9952104d9010000001976a914507173527b4c3318a2aecd793bf1cfed705950cf88ac80f0fa0200000000feffffff"
     );
 
     sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAnyoneCanPay, 0x02faf080, Bitcoin::BASE);
-    EXPECT_EQ(hex(sighash.begin(), sighash.end()), "f0bde4facddbc11f5e9ed2f5d5038083bec4a61627a2715a5ee9be7fb3152e9b");
+    EXPECT_EQ(hex(sighash), "f0bde4facddbc11f5e9ed2f5d5038083bec4a61627a2715a5ee9be7fb3152e9b");
 
     // AnyoneCanPay|Single
     preImage = transaction.getPreImage(scriptCode, 0, TWBitcoinSigHashType(TWBitcoinSigHashTypeAnyoneCanPay | TWBitcoinSigHashTypeSingle), 0x02faf080);
-    EXPECT_EQ(hex(preImage.begin(), preImage.end()),
+    EXPECT_EQ(hex(preImage),
         "0400008085202f890000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000055986938e432f825904fe288aa4feca1fe7eafa24aecd1bd6a9a739536b50a5469be00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000029b0040048b00400000000000000000083000000a8c685478265f4c14dada651969c45a65e1aeb8cd6791f2f5bb6a1d9952104d9010000001976a914507173527b4c3318a2aecd793bf1cfed705950cf88ac80f0fa0200000000feffffff"
     );
 
     sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashType(TWBitcoinSigHashTypeAnyoneCanPay | TWBitcoinSigHashTypeSingle), 0x02faf080, Bitcoin::BASE);
-    EXPECT_EQ(hex(sighash.begin(), sighash.end()), "1e747b6a4a96aa9e7c1d7968221ec916bd30b514f8bca14b6f74d7c11c0742c2");
+    EXPECT_EQ(hex(sighash), "1e747b6a4a96aa9e7c1d7968221ec916bd30b514f8bca14b6f74d7c11c0742c2");
 }
 
 TEST(TWZcashTransaction, SaplingSigning) {
@@ -107,6 +107,7 @@ TEST(TWZcashTransaction, SaplingSigning) {
     const int64_t fee = 6000;
 
     auto input = Bitcoin::Proto::SigningInput();
+    input.set_coin_type(TWCoinTypeZcash);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);

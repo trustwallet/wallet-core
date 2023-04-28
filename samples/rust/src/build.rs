@@ -11,7 +11,7 @@ use std::path::Path;
 static WALLET_CORE_PROJECT_DIR: &str = "../..";
 
 // libs to link with, in reverse dependency order
-static LIBS: [&str; 3] = ["TrustWalletCore", "TrezorCrypto", "protobuf"];
+static LIBS: [&str; 4] = ["TrustWalletCore", "TrezorCrypto", "protobuf", "wallet_core_rs"];
 
 fn main() {
     // Generate protobuf interface files
@@ -33,6 +33,8 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}/build", WALLET_CORE_PROJECT_DIR);
     println!("cargo:rustc-link-search=native={}/build/trezor-crypto", WALLET_CORE_PROJECT_DIR);
+    println!("cargo:rustc-link-search=native={}/build/local/lib", WALLET_CORE_PROJECT_DIR);
+    println!("cargo:rustc-link-search=native={}/rust/target/release", WALLET_CORE_PROJECT_DIR);
 
     // Libraries; order matters
     for i in 0..LIBS.len() {

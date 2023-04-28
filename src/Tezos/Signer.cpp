@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,14 +18,18 @@ using namespace TW;
 namespace TW::Tezos {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto operationList = Tezos::OperationList(input.operation_list().branch());
-    for (Proto::Operation operation : input.operation_list().operations()) {
-        operationList.addOperation(operation);
-    }
-
     auto signer = Signer();
     PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    Data encoded = signer.signOperationList(key, operationList);
+    Data encoded;
+    if (input.encoded_operations().empty()) {
+        auto operationList = Tezos::OperationList(input.operation_list().branch());
+        for (Proto::Operation operation : input.operation_list().operations()) {
+            operationList.addOperation(operation);
+        }
+        encoded = signer.signOperationList(key, operationList);
+    } else {
+        encoded = signer.signData(key, TW::data(input.encoded_operations()));
+    }
 
     auto output = Proto::SigningOutput();
     output.set_encoded(encoded.data(), encoded.size());

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+ # build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
+ sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing

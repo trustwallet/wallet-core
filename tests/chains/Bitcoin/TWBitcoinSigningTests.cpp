@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -1079,7 +1079,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
+    EXPECT_EQ(result.error(), Common::Proto::Error_invalid_address);
 }
 
 TEST(BitcoinSigning, Plan_10input_MaxAmount) {
@@ -1510,7 +1510,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
 
 TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     auto wif = "L4BeKzm3AHDUMkxLRVKTSVxkp6Hz9FcMQPh18YCKU1uioXfovzwP";
-    auto decoded = Base58::bitcoin.decodeCheck(wif);
+    auto decoded = Base58::decodeCheck(wif);
     auto key = PrivateKey(Data(decoded.begin() + 1, decoded.begin() + 33));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     auto hash = Hash::sha256ripemd(pubkey.bytes.data(), pubkey.bytes.size());

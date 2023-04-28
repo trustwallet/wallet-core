@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -113,6 +113,9 @@ Transaction Signer::buildTx(const Proto::SigningInput& input) const {
     auto tx =
         Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
                     input.reference_block_time());
+    if (input.expiration() > 0) {
+        tx.expiration = input.expiration();
+    }
     tx.actions.push_back(action);
     return tx;
 }

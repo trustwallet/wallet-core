@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -61,7 +61,7 @@ TEST(HDWalletInternal, SquareDerivationRoutes) {
 
     // getMasterNode
     auto masterNode = HDNode();
-    hdnode_from_seed(wallet.getSeed().data(), HDWallet::seedSize, SECP256K1_NAME, &masterNode);
+    hdnode_from_seed(wallet.getSeed().data(), HDWallet<>::mSeedSize, SECP256K1_NAME, &masterNode);
 
     auto node0 = masterNode;
     // getNode

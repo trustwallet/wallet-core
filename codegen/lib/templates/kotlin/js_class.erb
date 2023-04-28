@@ -1,0 +1,48 @@
+<%= render('kotlin/package.erb') %>
+
+<% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
+<% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
+<% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+actual class <%= entity.name %> constructor(
+    val jsValue: Js<%= entity.name %>,
+) {
+<%# Constructors -%>
+<%- constructors.each do |constructor| -%>
+
+    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) :
+<%  if constructor.return_type.is_nullable -%>
+        this(WalletCore.Instance.<%= entity.name %>.<%= WasmCppHelper.function_name(entity: entity, function: constructor) %>(<%= KotlinHelper.calling_parameters_js(constructor.parameters) %>) ?: throw IllegalArgumentException())
+<%  else -%>
+        this(WalletCore.Instance.<%= entity.name %>.<%= WasmCppHelper.function_name(entity: entity, function: constructor) %>(<%= KotlinHelper.calling_parameters_js(constructor.parameters) %>))
+<%  end -%>
+<%  end -%>
+<%# Property declarations -%>
+<%  entity.properties.each do |property| -%>
+
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        get() = <%= KotlinHelper.convert_calling_return_type_js(property.return_type, "jsValue.#{WasmCppHelper.function_name(entity: entity, function: property)}()") %>
+<%  end -%>
+<%# Method declarations -%>
+<%  methods.each do |method| -%>
+
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
+        <%= KotlinHelper.convert_calling_return_type_js(method.return_type, "jsValue.#{WasmCppHelper.function_name(entity: entity, function: method)}(#{KotlinHelper.calling_parameters_js(method.parameters.drop(1))})") %>
+<%  end -%>
+<%  if entity.static_properties.any? || static_methods.any? -%>
+
+    <%= if entity.static_properties.any? || static_methods.any? then "actual" else "private" end %> companion object {
+<%# Static property declarations -%>
+<%  entity.static_properties.each do |property| -%>
+
+        actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+            get() = TODO()
+<% end -%>
+<%# Static method declarations -%>
+<%  static_methods.each do |method| -%>
+
+        actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> =
+            <%= KotlinHelper.convert_calling_return_type_js(method.return_type, "WalletCore.Instance.#{entity.name}.#{WasmCppHelper.function_name(entity: entity, function: method)}(#{KotlinHelper.calling_parameters_js(method.parameters)})") %>
+<%  end -%>
+    }
+<%  end -%>
+}

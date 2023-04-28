@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,8 +20,8 @@ void Tezos::OperationList::addOperation(const Operation& operation) {
 
 // Forge the given branch to a hex encoded string.
 Data Tezos::OperationList::forgeBranch() const {
-    std::array<TW::byte, 2> prefix = {1, 52};
-    const auto decoded = Base58::bitcoin.decodeCheck(branch);
+    std::array<byte, 2> prefix = {1, 52};
+    const auto decoded = Base58::decodeCheck(branch);
     if (decoded.size() != 34 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
         throw std::invalid_argument("Invalid branch for forge");
     }

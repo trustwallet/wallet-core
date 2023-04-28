@@ -207,7 +207,7 @@ message ActionCore {
     // Gas price
     string gasPrice = 4;
 
-    // The chain id of blockchain
+    // Chain ID
     uint32 chainID = 5;
 
     // action payload

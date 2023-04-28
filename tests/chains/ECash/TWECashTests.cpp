@@ -124,6 +124,7 @@ TEST(ECash, SignTransaction) {
     // https://blockchair.com/ecash/transaction/96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4
 
     auto input = Proto::SigningInput();
+    input.set_coin_type(TWCoinTypeECash);
     input.set_hash_type(hashTypeForCoin(TWCoinTypeECash));
     input.set_amount(amount);
     input.set_byte_fee(1);

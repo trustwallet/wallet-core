@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,13 +24,10 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& addr
     return isValidBase58 || isValidHrp;
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,
-                            const char* hrp) const {
-    return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
-}
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    byte p2pkh = getFromPrefixPkhOrDefault(addressPrefix, coin);
+    const char* hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
-                          TW::byte p2pkh, const char* hrp) const {
     switch (derivation) {
     case TWDerivationBitcoinLegacy:
     case TWDerivationDefault:

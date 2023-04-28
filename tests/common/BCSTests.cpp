@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 // Created by Clément Doumergue
 //
 // This file is part of Trust. The full Trust copyright notice, including

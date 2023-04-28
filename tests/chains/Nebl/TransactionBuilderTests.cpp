@@ -52,6 +52,6 @@ TEST(NeblTransactionBuilder, BuildWithTime) {
     plan.fee = fee;
     plan.change = 980000000;
 
-    auto tx = Verge::TransactionBuilder::build<Verge::Transaction>(plan, input);
+    auto tx = Verge::TransactionBuilder::build<Verge::Transaction>(plan, input).payload();
     ASSERT_NE(tx.time, 0ul);
 }

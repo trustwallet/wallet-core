@@ -6,17 +6,23 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-latest
+    if: github.event.pull_request.draft == false
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install system dependencies
       run: |
-        brew install boost ninja xcodegen xcbeautify
+        tools/install-sys-dependencies-mac
+        tools/install-rust-dependencies
     - name: Cache internal dependencies
       id: internal_cache
-      uses: actions/cache@v1.1.2
+      uses: actions/cache@v3
       with:
         path: build/local
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
@@ -26,6 +32,13 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
     - name: Run codegen tests
       run: tools/codegen-test
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
+
     - name: Run iOS tests
       run: |
         tools/generate-files

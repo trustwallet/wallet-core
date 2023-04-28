@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,7 +10,7 @@
 #include "TWJNIData.h"
 
 jbyteArray TWDataJByteArray(TWData *_Nonnull data, JNIEnv *env) {
-    jsize dataSize = static_cast<jsize>(TWDataSize(data));
+    auto dataSize = static_cast<jsize>(TWDataSize(data));
     jbyteArray array = env->NewByteArray(dataSize);
     env->SetByteArrayRegion(array, 0, dataSize, (jbyte *) TWDataBytes(data));
     TWDataDelete(data);

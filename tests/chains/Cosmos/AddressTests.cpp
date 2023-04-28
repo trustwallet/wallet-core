@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,6 +14,10 @@
 
 namespace TW::Cosmos {
 
+TEST(CosmosAddressAddressToData, Invalid) {
+    ASSERT_TRUE(addressToData(TWCoinTypeCosmos, "fake").empty());
+}
+
 TEST(CosmosAddress, Valid) {
     ASSERT_TRUE(Address::isValid(TWCoinTypeBinance, "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"));
 }
@@ -25,7 +29,7 @@ TEST(CosmosAddress, Invalid) {
 TEST(CosmosAddress, Cosmos_FromPublicKey) {
     auto privateKey = PrivateKey(parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"));
     auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
+    ASSERT_EQ(hex(publicKeyData.bytes), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
 
     auto publicKey = PublicKey(publicKeyData);
     auto address = Address("cosmos", publicKey);
@@ -56,7 +60,7 @@ TEST(CosmosAddress, Cosmos_Invalid) {
 TEST(CosmosAddress, ThorFromPublicKey) {
     auto privateKey = PrivateKey(parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e"));
     auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "03ed997e396cf4292f5fce5a42bba41599ccd5d96e313154a7c9ea7049de317c77");
+    ASSERT_EQ(hex(publicKeyData.bytes), "03ed997e396cf4292f5fce5a42bba41599ccd5d96e313154a7c9ea7049de317c77");
 
     auto publicKey = PublicKey(publicKeyData);
     auto address = Address("thor", publicKey);

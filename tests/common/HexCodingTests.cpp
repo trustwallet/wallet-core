@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,6 +26,13 @@ TEST(HexCoding, OddLength) {
     const auto bytes = parse_hex(oddHex, true);
     const auto number = load(bytes);
     ASSERT_EQ(number, 11000000000);
+}
+
+TEST(HexCoding, isHexEncoded) {
+    ASSERT_TRUE(is_hex_encoded("66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"));
+    ASSERT_TRUE(is_hex_encoded("0x66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"));
+    ASSERT_FALSE(is_hex_encoded("1x66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"));
+    ASSERT_FALSE(is_hex_encoded("0xyahoo"));
 }
 
 }

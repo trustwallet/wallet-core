@@ -1,0 +1,118 @@
+<%
+  method = locals[:method]
+  if method.static
+    arguments = locals[:arguments] || KotlinJniHelper.arguments(method.parameters)
+    call = render('kotlin_jni/method_call.erb', { method: method, arguments: arguments })
+  else
+    instance = (method.entity.struct? ? '*' : '') + 'instance'
+    arguments = locals[:arguments] || [instance] + KotlinJniHelper.arguments(method.parameters.drop(1))
+    call = render('kotlin_jni/method_call.erb', { method: method, arguments: arguments })
+  end
+
+  # Method returns data
+  if should_return_data(method) -%>
+    <%= KotlinJniHelper.type(method.return_type) %> result = NULL;
+    TWData *resultData = <%= call %>;
+<%  if method.return_type.is_nullable %>
+    if (resultData == NULL) {
+        goto cleanup;
+    }
+<%  end -%>
+    result = TWDataJByteArray(resultData, env);
+<%  if method.return_type.is_nullable %>
+cleanup:
+<%  end -%>
+<%= render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+    return result;
+<%
+  # Method returns a string
+  elsif should_return_string(method) -%>
+    jstring result = NULL;
+    TWString *resultString = <%= call %>;
+<%  if method.return_type.is_nullable %>
+    if (resultString == NULL) {
+        goto cleanup;
+    }
+<%  end -%>
+    result = TWStringJString(resultString, env);
+<%  if method.return_type.is_nullable %>
+cleanup:
+<%  end -%>
+<%= render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+    return result;
+<%
+  # Method returns proto
+  elsif method.return_type.is_proto -%>
+    jbyteArray resultData = TWDataJByteArray(<%= call %>, env);
+    jclass resultClass = (*env)->FindClass(env, "<%= KotlinJniHelper.proto_to_class(method.return_type.name) %>");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)L<%= KotlinJniHelper.proto_to_class(method.return_type.name) %>;");
+    jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
+
+    (*env)->DeleteLocalRef(env, resultClass);
+<%= render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    return result;
+<%
+  # Method returns an object
+  elsif method.return_type.is_struct || method.return_type.is_class || method.return_type.is_enum
+    if method.return_type.is_struct -%>
+    struct TW<%= method.return_type.name %> result = <%= call %>;
+<%  elsif method.return_type.is_class -%>
+    struct TW<%= method.return_type.name %> *result = <%= call %>;
+<%  elsif method.return_type.is_enum -%>
+    enum TW<%= method.return_type.name %> result = <%= call %>;
+<%  else -%>
+    TW<%= method.return_type.name %> *result = <%= call %>;
+<%  end -%>
+
+<%= render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    jclass class = (*env)->FindClass(env, "com/trustwallet/core/<%= method.return_type.name %>");
+<%  if method.return_type.is_struct -%>
+    jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TW<%= method.return_type.name %>));
+    (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TW<%= method.return_type.name %>), (jbyte *) &result);
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lcom/trustwallet/core/<%= method.return_type.name %>;");
+    return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
+<%  elsif method.return_type.is_enum -%>
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lcom/trustwallet/core/<%= method.return_type.name %>;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
+<%  else -%>
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lcom/trustwallet/core/<%= method.return_type.name %>;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+<%  end
+
+  # Method returns void
+  elsif method.return_type.name == :void -%>
+    <%= call %>;
+
+<%= render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+<%  end
+
+  # Method returns a primitive
+  else -%>
+    <%= KotlinJniHelper.type(method.return_type) %> resultValue = (<%= KotlinJniHelper.type(method.return_type) %>) <%= call %>;
+
+<%= render('kotlin_jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%= render('kotlin_jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    return resultValue;
+<%end -%>

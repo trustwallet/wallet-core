@@ -1,19 +1,17 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Base64.h"
-#include "Everscale/Cell.h"
-#include "Everscale/Wallet.h"
 #include "HexCoding.h"
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
+
+#include "Everscale/CommonTON/Cell.h"
+#include "Everscale/Wallet.h"
+
 #include <gtest/gtest.h>
 #include <vector>
-
-using namespace TW;
 
 namespace TW::Everscale {
 

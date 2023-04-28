@@ -1,0 +1,54 @@
+<%= render('kotlin/package.erb') %>
+
+import cnames.structs.TW<%= entity.name %>
+import kotlinx.cinterop.CPointer
+
+<% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
+<% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
+<% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+actual class <%= entity.name %> constructor(
+    val pointer: CPointer<TW<%= entity.name %>>,
+) {
+<%# Constructors -%>
+<%- constructors.each do |constructor| -%>
+
+<%  if constructor.return_type.is_nullable -%>
+    @Throws(IllegalArgumentException::class)
+    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
+        TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>) ?: throw IllegalArgumentException()
+<%  else -%>
+    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
+        TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>)!!
+<%  end -%>
+    )
+<%  end -%>
+<%# Property declarations -%>
+<%  entity.properties.each do |property| -%>
+
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        get() = <%= KotlinHelper.convert_calling_return_type_ios(property.return_type, "TW#{entity.name}#{property.name}(pointer)") %>
+<%  end -%>
+<%# Method declarations -%>
+<%  methods.each do |method| -%>
+
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
+        <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(pointer#{', ' if not method.parameters.one?}#{KotlinHelper.calling_parameters_ios(method.parameters.drop(1))})") %>
+<%  end -%>
+<%  if entity.static_properties.any? || static_methods.any? -%>
+
+    actual companion object {
+<%# Static property declarations -%>
+<%  entity.static_properties.each do |property| -%>
+
+        actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+            get() = TW<%= entity.name %><%= property.name %>()<%= KotlinHelper.convert_calling_return_type_ios(property.return_type) %>
+<% end -%>
+<%# Static method declarations -%>
+<%  static_methods.each do |method| -%>
+
+        actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> =
+            <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
+<%  end -%>
+    }
+<%  end -%>
+}

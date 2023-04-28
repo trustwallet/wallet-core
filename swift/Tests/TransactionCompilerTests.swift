@@ -143,8 +143,8 @@ class TransactionCompilerTests: XCTestCase {
         XCTAssertEqual(preSigningOutput.hashPublicKeys[2].publicKeyHash.hexString, inPubKeyHash0.hexString)
 
         // Simulate signatures, normally they are obtained from external source, e.g. a signature server.
-        var signatureVec = DataVector()
-        var pubkeyVec = DataVector()
+        let signatureVec = DataVector()
+        let pubkeyVec = DataVector()
         for h in preSigningOutput.hashPublicKeys {
             let preImageHash = h.dataHash
             let pubkeyHash = h.publicKeyHash

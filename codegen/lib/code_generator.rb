@@ -7,6 +7,8 @@ require 'jni_helper'
 require 'swift_helper'
 require 'wasm_cpp_helper'
 require 'ts_helper'
+require 'kotlin_helper'
+require 'kotlin_jni_helper'
 
 # Code generation
 class CodeGenerator
@@ -47,7 +49,7 @@ class CodeGenerator
   end
 
   # Renders a template
-  def render_template(header:, template:, output_subfolder:, extension:)
+  def render_template(header:, template:, output_subfolder:, extension:, file_prefix: "")
     FileUtils.mkdir_p File.join(output_folder, output_subfolder)
     @entities.zip(files) do |entity, file|
       # Make current entity available to templates
@@ -63,7 +65,7 @@ class CodeGenerator
           code << "\n" unless header.nil?
           code << string
 
-          path = File.expand_path(File.join(output_folder, output_subfolder, "#{file}.#{extension}"))
+          path = File.expand_path(File.join(output_folder, output_subfolder, "#{file_prefix}#{file}.#{extension}"))
           File.write(path, code)
         end
       end
@@ -101,6 +103,34 @@ class CodeGenerator
   def render_ts_declaration
     render_template(header: nil, template: 'wasm_d_ts.erb', output_subfolder: 'wasm/lib/generated', extension: 'd.ts')
     TsHelper.combine_declaration_files()
+  end
+
+  def render_kotlin_common
+    render_template(header: nil, template: 'kotlin_common.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core', extension: 'kt')
+  end
+
+  def render_kotlin_android
+    render_template(header: nil, template: 'kotlin_android.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core', extension: 'kt')
+  end
+
+  def render_kotlin_ios
+    render_template(header: nil, template: 'kotlin_ios.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/iosMain/generated/com/trustwallet/core', extension: 'kt')
+  end
+
+  def render_kotlin_js
+    render_template(header: nil, template: 'kotlin_js.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/jsMain/generated/com/trustwallet/core', extension: 'kt')
+  end
+
+  def render_kotlin_js_accessors
+    render_template(header: nil, template: 'kotlin_js_accessors.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/jsMain/generated/com/trustwallet/core', extension: 'kt', file_prefix: "Js")
+  end
+
+  def render_kotlin_jni_h
+    render_template(header: 'copyright_header.erb', template: 'kotlin_jni_h.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/androidMain/cpp/generated', extension: 'h')
+  end
+
+  def render_kotlin_jni_c
+    render_template(header: 'copyright_header.erb', template: 'kotlin_jni_c.erb', output_subfolder: 'kotlin/wallet-core-kotlin/src/androidMain/cpp/generated', extension: 'c')
   end
 
   def render(file, locals = {})

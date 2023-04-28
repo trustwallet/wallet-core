@@ -7,6 +7,7 @@ set -e
 
 echo "#### Initializing workspace with dependencies ... ####"
 tools/install-dependencies
+tools/install-rust-dependencies
 
 find . -name "*.gcda" -exec rm {} \;
 
@@ -14,5 +15,5 @@ echo "#### Building and running tests ... ####"
 tools/build-and-test
 
 echo "#### Installing... ####"
-sudo cp build/libTrustWalletCore.a build/libprotobuf.a build/trezor-crypto/libTrezorCrypto.a /usr/local/lib
+sudo cp build/libTrustWalletCore.a build/libprotobuf.a build/trezor-crypto/libTrezorCrypto.a build/local/lib/libwallet_core_rs.a /usr/local/lib
 sudo ln -s ${PWD}/include/TrustWalletCore /usr/local/include/TrustWalletCore

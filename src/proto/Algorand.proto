@@ -75,4 +75,7 @@ message SigningOutput {
 
     // error description
     string error_message = 3;
+    
+    // Signature in base64.
+    string signature = 4;
 }

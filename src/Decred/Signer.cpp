@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -272,7 +272,7 @@ Data Signer::keyForPublicKeyHash(const Data& hash) const {
 }
 
 Data Signer::scriptForScriptHash(const Data& hash) const {
-    auto hashString = hex(hash.begin(), hash.end());
+    auto hashString = hex(hash);
     auto it = input.scripts().find(hashString);
     if (it == input.scripts().end()) {
         // Error: Missing redeem script

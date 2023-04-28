@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,7 +18,7 @@ TW_EXTERN_C_BEGIN
 /// Bitcoin Core and some other wallets support a message signing & verification format, to create a proof (a signature)
 /// that someone has access to the private keys of a specific address.
 /// This feature currently works on old legacy addresses only.
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWBitcoinMessageSigner;
 
 /// Sign a message.

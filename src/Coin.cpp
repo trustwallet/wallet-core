@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,7 +24,7 @@
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
 #include "EOS/Entry.h"
-#include "Elrond/Entry.h"
+#include "MultiversX/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Everscale/Entry.h"
 #include "FIO/Entry.h"
@@ -62,6 +62,8 @@
 #include "Zen/Entry.h"
 #include "Everscale/Entry.h"
 #include "Hedera/Entry.h"
+#include "TheOpenNetwork/Entry.h"
+#include "Sui/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -76,7 +78,7 @@ Binance::Entry binanceDP;
 Bitcoin::Entry bitcoinDP;
 Cardano::Entry cardanoDP;
 Cosmos::Entry cosmosDP;
-Elrond::Entry elrondDP;
+MultiversX::Entry multiversxDP;
 EOS::Entry eosDP;
 Ethereum::Entry ethereumDP;
 Decred::Entry decredDP;
@@ -115,6 +117,8 @@ Zen::Entry zenDP;
 Nervos::Entry NervosDP;
 Everscale::Entry EverscaleDP;
 Hedera::Entry HederaDP;
+TheOpenNetwork::Entry tonDP;
+Sui::Entry SuiDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -155,7 +159,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainCardano: entry = &cardanoDP; break;
         case TWBlockchainNEO: entry = &neoDP; break;
         case TWBlockchainFilecoin: entry = &filecoinDP; break;
-        case TWBlockchainElrondNetwork: entry = &elrondDP; break;
+        case TWBlockchainMultiversX: entry = &multiversxDP; break;
         case TWBlockchainOasisNetwork: entry = &oasisDP; break;
         case TWBlockchainDecred: entry = &decredDP; break;
         case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
@@ -170,6 +174,8 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainEverscale: entry = &EverscaleDP; break;
         case TWBlockchainAptos: entry = &AptosDP; break;
         case TWBlockchainHedera: entry = &HederaDP; break;
+        case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
+        case TWBlockchainSui: entry = &SuiDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
@@ -257,21 +263,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWD
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, const PrefixVariant& addressPrefix, TWDerivation derivation) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) {
     auto const* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->deriveAddress(coin, publicKey, derivation, addressPrefix);
-}
-
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
-    auto p2pkh = TW::p2pkhPrefix(coin);
-    const char* hrpRaw = [&hrp, coin]() {
-        return hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
-    }();
-    // dispatch
-    auto* dispatcher = coinDispatcher(coin);
-    assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrpRaw);
 }
 
 Data TW::addressToData(TWCoinType coin, const std::string& address) {

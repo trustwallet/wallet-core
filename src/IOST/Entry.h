@@ -16,8 +16,7 @@ namespace TW::IOST {
 class Entry : public CoinEntry {
   public:
     virtual bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefixp) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,
-                                      const char* hrp) const;
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const;
     virtual Data addressToData(TWCoinType coin, const std::string& address) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 

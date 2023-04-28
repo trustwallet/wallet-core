@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,12 +19,10 @@ bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string&
     return TW::Bitcoin::SegwitAddress::isValid(address, std::get<Bech32Prefix>(addressPrefix));
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
-    return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
-}
-
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
-                            TW::byte p2pkh, const char* hrp) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    auto hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
+    auto p2pkh =  getFromPrefixPkhOrDefault(addressPrefix, coin);
+    
     switch (derivation) {
     case TWDerivationBitcoinLegacy:
         return Address(publicKey, p2pkh).string();

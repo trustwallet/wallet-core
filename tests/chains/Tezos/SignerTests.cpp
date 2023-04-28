@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -78,7 +78,7 @@ TEST(TezosSigner, SignOperationList) {
 
     op_list.addOperation(delegateOperation);
 
-    auto decodedPrivateKey = Base58::bitcoin.decodeCheck("edsk4bMQMM6HYtMazF3m7mYhQ6KQ1WCEcBuRwh6DTtdnoqAvC3nPCc");
+    auto decodedPrivateKey = Base58::decodeCheck("edsk4bMQMM6HYtMazF3m7mYhQ6KQ1WCEcBuRwh6DTtdnoqAvC3nPCc");
     auto key = PrivateKey(Data(decodedPrivateKey.begin() + 4, decodedPrivateKey.end()));
 
     std::string expectedForgedBytesToSign = hex(op_list.forge(key));
@@ -86,9 +86,9 @@ TEST(TezosSigner, SignOperationList) {
     std::string expectedSignedBytes = expectedForgedBytesToSign + expectedSignature;
 
     auto signedBytes = Signer().signOperationList(key, op_list);
-    auto signedBytesHex = hex(signedBytes.begin(), signedBytes.end());
+    auto signedBytesHex = hex(signedBytes);
 
-    ASSERT_EQ(hex(signedBytes.begin(), signedBytes.end()), expectedSignedBytes);
+    ASSERT_EQ(hex(signedBytes), expectedSignedBytes);
 }
 
 } // namespace TW::Tezos::tests

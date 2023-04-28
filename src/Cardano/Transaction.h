@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -104,6 +104,9 @@ public:
 
     /// Token amounts (optional)
     TokenBundle tokenBundle;
+
+    /// Returns minimal amount of ADA for the output.
+    uint64_t minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept;
 
     TxOutput() = default;
     TxOutput(Data address, Amount amount)

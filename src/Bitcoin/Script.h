@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,6 +20,9 @@ namespace TW::Bitcoin {
 
 class Script {
   public:
+    // Maximum length for OP_RETURN data
+    static const size_t MaxOpReturnLength = 80;
+
     /// Script raw bytes.
     Data bytes;
 
@@ -111,7 +114,7 @@ class Script {
     /// Builds a V1 pay-to-witness-program script, P2TR (from a 32-byte Schnorr public key).
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
 
-    /// Builds an OP_RETURN script with given data
+    /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
     static Script buildOpReturnScript(const Data& data);
 
     /// Builds a appropriate lock script for the given

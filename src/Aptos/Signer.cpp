@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -89,6 +89,48 @@ TransactionPayload nftOfferPayload(const Proto::OfferNftMessage& msg) {
     return payload;
 }
 
+TransactionPayload tortugaClaimPayload(const std::string& smart_contract_address, const Proto::TortugaClaim& msg) {
+    std::vector<Data> args;
+    serializeToArgs(args, msg.idx());
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            std::to_string(msg.idx())
+                        });
+    // clang-format on
+    ModuleId tortugaStakeModule{Address(smart_contract_address), "stake_router"};
+    TransactionPayload payload = EntryFunction(tortugaStakeModule, "claim", {}, args, argsJson);
+    return payload;
+}
+
+TransactionPayload tortugaStakePayload(const std::string& smart_contract_address, const Proto::TortugaStake& msg) {
+    std::vector<Data> args;
+    serializeToArgs(args, msg.amount());
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            std::to_string(msg.amount())
+                        });
+    // clang-format on
+    ModuleId tortugaStakeModule{Address(smart_contract_address), "stake_router"};
+    TransactionPayload payload = EntryFunction(tortugaStakeModule, "stake", {}, args, argsJson);
+    return payload;
+}
+
+TransactionPayload tortugaUnStakePayload(const std::string& smart_contract_address, const Proto::TortugaUnstake& msg) {
+    std::vector<Data> args;
+    serializeToArgs(args, msg.amount());
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            std::to_string(msg.amount())
+                        });
+    // clang-format on
+    ModuleId tortugaStakeModule{Address(smart_contract_address), "stake_router"};
+    TransactionPayload payload = EntryFunction(tortugaStakeModule, "unstake", {}, args, argsJson);
+    return payload;
+}
+
 TransactionPayload cancelNftOfferPayload(const Proto::CancelOfferNftMessage& msg) {
     std::vector<Data> args;
     serializeToArgs(args, Address(msg.receiver()));
@@ -131,27 +173,38 @@ TransactionPayload registerTokenPayload(const Proto::SigningInput& input) {
 
 Proto::SigningOutput blindSign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
-    BCS::Serializer serializer;
-    auto encodedCall = parse_hex(input.any_encoded());
-    serializer.add_bytes(begin(encodedCall), end(encodedCall));
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto signature = privateKey.sign(encodedCall, TWCurveED25519);
     auto pubKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
-    output.set_raw_txn(encodedCall.data(), encodedCall.size());
-    output.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
-    output.mutable_authenticator()->set_signature(signature.data(), signature.size());
-    serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
-    output.set_encoded(serializer.bytes.data(), serializer.bytes.size());
+    if (nlohmann::json j = nlohmann::json::parse(input.any_encoded(), nullptr, false); j.is_discarded()) {
+        BCS::Serializer serializer;
+        auto encodedCall = parse_hex(input.any_encoded());
+        serializer.add_bytes(begin(encodedCall), end(encodedCall));
+        auto signature = privateKey.sign(encodedCall, TWCurveED25519);
+        output.set_raw_txn(encodedCall.data(), encodedCall.size());
+        output.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
+        output.mutable_authenticator()->set_signature(signature.data(), signature.size());
+        serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
+        output.set_encoded(serializer.bytes.data(), serializer.bytes.size());
 
-    // clang-format off
-    nlohmann::json json = {
-        {"type", "ed25519_signature"},
-        {"public_key", hexEncoded(pubKeyData)},
-        {"signature", hexEncoded(signature)}
-    };
-    // clang-format on
-
-    output.set_json(json.dump());
+        // clang-format off
+        nlohmann::json json = {
+            {"type", "ed25519_signature"},
+            {"public_key", hexEncoded(pubKeyData)},
+            {"signature", hexEncoded(signature)}
+        };
+        // clang-format on
+        output.set_json(json.dump());
+    } else {
+        TransactionBuilder::builder()
+            .sender(Address(input.sender()))
+            .sequenceNumber(input.sequence_number())
+            .payload(EntryFunction::from_json(j))
+            .maxGasAmount(input.max_gas_amount())
+            .gasUnitPrice(input.gas_unit_price())
+            .expirationTimestampSecs(input.expiration_timestamp_secs())
+            .chainId(static_cast<uint8_t>(input.chain_id()))
+            .sign(input, output);
+    }
     return output;
 }
 
@@ -172,7 +225,19 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
             throw std::runtime_error("Nft message payload not set");
         }
     };
-    auto payloadFunctor = [&input, &nftPayloadFunctor]() {
+    auto liquidStakingFunctor = [](const Proto::LiquidStaking& liquidStakingMessage) {
+        switch (liquidStakingMessage.liquid_stake_transaction_payload_case()) {
+        case Proto::LiquidStaking::kStake:
+            return tortugaStakePayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.stake());
+        case Proto::LiquidStaking::kUnstake:
+            return tortugaUnStakePayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.unstake());
+        case Proto::LiquidStaking::kClaim:
+            return tortugaClaimPayload(liquidStakingMessage.smart_contract_address(), liquidStakingMessage.claim());
+        case Proto::LiquidStaking::LIQUID_STAKE_TRANSACTION_PAYLOAD_NOT_SET:
+            return TransactionPayload();
+        }
+    };
+    auto payloadFunctor = [&input, &nftPayloadFunctor, &liquidStakingFunctor]() {
         switch (input.transaction_payload_case()) {
         case Proto::SigningInput::kTransfer: {
             return transferPayload(input);
@@ -188,6 +253,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         }
         case Proto::SigningInput::kRegisterToken: {
             return registerTokenPayload(input);
+        }
+        case Proto::SigningInput::kLiquidStakingMessage: {
+            return liquidStakingFunctor(input.liquid_staking_message());
         }
         case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Transaction payload should be set");

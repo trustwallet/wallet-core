@@ -1,0 +1,19 @@
+root = true
+
+[*]
+indent_style = space
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 120
+
+[*.{kt,kts}]
+indent_size = 4
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+ij_kotlin_imports_layout = *
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_enum_constants_wrap = split_into_lines
+ij_kotlin_packages_to_use_import_on_demand = *
+ij_kotlin_wrap_first_method_in_call_chain = true

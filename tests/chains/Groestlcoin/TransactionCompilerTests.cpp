@@ -31,6 +31,7 @@ TEST(GroestlcoinCompiler, CompileWithSignatures) {
     const auto coin = TWCoinTypeGroestlcoin;
 
     Bitcoin::Proto::SigningInput input;
+    input.set_coin_type(coin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(2500);
     input.set_byte_fee(1);
