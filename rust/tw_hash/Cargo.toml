@@ -7,7 +7,6 @@ edition = "2021"
 default = ["serde"]
 
 [dependencies]
-arbitrary = { version = "1", features = ["derive"], optional = true }
 blake-hash = "0.4.1"
 blake2 = "0.10.6"
 blake2b-ref = "0.3.1"

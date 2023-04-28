@@ -17,7 +17,6 @@ pub type H512 = Hash<64>;
 pub type H520 = Hash<65>;
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Hash<const N: usize>([u8; N]);
 
 impl<const N: usize> DefaultIsZeroes for Hash<N> {}

@@ -1057,7 +1057,6 @@ dependencies = [
 name = "tw_hash"
 version = "0.1.0"
 dependencies = [
- "arbitrary",
  "blake-hash",
  "blake2",
  "blake2b-ref",
