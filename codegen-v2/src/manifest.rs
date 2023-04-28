@@ -118,10 +118,6 @@ pub struct InitInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeinitInfo {
     pub name: String,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub params: Vec<ParamInfo>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub comments: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -309,8 +309,6 @@ impl DeinitInfo {
 
         Ok(DeinitInfo {
             name: func.name,
-            params: func.params,
-            comments: vec![],
         })
     }
 }

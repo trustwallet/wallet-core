@@ -128,14 +128,13 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             vec![]
         };
 
-        // TODO: Extend
         let payload = json!({
             "name": struct_name,
             "is_class": is_class,
             "init_instance": is_class,
             "superclasses": superclasses,
             "inits": inits,
-            "deinits": [],
+            "deinits": info.deinits,
             "methods": methods,
             "properties": properties,
         });
