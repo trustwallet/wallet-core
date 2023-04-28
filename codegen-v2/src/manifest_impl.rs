@@ -158,14 +158,16 @@ impl EnumInfo {
                 .cloned()
                 .enumerate()
                 .map(|(idx, (k, v))| {
-                    (
+                    EnumVariantInfo {
                         // Remove prefix from enum variant.
-                        first_char_to_lowercase(
+                        name: first_char_to_lowercase(
                             k.0.strip_prefix(&value.name.0).unwrap().to_string(),
                         ),
-                        // In the old codegen, non-values result in a simple counter.
-                        v.unwrap_or(idx),
-                    )
+                        // In the old codegen, non-values result in a simple
+                        // counter. IMO fixed values should be enforced.
+                        value: v.unwrap_or(idx),
+                        as_string: None,
+                    }
                 })
                 .collect(),
             tags: vec![],

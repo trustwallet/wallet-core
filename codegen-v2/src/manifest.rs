@@ -81,9 +81,17 @@ pub struct EnumInfo {
     pub name: String,
     pub is_public: bool,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub variants: Vec<(String, usize)>,
+    pub variants: Vec<EnumVariantInfo>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EnumVariantInfo {
+    pub name: String,
+    pub value: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub as_string: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
