@@ -82,7 +82,7 @@ fn generate_swift_bindings() {
         let rendered = libparser::codegen::swift::render_file_info(input).unwrap();
 
         if !rendered.enums.is_empty() {
-            std::fs::create_dir_all(format!("{}/enums", OUT_DIR)).unwrap();
+            std::fs::create_dir_all(format!("{}/Enums", OUT_DIR)).unwrap();
         }
 
         if !rendered.protos.is_empty() {
@@ -95,7 +95,7 @@ fn generate_swift_bindings() {
         }
 
         for (name, rendered) in rendered.enums {
-            let file_path = format!("{}/enums/{}.swift", OUT_DIR, name);
+            let file_path = format!("{}/Enums/{}.swift", OUT_DIR, name);
             std::fs::write(&file_path, rendered.as_bytes()).unwrap();
         }
 
