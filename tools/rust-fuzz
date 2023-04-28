@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# This script ensures that all `cargo fuzz` targets are compilable if the `dry` argument is given. Otherwise it does nothing.
+# This script ensures that all `cargo-fuzz` targets are compilable if the `dry` argument is given. Otherwise it does nothing.
+# Prerequisite: install `cargo-fuzz` by running `cargo install cargo-fuzz`.
 
 set -e
 
@@ -32,6 +33,7 @@ run_fuzz_crate_dry() {
 }
 
 if [[ $1 == "dry" ]]; then
-  run_fuzz_crate_dry "tw_keypair"
   run_fuzz_crate_dry "tw_encoding"
+  run_fuzz_crate_dry "tw_hash"
+  run_fuzz_crate_dry "tw_keypair"
 fi

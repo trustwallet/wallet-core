@@ -31,7 +31,9 @@ pub unsafe extern "C" fn blake2_b(
     hash_size: usize,
 ) -> CByteArray {
     let input = std::slice::from_raw_parts(input, input_len);
-    blake2::blake2_b(input, hash_size).into()
+    blake2::blake2_b(input, hash_size)
+        .unwrap_or_default()
+        .into()
 }
 
 /// Computes the personalized BLAKE2B hash of the `input` byte array.
@@ -51,7 +53,9 @@ pub unsafe extern "C" fn blake2_b_personal(
 ) -> CByteArray {
     let input = std::slice::from_raw_parts(input, input_len);
     let personal = std::slice::from_raw_parts(personal_input, personal_len);
-    blake2::blake2_b_personal(input, hash_size, personal).into()
+    blake2::blake2_b_personal(input, hash_size, personal)
+        .unwrap_or_default()
+        .into()
 }
 
 /// Computes the Groestl-512 hash of the `input` byte array.
