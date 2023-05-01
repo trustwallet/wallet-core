@@ -63,20 +63,40 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
     {{/each}}
     {{#each methods}}
-    {{#if is_static}}public static func{{else}}public func{{/if}} {{name}}({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#if is_static}}public static func{{else}}public func{{/if}} {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each params}}
+        {{#if is_nullable}}
+        let {{name}}Maybe: UnsafeRawPointer?
+        if let {{name}} = {{name}} {
+        {{#if wrap_as}}
+            {{name}}Maybe = {{wrap_as}}
+        {{else}}
+            {{name}}Maybe = {{name}}
+        {{/if}}
+        } else {
+            {{name}}Maybe = nil
+        }
+        let {{name}} = {{name}}Maybe
+        {{else}}
         {{#if wrap_as}}
         let {{name}} = {{wrap_as}}
         {{else}}
         let {{name}} = {{name}}
         {{/if}}
+        {{/if}}
         {{#if deter_as}}
         defer {
+            {{#if is_nullable}}
+            if let {{name}} = {{name}} {
+                {{deter_as}}
+            }
+            {{else}}
             {{deter_as}}
+            {{/if}}
         }
         {{/if}}
-        {{/each}}
 
+        {{/each}}
         // Call the underlying C function.
         let result = {{c_ffi_name}}({{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
 

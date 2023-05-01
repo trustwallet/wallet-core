@@ -439,9 +439,10 @@ impl TryFrom<TypeInfo> for SwiftReturn {
             )
         } else {
             let wrap_as = match &value.variant {
-                TypeVariant::Enum(n) | TypeVariant::Struct(n) => {
-                    Some(format!("{n}(rawValue: result.rawValue)"))
-                }
+                TypeVariant::Enum(n) | TypeVariant::Struct(n) => Some(format!(
+                    "{}(rawValue: result.rawValue)",
+                    n.strip_prefix("TW").unwrap()
+                )),
                 _ => None,
             };
 
@@ -475,8 +476,9 @@ impl TryFrom<ParamInfo> for SwiftParam {
             )
         } else {
             let wrap_as = match &value.ty.variant {
-                TypeVariant::Enum(n) | TypeVariant::Struct(n) => {
-                    Some(format!("{n}(rawValue: {}.rawValue)", value.name))
+                TypeVariant::Struct(_) => Some(format!("{}.rawValue", value.name)),
+                TypeVariant::Enum(obj_name) => {
+                    Some(format!("{obj_name}(rawValue: {}.rawValue)", value.name))
                 }
                 _ => None,
             };
