@@ -25,7 +25,7 @@ extension {{name}}
         {{/each}}
 
         // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#unless is_static}}this.rawValue, {{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
+        let result = {{c_ffi_name}}({{#unless is_static}}TW{{../name}}(rawValue: this.rawValue){{/unless}}{{#if param}}, {{/if}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
 
         {{#if return.is_nullable}}
         // Check nullable result.

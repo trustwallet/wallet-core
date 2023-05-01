@@ -436,7 +436,7 @@ impl TryFrom<TypeInfo> for SwiftReturn {
         } else {
             let wrap_as = match &value.variant {
                 TypeVariant::Enum(n) | TypeVariant::Struct(n) => Some(format!(
-                    "{}(rawValue: result.rawValue)",
+                    "{}(rawValue: result)",
                     n.strip_prefix("TW").unwrap()
                 )),
                 _ => None,
