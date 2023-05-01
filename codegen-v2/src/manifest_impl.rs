@@ -307,9 +307,7 @@ impl DeinitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
         let func = FunctionInfo::from_g_type(&None, value)?;
 
-        Ok(DeinitInfo {
-            name: func.name,
-        })
+        Ok(DeinitInfo { name: func.name })
     }
 }
 

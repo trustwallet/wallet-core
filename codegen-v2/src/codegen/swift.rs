@@ -155,7 +155,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         // Add superclasses.
         let value_type = SwiftType::from(enm.value_type);
-        let mut superclasses = vec!["CaseIterable", value_type.0.as_str()];
+        let mut superclasses = vec![value_type.0.as_str(), "CaseIterable"];
 
         // If the enum has `as_string` fields, we can generate a description.
         let description: Option<Vec<(&str, &str)>> =
