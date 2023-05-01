@@ -48,6 +48,7 @@ pub struct SwiftReturn {
     pub param_type: SwiftType,
     pub is_nullable: bool,
     pub wrap_as: Option<String>,
+    // TODO: This is not needed.
     pub deter_as: Option<String>,
 }
 
@@ -428,13 +429,13 @@ impl TryFrom<TypeInfo> for SwiftReturn {
         let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
             (
                 SwiftType("Data".to_string()),
-                Some("TWDataCreateWithNSData(result)".to_string()),
+                Some("TWDataNSData(result)".to_string()),
                 Some("TWDataDelete(result)".to_string()),
             )
         } else if value.tags.iter().any(|t| t == "TW_STRING") {
             (
                 SwiftType("String".to_string()),
-                Some("TWStringCreateWithNSString(result)".to_string()),
+                Some("TWStringNSString(result)".to_string()),
                 Some("StringDelete(result)".to_string()),
             )
         } else {
