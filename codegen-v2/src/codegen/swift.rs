@@ -411,7 +411,9 @@ impl From<TypeVariant> for SwiftType {
             TypeVariant::UInt16T => "UInt16".to_string(),
             TypeVariant::UInt32T => "UInt32".to_string(),
             TypeVariant::UInt64T => "UInt64".to_string(),
-            TypeVariant::Struct(n) | TypeVariant::Enum(n) => n,
+            TypeVariant::Struct(n) | TypeVariant::Enum(n) => {
+                n.strip_prefix("TW").unwrap().to_string()
+            }
         };
 
         SwiftType(res)
@@ -464,7 +466,17 @@ impl TryFrom<ParamInfo> for SwiftParam {
                 Some(format!("TWStringDelete({})", value.name)),
             )
         } else {
-            (SwiftType::try_from(value.ty.variant).unwrap(), None, None)
+            let wrap_as = if let TypeVariant::Enum(ref enum_name) = value.ty.variant {
+                Some(format!("{enum_name}(rawValue: rawValue)"))
+            } else {
+                None
+            };
+
+            (
+                SwiftType::try_from(value.ty.variant).unwrap(),
+                wrap_as,
+                None,
+            )
         };
 
         Ok(SwiftParam {
