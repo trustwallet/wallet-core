@@ -318,20 +318,15 @@ fn process_object_methods(
                     continue;
                 }
             }
-
-            let ty_variant = param.ty.variant.clone();
-            // Convert parameter to Swift parameter.
-            let mut swift_param = SwiftParam::try_from(param).unwrap();
-
             // Skip self-referencing enum parameter and wrap accordingly
-            // TODO: Merge logic with `TypeVariant::Struct` above.
-            if let TypeVariant::Enum(ref enum_name) = ty_variant {
+            else if let TypeVariant::Enum(ref enum_name) = param.ty.variant {
                 if enum_name == object_name {
-                    swift_param.wrap_as = Some(format!("{enum_name}(rawValue: rawValue)"));
-                    swift_param.skip_self = true;
+                    continue;
                 }
             }
 
+            // Convert parameter to Swift parameter.
+            let swift_param = SwiftParam::try_from(param).unwrap();
             params.push(swift_param);
         }
 

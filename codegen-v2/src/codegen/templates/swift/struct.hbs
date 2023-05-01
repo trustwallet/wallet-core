@@ -63,7 +63,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
     {{/each}}
     {{#each methods}}
-    {{#if is_static}}public static func{{else}}public func{{/if}} {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#if is_static}}public static func{{else}}public func{{/if}} {{name}}({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{/unless}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each params}}
         {{#if is_nullable}}
         let {{name}}Maybe: UnsafeRawPointer?
@@ -98,7 +98,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
         {{/each}}
         // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
+        let result = {{c_ffi_name}}({{#unless is_static}}this.rawValue, {{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
 
         {{#if return.is_nullable}}
         // Check nullable result.
