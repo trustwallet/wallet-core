@@ -9,7 +9,7 @@
 
 import Foundation
 
-public final {{#if is_class}}class {{else}}struct {{/if}}{{name}}
+public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     {{~#if superclasses}}: {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
     {{#if init_instance}}
     let rawValue: OpaquePointer

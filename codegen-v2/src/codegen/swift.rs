@@ -146,8 +146,6 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
                 is_static: func.is_static,
             };
 
-            dbg!(&operator);
-
             // Remove that method from the `methods` list.
             methods.remove(idx);
 
