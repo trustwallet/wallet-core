@@ -21,6 +21,12 @@ public final {{#if is_class}}class {{else}}struct {{/if}}{{name}}
     init() {}
     {{/if}}
 
+    {{#if eq_operator}}
+    {{#if eq_operator.is_public}}public {{/if}}{{#if eq_operator.is_static}}static {{/if}}func == (lhs: {{name}}, rhs: {{name}}) -> Bool {
+        return {{eq_operator.c_ffi_name}}(lhs.rawValue, rhs.rawValue)
+    }
+    {{/if}}
+
     {{#each inits}}
     public init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
         {{#each params}}

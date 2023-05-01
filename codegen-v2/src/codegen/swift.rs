@@ -67,6 +67,13 @@ pub struct SwiftProto {
     pub c_ffi_name: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftOperatorEquality {
+    pub c_ffi_name: String,
+    pub is_public: bool,
+    pub is_static: bool,
+}
+
 #[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
     pub file_info: FileInfo,
@@ -109,7 +116,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     for strct in info.structs {
         let is_class = strct.tags.iter().any(|t| t == "TW_EXPORT_CLASS");
 
-        let (inits, methods, properties);
+        let (inits, mut methods, properties);
         (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
         (methods, info.functions) = process_object_methods(&strct.name, info.functions).unwrap();
         (properties, info.properties) =
@@ -129,11 +136,32 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             vec![]
         };
 
+        // Handle equality operator.
+        let equality_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
+
+        let equality_operator = if let Some((idx, func)) = equality_method {
+            let operator = SwiftOperatorEquality {
+                c_ffi_name: func.c_ffi_name.clone(),
+                is_public: func.is_public,
+                is_static: func.is_static,
+            };
+
+            dbg!(&operator);
+
+            // Remove that method from the `methods` list.
+            methods.remove(idx);
+
+            Some(operator)
+        } else {
+            None
+        };
+
         let payload = json!({
             "name": struct_name,
             "is_class": is_class,
             "init_instance": is_class,
             "superclasses": superclasses,
+            "eq_operator": equality_operator,
             "inits": inits,
             "deinits": info.deinits,
             "methods": methods,
