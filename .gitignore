@@ -27,7 +27,7 @@ lib/protobuf
 *.xcuserdatad/
 
 # Generated files
-jni/cpp/generated
+jni/android/generated
 jni/java/wallet/core/jni
 jni/proto/wallet
 jni/dokka-out

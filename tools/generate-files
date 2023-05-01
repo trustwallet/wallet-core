@@ -39,7 +39,7 @@ $PROTOC --version
 # Clean
 rm -rf swift/Sources/Generated
 rm -rf jni/java/wallet/core/jni
-rm -rf jni/cpp/generated
+rm -rf jni/android/generated
 
 mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 
