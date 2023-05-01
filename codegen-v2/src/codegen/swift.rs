@@ -323,6 +323,7 @@ fn process_object_methods(
             let mut swift_param = SwiftParam::try_from(param).unwrap();
 
             // Skip self-referencing enum parameter and wrap accordingly
+            // TODO: Merge logic with `TypeVariant::Struct` above.
             if let TypeVariant::Enum(ref enum_name) = ty_variant {
                 if enum_name == object_name {
                     swift_param.wrap_as = Some(format!("{enum_name}(rawValue: rawValue)"));
@@ -437,7 +438,14 @@ impl TryFrom<TypeInfo> for SwiftReturn {
                 Some("StringDelete(result)".to_string()),
             )
         } else {
-            (SwiftType::try_from(value.variant).unwrap(), None, None)
+            let wrap_as = match &value.variant {
+                TypeVariant::Enum(n) | TypeVariant::Struct(n) => {
+                    Some(format!("{n}(rawValue: result.rawValue)"))
+                }
+                _ => None,
+            };
+
+            (SwiftType::try_from(value.variant).unwrap(), wrap_as, None)
         };
 
         Ok(SwiftReturn {
@@ -466,10 +474,11 @@ impl TryFrom<ParamInfo> for SwiftParam {
                 Some(format!("TWStringDelete({})", value.name)),
             )
         } else {
-            let wrap_as = if let TypeVariant::Enum(ref enum_name) = value.ty.variant {
-                Some(format!("{enum_name}(rawValue: rawValue)"))
-            } else {
-                None
+            let wrap_as = match &value.ty.variant {
+                TypeVariant::Enum(n) | TypeVariant::Struct(n) => {
+                    Some(format!("{n}(rawValue: {}.rawValue)", value.name))
+                }
+                _ => None,
             };
 
             (
