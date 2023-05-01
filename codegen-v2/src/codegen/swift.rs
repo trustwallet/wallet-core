@@ -56,6 +56,7 @@ pub struct SwiftInit {
     pub name: String,
     pub c_ffi_name: String,
     pub is_public: bool,
+    pub is_nullable: bool,
     pub params: Vec<SwiftParam>,
     pub comments: Vec<String>,
 }
@@ -256,6 +257,7 @@ fn process_inits(
             name: init_name,
             c_ffi_name: init.name.clone(),
             is_public: init.is_public,
+            is_nullable: init.is_nullable,
             params,
             comments: vec![],
         });

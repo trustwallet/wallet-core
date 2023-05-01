@@ -109,6 +109,7 @@ pub struct StructInfo {
 pub struct InitInfo {
     pub name: String,
     pub is_public: bool,
+    pub is_nullable: bool,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub params: Vec<ParamInfo>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
