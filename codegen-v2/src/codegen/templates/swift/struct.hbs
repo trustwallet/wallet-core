@@ -76,7 +76,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         } else {
             {{name}}Ptr = nil
         }
-        let {{name}} = {{name}}Ptr?.pointee
+        let {{name}} = {{name}}Ptr
         {{else}}
         {{#if wrap_as}}
         let {{name}} = {{wrap_as}}

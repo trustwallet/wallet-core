@@ -45,7 +45,7 @@ extension {{name}}
     {{/each}}
     {{#each properties}}
     public var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        let obj = TW{{../name}}(self.rawValue)
+        let obj = TW{{../name}}(rawValue: self.rawValue)
 
         // Call the underlying C function.
         let result = {{c_ffi_name}}(obj.rawValue)
