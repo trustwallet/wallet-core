@@ -25,9 +25,17 @@ struct SwiftProperty {
     pub name: String,
     pub c_ffi_name: String,
     pub is_public: bool,
+    pub operations: Vec<SwiftOperation>,
     #[serde(rename = "return")]
     pub return_type: SwiftReturn,
     pub comments: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum SwiftOperation {
+    Call { var_name: String, call: String },
+    GuardedCall { var_name: String, call: String },
+    Return { call: String },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -46,7 +54,6 @@ pub struct SwiftReturn {
     #[serde(rename = "type")]
     pub param_type: SwiftType,
     pub is_nullable: bool,
-    pub wrap_as: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -344,32 +351,94 @@ fn process_object_methods(
     Ok((swift_funcs, info_funcs))
 }
 
+enum ObjectVariant<'a> {
+    Struct(&'a str),
+    Enum(&'a str),
+}
+
+impl<'a> ObjectVariant<'a> {
+    fn name(&'a self) -> &'a str {
+        todo!()
+    }
+}
+
 fn process_object_properties(
-    object_name: &str,
+    object: &ObjectVariant,
     properties: Vec<PropertyInfo>,
 ) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {
     let mut swift_props = vec![];
     let mut info_props = vec![];
 
     for prop in properties {
-        if !prop.name.starts_with(object_name) {
+        // TODO: This should be handled by the manifest
+        if !prop.name.starts_with(object.name()) {
             // Function is not assciated to the struct.
             info_props.push(prop);
             continue;
         }
 
-        let mut prop_name = prop.name.strip_prefix(object_name).unwrap().to_string();
+        let mut ops = vec![];
+
+        // Initalize the 'self' type, which is then passed on to the underlying
+        // C FFI function.
+        //
+        // E.g:
+        // - `let obj = self.rawValue`
+        // - `let obj = TWSomeEnum(rawValue: self.RawValue")`
+        ops.push(match object {
+            ObjectVariant::Struct(_) => SwiftOperation::Call {
+                var_name: "obj".to_string(),
+                call: "self.rawValue".to_string(),
+            },
+            ObjectVariant::Enum(name) => SwiftOperation::Call {
+                var_name: "obj".to_string(),
+                call: format!("{}(rawValue: self.rawValue", name),
+            },
+        });
+
+        // Call the underlying C FFI function, passing on the `obj` instance.
+        ops.push(SwiftOperation::Call {
+            var_name: "result".to_string(),
+            call: format!("{}(obj)", prop.name),
+        });
+
+        // The `result` must be handled and returned explicitly.
+        //
+        // E.g:
+        // - `return TWStringNSString(result)`
+        // - `return SomeEnum(rawValue: result.rawValue)`
+        // - `return SomeStruct(rawValue: result)`
+        ops.push(match prop.return_type.variant {
+            TypeVariant::String => SwiftOperation::Return {
+                call: "TWStringNSString(result)".to_string(),
+            },
+            TypeVariant::Data => SwiftOperation::Return {
+                call: "TWDataNSData(result)".to_string(),
+            },
+            TypeVariant::Enum(enm) => SwiftOperation::Return {
+                call: format!("{}(rawValue: result.rawValue)", enm),
+            },
+            TypeVariant::Struct(strct) => SwiftOperation::Return {
+                call: format!("{}(rawValue: result)", strct),
+            },
+            _ => SwiftOperation::Return {
+                call: "result".to_string(),
+            },
+        });
+
+        // Pretty name.
+        let pretty_name = prop.name.strip_prefix(object.name()).unwrap().to_string();
 
         // TODO/TEMP
-        if &prop_name == "HRP" {
-            prop_name = "hrp".to_string();
+        if &pretty_name == "HRP" {
+            pretty_name = "hrp".to_string();
         }
 
         // Convert return type.
         let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
 
         swift_props.push(SwiftProperty {
-            name: first_char_to_lowercase(prop_name),
+            name: first_char_to_lowercase(pretty_name),
             c_ffi_name: prop.name.clone(),
             is_public: prop.is_public,
             return_type,

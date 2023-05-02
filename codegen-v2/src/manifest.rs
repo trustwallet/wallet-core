@@ -45,6 +45,8 @@ pub enum TypeVariant {
     UInt64T,
     Struct(String),
     Enum(String),
+    Data,
+    String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
