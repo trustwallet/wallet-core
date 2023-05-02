@@ -6,6 +6,7 @@
 
 #include "LiquidStaking/LiquidStaking.h"
 #include "HexCoding.h"
+#include "Base64.h"
 #include "uint256.h"
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWAnySigner.h>
@@ -567,6 +568,155 @@ namespace TW::LiquidStaking::tests {
             fill_tx_functor(aptos_tx);
             Aptos::Proto::SigningOutput output;
             ANY_SIGN(tx, TWCoinTypeAptos);
+            verify_tx_functor(output);
+        }
+    }
+
+    TEST(LiquidStaking, StrideStakeAtom) {
+        Proto::Input input;
+        input.set_blockchain(Proto::STRIDE);
+        input.set_protocol(Proto::Stride);
+        Proto::Stake stake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::ATOM);
+        asset.set_denom("uatom");
+        asset.set_from_address("stride1mry47pkga5tdswtluy0m8teslpalkdq0a2sjge");
+        *stake.mutable_asset() = asset;
+        stake.set_amount("100000");
+        *input.mutable_stake() = stake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        ASSERT_TRUE(ls_output.has_cosmos());
+        auto tx = *ls_output.mutable_cosmos();
+
+        auto fill_tx_functor = [](auto& tx){
+            // Following fields must be set afterwards, before signing ...tx
+            auto privateKey = parse_hex("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433");
+            tx.set_signing_mode(Cosmos::Proto::Protobuf);
+            tx.set_account_number(136412);
+            tx.set_chain_id("stride-1");
+            tx.set_memo("");
+            tx.set_sequence(0);
+            tx.set_private_key(privateKey.data(), privateKey.size());
+
+            auto& fee = *tx.mutable_fee();
+            fee.set_gas(500000);
+            auto amountOfFee = fee.add_amounts();
+            amountOfFee->set_denom("ustrd");
+            amountOfFee->set_amount("0");
+        };
+
+        auto verify_tx_functor = [](auto& tx) {
+            // Successfully broadcasted: https://www.mintscan.io/stride/txs/48E51A2571D99453C4581B30CECA2A1156C0D1EBACCD3619729B5A35AD67CC94?height=3485243
+            auto expectedJson = R"(
+                {
+                    "mode":"BROADCAST_MODE_BLOCK",
+                    "tx_bytes":"CmMKYQofL3N0cmlkZS5zdGFrZWliYy5Nc2dMaXF1aWRTdGFrZRI+Ci1zdHJpZGUxbXJ5NDdwa2dhNXRkc3d0bHV5MG04dGVzbHBhbGtkcTBhMnNqZ2USBjEwMDAwMBoFdWF0b20SYgpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAsv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarlEgQKAggBEhAKCgoFdXN0cmQSATAQoMIeGkCDaZHV5/Z3CAQC5DXkaHmF6OKUiS5XKDsl3ZnBaaVuJjlSWV2vA7MPwGbC17P6jbVJt58ZLcxIWFt76UO3y1ix"
+                })";
+            assertJSONEqual(tx.serialized(), expectedJson);
+            EXPECT_EQ(hex(tx.signature()), "836991d5e7f677080402e435e4687985e8e294892e57283b25dd99c169a56e263952595daf03b30fc066c2d7b3fa8db549b79f192dcc48585b7be943b7cb58b1");
+            EXPECT_EQ(tx.json(), "");
+            EXPECT_EQ(tx.error(), "");
+        };
+
+        {
+            fill_tx_functor(tx);
+            Cosmos::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeStride);
+            verify_tx_functor(output);
+        }
+
+        {
+            const auto inputData_ = input.SerializeAsString();
+            EXPECT_EQ(hex(inputData_), "0a420a3808011a057561746f6d222d737472696465316d72793437706b67613574647377746c7579306d387465736c70616c6b6471306132736a6765120631303030303028013002");
+            const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+            const auto outputTWData_ = WRAPD(TWLiquidStakingBuildRequest(inputTWData_.get()));
+            const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+            EXPECT_EQ(outputData.size(), 69ul);
+            Proto::Output outputProto;
+            EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+            ASSERT_TRUE(outputProto.has_cosmos());
+            ASSERT_EQ(outputProto.status().code(), Proto::OK);
+            auto aptos_tx = *ls_output.mutable_cosmos();
+            fill_tx_functor(aptos_tx);
+            Cosmos::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeStride);
+            verify_tx_functor(output);
+        }
+    }
+
+    TEST(LiquidStaking, StrideUnstakeAtom) {
+        Proto::Input input;
+        input.set_blockchain(Proto::STRIDE);
+        input.set_protocol(Proto::Stride);
+        Proto::Unstake unstake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::ATOM);
+        asset.set_from_address("stride1mry47pkga5tdswtluy0m8teslpalkdq0a2sjge");
+        *unstake.mutable_asset() = asset;
+        unstake.set_amount("40000");
+        unstake.set_receiver_chain_id("cosmoshub-4");
+        unstake.set_receiver_address("cosmos1mry47pkga5tdswtluy0m8teslpalkdq07pswu4");
+        *input.mutable_unstake() = unstake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        ASSERT_TRUE(ls_output.has_cosmos());
+        auto tx = *ls_output.mutable_cosmos();
+
+        auto fill_tx_functor = [](auto& tx){
+            // Following fields must be set afterwards, before signing ...tx
+            auto privateKey = parse_hex("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433");
+            tx.set_signing_mode(Cosmos::Proto::Protobuf);
+            tx.set_account_number(136412);
+            tx.set_chain_id("stride-1");
+            tx.set_memo("");
+            tx.set_sequence(1);
+            tx.set_private_key(privateKey.data(), privateKey.size());
+
+            auto& fee = *tx.mutable_fee();
+            fee.set_gas(1000000);
+            auto amountOfFee = fee.add_amounts();
+            amountOfFee->set_denom("ustrd");
+            amountOfFee->set_amount("0");
+        };
+
+        auto verify_tx_functor = [](auto& tx) {
+            // Successfully broadcasted: https://www.mintscan.io/stride/txs/B3D3A92A2FFB92A480A4B547A4303E6932204972A965D687DB4FB6B4E16B2C42?height=3485343
+            auto expectedJson = R"(
+                {
+                    "mode":"BROADCAST_MODE_BLOCK",
+                    "tx_bytes":"CpgBCpUBCh8vc3RyaWRlLnN0YWtlaWJjLk1zZ1JlZGVlbVN0YWtlEnIKLXN0cmlkZTFtcnk0N3BrZ2E1dGRzd3RsdXkwbTh0ZXNscGFsa2RxMGEyc2pnZRIFNDAwMDAaC2Nvc21vc2h1Yi00Ii1jb3Ntb3MxbXJ5NDdwa2dhNXRkc3d0bHV5MG04dGVzbHBhbGtkcTA3cHN3dTQSZApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAsv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarlEgQKAggBGAESEAoKCgV1c3RyZBIBMBDAhD0aQKf84TYoPqwnXw22r0dok2fYplUFu003TlIfpoT+wqTZF1lHPC+RTAoJob6x50CnfvGlgJFBEQYPD+Ccv659VVA="
+                })";
+            assertJSONEqual(tx.serialized(), expectedJson);
+            EXPECT_EQ(TW::Base64::encode(data(tx.signature())), "p/zhNig+rCdfDbavR2iTZ9imVQW7TTdOUh+mhP7CpNkXWUc8L5FMCgmhvrHnQKd+8aWAkUERBg8P4Jy/rn1VUA==");
+            EXPECT_EQ(tx.json(), "");
+            EXPECT_EQ(tx.error(), "");
+        };
+
+        {
+            fill_tx_functor(tx);
+            Cosmos::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeStride);
+            verify_tx_functor(output);
+        }
+
+        {
+            const auto inputData_ = input.SerializeAsString();
+            EXPECT_EQ(hex(inputData_), "12760a310801222d737472696465316d72793437706b67613574647377746c7579306d387465736c70616c6b6471306132736a6765120534303030301a2d636f736d6f73316d72793437706b67613574647377746c7579306d387465736c70616c6b647130377073777534220b636f736d6f736875622d3428013002");
+            const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+            const auto outputTWData_ = WRAPD(TWLiquidStakingBuildRequest(inputTWData_.get()));
+            const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+            EXPECT_EQ(outputData.size(), 121ul);
+            Proto::Output outputProto;
+            EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+            ASSERT_TRUE(outputProto.has_cosmos());
+            ASSERT_EQ(outputProto.status().code(), Proto::OK);
+            auto aptos_tx = *ls_output.mutable_cosmos();
+            fill_tx_functor(aptos_tx);
+            Cosmos::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeStride);
             verify_tx_functor(output);
         }
     }
