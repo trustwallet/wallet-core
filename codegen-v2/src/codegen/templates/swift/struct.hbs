@@ -32,13 +32,12 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}
-        {{/if}}
-        {{#if this.call_defer}}
-        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
+        {{#if this.call.defer}}
         defer {
-            {{this.call_defer.defer}}
+            {{this.call.defer}}
         }
 
+        {{/if}}
         {{/if}}
         {{#if this.guarded_call}}
         {{/if}}
@@ -60,13 +59,12 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}
-        {{/if}}
-        {{#if this.call_defer}}
-        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
+        {{#if this.call.defer}}
         defer {
-            {{this.call_defer.defer}}
+            {{this.call.defer}}
         }
 
+        {{/if}}
         {{/if}}
         {{#if this.guarded_call}}
         {{/if}}
@@ -82,12 +80,12 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}
-        {{/if}}
-        {{#if this.call_defer}}
-        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
+        {{#if this.call.defer}}
         defer {
-            {{this.call_defer.defer}}
+            {{this.call.defer}}
         }
+
+        {{/if}}
         {{/if}}
         {{#if this.guarded_call}}
         {{/if}}

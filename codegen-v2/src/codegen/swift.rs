@@ -36,11 +36,7 @@ pub enum SwiftOperation {
     Call {
         var_name: String,
         call: String,
-    },
-    CallDefer {
-        var_name: String,
-        call: String,
-        defer: String,
+        defer: Option<String>,
     },
     GuardedCall {
         var_name: String,
@@ -296,19 +292,20 @@ fn process_inits(
         let mut params = vec![];
         for param in init.params {
             let call = match &param.ty.variant {
-                TypeVariant::String => Some(SwiftOperation::CallDefer {
+                TypeVariant::String => Some(SwiftOperation::Call {
                     var_name: param.name.clone(),
                     call: format!("TWStringCreateWithNSString({})", param.name),
-                    defer: format!("TWStringDelete({})", param.name),
+                    defer: Some(format!("TWStringDelete({})", param.name)),
                 }),
-                TypeVariant::Data => Some(SwiftOperation::CallDefer {
+                TypeVariant::Data => Some(SwiftOperation::Call {
                     var_name: param.name.clone(),
                     call: format!("TWDataCreateWithNSData({})", param.name),
-                    defer: format!("TWDataDelete({})", param.name),
+                    defer: Some(format!("TWDataDelete({})", param.name)),
                 }),
                 TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
                     var_name: param.name.clone(),
                     call: format!("{enm}(rawValue: {}.rawValue)", param.name),
+                    defer: None,
                 }),
                 // Reference the parameter by name directly, as defined in the
                 // function interface.
@@ -339,6 +336,7 @@ fn process_inits(
         ops.push(SwiftOperation::Call {
             var_name: "result".to_string(),
             call: format!("{}({})", init.name, param_names),
+            defer: None,
         });
 
         // The `result` must be handled and returned explicitly.
@@ -398,10 +396,12 @@ fn process_object_methods(
                 ObjectVariant::Struct(_) => SwiftOperation::Call {
                     var_name: "obj".to_string(),
                     call: "self.rawValue".to_string(),
+                    defer: None,
                 },
                 ObjectVariant::Enum(name) => SwiftOperation::Call {
                     var_name: "obj".to_string(),
                     call: format!("{}(rawValue: self.rawValue)", name),
+                    defer: None,
                 },
             });
         }
@@ -420,19 +420,20 @@ fn process_object_methods(
             }
 
             let call = match &param.ty.variant {
-                TypeVariant::String => Some(SwiftOperation::CallDefer {
+                TypeVariant::String => Some(SwiftOperation::Call {
                     var_name: param.name.clone(),
                     call: format!("TWStringCreateWithNSString({})", param.name),
-                    defer: format!("TWStringDelete({})", param.name),
+                    defer: Some(format!("TWStringDelete({})", param.name)),
                 }),
-                TypeVariant::Data => Some(SwiftOperation::CallDefer {
+                TypeVariant::Data => Some(SwiftOperation::Call {
                     var_name: param.name.clone(),
                     call: format!("TWDataCreateWithNSData({})", param.name),
-                    defer: format!("TWDataDelete({})", param.name),
+                    defer: Some(format!("TWDataDelete({})", param.name)),
                 }),
                 TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
                     var_name: param.name.clone(),
                     call: format!("{enm}(rawValue: {}.rawValue)", param.name),
+                    defer: None,
                 }),
                 // Reference the parameter by name directly, as defined in the
                 // function interface.
@@ -464,6 +465,7 @@ fn process_object_methods(
         ops.push(SwiftOperation::Call {
             var_name: "result".to_string(),
             call: format!("{}({})", func.name, param_names),
+            defer: None,
         });
 
         // The `result` must be handled and returned explicitly.
@@ -552,10 +554,12 @@ fn process_object_properties(
             ObjectVariant::Struct(_) => SwiftOperation::Call {
                 var_name: "obj".to_string(),
                 call: "self.rawValue".to_string(),
+                defer: None,
             },
             ObjectVariant::Enum(name) => SwiftOperation::Call {
                 var_name: "obj".to_string(),
                 call: format!("{}(rawValue: self.rawValue)", name),
+                defer: None,
             },
         });
 
@@ -565,6 +569,7 @@ fn process_object_properties(
         ops.push(SwiftOperation::Call {
             var_name: "result".to_string(),
             call: format!("{}(obj)", prop.name),
+            defer: None,
         });
 
         // The `result` must be handled and returned explicitly.
