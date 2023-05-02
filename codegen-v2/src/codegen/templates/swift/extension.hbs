@@ -11,58 +11,43 @@ extension {{name}}
     {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}}{{/each}} {
     {{#each methods}}
     {{#if is_static}}public static func{{else}}public func{{/if}} {{name}} ({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        {{#each params}}
-        {{#if wrap_as}}
-        let {{name}} = {{wrap_as}}
-        {{else}}
-        let {{name}} = {{name}}
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
         {{/if}}
-        {{#if deter_as}}
+        {{#if this.call_defer}}
+        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
         defer {
-            {{deter_as}}
+            {{this.call_defer.defer}}
         }
+        {{/if}}
+        {{#if this.guarded_call}}
+        {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
         {{/if}}
         {{/each}}
-
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#unless is_static}}TW{{../name}}(rawValue: self.rawValue){{#if params}}, {{/if}}{{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
-
-        {{#if return.is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
-            return nil
-        }
-
-        {{/if}}
-        {{#if return.wrap_as}}
-        // Return with conversion function.
-        return {{return.wrap_as}}
-        {{else}}
-        return result
-        {{/if}}
     }
 
     {{/each}}
     {{#each properties}}
     public var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        let obj = TW{{../name}}(rawValue: self.rawValue)
-
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}(obj.rawValue)
-
-        {{#if return.is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
-            return nil
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
+        {{/if}}
+        {{#if this.call_defer}}
+        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
+        defer {
+            {{this.call_defer.defer}}
         }
-
         {{/if}}
-        {{#if return.wrap_as}}
-        // Return with conversion function.
-        return {{return.wrap_as}}
-        {{else}}
-        return result
+        {{#if this.guarded_call}}
         {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
+        {{/if}}
+        {{/each}}
     }
 
     {{/each}}

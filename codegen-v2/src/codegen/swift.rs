@@ -11,10 +11,10 @@ pub struct SwiftType(String);
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftFunction {
     pub name: String,
-    pub c_ffi_name: String,
     pub is_public: bool,
     pub is_static: bool,
     pub params: Vec<SwiftParam>,
+    pub operations: Vec<SwiftOperation>,
     #[serde(rename = "return")]
     pub return_type: SwiftReturn,
     pub comments: Vec<String>,
@@ -31,7 +31,8 @@ struct SwiftProperty {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum SwiftOperation {
+#[serde(rename_all = "snake_case")]
+pub enum SwiftOperation {
     Call {
         var_name: String,
         call: String,
@@ -132,9 +133,11 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let (inits, mut methods, properties);
         (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
-        (methods, info.functions) = process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions).unwrap();
+        (methods, info.functions) =
+            process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions).unwrap();
         (properties, info.properties) =
-            process_object_properties(&ObjectVariant::Struct(&strct.name), info.properties).unwrap();
+            process_object_properties(&ObjectVariant::Struct(&strct.name), info.properties)
+                .unwrap();
 
         // Avoid rendering empty structs.
         if inits.is_empty() && methods.is_empty() && properties.is_empty() {
@@ -155,7 +158,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let equality_operator = if let Some((idx, func)) = equality_method {
             let operator = SwiftOperatorEquality {
-                c_ffi_name: func.c_ffi_name.clone(),
+                c_ffi_name: func.name.clone(),
                 is_public: func.is_public,
                 is_static: func.is_static,
             };
@@ -180,6 +183,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "properties": properties,
         });
 
+        // TODO
+        //println!("{}", serde_json::to_string_pretty(&payload).unwrap());
+
         let out = engine.render("struct", &payload).unwrap();
 
         outputs.structs.push((struct_name.to_string(), out));
@@ -188,7 +194,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     // Render enums.
     for enm in info.enums {
         let (methods, properties);
-        (methods, info.functions) = process_object_methods(&ObjectVariant::Enum(&enm.name), info.functions).unwrap();
+        (methods, info.functions) =
+            process_object_methods(&ObjectVariant::Enum(&enm.name), info.functions).unwrap();
         (properties, info.properties) =
             process_object_properties(&ObjectVariant::Enum(&enm.name), info.properties).unwrap();
 
@@ -431,9 +438,9 @@ fn process_object_methods(
 
         swift_funcs.push(SwiftFunction {
             name: first_char_to_lowercase(func_name),
-            c_ffi_name: func.name.clone(),
             is_public: func.is_public,
             is_static: func.is_static,
+            operations: ops,
             params,
             return_type,
             comments: vec![],

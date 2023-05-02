@@ -64,82 +64,43 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     {{/each}}
     {{#each methods}}
     {{#if is_static}}public static func{{else}}public func{{/if}} {{name}}({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{/unless}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        {{#each params}}
-        {{#if is_nullable}}
-        let {{name}}Ptr: UnsafeRawPointer?
-        if let {{name}} = {{name}} {
-        {{#if wrap_as}}
-            {{name}}Ptr = {{wrap_as}}
-        {{else}}
-            {{name}}Ptr = {{name}}
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
         {{/if}}
-        } else {
-            {{name}}Ptr = nil
-        }
-        let {{name}} = {{name}}Ptr
-        {{else}}
-        {{#if wrap_as}}
-        let {{name}} = {{wrap_as}}
-        {{else}}
-        let {{name}} = {{name}}
-        {{/if}}
-        {{/if}}
-        {{#if deter_as}}
+        {{#if this.call_defer}}
+        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
         defer {
-            {{#if is_nullable}}
-            if let {{name}} = {{name}} {
-                {{deter_as}}
-            }
-            {{else}}
-            {{deter_as}}
-            {{/if}}
+            {{this.call_defer.defer}}
         }
         {{/if}}
-
+        {{#if this.guarded_call}}
+        {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
+        {{/if}}
         {{/each}}
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#unless is_static}}self.rawValue{{#if params}}, {{/if}}{{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
-
-        {{#if return.is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
-            return nil
-        }
-
-        {{/if}}
-        {{#if return.wrap_as}}
-        // Return with conversion function.
-        return {{return.wrap_as}}
-        {{else}}
-        return result
-        {{/if}}
     }
 
     {{/each}}
     {{#each properties}}
     public var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        {{#if ../is_class}}
-        let obj = self.rawValue
-        {{else}}
-        let obj = TW{{../name}}(rawValue: self.rawValue)
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
         {{/if}}
-
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}(obj)
-
-        {{#if return.is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
-            return nil
+        {{#if this.call_defer}}
+        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
+        defer {
+            {{this.call_defer.defer}}
         }
-
         {{/if}}
-        {{#if return.wrap_as}}
-        // Return with conversion function.
-        return {{return.wrap_as}}
-        {{else}}
-        return result
+        {{#if this.guarded_call}}
         {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
+        {{/if}}
+        {{/each}}
     }
 
     {{/each}}

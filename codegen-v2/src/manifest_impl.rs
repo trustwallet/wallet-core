@@ -61,7 +61,7 @@ impl TypeInfo {
                 if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
                     if keyword.0 == "TWData" {
                         return Ok(TypeInfo {
-                            variant: TypeVariant::Void,
+                            variant: TypeVariant::Data,
                             // Is always const
                             is_constant: true,
                             is_nullable,
@@ -70,7 +70,7 @@ impl TypeInfo {
                         });
                     } else if keyword.0 == "TWString" {
                         return Ok(TypeInfo {
-                            variant: TypeVariant::Void,
+                            variant: TypeVariant::String,
                             // Is always const
                             is_constant: true,
                             is_nullable,
