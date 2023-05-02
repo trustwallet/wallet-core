@@ -87,7 +87,7 @@ std::string chainName(Chain chain) {
     case Chain::LTC:
         return "LTC";
     case Chain::ATOM:
-        return "ATOM";
+        return "GAIA";
     case Chain::THOR:
     default:
         return "THOR";
