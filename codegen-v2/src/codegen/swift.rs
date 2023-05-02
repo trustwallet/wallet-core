@@ -132,9 +132,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let (inits, mut methods, properties);
         (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
-        (methods, info.functions) = process_object_methods(&strct.name, info.functions).unwrap();
+        (methods, info.functions) = process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions).unwrap();
         (properties, info.properties) =
-            process_object_properties(&strct.name, info.properties).unwrap();
+            process_object_properties(&ObjectVariant::Struct(&strct.name), info.properties).unwrap();
 
         // Avoid rendering empty structs.
         if inits.is_empty() && methods.is_empty() && properties.is_empty() {
@@ -188,9 +188,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     // Render enums.
     for enm in info.enums {
         let (methods, properties);
-        (methods, info.functions) = process_object_methods(&enm.name, info.functions).unwrap();
+        (methods, info.functions) = process_object_methods(&ObjectVariant::Enum(&enm.name), info.functions).unwrap();
         (properties, info.properties) =
-            process_object_properties(&enm.name, info.properties).unwrap();
+            process_object_properties(&ObjectVariant::Enum(&enm.name), info.properties).unwrap();
 
         let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
 
@@ -350,19 +350,19 @@ fn process_object_methods(
                 continue;
             }
 
-            let call = match param.ty.variant {
+            let call = match &param.ty.variant {
                 TypeVariant::String => Some(SwiftOperation::CallDefer {
-                    var_name: param.name,
+                    var_name: param.name.clone(),
                     call: format!("TWStringCreateWithNSString({})", param.name),
                     defer: format!("TWStringDelete({})", param.name),
                 }),
                 TypeVariant::Data => Some(SwiftOperation::CallDefer {
-                    var_name: param.name,
+                    var_name: param.name.clone(),
                     call: format!("TWDataCreateWithNSData({})", param.name),
                     defer: format!("TWDataDelete({})", param.name),
                 }),
                 TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
-                    var_name: param.name,
+                    var_name: param.name.clone(),
                     call: format!("{enm}(rawValue: {}.rawValue)", param.name),
                 }),
                 // Reference the parameter by name directly, as defined in the
@@ -403,7 +403,7 @@ fn process_object_methods(
         // - `return TWStringNSString(result)`
         // - `return SomeEnum(rawValue: result.rawValue)`
         // - `return SomeStruct(rawValue: result)`
-        ops.push(match func.return_type.variant {
+        ops.push(match &func.return_type.variant {
             TypeVariant::String => SwiftOperation::Return {
                 call: "TWStringNSString(result)".to_string(),
             },
@@ -450,7 +450,9 @@ enum ObjectVariant<'a> {
 
 impl<'a> ObjectVariant<'a> {
     fn name(&'a self) -> &'a str {
-        todo!()
+        match self {
+            ObjectVariant::Struct(n) | ObjectVariant::Enum(n) => n,
+        }
     }
 }
 
@@ -502,7 +504,7 @@ fn process_object_properties(
         // - `return TWStringNSString(result)`
         // - `return SomeEnum(rawValue: result.rawValue)`
         // - `return SomeStruct(rawValue: result)`
-        ops.push(match prop.return_type.variant {
+        ops.push(match &prop.return_type.variant {
             TypeVariant::String => SwiftOperation::Return {
                 call: "TWStringNSString(result)".to_string(),
             },
@@ -622,9 +624,6 @@ impl TryFrom<ParamInfo> for SwiftParam {
             name: value.name,
             param_type,
             is_nullable: value.ty.is_nullable,
-            skip_self: false,
-            wrap_as,
-            deter_as,
         })
     }
 }
