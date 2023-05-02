@@ -66,6 +66,25 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
         {{/if}}
         {{/if}}
+        {{#if this.call_optional}}
+        let ptr: UnsafeRawPointer?
+        if let {{this.call_optional.var_name}} = {{this.call_optional.var_name}} {
+            ptr = {{this.call_optional.call}}
+        } else {
+            ptr = nil
+        }
+        {{#if this.call_optional.defer}}
+        defer {
+            if let {{this.call_optional.var_name}}  = ptr {
+                {{this.call_optional.defer}}
+            }
+        }
+        let {{this.call_optional.var_name}} = ptr
+
+        {{else}}
+
+        {{/if}}
+        {{/if}}
         {{#if this.guarded_call}}
         {{/if}}
         {{#if this.return}}
@@ -84,6 +103,25 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         defer {
             {{this.call.defer}}
         }
+
+        {{/if}}
+        {{/if}}
+        {{#if this.call_optional}}
+        let ptr: UnsafeRawPointer?
+        if let {{this.call_optional.var_name}} = {{this.call_optional.var_name}} {
+            ptr = {{this.call_optional.call}}
+        } else {
+            ptr = nil
+        }
+        {{#if this.call_optional.defer}}
+        defer {
+            if let {{this.call_optional.var_name}}  = ptr {
+                {{this.call_optional.defer}}
+            }
+        }
+        let {{this.call_optional.var_name}} = ptr
+
+        {{else}}
 
         {{/if}}
         {{/if}}

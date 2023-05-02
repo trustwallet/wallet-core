@@ -38,6 +38,11 @@ pub enum SwiftOperation {
         call: String,
         defer: Option<String>,
     },
+    CallOptional {
+        var_name: String,
+        call: String,
+        defer: Option<String>,
+    },
     GuardedCall {
         var_name: String,
         call: String,
@@ -291,37 +296,50 @@ fn process_inits(
 
         let mut params = vec![];
         for param in init.params {
-            let call = match &param.ty.variant {
-                TypeVariant::String => Some(SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("TWStringCreateWithNSString({})", param.name),
-                    defer: Some(format!("TWStringDelete({})", param.name)),
-                }),
-                TypeVariant::Data => Some(SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("TWDataCreateWithNSData({})", param.name),
-                    defer: Some(format!("TWDataDelete({})", param.name)),
-                }),
-                TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("{enm}(rawValue: {}.rawValue)", param.name),
-                    defer: None,
-                }),
-                // Reference the parameter by name directly, as defined in the
-                // function interface.
-                _ => None,
-            };
-
-            if let Some(call) = call {
-                ops.push(call);
-            }
-
             // Convert parameter to Swift parameter.
             params.push(SwiftParam {
-                name: param.name,
-                param_type: SwiftType::try_from(param.ty.variant).unwrap(),
+                name: param.name.clone(),
+                param_type: SwiftType::try_from(param.ty.variant.clone()).unwrap(),
                 is_nullable: param.ty.is_nullable,
             });
+
+            let (var_name, call, defer) = match &param.ty.variant {
+                TypeVariant::String => (
+                    param.name.clone(),
+                    format!("TWStringCreateWithNSString({})", param.name),
+                    Some(format!("TWStringDelete({})", param.name)),
+                ),
+                TypeVariant::Data => (
+                    param.name.clone(),
+                    format!("TWDataCreateWithNSData({})", param.name),
+                    Some(format!("TWDataDelete({})", param.name)),
+                ),
+                TypeVariant::Struct(_) => {
+                    (param.name.clone(), format!("{}.rawValue", param.name), None)
+                }
+                TypeVariant::Enum(enm) => (
+                    param.name.clone(),
+                    format!("{enm}(rawValue: {}.rawValue)", param.name),
+                    None,
+                ),
+                // Reference the parameter by name directly, as defined in the
+                // function interface.
+                _ => continue,
+            };
+
+            if param.ty.is_nullable {
+                ops.push(SwiftOperation::CallOptional {
+                    var_name,
+                    call,
+                    defer,
+                })
+            } else {
+                ops.push(SwiftOperation::Call {
+                    var_name,
+                    call,
+                    defer,
+                })
+            }
         }
 
         // Call the underlying C FFI function, passing on the `obj` instance.
@@ -419,37 +437,50 @@ fn process_object_methods(
                 _ => {}
             }
 
-            let call = match &param.ty.variant {
-                TypeVariant::String => Some(SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("TWStringCreateWithNSString({})", param.name),
-                    defer: Some(format!("TWStringDelete({})", param.name)),
-                }),
-                TypeVariant::Data => Some(SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("TWDataCreateWithNSData({})", param.name),
-                    defer: Some(format!("TWDataDelete({})", param.name)),
-                }),
-                TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("{enm}(rawValue: {}.rawValue)", param.name),
-                    defer: None,
-                }),
-                // Reference the parameter by name directly, as defined in the
-                // function interface.
-                _ => None,
-            };
-
-            if let Some(call) = call {
-                ops.push(call);
-            }
-
             // Convert parameter to Swift parameter.
             params.push(SwiftParam {
-                name: param.name,
-                param_type: SwiftType::try_from(param.ty.variant).unwrap(),
+                name: param.name.clone(),
+                param_type: SwiftType::try_from(param.ty.variant.clone()).unwrap(),
                 is_nullable: param.ty.is_nullable,
             });
+
+            let (var_name, call, defer) = match &param.ty.variant {
+                TypeVariant::String => (
+                    param.name.clone(),
+                    format!("TWStringCreateWithNSString({})", param.name),
+                    Some(format!("TWStringDelete({})", param.name)),
+                ),
+                TypeVariant::Data => (
+                    param.name.clone(),
+                    format!("TWDataCreateWithNSData({})", param.name),
+                    Some(format!("TWDataDelete({})", param.name)),
+                ),
+                TypeVariant::Struct(_) => {
+                    (param.name.clone(), format!("{}.rawValue", param.name), None)
+                }
+                TypeVariant::Enum(enm) => (
+                    param.name.clone(),
+                    format!("{enm}(rawValue: {}.rawValue)", param.name),
+                    None,
+                ),
+                // Reference the parameter by name directly, as defined in the
+                // function interface.
+                _ => continue,
+            };
+
+            if param.ty.is_nullable {
+                ops.push(SwiftOperation::CallOptional {
+                    var_name,
+                    call,
+                    defer,
+                })
+            } else {
+                ops.push(SwiftOperation::Call {
+                    var_name,
+                    call,
+                    defer,
+                })
+            }
         }
 
         // Call the underlying C FFI function, passing on the `obj` instance.
