@@ -693,46 +693,6 @@ impl From<TypeVariant> for SwiftType {
     }
 }
 
-impl TryFrom<ParamInfo> for SwiftParam {
-    type Error = Error;
-
-    fn try_from(value: ParamInfo) -> Result<Self> {
-        let (param_type, wrap_as, deter_as) = if value.ty.tags.iter().any(|t| t == "TW_DATA") {
-            (
-                SwiftType("Data".to_string()),
-                Some(format!("TWDataCreateWithNSData({})", value.name)),
-                Some(format!("TWDataDelete({})", value.name)),
-            )
-        } else if value.ty.tags.iter().any(|t| t == "TW_STRING") {
-            (
-                SwiftType("String".to_string()),
-                Some(format!("TWStringCreateWithNSString({})", value.name)),
-                Some(format!("TWStringDelete({})", value.name)),
-            )
-        } else {
-            let wrap_as = match &value.ty.variant {
-                TypeVariant::Struct(_) => Some(format!("{}.rawValue", value.name)),
-                TypeVariant::Enum(obj_name) => {
-                    Some(format!("{obj_name}(rawValue: {}.rawValue)", value.name))
-                }
-                _ => None,
-            };
-
-            (
-                SwiftType::try_from(value.ty.variant).unwrap(),
-                wrap_as,
-                None,
-            )
-        };
-
-        Ok(SwiftParam {
-            name: value.name,
-            param_type,
-            is_nullable: value.ty.is_nullable,
-        })
-    }
-}
-
 impl TryFrom<ProtoInfo> for SwiftProto {
     type Error = Error;
 
