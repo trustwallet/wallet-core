@@ -16,7 +16,7 @@ pub struct SwiftFunction {
     pub is_static: bool,
     pub params: Vec<SwiftParam>,
     #[serde(rename = "return")]
-    pub return_type: SwiftReturnParam,
+    pub return_type: SwiftReturn,
     pub comments: Vec<String>,
 }
 
@@ -27,7 +27,7 @@ struct SwiftProperty {
     pub is_public: bool,
     pub is_static: bool,
     #[serde(rename = "return")]
-    pub return_type: SwiftReturnParam,
+    pub return_type: SwiftReturn,
     pub comments: Vec<String>,
 }
 
@@ -43,15 +43,7 @@ pub struct SwiftParam {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SwiftSelfParam {
-    pub name: String,
-    #[serde(rename = "type")]
-    pub param_type: SwiftType,
-    pub wrap_as: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SwiftReturnParam {
+pub struct SwiftReturn {
     #[serde(rename = "type")]
     pub param_type: SwiftType,
     pub is_nullable: bool,
@@ -337,7 +329,7 @@ fn process_object_methods(
         }
 
         // Convert return type.
-        let return_type = SwiftReturnParam::try_from(func.return_type).unwrap();
+        let return_type = SwiftReturn::try_from(func.return_type).unwrap();
 
         swift_funcs.push(SwiftFunction {
             name: first_char_to_lowercase(func_name),
@@ -370,7 +362,7 @@ fn process_object_properties(
         let prop_name = prop.name.strip_prefix(object_name).unwrap().to_string();
 
         // Convert return type.
-        let return_type = SwiftReturnParam::try_from(prop.return_type).unwrap();
+        let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
 
         swift_props.push(SwiftProperty {
             name: first_char_to_lowercase(prop_name),
@@ -423,7 +415,7 @@ impl From<TypeVariant> for SwiftType {
     }
 }
 
-impl TryFrom<TypeInfo> for SwiftReturnParam {
+impl TryFrom<TypeInfo> for SwiftReturn {
     type Error = Error;
 
     fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
@@ -449,7 +441,7 @@ impl TryFrom<TypeInfo> for SwiftReturnParam {
             (SwiftType::try_from(value.variant).unwrap(), wrap_as)
         };
 
-        Ok(SwiftReturnParam {
+        Ok(SwiftReturn {
             param_type,
             is_nullable: value.is_nullable,
             wrap_as,
