@@ -66,17 +66,17 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     {{#if is_static}}public static func{{else}}public func{{/if}} {{name}}({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{/unless}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each params}}
         {{#if is_nullable}}
-        let {{name}}Maybe: UnsafeRawPointer?
+        let {{name}}Ptr: UnsafeRawPointer?
         if let {{name}} = {{name}} {
         {{#if wrap_as}}
-            {{name}}Maybe = {{wrap_as}}
+            {{name}}Ptr = {{wrap_as}}
         {{else}}
-            {{name}}Maybe = {{name}}
+            {{name}}Ptr = {{name}}
         {{/if}}
         } else {
-            {{name}}Maybe = nil
+            {{name}}Ptr = nil
         }
-        let {{name}} = {{name}}Maybe
+        let {{name}} = {{name}}Ptr?.pointee
         {{else}}
         {{#if wrap_as}}
         let {{name}} = {{wrap_as}}
