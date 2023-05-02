@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+ed25519-dalek = "1"
+curve25519-dalek = "3"
+blake2 = "0.9"
 lazy_static = "1.4.0"
 k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
 starknet-crypto = "0.4.3"
@@ -13,6 +16,7 @@ tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 zeroize = "1.6.0"
+ed25519-dalek-blake2b = "1.0.2"
 
 [dev-dependencies]
 serde = { version = "1.0.159", features = ["derive"] }
