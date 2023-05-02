@@ -359,7 +359,12 @@ fn process_object_properties(
             continue;
         }
 
-        let prop_name = prop.name.strip_prefix(object_name).unwrap().to_string();
+        let mut prop_name = prop.name.strip_prefix(object_name).unwrap().to_string();
+
+        // TODO/TEMP
+        if &prop_name == "HRP" {
+            prop_name = "hrp".to_string();
+        }
 
         // Convert return type.
         let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
@@ -486,8 +491,8 @@ impl TryFrom<ParamInfo> for SwiftParam {
             param_type,
             is_nullable: value.ty.is_nullable,
             skip_self: false,
-            wrap_as: wrap_as,
-            deter_as: deter_as,
+            wrap_as,
+            deter_as,
         })
     }
 }
