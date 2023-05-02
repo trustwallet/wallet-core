@@ -291,6 +291,19 @@ message Message {
         VoteOption option      = 3;
     }
 
+    message MsgStrideLiquidStakingStake {
+        string creator = 1;
+        string amount = 2;
+        string host_denom = 3;
+    }
+
+    message MsgStrideLiquidStakingRedeem {
+        string creator = 1;
+        string amount = 2;
+        string host_zone = 3;
+        string receiver = 4;
+    }
+
     // The payload message
     oneof message_oneof {
         Send send_coins_message = 1;
@@ -311,6 +324,8 @@ message Message {
         AuthGrant  auth_grant = 16;
         AuthRevoke auth_revoke = 17;
         MsgVote msg_vote = 18;
+        MsgStrideLiquidStakingStake msg_stride_liquid_staking_stake = 19;
+        MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 20;
     }
 }
 

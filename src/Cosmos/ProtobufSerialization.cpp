@@ -14,6 +14,7 @@
 #include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/authz_tx.pb.h"
 #include "Protobuf/tx.pb.h"
+#include "Protobuf/stride_liquid_staking.pb.h"
 #include "Protobuf/gov_tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 #include "Protobuf/ibc_applications_transfer_tx.pb.h"
@@ -289,6 +290,25 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             msgVote.set_voter(vote.voter());
             any.PackFrom(msgVote, ProtobufAnyNamespacePrefix);
             return any;
+        }
+        case Proto::Message::kMsgStrideLiquidStakingStake: {
+                const auto& stride_liquid_staking_stake = msg.msg_stride_liquid_staking_stake();
+                auto liquid_staking_msg = stride::stakeibc::MsgLiquidStake();
+                liquid_staking_msg.set_creator(stride_liquid_staking_stake.creator());
+                liquid_staking_msg.set_amount(stride_liquid_staking_stake.amount());
+                liquid_staking_msg.set_host_denom(stride_liquid_staking_stake.host_denom());
+                any.PackFrom(liquid_staking_msg, ProtobufAnyNamespacePrefix);
+                return any;
+        }
+        case Proto::Message::kMsgStrideLiquidStakingRedeem: {
+                const auto& stride_liquid_staking_redeem = msg.msg_stride_liquid_staking_redeem();
+                auto liquid_staking_msg = stride::stakeibc::MsgRedeemStake();
+                liquid_staking_msg.set_creator(stride_liquid_staking_redeem.creator());
+                liquid_staking_msg.set_amount(stride_liquid_staking_redeem.amount());
+                liquid_staking_msg.set_receiver(stride_liquid_staking_redeem.receiver());
+                liquid_staking_msg.set_host_zone(stride_liquid_staking_redeem.host_zone());
+                any.PackFrom(liquid_staking_msg, ProtobufAnyNamespacePrefix);
+                return any;
         }
 
         default:
