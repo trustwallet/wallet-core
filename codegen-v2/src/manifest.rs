@@ -137,7 +137,6 @@ pub struct FunctionInfo {
 pub struct PropertyInfo {
     pub name: String,
     pub is_public: bool,
-    pub is_static: bool,
     pub return_type: TypeInfo,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub comments: Vec<String>,

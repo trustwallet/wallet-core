@@ -260,7 +260,7 @@ impl PropertyInfo {
         }
 
         // The property must have one of the two available markers and is always public.
-        let (is_static, is_public) = match markers.next() {
+        let (_is_static, is_public) = match markers.next() {
             Some(GMarker::TwExportProperty) => (false, true),
             Some(GMarker::TwExportStaticProperty) => (true, true),
             _ => return Err(Error::BadObject),
@@ -282,7 +282,6 @@ impl PropertyInfo {
         Ok(PropertyInfo {
             name,
             is_public,
-            is_static,
             return_type,
             comments: vec![],
         })

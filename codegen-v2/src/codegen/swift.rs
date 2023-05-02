@@ -25,7 +25,6 @@ struct SwiftProperty {
     pub name: String,
     pub c_ffi_name: String,
     pub is_public: bool,
-    pub is_static: bool,
     #[serde(rename = "return")]
     pub return_type: SwiftReturn,
     pub comments: Vec<String>,
@@ -373,7 +372,6 @@ fn process_object_properties(
             name: first_char_to_lowercase(prop_name),
             c_ffi_name: prop.name.clone(),
             is_public: prop.is_public,
-            is_static: prop.is_static,
             return_type,
             comments: vec![],
         });
