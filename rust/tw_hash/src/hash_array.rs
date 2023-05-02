@@ -16,6 +16,20 @@ pub type H264 = Hash<33>;
 pub type H512 = Hash<64>;
 pub type H520 = Hash<65>;
 
+pub fn concat<const L: usize, const R: usize, const N: usize>(
+    left: Hash<L>,
+    right: Hash<R>,
+) -> Hash<N> {
+    // Ensure if `L + R == N` at compile time.
+    let _ = AssertSplit::<L, R, N>::VALID;
+
+    let mut res = Hash::new();
+    res[0..L].copy_from_slice(left.as_slice());
+    res[L..(L + R)].copy_from_slice(right.as_slice());
+
+    res
+}
+
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Hash<const N: usize>([u8; N]);
 
@@ -34,6 +48,19 @@ impl<const N: usize> Hash<N> {
         self.0.to_vec()
     }
 
+    pub fn split<const L: usize, const R: usize>(&self) -> (Hash<L>, Hash<R>) {
+        // Ensure if `L + R == N` at compile time.
+        let _ = AssertSplit::<L, R, N>::VALID;
+
+        let mut left: Hash<L> = Hash::default();
+        let mut right: Hash<R> = Hash::default();
+
+        left.copy_from_slice(&self.0[0..L]);
+        right.copy_from_slice(&self.0[L..]);
+
+        (left, right)
+    }
+
     pub const fn take(self) -> [u8; N] {
         self.0
     }
@@ -41,6 +68,27 @@ impl<const N: usize> Hash<N> {
     pub const fn len() -> usize {
         N
     }
+}
+
+/// This is a [`Hash::split`] helper that ensures that `L + R == N` at compile time.
+/// Assertion example:
+/// ```rust(ignore)
+/// let hash = H256::default();
+/// let (left, right): (H128, H160) = hash.split();
+///
+/// // output:
+/// // error[E0080]: evaluation of `hash_array::AssertSplit::<16, 20, 32>::EQ` failed
+/// //   --> tw_hash/src/hash_array.rs:67:41
+/// //    |
+/// // 67 |     pub const EQ: usize = (R + L - N) + (N - (R + L));
+/// //    |                                         ^^^^^^^^^^^^^ attempt to compute `32_usize - 36_usize`, which would overflow
+/// ```
+///
+/// TODO remove once [feature(generic_const_exprs)](https://github.com/rust-lang/rust/issues/76560) is stable.
+struct AssertSplit<const L: usize, const R: usize, const N: usize>;
+
+impl<const L: usize, const R: usize, const N: usize> AssertSplit<L, R, N> {
+    pub const VALID: usize = (R + L - N) + (N - (R + L));
 }
 
 /// Implement `str` -> `Hash<N>` conversion for test purposes.
@@ -186,12 +234,36 @@ mod tests {
             other => panic!("Expected 'Error::InvalidHashLength', found: {other:?}"),
         }
     }
+
+    #[test]
+    fn test_hash_split_at() {
+        let hash =
+            Hash::<32>::from("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+
+        let (left, right): (Hash<10>, Hash<22>) = hash.split();
+        assert_eq!(left, Hash::from("afeefca74d9a325cf1d6"));
+        assert_eq!(
+            right,
+            Hash::from("b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
+        );
+    }
+
+    #[test]
+    fn test_hash_concat() {
+        let left: Hash<10> = Hash::from("afeefca74d9a325cf1d6");
+        let right: Hash<22> = Hash::from("b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+        let res: Hash<32> = concat(left, right);
+
+        let expected: Hash<32> =
+            Hash::from("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+        assert_eq!(res, expected);
+    }
 }
 
 /// cbindgen:ignore
 #[cfg(all(test, feature = "serde"))]
 mod serde_tests {
-    use super::Hash;
+    use super::*;
     use serde_json::json;
 
     const BYTES_32: [u8; 32] = [

@@ -4,8 +4,94 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use digest::{consts::U64, Digest};
+
+mod private;
+mod public;
+mod secret;
+mod signature;
+
+pub use signature::Signature;
+
+pub mod sha512 {
+    use sha2::Sha512;
+
+    pub type PrivateKey = crate::ed25519::private::PrivateKey<Sha512>;
+    pub type PublicKey = crate::ed25519::public::PublicKey<Sha512>;
+}
+
+pub mod blake2b {
+    use blake2::Blake2b;
+
+    pub type PrivateKey = crate::ed25519::private::PrivateKey<Blake2b>;
+    pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b>;
+}
+
+pub trait Hash512: Digest<OutputSize = U64> {
+    const OUTPUT_LEN: usize = 64;
+    const HALF_LEN: usize = 32;
+}
+
+impl<T> Hash512 for T where T: Digest<OutputSize = U64> {}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::traits::SigningKeyTrait;
+    use tw_hash::sha2::sha256;
+    use tw_hash::{H256, H512};
+
+    #[test]
+    fn test_private_to_public() {
+        let private = sha512::PrivateKey::from(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        );
+        let public = private.public();
+
+        let expected =
+            H256::from("4870d56d074c50e891506d78faa4fb69ca039cc5f131eb491e166b975880e867");
+        assert_eq!(public.to_bytes(), expected);
+    }
+
+    #[test]
+    fn test_private_to_public_blake2b() {
+        let private = blake2b::PrivateKey::from(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        );
+        let public = private.public();
+
+        let expected =
+            H256::from("b689ab808542e13f3d2ec56fe1efe43a1660dcadc73ce489fde7df98dd8ce5d9");
+        assert_eq!(public.to_bytes(), expected);
+    }
+
+    #[test]
+    fn test_keypair_sign_verify() {
+        let keypair = sha512::PrivateKey::from(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        );
+        let to_sign = sha256(b"Hello");
+        let actual = keypair.sign(to_sign).unwrap();
+
+        let expected = H512::from("42848abf2641a731e18b8a1fb80eff341a5acebdc56faeccdcbadb960aef775192842fccec344679446daa4d02d264259c8f9aa364164ebe0ebea218581e2e03");
+        assert_eq!(actual.to_bytes(), expected);
+    }
+
+    #[test]
+    fn test_keypair_sign_verify_blake2b() {
+        let keypair = blake2b::PrivateKey::from(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        );
+        let to_sign = sha256(b"Hello");
+        let actual = keypair.sign(to_sign).unwrap();
+
+        let expected = H512::from("5c1473944cd0234ebc5a91b2966b9e707a33b936dadd149417a2e53b6b3fc97bef17b767b1690708c74d7b4c8fe48703fd44a6ef59d4cc5b9f88ba992db0a003");
+        assert_eq!(actual.to_bytes(), expected);
+    }
+}
+
+#[cfg(test)]
+mod tests_original {
     use curve25519_dalek::constants;
     use curve25519_dalek::edwards::CompressedEdwardsY;
     use curve25519_dalek::scalar::Scalar;
