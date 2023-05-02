@@ -98,7 +98,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
         {{/each}}
         // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#unless is_static}}this.rawValue, {{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
+        let result = {{c_ffi_name}}({{#unless is_static}}self.rawValue{{#if params}}, {{/if}}{{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
 
         {{#if return.is_nullable}}
         // Check nullable result.
