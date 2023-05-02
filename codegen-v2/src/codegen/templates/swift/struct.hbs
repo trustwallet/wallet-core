@@ -118,7 +118,11 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     {{/each}}
     {{#each properties}}
     public var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+        {{#if ../is_class}}
+        let obj = self.rawValue
+        {{else}}
         let obj = TW{{../name}}(rawValue: self.rawValue)
+        {{/if}}
 
         // Call the underlying C function.
         let result = {{c_ffi_name}}(self.rawValue)
