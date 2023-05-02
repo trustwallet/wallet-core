@@ -44,7 +44,7 @@ extension {{name}}
 
     {{/each}}
     {{#each properties}}
-    {{#if is_static}}public static var{{else}}public var{{/if}} {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    public var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         // Call the underlying C function.
         {{#if is_static}}
         let result = {{c_ffi_name}}()
