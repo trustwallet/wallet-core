@@ -11,6 +11,7 @@ use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_result::ErrorCode;
 
 #[repr(C)]
+#[derive(Debug, PartialEq)]
 pub enum CHashingCode {
     Ok = 0,
     InvalidHashLength = 1,

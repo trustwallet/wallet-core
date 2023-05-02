@@ -5,10 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::Error;
-use blake2::{
-    digest::{Update, VariableOutput},
-    Blake2bVar,
-};
 use blake2b_ref::Blake2bBuilder;
 use std::ops::RangeInclusive;
 
@@ -16,10 +12,14 @@ const OUTPUT_HASH_LEN_RANGE: RangeInclusive<usize> = 1..=64;
 const PERSONAL_INPUT_MAX_LEN: usize = 16;
 
 pub fn blake2_b(input: &[u8], hash_size: usize) -> Result<Vec<u8>, Error> {
-    let mut hasher = Blake2bVar::new(hash_size).map_err(|_| Error::InvalidArgument)?;
+    if !OUTPUT_HASH_LEN_RANGE.contains(&hash_size) {
+        return Err(Error::InvalidHashLength);
+    }
+
+    let mut hasher = Blake2bBuilder::new(hash_size).build();
     hasher.update(input);
     let mut buf = vec![0; hash_size];
-    hasher.finalize_variable(&mut buf).unwrap();
+    hasher.finalize(&mut buf);
     Ok(buf)
 }
 
@@ -28,8 +28,10 @@ pub fn blake2_b_personal(
     hash_size: usize,
     personal_input: &[u8],
 ) -> Result<Vec<u8>, Error> {
-    if !OUTPUT_HASH_LEN_RANGE.contains(&hash_size) || personal_input.len() > PERSONAL_INPUT_MAX_LEN
-    {
+    if !OUTPUT_HASH_LEN_RANGE.contains(&hash_size) {
+        return Err(Error::InvalidHashLength);
+    }
+    if personal_input.len() > PERSONAL_INPUT_MAX_LEN {
         return Err(Error::InvalidArgument);
     }
 
