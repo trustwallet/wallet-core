@@ -29,30 +29,23 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
     {{#each inits}}
     public init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
-        {{#each params}}
-        {{#if wrap_as}}
-        let {{name}} = {{wrap_as}}
-        {{else}}
-        let {{name}} = {{name}}
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
         {{/if}}
-        {{#if deter_as}}
+        {{#if this.call_defer}}
+        let {{this.call_defer.var_name}} = {{this.call_defer.call}}
         defer {
-            {{deter_as}}
+            {{this.call_defer.defer}}
         }
+
+        {{/if}}
+        {{#if this.guarded_call}}
+        {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
         {{/if}}
         {{/each}}
-
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
-
-        {{#if is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
-            return nil
-        }
-
-        {{/if}}
-        self.rawValue = result
     }
 
     {{/each}}
@@ -73,6 +66,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         defer {
             {{this.call_defer.defer}}
         }
+
         {{/if}}
         {{#if this.guarded_call}}
         {{/if}}

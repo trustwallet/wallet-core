@@ -69,10 +69,9 @@ pub struct SwiftReturn {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftInit {
     pub name: String,
-    pub c_ffi_name: String,
-    pub is_public: bool,
     pub is_nullable: bool,
     pub params: Vec<SwiftParam>,
+    pub operations: Vec<SwiftOperation>,
     pub comments: Vec<String>,
 }
 
@@ -132,7 +131,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         let is_class = strct.tags.iter().any(|t| t == "TW_EXPORT_CLASS");
 
         let (inits, mut methods, properties);
-        (inits, info.inits) = process_inits(&strct.name, info.inits).unwrap();
+        (inits, info.inits) =
+            process_inits(&ObjectVariant::Struct(&strct.name), info.inits).unwrap();
         (methods, info.functions) =
             process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions).unwrap();
         (properties, info.properties) =
@@ -278,34 +278,91 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 }
 
 fn process_inits(
-    object_name: &str,
+    object: &ObjectVariant,
     inits: Vec<InitInfo>,
 ) -> Result<(Vec<SwiftInit>, Vec<InitInfo>)> {
     let mut swift_inits = vec![];
     let mut info_inits = vec![];
 
     for init in inits {
-        if !init.name.starts_with(object_name) {
+        if !init.name.starts_with(object.name()) {
             // Init is not assciated with the object.
             info_inits.push(init);
             continue;
         }
 
-        let init_name = init.name.strip_prefix(object_name).unwrap().to_string();
+        let mut ops = vec![];
 
-        // Convert parameters.
-        let params = init
-            .params
-            .into_iter()
-            .map(|p| SwiftParam::try_from(p))
-            .collect::<Result<Vec<SwiftParam>>>()?;
+        let mut params = vec![];
+        for param in init.params {
+            let call = match &param.ty.variant {
+                TypeVariant::String => Some(SwiftOperation::CallDefer {
+                    var_name: param.name.clone(),
+                    call: format!("TWStringCreateWithNSString({})", param.name),
+                    defer: format!("TWStringDelete({})", param.name),
+                }),
+                TypeVariant::Data => Some(SwiftOperation::CallDefer {
+                    var_name: param.name.clone(),
+                    call: format!("TWDataCreateWithNSData({})", param.name),
+                    defer: format!("TWDataDelete({})", param.name),
+                }),
+                TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
+                    var_name: param.name.clone(),
+                    call: format!("{enm}(rawValue: {}.rawValue)", param.name),
+                }),
+                // Reference the parameter by name directly, as defined in the
+                // function interface.
+                _ => None,
+            };
+
+            if let Some(call) = call {
+                ops.push(call);
+            }
+
+            // Convert parameter to Swift parameter.
+            params.push(SwiftParam {
+                name: param.name,
+                param_type: SwiftType::try_from(param.ty.variant).unwrap(),
+                is_nullable: param.ty.is_nullable,
+            });
+        }
+
+        // Call the underlying C FFI function, passing on the `obj` instance.
+        //
+        // E.g: `let result = TWSomeFunc(obj)`.
+        let param_names = params
+            .iter()
+            .map(|p| p.name.as_str())
+            .collect::<Vec<&str>>()
+            .join(",");
+
+        ops.push(SwiftOperation::Call {
+            var_name: "result".to_string(),
+            call: format!("{}({})", init.name, param_names),
+        });
+
+        // The `result` must be handled and returned explicitly.
+        //
+        // E.g:
+        // - `return TWStringNSString(result)`
+        // - `return SomeEnum(rawValue: result.rawValue)`
+        // - `return SomeStruct(rawValue: result)`
+        ops.push(match &object {
+            ObjectVariant::Struct(strct) => SwiftOperation::Return {
+                call: format!("{}(rawValue: result)", strct),
+            },
+            ObjectVariant::Enum(enm) => SwiftOperation::Return {
+                call: format!("{}(rawValue: result.rawValue)", enm),
+            },
+        });
+
+        let pretty_name = init.name.strip_prefix(object.name()).unwrap().to_string();
 
         swift_inits.push(SwiftInit {
-            name: init_name,
-            c_ffi_name: init.name.clone(),
-            is_public: init.is_public,
+            name: pretty_name,
             is_nullable: init.is_nullable,
             params,
+            operations: ops,
             comments: vec![],
         });
     }

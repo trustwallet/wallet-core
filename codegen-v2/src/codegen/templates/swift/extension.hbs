@@ -20,6 +20,7 @@ extension {{name}}
         defer {
             {{this.call_defer.defer}}
         }
+
         {{/if}}
         {{#if this.guarded_call}}
         {{/if}}
@@ -41,12 +42,14 @@ extension {{name}}
         defer {
             {{this.call_defer.defer}}
         }
+
         {{/if}}
         {{#if this.guarded_call}}
         {{/if}}
         {{#if this.return}}
         return {{this.return.call}}
         {{/if}}
+
         {{/each}}
     }
 
