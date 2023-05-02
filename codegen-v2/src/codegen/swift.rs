@@ -344,7 +344,7 @@ fn process_object_methods(
                 },
                 ObjectVariant::Enum(name) => SwiftOperation::Call {
                     var_name: "obj".to_string(),
-                    call: format!("{}(rawValue: self.rawValue", name),
+                    call: format!("{}(rawValue: self.rawValue)", name),
                 },
             });
         }
@@ -353,8 +353,13 @@ fn process_object_methods(
         let mut params = vec![];
         for param in func.params {
             // Skip self parameter
-            if !func.is_static && param.name == object.name() {
-                continue;
+            // TODO: This should be set stricter by the C header, respectively
+            // the manifest.
+            match &param.ty.variant {
+                TypeVariant::Enum(name) | TypeVariant::Struct(name) if name == object.name() => {
+                    continue
+                }
+                _ => {}
             }
 
             let call = match &param.ty.variant {
@@ -493,7 +498,7 @@ fn process_object_properties(
             },
             ObjectVariant::Enum(name) => SwiftOperation::Call {
                 var_name: "obj".to_string(),
-                call: format!("{}(rawValue: self.rawValue", name),
+                call: format!("{}(rawValue: self.rawValue)", name),
             },
         });
 
