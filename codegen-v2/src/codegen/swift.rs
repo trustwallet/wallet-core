@@ -48,8 +48,6 @@ pub struct SwiftReturn {
     pub param_type: SwiftType,
     pub is_nullable: bool,
     pub wrap_as: Option<String>,
-    // TODO: This is not needed.
-    pub deter_as: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -421,17 +419,15 @@ impl TryFrom<TypeInfo> for SwiftReturn {
     type Error = Error;
 
     fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
-        let (param_type, wrap_as, deter_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
+        let (param_type, wrap_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
             (
                 SwiftType("Data".to_string()),
                 Some("TWDataNSData(result)".to_string()),
-                Some("TWDataDelete(result)".to_string()),
             )
         } else if value.tags.iter().any(|t| t == "TW_STRING") {
             (
                 SwiftType("String".to_string()),
                 Some("TWStringNSString(result)".to_string()),
-                Some("StringDelete(result)".to_string()),
             )
         } else {
             let wrap_as = match &value.variant {
@@ -442,14 +438,13 @@ impl TryFrom<TypeInfo> for SwiftReturn {
                 _ => None,
             };
 
-            (SwiftType::try_from(value.variant).unwrap(), wrap_as, None)
+            (SwiftType::try_from(value.variant).unwrap(), wrap_as)
         };
 
         Ok(SwiftReturn {
             param_type,
             is_nullable: value.is_nullable,
             wrap_as,
-            deter_as,
         })
     }
 }
