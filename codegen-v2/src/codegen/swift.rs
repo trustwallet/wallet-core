@@ -439,7 +439,7 @@ impl TryFrom<TypeInfo> for SwiftReturn {
                     n.strip_prefix("TW").unwrap()
                 )),
                 TypeVariant::Enum(n) => Some(format!(
-                    "{}(rawValue: result.rawValue)",
+                    "{}(rawValue: result.rawValue)!",
                     n.strip_prefix("TW").unwrap()
                 )),
                 _ => None,

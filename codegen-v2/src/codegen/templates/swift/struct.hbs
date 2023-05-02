@@ -125,7 +125,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{/if}}
 
         // Call the underlying C function.
-        let result = {{c_ffi_name}}(self.rawValue)
+        let result = {{c_ffi_name}}(obj)
 
         {{#if return.is_nullable}}
         // Check nullable result.
