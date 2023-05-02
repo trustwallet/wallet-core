@@ -23,7 +23,6 @@ pub struct SwiftFunction {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SwiftProperty {
     pub name: String,
-    pub c_ffi_name: String,
     pub is_public: bool,
     pub operations: Vec<SwiftOperation>,
     #[serde(rename = "return")]
@@ -335,7 +334,7 @@ fn process_object_methods(
         }
 
         // Convert return type.
-        let return_type = SwiftReturn::try_from(func.return_type).unwrap();
+        let return_type = SwiftType::try_from(func.return_type.variant).unwrap();
 
         swift_funcs.push(SwiftFunction {
             name: first_char_to_lowercase(func_name),
@@ -427,7 +426,7 @@ fn process_object_properties(
         });
 
         // Pretty name.
-        let pretty_name = prop.name.strip_prefix(object.name()).unwrap().to_string();
+        let mut pretty_name = prop.name.strip_prefix(object.name()).unwrap().to_string();
 
         // TODO/TEMP
         if &pretty_name == "HRP" {
@@ -435,12 +434,15 @@ fn process_object_properties(
         }
 
         // Convert return type.
-        let return_type = SwiftReturn::try_from(prop.return_type).unwrap();
+        let return_type = SwiftReturn {
+            param_type: SwiftType::try_from(prop.return_type.variant).unwrap(),
+            is_nullable: prop.return_type.is_nullable,
+        };
 
         swift_props.push(SwiftProperty {
             name: first_char_to_lowercase(pretty_name),
-            c_ffi_name: prop.name.clone(),
             is_public: prop.is_public,
+            operations: ops,
             return_type,
             comments: vec![],
         });
@@ -484,44 +486,6 @@ impl From<TypeVariant> for SwiftType {
         };
 
         SwiftType(res)
-    }
-}
-
-impl TryFrom<TypeInfo> for SwiftReturn {
-    type Error = Error;
-
-    fn try_from(value: TypeInfo) -> std::result::Result<Self, Self::Error> {
-        let (param_type, wrap_as) = if value.tags.iter().any(|t| t == "TW_DATA") {
-            (
-                SwiftType("Data".to_string()),
-                Some("TWDataNSData(result)".to_string()),
-            )
-        } else if value.tags.iter().any(|t| t == "TW_STRING") {
-            (
-                SwiftType("String".to_string()),
-                Some("TWStringNSString(result)".to_string()),
-            )
-        } else {
-            let wrap_as = match &value.variant {
-                TypeVariant::Struct(n) => Some(format!(
-                    "{}(rawValue: result)",
-                    n.strip_prefix("TW").unwrap()
-                )),
-                TypeVariant::Enum(n) => Some(format!(
-                    "{}(rawValue: result.rawValue)!",
-                    n.strip_prefix("TW").unwrap()
-                )),
-                _ => None,
-            };
-
-            (SwiftType::try_from(value.variant).unwrap(), wrap_as)
-        };
-
-        Ok(SwiftReturn {
-            param_type,
-            is_nullable: value.is_nullable,
-            wrap_as,
-        })
     }
 }
 
