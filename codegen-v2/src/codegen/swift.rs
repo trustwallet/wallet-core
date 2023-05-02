@@ -32,9 +32,22 @@ struct SwiftProperty {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 enum SwiftOperation {
-    Call { var_name: String, call: String },
-    GuardedCall { var_name: String, call: String },
-    Return { call: String },
+    Call {
+        var_name: String,
+        call: String,
+    },
+    CallDefer {
+        var_name: String,
+        call: String,
+        defer: String,
+    },
+    GuardedCall {
+        var_name: String,
+        call: String,
+    },
+    Return {
+        call: String,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -43,9 +56,6 @@ pub struct SwiftParam {
     #[serde(rename = "type")]
     pub param_type: SwiftType,
     pub is_nullable: bool,
-    pub skip_self: bool,
-    pub wrap_as: Option<String>,
-    pub deter_as: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -297,44 +307,127 @@ fn process_inits(
 }
 
 fn process_object_methods(
-    object_name: &str,
+    object: &ObjectVariant,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
     let mut swift_funcs = vec![];
     let mut info_funcs = vec![];
 
     for func in functions {
-        if !func.name.starts_with(object_name) {
-            // Function is not assciated to the struct.
+        // TODO: This should be handled by the manifest
+        if !func.name.starts_with(object.name()) {
+            // Function is not assciated with the object.
             info_funcs.push(func);
             continue;
         }
 
-        let func_name = func.name.strip_prefix(object_name).unwrap().to_string();
+        let mut ops = vec![];
+
+        // Initalize the 'self' type, which is then passed on to the underlying
+        // C FFI function, assuming the function is not static.
+        //
+        // E.g:
+        // - `let obj = self.rawValue`
+        // - `let obj = TWSomeEnum(rawValue: self.RawValue")`
+        if !func.is_static {
+            ops.push(match object {
+                ObjectVariant::Struct(_) => SwiftOperation::Call {
+                    var_name: "obj".to_string(),
+                    call: "self.rawValue".to_string(),
+                },
+                ObjectVariant::Enum(name) => SwiftOperation::Call {
+                    var_name: "obj".to_string(),
+                    call: format!("{}(rawValue: self.rawValue", name),
+                },
+            });
+        }
 
         // Convert parameters.
         let mut params = vec![];
         for param in func.params {
-            // Skip self-referencing struct paramater for non-static methods.
-            if let TypeVariant::Struct(ref struct_name) = param.ty.variant {
-                if struct_name == object_name && !func.is_static {
-                    continue;
-                }
+            // Skip self parameter
+            if !func.is_static && param.name == object.name() {
+                continue;
             }
-            // Skip self-referencing enum parameter and wrap accordingly
-            else if let TypeVariant::Enum(ref enum_name) = param.ty.variant {
-                if enum_name == object_name {
-                    continue;
-                }
+
+            let call = match param.ty.variant {
+                TypeVariant::String => Some(SwiftOperation::CallDefer {
+                    var_name: param.name,
+                    call: format!("TWStringCreateWithNSString({})", param.name),
+                    defer: format!("TWStringDelete({})", param.name),
+                }),
+                TypeVariant::Data => Some(SwiftOperation::CallDefer {
+                    var_name: param.name,
+                    call: format!("TWDataCreateWithNSData({})", param.name),
+                    defer: format!("TWDataDelete({})", param.name),
+                }),
+                TypeVariant::Enum(enm) => Some(SwiftOperation::Call {
+                    var_name: param.name,
+                    call: format!("{enm}(rawValue: {}.rawValue)", param.name),
+                }),
+                // Reference the parameter by name directly, as defined in the
+                // function interface.
+                _ => None,
+            };
+
+            if let Some(call) = call {
+                ops.push(call);
             }
 
             // Convert parameter to Swift parameter.
-            let swift_param = SwiftParam::try_from(param).unwrap();
-            params.push(swift_param);
+            params.push(SwiftParam {
+                name: param.name,
+                param_type: SwiftType::try_from(param.ty.variant).unwrap(),
+                is_nullable: param.ty.is_nullable,
+            });
         }
 
+        // Call the underlying C FFI function, passing on the `obj` instance.
+        //
+        // E.g: `let result = TWSomeFunc(obj)`.
+        let param_name = if func.is_static { vec![] } else { vec!["obj"] };
+        let param_names = param_name
+            .into_iter()
+            .chain(params.iter().map(|p| p.name.as_str()))
+            .collect::<Vec<&str>>()
+            .join(",");
+
+        ops.push(SwiftOperation::Call {
+            var_name: "result".to_string(),
+            call: format!("{}({})", func.name, param_names),
+        });
+
+        // The `result` must be handled and returned explicitly.
+        //
+        // E.g:
+        // - `return TWStringNSString(result)`
+        // - `return SomeEnum(rawValue: result.rawValue)`
+        // - `return SomeStruct(rawValue: result)`
+        ops.push(match func.return_type.variant {
+            TypeVariant::String => SwiftOperation::Return {
+                call: "TWStringNSString(result)".to_string(),
+            },
+            TypeVariant::Data => SwiftOperation::Return {
+                call: "TWDataNSData(result)".to_string(),
+            },
+            TypeVariant::Enum(enm) => SwiftOperation::Return {
+                call: format!("{}(rawValue: result.rawValue)", enm),
+            },
+            TypeVariant::Struct(strct) => SwiftOperation::Return {
+                call: format!("{}(rawValue: result)", strct),
+            },
+            _ => SwiftOperation::Return {
+                call: "result".to_string(),
+            },
+        });
+
         // Convert return type.
-        let return_type = SwiftType::try_from(func.return_type.variant).unwrap();
+        let return_type = SwiftReturn {
+            param_type: SwiftType::try_from(func.return_type.variant).unwrap(),
+            is_nullable: func.return_type.is_nullable,
+        };
+
+        let func_name = func.name.strip_prefix(object.name()).unwrap().to_string();
 
         swift_funcs.push(SwiftFunction {
             name: first_char_to_lowercase(func_name),
@@ -371,7 +464,7 @@ fn process_object_properties(
     for prop in properties {
         // TODO: This should be handled by the manifest
         if !prop.name.starts_with(object.name()) {
-            // Function is not assciated to the struct.
+            // Property is not assciated with the object.
             info_props.push(prop);
             continue;
         }
@@ -396,6 +489,8 @@ fn process_object_properties(
         });
 
         // Call the underlying C FFI function, passing on the `obj` instance.
+        //
+        // E.g: `let result = TWSomeFunc(obj)`.
         ops.push(SwiftOperation::Call {
             var_name: "result".to_string(),
             call: format!("{}(obj)", prop.name),
@@ -480,6 +575,8 @@ impl From<TypeVariant> for SwiftType {
             TypeVariant::UInt16T => "UInt16".to_string(),
             TypeVariant::UInt32T => "UInt32".to_string(),
             TypeVariant::UInt64T => "UInt64".to_string(),
+            TypeVariant::String => "String".to_string(),
+            TypeVariant::Data => "Data".to_string(),
             TypeVariant::Struct(n) | TypeVariant::Enum(n) => {
                 n.strip_prefix("TW").unwrap().to_string()
             }
