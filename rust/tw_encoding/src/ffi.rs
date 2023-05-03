@@ -41,7 +41,8 @@ impl From<CEncodingCode> for ErrorCode {
 }
 
 #[repr(C)]
-#[derive(PartialEq, Debug)]
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Base58Alphabet {
     Bitcoin = 1,
     Ripple = 2,
