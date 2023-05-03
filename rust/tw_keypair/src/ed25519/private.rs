@@ -14,8 +14,8 @@ use std::marker::PhantomData;
 use tw_encoding::hex;
 use tw_hash::H256;
 
-pub struct PrivateKey<Hash> {
-    secret: H256,
+pub struct PrivateKey<Hash: Hash512> {
+    pub(crate) secret: H256,
     _phantom: PhantomData<Hash>,
 }
 
@@ -38,12 +38,12 @@ impl<Hash: Hash512> SigningKeyTrait for PrivateKey<Hash> {
     type Signature = Signature;
 
     fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
-        let expanded = ExpandedSecretKey::new(self);
+        let expanded = ExpandedSecretKey::<Hash>::with_secret(self.secret);
         expanded.sign(hash)
     }
 }
 
-impl<Hash> TryFrom<&[u8]> for PrivateKey<Hash> {
+impl<Hash: Hash512> TryFrom<&[u8]> for PrivateKey<Hash> {
     type Error = Error;
 
     fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
@@ -55,7 +55,7 @@ impl<Hash> TryFrom<&[u8]> for PrivateKey<Hash> {
     }
 }
 
-impl<Hash> From<&'static str> for PrivateKey<Hash> {
+impl<Hash: Hash512> From<&'static str> for PrivateKey<Hash> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
         let data = hex::decode(hex).expect("Expected a valid Secret Key hex");

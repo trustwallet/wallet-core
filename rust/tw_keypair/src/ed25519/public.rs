@@ -19,15 +19,18 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
-pub struct PublicKey<Hash> {
+pub struct PublicKey<Hash: Hash512> {
     compressed: CompressedEdwardsY,
     point: EdwardsPoint,
     _phantom: PhantomData<Hash>,
 }
 
+/// cbindgen:ignore
 impl<Hash: Hash512> PublicKey<Hash> {
+    pub const LEN: usize = H256::len();
+
     pub(crate) fn with_private_key(private: &PrivateKey<Hash>) -> Self {
-        let expanded = ExpandedSecretKey::new(private);
+        let expanded = ExpandedSecretKey::with_secret(private.secret);
         Self::with_expanded_secret(&expanded)
     }
 
@@ -93,13 +96,13 @@ impl<Hash: Hash512> VerifyingKeyTrait for PublicKey<Hash> {
     }
 }
 
-impl<Hash> ToBytesVec for PublicKey<Hash> {
+impl<Hash: Hash512> ToBytesVec for PublicKey<Hash> {
     fn to_vec(&self) -> Vec<u8> {
         self.compressed.to_bytes().to_vec()
     }
 }
 
-impl<'a, Hash> TryFrom<&'a [u8]> for PublicKey<Hash> {
+impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for PublicKey<Hash> {
     type Error = Error;
 
     fn try_from(pubkey: &'a [u8]) -> Result<Self, Self::Error> {
@@ -116,7 +119,7 @@ impl<'a, Hash> TryFrom<&'a [u8]> for PublicKey<Hash> {
     }
 }
 
-impl<Hash> From<&'static str> for PublicKey<Hash> {
+impl<Hash: Hash512> From<&'static str> for PublicKey<Hash> {
     fn from(hex: &'static str) -> Self {
         let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");
         PublicKey::try_from(bytes.as_slice()).expect("Expected a valid Public Key")
