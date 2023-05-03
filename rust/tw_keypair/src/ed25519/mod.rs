@@ -37,7 +37,8 @@ impl<T> Hash512 for T where T: Digest<OutputSize = U64> {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::traits::SigningKeyTrait;
+    use crate::traits::{SigningKeyTrait, VerifyingKeyTrait};
+    use tw_encoding::hex;
     use tw_hash::sha2::sha256;
     use tw_hash::{H256, H512};
 
@@ -71,10 +72,26 @@ mod tests {
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
         );
         let to_sign = sha256(b"Hello");
-        let actual = keypair.sign(to_sign).unwrap();
+        let actual = keypair.sign(to_sign.clone()).unwrap();
 
         let expected = H512::from("42848abf2641a731e18b8a1fb80eff341a5acebdc56faeccdcbadb960aef775192842fccec344679446daa4d02d264259c8f9aa364164ebe0ebea218581e2e03");
         assert_eq!(actual.to_bytes(), expected);
+
+        assert!(keypair.public().verify(actual, to_sign));
+    }
+
+    #[test]
+    fn test_signature_malleability() {
+        let pubkey = sha512::PublicKey::from(
+            "a96e02312b03116ff88a9f3e7cea40f424af43a5c6ca6c8ed4f98969faf46ade",
+        );
+        let message = b"Hello, world!".to_vec();
+
+        let orig_sign_bytes = hex::decode("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07e7ed7a20a4e2fa1009db3d1443e937e6abb16ff3c3eaecb798faed7fbb40b008").unwrap();
+        Signature::try_from(orig_sign_bytes.as_slice()).unwrap();
+
+        let modified_sign_bytes = hex::decode("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07d4c1707dbe450d69df7735b721e316fbabb16ff3c3eaecb798faed7fbb40b018").unwrap();
+        Signature::try_from(modified_sign_bytes.as_slice()).unwrap_err();
     }
 
     #[test]
@@ -83,10 +100,12 @@ mod tests {
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
         );
         let to_sign = sha256(b"Hello");
-        let actual = keypair.sign(to_sign).unwrap();
+        let actual = keypair.sign(to_sign.clone()).unwrap();
 
         let expected = H512::from("5c1473944cd0234ebc5a91b2966b9e707a33b936dadd149417a2e53b6b3fc97bef17b767b1690708c74d7b4c8fe48703fd44a6ef59d4cc5b9f88ba992db0a003");
         assert_eq!(actual.to_bytes(), expected);
+
+        assert!(keypair.public().verify(actual, to_sign));
     }
 }
 
@@ -102,6 +121,25 @@ mod tests_original {
     // use bla
     use blake2::Digest;
     use tw_hash::sha3::keccak256;
+
+    #[test]
+    fn test_verify() {
+        let public =
+            tw_encoding::base64::decode("qW4CMSsDEW/4ip8+fOpA9CSvQ6XGymyO1PmJafr0at4=", false)
+                .unwrap();
+        println!("{}", tw_encoding::hex::encode(&public, false));
+        let public = PublicKey::from_bytes(&public).unwrap();
+        let sign_1 = tw_encoding::base64::decode("6oWkfcwYtRLf6nwgkWKrrqSAjXfB7JA9x7puKvo/nwfn7XogpOL6EAnbPRRD6Tfmq7Fv88Pq7LeY+u1/u0CwCA==", false).unwrap();
+        println!("{}", tw_encoding::hex::encode(&sign_1, false));
+        let sign_2 = tw_encoding::base64::decode("6oWkfcwYtRLf6nwgkWKrrqSAjXfB7JA9x7puKvo/nwfUwXB9vkUNad93Nbch4xb7q7Fv88Pq7LeY+u1/u0CwGA==", false).unwrap();
+        println!("{}", tw_encoding::hex::encode(&sign_2, false));
+
+        let sign_1 = ed25519_dalek::Signature::from_bytes(&sign_1).unwrap();
+        let sign_2 = ed25519_dalek::Signature::from_bytes(&sign_2).unwrap();
+
+        public.verify(b"Hello, world!", &sign_1).unwrap();
+        public.verify_strict(b"Hello, world!", &sign_2).unwrap_err();
+    }
 
     // msg: [24, 95, 141, 179, 34, 113, 254, 37, 245, 97, 166, 252, 147, 139, 46, 38, 67, 6, 236, 48, 78, 218, 81, 128, 7, 209, 118, 72, 38, 56, 25, 105, ]
     // secret (key): [40, 243, 55, 77, 234, 67, 126, 254, 10, 189, 141, 149, 157, 66, 54, 128, 201, 75, 137, 164, 106, 182, 78, 20, 130, 0, 221, 79, 144, 220, 197, 93, ]

@@ -6,13 +6,18 @@
 
 use crate::ed25519::private::PrivateKey;
 use crate::ed25519::secret::ExpandedSecretKey;
+use crate::ed25519::signature::Signature;
 use crate::ed25519::Hash512;
+use crate::traits::VerifyingKeyTrait;
+use crate::Error;
 use curve25519_dalek::constants;
 use curve25519_dalek::edwards::{CompressedEdwardsY, EdwardsPoint};
 use curve25519_dalek::scalar::Scalar;
 use std::marker::PhantomData;
+use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
+use tw_misc::try_or_false;
 
 pub struct PublicKey<Hash> {
     compressed: CompressedEdwardsY,
@@ -61,8 +66,59 @@ impl<Hash: Hash512> PublicKey<Hash> {
     }
 }
 
+impl<Hash: Hash512> VerifyingKeyTrait for PublicKey<Hash> {
+    type SigningHash = Vec<u8>;
+    type VerifySignature = Signature;
+
+    #[allow(non_snake_case)]
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningHash) -> bool {
+        let mut h = Hash::new();
+        let minus_A: EdwardsPoint = -self.point;
+
+        let signature_R = try_or_false!(signature.R.decompress());
+
+        // Logical OR is fine here as we're not trying to be constant time.
+        if signature_R.is_small_order() || self.point.is_small_order() {
+            return false;
+        }
+
+        h.update(signature.R.as_bytes());
+        h.update(self.as_slice());
+        h.update(&message);
+
+        let k = Scalar::from_hash(h);
+        let R = EdwardsPoint::vartime_double_scalar_mul_basepoint(&k, &(minus_A), &signature.s);
+
+        R == signature_R
+    }
+}
+
 impl<Hash> ToBytesVec for PublicKey<Hash> {
     fn to_vec(&self) -> Vec<u8> {
         self.compressed.to_bytes().to_vec()
+    }
+}
+
+impl<'a, Hash> TryFrom<&'a [u8]> for PublicKey<Hash> {
+    type Error = Error;
+
+    fn try_from(pubkey: &'a [u8]) -> Result<Self, Self::Error> {
+        let pubkey = H256::try_from(pubkey).map_err(|_| Error::InvalidPublicKey)?;
+
+        let compressed = CompressedEdwardsY(pubkey.take());
+        let point = compressed.decompress().ok_or(Error::InvalidPublicKey)?;
+
+        Ok(PublicKey {
+            compressed,
+            point,
+            _phantom: PhantomData::default(),
+        })
+    }
+}
+
+impl<Hash> From<&'static str> for PublicKey<Hash> {
+    fn from(hex: &'static str) -> Self {
+        let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");
+        PublicKey::try_from(bytes.as_slice()).expect("Expected a valid Public Key")
     }
 }

@@ -87,6 +87,7 @@ impl<const N: usize> Hash<N> {
 /// TODO remove once [feature(generic_const_exprs)](https://github.com/rust-lang/rust/issues/76560) is stable.
 struct AssertSplit<const L: usize, const R: usize, const N: usize>;
 
+/// cbindgen:ignore
 impl<const L: usize, const R: usize, const N: usize> AssertSplit<L, R, N> {
     pub const VALID: usize = (R + L - N) + (N - (R + L));
 }

@@ -11,6 +11,7 @@ use tw_hash::{concat, H256, H512};
 use tw_misc::traits::ToBytesVec;
 
 #[allow(non_snake_case)]
+#[derive(Debug)]
 pub struct Signature {
     /// `R` is an `EdwardsPoint`, formed by using an hash function with
     /// 512-bits output to produce the digest of:
@@ -66,15 +67,20 @@ impl<'a> TryFrom<&'a [u8]> for Signature {
 }
 
 fn get_scalar(bytes: H256) -> Result<Scalar, Error> {
-    // The highest 3 bits must not be set.  No other checking for the
-    // remaining 2^253 - 2^252 + 27742317777372353535851937790883648493
-    // potential non-reduced scalars is performed.
+    // Since this is only used in signature deserialisation (i.e. upon
+    // verification), we can do a "succeed fast" trick by checking that the most
+    // significant 4 bits are unset.  If they are unset, we can succeed fast
+    // because we are guaranteed that the scalar is fully reduced.  However, if
+    // the 4th most significant bit is set, we must do the full reduction check,
+    // as the order of the basepoint is roughly a 2^(252.5) bit number.
     //
-    // This is compatible with ed25519-donna and libsodium when
-    // -DED25519_COMPAT is NOT specified.
-    if bytes[31] & 224 != 0 {
-        return Err(Error::InvalidSignature);
+    // This succeed-fast trick should succeed for roughly half of all scalars.
+    if bytes[31] & 240 == 0 {
+        return Ok(Scalar::from_bits(bytes.take()));
     }
 
-    Ok(Scalar::from_bits(bytes.take()))
+    match Scalar::from_canonical_bytes(bytes.take()) {
+        Some(x) => Ok(x),
+        None => Err(Error::InvalidSignature),
+    }
 }
