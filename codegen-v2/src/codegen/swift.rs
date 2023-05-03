@@ -645,7 +645,7 @@ fn process_object_properties(
             },
             TypeVariant::Enum(_) => SwiftOperation::Return {
                 call: format!(
-                    "{}(rawValue: result.rawValue)",
+                    "{}(rawValue: result.rawValue)!",
                     SwiftType::try_from(prop.return_type.variant.clone())
                         .unwrap()
                         .0
