@@ -351,18 +351,27 @@ fn process_inits(
             .collect::<Vec<&str>>()
             .join(",");
 
-        ops.push(SwiftOperation::Call {
-            var_name: "result".to_string(),
-            call: format!("{}({})", init.name, param_names),
-            defer: None,
-        });
+        if init.is_nullable {
+            ops.push(SwiftOperation::GuardedCall {
+                var_name: "result".to_string(),
+                call: format!("{}({})", init.name, param_names),
+            });
+        } else {
+            ops.push(SwiftOperation::Call {
+                var_name: "result".to_string(),
+                call: format!("{}({})", init.name, param_names),
+                defer: None,
+            });
+        }
 
-        // The `result` must be handled and returned explicitly.
+        // TODO: Expand comment
         //
         // E.g:
         // - `return TWStringNSString(result)`
         // - `return SomeEnum(rawValue: result.rawValue)`
         // - `return SomeStruct(rawValue: result)`
+        // TODO: Should there be a SwiftOperation for Init?
+        /*
         ops.push(match &object {
             ObjectVariant::Struct(strct) => SwiftOperation::Return {
                 call: format!("{}(rawValue: result)", strct),
@@ -371,6 +380,7 @@ fn process_inits(
                 call: format!("{}(rawValue: result.rawValue)", enm),
             },
         });
+         */
 
         let pretty_name = init.name.strip_prefix(object.name()).unwrap().to_string();
 
@@ -493,11 +503,18 @@ fn process_object_methods(
             .collect::<Vec<&str>>()
             .join(",");
 
-        ops.push(SwiftOperation::Call {
-            var_name: "result".to_string(),
-            call: format!("{}({})", func.name, param_names),
-            defer: None,
-        });
+        if func.return_type.is_nullable {
+            ops.push(SwiftOperation::GuardedCall {
+                var_name: "result".to_string(),
+                call: format!("{}({})", func.name, param_names),
+            });
+        } else {
+            ops.push(SwiftOperation::Call {
+                var_name: "result".to_string(),
+                call: format!("{}({})", func.name, param_names),
+                defer: None,
+            });
+        }
 
         // The `result` must be handled and returned explicitly.
         //
