@@ -284,7 +284,7 @@ fn process_inits(
     let mut info_inits = vec![];
 
     for init in inits {
-        if !init.name.starts_with(object.name()) {
+        if !init.name.starts_with(object.name()) || !init.is_public {
             // Init is not assciated with the object.
             info_inits.push(init);
             continue;
