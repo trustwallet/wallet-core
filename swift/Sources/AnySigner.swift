@@ -69,19 +69,19 @@ public final class AnySigner {
     }
     
     // TANGEM
-    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) -> SigningOutput {
+    public static func signExternally<SigningOutput: Message>(input: SigningInput, coin: CoinType, signer: Signer) throws -> SigningOutput {
         defer {
             externalSigner = nil
         }
         
         externalSigner = signer
-        
-        do {
-            let outputData = nativeSignExternally(data: try input.serializedData(), coin: coin, publicKey: signer.publicKey)
-            return try SigningOutput(serializedData: outputData)
-        } catch let error {
-            fatalError(error.localizedDescription)
+
+        // It's safe to use "try!" here because the original code just catches exceptions and calls "fatalError"
+        let outputData = nativeSignExternally(data: try! input.serializedData(), coin: coin, publicKey: signer.publicKey)
+        if let error = signer.error {
+            throw error
         }
+        return try! SigningOutput(serializedData: outputData)
     }
 
     /// Signs a transaction by serialized data of a SigningInput and coin type

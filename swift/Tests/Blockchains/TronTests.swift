@@ -67,7 +67,7 @@ class TronTests: XCTestCase {
         // TANGEM
         let signer = PrivateKeySigner(privateKey: PrivateKey(data: input.privateKey)!, coin: .tron)
         input.privateKey = Data(repeating: 1, count: 32)
-        let outputExternal: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
+        let outputExternal: TronSigningOutput = try! AnySigner.signExternally(input: input, coin: .tron, signer: signer)
         
         XCTAssertJSONEqual(outputExternal.json, expectedJSON)
     }
