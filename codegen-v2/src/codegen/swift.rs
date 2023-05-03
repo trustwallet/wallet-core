@@ -643,11 +643,21 @@ fn process_object_properties(
             TypeVariant::Data => SwiftOperation::Return {
                 call: "TWDataNSData(result)".to_string(),
             },
-            TypeVariant::Enum(enm) => SwiftOperation::Return {
-                call: format!("{}(rawValue: result.rawValue)", enm),
+            TypeVariant::Enum(_) => SwiftOperation::Return {
+                call: format!(
+                    "{}(rawValue: result.rawValue)",
+                    SwiftType::try_from(prop.return_type.variant.clone())
+                        .unwrap()
+                        .0
+                ),
             },
-            TypeVariant::Struct(strct) => SwiftOperation::Return {
-                call: format!("{}(rawValue: result)", strct),
+            TypeVariant::Struct(_) => SwiftOperation::Return {
+                call: format!(
+                    "{}(rawValue: result)",
+                    SwiftType::try_from(prop.return_type.variant.clone())
+                        .unwrap()
+                        .0
+                ),
             },
             _ => SwiftOperation::Return {
                 call: "result".to_string(),
