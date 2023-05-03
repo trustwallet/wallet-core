@@ -1,6 +1,7 @@
 use crate::manifest::{FileInfo, FunctionInfo, InitInfo, PropertyInfo, ProtoInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
+use heck::ToLowerCamelCase;
 use serde_json::json;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -601,7 +602,7 @@ fn process_object_methods(
         let func_name = func.name.strip_prefix(object.name()).unwrap().to_string();
 
         swift_funcs.push(SwiftFunction {
-            name: first_char_to_lowercase(func_name),
+            name: func_name.to_lower_camel_case(),
             is_public: func.is_public,
             is_static: func.is_static,
             operations: ops,
@@ -714,12 +715,11 @@ fn process_object_properties(
         });
 
         // Pretty name.
-        let mut pretty_name = prop.name.strip_prefix(object.name()).unwrap().to_string();
-
-        // TODO/TEMP
-        if &pretty_name == "HRP" {
-            pretty_name = "hrp".to_string();
-        }
+        let mut pretty_name = prop
+            .name
+            .strip_prefix(object.name())
+            .unwrap()
+            .to_lower_camel_case();
 
         // Convert return type.
         let return_type = SwiftReturn {
@@ -728,7 +728,7 @@ fn process_object_properties(
         };
 
         swift_props.push(SwiftProperty {
-            name: first_char_to_lowercase(pretty_name),
+            name: pretty_name,
             is_public: prop.is_public,
             operations: ops,
             return_type,
@@ -737,14 +737,6 @@ fn process_object_properties(
     }
 
     Ok((swift_props, info_props))
-}
-
-pub fn first_char_to_lowercase(input_str: String) -> String {
-    let mut chars = input_str.chars();
-    match chars.next() {
-        None => String::new(),
-        Some(f) => f.to_lowercase().chain(chars).collect(),
-    }
 }
 
 impl From<TypeVariant> for SwiftType {

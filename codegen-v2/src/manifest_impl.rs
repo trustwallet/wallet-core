@@ -1,9 +1,9 @@
-use crate::codegen::swift::first_char_to_lowercase;
 use crate::grammar::{
     GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
     GTypeCategory, GTypedef,
 };
 use crate::manifest::*;
+use heck::ToLowerCamelCase;
 
 impl TypeInfo {
     pub fn from_g_type(ty: &GType, markers: &GMarkers) -> Result<Self> {
@@ -179,9 +179,11 @@ impl EnumInfo {
                 .map(|(idx, (k, v))| {
                     EnumVariantInfo {
                         // Remove prefix from enum variant.
-                        name: first_char_to_lowercase(
-                            k.0.strip_prefix(&value.name.0).unwrap().to_string(),
-                        ),
+                        name: k
+                            .0
+                            .strip_prefix(&value.name.0)
+                            .unwrap()
+                            .to_lower_camel_case(),
                         // In the old codegen, non-values result in a simple
                         // counter. IMO fixed values should be enforced.
                         value: v.unwrap_or(idx),
