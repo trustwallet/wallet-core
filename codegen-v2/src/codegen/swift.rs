@@ -157,7 +157,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let equality_operator = if let Some((idx, func)) = equality_method {
             let operator = SwiftOperatorEquality {
-                c_ffi_name: func.name.clone(),
+                c_ffi_name: format!("{}Equal", strct.name),
                 is_public: func.is_public,
                 is_static: func.is_static,
             };
