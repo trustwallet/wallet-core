@@ -1421,12 +1421,10 @@ impl ParseTree for GFunctionDecl {
 
             // Check for single `void`
             let (pending, checked_out) = reader.checkout();
-            if let Ok((prim, cr)) = ensure::<GPrimitive>(checked_out) {
-                if prim == GPrimitive::Void {
-                    if ensure::<GCloseBracket>(cr).is_ok() {
-                        reader = pending.discard();
-                        break;
-                    }
+            if let Ok(res) = GPrimitive::derive(checked_out) {
+                if res.derived == GPrimitive::Void {
+                    reader = pending.merge(res.branch);
+                    break;
                 }
             }
 

@@ -601,12 +601,14 @@ fn process_object_methods(
             .unwrap()
             .to_lower_camel_case();
 
-        // Some functionsdo not follow standard camelCase convention.
+        // Some functions do not follow standard camelCase convention.
         if object.name() == "TWStoredKey" {
             func_name = func_name.replace("Json", "JSON");
             func_name = func_name.replace("Hd", "HD");
         } else if object.name() == "TWPublicKey" {
             func_name = func_name.replace("Der", "DER");
+        } else if object.name() == "TWHash" {
+            func_name = func_name.replace("Ripemd", "RIPEMD");
         }
 
         swift_funcs.push(SwiftFunction {

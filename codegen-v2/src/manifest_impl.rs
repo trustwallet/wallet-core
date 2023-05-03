@@ -177,13 +177,28 @@ impl EnumInfo {
                 .cloned()
                 .enumerate()
                 .map(|(idx, (k, v))| {
+                    let mut name =
+                        k.0.strip_prefix(&value.name.0)
+                            .unwrap()
+                            .to_lower_camel_case();
+
+                    // HACK
+                    // Some variant names do not follow standard camelCase convention.
+                    if value.name.0 == "TWCoinType" {
+                        name = name.replace("xDai", "xdai");
+                        name = name.replace("polygonzkEvm", "polygonzkEVM");
+                        name = name.replace("ecoChain", "ecochain");
+                        name = name.replace("okxChain", "okxchain");
+                        name = name.replace("ioTeXevm", "ioTeXEVM");
+                        name = name.replace("poaNetwork", "poanetwork");
+                        name = name.replace("thorChain", "thorchain");
+                        name = name.replace("eCash", "ecash");
+                        name = name.replace("fetchAi", "fetchAI");
+                    }
+
                     EnumVariantInfo {
                         // Remove prefix from enum variant.
-                        name: k
-                            .0
-                            .strip_prefix(&value.name.0)
-                            .unwrap()
-                            .to_lower_camel_case(),
+                        name,
                         // In the old codegen, non-values result in a simple
                         // counter. IMO fixed values should be enforced.
                         value: v.unwrap_or(idx),
