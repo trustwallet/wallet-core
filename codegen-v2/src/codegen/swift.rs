@@ -1,5 +1,5 @@
 use crate::manifest::{
-    FileInfo, FunctionInfo, InitInfo, ParamInfo, PropertyInfo, ProtoInfo, TypeInfo, TypeVariant,
+    FileInfo, FunctionInfo, InitInfo, PropertyInfo, ProtoInfo, TypeVariant,
 };
 use crate::{Error, Result};
 use handlebars::Handlebars;
