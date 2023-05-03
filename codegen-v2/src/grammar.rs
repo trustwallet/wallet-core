@@ -1420,11 +1420,17 @@ impl ParseTree for GFunctionDecl {
             }
 
             // Check for single `void`
-            let (void, r) = optional::<GPrimitive>(reader);
-            if void.is_some() {
-                reader = r;
-                break;
+            let (pending, checked_out) = reader.checkout();
+            if let Ok((prim, cr)) = ensure::<GPrimitive>(checked_out) {
+                if prim == GPrimitive::Void {
+                    if ensure::<GCloseBracket>(cr).is_ok() {
+                        reader = pending.discard();
+                        break;
+                    }
+                }
             }
+
+            let r = pending.discard();
 
             // Derive and track parameter.
             let (derived, r) = ensure::<GParamItem>(r)?;
