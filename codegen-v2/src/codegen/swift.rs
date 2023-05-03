@@ -1,6 +1,4 @@
-use crate::manifest::{
-    FileInfo, FunctionInfo, InitInfo, PropertyInfo, ProtoInfo, TypeVariant,
-};
+use crate::manifest::{FileInfo, FunctionInfo, InitInfo, PropertyInfo, ProtoInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
@@ -529,11 +527,23 @@ fn process_object_methods(
             TypeVariant::Data => SwiftOperation::Return {
                 call: "TWDataNSData(result)".to_string(),
             },
-            TypeVariant::Enum(enm) => SwiftOperation::Return {
-                call: format!("{}(rawValue: result.rawValue)", enm),
+            TypeVariant::Enum(_enm) => SwiftOperation::Return {
+                call: format!(
+                    "{}(rawValue: result.rawValue)",
+                    // TODO: Comment
+                    // TODO: impl Display for SwiftType
+                    SwiftType::try_from(func.return_type.variant.clone())
+                        .unwrap()
+                        .0
+                ),
             },
-            TypeVariant::Struct(strct) => SwiftOperation::Return {
-                call: format!("{}(rawValue: result)", strct),
+            TypeVariant::Struct(_strct) => SwiftOperation::Return {
+                call: format!(
+                    "{}(rawValue: result)",
+                    SwiftType::try_from(func.return_type.variant.clone())
+                        .unwrap()
+                        .0
+                ),
             },
             _ => SwiftOperation::Return {
                 call: "result".to_string(),
