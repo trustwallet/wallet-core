@@ -16,9 +16,9 @@
 
 namespace TW::Aptos {
 
-class Address : public Move::Address<Address, 32> {
+class Address : public Move::Address<Address, 32, true> {
 public:
-    using AptosAddress = Move::Address<Address, 32>;
+    using AptosAddress = Move::Address<Address, 32, true>;
     using AptosAddress::size;
     using AptosAddress::bytes;
 
