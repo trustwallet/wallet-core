@@ -595,13 +595,18 @@ fn process_object_methods(
             is_nullable: func.return_type.is_nullable,
         };
 
-        let mut func_name = func.name.strip_prefix(object.name()).unwrap().to_lower_camel_case();
+        let mut func_name = func
+            .name
+            .strip_prefix(object.name())
+            .unwrap()
+            .to_lower_camel_case();
 
-        // The 'TWStoredKey' structs contains functions that do not follow
-        // standard camelCase convention.
+        // Some functionsdo not follow standard camelCase convention.
         if object.name() == "TWStoredKey" {
             func_name = func_name.replace("Json", "JSON");
             func_name = func_name.replace("Hd", "HD");
+        } else if object.name() == "TWPublicKey" {
+            func_name = func_name.replace("Der", "DER");
         }
 
         swift_funcs.push(SwiftFunction {
