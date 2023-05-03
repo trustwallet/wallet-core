@@ -613,6 +613,9 @@ fn process_object_methods(
             func_name = func_name.replace("sha512256", "sha512_256");
             func_name = func_name.replace("sha3256", "sha3_256");
             func_name = func_name.replace("sha256sha256", "sha256SHA256");
+        } else if object.name() == "TWAES" {
+            func_name = func_name.replace("Cbc", "CBC");
+            func_name = func_name.replace("Ctr", "CTR");
         }
 
         swift_funcs.push(SwiftFunction {
