@@ -91,6 +91,8 @@ android {
         minSdk = libs.versions.android.sdk.min.get().toInt()
         ndkVersion = libs.versions.android.ndk.get()
 
+        consumerProguardFiles += projectDir.resolve("consumer-rules.pro")
+
         externalNativeBuild {
             cmake {
                 arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DKOTLIN=True", "-DTW_UNITY_BUILD=ON")
