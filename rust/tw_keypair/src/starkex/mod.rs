@@ -106,4 +106,17 @@ mod tests {
             H256::from("04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a")
         );
     }
+
+    // https://github.com/xJonathanLEI/starknet-rs/issues/365
+    #[test]
+    fn test_verify_panic() {
+        let public =
+            PublicKey::from("03ee9bffffffffff26ffffffff60ffffffffffffffffffffffffffff004accff");
+        let hash = hex::decode("06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76")
+            .unwrap();
+        let signature_bytes = hex::decode("06ffffffffffffffffffffffffffffffffffffffffffff06ffff5dffff9bffdf00ffffff9b9b9b9b9b9b9b9bbb9bff9b9bbb9bff9b9b9b9b9b9b9b9b9b9b9b33").unwrap();
+        let signature = Signature::try_from(signature_bytes.as_slice()).unwrap();
+
+        assert!(!public.verify(signature, hash));
+    }
 }

@@ -16,6 +16,7 @@ pub type H264 = Hash<33>;
 pub type H512 = Hash<64>;
 pub type H520 = Hash<65>;
 
+/// Represents a fixed-length byte array.
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Hash<const N: usize>([u8; N]);
 
