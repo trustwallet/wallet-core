@@ -284,6 +284,8 @@ fn process_inits(
     let mut info_inits = vec![];
 
     for init in inits {
+        // TODO: The current/old codgen simply skips non-exported methods. Maybe
+        // this should be renamed to `export` rather than `is_public`.
         if !init.name.starts_with(object.name()) || !init.is_public {
             // Init is not assciated with the object.
             info_inits.push(init);
@@ -452,43 +454,83 @@ fn process_object_methods(
                 is_nullable: param.ty.is_nullable,
             });
 
-            let (var_name, call, defer) = match &param.ty.variant {
-                TypeVariant::String => (
-                    param.name.clone(),
-                    format!("TWStringCreateWithNSString({})", param.name),
-                    Some(format!("TWStringDelete({})", param.name)),
-                ),
-                TypeVariant::Data => (
-                    param.name.clone(),
-                    format!("TWDataCreateWithNSData({})", param.name),
-                    Some(format!("TWDataDelete({})", param.name)),
-                ),
-                TypeVariant::Struct(_) => {
-                    (param.name.clone(), format!("{}.rawValue", param.name), None)
+            ops.push(match &param.ty.variant {
+                TypeVariant::String => {
+                    let (var_name, call, defer) = (
+                        param.name.clone(),
+                        format!("TWStringCreateWithNSString({})", param.name),
+                        Some(format!("TWStringDelete({})", param.name)),
+                    );
+
+                    if param.ty.is_nullable {
+                        SwiftOperation::CallOptional {
+                            var_name,
+                            call,
+                            defer,
+                        }
+                    } else {
+                        SwiftOperation::Call {
+                            var_name,
+                            call,
+                            defer,
+                        }
+                    }
                 }
-                TypeVariant::Enum(enm) => (
-                    param.name.clone(),
-                    format!("{enm}(rawValue: {}.rawValue)", param.name),
-                    None,
-                ),
+                TypeVariant::Data => {
+                    let (var_name, call, defer) = (
+                        param.name.clone(),
+                        format!("TWDataCreateWithNSData({})", param.name),
+                        Some(format!("TWDataDelete({})", param.name)),
+                    );
+
+                    if param.ty.is_nullable {
+                        SwiftOperation::CallOptional {
+                            var_name,
+                            call,
+                            defer,
+                        }
+                    } else {
+                        SwiftOperation::Call {
+                            var_name,
+                            call,
+                            defer,
+                        }
+                    }
+                }
+                TypeVariant::Struct(_) => {
+                    let (var_name, call, defer) = if param.ty.is_nullable {
+                        (
+                            param.name.clone(),
+                            format!("{}?.rawValue", param.name),
+                            None,
+                        )
+                    } else {
+                        (param.name.clone(), format!("{}.rawValue", param.name), None)
+                    };
+
+                    SwiftOperation::Call {
+                        var_name,
+                        call,
+                        defer,
+                    }
+                }
+                TypeVariant::Enum(enm) => {
+                    let (var_name, call, defer) = (
+                        param.name.clone(),
+                        format!("{enm}(rawValue: {}.rawValue)", param.name),
+                        None,
+                    );
+
+                    SwiftOperation::Call {
+                        var_name,
+                        call,
+                        defer,
+                    }
+                }
                 // Reference the parameter by name directly, as defined in the
                 // function interface.
                 _ => continue,
-            };
-
-            if param.ty.is_nullable {
-                ops.push(SwiftOperation::CallOptional {
-                    var_name,
-                    call,
-                    defer,
-                })
-            } else {
-                ops.push(SwiftOperation::Call {
-                    var_name,
-                    call,
-                    defer,
-                })
-            }
+            });
         }
 
         // Call the underlying C FFI function, passing on the `obj` instance.
