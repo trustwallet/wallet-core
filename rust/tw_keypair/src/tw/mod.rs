@@ -14,6 +14,9 @@ pub use public::PublicKey;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Curve {
     Secp256k1 = 0,
+    Ed25519 = 1,
+    Ed25519Blake2bNano = 2,
+    Ed25519ExtendedCardano = 5,
     Starkex = 6,
 }
 
@@ -22,6 +25,9 @@ impl Curve {
     pub fn from_raw(curve: u32) -> Option<Curve> {
         match curve {
             0 => Some(Curve::Secp256k1),
+            1 => Some(Curve::Ed25519),
+            2 => Some(Curve::Ed25519Blake2bNano),
+            5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
             _ => None,
         }
@@ -33,6 +39,9 @@ impl Curve {
 pub enum PublicKeyType {
     Secp256k1 = 0,
     Secp256k1Extended = 1,
+    Ed25519 = 4,
+    Ed25519Blake2b = 5,
+    Ed25519CardanoExtended = 7,
     Starkex = 8,
 }
 
@@ -42,6 +51,9 @@ impl PublicKeyType {
         match ty {
             0 => Some(PublicKeyType::Secp256k1),
             1 => Some(PublicKeyType::Secp256k1Extended),
+            4 => Some(PublicKeyType::Ed25519),
+            5 => Some(PublicKeyType::Ed25519Blake2b),
+            7 => Some(PublicKeyType::Ed25519CardanoExtended),
             8 => Some(PublicKeyType::Starkex),
             _ => None,
         }

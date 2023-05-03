@@ -6,7 +6,7 @@
 
 use crate::traits::VerifyingKeyTrait;
 use crate::tw::PublicKeyType;
-use crate::{secp256k1, starkex, Error};
+use crate::{ed25519, secp256k1, starkex, Error};
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
@@ -14,6 +14,9 @@ use tw_misc::try_or_false;
 pub enum PublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
+    Ed25519(ed25519::sha512::PublicKey),
+    Ed25519Blake2b(ed25519::blake2b::PublicKey),
+    Ed25519CardanoExtended(Box<ed25519::cardano::ExtendedPublicKey>),
     Starkex(starkex::PublicKey),
 }
 
@@ -30,6 +33,20 @@ impl PublicKey {
             {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Secp256k1Extended(pubkey))
+            },
+            PublicKeyType::Ed25519 if ed25519::sha512::PublicKey::LEN == bytes.len() => {
+                let pubkey = ed25519::sha512::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Ed25519(pubkey))
+            },
+            PublicKeyType::Ed25519Blake2b if ed25519::blake2b::PublicKey::LEN == bytes.len() => {
+                let pubkey = ed25519::blake2b::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Ed25519Blake2b(pubkey))
+            },
+            PublicKeyType::Ed25519CardanoExtended
+                if ed25519::cardano::ExtendedPublicKey::LEN == bytes.len() =>
+            {
+                let pubkey = ed25519::cardano::ExtendedPublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Ed25519CardanoExtended(Box::new(pubkey)))
             },
             PublicKeyType::Starkex => {
                 let pubkey = starkex::PublicKey::try_from(bytes.as_slice())?;
@@ -60,6 +77,9 @@ impl PublicKey {
             PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
                 verify_impl(secp, sig, hash)
             },
+            PublicKey::Ed25519(ed) => verify_impl(ed, sig, hash),
+            PublicKey::Ed25519Blake2b(blake) => verify_impl(blake, sig, hash),
+            PublicKey::Ed25519CardanoExtended(cardano) => verify_impl(cardano.as_ref(), sig, hash),
             PublicKey::Starkex(stark) => verify_impl(stark, sig, hash),
         }
     }
@@ -69,6 +89,9 @@ impl PublicKey {
         match self {
             PublicKey::Secp256k1(secp) => secp.compressed().into_vec(),
             PublicKey::Secp256k1Extended(secp) => secp.uncompressed().into_vec(),
+            PublicKey::Ed25519(ed) => ed.to_vec(),
+            PublicKey::Ed25519Blake2b(blake) => blake.to_vec(),
+            PublicKey::Ed25519CardanoExtended(cardano) => cardano.to_vec(),
             PublicKey::Starkex(stark) => stark.to_vec(),
         }
     }

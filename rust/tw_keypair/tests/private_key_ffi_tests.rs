@@ -5,7 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use tw_encoding::hex;
-use tw_hash::{H256, H520};
+use tw_hash::sha2::sha256;
+use tw_hash::{H256, H512, H520};
 use tw_keypair::ffi::privkey::{
     tw_private_key_create_with_data, tw_private_key_delete, tw_private_key_get_public_key_by_type,
     tw_private_key_is_valid, tw_private_key_sign, TWPrivateKey,
@@ -27,8 +28,8 @@ impl TWPrivateKeyHelper {
     }
 
     fn with_hex(hex: &'static str) -> TWPrivateKeyHelper {
-        let priv_key_data = H256::from(hex);
-        TWPrivateKeyHelper::with_bytes(priv_key_data.into_vec())
+        let priv_key_data = hex::decode(hex).unwrap();
+        TWPrivateKeyHelper::with_bytes(priv_key_data)
     }
 }
 
@@ -65,7 +66,7 @@ fn test_tw_private_key_delete_null() {
 }
 
 #[test]
-fn test_tw_private_key_sign() {
+fn test_tw_private_key_sign_secp256k1() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
     );
@@ -81,6 +82,27 @@ fn test_tw_private_key_sign() {
         .into_vec()
     };
     let expected = H520::from("8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901");
+    assert_eq!(actual, expected.into_vec());
+}
+
+#[test]
+fn test_tw_private_key_sign_ed25519_cardano_extended() {
+    let tw_privkey = TWPrivateKeyHelper::with_hex(
+        "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
+        e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276",
+    );
+    let message = sha256(b"Hello");
+    let message_raw = CByteArray::from(message);
+    let actual = unsafe {
+        tw_private_key_sign(
+            tw_privkey.ptr,
+            message_raw.data(),
+            message_raw.size(),
+            Curve::Ed25519ExtendedCardano as u32,
+        )
+        .into_vec()
+    };
+    let expected = H512::from("0a8c6e36f9afa324e9065d185cf5df2815c6b997b2e1627e8612ddba8097dcfc325ad6b2317cda2159407463cdd2706af97f299873e940f43f986951f8809108");
     assert_eq!(actual, expected.into_vec());
 }
 
@@ -161,10 +183,10 @@ fn test_tw_private_key_is_valid() {
         H256::from("0000000000000000000000000000000000000000000000000000000000000001");
     assert!(is_valid(privkey_bytes.into_vec()));
 
-    // Cardano private key is not supported yet.
+    // Cardano private key.
     let privkey_bytes =
         hex::decode("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e").unwrap();
-    assert!(!is_valid(privkey_bytes));
+    assert!(is_valid(privkey_bytes));
 
     // Zero private key.
     let privkey_bytes =

@@ -21,7 +21,7 @@ pub struct ExtendedPublicKey<Hash: Hash512> {
 
 /// cbindgen:ignore
 impl<Hash: Hash512> ExtendedPublicKey<Hash> {
-    const LEN: usize = ExtendedPublicPart::<Hash>::LEN * 2;
+    pub const LEN: usize = ExtendedPublicPart::<Hash>::LEN * 2;
     const KEY_RANGE: Range<usize> = 0..ExtendedPublicPart::<Hash>::LEN;
     const SECOND_KEY_RANGE: Range<usize> = ExtendedPublicPart::<Hash>::LEN..Self::LEN;
 

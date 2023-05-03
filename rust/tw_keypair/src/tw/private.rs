@@ -6,7 +6,7 @@
 
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
-use crate::{secp256k1, starkex, Error};
+use crate::{ed25519, secp256k1, starkex, Error};
 use std::ops::Range;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
@@ -24,8 +24,10 @@ pub struct PrivateKey {
 impl PrivateKey {
     /// The number of bytes in a private key.
     const SIZE: usize = 32;
+    const CARDANO_SIZE: usize = 192;
 
     const KEY_RANGE: Range<usize> = 0..Self::SIZE;
+    const CARDANO_EXTENDED_RANGE: Range<usize> = 0..Self::CARDANO_SIZE;
 
     /// Validates the given `bytes` secret and creates a private key.
     pub fn new(bytes: Vec<u8>) -> Result<PrivateKey, Error> {
@@ -45,9 +47,18 @@ impl PrivateKey {
             .expect("H256 and KEY_RANGE must be 32 byte length")
     }
 
+    /// Returns the 192 byte array - the essential cardano extended private key data.
+    pub fn cardano_extended_key(&self) -> &[u8] {
+        assert!(
+            self.bytes.len() == Self::CARDANO_SIZE,
+            "'PrivateKey::bytes' has an unexpected length"
+        );
+        &self.bytes[Self::CARDANO_EXTENDED_RANGE]
+    }
+
     /// Checks if the given `bytes` secret is valid in general (without a concrete curve).
     pub fn is_valid_general(bytes: &[u8]) -> bool {
-        if bytes.len() != Self::SIZE {
+        if bytes.len() != Self::SIZE && bytes.len() != Self::CARDANO_SIZE {
             return false;
         }
         // Check for zero address.
@@ -61,6 +72,16 @@ impl PrivateKey {
         }
         match curve {
             Curve::Secp256k1 => secp256k1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
+            Curve::Ed25519 => {
+                ed25519::sha512::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
+            },
+            Curve::Ed25519Blake2bNano => {
+                ed25519::blake2b::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
+            },
+            Curve::Ed25519ExtendedCardano => {
+                ed25519::cardano::ExtendedPrivateKey::try_from(&bytes[Self::CARDANO_EXTENDED_RANGE])
+                    .is_ok()
+            },
             Curve::Starkex => starkex::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
         }
     }
@@ -78,6 +99,9 @@ impl PrivateKey {
 
         match curve {
             Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, hash),
+            Curve::Ed25519 => sign_impl(self.to_ed25519()?, hash),
+            Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, hash),
+            Curve::Ed25519ExtendedCardano => sign_impl(self.to_ed25519_cardano_extended()?, hash),
             Curve::Starkex => sign_impl(self.to_starkex_privkey()?, hash),
         }
     }
@@ -93,6 +117,20 @@ impl PrivateKey {
                 let privkey = self.to_secp256k1_privkey()?;
                 Ok(PublicKey::Secp256k1Extended(privkey.public()))
             },
+            PublicKeyType::Ed25519 => {
+                let privkey = self.to_ed25519()?;
+                Ok(PublicKey::Ed25519(privkey.public()))
+            },
+            PublicKeyType::Ed25519Blake2b => {
+                let privkey = self.to_ed25519_blake2b()?;
+                Ok(PublicKey::Ed25519Blake2b(privkey.public()))
+            },
+            PublicKeyType::Ed25519CardanoExtended => {
+                let privkey = self.to_ed25519_cardano_extended()?;
+                Ok(PublicKey::Ed25519CardanoExtended(Box::new(
+                    privkey.public(),
+                )))
+            },
             PublicKeyType::Starkex => {
                 let privkey = self.to_starkex_privkey()?;
                 Ok(PublicKey::Starkex(privkey.public()))
@@ -103,6 +141,21 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`secp256k1::PrivateKey`].
     fn to_secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
         secp256k1::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`ed25519::sha512::PrivateKey`].
+    fn to_ed25519(&self) -> Result<ed25519::sha512::PrivateKey, Error> {
+        ed25519::sha512::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`ed25519::sha512::PrivateKey`].
+    fn to_ed25519_blake2b(&self) -> Result<ed25519::blake2b::PrivateKey, Error> {
+        ed25519::blake2b::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`ed25519::sha512::PrivateKey`].
+    fn to_ed25519_cardano_extended(&self) -> Result<ed25519::cardano::ExtendedPrivateKey, Error> {
+        ed25519::cardano::ExtendedPrivateKey::try_from(self.cardano_extended_key())
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`starkex::PrivateKey`].
