@@ -608,9 +608,11 @@ fn process_object_methods(
         } else if object.name() == "TWPublicKey" {
             func_name = func_name.replace("Der", "DER");
         } else if object.name() == "TWHash" {
-            func_name = func_name.replace("sha512256", "sha512_256");
             func_name = func_name.replace("ripemd", "RIPEMD");
             func_name = func_name.replace("Ripemd", "RIPEMD");
+            func_name = func_name.replace("sha512256", "sha512_256");
+            func_name = func_name.replace("sha3256", "sha3_256");
+            func_name = func_name.replace("sha256sha256", "sha256SHA256");
         }
 
         swift_funcs.push(SwiftFunction {
