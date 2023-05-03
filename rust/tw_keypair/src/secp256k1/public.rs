@@ -46,11 +46,13 @@ impl PublicKey {
 }
 
 impl VerifyingKeyTrait for PublicKey {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type VerifySignature = VerifySignature;
 
-    fn verify(&self, sign: Self::VerifySignature, hash: Self::SigningHash) -> bool {
-        self.public.verify_prehash(&hash, &sign.signature).is_ok()
+    fn verify(&self, sign: Self::VerifySignature, message: Self::SigningMessage) -> bool {
+        self.public
+            .verify_prehash(&message, &sign.signature)
+            .is_ok()
     }
 }
 

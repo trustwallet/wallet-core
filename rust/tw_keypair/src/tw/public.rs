@@ -61,26 +61,30 @@ impl PublicKey {
         PublicKey::new(bytes, ty).is_ok()
     }
 
-    /// Verifies if the given `hash` was signed using a private key associated with the public key.
-    pub fn verify(&self, sig: &[u8], hash: &[u8]) -> bool {
-        fn verify_impl<Key>(verifying_key: &Key, sig: &[u8], hash: &[u8]) -> bool
+    /// Verifies if the given `message` was signed using a private key associated with the public key.
+    pub fn verify(&self, sig: &[u8], message: &[u8]) -> bool {
+        fn verify_impl<Key>(verifying_key: &Key, sig: &[u8], message: &[u8]) -> bool
         where
             Key: VerifyingKeyTrait,
         {
             let verify_sig =
                 try_or_false!(<Key as VerifyingKeyTrait>::VerifySignature::try_from(sig));
-            let hash = try_or_false!(<Key as VerifyingKeyTrait>::SigningHash::try_from(hash));
-            verifying_key.verify(verify_sig, hash)
+            let message = try_or_false!(<Key as VerifyingKeyTrait>::SigningMessage::try_from(
+                message
+            ));
+            verifying_key.verify(verify_sig, message)
         }
 
         match self {
             PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
-                verify_impl(secp, sig, hash)
+                verify_impl(secp, sig, message)
             },
-            PublicKey::Ed25519(ed) => verify_impl(ed, sig, hash),
-            PublicKey::Ed25519Blake2b(blake) => verify_impl(blake, sig, hash),
-            PublicKey::Ed25519CardanoExtended(cardano) => verify_impl(cardano.as_ref(), sig, hash),
-            PublicKey::Starkex(stark) => verify_impl(stark, sig, hash),
+            PublicKey::Ed25519(ed) => verify_impl(ed, sig, message),
+            PublicKey::Ed25519Blake2b(blake) => verify_impl(blake, sig, message),
+            PublicKey::Ed25519CardanoExtended(cardano) => {
+                verify_impl(cardano.as_ref(), sig, message)
+            },
+            PublicKey::Starkex(stark) => verify_impl(stark, sig, message),
         }
     }
 

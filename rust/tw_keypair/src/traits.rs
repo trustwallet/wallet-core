@@ -27,11 +27,11 @@ pub trait SigningKeyTrait {
 }
 
 pub trait VerifyingKeyTrait {
-    type SigningHash: FromSlice;
+    type SigningMessage: FromSlice;
     type VerifySignature: FromSlice;
 
     /// Verifies if the given `hash` was signed using the private key.
-    fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool;
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool;
 }
 
 pub trait FromSlice: for<'a> TryFrom<&'a [u8]> {}

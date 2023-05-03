@@ -27,11 +27,11 @@ impl PublicKey {
 }
 
 impl VerifyingKeyTrait for PublicKey {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
-    fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
-        let hash = try_or_false!(field_element_from_bytes_be(&hash));
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
+        let hash = try_or_false!(field_element_from_bytes_be(&message));
         let ecdsa_signature = signature.inner();
         ecdsa_verify(&self.public, &hash, &ecdsa_signature.r, &ecdsa_signature.s)
             .unwrap_or_default()

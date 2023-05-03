@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ed25519-dalek = "1"
 curve25519-dalek = "3"
 blake2 = "0.9"
 digest = "0.9.0"
@@ -18,7 +17,6 @@ tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 zeroize = "1.6.0"
-ed25519-dalek-blake2b = "1.0.2"
 
 [dev-dependencies]
 serde = { version = "1.0.159", features = ["derive"] }

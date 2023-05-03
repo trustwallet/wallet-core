@@ -70,11 +70,11 @@ impl<Hash: Hash512> PublicKey<Hash> {
 }
 
 impl<Hash: Hash512> VerifyingKeyTrait for PublicKey<Hash> {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
     #[allow(non_snake_case)]
-    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningHash) -> bool {
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         let mut h = Hash::new();
         let minus_A: EdwardsPoint = -self.point;
 

@@ -31,10 +31,10 @@ impl<Hash: Hash512> ExtendedPublicKey<Hash> {
 }
 
 impl<Hash: Hash512> VerifyingKeyTrait for ExtendedPublicKey<Hash> {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
-    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningHash) -> bool {
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         self.key.public.verify(signature, message)
     }
 }

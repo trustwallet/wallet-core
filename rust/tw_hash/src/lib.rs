@@ -17,7 +17,7 @@ pub mod sha3;
 mod hash_array;
 mod hash_wrapper;
 
-pub use hash_array::{H256, H264, H512, H520, concat};
+pub use hash_array::{concat, H256, H264, H512, H520};
 
 use tw_encoding::hex::FromHexError;
 

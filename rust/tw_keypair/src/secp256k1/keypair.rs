@@ -41,11 +41,11 @@ impl SigningKeyTrait for KeyPair {
 }
 
 impl VerifyingKeyTrait for KeyPair {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type VerifySignature = VerifySignature;
 
-    fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
-        self.public.verify(signature, hash)
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
+        self.public.verify(signature, message)
     }
 }
 

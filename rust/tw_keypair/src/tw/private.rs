@@ -86,23 +86,25 @@ impl PrivateKey {
         }
     }
 
-    /// Signs a `hash` with using the given elliptic curve.
-    pub fn sign(&self, hash: &[u8], curve: Curve) -> Result<Vec<u8>, Error> {
-        fn sign_impl<Key>(signing_key: Key, hash: &[u8]) -> Result<Vec<u8>, Error>
+    /// Signs a `message` with using the given elliptic curve.
+    pub fn sign(&self, message: &[u8], curve: Curve) -> Result<Vec<u8>, Error> {
+        fn sign_impl<Key>(signing_key: Key, message: &[u8]) -> Result<Vec<u8>, Error>
         where
             Key: SigningKeyTrait,
         {
-            let hash_to_sign = <Key as SigningKeyTrait>::SigningHash::try_from(hash)
+            let hash_to_sign = <Key as SigningKeyTrait>::SigningHash::try_from(message)
                 .map_err(|_| Error::InvalidSignMessage)?;
             signing_key.sign(hash_to_sign).map(|sig| sig.to_vec())
         }
 
         match curve {
-            Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, hash),
-            Curve::Ed25519 => sign_impl(self.to_ed25519()?, hash),
-            Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, hash),
-            Curve::Ed25519ExtendedCardano => sign_impl(self.to_ed25519_cardano_extended()?, hash),
-            Curve::Starkex => sign_impl(self.to_starkex_privkey()?, hash),
+            Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, message),
+            Curve::Ed25519 => sign_impl(self.to_ed25519()?, message),
+            Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, message),
+            Curve::Ed25519ExtendedCardano => {
+                sign_impl(self.to_ed25519_cardano_extended()?, message)
+            },
+            Curve::Starkex => sign_impl(self.to_starkex_privkey()?, message),
         }
     }
 
