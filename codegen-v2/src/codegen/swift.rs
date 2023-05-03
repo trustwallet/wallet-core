@@ -84,8 +84,6 @@ pub struct SwiftProto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftOperatorEquality {
     pub c_ffi_name: String,
-    pub is_public: bool,
-    pub is_static: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -156,11 +154,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         // Handle equality operator.
         let equality_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
 
-        let equality_operator = if let Some((idx, func)) = equality_method {
+        let equality_operator = if let Some((idx, _func)) = equality_method {
             let operator = SwiftOperatorEquality {
                 c_ffi_name: format!("{}Equal", strct.name),
-                is_public: func.is_public,
-                is_static: func.is_static,
             };
 
             // Remove that method from the `methods` list.
@@ -715,7 +711,7 @@ fn process_object_properties(
         });
 
         // Pretty name.
-        let mut pretty_name = prop
+        let pretty_name = prop
             .name
             .strip_prefix(object.name())
             .unwrap()
