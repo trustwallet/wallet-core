@@ -608,6 +608,7 @@ fn process_object_methods(
         } else if object.name() == "TWPublicKey" {
             func_name = func_name.replace("Der", "DER");
         } else if object.name() == "TWHash" {
+            func_name = func_name.replace("ripemd", "RIPEMD");
             func_name = func_name.replace("Ripemd", "RIPEMD");
         }
 
