@@ -35,6 +35,7 @@ pub(super) fn process_inits(
                 is_nullable: param.ty.is_nullable,
             });
 
+            // Process parameter.
             if let Some(op) = param_c_ffi_call(&param) {
                 ops.push(op);
             }
@@ -47,6 +48,7 @@ pub(super) fn process_inits(
             .collect::<Vec<&str>>()
             .join(",");
 
+        // Call the underlying C FFI function, passing on the parameter list.
         if init.is_nullable {
             ops.push(SwiftOperation::GuardedCall {
                 var_name: "result".to_string(),
@@ -59,6 +61,9 @@ pub(super) fn process_inits(
                 defer: None,
             });
         }
+
+        // Note that we do not return a value here; the template sets a
+        // `self.rawValue = result` entry at the end of the constructor.
 
         // Prettify name, remove object name prefix from this property.
         let pretty_name = init

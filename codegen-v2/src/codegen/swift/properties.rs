@@ -1,5 +1,5 @@
 use super::*;
-use crate::manifest::{PropertyInfo, TypeVariant};
+use crate::manifest::PropertyInfo;
 use heck::ToLowerCamelCase;
 
 /// This function checks each property and determines whether there's an
@@ -44,45 +44,19 @@ pub(super) fn process_object_properties(
         // Call the underlying C FFI function, passing on the `obj` instance.
         //
         // E.g: `let result = TWSomeFunc(obj)`.
-        let (var_name, call, defer) = ("result".to_string(), format!("{}(obj)", prop.name), None);
-
+        let (var_name, call) = ("result".to_string(), format!("{}(obj)", prop.name));
         if prop.return_type.is_nullable {
             ops.push(SwiftOperation::GuardedCall { var_name, call });
         } else {
             ops.push(SwiftOperation::Call {
                 var_name,
                 call,
-                defer,
+                defer: None,
             });
         }
 
-        // The `result` must be handled and returned explicitly.
-        ops.push(match &prop.return_type.variant {
-            // E.g.`return TWStringNSString(result)`
-            TypeVariant::String => SwiftOperation::Return {
-                call: "TWStringNSString(result)".to_string(),
-            },
-            TypeVariant::Data => SwiftOperation::Return {
-                call: "TWDataNSData(result)".to_string(),
-            },
-            // E.g. `return SomeEnum(rawValue: result.rawValue)`
-            TypeVariant::Enum(_) => SwiftOperation::Return {
-                call: format!(
-                    "{}(rawValue: result.rawValue)!",
-                    SwiftType::from(prop.return_type.variant.clone())
-                ),
-            },
-            // E.g. `return SomeStruct(rawValue: result)`
-            TypeVariant::Struct(_) => SwiftOperation::Return {
-                call: format!(
-                    "{}(rawValue: result)",
-                    SwiftType::from(prop.return_type.variant.clone())
-                ),
-            },
-            _ => SwiftOperation::Return {
-                call: "result".to_string(),
-            },
-        });
+        // Wrap result.
+        ops.push(wrap_return(&prop.return_type));
 
         // Prettify name, remove object name prefix from this property.
         let pretty_name = prop
@@ -92,7 +66,7 @@ pub(super) fn process_object_properties(
             .unwrap()
             .to_lower_camel_case();
 
-        // Convert return type.
+        // Convert return type for property interface.
         let return_type = SwiftReturn {
             param_type: SwiftType::from(prop.return_type.variant),
             is_nullable: prop.return_type.is_nullable,

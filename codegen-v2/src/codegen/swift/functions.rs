@@ -80,51 +80,24 @@ pub(super) fn process_object_methods(
             .join(",");
 
         // Call the underlying C FFI function, passing on the parameter list.
+        let (var_name, call) = (
+            "result".to_string(),
+            format!("{}({})", func.name, param_names),
+        );
         if func.return_type.is_nullable {
-            ops.push(SwiftOperation::GuardedCall {
-                var_name: "result".to_string(),
-                call: format!("{}({})", func.name, param_names),
-            });
+            ops.push(SwiftOperation::GuardedCall { var_name, call });
         } else {
             ops.push(SwiftOperation::Call {
-                var_name: "result".to_string(),
-                call: format!("{}({})", func.name, param_names),
+                var_name,
+                call,
                 defer: None,
             });
         }
 
-        // The `result` must be handled and returned explicitly.
-        ops.push(match &func.return_type.variant {
-            // E.g. `return TWStringNSString(result)`
-            TypeVariant::String => SwiftOperation::Return {
-                call: "TWStringNSString(result)".to_string(),
-            },
-            TypeVariant::Data => SwiftOperation::Return {
-                call: "TWDataNSData(result)".to_string(),
-            },
-            // E.g. `return SomeEnum(rawValue: result.rawValue)`
-            TypeVariant::Enum(_enm) => SwiftOperation::Return {
-                call: format!(
-                    "{}(rawValue: result.rawValue)",
-                    // Strip "TW" prefix from enum, impying Swift enum.
-                    SwiftType::from(func.return_type.variant.clone())
-                ),
-            },
-            // E.g. `return SomeStruct(rawValue: result)`
-            TypeVariant::Struct(_strct) => SwiftOperation::Return {
-                call: format!(
-                    "{}(rawValue: result)",
-                    // Strip "TW" prefix from struct, impying Swift struct.
-                    SwiftType::from(func.return_type.variant.clone())
-                ),
-            },
-            // E.g. `return result`
-            _ => SwiftOperation::Return {
-                call: "result".to_string(),
-            },
-        });
+        // Wrap result.
+        ops.push(wrap_return(&func.return_type));
 
-        // Convert return type.
+        // Convert return type for function interface.
         let return_type = SwiftReturn {
             param_type: SwiftType::from(func.return_type.variant),
             is_nullable: func.return_type.is_nullable,

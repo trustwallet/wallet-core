@@ -3,7 +3,7 @@ use std::fmt::Display;
 use self::functions::process_object_methods;
 use self::inits::process_inits;
 use self::properties::process_object_properties;
-use crate::manifest::{FileInfo, ParamInfo, ProtoInfo, TypeVariant};
+use crate::manifest::{FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use handlebars::Handlebars;
 use serde_json::json;
 
@@ -444,4 +444,33 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<SwiftOperation> {
     };
 
     Some(op)
+}
+
+// Wrap the return value, returning the operation. Note that types are wrapped
+// differently when returning, compared to `param_c_ffi_call`; such as using
+// `TWStringNSString` instead of `TWDataCreateWithNSData` for Strings.
+fn wrap_return(ty: &TypeInfo) -> SwiftOperation {
+    match &ty.variant {
+        // E.g.`return TWStringNSString(result)`
+        TypeVariant::String => SwiftOperation::Return {
+            call: "TWStringNSString(result)".to_string(),
+        },
+        TypeVariant::Data => SwiftOperation::Return {
+            call: "TWDataNSData(result)".to_string(),
+        },
+        // E.g. `return SomeEnum(rawValue: result.rawValue)`
+        TypeVariant::Enum(_) => SwiftOperation::Return {
+            call: format!(
+                "{}(rawValue: result.rawValue)!",
+                SwiftType::from(ty.variant.clone())
+            ),
+        },
+        // E.g. `return SomeStruct(rawValue: result)`
+        TypeVariant::Struct(_) => SwiftOperation::Return {
+            call: format!("{}(rawValue: result)", SwiftType::from(ty.variant.clone())),
+        },
+        _ => SwiftOperation::Return {
+            call: "result".to_string(),
+        },
+    }
 }
