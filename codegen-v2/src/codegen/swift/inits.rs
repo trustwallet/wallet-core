@@ -1,5 +1,5 @@
 use super::*;
-use crate::manifest::{InitInfo, TypeVariant};
+use crate::manifest::InitInfo;
 
 /// This function checks each constructor and determines whether there's an
 /// association with the passed on object (struct or enum), based on common name
@@ -60,7 +60,13 @@ pub(super) fn process_inits(
             });
         }
 
-        let pretty_name = init.name.strip_prefix(object.name()).unwrap().to_string();
+        // Prettify name, remove object name prefix from this property.
+        let pretty_name = init
+            .name
+            .strip_prefix(object.name())
+            // Panicing implies bug, checked at the start of the loop.
+            .unwrap()
+            .to_string();
 
         swift_inits.push(SwiftInit {
             name: pretty_name,
