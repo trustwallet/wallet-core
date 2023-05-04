@@ -42,12 +42,23 @@ impl<T> Hash512 for T where T: Digest<OutputSize = U64> {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::traits::{SigningKeyTrait, VerifyingKeyTrait};
+    use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
     use tw_encoding::hex;
     use tw_hash::sha2::sha256;
     use tw_hash::sha3::keccak256;
     use tw_hash::{H256, H512};
-    use tw_misc::traits::ToBytesVec;
+    use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
+
+    #[test]
+    fn test_private_from_bytes() {
+        let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+
+        let private = sha512::PrivateKey::from(
+            "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
+        );
+        let actual = private.to_zeroizing_vec();
+        assert_eq!(actual.as_slice(), H256::from(secret).as_slice());
+    }
 
     #[test]
     fn test_private_to_public() {
@@ -111,6 +122,16 @@ mod tests {
     }
 
     #[test]
+    fn test_private_from_bytes_cardano() {
+        let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
+        639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
+
+        let private = cardano::ExtendedPrivateKey::from(secret);
+        let actual = private.to_zeroizing_vec();
+        assert_eq!(actual.as_slice(), hex::decode(secret).unwrap());
+    }
+
+    #[test]
     fn test_keypair_sign_verify_cardano_extended() {
         let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
         639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
@@ -137,5 +158,44 @@ mod tests {
         let expected = "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
         f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
         assert_eq!(public.to_vec(), hex::decode(expected).unwrap());
+    }
+
+    #[test]
+    fn test_public_key_from_bytes_cardano_extended() {
+        let pubkey_hex = "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
+        f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
+        let pubkey_bytes = hex::decode(pubkey_hex).unwrap();
+
+        let actual = cardano::ExtendedPublicKey::try_from(pubkey_bytes.as_slice()).unwrap();
+        assert_eq!(actual.to_vec(), pubkey_bytes);
+    }
+
+    #[test]
+    fn test_signature_from_bytes() {
+        let signature = "418aff0000000000000000000000000000000000000000000000f600000000000000000000000000000000000000000000000000000000000000000000000010";
+        let actual = Signature::try_from(hex::decode(signature).unwrap().as_slice()).unwrap();
+        assert_eq!(actual.to_bytes(), H512::from(signature));
+    }
+
+    #[test]
+    fn test_keypair_from_invalid_bytes() {
+        let invalid = [0; 1];
+        let _ = sha512::KeyPair::try_from(&invalid[..]).unwrap_err();
+        let _ = sha512::PrivateKey::try_from(&invalid[..]).unwrap_err();
+        let _ = sha512::PublicKey::try_from(&invalid[..]).unwrap_err();
+    }
+
+    #[test]
+    fn test_debug() {
+        let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+        let sign = H512::from("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07e7ed7a20a4e2fa1009db3d1443e937e6abb16ff3c3eaecb798faed7fbb40b008");
+
+        let keypair = sha512::KeyPair::from(secret);
+        let sign = Signature::try_from(sign.as_slice()).unwrap();
+
+        let _ = format!("{:?}", keypair);
+        let _ = format!("{:?}", keypair.private());
+        let _ = format!("{:?}", keypair.public());
+        let _ = format!("{:?}", sign);
     }
 }

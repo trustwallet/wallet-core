@@ -67,12 +67,38 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_starkex_tw_public_key_type_from_raw() {
-        assert_eq!(PublicKeyType::from_raw(8), Some(PublicKeyType::Starkex));
+    fn test_curve_from_raw() {
+        let tests = [
+            (0, Some(Curve::Secp256k1)),
+            (1, Some(Curve::Ed25519)),
+            (2, Some(Curve::Ed25519Blake2bNano)),
+            (3, None),
+            (4, None),
+            (5, Some(Curve::Ed25519ExtendedCardano)),
+            (6, Some(Curve::Starkex)),
+            (7, None),
+        ];
+        for (raw, expected) in tests {
+            assert_eq!(Curve::from_raw(raw), expected);
+        }
     }
 
     #[test]
-    fn test_starkex_curve_from_raw() {
-        assert_eq!(Curve::from_raw(6), Some(Curve::Starkex));
+    fn test_public_key_type_from_raw() {
+        let tests = [
+            (0, Some(PublicKeyType::Secp256k1)),
+            (1, Some(PublicKeyType::Secp256k1Extended)),
+            (2, None),
+            (3, None),
+            (4, Some(PublicKeyType::Ed25519)),
+            (5, Some(PublicKeyType::Ed25519Blake2b)),
+            (6, None),
+            (7, Some(PublicKeyType::Ed25519CardanoExtended)),
+            (8, Some(PublicKeyType::Starkex)),
+            (9, None),
+        ];
+        for (raw, expected) in tests {
+            assert_eq!(PublicKeyType::from_raw(raw), expected);
+        }
     }
 }

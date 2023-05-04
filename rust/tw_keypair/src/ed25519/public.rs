@@ -13,16 +13,26 @@ use crate::Error;
 use curve25519_dalek::constants;
 use curve25519_dalek::edwards::{CompressedEdwardsY, EdwardsPoint};
 use curve25519_dalek::scalar::Scalar;
+use std::fmt;
 use std::marker::PhantomData;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
+#[derive(PartialEq)]
 pub struct PublicKey<Hash: Hash512> {
     compressed: CompressedEdwardsY,
     point: EdwardsPoint,
     _phantom: PhantomData<Hash>,
+}
+
+impl<Hash: Hash512> fmt::Debug for PublicKey<Hash> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("PublicKey")
+            .field("compressed", &self.as_slice())
+            .finish()
+    }
 }
 
 /// cbindgen:ignore

@@ -16,17 +16,13 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
-#[derive(ZeroizeOnDrop)]
+#[derive(Debug, ZeroizeOnDrop)]
 pub struct PrivateKey<Hash: Hash512> {
     pub(crate) secret: H256,
     _phantom: PhantomData<Hash>,
 }
 
 impl<Hash: Hash512> PrivateKey<Hash> {
-    pub fn as_slice(&self) -> &[u8] {
-        self.secret.as_slice()
-    }
-
     pub fn public(&self) -> PublicKey<Hash> {
         PublicKey::with_private_key(self)
     }

@@ -9,6 +9,7 @@ use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
 
+#[derive(Debug)]
 pub struct KeyPair<Hash: Hash512> {
     private: PrivateKey<Hash>,
     public: PublicKey<Hash>,
@@ -32,7 +33,7 @@ impl<Hash: Hash512> SigningKeyTrait for KeyPair<Hash> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        self.private.sign(message)
+        self.private().sign(message)
     }
 }
 
@@ -41,7 +42,7 @@ impl<Hash: Hash512> VerifyingKeyTrait for KeyPair<Hash> {
     type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        self.public.verify(signature, message)
+        self.public().verify(signature, message)
     }
 }
 
