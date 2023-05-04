@@ -138,13 +138,11 @@ pub(super) fn process_object_methods(
                 // E.g. `let param = TWSomeEnum(rawValue: param.rawValue)`
                 // Note that it calls the constructor of the enum, which calls
                 // the underlying "*Create*" C FFI function.
-                TypeVariant::Enum(enm) => {
-                    SwiftOperation::Call {
-                        var_name: param.name.clone(),
-                        call: format!("{enm}(rawValue: {}.rawValue)", param.name),
-                        defer: None,
-                    }
-                }
+                TypeVariant::Enum(enm) => SwiftOperation::Call {
+                    var_name: param.name.clone(),
+                    call: format!("{enm}(rawValue: {}.rawValue)", param.name),
+                    defer: None,
+                },
                 // Skip processing parameter, reference the parameter by name
                 // directly, as defined in the function interface (usually the
                 // case for primitive types).

@@ -44,16 +44,15 @@ pub(super) fn process_object_properties(
         // Call the underlying C FFI function, passing on the `obj` instance.
         //
         // E.g: `let result = TWSomeFunc(obj)`.
+        let (var_name, call, defer) = ("result".to_string(), format!("{}(obj)", prop.name), None);
+
         if prop.return_type.is_nullable {
-            ops.push(SwiftOperation::GuardedCall {
-                var_name: "result".to_string(),
-                call: format!("{}(obj)", prop.name),
-            });
+            ops.push(SwiftOperation::GuardedCall { var_name, call });
         } else {
             ops.push(SwiftOperation::Call {
-                var_name: "result".to_string(),
-                call: format!("{}(obj)", prop.name),
-                defer: None,
+                var_name,
+                call,
+                defer,
             });
         }
 
