@@ -79,6 +79,6 @@ fn generate_swift_bindings() -> Result<()> {
         }
     }
 
-    println!("Created bindings in out/swift/!");
+    println!("Created bindings in directory 'bindings/'!");
     Ok(())
 }
