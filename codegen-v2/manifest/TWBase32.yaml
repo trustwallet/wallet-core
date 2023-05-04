@@ -1,0 +1,100 @@
+name: TWBase32
+structs:
+- name: TWBase32
+  is_public: true
+  is_class: false
+  tags:
+  - TW_EXPORT_STRUCT
+functions:
+- name: TWBase32DecodeWithAlphabet
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+      tags:
+      - TW_STRING
+  - name: alphabet
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: true
+      is_pointer: true
+      tags:
+      - TW_STRING
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+    tags:
+    - TW_DATA
+- name: TWBase32Decode
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+      tags:
+      - TW_STRING
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+    tags:
+    - TW_DATA
+- name: TWBase32EncodeWithAlphabet
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+      tags:
+      - TW_DATA
+  - name: alphabet
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: true
+      is_pointer: true
+      tags:
+      - TW_STRING
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+    tags:
+    - TW_STRING
+- name: TWBase32Encode
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+      tags:
+      - TW_DATA
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+    tags:
+    - TW_STRING
