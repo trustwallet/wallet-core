@@ -242,13 +242,13 @@ struct SwiftProperty {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 /// The operation to be interpreted by the templating engine. This handles
-/// parameters, return values in an appropriate way.
+/// parameters and C FFI calls in an appropriate way, depending on context.
 pub enum SwiftOperation {
     // Results in:
     // ```swift
     // let <var_name> = <call>
     // defer {
-    //     <defer.val>(<var_name>)
+    //     <defer.String>(<var_name>)
     // }
     // ```
     Call {
@@ -256,6 +256,16 @@ pub enum SwiftOperation {
         call: String,
         defer: Option<String>,
     },
+    // Results in:
+    // ```swift
+    // let ptr: UnsafeRawPointer?
+    // if let alphabet = alphabet {
+    //     ptr = TWStringCreateWithNSString(alphabet)
+    // } else {
+    //     ptr = nil
+    // }
+    // ```
+    // ... with an optional `defer` operation.
     CallOptional {
         var_name: String,
         call: String,
@@ -344,6 +354,7 @@ impl TryFrom<ProtoInfo> for SwiftProto {
     }
 }
 
+/// Convert the `TypeVariant` into the appropriate Swift type.
 impl From<TypeVariant> for SwiftType {
     fn from(value: TypeVariant) -> Self {
         let res = match value {
@@ -378,7 +389,8 @@ impl From<TypeVariant> for SwiftType {
     }
 }
 
-// Process the paremter, returning the operation for handling the C FFI call (if any).
+// Covenience function: process the paremter, returning the operation for
+// handling the C FFI call (if any).
 fn param_c_ffi_call(param: &ParamInfo) -> Option<SwiftOperation> {
     let op = match &param.ty.variant {
         // E.g. `let param = TWStringCreateWithNSString(param)`
@@ -466,9 +478,10 @@ fn param_c_ffi_call(param: &ParamInfo) -> Option<SwiftOperation> {
     Some(op)
 }
 
-// Wrap the return value, returning the operation. Note that types are wrapped
-// differently when returning, compared to `param_c_ffi_call`; such as using
-// `TWStringNSString` instead of `TWDataCreateWithNSData` for Strings.
+// Convenience funcion: wrap the return value, returning the operation. Note
+// that types are wrapped differently when returning, compared to
+// `param_c_ffi_call`; such as using `TWStringNSString` instead of
+// `TWDataCreateWithNSData` for Strings.
 fn wrap_return(ty: &TypeInfo) -> SwiftOperation {
     match &ty.variant {
         // E.g.`return TWStringNSString(result)`
