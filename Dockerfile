@@ -66,6 +66,7 @@ RUN make -Cbuild -j12 tests
 
 FROM base AS prod
 COPY --from=builder /wallet-core/build/libTrustWalletCore.a /usr/local/lib
+COPY --from=builder /wallet-core/build/local/lib/libwallet_core_rs.a /usr/local/lib
 COPY --from=builder /wallet-core/build/libprotobuf.a /usr/local/lib
 COPY --from=builder /wallet-core/build/trezor-crypto/libTrezorCrypto.a /usr/local/lib
 COPY --from=builder /wallet-core/include/TrustWalletCore /usr/local/include/TrustWalletCore
