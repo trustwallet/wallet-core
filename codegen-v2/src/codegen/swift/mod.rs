@@ -358,7 +358,7 @@ impl TryFrom<ProtoInfo> for SwiftProto {
 impl From<TypeVariant> for SwiftType {
     fn from(value: TypeVariant) -> Self {
         let res = match value {
-            TypeVariant::Void => "()".to_string(),
+            TypeVariant::Void => "Void".to_string(),
             TypeVariant::Bool => "Bool".to_string(),
             TypeVariant::Char => "Character".to_string(),
             TypeVariant::ShortInt => "Int16".to_string(),
