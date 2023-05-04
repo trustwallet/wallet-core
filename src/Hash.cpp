@@ -95,16 +95,27 @@ Data Hash::blake256(const byte* data, size_t size) {
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize) {
-    return Rust::CByteArrayWrapper(Rust::blake2_b(data, dataSize, 32)).data;
+    Rust::CByteArrayResultWrapper res = Rust::blake2_b(data, dataSize, 32);
+    if (res.isErr()) {
+        throw std::runtime_error("Error 'blake2_b' hashing");
+    }
+    return res.unwrap().data;
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize) {
-    return Rust::CByteArrayWrapper(Rust::blake2_b(data, dataSize, hashSize)).data;
+    Rust::CByteArrayResultWrapper res = Rust::blake2_b(data, dataSize, hashSize);
+    if (res.isErr()) {
+        throw std::runtime_error("Error 'blake2_b' hashing");
+    }
+    return res.unwrap().data;
 }
 
 Data Hash::blake2b(const byte* data, size_t dataSize, size_t hashSize, const Data& personal) {
-    Rust::CByteArrayWrapper res = Rust::blake2_b_personal(data, dataSize, hashSize, personal.data(), personal.size());
-    return res.data;
+    Rust::CByteArrayResultWrapper res = Rust::blake2_b_personal(data, dataSize, hashSize, personal.data(), personal.size());
+    if (res.isErr()) {
+        throw std::runtime_error("Error 'blake2_b_personal' hashing");
+    }
+    return res.unwrap().data;
 }
 
 Data Hash::groestl512(const byte* data, size_t size) {

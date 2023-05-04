@@ -8,7 +8,6 @@
 
 #include "TWBase.h"
 #include "TWCoinType.h"
-#include "TWDerivationPath.h"
 #include "TWPurpose.h"
 #include "TWString.h"
 

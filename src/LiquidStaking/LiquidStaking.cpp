@@ -7,6 +7,9 @@
 #include "LiquidStaking/LiquidStaking.h"
 #include "Data.h"
 
+// Stride
+#include "proto/Cosmos.pb.h"
+
 // Aptos
 #include "proto/Aptos.pb.h"
 
@@ -137,6 +140,35 @@ Proto::Output Builder::buildTortugaAptos() const {
     return output;
 }
 
+Proto::Output Builder::buildStride() const {
+    if (this->mBlockchain != Proto::STRIDE) {
+        auto output = Proto::Output();
+        *output.mutable_status() = generateError(Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL, "Only Stride blockchain is supported on stride for now");
+        return output;
+    }
+
+    Proto::Output output;
+    auto input = Cosmos::Proto::SigningInput();
+    auto visitFunctor = [&input](const TAction& value) {
+        if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
+            auto& stride_stake = *input.add_messages()->mutable_msg_stride_liquid_staking_stake();
+            stride_stake.set_creator(stake->asset().from_address());
+            stride_stake.set_amount(stake->amount());
+            stride_stake.set_host_denom(stake->asset().denom());
+        } else if (auto* unstake = std::get_if<Proto::Unstake>(&value); unstake) {
+            auto& stride_redeem = *input.add_messages()->mutable_msg_stride_liquid_staking_redeem();
+            stride_redeem.set_creator(unstake->asset().from_address());
+            stride_redeem.set_amount(unstake->amount());
+            stride_redeem.set_host_zone(unstake->receiver_chain_id());
+            stride_redeem.set_receiver(unstake->receiver_address());
+        }
+    };
+
+    std::visit(visitFunctor, this->mAction);
+    *output.mutable_cosmos() = input;
+    return output;
+}
+
 Proto::Output Builder::buildTortuga() const {
     if (this->mBlockchain == Proto::APTOS) {
         return buildTortugaAptos();
@@ -165,6 +197,8 @@ Proto::Output Builder::build() const {
         return this->buildStrader();
     case Proto::Tortuga:
         return this->buildTortuga();
+    case Proto::Stride:
+        return this->buildStride();
     default:
         return Proto::Output();
     }

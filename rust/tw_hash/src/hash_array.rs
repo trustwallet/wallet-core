@@ -30,6 +30,7 @@ pub fn concat<const L: usize, const R: usize, const N: usize>(
     res
 }
 
+/// Represents a fixed-length byte array.
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Hash<const N: usize>([u8; N]);
 

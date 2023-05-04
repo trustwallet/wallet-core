@@ -12,6 +12,7 @@ pub use public::PublicKey;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Curve {
     Secp256k1 = 0,
     Ed25519 = 1,
@@ -36,6 +37,7 @@ impl Curve {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum PublicKeyType {
     Secp256k1 = 0,
     Secp256k1Extended = 1,

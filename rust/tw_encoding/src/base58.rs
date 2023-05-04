@@ -5,7 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::{EncodingError, EncodingResult};
-use bs58::{decode::Error, Alphabet};
+use bs58::decode::Error;
+pub use bs58::Alphabet;
 
 impl From<Error> for EncodingError {
     fn from(_: Error) -> Self {
