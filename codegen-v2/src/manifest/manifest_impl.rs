@@ -18,6 +18,15 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
             .unwrap()
             .to_string();
 
+        // Manual handling: those functions are explicitly skipped
+        if file_name.starts_with("TWAnySigner")
+            || file_name.starts_with("TWString")
+            || file_name.starts_with("TWData")
+            || file_name.starts_with("TWBase")
+        {
+            continue;
+        }
+
         let mut file_info = FileInfo {
             name: file_name.clone(),
             structs: vec![],
@@ -64,15 +73,6 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
-                    // Manual handling: those functions are explicitly skipped
-                    let name = &decl.name.0;
-                    if name.starts_with("TWAnySigner")
-                        || name.starts_with("TWString")
-                        || name.starts_with("TWData")
-                    {
-                        continue;
-                    }
-
                     let markers = &decl.markers.0;
 
                     // Handle exported properties.

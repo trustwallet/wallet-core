@@ -1,5 +1,4 @@
-use crate::grammar::CHeaderDirectory;
-use crate::grammar::{GHeaderFileItem, GMarker};
+use crate::grammar::{CHeaderDirectory, GHeaderFileItem};
 
 mod manifest_impl;
 mod manifest_impl_custom;
