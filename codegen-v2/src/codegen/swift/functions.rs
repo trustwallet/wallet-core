@@ -140,10 +140,14 @@ pub(super) fn process_object_methods(
 
         // Special handling: some functions do not follow standard camelCase
         // convention.
+        #[rustfmt::skip]
         let pretty_name = if object.name() == "TWStoredKey" {
-            pretty_name.replace("Json", "JSON").replace("Hd", "HD")
+            pretty_name
+                .replace("Json", "JSON")
+                .replace("Hd", "HD")
         } else if object.name() == "TWPublicKey" {
-            pretty_name.replace("Der", "DER")
+            pretty_name
+                .replace("Der", "DER")
         } else if object.name() == "TWHash" {
             pretty_name
                 .replace("ripemd", "RIPEMD")
@@ -152,7 +156,9 @@ pub(super) fn process_object_methods(
                 .replace("sha3256", "sha3_256")
                 .replace("sha256sha256", "sha256SHA256")
         } else if object.name() == "TWAES" {
-            pretty_name.replace("Cbc", "CBC").replace("Ctr", "CTR")
+            pretty_name
+                .replace("Cbc", "CBC")
+                .replace("Ctr", "CTR")
         } else {
             pretty_name
         };

@@ -12,12 +12,12 @@ pub(super) fn process_inits(
     inits: Vec<InitInfo>,
 ) -> Result<(Vec<SwiftInit>, Vec<InitInfo>)> {
     let mut swift_inits = vec![];
-    let mut info_inits = vec![];
+    let mut skipped_inits = vec![];
 
     for init in inits {
         if !init.name.starts_with(object.name()) {
             // Init is not assciated with the object.
-            info_inits.push(init);
+            skipped_inits.push(init);
             continue;
         }
 
@@ -77,5 +77,5 @@ pub(super) fn process_inits(
         });
     }
 
-    Ok((swift_inits, info_inits))
+    Ok((swift_inits, skipped_inits))
 }
