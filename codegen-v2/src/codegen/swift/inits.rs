@@ -35,7 +35,7 @@ pub(super) fn process_inits(
                 is_nullable: param.ty.is_nullable,
             });
 
-            if let Some(op) = handle_c_ffi_call(&param) {
+            if let Some(op) = param_c_ffi_call(&param) {
                 ops.push(op);
             }
         }

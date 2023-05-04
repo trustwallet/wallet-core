@@ -66,7 +66,7 @@ pub(super) fn process_object_methods(
             });
 
             // Process parameter.
-            if let Some(op) = handle_c_ffi_call(&param) {
+            if let Some(op) = param_c_ffi_call(&param) {
                 ops.push(op)
             }
         }
