@@ -20,6 +20,8 @@ members = ["."]
 
 [profile.release]
 debug = 1
+# Required by `curve25519-dalek`: https://github.com/rust-lang/rust/issues/95240
+opt-level = 2
 
 [[bin]]
 name = "tw_private_sign"

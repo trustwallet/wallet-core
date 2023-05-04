@@ -48,12 +48,11 @@ impl PrivateKey {
     }
 
     /// Returns the 192 byte array - the essential cardano extended private key data.
-    pub fn cardano_extended_key(&self) -> &[u8] {
-        assert!(
-            self.bytes.len() == Self::CARDANO_SIZE,
-            "'PrivateKey::bytes' has an unexpected length"
-        );
-        &self.bytes[Self::CARDANO_EXTENDED_RANGE]
+    pub fn cardano_extended_key(&self) -> Result<&[u8], Error> {
+        if self.bytes.len() != Self::CARDANO_SIZE {
+            return Err(Error::InvalidSecretKey);
+        }
+        Ok(&self.bytes[Self::CARDANO_EXTENDED_RANGE])
     }
 
     /// Checks if the given `bytes` secret is valid in general (without a concrete curve).
@@ -157,7 +156,7 @@ impl PrivateKey {
 
     /// Tries to convert [`PrivateKey::key`] to [`ed25519::sha512::PrivateKey`].
     fn to_ed25519_cardano_extended(&self) -> Result<ed25519::cardano::ExtendedPrivateKey, Error> {
-        ed25519::cardano::ExtendedPrivateKey::try_from(self.cardano_extended_key())
+        ed25519::cardano::ExtendedPrivateKey::try_from(self.cardano_extended_key()?)
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`starkex::PrivateKey`].
