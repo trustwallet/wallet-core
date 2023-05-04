@@ -68,14 +68,6 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
-                    if decl.name.0.starts_with("TWAnySigner") {
-                        println!(
-                            "Skipped function from manifest (non-export):  {}",
-                            decl.name.0
-                        );
-                        continue;
-                    }
-
                     let markers = &decl.markers.0;
 
                     // Handle exported properties.
@@ -97,9 +89,10 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                             let x = DeinitInfo::from_g_type(decl).unwrap();
                             file_info.deinits.push(x);
                         }
-                        // Any any other method is just a method.
+                        // Any any other function is just a method.
                         else {
-                            let x = FunctionInfo::from_g_type(&None, decl).unwrap();
+                            dbg!(&decl);
+                            let x = FunctionInfo::from_g_type(decl).unwrap();
                             file_info.functions.push(x);
                         }
                     }
@@ -416,7 +409,7 @@ impl PropertyInfo {
 
 impl InitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        let func = FunctionInfo::from_g_type(&None, value)?;
+        let func = FunctionInfo::from_g_type(value)?;
 
         let is_public = value
             .markers
@@ -442,43 +435,22 @@ impl InitInfo {
 
 impl DeinitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        let func = FunctionInfo::from_g_type(&None, value)?;
+        let func = FunctionInfo::from_g_type(value)?;
 
         Ok(DeinitInfo { name: func.name })
     }
 }
 
 impl FunctionInfo {
-    pub fn from_g_type(object_name: &Option<String>, value: &GFunctionDecl) -> Result<Self> {
-        // ### Name
-
-        // Strip the object name from the method name.
-        // E.g. "SomeObjectIsValid" => "IsValid"
-        let name = if let Some(object_name) = object_name {
-            value
-                .name
-                .0
-                .strip_prefix(object_name)
-                .ok_or(Error::BadType)?
-                .to_string()
-        } else {
-            value.name.0.to_string()
-        };
-
-        if name.is_empty() {
-            return Err(Error::BadType);
-        }
-
+    pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
         // ### Marker
 
         let mut markers = value.markers.0.iter();
 
-        // The method must have one of the two available markers and is always public.
+        // Determinte export based on markers.
         let (is_static, is_public) = match markers.next() {
             Some(GMarker::TwExportMethod) => (false, true),
             Some(GMarker::TwExportStaticMethod) => (true, true),
-            // TODO:?
-            //_ => return Err(Error::BadObject),
             _ => (false, false),
         };
 
@@ -502,7 +474,7 @@ impl FunctionInfo {
         let return_type = TypeInfo::from_g_type(&re.ty, &re.markers)?;
 
         Ok(FunctionInfo {
-            name,
+            name: value.name.0.to_string(),
             is_public,
             is_static,
             params,
