@@ -2,6 +2,12 @@ use super::*;
 use crate::manifest::{PropertyInfo, TypeVariant};
 use heck::ToLowerCamelCase;
 
+/// This function checks each property and determines whether there's an
+/// association with the passed on object (struct or enum), based on common name
+/// prefix, and maps the data into a Swift structure.
+///
+/// This function returns a tuple of associated Swift properties and skipped
+/// respectively non-associated properties.
 pub(super) fn process_object_properties(
     object: &ObjectVariant,
     properties: Vec<PropertyInfo>,
@@ -69,17 +75,13 @@ pub(super) fn process_object_properties(
             TypeVariant::Enum(_) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result.rawValue)!",
-                    SwiftType::try_from(prop.return_type.variant.clone())
-                        .unwrap()
-                        .0
+                    SwiftType::from(prop.return_type.variant.clone())
                 ),
             },
             TypeVariant::Struct(_) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result)",
-                    SwiftType::try_from(prop.return_type.variant.clone())
-                        .unwrap()
-                        .0
+                    SwiftType::from(prop.return_type.variant.clone())
                 ),
             },
             _ => SwiftOperation::Return {
@@ -87,16 +89,17 @@ pub(super) fn process_object_properties(
             },
         });
 
-        // Pretty name.
+        // Prettify name, remove object name prefix from this property.
         let pretty_name = prop
             .name
             .strip_prefix(object.name())
+            // Panicing implies bug
             .unwrap()
             .to_lower_camel_case();
 
         // Convert return type.
         let return_type = SwiftReturn {
-            param_type: SwiftType::try_from(prop.return_type.variant).unwrap(),
+            param_type: SwiftType::from(prop.return_type.variant),
             is_nullable: prop.return_type.is_nullable,
         };
 
