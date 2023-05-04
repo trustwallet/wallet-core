@@ -10,7 +10,6 @@ pub(super) fn process_object_properties(
     let mut info_props = vec![];
 
     for prop in properties {
-        // TODO: This should be handled by the manifest
         if !prop.name.starts_with(object.name()) {
             // Property is not assciated with the object.
             info_props.push(prop);

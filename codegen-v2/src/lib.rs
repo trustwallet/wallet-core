@@ -6,8 +6,8 @@
 #[macro_use]
 extern crate serde;
 
-use std::io::Error as IoError;
 use serde_yaml::Error as YamlError;
+use std::io::Error as IoError;
 
 pub mod codegen;
 pub mod manifest;
@@ -18,7 +18,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     Todo,
     IoError(IoError),
-    YamlError(YamlError)
+    YamlError(YamlError),
 }
 
 impl From<IoError> for Error {

@@ -17,22 +17,6 @@ inits:
       is_constant: true
       is_nullable: false
       is_pointer: true
-- name: TWBitcoinScriptCreateWithBytes
-  is_public: false
-  is_nullable: false
-  params:
-  - name: bytes
-    type:
-      variant: u_int8_t
-      is_constant: false
-      is_nullable: false
-      is_pointer: true
-  - name: size
-    type:
-      variant: size_t
-      is_constant: false
-      is_nullable: false
-      is_pointer: false
 - name: TWBitcoinScriptCreateCopy
   is_public: true
   is_nullable: false

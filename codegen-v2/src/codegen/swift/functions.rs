@@ -10,7 +10,6 @@ pub(super) fn process_object_methods(
     let mut info_funcs = vec![];
 
     for func in functions {
-        // TODO: This should be handled by the manifest
         if !func.name.starts_with(object.name()) {
             // Function is not assciated with the object.
             info_funcs.push(func);
@@ -44,8 +43,6 @@ pub(super) fn process_object_methods(
         let mut params = vec![];
         for param in func.params {
             // Skip self parameter
-            // TODO: This should be set stricter by the C header, respectively
-            // the manifest.
             match &param.ty.variant {
                 TypeVariant::Enum(name) | TypeVariant::Struct(name) if name == object.name() => {
                     continue

@@ -9,9 +9,7 @@ pub(super) fn process_inits(
     let mut info_inits = vec![];
 
     for init in inits {
-        // TODO: The current/old codgen simply skips non-exported methods. Maybe
-        // this should be renamed to `export` rather than `is_public`.
-        if !init.name.starts_with(object.name()) || !init.is_public {
+        if !init.name.starts_with(object.name()) {
             // Init is not assciated with the object.
             info_inits.push(init);
             continue;
@@ -88,24 +86,6 @@ pub(super) fn process_inits(
                 defer: None,
             });
         }
-
-        // TODO: Expand comment
-        //
-        // E.g:
-        // - `return TWStringNSString(result)`
-        // - `return SomeEnum(rawValue: result.rawValue)`
-        // - `return SomeStruct(rawValue: result)`
-        // TODO: Should there be a SwiftOperation for Init?
-        /*
-        ops.push(match &object {
-            ObjectVariant::Struct(strct) => SwiftOperation::Return {
-                call: format!("{}(rawValue: result)", strct),
-            },
-            ObjectVariant::Enum(enm) => SwiftOperation::Return {
-                call: format!("{}(rawValue: result.rawValue)", enm),
-            },
-        });
-         */
 
         let pretty_name = init.name.strip_prefix(object.name()).unwrap().to_string();
 

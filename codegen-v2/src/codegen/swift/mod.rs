@@ -1,13 +1,13 @@
+use self::functions::process_object_methods;
+use self::inits::process_inits;
+use self::properties::process_object_properties;
 use crate::manifest::{FileInfo, ProtoInfo, TypeVariant};
 use crate::{Error, Result};
-use self::inits::process_inits;
-use self::functions::process_object_methods;
-use self::properties::process_object_properties;
 use handlebars::Handlebars;
 use serde_json::json;
 
-mod inits;
 mod functions;
+mod inits;
 mod properties;
 
 #[derive(Debug, Clone)]
@@ -25,19 +25,6 @@ pub struct RenderOutput {
     pub enums: Vec<(String, String)>,
     pub extensions: Vec<(String, String)>,
     pub protos: Vec<(String, String)>,
-}
-
-enum ObjectVariant<'a> {
-    Struct(&'a str),
-    Enum(&'a str),
-}
-
-impl<'a> ObjectVariant<'a> {
-    fn name(&'a self) -> &'a str {
-        match self {
-            ObjectVariant::Struct(n) | ObjectVariant::Enum(n) => n,
-        }
-    }
 }
 
 pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
@@ -288,6 +275,19 @@ pub struct SwiftProto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftOperatorEquality {
     pub c_ffi_name: String,
+}
+
+enum ObjectVariant<'a> {
+    Struct(&'a str),
+    Enum(&'a str),
+}
+
+impl<'a> ObjectVariant<'a> {
+    fn name(&'a self) -> &'a str {
+        match self {
+            ObjectVariant::Struct(n) | ObjectVariant::Enum(n) => n,
+        }
+    }
 }
 
 impl TryFrom<ProtoInfo> for SwiftProto {
