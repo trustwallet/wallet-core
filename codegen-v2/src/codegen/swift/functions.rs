@@ -177,17 +177,13 @@ pub(super) fn process_object_methods(
                     "{}(rawValue: result.rawValue)",
                     // TODO: Comment
                     // TODO: impl Display for SwiftType
-                    SwiftType::try_from(func.return_type.variant.clone())
-                        .unwrap()
-                        .0
+                    SwiftType::try_from(func.return_type.variant.clone()).unwrap()
                 ),
             },
             TypeVariant::Struct(_strct) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result)",
-                    SwiftType::try_from(func.return_type.variant.clone())
-                        .unwrap()
-                        .0
+                    SwiftType::try_from(func.return_type.variant.clone()).unwrap()
                 ),
             },
             _ => SwiftOperation::Return {

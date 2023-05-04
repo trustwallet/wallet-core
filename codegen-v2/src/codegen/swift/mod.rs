@@ -1,14 +1,22 @@
+use std::fmt::Display;
+
 use self::functions::process_object_methods;
 use self::inits::process_inits;
 use self::properties::process_object_properties;
 use crate::manifest::{FileInfo, ProtoInfo, TypeVariant};
-use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
 
 mod functions;
 mod inits;
 mod properties;
+
+type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug)]
+pub enum Error {
+    InvalidType,
+}
 
 #[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
@@ -64,7 +72,12 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             continue;
         }
 
-        let struct_name = strct.name.strip_prefix("TW").ok_or(Error::Todo)?;
+        // Stip "TW" prefix if present.
+        let struct_name = strct
+            .name
+            .strip_prefix("TW")
+            .unwrap_or(&strct.name)
+            .to_string();
 
         // Add superclasses.
         let superclasses = if struct_name.ends_with("Address") {
@@ -117,7 +130,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         (properties, info.properties) =
             process_object_properties(&ObjectVariant::Enum(&enm.name), info.properties).unwrap();
 
-        let enum_name = enm.name.strip_prefix("TW").ok_or(Error::Todo)?;
+        // Stip "TW" prefix if present.
+        let enum_name = enm.name.strip_prefix("TW").unwrap_or(&enm.name).to_string();
 
         // Add superclasses.
         let value_type = SwiftType::from(enm.value_type);
@@ -169,13 +183,12 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
     // Render Protobufs.
     if !info.protos.is_empty() {
-        // TODO: Should this convention be enforced?
         let file_name = info
             .name
             .strip_prefix("TW")
-            .ok_or(Error::Todo)?
+            .unwrap_or(&info.name)
             .strip_suffix("Proto")
-            .ok_or(Error::Todo)?
+            .unwrap_or(&info.name)
             .to_string();
 
         let protos = info
@@ -197,6 +210,12 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftType(String);
+
+impl Display for SwiftType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftFunction {
