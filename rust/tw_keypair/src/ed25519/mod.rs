@@ -32,12 +32,12 @@ pub mod blake2b {
     pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b>;
 }
 
-pub trait Hash512: Digest<OutputSize = U64> {
+pub trait Hasher512: Digest<OutputSize = U64> {
     const OUTPUT_LEN: usize = 64;
     const HALF_LEN: usize = 32;
 }
 
-impl<T> Hash512 for T where T: Digest<OutputSize = U64> {}
+impl<T> Hasher512 for T where T: Digest<OutputSize = U64> {}
 
 #[cfg(test)]
 mod tests {

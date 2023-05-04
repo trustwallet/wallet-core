@@ -6,7 +6,7 @@
 
 use crate::ed25519::public::PublicKey;
 use crate::ed25519::signature::Signature;
-use crate::ed25519::Hash512;
+use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::Error;
 use curve25519_dalek::constants;
@@ -14,15 +14,15 @@ use curve25519_dalek::scalar::Scalar;
 use std::marker::PhantomData;
 use tw_hash::{H256, H512};
 
-pub(crate) struct ExpandedSecretKey<Hash: Hash512> {
+pub(crate) struct ExpandedSecretKey<H: Hasher512> {
     pub key: Scalar,
     pub nonce: H256,
-    _phantom: PhantomData<Hash>,
+    _phantom: PhantomData<H>,
 }
 
-impl<Hash: Hash512> ExpandedSecretKey<Hash> {
+impl<H: Hasher512> ExpandedSecretKey<H> {
     pub(crate) fn with_secret(secret: H256) -> Self {
-        let mut h = Hash::new();
+        let mut h = H::new();
         let mut hash = H512::default();
 
         h.update(secret.as_slice());
@@ -55,7 +55,7 @@ impl<Hash: Hash512> ExpandedSecretKey<Hash> {
         pubkey: H256,
         message: &[u8],
     ) -> Result<Signature, Error> {
-        let mut h = Hash::new();
+        let mut h = H::new();
 
         h.update(self.nonce.as_slice());
         h.update(message);
@@ -63,7 +63,7 @@ impl<Hash: Hash512> ExpandedSecretKey<Hash> {
         let r = Scalar::from_hash(h);
         let R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
 
-        h = Hash::new();
+        h = H::new();
         h.update(R.as_bytes());
         h.update(pubkey);
         h.update(message);
@@ -75,7 +75,7 @@ impl<Hash: Hash512> ExpandedSecretKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> SigningKeyTrait for ExpandedSecretKey<Hash> {
+impl<H: Hasher512> SigningKeyTrait for ExpandedSecretKey<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 

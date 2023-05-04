@@ -7,7 +7,7 @@
 use crate::ed25519::public::PublicKey;
 use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;
-use crate::ed25519::Hash512;
+use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::Error;
 use std::marker::PhantomData;
@@ -17,28 +17,28 @@ use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 #[derive(Debug, ZeroizeOnDrop)]
-pub struct PrivateKey<Hash: Hash512> {
+pub struct PrivateKey<H: Hasher512> {
     pub(crate) secret: H256,
-    _phantom: PhantomData<Hash>,
+    _phantom: PhantomData<H>,
 }
 
-impl<Hash: Hash512> PrivateKey<Hash> {
-    pub fn public(&self) -> PublicKey<Hash> {
+impl<H: Hasher512> PrivateKey<H> {
+    pub fn public(&self) -> PublicKey<H> {
         PublicKey::with_private_key(self)
     }
 }
 
-impl<Hash: Hash512> SigningKeyTrait for PrivateKey<Hash> {
+impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        let expanded = ExpandedSecretKey::<Hash>::with_secret(self.secret);
+        let expanded = ExpandedSecretKey::<H>::with_secret(self.secret);
         expanded.sign(message)
     }
 }
 
-impl<Hash: Hash512> TryFrom<&[u8]> for PrivateKey<Hash> {
+impl<H: Hasher512> TryFrom<&[u8]> for PrivateKey<H> {
     type Error = Error;
 
     fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
@@ -50,7 +50,7 @@ impl<Hash: Hash512> TryFrom<&[u8]> for PrivateKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> From<&'static str> for PrivateKey<Hash> {
+impl<H: Hasher512> From<&'static str> for PrivateKey<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
         let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
@@ -58,7 +58,7 @@ impl<Hash: Hash512> From<&'static str> for PrivateKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> ToBytesZeroizing for PrivateKey<Hash> {
+impl<H: Hasher512> ToBytesZeroizing for PrivateKey<H> {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         Zeroizing::new(self.secret.into_vec())
     }

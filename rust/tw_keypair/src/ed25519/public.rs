@@ -7,7 +7,7 @@
 use crate::ed25519::private::PrivateKey;
 use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;
-use crate::ed25519::Hash512;
+use crate::ed25519::Hasher512;
 use crate::traits::VerifyingKeyTrait;
 use crate::Error;
 use curve25519_dalek::constants;
@@ -21,13 +21,13 @@ use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
 #[derive(PartialEq)]
-pub struct PublicKey<Hash: Hash512> {
+pub struct PublicKey<H: Hasher512> {
     compressed: CompressedEdwardsY,
     point: EdwardsPoint,
-    _phantom: PhantomData<Hash>,
+    _phantom: PhantomData<H>,
 }
 
-impl<Hash: Hash512> fmt::Debug for PublicKey<Hash> {
+impl<H: Hasher512> fmt::Debug for PublicKey<H> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("PublicKey")
             .field("compressed", &self.as_slice())
@@ -36,15 +36,15 @@ impl<Hash: Hash512> fmt::Debug for PublicKey<Hash> {
 }
 
 /// cbindgen:ignore
-impl<Hash: Hash512> PublicKey<Hash> {
+impl<H: Hasher512> PublicKey<H> {
     pub const LEN: usize = H256::len();
 
-    pub(crate) fn with_private_key(private: &PrivateKey<Hash>) -> Self {
+    pub(crate) fn with_private_key(private: &PrivateKey<H>) -> Self {
         let expanded = ExpandedSecretKey::with_secret(private.secret);
         Self::with_expanded_secret(&expanded)
     }
 
-    pub(crate) fn with_expanded_secret(secret: &ExpandedSecretKey<Hash>) -> Self {
+    pub(crate) fn with_expanded_secret(secret: &ExpandedSecretKey<H>) -> Self {
         let mut bits = secret.key.to_bytes();
 
         PublicKey::mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(&mut bits)
@@ -63,7 +63,7 @@ impl<Hash: Hash512> PublicKey<Hash> {
     /// public key.
     fn mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(
         bits: &mut [u8; 32],
-    ) -> PublicKey<Hash> {
+    ) -> PublicKey<H> {
         bits[0] &= 248;
         bits[31] &= 127;
         bits[31] |= 64;
@@ -79,13 +79,13 @@ impl<Hash: Hash512> PublicKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> VerifyingKeyTrait for PublicKey<Hash> {
+impl<H: Hasher512> VerifyingKeyTrait for PublicKey<H> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
     #[allow(non_snake_case)]
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        let mut h = Hash::new();
+        let mut h = H::new();
         let minus_A: EdwardsPoint = -self.point;
 
         let signature_R = try_or_false!(signature.R.decompress());
@@ -106,13 +106,13 @@ impl<Hash: Hash512> VerifyingKeyTrait for PublicKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> ToBytesVec for PublicKey<Hash> {
+impl<H: Hasher512> ToBytesVec for PublicKey<H> {
     fn to_vec(&self) -> Vec<u8> {
         self.as_slice().to_vec()
     }
 }
 
-impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for PublicKey<Hash> {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
     type Error = Error;
 
     fn try_from(pubkey: &'a [u8]) -> Result<Self, Self::Error> {
@@ -129,7 +129,7 @@ impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for PublicKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> From<&'static str> for PublicKey<Hash> {
+impl<H: Hasher512> From<&'static str> for PublicKey<H> {
     fn from(hex: &'static str) -> Self {
         let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");
         PublicKey::try_from(bytes.as_slice()).expect("Expected a valid Public Key")

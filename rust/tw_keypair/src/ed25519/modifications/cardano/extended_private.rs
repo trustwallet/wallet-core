@@ -10,7 +10,7 @@ use crate::ed25519::modifications::cardano::extended_public::{
 use crate::ed25519::public::PublicKey;
 use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;
-use crate::ed25519::Hash512;
+use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::Error;
 use std::marker::PhantomData;
@@ -20,18 +20,18 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
-pub struct ExtendedPrivateKey<Hash: Hash512> {
-    key: ExtendedSecretPart<Hash>,
-    second_key: ExtendedSecretPart<Hash>,
+pub struct ExtendedPrivateKey<H: Hasher512> {
+    key: ExtendedSecretPart<H>,
+    second_key: ExtendedSecretPart<H>,
 }
 
 /// cbindgen:ignore
-impl<Hash: Hash512> ExtendedPrivateKey<Hash> {
-    const LEN: usize = ExtendedSecretPart::<Hash>::LEN * 2;
-    const KEY_RANGE: Range<usize> = 0..ExtendedSecretPart::<Hash>::LEN;
-    const SECOND_KEY_RANGE: Range<usize> = ExtendedSecretPart::<Hash>::LEN..Self::LEN;
+impl<H: Hasher512> ExtendedPrivateKey<H> {
+    const LEN: usize = ExtendedSecretPart::<H>::LEN * 2;
+    const KEY_RANGE: Range<usize> = 0..ExtendedSecretPart::<H>::LEN;
+    const SECOND_KEY_RANGE: Range<usize> = ExtendedSecretPart::<H>::LEN..Self::LEN;
 
-    pub fn public(&self) -> ExtendedPublicKey<Hash> {
+    pub fn public(&self) -> ExtendedPublicKey<H> {
         let key_public = PublicKey::with_expanded_secret(&self.key.to_expanded_secret());
         let second_key_public =
             PublicKey::with_expanded_secret(&self.second_key.to_expanded_secret());
@@ -43,18 +43,18 @@ impl<Hash: Hash512> ExtendedPrivateKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> SigningKeyTrait for ExtendedPrivateKey<Hash> {
+impl<H: Hasher512> SigningKeyTrait for ExtendedPrivateKey<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
         let expanded =
-            ExpandedSecretKey::<Hash>::with_extended_secret(self.key.secret, self.key.extension);
+            ExpandedSecretKey::<H>::with_extended_secret(self.key.secret, self.key.extension);
         expanded.sign(message)
     }
 }
 
-impl<Hash: Hash512> ToBytesZeroizing for ExtendedPrivateKey<Hash> {
+impl<H: Hasher512> ToBytesZeroizing for ExtendedPrivateKey<H> {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let mut res = self.key.to_zeroizing_vec();
         res.extend_from_slice(self.second_key.to_zeroizing_vec().as_slice());
@@ -62,7 +62,7 @@ impl<Hash: Hash512> ToBytesZeroizing for ExtendedPrivateKey<Hash> {
     }
 }
 
-impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for ExtendedPrivateKey<Hash> {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPrivateKey<H> {
     type Error = Error;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
@@ -76,7 +76,7 @@ impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for ExtendedPrivateKey<Hash> {
     }
 }
 
-impl<Hash: Hash512> From<&'static str> for ExtendedPrivateKey<Hash> {
+impl<H: Hasher512> From<&'static str> for ExtendedPrivateKey<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
         let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
@@ -85,26 +85,26 @@ impl<Hash: Hash512> From<&'static str> for ExtendedPrivateKey<Hash> {
 }
 
 #[derive(ZeroizeOnDrop)]
-struct ExtendedSecretPart<Hash: Hash512> {
+struct ExtendedSecretPart<H: Hasher512> {
     secret: H256,
     extension: H256,
     chain_code: H256,
-    _phantom: PhantomData<Hash>,
+    _phantom: PhantomData<H>,
 }
 
 /// cbindgen:ignore
-impl<Hash: Hash512> ExtendedSecretPart<Hash> {
+impl<H: Hasher512> ExtendedSecretPart<H> {
     const LEN: usize = 96;
     const SECRET_RANGE: Range<usize> = 0..32;
     const EXTENSION_RANGE: Range<usize> = 32..64;
     const CHAIN_CODE_RANGE: Range<usize> = 64..96;
 
-    fn to_expanded_secret(&self) -> ExpandedSecretKey<Hash> {
+    fn to_expanded_secret(&self) -> ExpandedSecretKey<H> {
         ExpandedSecretKey::with_extended_secret(self.secret, self.extension)
     }
 }
 
-impl<Hash: Hash512> ToBytesZeroizing for ExtendedSecretPart<Hash> {
+impl<H: Hasher512> ToBytesZeroizing for ExtendedSecretPart<H> {
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let mut res = Vec::with_capacity(H256::len() * 3);
         res.extend_from_slice(self.secret.as_slice());
@@ -114,7 +114,7 @@ impl<Hash: Hash512> ToBytesZeroizing for ExtendedSecretPart<Hash> {
     }
 }
 
-impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for ExtendedSecretPart<Hash> {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedSecretPart<H> {
     type Error = Error;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {

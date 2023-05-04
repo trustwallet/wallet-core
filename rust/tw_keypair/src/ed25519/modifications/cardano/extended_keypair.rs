@@ -7,19 +7,19 @@
 use crate::ed25519::modifications::cardano::{
     extended_private::ExtendedPrivateKey, extended_public::ExtendedPublicKey,
 };
-use crate::ed25519::{signature::Signature, Hash512};
+use crate::ed25519::{signature::Signature, Hasher512};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
 
-pub struct ExtendedKeyPair<Hash: Hash512> {
-    private: ExtendedPrivateKey<Hash>,
-    public: ExtendedPublicKey<Hash>,
+pub struct ExtendedKeyPair<H: Hasher512> {
+    private: ExtendedPrivateKey<H>,
+    public: ExtendedPublicKey<H>,
 }
 
-impl<Hash: Hash512> KeyPairTrait for ExtendedKeyPair<Hash> {
-    type Private = ExtendedPrivateKey<Hash>;
-    type Public = ExtendedPublicKey<Hash>;
+impl<H: Hasher512> KeyPairTrait for ExtendedKeyPair<H> {
+    type Private = ExtendedPrivateKey<H>;
+    type Public = ExtendedPublicKey<H>;
 
     fn public(&self) -> &Self::Public {
         &self.public
@@ -30,7 +30,7 @@ impl<Hash: Hash512> KeyPairTrait for ExtendedKeyPair<Hash> {
     }
 }
 
-impl<Hash: Hash512> SigningKeyTrait for ExtendedKeyPair<Hash> {
+impl<H: Hasher512> SigningKeyTrait for ExtendedKeyPair<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
@@ -39,7 +39,7 @@ impl<Hash: Hash512> SigningKeyTrait for ExtendedKeyPair<Hash> {
     }
 }
 
-impl<Hash: Hash512> VerifyingKeyTrait for ExtendedKeyPair<Hash> {
+impl<H: Hasher512> VerifyingKeyTrait for ExtendedKeyPair<H> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
@@ -48,7 +48,7 @@ impl<Hash: Hash512> VerifyingKeyTrait for ExtendedKeyPair<Hash> {
     }
 }
 
-impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for ExtendedKeyPair<Hash> {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedKeyPair<H> {
     type Error = Error;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
@@ -58,7 +58,7 @@ impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for ExtendedKeyPair<Hash> {
     }
 }
 
-impl<Hash: Hash512> From<&'static str> for ExtendedKeyPair<Hash> {
+impl<H: Hasher512> From<&'static str> for ExtendedKeyPair<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).
         let bytes = hex::decode(hex).expect("Expected a valid Secret Key hex");

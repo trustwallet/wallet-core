@@ -4,20 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ed25519::{private::PrivateKey, public::PublicKey, signature::Signature, Hash512};
+use crate::ed25519::{private::PrivateKey, public::PublicKey, signature::Signature, Hasher512};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
 
 #[derive(Debug)]
-pub struct KeyPair<Hash: Hash512> {
-    private: PrivateKey<Hash>,
-    public: PublicKey<Hash>,
+pub struct KeyPair<H: Hasher512> {
+    private: PrivateKey<H>,
+    public: PublicKey<H>,
 }
 
-impl<Hash: Hash512> KeyPairTrait for KeyPair<Hash> {
-    type Private = PrivateKey<Hash>;
-    type Public = PublicKey<Hash>;
+impl<H: Hasher512> KeyPairTrait for KeyPair<H> {
+    type Private = PrivateKey<H>;
+    type Public = PublicKey<H>;
 
     fn public(&self) -> &Self::Public {
         &self.public
@@ -28,7 +28,7 @@ impl<Hash: Hash512> KeyPairTrait for KeyPair<Hash> {
     }
 }
 
-impl<Hash: Hash512> SigningKeyTrait for KeyPair<Hash> {
+impl<H: Hasher512> SigningKeyTrait for KeyPair<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
@@ -37,7 +37,7 @@ impl<Hash: Hash512> SigningKeyTrait for KeyPair<Hash> {
     }
 }
 
-impl<Hash: Hash512> VerifyingKeyTrait for KeyPair<Hash> {
+impl<H: Hasher512> VerifyingKeyTrait for KeyPair<H> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
@@ -46,7 +46,7 @@ impl<Hash: Hash512> VerifyingKeyTrait for KeyPair<Hash> {
     }
 }
 
-impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for KeyPair<Hash> {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for KeyPair<H> {
     type Error = Error;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
@@ -56,7 +56,7 @@ impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for KeyPair<Hash> {
     }
 }
 
-impl<Hash: Hash512> From<&'static str> for KeyPair<Hash> {
+impl<H: Hasher512> From<&'static str> for KeyPair<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).
         let bytes = hex::decode(hex).expect("Expected a valid Secret Key hex");
