@@ -130,7 +130,8 @@ pub(super) fn process_object_methods(
             is_nullable: func.return_type.is_nullable,
         };
 
-        let mut func_name = func
+        // Prettify name, remove object name prefix from this property.
+        let pretty_name = func
             .name
             .strip_prefix(object.name())
             // Panicing implies bug, checked at the start of the loop.
@@ -139,24 +140,25 @@ pub(super) fn process_object_methods(
 
         // Special handling: some functions do not follow standard camelCase
         // convention.
-        if object.name() == "TWStoredKey" {
-            func_name = func_name.replace("Json", "JSON");
-            func_name = func_name.replace("Hd", "HD");
+        let pretty_name = if object.name() == "TWStoredKey" {
+            pretty_name.replace("Json", "JSON").replace("Hd", "HD")
         } else if object.name() == "TWPublicKey" {
-            func_name = func_name.replace("Der", "DER");
+            pretty_name.replace("Der", "DER")
         } else if object.name() == "TWHash" {
-            func_name = func_name.replace("ripemd", "RIPEMD");
-            func_name = func_name.replace("Ripemd", "RIPEMD");
-            func_name = func_name.replace("sha512256", "sha512_256");
-            func_name = func_name.replace("sha3256", "sha3_256");
-            func_name = func_name.replace("sha256sha256", "sha256SHA256");
+            pretty_name
+                .replace("ripemd", "RIPEMD")
+                .replace("Ripemd", "RIPEMD")
+                .replace("sha512256", "sha512_256")
+                .replace("sha3256", "sha3_256")
+                .replace("sha256sha256", "sha256SHA256")
         } else if object.name() == "TWAES" {
-            func_name = func_name.replace("Cbc", "CBC");
-            func_name = func_name.replace("Ctr", "CTR");
-        }
+            pretty_name.replace("Cbc", "CBC").replace("Ctr", "CTR")
+        } else {
+            pretty_name
+        };
 
         swift_funcs.push(SwiftFunction {
-            name: func_name,
+            name: pretty_name,
             is_public: func.is_public,
             is_static: func.is_static,
             operations: ops,

@@ -40,9 +40,7 @@ pub(super) fn process_inits(
             }
         }
 
-        // Call the underlying C FFI function, passing on the `obj` instance.
-        //
-        // E.g: `let result = TWSomeFunc(obj)`.
+        // Prepepare parameter list to be passed on to the underlying C FFI function.
         let param_names = params
             .iter()
             .map(|p| p.name.as_str())
