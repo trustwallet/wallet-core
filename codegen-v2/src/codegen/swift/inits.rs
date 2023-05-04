@@ -1,6 +1,12 @@
 use super::*;
 use crate::manifest::{InitInfo, TypeVariant};
 
+/// This function checks each constructor and determines whether there's an
+/// association with the passed on object (struct or enum), based on common name
+/// prefix, and maps the data into a Swift structure.
+///
+/// This function returns a tuple of associated Swift constructor and the skipped
+/// respectively non-associated constructors.
 pub(super) fn process_inits(
     object: &ObjectVariant,
     inits: Vec<InitInfo>,
@@ -17,6 +23,9 @@ pub(super) fn process_inits(
 
         let mut ops = vec![];
 
+        // For each parameter, we track a list of `params` which is used for the
+        // function interface and add the necessary operations on how to process
+        // those parameters.
         let mut params = vec![];
         for param in init.params {
             // Convert parameter to Swift parameter.
@@ -26,42 +35,8 @@ pub(super) fn process_inits(
                 is_nullable: param.ty.is_nullable,
             });
 
-            let (var_name, call, defer) = match &param.ty.variant {
-                TypeVariant::String => (
-                    param.name.clone(),
-                    format!("TWStringCreateWithNSString({})", param.name),
-                    Some(format!("TWStringDelete({})", param.name)),
-                ),
-                TypeVariant::Data => (
-                    param.name.clone(),
-                    format!("TWDataCreateWithNSData({})", param.name),
-                    Some(format!("TWDataDelete({})", param.name)),
-                ),
-                TypeVariant::Struct(_) => {
-                    (param.name.clone(), format!("{}.rawValue", param.name), None)
-                }
-                TypeVariant::Enum(enm) => (
-                    param.name.clone(),
-                    format!("{enm}(rawValue: {}.rawValue)", param.name),
-                    None,
-                ),
-                // Reference the parameter by name directly, as defined in the
-                // function interface.
-                _ => continue,
-            };
-
-            if param.ty.is_nullable {
-                ops.push(SwiftOperation::CallOptional {
-                    var_name,
-                    call,
-                    defer,
-                })
-            } else {
-                ops.push(SwiftOperation::Call {
-                    var_name,
-                    call,
-                    defer,
-                })
+            if let Some(op) = handle_c_ffi_call(&param) {
+                ops.push(op);
             }
         }
 

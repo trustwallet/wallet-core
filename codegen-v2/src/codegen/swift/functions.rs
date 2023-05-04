@@ -66,88 +66,9 @@ pub(super) fn process_object_methods(
             });
 
             // Process parameter.
-            ops.push(match &param.ty.variant {
-                // E.g. `let param = TWStringCreateWithNSString(param)`
-                TypeVariant::String => {
-                    let (var_name, call, defer) = (
-                        param.name.clone(),
-                        format!("TWStringCreateWithNSString({})", param.name),
-                        Some(format!("TWStringDelete({})", param.name)),
-                    );
-
-                    // If the parameter is nullable, add special handler.
-                    if param.ty.is_nullable {
-                        SwiftOperation::CallOptional {
-                            var_name,
-                            call,
-                            defer,
-                        }
-                    } else {
-                        SwiftOperation::Call {
-                            var_name,
-                            call,
-                            defer,
-                        }
-                    }
-                }
-                TypeVariant::Data => {
-                    let (var_name, call, defer) = (
-                        param.name.clone(),
-                        format!("TWDataCreateWithNSData({})", param.name),
-                        Some(format!("TWDataDelete({})", param.name)),
-                    );
-
-                    // If the parameter is nullable, add special handler.
-                    if param.ty.is_nullable {
-                        SwiftOperation::CallOptional {
-                            var_name,
-                            call,
-                            defer,
-                        }
-                    } else {
-                        SwiftOperation::Call {
-                            var_name,
-                            call,
-                            defer,
-                        }
-                    }
-                }
-                // E.g.
-                // - `let param = param.rawValue`
-                // - `let param = param?.rawValue`
-                TypeVariant::Struct(_) => {
-                    // For nullable structs, we do not use the special
-                    // `CallOptional` handler but rather use the question mark
-                    // operator.
-                    let (var_name, call, defer) = if param.ty.is_nullable {
-                        (
-                            param.name.clone(),
-                            format!("{}?.rawValue", param.name),
-                            None,
-                        )
-                    } else {
-                        (param.name.clone(), format!("{}.rawValue", param.name), None)
-                    };
-
-                    SwiftOperation::Call {
-                        var_name,
-                        call,
-                        defer,
-                    }
-                }
-                // E.g. `let param = TWSomeEnum(rawValue: param.rawValue)`
-                // Note that it calls the constructor of the enum, which calls
-                // the underlying "*Create*" C FFI function.
-                TypeVariant::Enum(enm) => SwiftOperation::Call {
-                    var_name: param.name.clone(),
-                    call: format!("{enm}(rawValue: {}.rawValue)", param.name),
-                    defer: None,
-                },
-                // Skip processing parameter, reference the parameter by name
-                // directly, as defined in the function interface (usually the
-                // case for primitive types).
-                _ => continue,
-            });
+            if let Some(op) = handle_c_ffi_call(&param) {
+                ops.push(op)
+            }
         }
 
         // Prepepare parameter list to be passed on to the underlying C FFI function.
