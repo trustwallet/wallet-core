@@ -5,7 +5,6 @@ use crate::grammar::{
 use crate::manifest::*;
 use heck::ToLowerCamelCase;
 
-// NOTE: This function is temporary
 pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
     let mut file_infos = vec![];
 
@@ -65,6 +64,15 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                     file_info.enums.push(x);
                 }
                 GHeaderFileItem::FunctionDecl(decl) => {
+                    // Manual handling: those functions are explicitly skipped
+                    let name = &decl.name.0;
+                    if name.starts_with("TWAnySigner")
+                        || name.starts_with("TWString")
+                        || name.starts_with("TWData")
+                    {
+                        continue;
+                    }
+
                     let markers = &decl.markers.0;
 
                     // Handle exported properties.
@@ -88,7 +96,6 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                         }
                         // Any any other function is just a method.
                         else {
-                            dbg!(&decl);
                             let x = FunctionInfo::from_g_type(decl).unwrap();
                             file_info.functions.push(x);
                         }
@@ -243,7 +250,7 @@ impl ProtoInfo {
 
 impl EnumInfo {
     pub fn from_g_type(value: &GEnumDecl) -> Result<Self> {
-        // Manual Handling: read the docs of the custom function for more info.
+        // Manual handling: read the docs of the custom function for more info.
         if value.name.0 == "TWStellarPassphrase" {
             return Ok(super::manifest_impl_custom::custom_handle_stellar_passphrase());
         } else if value.name.0 == "TWHRP" {
@@ -343,16 +350,6 @@ impl StructInfo {
 
 impl PropertyInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
-        // ### Name
-
-        // Strip the object name from the property name.
-        // E.g. "SomeObjectIsValid" => "IsValid"
-        let name = value.name.0.clone();
-
-        if name.is_empty() {
-            return Err(Error::BadProperty);
-        }
-
         // ### Marker
 
         let mut markers = value.markers.0.iter();
@@ -383,7 +380,7 @@ impl PropertyInfo {
         let return_type = TypeInfo::from_g_type(&re.ty, &re.markers)?;
 
         Ok(PropertyInfo {
-            name,
+            name: value.name.0.clone(),
             is_public,
             return_type,
             comments: vec![],
@@ -426,21 +423,21 @@ impl DeinitInfo {
 }
 
 impl FunctionInfo {
-    pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
+    pub fn from_g_type(decl: &GFunctionDecl) -> Result<Self> {
         // ### Marker
-
-        let mut markers = value.markers.0.iter();
-
-        // Determinte export based on markers.
-        let (is_static, is_public) = match markers.next() {
-            Some(GMarker::TwExportMethod) => (false, true),
-            Some(GMarker::TwExportStaticMethod) => (true, true),
-            _ => (false, false),
+        let (is_static, is_public) = if let Some(marker) = decl.markers.0.first() {
+            match marker {
+                GMarker::TwExportMethod => (false, true),
+                GMarker::TwExportStaticMethod => (true, true),
+                _ => panic!(),
+            }
+        } else {
+            (false, false)
         };
 
         // ### Params
 
-        let mut g_params = value.params.iter();
+        let mut g_params = decl.params.iter();
 
         // Convert parameters.
         let mut params = vec![];
@@ -454,11 +451,11 @@ impl FunctionInfo {
         // ### Return value
 
         // Extract return value.
-        let re = &value.return_value;
+        let re = &decl.return_value;
         let return_type = TypeInfo::from_g_type(&re.ty, &re.markers)?;
 
         Ok(FunctionInfo {
-            name: value.name.0.to_string(),
+            name: decl.name.0.to_string(),
             is_public,
             is_static,
             params,

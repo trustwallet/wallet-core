@@ -361,16 +361,10 @@ pub enum GMarker {
     TwExportStaticMethod,
     TwExportStaticProperty,
     TwMethodDiscardableResult,
-    //TwData,
     TwAssumeNonNullBegin,
     TwAssumeNonNullEnd,
-    //TwDeprecated,
-    //TwDeprecatedFor,
     Nullable,
     NonNull,
-    //NullUnspecified,
-    TWExternCBegin,
-    TWExternCEnd,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -912,8 +906,6 @@ impl ParseTree for GMarker {
             //"TW_DEPRECATED_FOR" => GMarker::TwDeprecatedFor,
             "_Nullable" => GMarker::Nullable,
             "_Nonnull" => GMarker::NonNull,
-            "TW_EXTERN_C_BEGIN" => GMarker::TWExternCBegin,
-            "TW_EXTERN_C_END" => GMarker::TWExternCEnd,
             _ => return Err(Error::Todo),
         };
 
