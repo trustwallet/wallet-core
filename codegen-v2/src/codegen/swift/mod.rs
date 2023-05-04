@@ -348,7 +348,9 @@ impl From<TypeVariant> for SwiftType {
             TypeVariant::String => "String".to_string(),
             TypeVariant::Data => "Data".to_string(),
             TypeVariant::Struct(n) | TypeVariant::Enum(n) => {
-                n.strip_prefix("TW").unwrap().to_string()
+                // We strip the "TW" prefix for Swift representations of
+                // structs/enums.
+                n.strip_prefix("TW").map(|n| n.to_string()).unwrap_or(n)
             }
         };
 

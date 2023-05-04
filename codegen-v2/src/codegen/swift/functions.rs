@@ -2,17 +2,23 @@ use super::*;
 use crate::manifest::{FunctionInfo, TypeVariant};
 use heck::ToLowerCamelCase;
 
+/// This function checks each function and determines whether there's an
+/// association with the passed on object (struct or enum), based on common name
+/// prefix, and maps the data into a Swift structure.
+///
+/// This function returns a tuple of associated Swift functions and the skipped
+/// respectively non-associated functions.
 pub(super) fn process_object_methods(
     object: &ObjectVariant,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
     let mut swift_funcs = vec![];
-    let mut info_funcs = vec![];
+    let mut skipped_funcs = vec![];
 
     for func in functions {
         if !func.name.starts_with(object.name()) {
             // Function is not assciated with the object.
-            info_funcs.push(func);
+            skipped_funcs.push(func);
             continue;
         }
 
@@ -39,7 +45,9 @@ pub(super) fn process_object_methods(
             });
         }
 
-        // Convert parameters.
+        // For each parameter, we track a list of `params` which is used for the
+        // function interface and add the necessary operations on how to process
+        // those parameters.
         let mut params = vec![];
         for param in func.params {
             // Skip self parameter
@@ -50,14 +58,16 @@ pub(super) fn process_object_methods(
                 _ => {}
             }
 
-            // Convert parameter to Swift parameter.
+            // Convert parameter to Swift parameter for the function interface.
             params.push(SwiftParam {
                 name: param.name.clone(),
-                param_type: SwiftType::try_from(param.ty.variant.clone()).unwrap(),
+                param_type: SwiftType::from(param.ty.variant.clone()),
                 is_nullable: param.ty.is_nullable,
             });
 
+            // Process parameter.
             ops.push(match &param.ty.variant {
+                // E.g. `let param = TWStringCreateWithNSString(param)`
                 TypeVariant::String => {
                     let (var_name, call, defer) = (
                         param.name.clone(),
@@ -65,6 +75,7 @@ pub(super) fn process_object_methods(
                         Some(format!("TWStringDelete({})", param.name)),
                     );
 
+                    // If the parameter is nullable, add special handler.
                     if param.ty.is_nullable {
                         SwiftOperation::CallOptional {
                             var_name,
@@ -86,6 +97,7 @@ pub(super) fn process_object_methods(
                         Some(format!("TWDataDelete({})", param.name)),
                     );
 
+                    // If the parameter is nullable, add special handler.
                     if param.ty.is_nullable {
                         SwiftOperation::CallOptional {
                             var_name,
@@ -100,7 +112,13 @@ pub(super) fn process_object_methods(
                         }
                     }
                 }
+                // E.g.
+                // - `let param = param.rawValue`
+                // - `let param = param?.rawValue`
                 TypeVariant::Struct(_) => {
+                    // For nullable structs, we do not use the special
+                    // `CallOptional` handler but rather use the question mark
+                    // operator.
                     let (var_name, call, defer) = if param.ty.is_nullable {
                         (
                             param.name.clone(),
@@ -117,28 +135,24 @@ pub(super) fn process_object_methods(
                         defer,
                     }
                 }
+                // E.g. `let param = TWSomeEnum(rawValue: param.rawValue)`
+                // Note that it calls the constructor of the enum, which calls
+                // the underlying "*Create*" C FFI function.
                 TypeVariant::Enum(enm) => {
-                    let (var_name, call, defer) = (
-                        param.name.clone(),
-                        format!("{enm}(rawValue: {}.rawValue)", param.name),
-                        None,
-                    );
-
                     SwiftOperation::Call {
-                        var_name,
-                        call,
-                        defer,
+                        var_name: param.name.clone(),
+                        call: format!("{enm}(rawValue: {}.rawValue)", param.name),
+                        defer: None,
                     }
                 }
-                // Reference the parameter by name directly, as defined in the
-                // function interface.
+                // Skip processing parameter, reference the parameter by name
+                // directly, as defined in the function interface (usually the
+                // case for primitive types).
                 _ => continue,
             });
         }
 
-        // Call the underlying C FFI function, passing on the `obj` instance.
-        //
-        // E.g: `let result = TWSomeFunc(obj)`.
+        // Prepepare parameter list to be passed on to the underlying C FFI function.
         let param_name = if func.is_static { vec![] } else { vec!["obj"] };
         let param_names = param_name
             .into_iter()
@@ -146,6 +160,7 @@ pub(super) fn process_object_methods(
             .collect::<Vec<&str>>()
             .join(",");
 
+        // Call the underlying C FFI function, passing on the parameter list.
         if func.return_type.is_nullable {
             ops.push(SwiftOperation::GuardedCall {
                 var_name: "result".to_string(),
@@ -160,32 +175,31 @@ pub(super) fn process_object_methods(
         }
 
         // The `result` must be handled and returned explicitly.
-        //
-        // E.g:
-        // - `return TWStringNSString(result)`
-        // - `return SomeEnum(rawValue: result.rawValue)`
-        // - `return SomeStruct(rawValue: result)`
         ops.push(match &func.return_type.variant {
+            // E.g. `return TWStringNSString(result)`
             TypeVariant::String => SwiftOperation::Return {
                 call: "TWStringNSString(result)".to_string(),
             },
             TypeVariant::Data => SwiftOperation::Return {
                 call: "TWDataNSData(result)".to_string(),
             },
+            // E.g. `return SomeEnum(rawValue: result.rawValue)`
             TypeVariant::Enum(_enm) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result.rawValue)",
-                    // TODO: Comment
-                    // TODO: impl Display for SwiftType
-                    SwiftType::try_from(func.return_type.variant.clone()).unwrap()
+                    // Strip "TW" prefix from enum, impying Swift enum.
+                    SwiftType::from(func.return_type.variant.clone())
                 ),
             },
+            // E.g. `return SomeStruct(rawValue: result)`
             TypeVariant::Struct(_strct) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result)",
-                    SwiftType::try_from(func.return_type.variant.clone()).unwrap()
+                    // Strip "TW" prefix from struct, impying Swift struct.
+                    SwiftType::from(func.return_type.variant.clone())
                 ),
             },
+            // E.g. `return result`
             _ => SwiftOperation::Return {
                 call: "result".to_string(),
             },
@@ -193,17 +207,19 @@ pub(super) fn process_object_methods(
 
         // Convert return type.
         let return_type = SwiftReturn {
-            param_type: SwiftType::try_from(func.return_type.variant).unwrap(),
+            param_type: SwiftType::from(func.return_type.variant),
             is_nullable: func.return_type.is_nullable,
         };
 
         let mut func_name = func
             .name
             .strip_prefix(object.name())
+            // Panicing implies bug, checked at the start of the loop.
             .unwrap()
             .to_lower_camel_case();
 
-        // Some functions do not follow standard camelCase convention.
+        // Special handling: some functions do not follow standard camelCase
+        // convention.
         if object.name() == "TWStoredKey" {
             func_name = func_name.replace("Json", "JSON");
             func_name = func_name.replace("Hd", "HD");
@@ -231,5 +247,5 @@ pub(super) fn process_object_methods(
         });
     }
 
-    Ok((swift_funcs, info_funcs))
+    Ok((swift_funcs, skipped_funcs))
 }

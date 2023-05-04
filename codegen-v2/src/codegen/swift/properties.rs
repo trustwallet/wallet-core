@@ -13,12 +13,12 @@ pub(super) fn process_object_properties(
     properties: Vec<PropertyInfo>,
 ) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {
     let mut swift_props = vec![];
-    let mut info_props = vec![];
+    let mut skipped_props = vec![];
 
     for prop in properties {
         if !prop.name.starts_with(object.name()) {
             // Property is not assciated with the object.
-            info_props.push(prop);
+            skipped_props.push(prop);
             continue;
         }
 
@@ -26,16 +26,14 @@ pub(super) fn process_object_properties(
 
         // Initalize the 'self' type, which is then passed on to the underlying
         // C FFI function.
-        //
-        // E.g:
-        // - `let obj = self.rawValue`
-        // - `let obj = TWSomeEnum(rawValue: self.RawValue")`
         ops.push(match object {
+            // E.g. `let obj = self.rawValue`
             ObjectVariant::Struct(_) => SwiftOperation::Call {
                 var_name: "obj".to_string(),
                 call: "self.rawValue".to_string(),
                 defer: None,
             },
+            // E.g. `let obj = TWSomeEnum(rawValue: self.rawValue")`
             ObjectVariant::Enum(name) => SwiftOperation::Call {
                 var_name: "obj".to_string(),
                 call: format!("{}(rawValue: self.rawValue)", name),
@@ -60,24 +58,22 @@ pub(super) fn process_object_properties(
         }
 
         // The `result` must be handled and returned explicitly.
-        //
-        // E.g:
-        // - `return TWStringNSString(result)`
-        // - `return SomeEnum(rawValue: result.rawValue)`
-        // - `return SomeStruct(rawValue: result)`
         ops.push(match &prop.return_type.variant {
+            // E.g.`return TWStringNSString(result)`
             TypeVariant::String => SwiftOperation::Return {
                 call: "TWStringNSString(result)".to_string(),
             },
             TypeVariant::Data => SwiftOperation::Return {
                 call: "TWDataNSData(result)".to_string(),
             },
+            // E.g. `return SomeEnum(rawValue: result.rawValue)`
             TypeVariant::Enum(_) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result.rawValue)!",
                     SwiftType::from(prop.return_type.variant.clone())
                 ),
             },
+            // E.g. `return SomeStruct(rawValue: result)`
             TypeVariant::Struct(_) => SwiftOperation::Return {
                 call: format!(
                     "{}(rawValue: result)",
@@ -93,7 +89,7 @@ pub(super) fn process_object_properties(
         let pretty_name = prop
             .name
             .strip_prefix(object.name())
-            // Panicing implies bug
+            // Panicing implies bug, checked at the start of the loop.
             .unwrap()
             .to_lower_camel_case();
 
@@ -112,5 +108,5 @@ pub(super) fn process_object_properties(
         });
     }
 
-    Ok((swift_props, info_props))
+    Ok((swift_props, skipped_props))
 }
