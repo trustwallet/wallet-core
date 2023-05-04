@@ -4,7 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ed25519::extended_public::{ExtendedPublicKey, ExtendedPublicPart};
+use crate::ed25519::modifications::cardano::extended_public::{
+    ExtendedPublicKey, ExtendedPublicPart,
+};
 use crate::ed25519::public::PublicKey;
 use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;

@@ -6,13 +6,13 @@
 
 use digest::{consts::U64, Digest};
 
-mod extended_private;
-mod extended_public;
+mod modifications;
 mod private;
 mod public;
 mod secret;
 mod signature;
 
+pub use modifications::cardano;
 pub use signature::Signature;
 
 pub mod sha512 {
@@ -27,14 +27,6 @@ pub mod blake2b {
 
     pub type PrivateKey = crate::ed25519::private::PrivateKey<Blake2b>;
     pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b>;
-}
-
-/// Cardano specific implementation.
-pub mod cardano {
-    use sha2::Sha512;
-
-    pub type ExtendedPrivateKey = crate::ed25519::extended_private::ExtendedPrivateKey<Sha512>;
-    pub type ExtendedPublicKey = crate::ed25519::extended_public::ExtendedPublicKey<Sha512>;
 }
 
 pub trait Hash512: Digest<OutputSize = U64> {
