@@ -5,6 +5,115 @@ use crate::grammar::{
 use crate::manifest::*;
 use heck::ToLowerCamelCase;
 
+// NOTE: This function is temporary
+pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
+    let mut file_infos = vec![];
+
+    for (path, items) in &dir.map {
+        let file_name = path
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .strip_suffix(".h")
+            .unwrap()
+            .to_string();
+
+        let mut file_info = FileInfo {
+            name: file_name.clone(),
+            structs: vec![],
+            inits: vec![],
+            deinits: vec![],
+            enums: vec![],
+            functions: vec![],
+            properties: vec![],
+            protos: vec![],
+        };
+
+        for item in items {
+            match item {
+                GHeaderFileItem::Typedef(decl) => {
+                    if decl.name.contains("Proto") {
+                        let x = ProtoInfo::from_g_type(decl).unwrap();
+                        file_info.protos.push(x);
+                    }
+                }
+                GHeaderFileItem::StructIndicator(decl) => {
+                    let markers = &decl.markers.0;
+
+                    let mut tags = vec![];
+                    match markers.first() {
+                        Some(GMarker::TwExportStruct) => {
+                            tags.push("TW_EXPORT_STRUCT".to_string());
+                        }
+                        Some(GMarker::TwExportClass) => {
+                            tags.push("TW_EXPORT_CLASS".to_string());
+                        }
+                        _ => {}
+                    };
+
+                    file_info.structs.push(StructInfo {
+                        name: decl.name.0 .0.clone(),
+                        is_public: true,
+                        fields: vec![],
+                        tags,
+                    });
+                }
+                GHeaderFileItem::StructDecl(decl) => {
+                    let x = StructInfo::from_g_type(decl).unwrap();
+                    file_info.structs.push(x);
+                }
+                GHeaderFileItem::EnumDecl(decl) => {
+                    let x = EnumInfo::from_g_type(decl).unwrap();
+                    file_info.enums.push(x);
+                }
+                GHeaderFileItem::FunctionDecl(decl) => {
+                    if decl.name.0.starts_with("TWAnySigner") {
+                        println!(
+                            "Skipped function from manifest (non-export):  {}",
+                            decl.name.0
+                        );
+                        continue;
+                    }
+
+                    let markers = &decl.markers.0;
+
+                    // Handle exported properties.
+                    if markers.contains(&GMarker::TwExportProperty)
+                        || markers.contains(&GMarker::TwExportStaticProperty)
+                    {
+                        let x = PropertyInfo::from_g_type(decl).unwrap();
+                        file_info.properties.push(x);
+                    }
+                    // Handle methods
+                    else {
+                        // Detect constructor methods.
+                        if decl.name.0.contains("Create") {
+                            let x = InitInfo::from_g_type(decl).unwrap();
+                            file_info.inits.push(x);
+                        }
+                        // Delect deconstructor methods.
+                        else if decl.name.0.contains("Delete") {
+                            let x = DeinitInfo::from_g_type(decl).unwrap();
+                            file_info.deinits.push(x);
+                        }
+                        // Any any other method is just a method.
+                        else {
+                            let x = FunctionInfo::from_g_type(&None, decl).unwrap();
+                            file_info.functions.push(x);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        file_infos.push(file_info);
+    }
+
+    file_infos
+}
+
 impl TypeInfo {
     pub fn from_g_type(ty: &GType, markers: &GMarkers) -> Result<Self> {
         pub fn get_variant(category: &GTypeCategory) -> Result<TypeVariant> {
@@ -149,9 +258,9 @@ impl EnumInfo {
     pub fn from_g_type(value: &GEnumDecl) -> Result<Self> {
         // Read the docs of the custom function for more info.
         if value.name.0 == "TWStellarPassphrase" {
-            return Ok(crate::manifest_impl_custom::custom_handle_stellar_passphrase());
+            return Ok(super::manifest_impl_custom::custom_handle_stellar_passphrase());
         } else if value.name.0 == "TWHRP" {
-            return Ok(crate::manifest_impl_custom::custom_handle_hrp());
+            return Ok(super::manifest_impl_custom::custom_handle_hrp());
         }
 
         if value.markers.0.len() != 1 {
