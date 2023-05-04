@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ed25519::private::PrivateKey;
 use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
@@ -20,6 +19,7 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
+/// Represents an `ed25519` public key.
 #[derive(PartialEq)]
 pub struct PublicKey<H: Hasher512> {
     compressed: CompressedEdwardsY,
@@ -37,23 +37,22 @@ impl<H: Hasher512> fmt::Debug for PublicKey<H> {
 
 /// cbindgen:ignore
 impl<H: Hasher512> PublicKey<H> {
+    /// The number of bytes in a serialized public key.
     pub const LEN: usize = H256::len();
 
-    pub(crate) fn with_private_key(private: &PrivateKey<H>) -> Self {
-        let expanded = ExpandedSecretKey::with_secret(private.secret);
-        Self::with_expanded_secret(&expanded)
-    }
-
+    /// Creates a public key with the given [`ExpandedSecretKey`].
     pub(crate) fn with_expanded_secret(secret: &ExpandedSecretKey<H>) -> Self {
         let mut bits = secret.key.to_bytes();
 
         PublicKey::mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(&mut bits)
     }
 
+    /// Returns the raw data of the public key (32 bytes).
     pub fn to_bytes(&self) -> H256 {
         H256::from(self.compressed.to_bytes())
     }
 
+    /// Returns the raw data of the data of the public key.
     pub fn as_slice(&self) -> &[u8] {
         self.compressed.as_bytes()
     }
@@ -61,6 +60,8 @@ impl<H: Hasher512> PublicKey<H> {
     /// Internal utility function for mangling the bits of a (formerly
     /// mathematically well-defined) "scalar" and multiplying it to produce a
     /// public key.
+    ///
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L147-L161
     fn mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(
         bits: &mut [u8; 32],
     ) -> PublicKey<H> {
@@ -83,6 +84,7 @@ impl<H: Hasher512> VerifyingKeyTrait for PublicKey<H> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L220-L319
     #[allow(non_snake_case)]
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         let mut h = H::new();
@@ -115,6 +117,7 @@ impl<H: Hasher512> ToBytesVec for PublicKey<H> {
 impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
     type Error = Error;
 
+    /// Inspired by: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L92-L145
     fn try_from(pubkey: &'a [u8]) -> Result<Self, Self::Error> {
         let pubkey = H256::try_from(pubkey).map_err(|_| Error::InvalidPublicKey)?;
 

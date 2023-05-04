@@ -16,6 +16,7 @@ mod signature;
 pub use modifications::cardano;
 pub use signature::Signature;
 
+/// Standard `ed25519` implementation.
 pub mod sha512 {
     use sha2::Sha512;
 
@@ -24,6 +25,7 @@ pub mod sha512 {
     pub type PublicKey = crate::ed25519::public::PublicKey<Sha512>;
 }
 
+/// `ed25519` implementation using `BLAKE2B` hash function.
 pub mod blake2b {
     use blake2::Blake2b;
 
@@ -32,6 +34,7 @@ pub mod blake2b {
     pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b>;
 }
 
+/// A hash function that returns 64 length output.
 pub trait Hasher512: Digest<OutputSize = U64> {
     const OUTPUT_LEN: usize = 64;
     const HALF_LEN: usize = 32;

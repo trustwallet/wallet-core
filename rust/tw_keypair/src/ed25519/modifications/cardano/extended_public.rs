@@ -14,6 +14,7 @@ use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
+/// Represents an `ed25519` extended public key that is used in Cardano blockchain.
 pub struct ExtendedPublicKey<H: Hasher512> {
     key: ExtendedPublicPart<H>,
     second_key: ExtendedPublicPart<H>,
@@ -21,10 +22,12 @@ pub struct ExtendedPublicKey<H: Hasher512> {
 
 /// cbindgen:ignore
 impl<H: Hasher512> ExtendedPublicKey<H> {
+    /// The number of bytes in a serialized public key.
     pub const LEN: usize = ExtendedPublicPart::<H>::LEN * 2;
     const KEY_RANGE: Range<usize> = 0..ExtendedPublicPart::<H>::LEN;
     const SECOND_KEY_RANGE: Range<usize> = ExtendedPublicPart::<H>::LEN..Self::LEN;
 
+    /// Creates a public key with the given [`ExtendedPublicPart`] first and second keys.
     pub(crate) fn new(key: ExtendedPublicPart<H>, second_key: ExtendedPublicPart<H>) -> Self {
         ExtendedPublicKey { key, second_key }
     }

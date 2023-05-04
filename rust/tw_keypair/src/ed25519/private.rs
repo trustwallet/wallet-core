@@ -16,15 +16,18 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
+/// Represents an `ed25519` private key.
 #[derive(Debug, ZeroizeOnDrop)]
 pub struct PrivateKey<H: Hasher512> {
-    pub(crate) secret: H256,
+    secret: H256,
     _phantom: PhantomData<H>,
 }
 
 impl<H: Hasher512> PrivateKey<H> {
+    /// Returns an associated `ed25519` public key.
     pub fn public(&self) -> PublicKey<H> {
-        PublicKey::with_private_key(self)
+        let expanded = ExpandedSecretKey::with_secret(self.secret);
+        PublicKey::with_expanded_secret(&expanded)
     }
 }
 
@@ -50,6 +53,7 @@ impl<H: Hasher512> TryFrom<&[u8]> for PrivateKey<H> {
     }
 }
 
+/// Implement `str` -> `PrivateKey` conversion for test purposes.
 impl<H: Hasher512> From<&'static str> for PrivateKey<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).

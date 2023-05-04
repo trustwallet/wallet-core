@@ -10,6 +10,8 @@ use curve25519_dalek::scalar::Scalar;
 use tw_hash::{concat, H256, H512};
 use tw_misc::traits::ToBytesVec;
 
+/// Represents an `ed25519` signature.
+/// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L22-L53
 #[allow(non_snake_case)]
 #[derive(Debug)]
 pub struct Signature {
@@ -53,6 +55,8 @@ impl ToBytesVec for Signature {
 impl<'a> TryFrom<&'a [u8]> for Signature {
     type Error = Error;
 
+    /// Construct a `Signature` from a slice of bytes.
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L115-L190
     fn try_from(sign: &'a [u8]) -> Result<Self, Self::Error> {
         let bytes = H512::try_from(sign).map_err(|_| Error::InvalidSignature)?;
 
@@ -66,6 +70,7 @@ impl<'a> TryFrom<&'a [u8]> for Signature {
     }
 }
 
+/// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L83-L102
 fn get_scalar(bytes: H256) -> Result<Scalar, Error> {
     // Since this is only used in signature deserialisation (i.e. upon
     // verification), we can do a "succeed fast" trick by checking that the most

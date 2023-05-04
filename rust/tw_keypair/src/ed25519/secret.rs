@@ -14,6 +14,8 @@ use curve25519_dalek::scalar::Scalar;
 use std::marker::PhantomData;
 use tw_hash::{H256, H512};
 
+/// Represents an "expanded" secret key produced by using a hash function
+/// with 512-bits output to digest a `PrivateKey`.
 pub(crate) struct ExpandedSecretKey<H: Hasher512> {
     pub key: Scalar,
     pub nonce: H256,
@@ -21,6 +23,7 @@ pub(crate) struct ExpandedSecretKey<H: Hasher512> {
 }
 
 impl<H: Hasher512> ExpandedSecretKey<H> {
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/secret.rs#L246-L282
     pub(crate) fn with_secret(secret: H256) -> Self {
         let mut h = H::new();
         let mut hash = H512::default();
@@ -49,6 +52,8 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         }
     }
 
+    /// Signs a message with this `ExpandedSecretKey`.
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/secret.rs#L389-L412
     #[allow(non_snake_case)]
     pub(crate) fn sign_with_pubkey(
         &self,

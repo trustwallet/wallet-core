@@ -20,6 +20,7 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
+/// Represents an `ed25519` extended private key that is used in Cardano blockchain.
 pub struct ExtendedPrivateKey<H: Hasher512> {
     key: ExtendedSecretPart<H>,
     second_key: ExtendedSecretPart<H>,
@@ -27,10 +28,12 @@ pub struct ExtendedPrivateKey<H: Hasher512> {
 
 /// cbindgen:ignore
 impl<H: Hasher512> ExtendedPrivateKey<H> {
+    /// The number of bytes in a serialized private key (192 bytes).
     const LEN: usize = ExtendedSecretPart::<H>::LEN * 2;
     const KEY_RANGE: Range<usize> = 0..ExtendedSecretPart::<H>::LEN;
     const SECOND_KEY_RANGE: Range<usize> = ExtendedSecretPart::<H>::LEN..Self::LEN;
 
+    /// Returns an associated Cardano extended `ed25519` public key.
     pub fn public(&self) -> ExtendedPublicKey<H> {
         let key_public = PublicKey::with_expanded_secret(&self.key.to_expanded_secret());
         let second_key_public =
@@ -76,6 +79,7 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPrivateKey<H> {
     }
 }
 
+/// Implement `str` -> `ExtendedPrivateKey<H>` conversion for test purposes.
 impl<H: Hasher512> From<&'static str> for ExtendedPrivateKey<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).

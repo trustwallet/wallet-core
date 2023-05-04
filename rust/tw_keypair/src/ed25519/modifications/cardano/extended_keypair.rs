@@ -12,6 +12,7 @@ use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
 
+/// Represents an `ed25519` extended key pair that is used in Cardano blockchain.
 pub struct ExtendedKeyPair<H: Hasher512> {
     private: ExtendedPrivateKey<H>,
     public: ExtendedPublicKey<H>,
@@ -58,6 +59,7 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedKeyPair<H> {
     }
 }
 
+/// Implement `str` -> `ExtendedKeyPair<N>` conversion for test purposes.
 impl<H: Hasher512> From<&'static str> for ExtendedKeyPair<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).
