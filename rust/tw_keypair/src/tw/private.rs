@@ -91,7 +91,7 @@ impl PrivateKey {
         where
             Key: SigningKeyTrait,
         {
-            let hash_to_sign = <Key as SigningKeyTrait>::SigningHash::try_from(message)
+            let hash_to_sign = <Key as SigningKeyTrait>::SigningMessage::try_from(message)
                 .map_err(|_| Error::InvalidSignMessage)?;
             signing_key.sign(hash_to_sign).map(|sig| sig.to_vec())
         }

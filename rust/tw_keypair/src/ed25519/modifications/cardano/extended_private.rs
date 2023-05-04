@@ -17,7 +17,8 @@ use std::marker::PhantomData;
 use std::ops::Range;
 use tw_encoding::hex;
 use tw_hash::H256;
-use tw_misc::traits::ToBytesVec;
+use tw_misc::traits::ToBytesZeroizing;
+use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 pub struct ExtendedPrivateKey<Hash: Hash512> {
     key: ExtendedSecretPart<Hash>,
@@ -43,20 +44,20 @@ impl<Hash: Hash512> ExtendedPrivateKey<Hash> {
 }
 
 impl<Hash: Hash512> SigningKeyTrait for ExtendedPrivateKey<Hash> {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
-    fn sign(&self, message: Self::SigningHash) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
         let expanded =
             ExpandedSecretKey::<Hash>::with_extended_secret(self.key.secret, self.key.extension);
         expanded.sign(message)
     }
 }
 
-impl<Hash: Hash512> ToBytesVec for ExtendedPrivateKey<Hash> {
-    fn to_vec(&self) -> Vec<u8> {
-        let mut res = self.key.to_vec();
-        res.extend_from_slice(self.second_key.to_vec().as_slice());
+impl<Hash: Hash512> ToBytesZeroizing for ExtendedPrivateKey<Hash> {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        let mut res = self.key.to_zeroizing_vec();
+        res.extend_from_slice(self.second_key.to_zeroizing_vec().as_slice());
         res
     }
 }
@@ -83,6 +84,7 @@ impl<Hash: Hash512> From<&'static str> for ExtendedPrivateKey<Hash> {
     }
 }
 
+#[derive(ZeroizeOnDrop)]
 struct ExtendedSecretPart<Hash: Hash512> {
     secret: H256,
     extension: H256,
@@ -102,13 +104,13 @@ impl<Hash: Hash512> ExtendedSecretPart<Hash> {
     }
 }
 
-impl<Hash: Hash512> ToBytesVec for ExtendedSecretPart<Hash> {
-    fn to_vec(&self) -> Vec<u8> {
+impl<Hash: Hash512> ToBytesZeroizing for ExtendedSecretPart<Hash> {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let mut res = Vec::with_capacity(H256::len() * 3);
         res.extend_from_slice(self.secret.as_slice());
         res.extend_from_slice(self.extension.as_slice());
         res.extend_from_slice(self.chain_code.as_slice());
-        res
+        Zeroizing::new(res)
     }
 }
 

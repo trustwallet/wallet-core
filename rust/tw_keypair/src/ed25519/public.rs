@@ -98,7 +98,7 @@ impl<Hash: Hash512> VerifyingKeyTrait for PublicKey<Hash> {
 
 impl<Hash: Hash512> ToBytesVec for PublicKey<Hash> {
     fn to_vec(&self) -> Vec<u8> {
-        self.compressed.to_bytes().to_vec()
+        self.as_slice().to_vec()
     }
 }
 

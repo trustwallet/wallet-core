@@ -32,12 +32,12 @@ impl PrivateKey {
 }
 
 impl SigningKeyTrait for PrivateKey {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
         let hash_to_sign =
-            field_element_from_bytes_be(&hash).map_err(|_| Error::InvalidSignMessage)?;
+            field_element_from_bytes_be(&message).map_err(|_| Error::InvalidSignMessage)?;
         let signature = ecdsa_sign(&self.secret, &hash_to_sign).map_err(|_| Error::SigningError)?;
         Ok(Signature::new(signature))
     }

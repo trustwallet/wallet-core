@@ -13,17 +13,16 @@ use crate::Error;
 use std::marker::PhantomData;
 use tw_encoding::hex;
 use tw_hash::H256;
+use tw_misc::traits::ToBytesZeroizing;
+use zeroize::{ZeroizeOnDrop, Zeroizing};
 
+#[derive(ZeroizeOnDrop)]
 pub struct PrivateKey<Hash: Hash512> {
     pub(crate) secret: H256,
     _phantom: PhantomData<Hash>,
 }
 
 impl<Hash: Hash512> PrivateKey<Hash> {
-    pub fn to_bytes(&self) -> H256 {
-        self.secret
-    }
-
     pub fn as_slice(&self) -> &[u8] {
         self.secret.as_slice()
     }
@@ -34,12 +33,12 @@ impl<Hash: Hash512> PrivateKey<Hash> {
 }
 
 impl<Hash: Hash512> SigningKeyTrait for PrivateKey<Hash> {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
         let expanded = ExpandedSecretKey::<Hash>::with_secret(self.secret);
-        expanded.sign(hash)
+        expanded.sign(message)
     }
 }
 
@@ -60,5 +59,11 @@ impl<Hash: Hash512> From<&'static str> for PrivateKey<Hash> {
         // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
         let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
         PrivateKey::try_from(data.as_slice()).expect("Expected a valid Secret Key")
+    }
+}
+
+impl<Hash: Hash512> ToBytesZeroizing for PrivateKey<Hash> {
+    fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
+        Zeroizing::new(self.secret.into_vec())
     }
 }

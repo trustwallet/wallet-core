@@ -32,11 +32,11 @@ impl KeyPairTrait for KeyPair {
 }
 
 impl SigningKeyTrait for KeyPair {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type Signature = Signature;
 
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
-        self.private.sign(hash)
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
+        self.private.sign(message)
     }
 }
 

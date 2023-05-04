@@ -48,32 +48,39 @@ impl<Hash: Hash512> ExpandedSecretKey<Hash> {
             _phantom: PhantomData::default(),
         }
     }
-}
-
-impl<Hash: Hash512> SigningKeyTrait for ExpandedSecretKey<Hash> {
-    type SigningHash = Vec<u8>;
-    type Signature = Signature;
 
     #[allow(non_snake_case)]
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
-        let public_key = PublicKey::with_expanded_secret(self);
-
+    pub(crate) fn sign_with_pubkey(
+        &self,
+        pubkey: H256,
+        message: &[u8],
+    ) -> Result<Signature, Error> {
         let mut h = Hash::new();
 
         h.update(self.nonce.as_slice());
-        h.update(hash.as_slice());
+        h.update(message);
 
         let r = Scalar::from_hash(h);
         let R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
 
         h = Hash::new();
         h.update(R.as_bytes());
-        h.update(public_key.as_slice());
-        h.update(hash.as_slice());
+        h.update(pubkey);
+        h.update(message);
 
         let k = Scalar::from_hash(h);
         let s = k * self.key + r;
 
         Ok(Signature { R, s })
+    }
+}
+
+impl<Hash: Hash512> SigningKeyTrait for ExpandedSecretKey<Hash> {
+    type SigningMessage = Vec<u8>;
+    type Signature = Signature;
+
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
+        let public_key = PublicKey::with_expanded_secret(self);
+        self.sign_with_pubkey(public_key.to_bytes(), &message)
     }
 }

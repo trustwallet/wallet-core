@@ -6,8 +6,10 @@
 
 use sha2::Sha512;
 
+pub(crate) mod extended_keypair;
 pub(crate) mod extended_private;
 pub(crate) mod extended_public;
 
+pub type ExtendedKeyPair = extended_keypair::ExtendedKeyPair<Sha512>;
 pub type ExtendedPrivateKey = extended_private::ExtendedPrivateKey<Sha512>;
 pub type ExtendedPublicKey = extended_public::ExtendedPublicKey<Sha512>;

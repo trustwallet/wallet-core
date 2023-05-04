@@ -4,22 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::starkex::private::PrivateKey;
-use crate::starkex::public::PublicKey;
-use crate::starkex::signature::Signature;
+use crate::ed25519::{private::PrivateKey, public::PublicKey, signature::Signature, Hash512};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::Error;
 use tw_encoding::hex;
 
-/// Represents a pair of private and public keys that are used in `starknet` context.
-pub struct KeyPair {
-    private: PrivateKey,
-    public: PublicKey,
+pub struct KeyPair<Hash: Hash512> {
+    private: PrivateKey<Hash>,
+    public: PublicKey<Hash>,
 }
 
-impl KeyPairTrait for KeyPair {
-    type Private = PrivateKey;
-    type Public = PublicKey;
+impl<Hash: Hash512> KeyPairTrait for KeyPair<Hash> {
+    type Private = PrivateKey<Hash>;
+    type Public = PublicKey<Hash>;
 
     fn public(&self) -> &Self::Public {
         &self.public
@@ -30,7 +27,7 @@ impl KeyPairTrait for KeyPair {
     }
 }
 
-impl SigningKeyTrait for KeyPair {
+impl<Hash: Hash512> SigningKeyTrait for KeyPair<Hash> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
@@ -39,7 +36,7 @@ impl SigningKeyTrait for KeyPair {
     }
 }
 
-impl VerifyingKeyTrait for KeyPair {
+impl<Hash: Hash512> VerifyingKeyTrait for KeyPair<Hash> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
@@ -48,7 +45,7 @@ impl VerifyingKeyTrait for KeyPair {
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for KeyPair {
+impl<'a, Hash: Hash512> TryFrom<&'a [u8]> for KeyPair<Hash> {
     type Error = Error;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
@@ -58,9 +55,9 @@ impl<'a> TryFrom<&'a [u8]> for KeyPair {
     }
 }
 
-impl From<&'static str> for KeyPair {
+impl<Hash: Hash512> From<&'static str> for KeyPair<Hash> {
     fn from(hex: &'static str) -> Self {
-        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
+        // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).
         let bytes = hex::decode(hex).expect("Expected a valid Secret Key hex");
         KeyPair::try_from(bytes.as_slice()).expect("Expected a valid Secret Key")
     }

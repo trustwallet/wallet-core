@@ -50,13 +50,13 @@ fn diffie_hellman(private: &SigningKey, public: &VerifyingKey) -> AffinePoint {
 }
 
 impl SigningKeyTrait for PrivateKey {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type Signature = Signature;
 
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
         let (signature, recovery_id) = self
             .secret
-            .sign_prehash_recoverable(&hash)
+            .sign_prehash_recoverable(&message)
             .map_err(|_| Error::SigningError)?;
         Ok(Signature::new(signature, recovery_id.to_byte()))
     }

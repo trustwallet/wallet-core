@@ -19,11 +19,11 @@ pub trait KeyPairTrait: FromSlice + SigningKeyTrait + VerifyingKeyTrait {
 }
 
 pub trait SigningKeyTrait {
-    type SigningHash: FromSlice;
+    type SigningMessage: FromSlice;
     type Signature: ToBytesVec;
 
     /// Signs the given `hash` using the private key.
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error>;
+    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error>;
 }
 
 pub trait VerifyingKeyTrait {

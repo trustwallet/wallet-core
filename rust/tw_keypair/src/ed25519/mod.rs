@@ -6,6 +6,7 @@
 
 use digest::{consts::U64, Digest};
 
+mod keypair;
 mod modifications;
 mod private;
 mod public;
@@ -18,6 +19,7 @@ pub use signature::Signature;
 pub mod sha512 {
     use sha2::Sha512;
 
+    pub type KeyPair = crate::ed25519::keypair::KeyPair<Sha512>;
     pub type PrivateKey = crate::ed25519::private::PrivateKey<Sha512>;
     pub type PublicKey = crate::ed25519::public::PublicKey<Sha512>;
 }
@@ -25,6 +27,7 @@ pub mod sha512 {
 pub mod blake2b {
     use blake2::Blake2b;
 
+    pub type KeyPair = crate::ed25519::keypair::KeyPair<Blake2b>;
     pub type PrivateKey = crate::ed25519::private::PrivateKey<Blake2b>;
     pub type PublicKey = crate::ed25519::public::PublicKey<Blake2b>;
 }
@@ -55,7 +58,7 @@ mod tests {
 
         let expected =
             H256::from("4870d56d074c50e891506d78faa4fb69ca039cc5f131eb491e166b975880e867");
-        assert_eq!(public.to_bytes(), expected);
+        assert_eq!(public.to_vec(), expected.into_vec());
     }
 
     #[test]
@@ -72,7 +75,7 @@ mod tests {
 
     #[test]
     fn test_keypair_sign_verify() {
-        let keypair = sha512::PrivateKey::from(
+        let keypair = sha512::KeyPair::from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
         );
         let to_sign = sha256(b"Hello");
@@ -81,7 +84,7 @@ mod tests {
         let expected = H512::from("42848abf2641a731e18b8a1fb80eff341a5acebdc56faeccdcbadb960aef775192842fccec344679446daa4d02d264259c8f9aa364164ebe0ebea218581e2e03");
         assert_eq!(actual.to_bytes(), expected);
 
-        assert!(keypair.public().verify(actual, to_sign));
+        assert!(keypair.verify(actual, to_sign));
     }
 
     #[test]
@@ -95,7 +98,7 @@ mod tests {
 
     #[test]
     fn test_keypair_sign_verify_blake2b() {
-        let keypair = blake2b::PrivateKey::from(
+        let keypair = blake2b::KeyPair::from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
         );
         let to_sign = sha256(b"Hello");
@@ -104,7 +107,7 @@ mod tests {
         let expected = H512::from("5c1473944cd0234ebc5a91b2966b9e707a33b936dadd149417a2e53b6b3fc97bef17b767b1690708c74d7b4c8fe48703fd44a6ef59d4cc5b9f88ba992db0a003");
         assert_eq!(actual.to_bytes(), expected);
 
-        assert!(keypair.public().verify(actual, to_sign));
+        assert!(keypair.verify(actual, to_sign));
     }
 
     #[test]
@@ -112,16 +115,15 @@ mod tests {
         let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
         639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
 
-        let private = cardano::ExtendedPrivateKey::from(secret);
+        let keypair = cardano::ExtendedKeyPair::from(secret);
 
         let message = keccak256(b"hello");
-        let actual = private.sign(message.clone()).unwrap();
+        let actual = keypair.sign(message.clone()).unwrap();
 
         let expected = H512::from("375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f08");
         assert_eq!(actual.to_bytes(), expected);
 
-        let public = private.public();
-        assert!(public.verify(actual, message));
+        assert!(keypair.verify(actual, message));
     }
 
     #[test]
