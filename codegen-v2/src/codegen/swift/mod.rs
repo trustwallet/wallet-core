@@ -241,7 +241,16 @@ struct SwiftProperty {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+/// The operation to be interpreted by the templating engine. This handles
+/// parameters, return values in an appropriate way.
 pub enum SwiftOperation {
+    // Results in:
+    // ```swift
+    // let <var_name> = <call>
+    // defer {
+    //     <defer.val>(<var_name>)
+    // }
+    // ```
     Call {
         var_name: String,
         call: String,
@@ -252,10 +261,21 @@ pub enum SwiftOperation {
         call: String,
         defer: Option<String>,
     },
+    // Results in:
+    // ```swift
+    // let <var_name> = <call>
+    // guard let <var_name> = <var_name> else {
+    //     return nil
+    // }
+    // ```
     GuardedCall {
         var_name: String,
         call: String,
     },
+    // Results in:
+    // ```swift
+    // return <call>
+    // ```
     Return {
         call: String,
     },
