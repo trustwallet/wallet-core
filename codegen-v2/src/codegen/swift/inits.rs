@@ -31,7 +31,7 @@ pub(super) fn process_inits(
             // Convert parameter to Swift parameter.
             params.push(SwiftParam {
                 name: param.name.clone(),
-                param_type: SwiftType::from(param.ty.variant.clone())?,
+                param_type: SwiftType::from(param.ty.variant.clone()),
                 is_nullable: param.ty.is_nullable,
             });
 
