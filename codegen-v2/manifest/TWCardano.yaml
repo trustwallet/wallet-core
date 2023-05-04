@@ -1,0 +1,63 @@
+name: TWCardano
+structs:
+- name: TWCardano
+  is_public: true
+  is_class: false
+functions:
+- name: TWCardanoMinAdaAmount
+  is_public: true
+  is_static: true
+  params:
+  - name: tokenBundle
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: u_int64_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCardanoOutputMinAdaAmount
+  is_public: true
+  is_static: true
+  params:
+  - name: toAddress
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: tokenBundle
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coinsPerUtxoByte
+    type:
+      variant: u_int64_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: u_int64_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCardanoGetStakingAddress
+  is_public: true
+  is_static: true
+  params:
+  - name: baseAddress
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

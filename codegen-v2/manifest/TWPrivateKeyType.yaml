@@ -1,0 +1,11 @@
+name: TWPrivateKeyType
+enums:
+- name: TWPrivateKeyType
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: default
+    value: 0
+  - name: cardano
+    value: 1

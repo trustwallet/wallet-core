@@ -1,0 +1,190 @@
+name: TWHRP
+enums:
+- name: TWHRP
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: unknown
+    value: 0
+    as_string: ''
+  - name: bitcoin
+    value: 1
+    as_string: bc
+  - name: litecoin
+    value: 2
+    as_string: ltc
+  - name: viacoin
+    value: 3
+    as_string: via
+  - name: groestlcoin
+    value: 4
+    as_string: grs
+  - name: digiByte
+    value: 5
+    as_string: dgb
+  - name: monacoin
+    value: 6
+    as_string: mona
+  - name: cosmos
+    value: 7
+    as_string: cosmos
+  - name: bitcoinCash
+    value: 8
+    as_string: bitcoincash
+  - name: bitcoinGold
+    value: 9
+    as_string: btg
+  - name: ioTeX
+    value: 10
+    as_string: io
+  - name: nervos
+    value: 11
+    as_string: ckb
+  - name: zilliqa
+    value: 12
+    as_string: zil
+  - name: terra
+    value: 13
+    as_string: terra
+  - name: cryptoOrg
+    value: 14
+    as_string: cro
+  - name: kava
+    value: 15
+    as_string: kava
+  - name: oasis
+    value: 16
+    as_string: oasis
+  - name: bluzelle
+    value: 17
+    as_string: bluzelle
+  - name: bandChain
+    value: 18
+    as_string: band
+  - name: multiversX
+    value: 19
+    as_string: erd
+  - name: secret
+    value: 20
+    as_string: secret
+  - name: agoric
+    value: 21
+    as_string: agoric
+  - name: binance
+    value: 22
+    as_string: bnb
+  - name: ecash
+    value: 23
+    as_string: ecash
+  - name: thorchain
+    value: 24
+    as_string: thor
+  - name: harmony
+    value: 25
+    as_string: one
+  - name: cardano
+    value: 26
+    as_string: addr
+  - name: qtum
+    value: 27
+    as_string: qc
+  - name: nativeInjective
+    value: 28
+    as_string: inj
+  - name: osmosis
+    value: 29
+    as_string: osmo
+  - name: terraV2
+    value: 30
+    as_string: terra
+  - name: coreum
+    value: 31
+    as_string: core
+  - name: nativeCanto
+    value: 32
+    as_string: canto
+  - name: sommelier
+    value: 33
+    as_string: somm
+  - name: fetchAI
+    value: 34
+    as_string: fetch
+  - name: mars
+    value: 35
+    as_string: mars
+  - name: umee
+    value: 36
+    as_string: umee
+  - name: quasar
+    value: 37
+    as_string: quasar
+  - name: persistence
+    value: 38
+    as_string: persistence
+  - name: akash
+    value: 39
+    as_string: akash
+  - name: noble
+    value: 40
+    as_string: noble
+  - name: stargaze
+    value: 41
+    as_string: stars
+  - name: nativeEvmos
+    value: 42
+    as_string: evmos
+  - name: juno
+    value: 43
+    as_string: juno
+  - name: stride
+    value: 44
+    as_string: stride
+  - name: axelar
+    value: 45
+    as_string: axelar
+  - name: crescent
+    value: 46
+    as_string: cre
+  - name: kujira
+    value: 47
+    as_string: kujira
+  - name: comdex
+    value: 48
+    as_string: comdex
+  - name: neutron
+    value: 49
+    as_string: neutron
+functions:
+- name: stringForHRP
+  is_public: false
+  is_static: false
+  params:
+  - name: hrp
+    type:
+      variant: enum
+      value: TWHRP
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: char
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: hrpForString
+  is_public: false
+  is_static: false
+  params:
+  - name: string
+    type:
+      variant: char
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: enum
+    value: TWHRP
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

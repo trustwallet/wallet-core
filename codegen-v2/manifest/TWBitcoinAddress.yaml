@@ -1,0 +1,124 @@
+name: TWBitcoinAddress
+structs:
+- name: TWPublicKey
+  is_public: false
+  is_class: false
+- name: TWBitcoinAddress
+  is_public: true
+  is_class: true
+inits:
+- name: TWBitcoinAddressCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWBitcoinAddressCreateWithData
+  is_public: true
+  is_nullable: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWBitcoinAddressCreateWithPublicKey
+  is_public: true
+  is_nullable: true
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: prefix
+    type:
+      variant: u_int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+deinits:
+- name: TWBitcoinAddressDelete
+functions:
+- name: TWBitcoinAddressEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWBitcoinAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: rhs
+    type:
+      variant: struct
+      value: TWBitcoinAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinAddressIsValid
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinAddressIsValidString
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWBitcoinAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinAddressPrefix
+  is_public: true
+  return_type:
+    variant: u_int8_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinAddressKeyhash
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

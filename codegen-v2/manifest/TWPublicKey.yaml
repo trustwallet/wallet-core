@@ -1,0 +1,200 @@
+name: TWPublicKey
+structs:
+- name: TWPublicKey
+  is_public: true
+  is_class: true
+inits:
+- name: TWPublicKeyCreateWithData
+  is_public: true
+  is_nullable: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: type
+    type:
+      variant: enum
+      value: TWPublicKeyType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+deinits:
+- name: TWPublicKeyDelete
+functions:
+- name: TWPublicKeyIsValid
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: type
+    type:
+      variant: enum
+      value: TWPublicKeyType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPublicKeyVerify
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPublicKeyVerifyAsDER
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPublicKeyVerifyZilliqaSchnorr
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPublicKeyRecover
+  is_public: true
+  is_static: true
+  params:
+  - name: signature
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+properties:
+- name: TWPublicKeyIsCompressed
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPublicKeyCompressed
+  is_public: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPublicKeyUncompressed
+  is_public: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPublicKeyData
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWPublicKeyKeyType
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWPublicKeyType
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPublicKeyDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

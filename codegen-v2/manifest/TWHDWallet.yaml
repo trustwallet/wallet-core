@@ -1,0 +1,626 @@
+name: TWHDWallet
+structs:
+- name: TWHDWallet
+  is_public: true
+  is_class: true
+inits:
+- name: TWHDWalletCreate
+  is_public: true
+  is_nullable: true
+  params:
+  - name: strength
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: passphrase
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWHDWalletCreateWithMnemonic
+  is_public: true
+  is_nullable: true
+  params:
+  - name: mnemonic
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: passphrase
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWHDWalletCreateWithMnemonicCheck
+  is_public: true
+  is_nullable: true
+  params:
+  - name: mnemonic
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: passphrase
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: check
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWHDWalletCreateWithEntropy
+  is_public: true
+  is_nullable: true
+  params:
+  - name: entropy
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: passphrase
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWHDWalletDelete
+functions:
+- name: TWHDWalletGetMasterKey
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: curve
+    type:
+      variant: enum
+      value: TWCurve
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetKeyForCoin
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetAddressForCoin
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetAddressDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetKey
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetKeyDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetKeyByCurve
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: curve
+    type:
+      variant: enum
+      value: TWCurve
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetDerivedKey
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: account
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: change
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: address
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetExtendedPrivateKey
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: version
+    type:
+      variant: enum
+      value: TWHDVersion
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetExtendedPublicKey
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: version
+    type:
+      variant: enum
+      value: TWHDVersion
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetExtendedPrivateKeyAccount
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: version
+    type:
+      variant: enum
+      value: TWHDVersion
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: account
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetExtendedPublicKeyAccount
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: version
+    type:
+      variant: enum
+      value: TWHDVersion
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: account
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetExtendedPrivateKeyDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: version
+    type:
+      variant: enum
+      value: TWHDVersion
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetExtendedPublicKeyDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: version
+    type:
+      variant: enum
+      value: TWHDVersion
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletGetPublicKeyFromExtended
+  is_public: true
+  is_static: true
+  params:
+  - name: extended
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+properties:
+- name: TWHDWalletSeed
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletMnemonic
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWHDWalletEntropy
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

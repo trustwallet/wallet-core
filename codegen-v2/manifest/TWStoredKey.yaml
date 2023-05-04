@@ -1,0 +1,755 @@
+name: TWStoredKey
+structs:
+- name: TWStoredKey
+  is_public: true
+  is_class: true
+inits:
+- name: TWStoredKeyCreateLevel
+  is_public: true
+  is_nullable: false
+  params:
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: encryptionLevel
+    type:
+      variant: enum
+      value: TWStoredKeyEncryptionLevel
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWStoredKeyCreateLevelAndEncryption
+  is_public: true
+  is_nullable: false
+  params:
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: encryptionLevel
+    type:
+      variant: enum
+      value: TWStoredKeyEncryptionLevel
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: encryption
+    type:
+      variant: enum
+      value: TWStoredKeyEncryption
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWStoredKeyCreate
+  is_public: true
+  is_nullable: false
+  params:
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWStoredKeyCreateEncryption
+  is_public: true
+  is_nullable: false
+  params:
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: encryption
+    type:
+      variant: enum
+      value: TWStoredKeyEncryption
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+deinits:
+- name: TWStoredKeyDelete
+functions:
+- name: TWStoredKeyLoad
+  is_public: true
+  is_static: true
+  params:
+  - name: path
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWStoredKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyImportPrivateKey
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWStoredKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyImportPrivateKeyWithEncryption
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: encryption
+    type:
+      variant: enum
+      value: TWStoredKeyEncryption
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWStoredKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyImportHDWallet
+  is_public: true
+  is_static: true
+  params:
+  - name: mnemonic
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWStoredKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyImportHDWalletWithEncryption
+  is_public: true
+  is_static: true
+  params:
+  - name: mnemonic
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: encryption
+    type:
+      variant: enum
+      value: TWStoredKeyEncryption
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWStoredKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyImportJSON
+  is_public: true
+  is_static: true
+  params:
+  - name: json
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWStoredKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyAccount
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: index
+    type:
+      variant: size_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWAccount
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyAccountForCoin
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWAccount
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyAccountForCoinDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: wallet
+    type:
+      variant: struct
+      value: TWHDWallet
+      is_constant: false
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWAccount
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyAddAccountDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: publicKey
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: extendedPublicKey
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: void
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyAddAccount
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: publicKey
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: extendedPublicKey
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: void
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyRemoveAccountForCoin
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: void
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyRemoveAccountForCoinDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: void
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyRemoveAccountForCoinDerivationPath
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: void
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyStore
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: path
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyDecryptPrivateKey
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyDecryptMnemonic
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyPrivateKey
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyWallet
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWHDWallet
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyExportJSON
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyFixAddresses
+  is_public: true
+  is_static: false
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWStoredKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWStoredKeyIdentifier
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWStoredKeyName
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWStoredKeyIsMnemonic
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyAccountCount
+  is_public: true
+  return_type:
+    variant: size_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWStoredKeyEncryptionParameters
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: true
+    is_pointer: true

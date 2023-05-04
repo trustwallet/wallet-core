@@ -1,0 +1,21 @@
+name: TWDerivation
+enums:
+- name: TWDerivation
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: default
+    value: 0
+  - name: custom
+    value: 1
+  - name: bitcoinSegwit
+    value: 2
+  - name: bitcoinLegacy
+    value: 3
+  - name: bitcoinTestnet
+    value: 4
+  - name: litecoinLegacy
+    value: 5
+  - name: solanaSolana
+    value: 6

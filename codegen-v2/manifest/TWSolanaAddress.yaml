@@ -1,0 +1,49 @@
+name: TWSolanaAddress
+structs:
+- name: TWSolanaAddress
+  is_public: true
+  is_class: true
+inits:
+- name: TWSolanaAddressCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWSolanaAddressDelete
+functions:
+- name: TWSolanaAddressDefaultTokenAddress
+  is_public: true
+  is_static: false
+  params:
+  - name: address
+    type:
+      variant: struct
+      value: TWSolanaAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: tokenMintAddress
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+properties:
+- name: TWSolanaAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

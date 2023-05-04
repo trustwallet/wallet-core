@@ -1,0 +1,4 @@
+name: TWAionProto
+protos:
+- TW_Aion_Proto_SigningInput
+- TW_Aion_Proto_SigningOutput
