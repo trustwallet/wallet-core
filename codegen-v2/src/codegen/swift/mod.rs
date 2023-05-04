@@ -1,22 +1,15 @@
-use std::fmt::Display;
-
 use self::functions::process_object_methods;
 use self::inits::process_inits;
 use self::properties::process_object_properties;
 use crate::manifest::{FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
+use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
+use std::fmt::Display;
 
 mod functions;
 mod inits;
 mod properties;
-
-type Result<T> = std::result::Result<T, Error>;
-
-#[derive(Debug)]
-pub enum Error {
-    InvalidType,
-}
 
 #[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
@@ -40,18 +33,10 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
 
-    engine
-        .register_partial("struct", input.struct_template)
-        .unwrap();
-    engine
-        .register_partial("enum", input.enum_template)
-        .unwrap();
-    engine
-        .register_partial("extension", input.extension_template)
-        .unwrap();
-    engine
-        .register_partial("proto", input.proto_template)
-        .unwrap();
+    engine.register_partial("struct", input.struct_template)?;
+    engine.register_partial("enum", input.enum_template)?;
+    engine.register_partial("extension", input.extension_template)?;
+    engine.register_partial("proto", input.proto_template)?;
 
     let mut info = input.file_info;
     let mut outputs = RenderOutput::default();
@@ -59,13 +44,11 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     // Render structs/classes.
     for strct in info.structs {
         let (inits, mut methods, properties);
-        (inits, info.inits) =
-            process_inits(&ObjectVariant::Struct(&strct.name), info.inits).unwrap();
+        (inits, info.inits) = process_inits(&ObjectVariant::Struct(&strct.name), info.inits)?;
         (methods, info.functions) =
-            process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions).unwrap();
+            process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions)?;
         (properties, info.properties) =
-            process_object_properties(&ObjectVariant::Struct(&strct.name), info.properties)
-                .unwrap();
+            process_object_properties(&ObjectVariant::Struct(&strct.name), info.properties)?;
 
         // Avoid rendering empty structs.
         if inits.is_empty() && methods.is_empty() && properties.is_empty() {
@@ -114,11 +97,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "properties": properties,
         });
 
-        // TODO
-        //println!("{}", serde_json::to_string_pretty(&payload).unwrap());
-
-        let out = engine.render("struct", &payload).unwrap();
-
+        //  Render struct.
+        let out = engine.render("struct", &payload)?;
         outputs.structs.push((struct_name.to_string(), out));
     }
 
@@ -126,9 +106,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     for enm in info.enums {
         let (methods, properties);
         (methods, info.functions) =
-            process_object_methods(&ObjectVariant::Enum(&enm.name), info.functions).unwrap();
+            process_object_methods(&ObjectVariant::Enum(&enm.name), info.functions)?;
         (properties, info.properties) =
-            process_object_properties(&ObjectVariant::Enum(&enm.name), info.properties).unwrap();
+            process_object_properties(&ObjectVariant::Enum(&enm.name), info.properties)?;
 
         // Stip "TW" prefix if present.
         let enum_name = enm.name.strip_prefix("TW").unwrap_or(&enm.name).to_string();
@@ -137,18 +117,26 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         let value_type = SwiftType::from(enm.value_type);
         let mut superclasses = vec![value_type.0.as_str(), "CaseIterable"];
 
-        // If the enum has `as_string` fields, we can generate a description.
+        // If the enum variants have `as_string` fields, we generate a
+        // description method.
         let description: Option<Vec<(&str, &str)>> =
             if enm.variants.iter().any(|e| e.as_string.is_some()) {
                 superclasses.push("CustomStringConvertible");
 
-                Some(
-                    enm.variants
-                        .iter()
-                        // TODO: Unwrap must be handled:
-                        .map(|e| (e.name.as_str(), e.as_string.as_ref().unwrap().as_str()))
-                        .collect(),
-                )
+                let mut desc = vec![];
+                for var in &enm.variants {
+                    if let Some(ref text) = var.as_string {
+                        desc.push((var.name.as_str(), text.as_str()))
+                    } else {
+                        // If at least one variant has a `as_string` field, than
+                        // *all* of others must too.
+                        return Err(Error::BadFormat(
+                            "missing as_string field for enum variant".to_string(),
+                        ));
+                    }
+                }
+
+                Some(desc)
             } else {
                 None
             };
@@ -161,7 +149,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "description": description,
         });
 
-        let out = engine.render("enum", &enum_payload).unwrap();
+        // Render enum.
+        let out = engine.render("enum", &enum_payload)?;
         outputs.enums.push((enum_name.to_string(), out));
 
         // Avoid rendering empty extension for enums.
@@ -177,7 +166,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "properties": properties,
         });
 
-        let out = engine.render("extension", &extension_payload).unwrap();
+        // Render enum extension.
+        let out = engine.render("extension", &extension_payload)?;
         outputs.extensions.push((enum_name.to_string(), out));
     }
 
@@ -201,7 +191,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             "protos": protos,
         });
 
-        let out = engine.render("proto", &payload).unwrap();
+        // Render protobuf.
+        let out = engine.render("proto", &payload)?;
         outputs.protos.push((file_name, out));
     }
 

@@ -6,6 +6,7 @@
 #[macro_use]
 extern crate serde;
 
+use handlebars::{RenderError, TemplateError};
 use serde_yaml::Error as YamlError;
 use std::io::Error as IoError;
 
@@ -19,6 +20,9 @@ pub enum Error {
     Todo,
     IoError(IoError),
     YamlError(YamlError),
+    RenderError(RenderError),
+    TemplateError(TemplateError),
+    BadFormat(String),
 }
 
 impl From<IoError> for Error {
@@ -30,5 +34,17 @@ impl From<IoError> for Error {
 impl From<YamlError> for Error {
     fn from(err: YamlError) -> Self {
         Error::YamlError(err)
+    }
+}
+
+impl From<RenderError> for Error {
+    fn from(err: RenderError) -> Self {
+        Error::RenderError(err)
+    }
+}
+
+impl From<TemplateError> for Error {
+    fn from(err: TemplateError) -> Self {
+        Error::TemplateError(err)
     }
 }
