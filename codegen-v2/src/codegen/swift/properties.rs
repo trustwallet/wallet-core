@@ -8,7 +8,7 @@ use heck::ToLowerCamelCase;
 ///
 /// This function returns a tuple of associated Swift properties and skipped
 /// respectively non-associated properties.
-pub(super) fn process_object_properties(
+pub(super) fn process_properties(
     object: &ObjectVariant,
     properties: Vec<PropertyInfo>,
 ) -> Result<(Vec<SwiftProperty>, Vec<PropertyInfo>)> {

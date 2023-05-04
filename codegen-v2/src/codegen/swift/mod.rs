@@ -1,6 +1,6 @@
-use self::functions::process_object_methods;
+use self::functions::process_methods;
 use self::inits::process_inits;
-use self::properties::process_object_properties;
+use self::properties::process_properties;
 use crate::manifest::{FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
@@ -28,6 +28,7 @@ pub struct RenderOutput {
     pub protos: Vec<(String, String)>,
 }
 
+/// Uses the given input templates to render all files.
 pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
@@ -43,12 +44,13 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
     // Render structs/classes.
     for strct in info.structs {
+        let obj = ObjectVariant::Struct(&strct.name);
+
+        // Process items.
         let (inits, mut methods, properties);
         (inits, info.inits) = process_inits(&ObjectVariant::Struct(&strct.name), info.inits)?;
-        (methods, info.functions) =
-            process_object_methods(&ObjectVariant::Struct(&strct.name), info.functions)?;
-        (properties, info.properties) =
-            process_object_properties(&ObjectVariant::Struct(&strct.name), info.properties)?;
+        (methods, info.functions) = process_methods(&obj, info.functions)?;
+        (properties, info.properties) = process_properties(&obj, info.properties)?;
 
         // Avoid rendering empty structs.
         if inits.is_empty() && methods.is_empty() && properties.is_empty() {
@@ -71,7 +73,6 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         // Handle equality operator.
         let equality_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
-
         let equality_operator = if let Some((idx, _func)) = equality_method {
             let operator = SwiftOperatorEquality {
                 c_ffi_name: format!("{}Equal", strct.name),
@@ -104,11 +105,12 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
     // Render enums.
     for enm in info.enums {
+        let obj = ObjectVariant::Enum(&enm.name);
+
+        // Process items.
         let (methods, properties);
-        (methods, info.functions) =
-            process_object_methods(&ObjectVariant::Enum(&enm.name), info.functions)?;
-        (properties, info.properties) =
-            process_object_properties(&ObjectVariant::Enum(&enm.name), info.properties)?;
+        (methods, info.functions) = process_methods(&obj, info.functions)?;
+        (properties, info.properties) = process_properties(&obj, info.properties)?;
 
         // Stip "TW" prefix if present.
         let enum_name = enm.name.strip_prefix("TW").unwrap_or(&enm.name).to_string();
@@ -317,6 +319,7 @@ pub struct SwiftOperatorEquality {
     pub c_ffi_name: String,
 }
 
+/// Used for the individual `process_*` functions.
 enum ObjectVariant<'a> {
     Struct(&'a str),
     Enum(&'a str),

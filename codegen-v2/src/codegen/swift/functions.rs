@@ -8,7 +8,7 @@ use heck::ToLowerCamelCase;
 ///
 /// This function returns a tuple of associated Swift functions and the skipped
 /// respectively non-associated functions.
-pub(super) fn process_object_methods(
+pub(super) fn process_methods(
     object: &ObjectVariant,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<SwiftFunction>, Vec<FunctionInfo>)> {
