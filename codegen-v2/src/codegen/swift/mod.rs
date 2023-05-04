@@ -126,8 +126,6 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
     // Render structs/classes.
     for strct in info.structs {
-        let is_class = strct.tags.iter().any(|t| t == "TW_EXPORT_CLASS");
-
         let (inits, mut methods, properties);
         (inits, info.inits) =
             process_inits(&ObjectVariant::Struct(&strct.name), info.inits).unwrap();
@@ -169,8 +167,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         let payload = json!({
             "name": struct_name,
-            "is_class": is_class,
-            "init_instance": is_class,
+            "is_class": strct.is_class,
+            "init_instance": strct.is_class,
             "superclasses": superclasses,
             "eq_operator": equality_operator,
             "inits": inits,

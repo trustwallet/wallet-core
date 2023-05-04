@@ -22,8 +22,6 @@ pub struct TypeInfo {
     pub is_constant: bool,
     pub is_nullable: bool,
     pub is_pointer: bool,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -89,8 +87,6 @@ pub struct EnumInfo {
     pub value_type: TypeVariant,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub variants: Vec<EnumVariantInfo>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -105,10 +101,9 @@ pub struct EnumVariantInfo {
 pub struct StructInfo {
     pub name: String,
     pub is_public: bool,
+    pub is_class: bool,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub fields: Vec<(String, TypeInfo)>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

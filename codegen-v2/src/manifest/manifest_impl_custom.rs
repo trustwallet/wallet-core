@@ -29,7 +29,6 @@ pub fn custom_handle_stellar_passphrase() -> EnumInfo {
         is_public: true,
         value_type: TypeVariant::UInt32T,
         variants,
-        tags: vec![],
     }
 }
 
@@ -102,6 +101,5 @@ pub fn custom_handle_hrp() -> EnumInfo {
         is_public: true,
         value_type: TypeVariant::UInt32T,
         variants,
-        tags: vec![],
     }
 }

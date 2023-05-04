@@ -39,24 +39,21 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                     }
                 }
                 GHeaderFileItem::StructIndicator(decl) => {
-                    let markers = &decl.markers.0;
-
-                    let mut tags = vec![];
-                    match markers.first() {
-                        Some(GMarker::TwExportStruct) => {
-                            tags.push("TW_EXPORT_STRUCT".to_string());
+                    let (is_public, is_class) = if let Some(marker) = decl.markers.0.first() {
+                        match marker {
+                            GMarker::TwExportStruct => (true, false),
+                            GMarker::TwExportClass => (true, true),
+                            _ => panic!(),
                         }
-                        Some(GMarker::TwExportClass) => {
-                            tags.push("TW_EXPORT_CLASS".to_string());
-                        }
-                        _ => {}
+                    } else {
+                        (false, false)
                     };
 
                     file_info.structs.push(StructInfo {
                         name: decl.name.0 .0.clone(),
-                        is_public: true,
+                        is_public,
+                        is_class,
                         fields: vec![],
-                        tags,
                     });
                 }
                 GHeaderFileItem::StructDecl(decl) => {
@@ -168,7 +165,6 @@ impl TypeInfo {
                             is_constant: true,
                             is_nullable,
                             is_pointer: true,
-                            tags: vec!["TW_DATA".to_string()],
                         });
                     } else if keyword.0 == "TWString" {
                         return Ok(TypeInfo {
@@ -177,7 +173,6 @@ impl TypeInfo {
                             is_constant: true,
                             is_nullable,
                             is_pointer: true,
-                            tags: vec!["TW_STRING".to_string()],
                         });
                     }
                 }
@@ -199,7 +194,6 @@ impl TypeInfo {
             is_constant,
             is_nullable,
             is_pointer,
-            tags: vec![],
         })
     }
 }
@@ -249,7 +243,7 @@ impl ProtoInfo {
 
 impl EnumInfo {
     pub fn from_g_type(value: &GEnumDecl) -> Result<Self> {
-        // Read the docs of the custom function for more info.
+        // Manual Handling: read the docs of the custom function for more info.
         if value.name.0 == "TWStellarPassphrase" {
             return Ok(super::manifest_impl_custom::custom_handle_stellar_passphrase());
         } else if value.name.0 == "TWHRP" {
@@ -284,8 +278,8 @@ impl EnumInfo {
                             .unwrap()
                             .to_lower_camel_case();
 
-                    // HACK
-                    // Some variant names do not follow standard camelCase convention.
+                    // Manual handling: Some variant names do not follow
+                    // standard camelCase convention.
                     if value.name.0 == "TWCoinType" {
                         name = name.replace("xDai", "xdai");
                         name = name.replace("polygonzkEvm", "polygonzkEVM");
@@ -308,30 +302,20 @@ impl EnumInfo {
                     }
                 })
                 .collect(),
-            tags: vec![],
         })
     }
 }
 
 impl StructInfo {
     pub fn from_g_type(value: &GStructDecl) -> Result<Self> {
-        let mut markers = value.markers.0.iter();
-
-        if markers.size_hint().0 != 1 {
-            return Err(Error::BadObject);
-        }
-
-        // Identify whether it's a struct or a class. The object must be *one*
-        // of the two available markers and is always public
-        let mut tags = vec![];
-        match markers.next() {
-            Some(GMarker::TwExportStruct) => {
-                tags.push("TW_EXPORT_STRUCT".to_string());
+        let (is_public, is_class) = if let Some(marker) = value.markers.0.first() {
+            match marker {
+                GMarker::TwExportStruct => (true, false),
+                GMarker::TwExportClass => (true, true),
+                _ => return Err(Error::BadObject),
             }
-            Some(GMarker::TwExportClass) => {
-                tags.push("TW_EXPORT_CLASS".to_string());
-            }
-            _ => return Err(Error::BadObject),
+        } else {
+            (false, false)
         };
 
         // Process fields.
@@ -350,9 +334,9 @@ impl StructInfo {
 
         Ok(StructInfo {
             name: value.name.0 .0.to_string(),
-            is_public: true,
+            is_public,
+            is_class,
             fields,
-            tags,
         })
     }
 }
