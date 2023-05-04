@@ -45,6 +45,8 @@ pub enum TypeVariant {
     UInt64T,
     Struct(String),
     Enum(String),
+    Data,
+    String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -229,7 +231,7 @@ pub fn process_c_grammar(dir: &CHeaderDirectory) -> Vec<FileInfo> {
                         let x = PropertyInfo::from_g_type(decl).unwrap();
                         file_info.properties.push(x);
                     }
-                    // None-exported methods are skipped.
+                    // Handle methods
                     else {
                         // Detect constructor methods.
                         if decl.name.0.contains("Create") {

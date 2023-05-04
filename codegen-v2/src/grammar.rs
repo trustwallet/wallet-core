@@ -1419,8 +1419,19 @@ impl ParseTree for GFunctionDecl {
                 break;
             }
 
+            // Check for single `void`
+            let (pending, checked_out) = reader.checkout();
+            if let Ok(res) = GPrimitive::derive(checked_out) {
+                if res.derived == GPrimitive::Void {
+                    reader = pending.merge(res.branch);
+                    break;
+                }
+            }
+
+            let r = pending.discard();
+
             // Derive and track parameter.
-            let (derived, r) = ensure::<GParamItem>(reader)?;
+            let (derived, r) = ensure::<GParamItem>(r)?;
             params.push(derived);
 
             // Ignore leading separators.

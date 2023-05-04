@@ -10,59 +10,85 @@
 extension {{name}}
     {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}}{{/each}} {
     {{#each methods}}
-    {{#if is_static}}public static func{{else}}public func{{/if}} {{name}} ({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        {{#each params}}
-        {{#if wrap_as}}
-        let {{name}} = {{wrap_as}}
-        {{else}}
-        let {{name}} = {{name}}
-        {{/if}}
-        {{#if deter_as}}
+    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}func {{name}}({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{/unless}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
+        {{#if this.call.defer}}
         defer {
-            {{deter_as}}
+            {{this.call.defer}}
+        }
+
+        {{/if}}
+        {{/if}}
+        {{#if this.call_optional}}
+        let ptr: UnsafeRawPointer?
+        if let {{this.call_optional.var_name}} = {{this.call_optional.var_name}} {
+            ptr = {{this.call_optional.call}}
+        } else {
+            ptr = nil
+        }
+        {{#if this.call_optional.defer}}
+        defer {
+            if let {{this.call_optional.var_name}}  = ptr {
+                {{this.call_optional.defer}}
+            }
         }
         {{/if}}
-        {{/each}}
+        let {{this.call_optional.var_name}} = ptr
 
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}({{#unless is_static}}TW{{../name}}(rawValue: self.rawValue){{#if params}}, {{/if}}{{/unless}}{{#each params}}{{name}}{{#unless @last}}, {{/unless}}{{/each}})
-
-        {{#if return.is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
+        {{/if}}
+        {{#if this.guarded_call}}
+        guard let {{this.guarded_call.var_name}} = {{this.guarded_call.call}} else {
             return nil
         }
-
         {{/if}}
-        {{#if return.wrap_as}}
-        // Return with conversion function.
-        return {{return.wrap_as}}
-        {{else}}
-        return result
+        {{#if this.return}}
+        return {{this.return.call}}
         {{/if}}
+        {{/each}}
     }
 
     {{/each}}
     {{#each properties}}
-    public var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
-        let obj = TW{{../name}}(rawValue: self.rawValue)
-
-        // Call the underlying C function.
-        let result = {{c_ffi_name}}(obj.rawValue)
-
-        {{#if return.is_nullable}}
-        // Check nullable result.
-        guard let result = result else {
-            return nil
+    {{#if is_public}}public{{/if}} var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
+        {{#if this.call.defer}}
+        defer {
+            {{this.call.defer}}
         }
 
         {{/if}}
-        {{#if return.wrap_as}}
-        // Return with conversion function.
-        return {{return.wrap_as}}
-        {{else}}
-        return result
         {{/if}}
+        {{#if this.call_optional}}
+        let ptr: UnsafeRawPointer?
+        if let {{this.call_optional.var_name}} = {{this.call_optional.var_name}} {
+            ptr = {{this.call_optional.call}}
+        } else {
+            ptr = nil
+        }
+        {{#if this.call_optional.defer}}
+        defer {
+            if let {{this.call_optional.var_name}}  = ptr {
+                {{this.call_optional.defer}}
+            }
+        }
+        {{/if}}
+        let {{this.call_optional.var_name}} = ptr
+
+        {{/if}}
+        {{#if this.guarded_call}}
+        guard let {{this.guarded_call.var_name}} = {{this.guarded_call.call}} else {
+            return nil
+        }
+        {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
+        {{/if}}
+
+        {{/each}}
     }
 
     {{/each}}

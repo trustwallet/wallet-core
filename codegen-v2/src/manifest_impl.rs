@@ -1,9 +1,9 @@
-use crate::codegen::swift::first_char_to_lowercase;
 use crate::grammar::{
     GEnumDecl, GFunctionDecl, GHeaderInclude, GMarker, GMarkers, GPrimitive, GStructDecl, GType,
     GTypeCategory, GTypedef,
 };
 use crate::manifest::*;
+use heck::ToLowerCamelCase;
 
 impl TypeInfo {
     pub fn from_g_type(ty: &GType, markers: &GMarkers) -> Result<Self> {
@@ -61,7 +61,7 @@ impl TypeInfo {
                 if let GTypeCategory::Unrecognized(ref keyword) = **pointer {
                     if keyword.0 == "TWData" {
                         return Ok(TypeInfo {
-                            variant: TypeVariant::Void,
+                            variant: TypeVariant::Data,
                             // Is always const
                             is_constant: true,
                             is_nullable,
@@ -70,7 +70,7 @@ impl TypeInfo {
                         });
                     } else if keyword.0 == "TWString" {
                         return Ok(TypeInfo {
-                            variant: TypeVariant::Void,
+                            variant: TypeVariant::String,
                             // Is always const
                             is_constant: true,
                             is_nullable,
@@ -177,11 +177,28 @@ impl EnumInfo {
                 .cloned()
                 .enumerate()
                 .map(|(idx, (k, v))| {
+                    let mut name =
+                        k.0.strip_prefix(&value.name.0)
+                            .unwrap()
+                            .to_lower_camel_case();
+
+                    // HACK
+                    // Some variant names do not follow standard camelCase convention.
+                    if value.name.0 == "TWCoinType" {
+                        name = name.replace("xDai", "xdai");
+                        name = name.replace("polygonzkEvm", "polygonzkEVM");
+                        name = name.replace("ecoChain", "ecochain");
+                        name = name.replace("okxChain", "okxchain");
+                        name = name.replace("ioTeXevm", "ioTeXEVM");
+                        name = name.replace("poaNetwork", "poanetwork");
+                        name = name.replace("thorChain", "thorchain");
+                        name = name.replace("eCash", "ecash");
+                        name = name.replace("fetchAi", "fetchAI");
+                    }
+
                     EnumVariantInfo {
                         // Remove prefix from enum variant.
-                        name: first_char_to_lowercase(
-                            k.0.strip_prefix(&value.name.0).unwrap().to_string(),
-                        ),
+                        name,
                         // In the old codegen, non-values result in a simple
                         // counter. IMO fixed values should be enforced.
                         value: v.unwrap_or(idx),
@@ -292,6 +309,12 @@ impl InitInfo {
     pub fn from_g_type(value: &GFunctionDecl) -> Result<Self> {
         let func = FunctionInfo::from_g_type(&None, value)?;
 
+        let is_public = value
+            .markers
+            .0
+            .iter()
+            .any(|m| m == &GMarker::TwExportMethod || m == &GMarker::TwExportStaticMethod);
+
         let is_nullable = value.return_value.markers.0.iter().any(|m| match m {
             GMarker::Nullable => true,
             GMarker::NonNull => false,
@@ -300,8 +323,7 @@ impl InitInfo {
 
         Ok(InitInfo {
             name: func.name,
-            // TODO
-            is_public: true,
+            is_public,
             is_nullable,
             params: func.params,
             comments: vec![],
