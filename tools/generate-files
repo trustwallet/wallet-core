@@ -49,6 +49,15 @@ codegen/bin/coins
 # Generate interface code
 codegen/bin/codegen
 
+echo "#### Running codegen-v2 Swift binding generation"
+
+cd codegen-v2/
+cargo run -- swift
+rm -rf ../swift/Sources/Generated/*
+cp -R bindings/* ../swift/Sources/Generated/
+cp ../WalletCore.h ../swift/Sources/Generated/
+cd ..
+
 # Convert doxygen comments to appropriate format
 tools/doxygen_convert_comments
 

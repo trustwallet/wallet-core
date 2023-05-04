@@ -7,8 +7,6 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-import Foundation
-
 {{#if is_public}}public {{/if}}enum {{name}}
     {{~#if superclasses}}: {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
     {{#each variants}}
