@@ -1,13 +1,14 @@
+use super::Result;
 use std::fs;
 use std::path::Path;
 
-pub fn read_directory<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>, ()> {
+pub fn read_directory<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>> {
     // Get a list of all files in the directory
-    let entries = fs::read_dir(path).unwrap();
+    let entries = fs::read_dir(path)?;
 
     let mut file_infos = vec![];
     for entry in entries {
-        let entry = entry.unwrap();
+        let entry = entry?;
         let file_path = entry.path();
 
         // Skip directories
@@ -17,10 +18,10 @@ pub fn read_directory<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>, ()> {
         }
 
         // Read the file into a string
-        let file_contents = fs::read_to_string(&file_path).unwrap();
+        let file_contents = fs::read_to_string(&file_path)?;
 
         // Deserialize the JSON into a struct
-        let info: FileInfo = serde_yaml::from_str(&file_contents).unwrap();
+        let info: FileInfo = serde_yaml::from_str(&file_contents)?;
         file_infos.push(info);
     }
 
