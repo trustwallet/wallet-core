@@ -1,0 +1,15 @@
+name: TWNervosProto
+protos:
+- TW_Nervos_Proto_TransactionPlan
+- TW_Nervos_Proto_CellDep
+- TW_Nervos_Proto_OutPoint
+- TW_Nervos_Proto_CellOutput
+- TW_Nervos_Proto_Script
+- TW_Nervos_Proto_NativeTransfer
+- TW_Nervos_Proto_SudtTransfer
+- TW_Nervos_Proto_DaoDeposit
+- TW_Nervos_Proto_DaoWithdrawPhase1
+- TW_Nervos_Proto_DaoWithdrawPhase2
+- TW_Nervos_Proto_SigningInput
+- TW_Nervos_Proto_Cell
+- TW_Nervos_Proto_SigningOutput

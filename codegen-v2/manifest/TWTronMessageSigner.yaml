@@ -1,0 +1,56 @@
+name: TWTronMessageSigner
+structs:
+- name: TWTronMessageSigner
+  is_public: true
+  is_class: false
+functions:
+- name: TWTronMessageSignerSignMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWTronMessageSignerVerifyMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: pubKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

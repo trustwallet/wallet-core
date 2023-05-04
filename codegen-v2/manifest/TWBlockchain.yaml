@@ -1,0 +1,97 @@
+name: TWBlockchain
+enums:
+- name: TWBlockchain
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: bitcoin
+    value: 0
+  - name: ethereum
+    value: 1
+  - name: vechain
+    value: 3
+  - name: tron
+    value: 4
+  - name: icon
+    value: 5
+  - name: binance
+    value: 6
+  - name: ripple
+    value: 7
+  - name: tezos
+    value: 8
+  - name: nimiq
+    value: 9
+  - name: stellar
+    value: 10
+  - name: aion
+    value: 11
+  - name: cosmos
+    value: 12
+  - name: theta
+    value: 13
+  - name: ontology
+    value: 14
+  - name: zilliqa
+    value: 15
+  - name: ioTeX
+    value: 16
+  - name: eos
+    value: 17
+  - name: nano
+    value: 18
+  - name: nuls
+    value: 19
+  - name: waves
+    value: 20
+  - name: aeternity
+    value: 21
+  - name: nebulas
+    value: 22
+  - name: fio
+    value: 23
+  - name: solana
+    value: 24
+  - name: harmony
+    value: 25
+  - name: near
+    value: 26
+  - name: algorand
+    value: 27
+  - name: polkadot
+    value: 29
+  - name: cardano
+    value: 30
+  - name: neo
+    value: 31
+  - name: filecoin
+    value: 32
+  - name: multiversX
+    value: 33
+  - name: oasisNetwork
+    value: 34
+  - name: decred
+    value: 35
+  - name: zcash
+    value: 36
+  - name: groestlcoin
+    value: 37
+  - name: thorchain
+    value: 38
+  - name: ronin
+    value: 39
+  - name: kusama
+    value: 40
+  - name: nervos
+    value: 41
+  - name: everscale
+    value: 42
+  - name: aptos
+    value: 43
+  - name: hedera
+    value: 44
+  - name: theOpenNetwork
+    value: 45
+  - name: sui
+    value: 46

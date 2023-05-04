@@ -1,0 +1,15 @@
+name: TWCardanoProto
+protos:
+- TW_Cardano_Proto_OutPoint
+- TW_Cardano_Proto_TokenAmount
+- TW_Cardano_Proto_TxInput
+- TW_Cardano_Proto_TxOutput
+- TW_Cardano_Proto_TokenBundle
+- TW_Cardano_Proto_Transfer
+- TW_Cardano_Proto_RegisterStakingKey
+- TW_Cardano_Proto_DeregisterStakingKey
+- TW_Cardano_Proto_Delegate
+- TW_Cardano_Proto_Withdraw
+- TW_Cardano_Proto_TransactionPlan
+- TW_Cardano_Proto_SigningInput
+- TW_Cardano_Proto_SigningOutput

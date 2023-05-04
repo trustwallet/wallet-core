@@ -8,11 +8,7 @@
 extern crate serde;
 
 pub mod codegen;
-pub mod grammar;
 pub mod manifest;
-mod reader;
-#[cfg(test)]
-mod tests;
 
 pub type Result<T> = std::result::Result<T, Error>;
 

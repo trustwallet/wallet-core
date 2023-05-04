@@ -1,0 +1,11 @@
+name: TWFilecoinAddressType
+enums:
+- name: TWFilecoinAddressType
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: default
+    value: 0
+  - name: delegated
+    value: 1

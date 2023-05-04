@@ -1,0 +1,92 @@
+name: TWRippleXAddress
+structs:
+- name: TWPublicKey
+  is_public: false
+  is_class: false
+- name: TWRippleXAddress
+  is_public: true
+  is_class: true
+inits:
+- name: TWRippleXAddressCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWRippleXAddressCreateWithPublicKey
+  is_public: true
+  is_nullable: false
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: tag
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+deinits:
+- name: TWRippleXAddressDelete
+functions:
+- name: TWRippleXAddressEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWRippleXAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: rhs
+    type:
+      variant: struct
+      value: TWRippleXAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWRippleXAddressIsValidString
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWRippleXAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWRippleXAddressTag
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

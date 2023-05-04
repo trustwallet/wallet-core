@@ -1,0 +1,134 @@
+name: TWAES
+structs:
+- name: TWAES
+  is_public: true
+  is_class: false
+  fields:
+  - - unused
+    - variant: u_int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+functions:
+- name: TWAESEncryptCBC
+  is_public: true
+  is_static: true
+  params:
+  - name: key
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: iv
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: mode
+    type:
+      variant: enum
+      value: TWAESPaddingMode
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWAESDecryptCBC
+  is_public: true
+  is_static: true
+  params:
+  - name: key
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: iv
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: mode
+    type:
+      variant: enum
+      value: TWAESPaddingMode
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWAESEncryptCTR
+  is_public: true
+  is_static: true
+  params:
+  - name: key
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: iv
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWAESDecryptCTR
+  is_public: true
+  is_static: true
+  params:
+  - name: key
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: iv
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true

@@ -1,0 +1,14 @@
+name: TWSolanaProto
+protos:
+- TW_Solana_Proto_Transfer
+- TW_Solana_Proto_DelegateStake
+- TW_Solana_Proto_DeactivateStake
+- TW_Solana_Proto_DeactivateAllStake
+- TW_Solana_Proto_WithdrawStake
+- TW_Solana_Proto_StakeAccountValue
+- TW_Solana_Proto_WithdrawAllStake
+- TW_Solana_Proto_CreateTokenAccount
+- TW_Solana_Proto_TokenTransfer
+- TW_Solana_Proto_CreateAndTransferToken
+- TW_Solana_Proto_SigningInput
+- TW_Solana_Proto_SigningOutput

@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use libparser::codegen::swift::RenderIntput;
+use libparser::manifest::read_directory;
 use std::fs::read_to_string;
-use std::path::Path;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -16,52 +16,17 @@ fn main() {
     }
 
     match args[1].as_str() {
-        "parse-headers" => parse_headers(),
-        "create-manifest" => create_manifest(),
-        "generate-bindings" => match args[2].as_str() {
-            "--swift" => {
-                generate_swift_bindings();
-            }
-            _ => panic!("Not supported"),
-        },
-        _ => panic!("Invalid command"),
+        "--swift" => {
+            generate_swift_bindings();
+        }
+        _ => panic!("Not supported"),
     }
-}
-
-fn parse_headers() {
-    let path = Path::new("../include/");
-    let dir = libparser::grammar::parse_headers(&path).expect("Failed to parse path");
-    let json = serde_json::to_string_pretty(&dir.map).expect("Failed to generate JSON");
-
-    std::fs::create_dir_all("out/").unwrap();
-    std::fs::write("out/header_grammar.json", json.as_bytes()).unwrap();
-
-    println!("Created out/header_grammar.json");
-}
-
-fn create_manifest() {
-    let path = Path::new("../include/");
-    let headers = libparser::grammar::parse_headers(&path).expect("Failed to parse path");
-    let file_infos = libparser::manifest::process_c_grammar(&headers);
-
-    std::fs::create_dir_all("out/manifest/").unwrap();
-
-    for file_info in file_infos {
-        let file_path = format!("out/manifest/{}.yaml", file_info.name);
-        let yaml = serde_yaml::to_string(&file_info).unwrap();
-
-        std::fs::write(&file_path, yaml.as_bytes()).unwrap();
-    }
-
-    println!("Created manifest in out/manifest/!");
 }
 
 fn generate_swift_bindings() {
     const OUT_DIR: &str = "out/swift_bindings";
 
-    let path = Path::new("../include/");
-    let dir = libparser::grammar::parse_headers(&path).unwrap();
-    let file_infos = libparser::manifest::process_c_grammar(&dir);
+    let file_infos = read_directory("manifest/").unwrap();
 
     std::fs::create_dir_all(OUT_DIR).unwrap();
 
@@ -108,8 +73,6 @@ fn generate_swift_bindings() {
             let file_path = format!("{}/Protobuf/{}+Proto.swift", OUT_DIR, name);
             std::fs::write(&file_path, rendered.as_bytes()).unwrap();
         }
-
-        // TODO...
     }
 
     println!("Created bindings in out/swift/!");

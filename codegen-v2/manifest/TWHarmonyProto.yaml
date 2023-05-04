@@ -1,0 +1,14 @@
+name: TWHarmonyProto
+protos:
+- TW_Harmony_Proto_SigningInput
+- TW_Harmony_Proto_SigningOutput
+- TW_Harmony_Proto_TransactionMessage
+- TW_Harmony_Proto_StakingMessage
+- TW_Harmony_Proto_Description
+- TW_Harmony_Proto_Decimal
+- TW_Harmony_Proto_CommissionRate
+- TW_Harmony_Proto_DirectiveCreateValidator
+- TW_Harmony_Proto_DirectiveEditValidator
+- TW_Harmony_Proto_DirectiveDelegate
+- TW_Harmony_Proto_DirectiveUndelegate
+- TW_Harmony_Proto_DirectiveCollectRewards

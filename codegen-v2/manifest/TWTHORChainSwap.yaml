@@ -1,0 +1,21 @@
+name: TWTHORChainSwap
+structs:
+- name: TWTHORChainSwap
+  is_public: true
+  is_class: false
+functions:
+- name: TWTHORChainSwapBuildSwap
+  is_public: true
+  is_static: true
+  params:
+  - name: input
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

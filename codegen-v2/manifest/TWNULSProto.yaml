@@ -1,0 +1,8 @@
+name: TWNULSProto
+protos:
+- TW_NULS_Proto_TransactionCoinFrom
+- TW_NULS_Proto_TransactionCoinTo
+- TW_NULS_Proto_Signature
+- TW_NULS_Proto_Transaction
+- TW_NULS_Proto_SigningInput
+- TW_NULS_Proto_SigningOutput

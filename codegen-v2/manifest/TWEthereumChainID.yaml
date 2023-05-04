@@ -1,0 +1,77 @@
+name: TWEthereumChainID
+enums:
+- name: TWEthereumChainID
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: ethereum
+    value: 1
+  - name: classic
+    value: 61
+  - name: poa
+    value: 99
+  - name: vechain
+    value: 74
+  - name: callisto
+    value: 820
+  - name: tomochain
+    value: 88
+  - name: polygon
+    value: 137
+  - name: okc
+    value: 66
+  - name: thundertoken
+    value: 108
+  - name: gochain
+    value: 60
+  - name: meter
+    value: 82
+  - name: celo
+    value: 42220
+  - name: wanchain
+    value: 888
+  - name: cronos
+    value: 25
+  - name: optimism
+    value: 10
+  - name: xdai
+    value: 100
+  - name: smartbch
+    value: 10000
+  - name: fantom
+    value: 250
+  - name: boba
+    value: 288
+  - name: kcc
+    value: 321
+  - name: zksync
+    value: 324
+  - name: heco
+    value: 128
+  - name: metis
+    value: 1088
+  - name: polygonzkevm
+    value: 1101
+  - name: moonbeam
+    value: 1284
+  - name: moonriver
+    value: 1285
+  - name: ronin
+    value: 2020
+  - name: kavaevm
+    value: 2222
+  - name: iotexevm
+    value: 4689
+  - name: klaytn
+    value: 8217
+  - name: avalanchec
+    value: 43114
+  - name: evmos
+    value: 9001
+  - name: arbitrum
+    value: 42161
+  - name: smartchain
+    value: 56
+  - name: aurora
+    value: 1313161554

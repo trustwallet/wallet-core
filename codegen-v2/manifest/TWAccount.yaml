@@ -1,0 +1,95 @@
+name: TWAccount
+structs:
+- name: TWAccount
+  is_public: true
+  is_class: true
+inits:
+- name: TWAccountCreate
+  is_public: true
+  is_nullable: false
+  params:
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivationPath
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: publicKey
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: extendedPublicKey
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWAccountDelete
+properties:
+- name: TWAccountAddress
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWAccountCoin
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWCoinType
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWAccountDerivation
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWDerivation
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWAccountDerivationPath
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWAccountPublicKey
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWAccountExtendedPublicKey
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

@@ -1,0 +1,11 @@
+name: TWAESPaddingMode
+enums:
+- name: TWAESPaddingMode
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: zero
+    value: 0
+  - name: pkcs7
+    value: 1
