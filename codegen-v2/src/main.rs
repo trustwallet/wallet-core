@@ -6,9 +6,10 @@
 
 use libparser::codegen::swift::RenderIntput;
 use libparser::manifest::read_directory;
+use libparser::{Error, Result};
 use std::fs::read_to_string;
 
-fn main() {
+fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() < 2 {
@@ -16,25 +17,23 @@ fn main() {
     }
 
     match args[1].as_str() {
-        "swift" => {
-            generate_swift_bindings();
-        }
-        _ => panic!("Not supported"),
+        "swift" => generate_swift_bindings(),
+        _ => Err(Error::InvalidCommand),
     }
 }
 
-fn generate_swift_bindings() {
+fn generate_swift_bindings() -> Result<()> {
     // NOTE: The paths will be configurable, eventually.
     const OUT_DIR: &str = "bindings/";
-    std::fs::create_dir_all(OUT_DIR).unwrap();
+    std::fs::create_dir_all(OUT_DIR)?;
 
-    let struct_t = read_to_string("src/codegen/templates/swift/struct.hbs").unwrap();
-    let enum_t = read_to_string("src/codegen/templates/swift/enum.hbs").unwrap();
-    let ext_t = read_to_string("src/codegen/templates/swift/extension.hbs").unwrap();
-    let proto_t = read_to_string("src/codegen/templates/swift/proto.hbs").unwrap();
+    let struct_t = read_to_string("src/codegen/templates/swift/struct.hbs")?;
+    let enum_t = read_to_string("src/codegen/templates/swift/enum.hbs")?;
+    let ext_t = read_to_string("src/codegen/templates/swift/extension.hbs")?;
+    let proto_t = read_to_string("src/codegen/templates/swift/proto.hbs")?;
 
     // Read the manifest dir, generate bindings for each entry.
-    let file_infos = read_directory("manifest/").unwrap();
+    let file_infos = read_directory("manifest/")?;
 
     for file_info in file_infos {
         let input = RenderIntput {
@@ -45,40 +44,41 @@ fn generate_swift_bindings() {
             proto_template: &proto_t,
         };
 
-        let rendered = libparser::codegen::swift::render_file_info(input).unwrap();
+        let rendered = libparser::codegen::swift::render_file_info(input)?;
 
         // Enum declarations go into their own subfolder.
         if !rendered.enums.is_empty() {
-            std::fs::create_dir_all(format!("{OUT_DIR}/Enums")).unwrap();
+            std::fs::create_dir_all(format!("{OUT_DIR}/Enums"))?;
         }
 
         // Protobuf declarations go into their own subfolder.
         if !rendered.protos.is_empty() {
-            std::fs::create_dir_all(format!("{OUT_DIR}/Protobuf")).unwrap();
+            std::fs::create_dir_all(format!("{OUT_DIR}/Protobuf"))?;
         }
 
         for (name, rendered) in rendered.structs {
             let file_path = format!("{OUT_DIR}/{name}.swift");
-            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+            std::fs::write(&file_path, rendered.as_bytes())?;
         }
 
         for (name, rendered) in rendered.enums {
             let file_path = format!("{OUT_DIR}/Enums/{name}.swift");
-            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+            std::fs::write(&file_path, rendered.as_bytes())?;
         }
 
         // Enum extensions.
         for (name, rendered) in rendered.extensions {
             let file_path = format!("{OUT_DIR}/{name}+Extension.swift");
-            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+            std::fs::write(&file_path, rendered.as_bytes())?;
         }
 
         // Protobuf messages.
         for (name, rendered) in rendered.protos {
             let file_path = format!("{OUT_DIR}/Protobuf/{name}+Proto.swift");
-            std::fs::write(&file_path, rendered.as_bytes()).unwrap();
+            std::fs::write(&file_path, rendered.as_bytes())?;
         }
     }
 
     println!("Created bindings in out/swift/!");
+    Ok(())
 }

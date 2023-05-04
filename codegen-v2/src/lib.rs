@@ -17,12 +17,12 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    Todo,
     IoError(IoError),
     YamlError(YamlError),
     RenderError(RenderError),
     TemplateError(TemplateError),
     BadFormat(String),
+    InvalidCommand,
 }
 
 impl From<IoError> for Error {
