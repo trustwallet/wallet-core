@@ -48,6 +48,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     let mut info = input.file_info;
     let mut outputs = RenderOutput::default();
 
+    // The current year for the copyright header in the generated bindings.
+    let current_year = crate::current_year();
+
     // Render structs/classes.
     for strct in info.structs {
         let obj = ObjectVariant::Struct(&strct.name);
@@ -93,7 +96,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         };
 
         let payload = json!({
-            "current_year": crate::current_year(),
+            "current_year": current_year,
             "name": struct_name,
             "is_class": strct.is_class,
             "init_instance": strct.is_class,
@@ -151,7 +154,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             };
 
         let enum_payload = json!({
-            "current_year": crate::current_year(),
+            "current_year": current_year,
             "name": enum_name,
             "is_public": enm.is_public,
             "superclasses": superclasses,
@@ -169,7 +172,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         }
 
         let extension_payload = json!({
-            "current_year": crate::current_year(),
+            "current_year": current_year,
             "name": enum_name,
             "init_instance": true,
             "parent_classes": [],
@@ -199,7 +202,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             .collect::<Result<Vec<_>>>()?;
 
         let payload = json!({
-            "current_year": crate::current_year(),
+            "current_year": current_year,
             "protos": protos,
         });
 
