@@ -49,3 +49,15 @@ impl From<TemplateError> for Error {
         Error::TemplateError(err)
     }
 }
+
+fn current_year() -> u64 {
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    let now = SystemTime::now();
+    let seconds_since_epoch = now
+        .duration_since(UNIX_EPOCH)
+        .expect("System's time is set before the start of the Unix epoch");
+
+    // 31556952 seconds in a year
+    1970 + (seconds_since_epoch.as_secs() / 31556952)
+}
