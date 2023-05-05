@@ -13,7 +13,6 @@ namespace TW::Ethereum {
 
 std::string getEIP4337DeploymentAddress(const std::string& factoryAddress, const std::string& logicAddress, const std::string& ownerAddress);
 std::string getEIP4337AddressFromOwnerBytes(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerPublicKey);
-std::string getEIP4337AddressFromOwnerAddress(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAddress);
 std::string getEIP4337AddressFromOwnerAttestationObject(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAttestationObject);
 
 Data getEIP4337AccountInitializeBytecode(const std::string& ownerAddress, const std::string& factoryAddress);

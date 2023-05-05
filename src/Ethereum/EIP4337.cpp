@@ -81,10 +81,6 @@ std::string getEIP4337AddressFromOwnerBytes(const std::string& factoryAddress, c
     return Ethereum::checksumed(Address(hexEncoded(create2Address(factoryAddress, salt, initCodeHash))));
 }
 
-std::string getEIP4337AddressFromOwnerAddress(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAddress) {
-    return getEIP4337AddressFromOwnerBytes(factoryAddress, bytecode, diamondCutFacetAddress, accountFacetAddress, verificationFacetAddress, entryPointAddress, securityManagerAddress, facetRegistryAddress, ownerAddress);
-}
-
 std::string getEIP4337AddressFromOwnerAttestationObject(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAttestationObject) {
     const std::string& ownerPublicKey = hex(TW::Webauthn::getPublicKey(parse_hex(ownerAttestationObject)));
     return getEIP4337AddressFromOwnerBytes(factoryAddress, bytecode, diamondCutFacetAddress, accountFacetAddress, verificationFacetAddress, entryPointAddress, securityManagerAddress, facetRegistryAddress, ownerPublicKey);
