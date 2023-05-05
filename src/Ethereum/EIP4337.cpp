@@ -7,10 +7,9 @@
 #include "ABI.h"
 #include "AddressChecksum.h"
 #include "EIP1014.h"
-#include "EIP1967.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include <iostream>
+#include <Webauthn.h>
 
 namespace TW::Ethereum {
 
@@ -58,6 +57,37 @@ std::string getEIP4337DeploymentAddress(const std::string& factoryAddress, const
     const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
     const Data initCodeHash = Hash::keccak256(proxyInitCode);
     return Ethereum::checksumed(Address(hexEncoded(create2Address(factoryAddress, salt, initCodeHash))));
+}
+
+std::string getEIP4337AddressFromOwnerBytes(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerPublicKey) {
+    Data initCode = parse_hex(bytecode);
+
+    auto params = ABI::ParamTuple();
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(diamondCutFacetAddress)));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(accountFacetAddress)));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(verificationFacetAddress)));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(entryPointAddress)));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(securityManagerAddress)));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(facetRegistryAddress)));
+    params.addParam(std::make_shared<ABI::ParamByteArray>(parse_hex(ownerPublicKey)));
+
+    Data encoded;
+    params.encode(encoded);
+
+    append(initCode, encoded);
+
+    const Data initCodeHash = Hash::keccak256(initCode);
+    const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
+    return Ethereum::checksumed(Address(hexEncoded(create2Address(factoryAddress, salt, initCodeHash))));
+}
+
+std::string getEIP4337AddressFromOwnerAddress(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAddress) {
+    return getEIP4337AddressFromOwnerBytes(factoryAddress, bytecode, diamondCutFacetAddress, accountFacetAddress, verificationFacetAddress, entryPointAddress, securityManagerAddress, facetRegistryAddress, ownerAddress);
+}
+
+std::string getEIP4337AddressFromOwnerAttestationObject(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAttestationObject) {
+    const std::string& ownerPublicKey = hex(TW::Webauthn::getPublicKey(parse_hex(ownerAttestationObject)));
+    return getEIP4337AddressFromOwnerBytes(factoryAddress, bytecode, diamondCutFacetAddress, accountFacetAddress, verificationFacetAddress, entryPointAddress, securityManagerAddress, facetRegistryAddress, ownerPublicKey);
 }
 
 } // namespace TW::Ethereum
