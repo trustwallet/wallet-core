@@ -20,7 +20,7 @@ TWString* TWEthereumEip2645GetPath(TWString* ethAddress, TWString* layer, TWStri
     return new std::string(TW::Ethereum::accountPathFromAddress(ethAddressStr, layerStr, applicationStr, indexStr));
 }
 
-TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerBytes(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerPublicKey) {
+TWString* TWEthereumEip4337GetAddressFromOwnerBytes(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerPublicKey) {
     const auto& factoryAddressStr = *reinterpret_cast<const std::string*>(factoryAddress);
     const auto& bytecodeStr = *reinterpret_cast<const std::string*>(bytecode);
     const auto& diamondCutFacetAddressStr = *reinterpret_cast<const std::string*>(diamondCutFacetAddress);
@@ -34,7 +34,7 @@ TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerBytes(TWString* _Nonnull fa
     return new std::string(TW::Ethereum::getEIP4337AddressFromOwnerBytes(factoryAddressStr, bytecodeStr, diamondCutFacetAddressStr, accountFacetAddressStr, verificationFacetAddressStr, entryPointAddressStr, securityManagerAddressStr, facetRegistryAddressStr, ownerPublicKeyStr));
 }
 
-TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAddress) {
+TWString* TWEthereumEip4337GetAddressFromOwnerAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAddress) {
     const auto& factoryAddressStr = *reinterpret_cast<const std::string*>(factoryAddress);
     const auto& bytecodeStr = *reinterpret_cast<const std::string*>(bytecode);
     const auto& diamondCutFacetAddressStr = *reinterpret_cast<const std::string*>(diamondCutFacetAddress);
@@ -47,7 +47,7 @@ TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerAddress(TWString* _Nonnull 
 
     return new std::string(TW::Ethereum::getEIP4337AddressFromOwnerBytes(factoryAddressStr, bytecodeStr, diamondCutFacetAddressStr, accountFacetAddressStr, verificationFacetAddressStr, entryPointAddressStr, securityManagerAddressStr, facetRegistryAddressStr, ownerAddressStr));
 }
-TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerAttestationObject(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAttestationObject) {
+TWString* TWEthereumEip4337GetAddressFromOwnerAttestationObject(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAttestationObject) {
     const auto& factoryAddressStr = *reinterpret_cast<const std::string*>(factoryAddress);
     const auto& bytecodeStr = *reinterpret_cast<const std::string*>(bytecode);
     const auto& diamondCutFacetAddressStr = *reinterpret_cast<const std::string*>(diamondCutFacetAddress);

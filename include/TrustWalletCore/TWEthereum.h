@@ -47,7 +47,7 @@ TWString* _Nonnull TWEthereumEip4337GetDeploymentAddress(TWString* _Nonnull fact
 /// \param ownerPublicKey  non-null bytes of the public key that controls the account
 /// \return Ethereum resulting address
 TW_EXPORT_STATIC_METHOD
-TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerBytes(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerPublicKey);
+TWString* TWEthereumEip4337GetAddressFromOwnerBytes(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerPublicKey);
 
 /// Generates a deployment address for a ERC-4337 compatible smart contract wallet with a EOA ownership scheme
 ///
@@ -62,7 +62,7 @@ TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerBytes(TWString* _Nonnull fa
 /// \param ownerAddress  non-null EOA address of the account owner
 /// \return Ethereum resulting address
 TW_EXPORT_STATIC_METHOD
-TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAddress);
+TWString* TWEthereumEip4337GetAddressFromOwnerAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAddress);
 
 /// Generates a deployment address for a ERC-4337 compatible smart contract wallet with a Webauthn based ownership scheme
 ///
@@ -77,5 +77,5 @@ TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerAddress(TWString* _Nonnull 
 /// \param ownerAttestationObject  non-null bytes of the webauthn attestation object
 /// \return Ethereum resulting address
 TW_EXPORT_STATIC_METHOD
-TWString* TWEthereumEip4337GetEIP4337AddressFromOwnerAttestationObject(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAttestationObject);
+TWString* TWEthereumEip4337GetAddressFromOwnerAttestationObject(TWString* _Nonnull factoryAddress, TWString* _Nonnull bytecode, TWString* _Nonnull diamondCutFacetAddress, TWString* _Nonnull accountFacetAddress, TWString* _Nonnull verificationFacetAddress, TWString* _Nonnull entryPointAddress, TWString* _Nonnull securityManagerAddress, TWString* _Nonnull facetRegistryAddress, TWString* _Nonnull ownerAttestationObject);
 TW_EXTERN_C_END
