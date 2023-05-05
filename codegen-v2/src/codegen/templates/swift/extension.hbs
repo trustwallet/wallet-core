@@ -10,7 +10,7 @@
 extension {{name}}
     {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}}{{/each}} {
     {{#each methods}}
-    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}func {{name}}({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{/unless}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}func {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}

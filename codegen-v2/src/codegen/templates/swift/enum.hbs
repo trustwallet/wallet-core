@@ -16,9 +16,9 @@
 
     public var description: String {
         switch self {
-        {{#each description}}
-        case .{{this.[0]}}: return "{{this.[1]}}"
-        {{/each}}
+            {{#each description}}
+            case .{{this.[0]}}: return "{{this.[1]}}"
+            {{/each}}
         }
     }
     {{/if}}

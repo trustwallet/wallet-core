@@ -19,8 +19,8 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     }
     {{else}}
     init() {}
-    {{/if}}
 
+    {{/if}}
     {{#if eq_operator}}
     public static func == (lhs: {{name}}, rhs: {{name}}) -> Bool {
         return {{eq_operator.c_ffi_name}}(lhs.rawValue, rhs.rawValue)
@@ -60,7 +60,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
 
     {{/each}}
     {{#each methods}}
-    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}func {{name}}({{#each params}}{{#unless skip_self}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{/unless}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}func {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}
