@@ -29,6 +29,15 @@ impl<H: Hasher512> PrivateKey<H> {
         let expanded = ExpandedSecretKey::with_secret(self.secret);
         PublicKey::with_expanded_secret(&expanded)
     }
+
+    pub fn sign_with_public_key(
+        &self,
+        public: &PublicKey<H>,
+        message: &[u8],
+    ) -> Result<Signature, Error> {
+        let expanded = ExpandedSecretKey::<H>::with_secret(self.secret);
+        expanded.sign_with_pubkey(public.to_bytes(), message)
+    }
 }
 
 impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
@@ -36,8 +45,7 @@ impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        let expanded = ExpandedSecretKey::<H>::with_secret(self.secret);
-        expanded.sign(message)
+        self.sign_with_public_key(&self.public(), &message)
     }
 }
 

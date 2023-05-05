@@ -4,10 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ed25519::public::PublicKey;
 use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
-use crate::traits::SigningKeyTrait;
 use crate::Error;
 use curve25519_dalek::constants;
 use curve25519_dalek::scalar::Scalar;
@@ -44,9 +42,17 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         }
     }
 
+    /// Here we use `Scalar::from_bytes_mod_order` instead of `Scalar::from_bits`
+    /// because `Scalar::from_bits` modifies the last 32th byte in some cases.
+    /// Although `Scalar::from_bytes_mod_order` also changes the given `secret` significantly,
+    /// but the result signature seems to be correct.
+    /// Unfortunately, there are no public functions to create `Scalar` without mangle the secret.
+    ///
+    /// TODO make sure if this is the right way to create a key!
     pub(crate) fn with_extended_secret(secret: H256, extension: H256) -> Self {
+        let key = Scalar::from_bytes_mod_order(secret.take());
         ExpandedSecretKey {
-            key: Scalar::from_bits(secret.take()),
+            key,
             nonce: extension,
             _phantom: PhantomData::default(),
         }
@@ -80,12 +86,34 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
     }
 }
 
-impl<H: Hasher512> SigningKeyTrait for ExpandedSecretKey<H> {
-    type SigningMessage = Vec<u8>;
-    type Signature = Signature;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sha2::Sha512;
+    use tw_encoding::hex;
 
-    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        let public_key = PublicKey::with_expanded_secret(self);
-        self.sign_with_pubkey(public_key.to_bytes(), &message)
+    #[test]
+    fn test_ed25519_expanded_secret_from_extended_key() {
+        let secret = H256::from("b52a1a9f4ae3bff2d16a06e144bcdd4147a35aa9843cfd0edf458afdf5ba1a3b");
+        let nonce = H256::from("b33b86344897745b35bb3ef8ca8fe8a3758bd31a537280a6b8c60e42a1f3a00d");
+
+        let secret_key: ExpandedSecretKey<Sha512> =
+            ExpandedSecretKey::with_extended_secret(secret, nonce);
+
+        // In `trezor-crypto` implementation, `a = mod(secret)` has the following:
+        let expected_mod_a =
+            H256::from("eeae3808eee7222aee44f9013eaa33100347a31aa512f234eff05d24627fbd2e");
+        // On the other hand, [`ExpandedSecretKey::key`] represents the same `a` value.
+        // But it differs from that.
+        // TODO probably, `secret_key.key.to_bytes()` should be the same as `expected_mod_a.take()`.
+        assert_ne!(secret_key.key.to_bytes(), expected_mod_a.take());
+
+        let public = H256::from("7950119e049a53a9eaa6ecfbfe354337287056ba0ea054130c1b0c97f1b69697");
+        let message = hex::decode("f0").unwrap();
+
+        // Anyway, the result signature has an expected value.
+        let sign = secret_key.sign_with_pubkey(public, &message).unwrap();
+        let expected = H512::from("ed55bce14a845a275e7a3a7242420ed1eeaba79dc3141bebf42ca0d12169e209a6e56b6981a336f711ae3aaea8d063b72b0e79a8808311d08cb42cabfdd0450d");
+        assert_eq!(sign.to_bytes(), expected);
     }
 }

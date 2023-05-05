@@ -36,7 +36,8 @@ impl<H: Hasher512> SigningKeyTrait for ExtendedKeyPair<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        self.private().sign(message)
+        self.private()
+            .sign_with_public_key(self.public(), message.as_slice())
     }
 }
 

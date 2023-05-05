@@ -35,14 +35,23 @@ impl<H: Hasher512> ExtendedPrivateKey<H> {
 
     /// Returns an associated Cardano extended `ed25519` public key.
     pub fn public(&self) -> ExtendedPublicKey<H> {
-        let key_public = PublicKey::with_expanded_secret(&self.key.to_expanded_secret());
+        let key_public = PublicKey::with_expanded_secret_no_mangle(&self.key.to_expanded_secret());
         let second_key_public =
-            PublicKey::with_expanded_secret(&self.second_key.to_expanded_secret());
+            PublicKey::with_expanded_secret_no_mangle(&self.second_key.to_expanded_secret());
 
         let key = ExtendedPublicPart::new(key_public, self.key.chain_code);
         let second_key = ExtendedPublicPart::new(second_key_public, self.second_key.chain_code);
 
         ExtendedPublicKey::new(key, second_key)
+    }
+
+    pub fn sign_with_public_key(
+        &self,
+        public: &ExtendedPublicKey<H>,
+        message: &[u8],
+    ) -> Result<Signature, Error> {
+        let expanded = self.key.to_expanded_secret();
+        expanded.sign_with_pubkey(public.key_for_signing(), &message)
     }
 }
 
@@ -51,9 +60,7 @@ impl<H: Hasher512> SigningKeyTrait for ExtendedPrivateKey<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        let expanded =
-            ExpandedSecretKey::<H>::with_extended_secret(self.key.secret, self.key.extension);
-        expanded.sign(message)
+        self.sign_with_public_key(&self.public(), message.as_slice())
     }
 }
 

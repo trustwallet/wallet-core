@@ -42,9 +42,19 @@ impl<H: Hasher512> PublicKey<H> {
 
     /// Creates a public key with the given [`ExpandedSecretKey`].
     pub(crate) fn with_expanded_secret(secret: &ExpandedSecretKey<H>) -> Self {
-        let mut bits = secret.key.to_bytes();
+        let bits = secret.key.to_bytes();
 
-        PublicKey::mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(&mut bits)
+        PublicKey::mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(bits)
+    }
+
+    /// Creates a public key with the given [`ExpandedSecretKey`].
+    ///
+    /// This function is useful when the given secret is mangled already.
+    /// For example, created via [`ExpandedSecretKey::with_extended_secret`].
+    pub(crate) fn with_expanded_secret_no_mangle(secret: &ExpandedSecretKey<H>) -> Self {
+        let bits = secret.key.to_bytes();
+
+        PublicKey::multiply_by_basepoint_to_produce_public_key(bits)
     }
 
     /// Returns the raw data of the public key (32 bytes).
@@ -63,13 +73,20 @@ impl<H: Hasher512> PublicKey<H> {
     ///
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L147-L161
     fn mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(
-        bits: &mut [u8; 32],
+        mut bits: [u8; 32],
     ) -> PublicKey<H> {
         bits[0] &= 248;
         bits[31] &= 127;
         bits[31] |= 64;
 
-        let point = &Scalar::from_bits(*bits) * &constants::ED25519_BASEPOINT_TABLE;
+        Self::multiply_by_basepoint_to_produce_public_key(bits)
+    }
+
+    /// Internal utility function for multiplying the given bits to produce a public key.
+    ///
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L147-L161
+    fn multiply_by_basepoint_to_produce_public_key(bits: [u8; 32]) -> PublicKey<H> {
+        let point = &Scalar::from_bits(bits) * &constants::ED25519_BASEPOINT_TABLE;
         let compressed = point.compress();
 
         PublicKey {

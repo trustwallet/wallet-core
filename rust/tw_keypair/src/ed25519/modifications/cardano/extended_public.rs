@@ -31,6 +31,11 @@ impl<H: Hasher512> ExtendedPublicKey<H> {
     pub(crate) fn new(key: ExtendedPublicPart<H>, second_key: ExtendedPublicPart<H>) -> Self {
         ExtendedPublicKey { key, second_key }
     }
+
+    /// Returns a public key bytes (32 length) that is used in signing.
+    pub(crate) fn key_for_signing(&self) -> H256 {
+        self.key.public.to_bytes()
+    }
 }
 
 impl<H: Hasher512> VerifyingKeyTrait for ExtendedPublicKey<H> {
