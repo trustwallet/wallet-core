@@ -16,7 +16,9 @@ use tw_misc::traits::ToBytesVec;
 
 /// Represents an `ed25519` extended public key that is used in Cardano blockchain.
 pub struct ExtendedPublicKey<H: Hasher512> {
+    /// The first half of the public key (64 bytes).
     key: ExtendedPublicPart<H>,
+    /// The second half of the public key (64 bytes).
     second_key: ExtendedPublicPart<H>,
 }
 
@@ -70,6 +72,7 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPublicKey<H> {
     }
 }
 
+/// Implement `str` -> `ExtendedPublicKey<H>` conversion for test purposes.
 impl<H: Hasher512> From<&'static str> for ExtendedPublicKey<H> {
     fn from(hex: &'static str) -> Self {
         let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");

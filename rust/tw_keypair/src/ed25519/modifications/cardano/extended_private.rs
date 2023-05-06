@@ -13,7 +13,6 @@ use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
 use crate::Error;
-use std::marker::PhantomData;
 use std::ops::Range;
 use tw_encoding::hex;
 use tw_hash::H256;
@@ -22,22 +21,24 @@ use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` extended private key that is used in Cardano blockchain.
 pub struct ExtendedPrivateKey<H: Hasher512> {
+    /// The first half (96 bytes) of the extended secret.
     key: ExtendedSecretPart<H>,
+    /// The second half (96 bytes) of the extended secret.
     second_key: ExtendedSecretPart<H>,
 }
 
 /// cbindgen:ignore
 impl<H: Hasher512> ExtendedPrivateKey<H> {
     /// The number of bytes in a serialized private key (192 bytes).
-    const LEN: usize = ExtendedSecretPart::<H>::LEN * 2;
+    pub const LEN: usize = ExtendedSecretPart::<H>::LEN * 2;
     const KEY_RANGE: Range<usize> = 0..ExtendedSecretPart::<H>::LEN;
     const SECOND_KEY_RANGE: Range<usize> = ExtendedSecretPart::<H>::LEN..Self::LEN;
 
     /// Returns an associated Cardano extended `ed25519` public key.
     pub fn public(&self) -> ExtendedPublicKey<H> {
-        let key_public = PublicKey::with_expanded_secret_no_mangle(&self.key.to_expanded_secret());
+        let key_public = PublicKey::with_expanded_secret_no_mangle(&self.key.expanded_key);
         let second_key_public =
-            PublicKey::with_expanded_secret_no_mangle(&self.second_key.to_expanded_secret());
+            PublicKey::with_expanded_secret_no_mangle(&self.second_key.expanded_key);
 
         let key = ExtendedPublicPart::new(key_public, self.key.chain_code);
         let second_key = ExtendedPublicPart::new(second_key_public, self.second_key.chain_code);
@@ -45,13 +46,15 @@ impl<H: Hasher512> ExtendedPrivateKey<H> {
         ExtendedPublicKey::new(key, second_key)
     }
 
-    pub fn sign_with_public_key(
+    /// `ed25519` signing uses a public key associated with the private key.
+    pub(crate) fn sign_with_public_key(
         &self,
         public: &ExtendedPublicKey<H>,
         message: &[u8],
     ) -> Result<Signature, Error> {
-        let expanded = self.key.to_expanded_secret();
-        expanded.sign_with_pubkey(public.key_for_signing(), &message)
+        self.key
+            .expanded_key
+            .sign_with_pubkey(public.key_for_signing(), message)
     }
 }
 
@@ -100,7 +103,10 @@ struct ExtendedSecretPart<H: Hasher512> {
     secret: H256,
     extension: H256,
     chain_code: H256,
-    _phantom: PhantomData<H>,
+    /// An expanded secret key obtained from [`ExtendedSecretPart::secret`]
+    /// and [`ExtendedSecretPart::extension`].
+    /// It's used to generate a public key and sign messages.
+    expanded_key: ExpandedSecretKey<H>,
 }
 
 /// cbindgen:ignore
@@ -109,10 +115,6 @@ impl<H: Hasher512> ExtendedSecretPart<H> {
     const SECRET_RANGE: Range<usize> = 0..32;
     const EXTENSION_RANGE: Range<usize> = 32..64;
     const CHAIN_CODE_RANGE: Range<usize> = 64..96;
-
-    fn to_expanded_secret(&self) -> ExpandedSecretKey<H> {
-        ExpandedSecretKey::with_extended_secret(self.secret, self.extension)
-    }
 }
 
 impl<H: Hasher512> ToBytesZeroizing for ExtendedSecretPart<H> {
@@ -139,11 +141,12 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedSecretPart<H> {
         let chain_code =
             H256::try_from(&bytes[Self::CHAIN_CODE_RANGE]).map_err(|_| Error::InvalidSecretKey)?;
 
+        let expanded_key = ExpandedSecretKey::with_extended_secret(secret, extension);
         Ok(ExtendedSecretPart {
             secret,
             extension,
             chain_code,
-            _phantom: PhantomData::default(),
+            expanded_key,
         })
     }
 }

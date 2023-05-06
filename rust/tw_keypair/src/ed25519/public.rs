@@ -84,7 +84,7 @@ impl<H: Hasher512> PublicKey<H> {
 
     /// Internal utility function for multiplying the given bits to produce a public key.
     ///
-    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L147-L161
+    /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L157-L160
     fn multiply_by_basepoint_to_produce_public_key(bits: [u8; 32]) -> PublicKey<H> {
         let point = &Scalar::from_bits(bits) * &constants::ED25519_BASEPOINT_TABLE;
         let compressed = point.compress();
@@ -149,6 +149,7 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
     }
 }
 
+/// Implement `str` -> `PublicKey<H>` conversion for test purposes.
 impl<H: Hasher512> From<&'static str> for PublicKey<H> {
     fn from(hex: &'static str) -> Self {
         let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");

@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn test_keypair_sign_verify_cardano_extended() {
+    fn test_keypair_sign_verify_extended_cardano() {
         let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
         639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
 
@@ -151,7 +151,7 @@ mod tests {
     }
 
     #[test]
-    fn test_private_to_public_cardano_extended() {
+    fn test_private_to_public_extended_cardano() {
         let secret = "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
         e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
 
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_public_key_from_bytes_cardano_extended() {
+    fn test_public_key_from_bytes_extended_cardano() {
         let pubkey_hex = "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
         f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
         let pubkey_bytes = hex::decode(pubkey_hex).unwrap();

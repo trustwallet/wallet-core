@@ -128,10 +128,10 @@ fn test_tw_public_key_verify_ed25519_blake2b() {
 }
 
 #[test]
-fn test_tw_public_key_verify_ed25519_cardano_extended() {
+fn test_tw_public_key_verify_ed25519_extended_cardano() {
     let public = "57fd54be7b38bb8952782c2f59aa276928a4dcbb66c8c62ce44f9d623ecd5a03bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
     06465638ee0e1ca1a9f34d940a0c8c48bbaaa0db124107e4c1b12b872a67511fed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
     let msg = hex::encode(keccak256(b"hello").as_slice(), false);
     let sign = "375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f08";
-    test_verify(PublicKeyType::Ed25519CardanoExtended, public, &msg, sign);
+    test_verify(PublicKeyType::Ed25519ExtendedCardano, public, &msg, sign);
 }

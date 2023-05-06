@@ -43,7 +43,7 @@ pub enum PublicKeyType {
     Secp256k1Extended = 1,
     Ed25519 = 4,
     Ed25519Blake2b = 5,
-    Ed25519CardanoExtended = 7,
+    Ed25519ExtendedCardano = 7,
     Starkex = 8,
 }
 
@@ -55,7 +55,7 @@ impl PublicKeyType {
             1 => Some(PublicKeyType::Secp256k1Extended),
             4 => Some(PublicKeyType::Ed25519),
             5 => Some(PublicKeyType::Ed25519Blake2b),
-            7 => Some(PublicKeyType::Ed25519CardanoExtended),
+            7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
             _ => None,
         }
@@ -93,7 +93,7 @@ mod tests {
             (4, Some(PublicKeyType::Ed25519)),
             (5, Some(PublicKeyType::Ed25519Blake2b)),
             (6, None),
-            (7, Some(PublicKeyType::Ed25519CardanoExtended)),
+            (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
             (8, Some(PublicKeyType::Starkex)),
             (9, None),
         ];

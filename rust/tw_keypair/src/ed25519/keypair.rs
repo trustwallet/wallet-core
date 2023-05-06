@@ -34,7 +34,7 @@ impl<H: Hasher512> SigningKeyTrait for KeyPair<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
-        self.private().sign(message)
+        self.private().sign_with_public_key(self.public(), &message)
     }
 }
 
@@ -57,6 +57,7 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for KeyPair<H> {
     }
 }
 
+/// Implement `str` -> `KeyPair<N>` conversion for test purposes.
 impl<H: Hasher512> From<&'static str> for KeyPair<H> {
     fn from(hex: &'static str) -> Self {
         // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).

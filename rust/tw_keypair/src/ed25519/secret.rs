@@ -11,17 +11,24 @@ use curve25519_dalek::constants;
 use curve25519_dalek::scalar::Scalar;
 use std::marker::PhantomData;
 use tw_hash::{H256, H512};
+use zeroize::ZeroizeOnDrop;
 
 /// Represents an "expanded" secret key produced by using a hash function
 /// with 512-bits output to digest a `PrivateKey`.
+///
+/// Represents [ed25519_extsk](https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L23-L32).
+#[derive(ZeroizeOnDrop)]
 pub(crate) struct ExpandedSecretKey<H: Hasher512> {
+    /// 32 byte scalar. Represents `extsk[0..32]`.
     pub key: Scalar,
+    /// 32 byte nonce. Represents `extsk[32..64]`.
     pub nonce: H256,
     _phantom: PhantomData<H>,
 }
 
 impl<H: Hasher512> ExpandedSecretKey<H> {
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/secret.rs#L246-L282
+    /// Ported: https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L23-L32
     pub(crate) fn with_secret(secret: H256) -> Self {
         let mut h = H::new();
         let mut hash = H512::default();
@@ -42,13 +49,15 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         }
     }
 
+    /// Ported: https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L93-L94C30
+    ///
     /// Here we use `Scalar::from_bytes_mod_order` instead of `Scalar::from_bits`
     /// because `Scalar::from_bits` modifies the last 32th byte in some cases.
-    /// Although `Scalar::from_bytes_mod_order` also changes the given `secret` significantly,
+    /// Although, `Scalar::from_bytes_mod_order` changes the given `secret` significantly,
     /// but the result signature seems to be correct.
-    /// Unfortunately, there are no public functions to create `Scalar` without mangle the secret.
+    /// Unfortunately, there are no public functions to create `Scalar` without mangling the secret.
     ///
-    /// TODO make sure if this is the right way to create a key!
+    /// TODO make sure if this is the right way to create an extended secret key (extsk).
     pub(crate) fn with_extended_secret(secret: H256, extension: H256) -> Self {
         let key = Scalar::from_bytes_mod_order(secret.take());
         ExpandedSecretKey {
@@ -60,6 +69,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
 
     /// Signs a message with this `ExpandedSecretKey`.
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/secret.rs#L389-L412
+    /// Ported: https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L97-L130
     #[allow(non_snake_case)]
     pub(crate) fn sign_with_pubkey(
         &self,
@@ -101,10 +111,11 @@ mod tests {
             ExpandedSecretKey::with_extended_secret(secret, nonce);
 
         // In `trezor-crypto` implementation, `a = mod(secret)` has the following:
+        // https://github.com/trustwallet/wallet-core/blob/423f0e34725f69c0a9d535e1a32534c99682edea/trezor-crypto/crypto/ed25519-donna/ed25519.c#L109-L111
         let expected_mod_a =
             H256::from("eeae3808eee7222aee44f9013eaa33100347a31aa512f234eff05d24627fbd2e");
         // On the other hand, [`ExpandedSecretKey::key`] represents the same `a` value.
-        // But it differs from that.
+        // But it differs from that - `eeae3888fbb988ea4e941ff8a8ce400347a35aa9843cfd0edf458afdf5ba1a0b`.
         // TODO probably, `secret_key.key.to_bytes()` should be the same as `expected_mod_a.take()`.
         assert_ne!(secret_key.key.to_bytes(), expected_mod_a.take());
 
