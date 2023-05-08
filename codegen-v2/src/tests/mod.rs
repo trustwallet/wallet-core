@@ -19,12 +19,10 @@ fn create_intput(yaml: &str) -> RenderIntput {
     }
 }
 
-#[test]
-fn single_struct() {
-    const INPUT: &str = include_str!("samples/single_struct.input.yaml");
-    const EXPECTED: &str = include_str!("samples/single_struct.output.swift");
-
-    let input = create_intput(INPUT);
+// Convenience function: runs the codegen on the given `input` and compares it
+// with the `expected` value. Expects a single, rendered file as output.
+fn render_and_compare(input: &str, expected: &str) {
+    let input = create_intput(input);
     let rendered = render_to_strings(input).unwrap();
 
     assert_eq!(rendered.structs.len(), 1);
@@ -32,10 +30,17 @@ fn single_struct() {
     assert!(rendered.extensions.is_empty());
     assert!(rendered.protos.is_empty());
 
-    let (name, output) = &rendered.structs[0];
+    let (_name, output) = &rendered.structs[0];
     println!("{output}");
-    assert_eq!(name, "FirstStruct");
-    assert_eq!(output, EXPECTED);
+    assert_eq!(output, expected);
+}
+
+#[test]
+fn single_struct() {
+    const INPUT: &str = include_str!("samples/single_struct.input.yaml");
+    const EXPECTED: &str = include_str!("samples/single_struct.output.swift");
+
+    render_and_compare(INPUT, EXPECTED);
 }
 
 #[test]
@@ -43,18 +48,7 @@ fn single_class() {
     const INPUT: &str = include_str!("samples/single_class.input.yaml");
     const EXPECTED: &str = include_str!("samples/single_class.output.swift");
 
-    let input = create_intput(INPUT);
-    let rendered = render_to_strings(input).unwrap();
-
-    assert_eq!(rendered.structs.len(), 1);
-    assert!(rendered.enums.is_empty());
-    assert!(rendered.extensions.is_empty());
-    assert!(rendered.protos.is_empty());
-
-    let (name, output) = &rendered.structs[0];
-    println!("{output}");
-    assert_eq!(name, "FirstStruct");
-    assert_eq!(output, EXPECTED);
+    render_and_compare(INPUT, EXPECTED);
 }
 
 #[test]
@@ -62,18 +56,7 @@ fn private() {
     const INPUT: &str = include_str!("samples/private.input.yaml");
     const EXPECTED: &str = include_str!("samples/private.output.swift");
 
-    let input = create_intput(INPUT);
-    let rendered = render_to_strings(input).unwrap();
-
-    assert_eq!(rendered.structs.len(), 1);
-    assert!(rendered.enums.is_empty());
-    assert!(rendered.extensions.is_empty());
-    assert!(rendered.protos.is_empty());
-
-    let (name, output) = &rendered.structs[0];
-    println!("{output}");
-    assert_eq!(name, "FirstStruct");
-    assert_eq!(output, EXPECTED);
+    render_and_compare(INPUT, EXPECTED);
 }
 
 #[test]
@@ -81,16 +64,5 @@ fn optional() {
     const INPUT: &str = include_str!("samples/optional.input.yaml");
     const EXPECTED: &str = include_str!("samples/optional.output.swift");
 
-    let input = create_intput(INPUT);
-    let rendered = render_to_strings(input).unwrap();
-
-    assert_eq!(rendered.structs.len(), 1);
-    assert!(rendered.enums.is_empty());
-    assert!(rendered.extensions.is_empty());
-    assert!(rendered.protos.is_empty());
-
-    let (name, output) = &rendered.structs[0];
-    println!("{output}");
-    assert_eq!(name, "FirstStruct");
-    assert_eq!(output, EXPECTED);
+    render_and_compare(INPUT, EXPECTED);
 }
