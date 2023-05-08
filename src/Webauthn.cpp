@@ -6,12 +6,13 @@
 
 
 #include "Cbor.h"
+#include "PublicKey.h"
 
 #include <iostream>
 #include <utility>
 #include <algorithm>
 
-namespace TW::Webauthn {
+namespace TW::WebAuthn {
 
 // https://www.w3.org/TR/webauthn-2/#authenticator-data
 struct AuthData {
@@ -71,29 +72,44 @@ AuthData parseAuthData(const Data& buffer) {
     return authData;
 }
 
-Data getPublicKey(const Data& attestationObject) {
-    Data authData = TW::Cbor::Decode(attestationObject).getMapElements()[2].second.getBytes();
-    AuthData authDataParsed = parseAuthData(authData);
+auto findIntKey = [](const auto& map, const auto& key) {
+    return std::find_if(map.begin(), map.end(), [&](const auto& p) {
+        return p.first.dumpToString() == key;
+    });
+};
 
-    std::vector<std::pair<TW::Cbor::Decode, TW::Cbor::Decode>> COSEPublicKey = TW::Cbor::Decode(authDataParsed.COSEPublicKey).getMapElements();
+auto findStringKey = [](const auto& map, const auto& key) {
+    return std::find_if(map.begin(), map.end(), [&](const auto& p) {
+        return p.first.getString() == key;
+    });
+};
+
+PublicKey getPublicKey(const Data& attestationObject) {
+    const Data authData = findStringKey(TW::Cbor::Decode(attestationObject).getMapElements(), "authData")->second.getBytes();
+    if (authData.empty()) {
+        return PublicKey(Data(), TWPublicKeyTypeNIST256p1Extended);
+    }
+
+    const AuthData authDataParsed = parseAuthData(authData);
+    const auto COSEPublicKey = TW::Cbor::Decode(authDataParsed.COSEPublicKey).getMapElements();
+
+    if (COSEPublicKey.empty()) {
+        return PublicKey(Data(), TWPublicKeyTypeNIST256p1Extended);
+    }
 
     // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
     const std::string xKey = "-2";
     const std::string yKey = "-3";
 
-    auto findKey = [](const auto& map, const auto& key) {
-        return std::find_if(map.begin(), map.end(), [&](const auto& p) {
-            return p.first.dumpToString() == key;
-        });
-    };
-
-    auto x = findKey(COSEPublicKey, xKey);
-    auto y = findKey(COSEPublicKey, yKey);
+    const auto x = findIntKey(COSEPublicKey, xKey);
+    const auto y = findIntKey(COSEPublicKey, yKey);
 
     Data publicKey;
+    append(publicKey, 0x04);
     append(publicKey, x->second.getBytes());
     append(publicKey, y->second.getBytes());
-    return publicKey;
+
+    return PublicKey(publicKey, TWPublicKeyTypeNIST256p1Extended);
 }
 
 } // namespace TW::Webauthn
