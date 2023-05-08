@@ -9,3 +9,6 @@ members = [
     "tw_proto",
     "wallet_core_rs",
 ]
+
+[profile.release]
+opt-level = 2
