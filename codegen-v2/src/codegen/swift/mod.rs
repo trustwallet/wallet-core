@@ -24,6 +24,7 @@ pub use self::render::{
     render_file_info, render_file_info_strings, RenderIntput, RenderOutput, RenderOutputStrings,
 };
 
+/// Represents a Swift struct or class.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftStruct {
     name: String,
@@ -37,6 +38,7 @@ pub struct SwiftStruct {
     properties: Vec<SwiftProperty>,
 }
 
+/// Represents a Swift enum.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftEnum {
     name: String,
@@ -46,6 +48,7 @@ pub struct SwiftEnum {
     variants: Vec<SwiftEnumVariant>,
 }
 
+/// Represents a Swift enum variant.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftEnumVariant {
     name: String,
@@ -53,6 +56,8 @@ pub struct SwiftEnumVariant {
     as_string: Option<String>,
 }
 
+/// Represents associated methods and properties of an enum. Based on the first
+/// codegen, those extensions are placed in a separate file.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftEnumExtension {
     name: String,
@@ -61,6 +66,8 @@ pub struct SwiftEnumExtension {
     properties: Vec<SwiftProperty>,
 }
 
+// Wrapper around a valid Swift type (built in or custom). Meant to be used as
+// `<SwiftType as From<TypeVariant>>::from(...)`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftType(String);
 
@@ -70,6 +77,7 @@ impl Display for SwiftType {
     }
 }
 
+/// Represents a Swift function or method.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftFunction {
     pub name: String,
@@ -82,6 +90,7 @@ pub struct SwiftFunction {
     pub comments: Vec<String>,
 }
 
+/// Represents a Swift property of a struct/class or enum.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SwiftProperty {
     pub name: String,
@@ -92,10 +101,10 @@ struct SwiftProperty {
     pub comments: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
 /// The operation to be interpreted by the templating engine. This handles
 /// parameters and C FFI calls in an appropriate way, depending on context.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SwiftOperation {
     // Results in:
     // ```swift
