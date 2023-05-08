@@ -7,7 +7,9 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use crate::manifest::{FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
+use crate::manifest::{
+    DeinitInfo, EnumInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant,
+};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
@@ -26,16 +28,71 @@ pub struct RenderIntput<'a> {
     pub proto_template: &'a str,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct WithYear<'a, T> {
+    pub current_year: u64,
+    #[serde(flatten)]
+    pub data: &'a T,
+}
+
 #[derive(Debug, Clone, Default)]
-pub struct RenderOutput {
+pub struct RenderOutputStrings {
     pub structs: Vec<(String, String)>,
     pub enums: Vec<(String, String)>,
     pub extensions: Vec<(String, String)>,
     pub protos: Vec<(String, String)>,
 }
 
-/// Uses the given input templates to render all files.
-pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
+#[derive(Debug, Clone, Default)]
+pub struct RenderOutput {
+    structs: Vec<SwiftStruct>,
+    enums: Vec<SwiftEnum>,
+    extensions: Vec<SwiftEnumExtension>,
+    protos: Vec<SwiftProto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftStruct {
+    name: String,
+    is_class: bool,
+    init_instance: bool,
+    superclasses: Vec<String>,
+    eq_operator: Option<SwiftOperatorEquality>,
+    inits: Vec<SwiftInit>,
+    deinits: Vec<DeinitInfo>,
+    methods: Vec<SwiftFunction>,
+    properties: Vec<SwiftProperty>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnum {
+    name: String,
+    is_public: bool,
+    add_description: bool,
+    superclasses: Vec<String>,
+    variants: Vec<SwiftEnumVariant>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnumVariant {
+    name: String,
+    value: usize,
+    as_string: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnumExtension {
+    name: String,
+    init_instance: bool,
+    methods: Vec<SwiftFunction>,
+    properties: Vec<SwiftProperty>,
+}
+
+pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOutputStrings> {
+    // The current year for the copyright header in the generated bindings.
+    let current_year = crate::current_year();
+    let file_name = input.file_info.name.clone();
+
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
     engine.set_strict_mode(true);
@@ -45,11 +102,61 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     engine.register_partial("extension", input.extension_template)?;
     engine.register_partial("proto", input.proto_template)?;
 
+    let rendered = render_file_info(input)?;
+    let mut out_str = RenderOutputStrings::default();
+
+    //  Render struct.
+    for strct in rendered.structs {
+        let out = engine.render(
+            "struct",
+            &WithYear {
+                current_year,
+                data: &strct,
+            },
+        )?;
+        out_str.structs.push((strct.name.to_string(), out));
+    }
+
+    for enm in rendered.enums {
+        let out = engine.render(
+            "enum",
+            &WithYear {
+                current_year,
+                data: &enm,
+            },
+        )?;
+        out_str.enums.push((enm.name.to_string(), out));
+    }
+
+    for ext in rendered.extensions {
+        let out = engine.render(
+            "extension",
+            &WithYear {
+                current_year,
+                data: &ext,
+            },
+        )?;
+        out_str.extensions.push((ext.name.to_string(), out));
+    }
+
+    let out = engine.render(
+        "proto",
+        &WithYear {
+            current_year,
+            data: &json!({
+                "protos": &rendered.protos
+            }),
+        },
+    )?;
+    out_str.protos.push((file_name, out));
+
+    Ok(out_str)
+}
+
+/// Uses the given input templates to render all files.
+pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     let mut info = input.file_info;
     let mut outputs = RenderOutput::default();
-
-    // The current year for the copyright header in the generated bindings.
-    let current_year = crate::current_year();
 
     // Render structs/classes.
     for strct in info.structs {
@@ -75,14 +182,14 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         // Add superclasses.
         let superclasses = if struct_name.ends_with("Address") {
-            vec!["Address"]
+            vec!["Address".to_string()]
         } else {
             vec![]
         };
 
         // Handle equality operator.
-        let equality_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
-        let equality_operator = if let Some((idx, _func)) = equality_method {
+        let eq_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
+        let eq_operator = if let Some((idx, _func)) = eq_method {
             let operator = SwiftOperatorEquality {
                 c_ffi_name: format!("{}Equal", strct.name),
             };
@@ -95,22 +202,18 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             None
         };
 
-        let payload = json!({
-            "current_year": current_year,
-            "name": struct_name,
-            "is_class": strct.is_class,
-            "init_instance": strct.is_class,
-            "superclasses": superclasses,
-            "eq_operator": equality_operator,
-            "inits": inits,
-            "deinits": info.deinits,
-            "methods": methods,
-            "properties": properties,
+        outputs.structs.push(SwiftStruct {
+            name: struct_name,
+            is_class: strct.is_class,
+            init_instance: strct.is_class,
+            superclasses,
+            eq_operator,
+            inits: inits,
+            // TODO:
+            deinits: info.deinits.clone(),
+            methods,
+            properties,
         });
-
-        //  Render struct.
-        let out = engine.render("struct", &payload)?;
-        outputs.structs.push((struct_name.to_string(), out));
     }
 
     // Render enums.
@@ -127,62 +230,50 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         // Add superclasses.
         let value_type = SwiftType::from(enm.value_type);
-        let mut superclasses = vec![value_type.0.as_str(), "CaseIterable"];
+        let mut superclasses = vec![value_type.0, "CaseIterable".to_string()];
 
-        // If the enum variants have `as_string` fields, we generate a
-        // description method.
-        let description: Option<Vec<(&str, &str)>> =
-            if enm.variants.iter().any(|e| e.as_string.is_some()) {
-                superclasses.push("CustomStringConvertible");
+        let mut add_class = false;
 
-                let mut desc = vec![];
-                for var in &enm.variants {
-                    if let Some(ref text) = var.as_string {
-                        desc.push((var.name.as_str(), text.as_str()))
-                    } else {
-                        // If at least one variant has a `as_string` field, than
-                        // *all* of others must too.
-                        return Err(Error::BadFormat(
-                            "missing as_string field for enum variant".to_string(),
-                        ));
-                    }
+        // Convert to Swift enum variants
+        let variants = enm
+            .variants
+            .into_iter()
+            .map(|info| {
+                if info.as_string.is_some() {
+                    add_class = true;
                 }
 
-                Some(desc)
-            } else {
-                None
-            };
+                SwiftEnumVariant {
+                    name: info.name,
+                    value: info.value,
+                    as_string: info.as_string,
+                }
+            })
+            .collect();
 
-        let enum_payload = json!({
-            "current_year": current_year,
-            "name": enum_name,
-            "is_public": enm.is_public,
-            "superclasses": superclasses,
-            "variants": enm.variants,
-            "description": description,
+        if add_class {
+            superclasses.push("CustomStringConvertible".to_string());
+        }
+
+        outputs.enums.push(SwiftEnum {
+            name: enum_name.clone(),
+            is_public: enm.is_public,
+            add_description: add_class,
+            superclasses,
+            variants,
         });
-
-        // Render enum.
-        let out = engine.render("enum", &enum_payload)?;
-        outputs.enums.push((enum_name.to_string(), out));
 
         // Avoid rendering empty extension for enums.
         if methods.is_empty() && properties.is_empty() {
             continue;
         }
 
-        let extension_payload = json!({
-            "current_year": current_year,
-            "name": enum_name,
-            "init_instance": true,
-            "parent_classes": [],
-            "methods": methods,
-            "properties": properties,
+        outputs.extensions.push(SwiftEnumExtension {
+            name: enum_name,
+            init_instance: true,
+            methods,
+            properties,
         });
-
-        // Render enum extension.
-        let out = engine.render("extension", &extension_payload)?;
-        outputs.extensions.push((enum_name.to_string(), out));
     }
 
     // Render Protobufs.
@@ -195,20 +286,9 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             .unwrap_or(&info.name)
             .to_string();
 
-        let protos = info
-            .protos
-            .into_iter()
-            .map(SwiftProto::try_from)
-            .collect::<Result<Vec<_>>>()?;
-
-        let payload = json!({
-            "current_year": current_year,
-            "protos": protos,
-        });
-
-        // Render protobuf.
-        let out = engine.render("proto", &payload)?;
-        outputs.protos.push((file_name, out));
+        for proto in info.protos {
+            outputs.protos.push(SwiftProto::try_from(proto)?);
+        }
     }
 
     Ok(outputs)

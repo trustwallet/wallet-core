@@ -44,7 +44,7 @@ fn generate_swift_bindings() -> Result<()> {
             proto_template: &proto_t,
         };
 
-        let rendered = libparser::codegen::swift::render_file_info(input)?;
+        let rendered = libparser::codegen::swift::render_file_info_strings(input)?;
 
         // Enum declarations go into their own subfolder.
         if !rendered.enums.is_empty() {
