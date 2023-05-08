@@ -92,7 +92,7 @@ impl<H: Hasher512> PublicKey<H> {
         PublicKey {
             compressed,
             point,
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
         }
     }
 }
@@ -144,7 +144,7 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
         Ok(PublicKey {
             compressed,
             point,
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
         })
     }
 }

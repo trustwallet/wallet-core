@@ -45,7 +45,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         ExpandedSecretKey {
             key: Scalar::from_bits(lower.take()),
             nonce: upper,
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
         }
     }
 
@@ -63,7 +63,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         ExpandedSecretKey {
             key,
             nonce: extension,
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
         }
     }
 
