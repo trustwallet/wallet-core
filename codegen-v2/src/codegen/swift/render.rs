@@ -10,7 +10,7 @@ pub struct RenderIntput<'a> {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct RenderOutputStrings {
+pub struct GeneratedSwiftTypesStrings {
     pub structs: Vec<(String, String)>,
     pub enums: Vec<(String, String)>,
     pub extensions: Vec<(String, String)>,
@@ -18,15 +18,16 @@ pub struct RenderOutputStrings {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct RenderOutput {
+pub struct GeneratedSwiftTypes {
     pub structs: Vec<SwiftStruct>,
     pub enums: Vec<SwiftEnum>,
     pub extensions: Vec<SwiftEnumExtension>,
     pub protos: Vec<SwiftProto>,
 }
 
+/// Convenience wrapper for setting copyright year when generating bindings.
 #[derive(Debug, Clone, Serialize)]
-pub struct WithYear<'a, T> {
+struct WithYear<'a, T> {
     pub current_year: u64,
     #[serde(flatten)]
     pub data: &'a T,
@@ -36,7 +37,7 @@ pub fn pretty_name(name: String) -> String {
     name.replace("_", "").replace("TW", "").replace("Proto", "")
 }
 
-pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOutputStrings> {
+pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTypesStrings> {
     // The current year for the copyright header in the generated bindings.
     let current_year = crate::current_year();
     // Convert the name into an appropriate format.
@@ -51,8 +52,8 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
     engine.register_partial("extension", input.extension_template)?;
     engine.register_partial("proto", input.proto_template)?;
 
-    let rendered = render_file_info(input)?;
-    let mut out_str = RenderOutputStrings::default();
+    let rendered = generate_swift_types(input)?;
+    let mut out_str = GeneratedSwiftTypesStrings::default();
 
     //  Render structs.
     for strct in rendered.structs {
@@ -112,9 +113,9 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
 }
 
 /// Uses the given input templates to render all files.
-pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
+pub fn generate_swift_types<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTypes> {
     let mut info = input.file_info;
-    let mut outputs = RenderOutput::default();
+    let mut outputs = GeneratedSwiftTypes::default();
 
     // Render structs/classes.
     for strct in info.structs {
