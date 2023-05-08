@@ -1,10 +1,10 @@
 name: SingleItems
 structs:
-- name: FirstStruct 
+- name: MainStruct 
   is_public: true
   is_class: true
 inits:
-- name: FirstStructCreate
+- name: MainStructCreate
   is_public: true
   is_nullable: true
   params:
@@ -15,9 +15,9 @@ inits:
       is_nullable: true
       is_pointer: true
 deinits:
-- name: FirstStructDelete
+- name: MainStructDelete
 functions:
-- name: FirstStructWithOptionalInt
+- name: MainStructWithOptionalInt
   is_public: true
   is_static: true
   params:
@@ -32,7 +32,7 @@ functions:
     is_constant: false
     is_nullable: true
     is_pointer: false
-- name: FirstStructWithOptionalStruct
+- name: MainStructWithOptionalStruct
   is_public: true
   is_static: true
   params:
@@ -48,7 +48,7 @@ functions:
     is_constant: false
     is_nullable: true
     is_pointer: false
-- name: FirstStructWithOptionalString
+- name: MainStructWithOptionalString
   is_public: true
   is_static: true
   params:
@@ -63,7 +63,7 @@ functions:
     is_constant: false
     is_nullable: true
     is_pointer: false
-- name: FirstStructWithOptionalEnum
+- name: MainStructWithOptionalEnum
   is_public: true
   is_static: true
   params:
@@ -80,21 +80,21 @@ functions:
     is_nullable: true
     is_pointer: false
 properties:
-- name: FirstStructWithOptionalInt
+- name: MainStructWithOptionalInt
   is_public: true
   return_type:
     variant: int
     is_constant: true
     is_nullable: true
     is_pointer: true
-- name: FirstStructWithOptionalString
+- name: MainStructWithOptionalString
   is_public: true
   return_type:
     variant: string
     is_constant: true
     is_nullable: true
     is_pointer: true
-- name: FirstStructWithOptionalStruct
+- name: MainStructWithOptionalStruct
   is_public: true
   return_type:
     variant: struct
@@ -102,7 +102,7 @@ properties:
     is_constant: true
     is_nullable: true
     is_pointer: true
-- name: FirstStructWithOptionalEnum
+- name: MainStructWithOptionalEnum
   is_public: true
   return_type:
     variant: enum

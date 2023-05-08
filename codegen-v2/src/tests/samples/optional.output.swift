@@ -9,7 +9,7 @@
 
 import Foundation
 
-public final class FirstStruct {
+public final class MainStruct {
     let rawValue: OpaquePointer
 
     init(rawValue: OpaquePointer) {
@@ -17,7 +17,7 @@ public final class FirstStruct {
     }
 
     public init?(string: String?) {
-        guard let result = FirstStructCreate(string) else {
+        guard let result = MainStructCreate(string) else {
             return nil
         }
 
@@ -25,11 +25,11 @@ public final class FirstStruct {
     }
 
     deinit {
-        FirstStructDelete(self.rawValue)
+        MainStructDelete(self.rawValue)
     }
 
     public static func withOptionalInt(first_param: Int32?) -> Bool? {
-        guard let result = FirstStructWithOptionalInt(first_param) else {
+        guard let result = MainStructWithOptionalInt(first_param) else {
             return nil
         }
         return result
@@ -37,7 +37,7 @@ public final class FirstStruct {
 
     public static func withOptionalStruct(first_param: SomeStruct?) -> Bool? {
         let first_param = first_param?.rawValue
-        guard let result = FirstStructWithOptionalStruct(first_param) else {
+        guard let result = MainStructWithOptionalStruct(first_param) else {
             return nil
         }
         return result
@@ -57,7 +57,7 @@ public final class FirstStruct {
         }
         let first_param = ptr
 
-        guard let result = FirstStructWithOptionalString(first_param) else {
+        guard let result = MainStructWithOptionalString(first_param) else {
             return nil
         }
         return result
@@ -65,7 +65,7 @@ public final class FirstStruct {
 
     public static func withOptionalEnum(first_param: SomeEnum?) -> Bool? {
         let first_param = SomeEnum(rawValue: first_param.rawValue)
-        guard let result = FirstStructWithOptionalEnum(first_param) else {
+        guard let result = MainStructWithOptionalEnum(first_param) else {
             return nil
         }
         return result
@@ -73,7 +73,7 @@ public final class FirstStruct {
 
     public var withOptionalInt: Int32? {
         let obj = self.rawValue
-        guard let result = FirstStructWithOptionalInt(obj) else {
+        guard let result = MainStructWithOptionalInt(obj) else {
             return nil
         }
         return result
@@ -81,7 +81,7 @@ public final class FirstStruct {
 
     public var withOptionalString: String? {
         let obj = self.rawValue
-        guard let result = FirstStructWithOptionalString(obj) else {
+        guard let result = MainStructWithOptionalString(obj) else {
             return nil
         }
         return TWStringNSString(result)
@@ -89,7 +89,7 @@ public final class FirstStruct {
 
     public var withOptionalStruct: SomeStruct? {
         let obj = self.rawValue
-        guard let result = FirstStructWithOptionalStruct(obj) else {
+        guard let result = MainStructWithOptionalStruct(obj) else {
             return nil
         }
         return SomeStruct(rawValue: result)
@@ -97,7 +97,7 @@ public final class FirstStruct {
 
     public var withOptionalEnum: SomeEnum? {
         let obj = self.rawValue
-        guard let result = FirstStructWithOptionalEnum(obj) else {
+        guard let result = MainStructWithOptionalEnum(obj) else {
             return nil
         }
         return SomeEnum(rawValue: result.rawValue)!

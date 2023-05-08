@@ -1,10 +1,10 @@
 name: SingleItems
 structs:
-- name: FirstStruct 
+- name: MainStruct 
   is_public: true
-  is_class: false 
+  is_class: true
 inits:
-- name: FirstStructCreate
+- name: MainStructCreate
   is_public: true
   is_nullable: false
   params:
@@ -15,9 +15,9 @@ inits:
       is_nullable: false
       is_pointer: true
 deinits:
-- name: FirstStructDelete
+- name: MainStructDelete
 functions:
-- name: FirstStructFirstFunction
+- name: MainStructFirstFunction
   is_public: true
   is_static: true
   params:
@@ -33,7 +33,7 @@ functions:
     is_nullable: false
     is_pointer: false
 properties:
-- name: FirstStructFirstProperty
+- name: MainStructFirstProperty
   is_public: true
   return_type:
     variant: bool 

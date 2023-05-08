@@ -9,8 +9,12 @@
 
 import Foundation
 
-public struct FirstStruct {
-    init() {}
+public final class MainStruct {
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
+        self.rawValue = rawValue
+    }
 
     public init(string: String) {
         let string = TWStringCreateWithNSString(string)
@@ -18,23 +22,23 @@ public struct FirstStruct {
             TWStringDelete(string)
         }
 
-        let result = FirstStructCreate(string)
+        let result = MainStructCreate(string)
 
         self.rawValue = result
     }
 
     deinit {
-        FirstStructDelete(self.rawValue)
+        MainStructDelete(self.rawValue)
     }
 
     public static func firstFunction(first_param: Int32) -> Bool {
-        let result = FirstStructFirstFunction(first_param)
+        let result = MainStructFirstFunction(first_param)
         return result
     }
 
     public var firstProperty: Bool {
         let obj = self.rawValue
-        let result = FirstStructFirstProperty(obj)
+        let result = MainStructFirstProperty(obj)
         return result
     }
 }
