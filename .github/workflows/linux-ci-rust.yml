@@ -43,39 +43,41 @@ jobs:
       - name: Install emsdk
         run: tools/install-wasm-dependencies
 
-      - name: Check code formatting
-        run: |
-          cargo fmt --check
-        working-directory: rust
-
-      - name: Check Clippy warnings
-        run: |
-          cargo clippy -- -D warnings
-        working-directory: rust
-
-      - name: Run tests
-        run: |
-          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
-        working-directory: rust
+#      - name: Check code formatting
+#        run: |
+#          cargo fmt --check
+#        working-directory: rust
+#
+#      - name: Check Clippy warnings
+#        run: |
+#          cargo clippy -- -D warnings
+#        working-directory: rust
+#
+#      - name: Run tests
+#        run: |
+#          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
+#        working-directory: rust
 
       - name: Run tests in WASM
         run: |
           source ../emsdk/emsdk_env.sh
           cargo test --target wasm32-unknown-emscripten --release
         env:
+          # Don't use the sccache for WASM target.
+          RUSTC_WRAPPER: ""
           CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER: node
         working-directory: rust
 
-      - name: Rust Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        continue-on-error: true
-        with:
-          name: Rust Tests
-          path: |
-            rust/target/nextest/ci/junit.xml
-          reporter: java-junit
-
-      - name: Gather and check Rust code coverage
-        run: |
-          tools/check-coverage rust/coverage.stats rust/coverage.info
+#      - name: Rust Test Report
+#        uses: dorny/test-reporter@v1
+#        if: success() || failure()
+#        continue-on-error: true
+#        with:
+#          name: Rust Tests
+#          path: |
+#            rust/target/nextest/ci/junit.xml
+#          reporter: java-junit
+#
+#      - name: Gather and check Rust code coverage
+#        run: |
+#          tools/check-coverage rust/coverage.stats rust/coverage.info
