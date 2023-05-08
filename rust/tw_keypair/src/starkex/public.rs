@@ -49,10 +49,12 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
     }
 }
 
-impl From<&'static str> for PublicKey {
-    fn from(hex: &'static str) -> Self {
-        let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");
-        PublicKey::try_from(bytes.as_slice()).expect("Expected a valid Public Key")
+impl<'a> TryFrom<&'a str> for PublicKey {
+    type Error = Error;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = hex::decode(hex).map_err(|_| Error::InvalidPublicKey)?;
+        Self::try_from(bytes.as_slice())
     }
 }
 

@@ -89,12 +89,12 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPrivateKey<H> {
     }
 }
 
-/// Implement `str` -> `ExtendedPrivateKey<H>` conversion for test purposes.
-impl<H: Hasher512> From<&'static str> for ExtendedPrivateKey<H> {
-    fn from(hex: &'static str) -> Self {
-        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
-        let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
-        ExtendedPrivateKey::try_from(data.as_slice()).expect("Expected a valid Secret Key")
+impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedPrivateKey<H> {
+    type Error = Error;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| Error::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }
 

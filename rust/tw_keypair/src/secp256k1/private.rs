@@ -62,21 +62,21 @@ impl SigningKeyTrait for PrivateKey {
     }
 }
 
-/// Implement `str` -> `PrivateKey` conversion for test purposes.
-impl From<&'static str> for PrivateKey {
-    fn from(hex: &'static str) -> Self {
-        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
-        let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
-        PrivateKey::try_from(data.as_slice()).expect("Expected a valid Secret Key")
-    }
-}
-
 impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     type Error = Error;
 
     fn try_from(data: &'a [u8]) -> Result<Self, Self::Error> {
         let secret = SigningKey::from_slice(data).map_err(|_| Error::InvalidSecretKey)?;
         Ok(PrivateKey { secret })
+    }
+}
+
+impl<'a> TryFrom<&'a str> for PrivateKey {
+    type Error = Error;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| Error::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }
 

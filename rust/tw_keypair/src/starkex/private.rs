@@ -54,11 +54,12 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     }
 }
 
-impl From<&'static str> for PrivateKey {
-    fn from(hex: &'static str) -> Self {
-        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
-        let bytes = hex::decode(hex).expect("Expected a valid Private Key hex");
-        PrivateKey::try_from(bytes.as_slice()).expect("Expected a valid Private Key")
+impl<'a> TryFrom<&'a str> for PrivateKey {
+    type Error = Error;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| Error::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }
 

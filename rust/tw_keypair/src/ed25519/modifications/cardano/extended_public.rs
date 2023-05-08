@@ -72,11 +72,12 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPublicKey<H> {
     }
 }
 
-/// Implement `str` -> `ExtendedPublicKey<H>` conversion for test purposes.
-impl<H: Hasher512> From<&'static str> for ExtendedPublicKey<H> {
-    fn from(hex: &'static str) -> Self {
-        let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");
-        ExtendedPublicKey::try_from(bytes.as_slice()).expect("Expected a valid Public Key")
+impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedPublicKey<H> {
+    type Error = Error;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = hex::decode(hex).map_err(|_| Error::InvalidPublicKey)?;
+        Self::try_from(bytes.as_slice())
     }
 }
 

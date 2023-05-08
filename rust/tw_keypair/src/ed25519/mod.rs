@@ -56,18 +56,20 @@ mod tests {
     fn test_private_from_bytes() {
         let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
 
-        let private = sha512::PrivateKey::from(
+        let private = sha512::PrivateKey::try_from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        );
+        )
+        .unwrap();
         let actual = private.to_zeroizing_vec();
         assert_eq!(actual.as_slice(), H256::from(secret).as_slice());
     }
 
     #[test]
     fn test_private_to_public() {
-        let private = sha512::PrivateKey::from(
+        let private = sha512::PrivateKey::try_from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        );
+        )
+        .unwrap();
         let public = private.public();
 
         let expected =
@@ -77,9 +79,10 @@ mod tests {
 
     #[test]
     fn test_private_to_public_blake2b() {
-        let private = blake2b::PrivateKey::from(
+        let private = blake2b::PrivateKey::try_from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        );
+        )
+        .unwrap();
         let public = private.public();
 
         let expected =
@@ -89,9 +92,10 @@ mod tests {
 
     #[test]
     fn test_keypair_sign_verify() {
-        let keypair = sha512::KeyPair::from(
+        let keypair = sha512::KeyPair::try_from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        );
+        )
+        .unwrap();
         let to_sign = sha256(b"Hello");
         let actual = keypair.sign(to_sign.clone()).unwrap();
 
@@ -112,9 +116,10 @@ mod tests {
 
     #[test]
     fn test_keypair_sign_verify_blake2b() {
-        let keypair = blake2b::KeyPair::from(
+        let keypair = blake2b::KeyPair::try_from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
-        );
+        )
+        .unwrap();
         let to_sign = sha256(b"Hello");
         let actual = keypair.sign(to_sign.clone()).unwrap();
 
@@ -129,7 +134,7 @@ mod tests {
         let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
         639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
 
-        let private = cardano::ExtendedPrivateKey::from(secret);
+        let private = cardano::ExtendedPrivateKey::try_from(secret).unwrap();
         let actual = private.to_zeroizing_vec();
         assert_eq!(actual.as_slice(), hex::decode(secret).unwrap());
     }
@@ -139,7 +144,7 @@ mod tests {
         let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
         639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
 
-        let keypair = cardano::ExtendedKeyPair::from(secret);
+        let keypair = cardano::ExtendedKeyPair::try_from(secret).unwrap();
 
         let message = keccak256(b"hello");
         let actual = keypair.sign(message.clone()).unwrap();
@@ -155,7 +160,7 @@ mod tests {
         let secret = "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
         e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
 
-        let private = cardano::ExtendedPrivateKey::from(secret);
+        let private = cardano::ExtendedPrivateKey::try_from(secret).unwrap();
         let public = private.public();
 
         let expected = "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
@@ -193,7 +198,7 @@ mod tests {
         let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
         let sign = H512::from("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07e7ed7a20a4e2fa1009db3d1443e937e6abb16ff3c3eaecb798faed7fbb40b008");
 
-        let keypair = sha512::KeyPair::from(secret);
+        let keypair = sha512::KeyPair::try_from(secret).unwrap();
         let sign = Signature::try_from(sign.as_slice()).unwrap();
 
         let _ = format!("{:?}", keypair);
