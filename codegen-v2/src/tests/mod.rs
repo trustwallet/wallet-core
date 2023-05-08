@@ -57,6 +57,24 @@ fn single_class() {
     assert_eq!(output, EXPECTED);
 }
 
+#[test]
+fn private() {
+    const INPUT: &str = include_str!("samples/private.input.yaml");
+    const EXPECTED: &str = include_str!("samples/private.output.swift");
+
+    let input = create_intput(INPUT);
+    let rendered = render_to_strings(input).unwrap();
+
+    assert_eq!(rendered.structs.len(), 1);
+    assert!(rendered.enums.is_empty());
+    assert!(rendered.extensions.is_empty());
+    assert!(rendered.protos.is_empty());
+
+    let (name, output) = &rendered.structs[0];
+    println!("{output}");
+    assert_eq!(name, "FirstStruct");
+    assert_eq!(output, EXPECTED);
+}
 
 #[test]
 fn optional() {
@@ -76,4 +94,3 @@ fn optional() {
     assert_eq!(name, "FirstStruct");
     assert_eq!(output, EXPECTED);
 }
-

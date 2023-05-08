@@ -82,6 +82,7 @@ pub(super) fn process_inits(
         swift_inits.push(SwiftInit {
             name: pretty_name,
             is_nullable: init.is_nullable,
+            is_public: init.is_public,
             params,
             operations: ops,
             comments: vec![],

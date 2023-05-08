@@ -30,6 +30,7 @@ pub use self::render::{
 pub struct SwiftStruct {
     name: String,
     is_class: bool,
+    is_public: bool,
     init_instance: bool,
     superclasses: Vec<String>,
     eq_operator: Option<SwiftOperatorEquality>,
@@ -173,6 +174,7 @@ pub struct SwiftReturn {
 pub struct SwiftInit {
     pub name: String,
     pub is_nullable: bool,
+    pub is_public: bool,
     pub params: Vec<SwiftParam>,
     pub operations: Vec<SwiftOperation>,
     pub comments: Vec<String>,

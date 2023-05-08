@@ -159,6 +159,7 @@ pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
         outputs.structs.push(SwiftStruct {
             name: pretty_struct_name,
             is_class: strct.is_class,
+            is_public: strct.is_public,
             init_instance: strct.is_class,
             superclasses,
             eq_operator,
