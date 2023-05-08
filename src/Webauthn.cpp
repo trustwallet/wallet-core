@@ -34,7 +34,7 @@ struct AuthData {
 AuthData parseAuthData(const Data& buffer) {
     AuthData authData;
 
-    authData.rpIdHash = Data(buffer.begin(), buffer.begin() + 32);
+    authData.rpIdHash = subData(buffer, 0, 32);
 
     auto it = buffer.begin() + 32;
     authData.flagsBuf = { *it };
@@ -78,11 +78,17 @@ Data getPublicKey(const Data& attestationObject) {
     std::vector<std::pair<TW::Cbor::Decode, TW::Cbor::Decode>> COSEPublicKey = TW::Cbor::Decode(authDataParsed.COSEPublicKey).getMapElements();
 
     // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
-    std::string xKey = "-2";
-    std::string yKey = "-3";
+    const std::string xKey = "-2";
+    const std::string yKey = "-3";
 
-    auto x = std::find_if(COSEPublicKey.begin(), COSEPublicKey.end(), [&xKey](const auto& p) { return p.first.dumpToString() == xKey; });
-    auto y = std::find_if(COSEPublicKey.begin(), COSEPublicKey.end(), [&yKey](const auto& p) { return p.first.dumpToString() == yKey; });
+    auto findKey = [](const auto& map, const auto& key) {
+        return std::find_if(map.begin(), map.end(), [&](const auto& p) {
+            return p.first.dumpToString() == key;
+        });
+    };
+
+    auto x = findKey(COSEPublicKey, xKey);
+    auto y = findKey(COSEPublicKey, yKey);
 
     Data publicKey;
     append(publicKey, x->second.getBytes());
