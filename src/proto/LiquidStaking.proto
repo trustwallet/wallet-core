@@ -19,6 +19,7 @@ enum Coin {
   ATOM = 1;
   BNB = 2;
   APT = 3;
+  ETH = 4;
 }
 
 // Enum for supported target blockchains for liquid staking
@@ -35,6 +36,7 @@ enum Protocol {
   Strader = 0;
   Stride = 1;
   Tortuga = 2;
+  Lido = 3;
 }
 
 // Enum for status codes to indicate the result of an operation

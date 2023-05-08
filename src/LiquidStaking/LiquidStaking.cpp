@@ -178,6 +178,21 @@ Proto::Output Builder::buildTortuga() const {
     return output;
 }
 
+Proto::Output Builder::buildLidoEVM() const {
+    return Proto::Output();
+}
+
+Proto::Output Builder::buildLido() const {
+    switch (this->mBlockchain) {
+    case Proto::ETHEREUM:
+        return buildLidoEVM();
+    default:
+        auto output = Proto::Output();
+        *output.mutable_status() = generateError(Proto::ERROR_TARGETED_BLOCKCHAIN_NOT_SUPPORTED_BY_PROTOCOL, "Only Lido EVM chains is supported for now");
+        return output;
+    }
+}
+
 
 Proto::Output Builder::buildStrader() const {
     switch (this->mBlockchain) {
@@ -199,6 +214,8 @@ Proto::Output Builder::build() const {
         return this->buildTortuga();
     case Proto::Stride:
         return this->buildStride();
+    case Proto::Lido:
+        return this->buildLido();
     default:
         return Proto::Output();
     }

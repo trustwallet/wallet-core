@@ -32,6 +32,8 @@ class Builder {
     Proto::Output buildTortugaAptos() const;
     Proto::Output buildTortuga() const;
     Proto::Output buildStride() const;
+    Proto::Output buildLidoEVM() const;
+    Proto::Output buildLido() const;
 public:
     Builder() noexcept = default;
 
