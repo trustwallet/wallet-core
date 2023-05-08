@@ -6,9 +6,9 @@ on:
   pull_request:
     branches: [ dev, master ]
 
-#env:
-#  SCCACHE_GHA_ENABLED: "true"
-#  RUSTC_WRAPPER: "sccache"
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,8 +27,8 @@ jobs:
         run: |
           tools/install-sys-dependencies-linux
 
-#      - name: Run sccache-cache
-#        uses: mozilla-actions/sccache-action@v0.0.3
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
@@ -59,12 +59,7 @@ jobs:
 #        working-directory: rust
 
       - name: Run tests in WASM
-        run: |
-          source ../emsdk/emsdk_env.sh
-          cargo test --target wasm32-unknown-emscripten --verbose
-        env:
-          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER: node
-        working-directory: rust
+        run: tools/rust-test wasm
 
 #      - name: Rust Test Report
 #        uses: dorny/test-reporter@v1

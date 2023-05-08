@@ -9,7 +9,3 @@ members = [
     "tw_proto",
     "wallet_core_rs",
 ]
-
-# Required by `k256` (signal: 10, SIGBUS: access to undefined memory) and `curve25519` (endless stuck) crates.
-[profile.dev]
-opt-level = 2
