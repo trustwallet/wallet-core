@@ -85,11 +85,11 @@ class CodeGenerator
   end
 
   def render_jni_h
-    render_template(header: 'copyright_header.erb', template: 'jni_h.erb', output_subfolder: 'jni/cpp/generated', extension: 'h')
+    render_template(header: 'copyright_header.erb', template: 'jni_h.erb', output_subfolder: 'jni/android/generated', extension: 'h')
   end
 
   def render_jni_c
-    render_template(header: 'copyright_header.erb', template: 'jni_c.erb', output_subfolder: 'jni/cpp/generated', extension: 'c')
+    render_template(header: 'copyright_header.erb', template: 'jni_c.erb', output_subfolder: 'jni/android/generated', extension: 'c')
   end
 
   def render_wasm_h

@@ -12,13 +12,12 @@
 #include <array>
 
 namespace TW::Move {
-template <typename Derived, std::size_t N>
+template <typename Derived, std::size_t N = 32, bool StrictPadding = false>
 class Address {
 private:
     static constexpr std::size_t shortSizeAddress = 3;
     static constexpr std::size_t hexShortSizeAddress = shortSizeAddress - 2;
     static constexpr std::size_t hexSizeAddress = N*2;
-    static constexpr std::size_t hexNonPaddedSizeAddress = hexSizeAddress - 1;
 
     static std::string normalize(const std::string& string, std::size_t hexLen) {
         std::string hexStr((size * 2) - hexLen, '0');
@@ -34,14 +33,15 @@ public:
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string) {
+        if (!is_hex_encoded(string)) {
+            return false;
+        }
         auto address = string;
         if (address.starts_with("0x")) {
             address = address.substr(2);
-            std::size_t hexLen = address.size();
-
-            if ((hexLen == hexShortSizeAddress || hexLen == hexNonPaddedSizeAddress) && hexLen < hexSizeAddress) {
-                address = normalize(address, hexLen);
-            }
+        }
+        if (address.size() == hexShortSizeAddress || (StrictPadding && (address.size() < hexSizeAddress))) {
+            address = normalize(address, address.size());
         }
         if (address.size() != 2 * Address::size) {
             return false;
@@ -58,12 +58,16 @@ public:
         }
         auto hexFunctor = [&string]() {
             std::size_t hexLen = string.size() - 2;
-            bool isExpectedLen = hexLen == hexShortSizeAddress || hexLen == hexNonPaddedSizeAddress;
-            if (string.starts_with("0x") && isExpectedLen) {
+            bool isExpectedLen = hexLen == hexShortSizeAddress;
+            if (string.starts_with("0x") && (isExpectedLen || (StrictPadding && (hexLen < hexSizeAddress)))) {
                 //! We have specific address like 0x1, padding it.
                 return parse_hex(normalize(string.substr(2), hexLen));
             } else {
-                return parse_hex(string);
+                auto address = string;
+                if (StrictPadding && (address.size() < hexSizeAddress)) {
+                    address = normalize(address, address.size());
+                }
+                return parse_hex(address);
             }
         };
 

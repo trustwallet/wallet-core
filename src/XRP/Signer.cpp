@@ -203,7 +203,7 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
 
 void Signer::signPayment(const Proto::SigningInput& input,
                          Proto::SigningOutput& output,
-                         Transaction& transaction) noexcept {
+                         Transaction& transaction) {
     const int64_t tag = input.op_payment().destination_tag();
     if (tag > std::numeric_limits<uint32_t>::max() || tag < 0) {
         output.set_error(Common::Proto::SigningError::Error_invalid_memo);

@@ -26,7 +26,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: 8.0.2
+        gradle-version: 8.1.1
 
     - name: Install system dependencies
       run: |

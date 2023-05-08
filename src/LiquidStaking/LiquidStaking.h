@@ -31,6 +31,7 @@ class Builder {
     Proto::Output buildStrader() const;
     Proto::Output buildTortugaAptos() const;
     Proto::Output buildTortuga() const;
+    Proto::Output buildStride() const;
 public:
     Builder() noexcept = default;
 

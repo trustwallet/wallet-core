@@ -21,12 +21,15 @@ TEST(AptosAddress, Valid) {
     ASSERT_TRUE(Address::isValid("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
     ASSERT_TRUE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
     ASSERT_TRUE(Address::isValid("19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c"));
+    ASSERT_TRUE(Address::isValid("777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb"));
+    ASSERT_TRUE(Address::isValid("0x777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb"));
+    ASSERT_TRUE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175"));   // too short -> automatically padded
 }
 
 TEST(AptosAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("Seff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));  // Invalid hex character
     ASSERT_FALSE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb")); // Invalid length: too long
-    ASSERT_FALSE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175"));   // Invalid length: too short
+
 }
 
 TEST(AptosAddress, FromPrivateKey) {
@@ -44,6 +47,12 @@ TEST(AptosAddress, FromPublicKey) {
 TEST(AptosAddress, FromString) {
     auto address = Address("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
     ASSERT_EQ(address.string(), "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
+
+
+    address = Address("0x777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb");
+    ASSERT_EQ(address.string(), "0x0000777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb");
+    address = Address("777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb");
+    ASSERT_EQ(address.string(), "0x0000777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb");
 }
 
 TEST(AptosAddress, ShortString) {

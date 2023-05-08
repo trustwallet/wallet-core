@@ -38,7 +38,7 @@ class Signer {
   private:
     static void signPayment(const Proto::SigningInput& input,
                      Proto::SigningOutput& output,
-                     Transaction& transaction) noexcept;
+                     Transaction& transaction);
 
     static void signNfTokenCancelOffer(const Proto::SigningInput& input, Transaction& transaction) noexcept;
 };
