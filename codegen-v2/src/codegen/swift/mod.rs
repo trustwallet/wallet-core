@@ -7,9 +7,7 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use crate::manifest::{
-    DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant,
-};
+use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
@@ -18,6 +16,10 @@ use std::fmt::Display;
 mod functions;
 mod inits;
 mod properties;
+
+fn pretty_name(name: String) -> String {
+    name.replace("_", "").replace("TW", "").replace("Proto", "")
+}
 
 #[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
@@ -54,7 +56,8 @@ pub struct RenderOutput {
 pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOutputStrings> {
     // The current year for the copyright header in the generated bindings.
     let current_year = crate::current_year();
-    let file_name = input.file_info.name.replace("TW", "").replace("Proto", "");
+    // Convert the name into an appropriate format.
+    let pretty_file_name = pretty_name(input.file_info.name.clone());
 
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
@@ -119,7 +122,7 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
             },
         )?;
 
-        out_str.protos.push((file_name, out));
+        out_str.protos.push((pretty_file_name, out));
     }
 
     Ok(out_str)
@@ -136,7 +139,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         // Process items.
         let (inits, mut methods, properties);
-        (inits, info.inits) = process_inits(&ObjectVariant::Struct(&strct.name), info.inits)?;
+        (inits, info.inits) = process_inits(&obj, info.inits)?;
         (methods, info.functions) = process_methods(&obj, info.functions)?;
         (properties, info.properties) = process_properties(&obj, info.properties)?;
 
@@ -145,15 +148,11 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
             continue;
         }
 
-        // Stip "TW" prefix if present.
-        let struct_name = strct
-            .name
-            .strip_prefix("TW")
-            .unwrap_or(&strct.name)
-            .to_string();
+        // Convert the name into an appropriate format.
+        let pretty_struct_name = pretty_name(strct.name.clone());
 
         // Add superclasses.
-        let superclasses = if struct_name.ends_with("Address") {
+        let superclasses = if pretty_struct_name.ends_with("Address") {
             vec!["Address".to_string()]
         } else {
             vec![]
@@ -161,7 +160,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
         // Handle equality operator.
         let eq_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
-        let eq_operator = if let Some((idx, _func)) = eq_method {
+        let eq_operator = if let Some((idx, _)) = eq_method {
             let operator = SwiftOperatorEquality {
                 c_ffi_name: format!("{}Equal", strct.name),
             };
@@ -175,7 +174,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         };
 
         outputs.structs.push(SwiftStruct {
-            name: struct_name,
+            name: pretty_struct_name,
             is_class: strct.is_class,
             init_instance: strct.is_class,
             superclasses,
@@ -197,8 +196,8 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         (methods, info.functions) = process_methods(&obj, info.functions)?;
         (properties, info.properties) = process_properties(&obj, info.properties)?;
 
-        // Stip "TW" prefix if present.
-        let enum_name = enm.name.strip_prefix("TW").unwrap_or(&enm.name).to_string();
+        // Convert the name into an appropriate format.
+        let pretty_enum_name = pretty_name(enm.name);
 
         // Add superclasses.
         let value_type = SwiftType::from(enm.value_type);
@@ -228,7 +227,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         }
 
         outputs.enums.push(SwiftEnum {
-            name: enum_name.clone(),
+            name: pretty_enum_name.clone(),
             is_public: enm.is_public,
             add_description: add_class,
             superclasses,
@@ -241,7 +240,7 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
         }
 
         outputs.extensions.push(SwiftEnumExtension {
-            name: enum_name,
+            name: pretty_enum_name,
             init_instance: true,
             methods,
             properties,
@@ -431,14 +430,9 @@ impl TryFrom<ProtoInfo> for SwiftProto {
     type Error = Error;
 
     fn try_from(value: ProtoInfo) -> std::result::Result<Self, Self::Error> {
-        let name = value
-            .0
-            .replace("_", "")
-            .replace("TW", "")
-            .replace("Proto", "");
-
         Ok(SwiftProto {
-            name,
+            // Convert the name into an appropriate format.
+            name: pretty_name(value.0.clone()),
             c_ffi_name: value.0,
         })
     }
