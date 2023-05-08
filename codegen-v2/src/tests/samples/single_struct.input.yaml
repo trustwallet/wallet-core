@@ -2,7 +2,7 @@ name: SingleItems
 structs:
 - name: FirstStruct 
   is_public: true
-  is_class: true
+  is_class: false 
 inits:
 - name: FirstStructCreate
   is_public: true

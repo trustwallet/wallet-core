@@ -19,7 +19,6 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     }
     {{else}}
     init() {}
-
     {{/if}}
     {{#if eq_operator}}
     public static func == (lhs: {{name}}, rhs: {{name}}) -> Bool {
@@ -98,8 +97,11 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{/if}}
         {{/each}}
     }
+    {{#unless @last}}
 
+    {{/unless}}
     {{/each}}
+
     {{#each properties}}
     {{#if is_public}}public{{/if}} var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each operations}}
@@ -139,6 +141,8 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{/if}}
         {{/each}}
     }
+    {{#unless @last}}
 
+    {{/unless}}
     {{/each}}
 }

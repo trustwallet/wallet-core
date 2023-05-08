@@ -20,7 +20,7 @@ fn create_intput(yaml: &str) -> RenderIntput {
 }
 
 #[test]
-fn some() {
+fn single_struct() {
     const INPUT: &str = include_str!("samples/single_struct.input.yaml");
     const EXPECTED: &str = include_str!("samples/single_struct.output.swift");
 
@@ -33,6 +33,27 @@ fn some() {
     assert!(rendered.protos.is_empty());
 
     let (name, output) = &rendered.structs[0];
+    println!("{output}");
     assert_eq!(name, "FirstStruct");
     assert_eq!(output, EXPECTED);
 }
+
+#[test]
+fn optional() {
+    const INPUT: &str = include_str!("samples/optional.input.yaml");
+    const EXPECTED: &str = include_str!("samples/optional.output.swift");
+
+    let input = create_intput(INPUT);
+    let rendered = render_to_strings(input).unwrap();
+
+    assert_eq!(rendered.structs.len(), 1);
+    assert!(rendered.enums.is_empty());
+    assert!(rendered.extensions.is_empty());
+    assert!(rendered.protos.is_empty());
+
+    let (name, output) = &rendered.structs[0];
+    println!("{output}");
+    assert_eq!(name, "FirstStruct");
+    assert_eq!(output, EXPECTED);
+}
+

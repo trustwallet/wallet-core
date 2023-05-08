@@ -9,12 +9,8 @@
 
 import Foundation
 
-public final class FirstStruct {
-    let rawValue: OpaquePointer
-
-    init(rawValue: OpaquePointer) {
-        self.rawValue = rawValue
-    }
+public struct FirstStruct {
+    init() {}
 
     public init(string: String) {
         let string = TWStringCreateWithNSString(string)
@@ -41,5 +37,4 @@ public final class FirstStruct {
         let result = FirstStructFirstProperty(obj)
         return result
     }
-
 }
