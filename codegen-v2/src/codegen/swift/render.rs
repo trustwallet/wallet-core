@@ -52,7 +52,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     engine.register_partial("extension", input.extension_template)?;
     engine.register_partial("proto", input.proto_template)?;
 
-    let rendered = generate_swift_types(input)?;
+    let rendered = generate_swift_types(input.file_info)?;
     let mut out_str = GeneratedSwiftTypesStrings::default();
 
     //  Render structs.
@@ -113,8 +113,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
 }
 
 /// Uses the given input templates to render all files.
-pub fn generate_swift_types<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTypes> {
-    let mut info = input.file_info;
+pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
     let mut outputs = GeneratedSwiftTypes::default();
 
     // Render structs/classes.

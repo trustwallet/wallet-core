@@ -8,7 +8,7 @@ use super::Result;
 use std::fs;
 use std::path::Path;
 
-pub fn read_directory<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>> {
+pub fn parse_dir<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>> {
     // Get a list of all files in the directory
     let entries = fs::read_dir(path)?;
 
@@ -27,11 +27,15 @@ pub fn read_directory<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>> {
         let file_contents = fs::read_to_string(&file_path)?;
 
         // Deserialize the JSON into a struct
-        let info: FileInfo = serde_yaml::from_str(&file_contents)?;
+        let info = parse_str(&file_contents)?;
         file_infos.push(info);
     }
 
     Ok(file_infos)
+}
+
+pub fn parse_str(str: &str) -> Result<FileInfo> {
+    serde_yaml::from_str(str).map_err(|err| err.into())
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]

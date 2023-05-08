@@ -13,6 +13,8 @@ use std::io::Error as IoError;
 
 pub mod codegen;
 pub mod manifest;
+#[cfg(test)]
+mod tests;
 
 pub type Result<T> = std::result::Result<T, Error>;
 

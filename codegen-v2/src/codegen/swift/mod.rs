@@ -21,7 +21,8 @@ mod render;
 
 // Re-exports
 pub use self::render::{
-    generate_swift_types, render_to_strings, RenderIntput, GeneratedSwiftTypes, GeneratedSwiftTypesStrings,
+    generate_swift_types, render_to_strings, GeneratedSwiftTypes, GeneratedSwiftTypesStrings,
+    RenderIntput,
 };
 
 /// Represents a Swift struct or class.
