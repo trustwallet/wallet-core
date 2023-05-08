@@ -8,7 +8,7 @@ use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
 use crate::manifest::{
-    DeinitInfo, EnumInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant,
+    DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant,
 };
 use crate::{Error, Result};
 use handlebars::Handlebars;
@@ -91,7 +91,7 @@ pub struct SwiftEnumExtension {
 pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOutputStrings> {
     // The current year for the copyright header in the generated bindings.
     let current_year = crate::current_year();
-    let file_name = input.file_info.name.clone();
+    let file_name = input.file_info.name.replace("TW", "").replace("Proto", "");
 
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
@@ -139,16 +139,19 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
         out_str.extensions.push((ext.name.to_string(), out));
     }
 
-    let out = engine.render(
-        "proto",
-        &WithYear {
-            current_year,
-            data: &json!({
-                "protos": &rendered.protos
-            }),
-        },
-    )?;
-    out_str.protos.push((file_name, out));
+    if !rendered.protos.is_empty() {
+        let out = engine.render(
+            "proto",
+            &WithYear {
+                current_year,
+                data: &json!({
+                    "protos": &rendered.protos
+                }),
+            },
+        )?;
+
+        out_str.protos.push((file_name, out));
+    }
 
     Ok(out_str)
 }
@@ -278,14 +281,6 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
 
     // Render Protobufs.
     if !info.protos.is_empty() {
-        let file_name = info
-            .name
-            .strip_prefix("TW")
-            .unwrap_or(&info.name)
-            .strip_suffix("Proto")
-            .unwrap_or(&info.name)
-            .to_string();
-
         for proto in info.protos {
             outputs.protos.push(SwiftProto::try_from(proto)?);
         }
@@ -430,9 +425,11 @@ impl TryFrom<ProtoInfo> for SwiftProto {
     type Error = Error;
 
     fn try_from(value: ProtoInfo) -> std::result::Result<Self, Self::Error> {
-        let mut name = value.0.replace("_", "");
-        name = name.replace("TW", "");
-        name = name.replace("Proto", "");
+        let name = value
+            .0
+            .replace("_", "")
+            .replace("TW", "")
+            .replace("Proto", "");
 
         Ok(SwiftProto {
             name,
