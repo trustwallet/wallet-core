@@ -7,9 +7,10 @@
 #pragma once
 
 #include "Data.h"
+#include "PublicKey.h"
 
-namespace TW::Webauthn {
+namespace TW::WebAuthn {
 
-Data getPublicKey(const Data& attestationObject);
+PublicKey getPublicKey(const Data& attestationObject);
 
 }
