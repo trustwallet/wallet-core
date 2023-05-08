@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use libparser::codegen::swift::RenderIntput;
-use libparser::manifest::read_directory;
+use libparser::manifest::parse_dir;
 use libparser::{Error, Result};
 use std::fs::read_to_string;
 
@@ -33,7 +33,7 @@ fn generate_swift_bindings() -> Result<()> {
     let proto_t = read_to_string("src/codegen/templates/swift/proto.hbs")?;
 
     // Read the manifest dir, generate bindings for each entry.
-    let file_infos = read_directory("manifest/")?;
+    let file_infos = parse_dir("manifest/")?;
 
     for file_info in file_infos {
         let input = RenderIntput {
@@ -44,7 +44,7 @@ fn generate_swift_bindings() -> Result<()> {
             proto_template: &proto_t,
         };
 
-        let rendered = libparser::codegen::swift::render_file_info(input)?;
+        let rendered = libparser::codegen::swift::render_to_strings(input)?;
 
         // Enum declarations go into their own subfolder.
         if !rendered.enums.is_empty() {

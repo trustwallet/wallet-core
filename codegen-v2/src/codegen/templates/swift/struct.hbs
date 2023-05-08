@@ -9,7 +9,7 @@
 
 import Foundation
 
-public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
+{{#if is_public}}public {{/if}}{{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     {{~#if superclasses}}: {{/if}}{{#each superclasses}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} {
     {{#if init_instance}}
     let rawValue: OpaquePointer
@@ -19,7 +19,6 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     }
     {{else}}
     init() {}
-
     {{/if}}
     {{#if eq_operator}}
     public static func == (lhs: {{name}}, rhs: {{name}}) -> Bool {
@@ -28,7 +27,7 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
     {{/if}}
 
     {{#each inits}}
-    public init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
+    {{#if is_public}}public {{/if}}init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}
@@ -98,10 +97,13 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{/if}}
         {{/each}}
     }
+    {{#unless @last}}
 
+    {{/unless}}
     {{/each}}
+
     {{#each properties}}
-    {{#if is_public}}public{{/if}} var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#if is_public}}public {{/if}}var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}
@@ -139,6 +141,8 @@ public {{#if is_class}}final class {{else}}struct {{/if}}{{name}}
         {{/if}}
         {{/each}}
     }
+    {{#unless @last}}
 
+    {{/unless}}
     {{/each}}
 }

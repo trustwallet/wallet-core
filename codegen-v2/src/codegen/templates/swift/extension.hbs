@@ -7,8 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-extension {{name}}
-    {{~#if parent_classes}}:{{/if}}{{#each parent_classes}} {{this}}{{/each}} {
+extension {{name}} {
     {{#each methods}}
     {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}func {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) -> {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each operations}}

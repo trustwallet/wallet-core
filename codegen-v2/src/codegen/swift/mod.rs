@@ -7,7 +7,8 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use crate::manifest::{FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
+use self::render::pretty_name;
+use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
 use serde_json::json;
@@ -16,204 +17,59 @@ use std::fmt::Display;
 mod functions;
 mod inits;
 mod properties;
+mod render;
 
-#[derive(Debug, Clone)]
-pub struct RenderIntput<'a> {
-    pub file_info: FileInfo,
-    pub struct_template: &'a str,
-    pub enum_template: &'a str,
-    pub extension_template: &'a str,
-    pub proto_template: &'a str,
+// Re-exports
+pub use self::render::{
+    generate_swift_types, render_to_strings, GeneratedSwiftTypes, GeneratedSwiftTypesStrings,
+    RenderIntput,
+};
+
+/// Represents a Swift struct or class.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftStruct {
+    name: String,
+    is_class: bool,
+    is_public: bool,
+    init_instance: bool,
+    superclasses: Vec<String>,
+    eq_operator: Option<SwiftOperatorEquality>,
+    inits: Vec<SwiftInit>,
+    deinits: Vec<DeinitInfo>,
+    methods: Vec<SwiftFunction>,
+    properties: Vec<SwiftProperty>,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct RenderOutput {
-    pub structs: Vec<(String, String)>,
-    pub enums: Vec<(String, String)>,
-    pub extensions: Vec<(String, String)>,
-    pub protos: Vec<(String, String)>,
+/// Represents a Swift enum.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnum {
+    name: String,
+    is_public: bool,
+    add_description: bool,
+    superclasses: Vec<String>,
+    variants: Vec<SwiftEnumVariant>,
 }
 
-/// Uses the given input templates to render all files.
-pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
-    let mut engine = Handlebars::new();
-    // Unmatched variables should result in an error.
-    engine.set_strict_mode(true);
-
-    engine.register_partial("struct", input.struct_template)?;
-    engine.register_partial("enum", input.enum_template)?;
-    engine.register_partial("extension", input.extension_template)?;
-    engine.register_partial("proto", input.proto_template)?;
-
-    let mut info = input.file_info;
-    let mut outputs = RenderOutput::default();
-
-    // The current year for the copyright header in the generated bindings.
-    let current_year = crate::current_year();
-
-    // Render structs/classes.
-    for strct in info.structs {
-        let obj = ObjectVariant::Struct(&strct.name);
-
-        // Process items.
-        let (inits, mut methods, properties);
-        (inits, info.inits) = process_inits(&ObjectVariant::Struct(&strct.name), info.inits)?;
-        (methods, info.functions) = process_methods(&obj, info.functions)?;
-        (properties, info.properties) = process_properties(&obj, info.properties)?;
-
-        // Avoid rendering empty structs.
-        if inits.is_empty() && methods.is_empty() && properties.is_empty() {
-            continue;
-        }
-
-        // Stip "TW" prefix if present.
-        let struct_name = strct
-            .name
-            .strip_prefix("TW")
-            .unwrap_or(&strct.name)
-            .to_string();
-
-        // Add superclasses.
-        let superclasses = if struct_name.ends_with("Address") {
-            vec!["Address"]
-        } else {
-            vec![]
-        };
-
-        // Handle equality operator.
-        let equality_method = methods.iter().enumerate().find(|(_, f)| f.name == "equal");
-        let equality_operator = if let Some((idx, _func)) = equality_method {
-            let operator = SwiftOperatorEquality {
-                c_ffi_name: format!("{}Equal", strct.name),
-            };
-
-            // Remove that method from the `methods` list.
-            methods.remove(idx);
-
-            Some(operator)
-        } else {
-            None
-        };
-
-        let payload = json!({
-            "current_year": current_year,
-            "name": struct_name,
-            "is_class": strct.is_class,
-            "init_instance": strct.is_class,
-            "superclasses": superclasses,
-            "eq_operator": equality_operator,
-            "inits": inits,
-            "deinits": info.deinits,
-            "methods": methods,
-            "properties": properties,
-        });
-
-        //  Render struct.
-        let out = engine.render("struct", &payload)?;
-        outputs.structs.push((struct_name.to_string(), out));
-    }
-
-    // Render enums.
-    for enm in info.enums {
-        let obj = ObjectVariant::Enum(&enm.name);
-
-        // Process items.
-        let (methods, properties);
-        (methods, info.functions) = process_methods(&obj, info.functions)?;
-        (properties, info.properties) = process_properties(&obj, info.properties)?;
-
-        // Stip "TW" prefix if present.
-        let enum_name = enm.name.strip_prefix("TW").unwrap_or(&enm.name).to_string();
-
-        // Add superclasses.
-        let value_type = SwiftType::from(enm.value_type);
-        let mut superclasses = vec![value_type.0.as_str(), "CaseIterable"];
-
-        // If the enum variants have `as_string` fields, we generate a
-        // description method.
-        let description: Option<Vec<(&str, &str)>> =
-            if enm.variants.iter().any(|e| e.as_string.is_some()) {
-                superclasses.push("CustomStringConvertible");
-
-                let mut desc = vec![];
-                for var in &enm.variants {
-                    if let Some(ref text) = var.as_string {
-                        desc.push((var.name.as_str(), text.as_str()))
-                    } else {
-                        // If at least one variant has a `as_string` field, than
-                        // *all* of others must too.
-                        return Err(Error::BadFormat(
-                            "missing as_string field for enum variant".to_string(),
-                        ));
-                    }
-                }
-
-                Some(desc)
-            } else {
-                None
-            };
-
-        let enum_payload = json!({
-            "current_year": current_year,
-            "name": enum_name,
-            "is_public": enm.is_public,
-            "superclasses": superclasses,
-            "variants": enm.variants,
-            "description": description,
-        });
-
-        // Render enum.
-        let out = engine.render("enum", &enum_payload)?;
-        outputs.enums.push((enum_name.to_string(), out));
-
-        // Avoid rendering empty extension for enums.
-        if methods.is_empty() && properties.is_empty() {
-            continue;
-        }
-
-        let extension_payload = json!({
-            "current_year": current_year,
-            "name": enum_name,
-            "init_instance": true,
-            "parent_classes": [],
-            "methods": methods,
-            "properties": properties,
-        });
-
-        // Render enum extension.
-        let out = engine.render("extension", &extension_payload)?;
-        outputs.extensions.push((enum_name.to_string(), out));
-    }
-
-    // Render Protobufs.
-    if !info.protos.is_empty() {
-        let file_name = info
-            .name
-            .strip_prefix("TW")
-            .unwrap_or(&info.name)
-            .strip_suffix("Proto")
-            .unwrap_or(&info.name)
-            .to_string();
-
-        let protos = info
-            .protos
-            .into_iter()
-            .map(SwiftProto::try_from)
-            .collect::<Result<Vec<_>>>()?;
-
-        let payload = json!({
-            "current_year": current_year,
-            "protos": protos,
-        });
-
-        // Render protobuf.
-        let out = engine.render("proto", &payload)?;
-        outputs.protos.push((file_name, out));
-    }
-
-    Ok(outputs)
+/// Represents a Swift enum variant.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnumVariant {
+    name: String,
+    value: usize,
+    as_string: Option<String>,
 }
 
+/// Represents associated methods and properties of an enum. Based on the first
+/// codegen, those extensions are placed in a separate file.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnumExtension {
+    name: String,
+    init_instance: bool,
+    methods: Vec<SwiftFunction>,
+    properties: Vec<SwiftProperty>,
+}
+
+// Wrapper around a valid Swift type (built in or custom). Meant to be used as
+// `<SwiftType as From<TypeVariant>>::from(...)`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftType(String);
 
@@ -223,6 +79,7 @@ impl Display for SwiftType {
     }
 }
 
+/// Represents a Swift function or method.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftFunction {
     pub name: String,
@@ -235,6 +92,7 @@ pub struct SwiftFunction {
     pub comments: Vec<String>,
 }
 
+/// Represents a Swift property of a struct/class or enum.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SwiftProperty {
     pub name: String,
@@ -245,10 +103,10 @@ struct SwiftProperty {
     pub comments: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
 /// The operation to be interpreted by the templating engine. This handles
 /// parameters and C FFI calls in an appropriate way, depending on context.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SwiftOperation {
     // Results in:
     // ```swift
@@ -316,6 +174,7 @@ pub struct SwiftReturn {
 pub struct SwiftInit {
     pub name: String,
     pub is_nullable: bool,
+    pub is_public: bool,
     pub params: Vec<SwiftParam>,
     pub operations: Vec<SwiftOperation>,
     pub comments: Vec<String>,
@@ -350,12 +209,9 @@ impl TryFrom<ProtoInfo> for SwiftProto {
     type Error = Error;
 
     fn try_from(value: ProtoInfo) -> std::result::Result<Self, Self::Error> {
-        let mut name = value.0.replace("_", "");
-        name = name.replace("TW", "");
-        name = name.replace("Proto", "");
-
         Ok(SwiftProto {
-            name,
+            // Convert the name into an appropriate format.
+            name: pretty_name(value.0.clone()),
             c_ffi_name: value.0,
         })
     }
