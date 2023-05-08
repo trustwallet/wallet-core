@@ -61,10 +61,8 @@ jobs:
       - name: Run tests in WASM
         run: |
           source ../emsdk/emsdk_env.sh
-          cargo test --target wasm32-unknown-emscripten --release
+          cargo test --target wasm32-unknown-emscripten --release --verbose
         env:
-          # Don't use the sccache for WASM target.
-#          RUSTC_WRAPPER: ""
           CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER: node
         working-directory: rust
 
