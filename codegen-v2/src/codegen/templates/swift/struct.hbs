@@ -103,7 +103,7 @@ import Foundation
     {{/each}}
 
     {{#each properties}}
-    {{#if is_public}}public{{/if}} var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+    {{#if is_public}}public {{/if}}var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
         {{#each operations}}
         {{#if this.call}}
         let {{this.call.var_name}} = {{this.call.call}}

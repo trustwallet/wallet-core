@@ -36,7 +36,7 @@ final class FirstStruct {
         return result
     }
 
-     var firstProperty: Bool {
+    var firstProperty: Bool {
         let obj = self.rawValue
         let result = FirstStructFirstProperty(obj)
         return result
