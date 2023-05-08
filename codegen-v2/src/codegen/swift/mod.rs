@@ -51,43 +51,6 @@ pub struct RenderOutput {
     protos: Vec<SwiftProto>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SwiftStruct {
-    name: String,
-    is_class: bool,
-    init_instance: bool,
-    superclasses: Vec<String>,
-    eq_operator: Option<SwiftOperatorEquality>,
-    inits: Vec<SwiftInit>,
-    deinits: Vec<DeinitInfo>,
-    methods: Vec<SwiftFunction>,
-    properties: Vec<SwiftProperty>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SwiftEnum {
-    name: String,
-    is_public: bool,
-    add_description: bool,
-    superclasses: Vec<String>,
-    variants: Vec<SwiftEnumVariant>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SwiftEnumVariant {
-    name: String,
-    value: usize,
-    as_string: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SwiftEnumExtension {
-    name: String,
-    init_instance: bool,
-    methods: Vec<SwiftFunction>,
-    properties: Vec<SwiftProperty>,
-}
-
 pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOutputStrings> {
     // The current year for the copyright header in the generated bindings.
     let current_year = crate::current_year();
@@ -105,7 +68,7 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
     let rendered = render_file_info(input)?;
     let mut out_str = RenderOutputStrings::default();
 
-    //  Render struct.
+    //  Render structs.
     for strct in rendered.structs {
         let out = engine.render(
             "struct",
@@ -114,9 +77,11 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
                 data: &strct,
             },
         )?;
+
         out_str.structs.push((strct.name.to_string(), out));
     }
 
+    //  Render enums.
     for enm in rendered.enums {
         let out = engine.render(
             "enum",
@@ -125,9 +90,11 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
                 data: &enm,
             },
         )?;
+
         out_str.enums.push((enm.name.to_string(), out));
     }
 
+    //  Render extensions.
     for ext in rendered.extensions {
         let out = engine.render(
             "extension",
@@ -136,9 +103,11 @@ pub fn render_file_info_strings<'a>(input: RenderIntput<'a>) -> Result<RenderOut
                 data: &ext,
             },
         )?;
+
         out_str.extensions.push((ext.name.to_string(), out));
     }
 
+    //  Render protos.
     if !rendered.protos.is_empty() {
         let out = engine.render(
             "proto",
@@ -287,6 +256,43 @@ pub fn render_file_info<'a>(input: RenderIntput<'a>) -> Result<RenderOutput> {
     }
 
     Ok(outputs)
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftStruct {
+    name: String,
+    is_class: bool,
+    init_instance: bool,
+    superclasses: Vec<String>,
+    eq_operator: Option<SwiftOperatorEquality>,
+    inits: Vec<SwiftInit>,
+    deinits: Vec<DeinitInfo>,
+    methods: Vec<SwiftFunction>,
+    properties: Vec<SwiftProperty>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnum {
+    name: String,
+    is_public: bool,
+    add_description: bool,
+    superclasses: Vec<String>,
+    variants: Vec<SwiftEnumVariant>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnumVariant {
+    name: String,
+    value: usize,
+    as_string: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SwiftEnumExtension {
+    name: String,
+    init_instance: bool,
+    methods: Vec<SwiftFunction>,
+    properties: Vec<SwiftProperty>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
