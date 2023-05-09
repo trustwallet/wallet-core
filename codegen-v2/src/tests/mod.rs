@@ -31,6 +31,7 @@ fn render_and_compare_struct(input: &str, expected: &str) {
     assert!(rendered.protos.is_empty());
 
     let (_name, output) = &rendered.structs[0];
+    println!("{output}");
     assert_eq!(output, expected);
 }
 
@@ -116,4 +117,13 @@ fn enum_with_extension() {
     // Check generated extension.
     let (_name, output) = &rendered.extensions[0];
     assert_eq!(output, EXPECTED_EXTENSION);
+}
+
+
+#[test]
+fn non_associated() {
+    const INPUT: &str = include_str!("samples/non-associated.input.yaml");
+    const EXPECTED: &str = include_str!("samples/non-associated.output.swift");
+
+    render_and_compare_struct(INPUT, EXPECTED);
 }
