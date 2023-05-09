@@ -18,5 +18,4 @@ extension MainEnum {
         let result = MainEnumSecondFunction(first_param)
         return result
     }
-
 }
