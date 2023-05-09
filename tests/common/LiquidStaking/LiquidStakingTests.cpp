@@ -761,7 +761,7 @@ namespace TW::LiquidStaking::tests {
             Ethereum::Proto::SigningOutput output;
             ANY_SIGN(tx, TWCoinTypeEthereum);
             EXPECT_EQ(hex(output.encoded()), "02f898018085085e42c7c0858fbcc8fcd88301c52094ae7ab96520de3a18e5e111b5eaab095312d7fe8487038d7ea4c68000a4a1903eab0000000000000000000000000000000000000000000000000000000000000000c001a0b94102406fb29a09f935bd4cc44155b8b1f4f33f90593f707cf849163b4c67dda035944b58665c5b4e7ee5cf537f24c375f5c9eaedd94d50bcdcc1cc2e5f21c66c");
-            // Successfully broadcasted https://polygonscan.com/tx/0x0f6c4f7a893c3f08be30d2ea24479d7ed4bdba40875d07cfd607cf97980b7cf0
+            // Successfully broadcasted https://etherscan.io/tx/0x4d509fd50f474a568419ade4df13b43943b5c8233e980d2217784c512941b3bd
         }
 
         // TW interface
@@ -783,7 +783,7 @@ namespace TW::LiquidStaking::tests {
             Ethereum::Proto::SigningOutput output;
             ANY_SIGN(tx, TWCoinTypeEthereum);
             EXPECT_EQ(hex(output.encoded()), "02f898018085085e42c7c0858fbcc8fcd88301c52094ae7ab96520de3a18e5e111b5eaab095312d7fe8487038d7ea4c68000a4a1903eab0000000000000000000000000000000000000000000000000000000000000000c001a0b94102406fb29a09f935bd4cc44155b8b1f4f33f90593f707cf849163b4c67dda035944b58665c5b4e7ee5cf537f24c375f5c9eaedd94d50bcdcc1cc2e5f21c66c");
-            // Successfully broadcasted https://polygonscan.com/tx/0x0f6c4f7a893c3f08be30d2ea24479d7ed4bdba40875d07cfd607cf97980b7cf0
+            // Successfully broadcasted https://etherscan.io/tx/0x4d509fd50f474a568419ade4df13b43943b5c8233e980d2217784c512941b3bd
         }
     }
 }
