@@ -119,7 +119,6 @@ fn enum_with_extension() {
     assert_eq!(output, EXPECTED_EXTENSION);
 }
 
-
 #[test]
 fn non_associated() {
     const INPUT: &str = include_str!("samples/non-associated.input.yaml");
