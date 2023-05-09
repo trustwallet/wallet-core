@@ -65,7 +65,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
             },
         )?;
 
-        out_str.structs.push((strct.name.to_string(), out));
+        out_str.structs.push((strct.name, out));
     }
 
     //  Render enums.
@@ -78,7 +78,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
             },
         )?;
 
-        out_str.enums.push((enm.name.to_string(), out));
+        out_str.enums.push((enm.name, out));
     }
 
     //  Render extensions.
@@ -91,7 +91,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
             },
         )?;
 
-        out_str.extensions.push((ext.name.to_string(), out));
+        out_str.extensions.push((ext.name, out));
     }
 
     //  Render protos.
