@@ -51,8 +51,10 @@ pub mod starkex;
 pub mod traits;
 pub mod tw;
 
+pub type KeyPairResult<T> = std::result::Result<T, KeyPairError>;
+
 #[derive(Debug)]
-pub enum Error {
+pub enum KeyPairError {
     InvalidSecretKey,
     InvalidPublicKey,
     InvalidSignature,

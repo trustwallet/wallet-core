@@ -7,6 +7,7 @@
 use digest::{consts::U64, Digest};
 
 mod keypair;
+mod mangle;
 mod modifications;
 mod private;
 mod public;

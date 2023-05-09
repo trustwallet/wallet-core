@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use curve25519_dalek::edwards::CompressedEdwardsY;
 use curve25519_dalek::scalar::Scalar;
 use tw_hash::{concat, H256, H512};
@@ -53,12 +53,12 @@ impl ToBytesVec for Signature {
 }
 
 impl<'a> TryFrom<&'a [u8]> for Signature {
-    type Error = Error;
+    type Error = KeyPairError;
 
     /// Construct a `Signature` from a slice of bytes.
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L115-L190
     fn try_from(sign: &'a [u8]) -> Result<Self, Self::Error> {
-        let bytes = H512::try_from(sign).map_err(|_| Error::InvalidSignature)?;
+        let bytes = H512::try_from(sign).map_err(|_| KeyPairError::InvalidSignature)?;
 
         let (lower, upper): (H256, H256) = bytes.split();
 
@@ -71,7 +71,10 @@ impl<'a> TryFrom<&'a [u8]> for Signature {
 }
 
 /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/signature.rs#L83-L102
-fn get_scalar(bytes: H256) -> Result<Scalar, Error> {
+fn get_scalar(bytes: H256) -> KeyPairResult<Scalar> {
+    /// Equals to 240 decimal.
+    const SIGNIFICANT_BITS_MASK: u8 = 0b1111_0000;
+
     // Since this is only used in signature deserialisation (i.e. upon
     // verification), we can do a "succeed fast" trick by checking that the most
     // significant 4 bits are unset.  If they are unset, we can succeed fast
@@ -80,12 +83,13 @@ fn get_scalar(bytes: H256) -> Result<Scalar, Error> {
     // as the order of the basepoint is roughly a 2^(252.5) bit number.
     //
     // This succeed-fast trick should succeed for roughly half of all scalars.
-    if bytes[31] & 240 == 0 {
+    let last_byte = bytes.last().expect("H256 is exactly 32 length");
+    if last_byte & SIGNIFICANT_BITS_MASK == 0 {
         return Ok(Scalar::from_bits(bytes.take()));
     }
 
     match Scalar::from_canonical_bytes(bytes.take()) {
         Some(x) => Ok(x),
-        None => Err(Error::InvalidSignature),
+        None => Err(KeyPairError::InvalidSignature),
     }
 }

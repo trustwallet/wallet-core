@@ -7,7 +7,7 @@
 use crate::starkex::field_element_from_bytes_be;
 use crate::starkex::signature::Signature;
 use crate::traits::VerifyingKeyTrait;
-use crate::Error;
+use crate::KeyPairError;
 use starknet_crypto::verify as ecdsa_verify;
 use starknet_ff::FieldElement;
 use tw_encoding::hex;
@@ -39,21 +39,21 @@ impl VerifyingKeyTrait for PublicKey {
 }
 
 impl<'a> TryFrom<&'a [u8]> for PublicKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        let bytes = H256::try_from(bytes).map_err(|_| Error::InvalidPublicKey)?;
-        let public_scalar =
-            FieldElement::from_bytes_be(&bytes.take()).map_err(|_| Error::InvalidPublicKey)?;
+        let bytes = H256::try_from(bytes).map_err(|_| KeyPairError::InvalidPublicKey)?;
+        let public_scalar = FieldElement::from_bytes_be(&bytes.take())
+            .map_err(|_| KeyPairError::InvalidPublicKey)?;
         Ok(PublicKey::from_scalar(public_scalar))
     }
 }
 
 impl<'a> TryFrom<&'a str> for PublicKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = hex::decode(hex).map_err(|_| Error::InvalidPublicKey)?;
+        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
         Self::try_from(bytes.as_slice())
     }
 }

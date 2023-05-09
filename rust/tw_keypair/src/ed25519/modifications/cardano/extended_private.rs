@@ -12,7 +12,7 @@ use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
 use crate::traits::SigningKeyTrait;
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use std::ops::Range;
 use tw_encoding::hex;
 use tw_hash::H256;
@@ -51,7 +51,7 @@ impl<H: Hasher512> ExtendedPrivateKey<H> {
         &self,
         public: &ExtendedPublicKey<H>,
         message: &[u8],
-    ) -> Result<Signature, Error> {
+    ) -> KeyPairResult<Signature> {
         self.key
             .expanded_key
             .sign_with_pubkey(public.key_for_signing(), message)
@@ -62,7 +62,7 @@ impl<H: Hasher512> SigningKeyTrait for ExtendedPrivateKey<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
-    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         self.sign_with_public_key(&self.public(), message.as_slice())
     }
 }
@@ -76,11 +76,11 @@ impl<H: Hasher512> ToBytesZeroizing for ExtendedPrivateKey<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPrivateKey<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         if bytes.len() != Self::LEN {
-            return Err(Error::InvalidSecretKey);
+            return Err(KeyPairError::InvalidSecretKey);
         }
         let key = ExtendedSecretPart::try_from(&bytes[Self::KEY_RANGE])?;
         let second_key = ExtendedSecretPart::try_from(&bytes[Self::SECOND_KEY_RANGE])?;
@@ -90,10 +90,10 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPrivateKey<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedPrivateKey<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| Error::InvalidSecretKey)?);
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Self::try_from(bytes.as_slice())
     }
 }
@@ -128,18 +128,18 @@ impl<H: Hasher512> ToBytesZeroizing for ExtendedSecretPart<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedSecretPart<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         if bytes.len() != Self::LEN {
-            return Err(Error::InvalidSecretKey);
+            return Err(KeyPairError::InvalidSecretKey);
         }
-        let secret =
-            H256::try_from(&bytes[Self::SECRET_RANGE]).map_err(|_| Error::InvalidSecretKey)?;
-        let extension =
-            H256::try_from(&bytes[Self::EXTENSION_RANGE]).map_err(|_| Error::InvalidSecretKey)?;
-        let chain_code =
-            H256::try_from(&bytes[Self::CHAIN_CODE_RANGE]).map_err(|_| Error::InvalidSecretKey)?;
+        let secret = H256::try_from(&bytes[Self::SECRET_RANGE])
+            .map_err(|_| KeyPairError::InvalidSecretKey)?;
+        let extension = H256::try_from(&bytes[Self::EXTENSION_RANGE])
+            .map_err(|_| KeyPairError::InvalidSecretKey)?;
+        let chain_code = H256::try_from(&bytes[Self::CHAIN_CODE_RANGE])
+            .map_err(|_| KeyPairError::InvalidSecretKey)?;
 
         let expanded_key = ExpandedSecretKey::with_extended_secret(secret, extension);
         Ok(ExtendedSecretPart {

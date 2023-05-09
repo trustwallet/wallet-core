@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::ed25519::mangle::mangle_scalar;
 use crate::ed25519::secret::ExpandedSecretKey;
 use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
 use crate::traits::VerifyingKeyTrait;
-use crate::Error;
+use crate::KeyPairError;
 use curve25519_dalek::constants;
 use curve25519_dalek::edwards::{CompressedEdwardsY, EdwardsPoint};
 use curve25519_dalek::scalar::Scalar;
@@ -75,9 +76,7 @@ impl<H: Hasher512> PublicKey<H> {
     fn mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(
         mut bits: [u8; 32],
     ) -> PublicKey<H> {
-        bits[0] &= 248;
-        bits[31] &= 127;
-        bits[31] |= 64;
+        mangle_scalar(&mut bits);
 
         Self::multiply_by_basepoint_to_produce_public_key(bits)
     }
@@ -132,14 +131,16 @@ impl<H: Hasher512> ToBytesVec for PublicKey<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     /// Inspired by: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L92-L145
     fn try_from(pubkey: &'a [u8]) -> Result<Self, Self::Error> {
-        let pubkey = H256::try_from(pubkey).map_err(|_| Error::InvalidPublicKey)?;
+        let pubkey = H256::try_from(pubkey).map_err(|_| KeyPairError::InvalidPublicKey)?;
 
         let compressed = CompressedEdwardsY(pubkey.take());
-        let point = compressed.decompress().ok_or(Error::InvalidPublicKey)?;
+        let point = compressed
+            .decompress()
+            .ok_or(KeyPairError::InvalidPublicKey)?;
 
         Ok(PublicKey {
             compressed,
@@ -150,10 +151,10 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a str> for PublicKey<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = hex::decode(hex).map_err(|_| Error::InvalidPublicKey)?;
+        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
         Self::try_from(bytes.as_slice())
     }
 }

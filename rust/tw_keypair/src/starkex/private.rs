@@ -8,7 +8,7 @@ use crate::starkex::field_element_from_bytes_be;
 use crate::starkex::public::PublicKey;
 use crate::starkex::signature::Signature;
 use crate::traits::SigningKeyTrait;
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use starknet_crypto::{
     get_public_key, rfc6979_generate_k, sign, SignError, Signature as EcdsaSignature,
 };
@@ -35,30 +35,31 @@ impl SigningKeyTrait for PrivateKey {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
-    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         let hash_to_sign =
-            field_element_from_bytes_be(&message).map_err(|_| Error::InvalidSignMessage)?;
-        let signature = ecdsa_sign(&self.secret, &hash_to_sign).map_err(|_| Error::SigningError)?;
+            field_element_from_bytes_be(&message).map_err(|_| KeyPairError::InvalidSignMessage)?;
+        let signature =
+            ecdsa_sign(&self.secret, &hash_to_sign).map_err(|_| KeyPairError::SigningError)?;
         Ok(Signature::new(signature))
     }
 }
 
 impl<'a> TryFrom<&'a [u8]> for PrivateKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        let bytes = H256::try_from(bytes).map_err(|_| Error::InvalidSecretKey)?;
-        let secret =
-            FieldElement::from_bytes_be(&bytes.take()).map_err(|_| Error::InvalidSecretKey)?;
+        let bytes = H256::try_from(bytes).map_err(|_| KeyPairError::InvalidSecretKey)?;
+        let secret = FieldElement::from_bytes_be(&bytes.take())
+            .map_err(|_| KeyPairError::InvalidSecretKey)?;
         Ok(PrivateKey { secret })
     }
 }
 
 impl<'a> TryFrom<&'a str> for PrivateKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| Error::InvalidSecretKey)?);
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Self::try_from(bytes.as_slice())
     }
 }

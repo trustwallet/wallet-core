@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use k256::FieldBytes;
 use std::ops::{Range, RangeInclusive};
 use tw_hash::{H256, H520};
@@ -61,9 +61,9 @@ impl Signature {
     }
 
     /// Tries to create a Signature from the serialized representation.
-    pub fn from_bytes(sig: &[u8]) -> Result<Signature, Error> {
+    pub fn from_bytes(sig: &[u8]) -> KeyPairResult<Signature> {
         if sig.len() != Signature::len() {
-            return Err(Error::InvalidSignature);
+            return Err(KeyPairError::InvalidSignature);
         }
 
         Ok(Signature {
@@ -87,11 +87,11 @@ impl Signature {
     /// # Panic
     ///
     /// `r` and `s` must be 32 byte arrays, otherwise the function panics.
-    fn signature_from_slices(r: &[u8], s: &[u8]) -> Result<k256::ecdsa::Signature, Error> {
+    fn signature_from_slices(r: &[u8], s: &[u8]) -> KeyPairResult<k256::ecdsa::Signature> {
         let r = FieldBytes::clone_from_slice(r);
         let s = FieldBytes::clone_from_slice(s);
 
-        k256::ecdsa::Signature::from_scalars(r, s).map_err(|_| Error::InvalidSignature)
+        k256::ecdsa::Signature::from_scalars(r, s).map_err(|_| KeyPairError::InvalidSignature)
     }
 }
 
@@ -107,11 +107,11 @@ pub struct VerifySignature {
 }
 
 impl<'a> TryFrom<&'a [u8]> for VerifySignature {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(sig: &'a [u8]) -> Result<Self, Self::Error> {
         if !VERIFY_SIGNATURE_LEN_RANGE.contains(&sig.len()) {
-            return Err(Error::InvalidSignature);
+            return Err(KeyPairError::InvalidSignature);
         }
 
         Ok(VerifySignature {

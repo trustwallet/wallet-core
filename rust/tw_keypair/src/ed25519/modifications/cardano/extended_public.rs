@@ -8,7 +8,7 @@ use crate::ed25519::public::PublicKey;
 use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
 use crate::traits::VerifyingKeyTrait;
-use crate::Error;
+use crate::KeyPairError;
 use std::ops::Range;
 use tw_encoding::hex;
 use tw_hash::H256;
@@ -58,11 +58,11 @@ impl<H: Hasher512> ToBytesVec for ExtendedPublicKey<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPublicKey<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         if bytes.len() != Self::LEN {
-            return Err(Error::InvalidPublicKey);
+            return Err(KeyPairError::InvalidPublicKey);
         }
 
         let key = ExtendedPublicPart::try_from(&bytes[Self::KEY_RANGE])?;
@@ -73,10 +73,10 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPublicKey<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedPublicKey<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = hex::decode(hex).map_err(|_| Error::InvalidPublicKey)?;
+        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
         Self::try_from(bytes.as_slice())
     }
 }
@@ -98,16 +98,16 @@ impl<H: Hasher512> ExtendedPublicPart<H> {
 }
 
 impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedPublicPart<H> {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         if bytes.len() != Self::LEN {
-            return Err(Error::InvalidPublicKey);
+            return Err(KeyPairError::InvalidPublicKey);
         }
 
         let public = PublicKey::try_from(&bytes[Self::PUBLIC_RANGE])?;
-        let chain_code =
-            H256::try_from(&bytes[Self::CHAIN_CODE_RANGE]).map_err(|_| Error::InvalidPublicKey)?;
+        let chain_code = H256::try_from(&bytes[Self::CHAIN_CODE_RANGE])
+            .map_err(|_| KeyPairError::InvalidPublicKey)?;
 
         Ok(ExtendedPublicPart { public, chain_code })
     }

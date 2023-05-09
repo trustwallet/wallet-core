@@ -6,7 +6,7 @@
 
 use crate::traits::VerifyingKeyTrait;
 use crate::tw::PublicKeyType;
-use crate::{ed25519, secp256k1, starkex, Error};
+use crate::{ed25519, secp256k1, starkex, KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
@@ -22,7 +22,7 @@ pub enum PublicKey {
 
 impl PublicKey {
     /// Validates the given `bytes` using the `ty` public key type and creates a public key from it.
-    pub fn new(bytes: Vec<u8>, ty: PublicKeyType) -> Result<PublicKey, Error> {
+    pub fn new(bytes: Vec<u8>, ty: PublicKeyType) -> KeyPairResult<PublicKey> {
         match ty {
             PublicKeyType::Secp256k1 if secp256k1::PublicKey::COMPRESSED == bytes.len() => {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
@@ -52,7 +52,7 @@ impl PublicKey {
                 let pubkey = starkex::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Starkex(pubkey))
             },
-            _ => Err(Error::InvalidPublicKey),
+            _ => Err(KeyPairError::InvalidPublicKey),
         }
     }
 

@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::Error;
+use crate::KeyPairError;
 use starknet_ff::FieldElement;
 use std::ops::Range;
 use tw_hash::H256;
@@ -61,20 +61,20 @@ impl ToBytesVec for Signature {
 }
 
 impl<'a> TryFrom<&'a [u8]> for Signature {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         if bytes.len() != Signature::len() {
-            return Err(Error::InvalidSignature);
+            return Err(KeyPairError::InvalidSignature);
         }
 
         let r_bytes = H256::try_from(&bytes[R_RANGE]).expect("Expected a valid r range");
         let s_bytes = H256::try_from(&bytes[S_RANGE]).expect("Expected a valid s range");
 
-        let r =
-            FieldElement::from_bytes_be(&r_bytes.take()).map_err(|_| Error::InvalidSignature)?;
-        let s =
-            FieldElement::from_bytes_be(&s_bytes.take()).map_err(|_| Error::InvalidSignature)?;
+        let r = FieldElement::from_bytes_be(&r_bytes.take())
+            .map_err(|_| KeyPairError::InvalidSignature)?;
+        let s = FieldElement::from_bytes_be(&s_bytes.take())
+            .map_err(|_| KeyPairError::InvalidSignature)?;
 
         Ok(Signature {
             signature: starknet_crypto::Signature { r, s },

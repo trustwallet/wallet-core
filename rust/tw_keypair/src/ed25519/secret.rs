@@ -4,12 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::ed25519::mangle::mangle_scalar;
 use crate::ed25519::signature::Signature;
 use crate::ed25519::Hasher512;
-use crate::Error;
+use crate::KeyPairResult;
 use curve25519_dalek::constants;
 use curve25519_dalek::scalar::Scalar;
 use std::marker::PhantomData;
+use std::ops::DerefMut;
 use tw_hash::{H256, H512};
 use zeroize::ZeroizeOnDrop;
 
@@ -37,10 +39,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         hash.copy_from_slice(h.finalize().as_slice());
 
         let (mut lower, upper): (H256, H256) = hash.split();
-
-        lower[0] &= 248;
-        lower[31] &= 63;
-        lower[31] |= 64;
+        mangle_scalar(lower.deref_mut());
 
         ExpandedSecretKey {
             key: Scalar::from_bits(lower.take()),
@@ -75,7 +74,7 @@ impl<H: Hasher512> ExpandedSecretKey<H> {
         &self,
         pubkey: H256,
         message: &[u8],
-    ) -> Result<Signature, Error> {
+    ) -> KeyPairResult<Signature> {
         let mut h = H::new();
 
         h.update(self.nonce.as_slice());

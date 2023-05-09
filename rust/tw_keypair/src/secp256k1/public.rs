@@ -6,7 +6,7 @@
 
 use crate::secp256k1::signature::VerifySignature;
 use crate::traits::VerifyingKeyTrait;
-use crate::Error;
+use crate::KeyPairError;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
@@ -51,27 +51,28 @@ impl VerifyingKeyTrait for PublicKey {
 
     fn verify(&self, sign: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         self.public
-            .verify_prehash(&message, &sign.signature)
+            .verify_prehash(message.as_slice(), &sign.signature)
             .is_ok()
     }
 }
 
 impl<'a> TryFrom<&'a str> for PublicKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = hex::decode(hex).map_err(|_| Error::InvalidPublicKey)?;
+        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
         Self::try_from(bytes.as_slice())
     }
 }
 
 impl<'a> TryFrom<&'a [u8]> for PublicKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     /// Expected either `H264` or `H520` slice.
     fn try_from(data: &'a [u8]) -> Result<Self, Self::Error> {
         Ok(PublicKey {
-            public: VerifyingKey::from_sec1_bytes(data).map_err(|_| Error::InvalidPublicKey)?,
+            public: VerifyingKey::from_sec1_bytes(data)
+                .map_err(|_| KeyPairError::InvalidPublicKey)?,
         })
     }
 }

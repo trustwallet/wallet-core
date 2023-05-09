@@ -6,7 +6,7 @@
 
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
-use crate::{ed25519, secp256k1, starkex, Error};
+use crate::{ed25519, secp256k1, starkex, KeyPairError, KeyPairResult};
 use std::ops::Range;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
@@ -30,9 +30,9 @@ impl PrivateKey {
     const EXTENDED_CARDANO_RANGE: Range<usize> = 0..Self::CARDANO_SIZE;
 
     /// Validates the given `bytes` secret and creates a private key.
-    pub fn new(bytes: Vec<u8>) -> Result<PrivateKey, Error> {
+    pub fn new(bytes: Vec<u8>) -> KeyPairResult<PrivateKey> {
         if !Self::is_valid_general(&bytes) {
-            return Err(Error::InvalidSecretKey);
+            return Err(KeyPairError::InvalidSecretKey);
         }
         Ok(PrivateKey { bytes })
     }
@@ -48,9 +48,9 @@ impl PrivateKey {
     }
 
     /// Returns the 192 byte array - the essential cardano extended private key data.
-    pub fn extended_cardano_key(&self) -> Result<&[u8], Error> {
+    pub fn extended_cardano_key(&self) -> KeyPairResult<&[u8]> {
         if self.bytes.len() != Self::CARDANO_SIZE {
-            return Err(Error::InvalidSecretKey);
+            return Err(KeyPairError::InvalidSecretKey);
         }
         Ok(&self.bytes[Self::EXTENDED_CARDANO_RANGE])
     }
@@ -86,13 +86,13 @@ impl PrivateKey {
     }
 
     /// Signs a `message` with using the given elliptic curve.
-    pub fn sign(&self, message: &[u8], curve: Curve) -> Result<Vec<u8>, Error> {
-        fn sign_impl<Key>(signing_key: Key, message: &[u8]) -> Result<Vec<u8>, Error>
+    pub fn sign(&self, message: &[u8], curve: Curve) -> KeyPairResult<Vec<u8>> {
+        fn sign_impl<Key>(signing_key: Key, message: &[u8]) -> KeyPairResult<Vec<u8>>
         where
             Key: SigningKeyTrait,
         {
             let hash_to_sign = <Key as SigningKeyTrait>::SigningMessage::try_from(message)
-                .map_err(|_| Error::InvalidSignMessage)?;
+                .map_err(|_| KeyPairError::InvalidSignMessage)?;
             signing_key.sign(hash_to_sign).map(|sig| sig.to_vec())
         }
 
@@ -108,7 +108,7 @@ impl PrivateKey {
     }
 
     /// Returns the public key associated with the `self` private key and `ty` public key type.
-    pub fn get_public_key_by_type(&self, ty: PublicKeyType) -> Result<PublicKey, Error> {
+    pub fn get_public_key_by_type(&self, ty: PublicKeyType) -> KeyPairResult<PublicKey> {
         match ty {
             PublicKeyType::Secp256k1 => {
                 let privkey = self.to_secp256k1_privkey()?;
@@ -140,27 +140,27 @@ impl PrivateKey {
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`secp256k1::PrivateKey`].
-    fn to_secp256k1_privkey(&self) -> Result<secp256k1::PrivateKey, Error> {
+    fn to_secp256k1_privkey(&self) -> KeyPairResult<secp256k1::PrivateKey> {
         secp256k1::PrivateKey::try_from(self.key().as_slice())
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`ed25519::sha512::PrivateKey`].
-    fn to_ed25519(&self) -> Result<ed25519::sha512::PrivateKey, Error> {
+    fn to_ed25519(&self) -> KeyPairResult<ed25519::sha512::PrivateKey> {
         ed25519::sha512::PrivateKey::try_from(self.key().as_slice())
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`ed25519::blake2b::PrivateKey`].
-    fn to_ed25519_blake2b(&self) -> Result<ed25519::blake2b::PrivateKey, Error> {
+    fn to_ed25519_blake2b(&self) -> KeyPairResult<ed25519::blake2b::PrivateKey> {
         ed25519::blake2b::PrivateKey::try_from(self.key().as_slice())
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`ed25519::cardano::ExtendedPrivateKey`].
-    fn to_ed25519_extended_cardano(&self) -> Result<ed25519::cardano::ExtendedPrivateKey, Error> {
+    fn to_ed25519_extended_cardano(&self) -> KeyPairResult<ed25519::cardano::ExtendedPrivateKey> {
         ed25519::cardano::ExtendedPrivateKey::try_from(self.extended_cardano_key()?)
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`starkex::PrivateKey`].
-    fn to_starkex_privkey(&self) -> Result<starkex::PrivateKey, Error> {
+    fn to_starkex_privkey(&self) -> KeyPairResult<starkex::PrivateKey> {
         starkex::PrivateKey::try_from(self.key().as_slice())
     }
 }

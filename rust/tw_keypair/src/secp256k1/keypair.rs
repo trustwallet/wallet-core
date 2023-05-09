@@ -8,7 +8,7 @@ use crate::secp256k1::private::PrivateKey;
 use crate::secp256k1::public::PublicKey;
 use crate::secp256k1::{Signature, VerifySignature};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 use tw_hash::H256;
 use zeroize::Zeroizing;
@@ -36,7 +36,7 @@ impl SigningKeyTrait for KeyPair {
     type SigningMessage = H256;
     type Signature = Signature;
 
-    fn sign(&self, message: Self::SigningMessage) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         self.private.sign(message)
     }
 }
@@ -51,7 +51,7 @@ impl VerifyingKeyTrait for KeyPair {
 }
 
 impl<'a> TryFrom<&'a [u8]> for KeyPair {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         let private = PrivateKey::try_from(bytes)?;
@@ -61,10 +61,10 @@ impl<'a> TryFrom<&'a [u8]> for KeyPair {
 }
 
 impl<'a> TryFrom<&'a str> for KeyPair {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| Error::InvalidSecretKey)?);
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
         Self::try_from(bytes.as_slice())
     }
 }

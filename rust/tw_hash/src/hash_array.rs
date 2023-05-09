@@ -16,6 +16,8 @@ pub type H264 = Hash<33>;
 pub type H512 = Hash<64>;
 pub type H520 = Hash<65>;
 
+pub type SplitHash<const L: usize, const R: usize> = (Hash<L>, Hash<R>);
+
 /// Concatenates `left: Hash<L>` and `right: Hash<R>` into `Hash<N>`
 /// where `N = L + R` (statically checked).
 pub fn concat<const L: usize, const R: usize, const N: usize>(
@@ -53,7 +55,7 @@ impl<const N: usize> Hash<N> {
 
     /// Splits the byte array into two pieces with `L` and `R` lengths accordingly,
     /// where `N = L + R` (statically checked).
-    pub fn split<const L: usize, const R: usize>(&self) -> (Hash<L>, Hash<R>) {
+    pub fn split<const L: usize, const R: usize>(&self) -> SplitHash<L, R> {
         // Ensure if `L + R == N` at compile time.
         let _ = AssertSplit::<L, R, N>::VALID;
 
@@ -146,7 +148,7 @@ impl<const N: usize> AsRef<[u8]> for Hash<N> {
 }
 
 impl<const N: usize> Deref for Hash<N> {
-    type Target = [u8];
+    type Target = [u8; N];
 
     fn deref(&self) -> &Self::Target {
         &self.0
