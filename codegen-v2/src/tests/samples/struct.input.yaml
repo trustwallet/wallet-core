@@ -1,4 +1,4 @@
-name: SingleItems
+name: Struct
 structs:
 - name: MainStruct 
   is_public: true

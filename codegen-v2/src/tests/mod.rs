@@ -98,8 +98,8 @@ fn privat_enum_with_description() {
 #[test]
 fn enum_with_extension() {
     const INPUT: &str = include_str!("samples/enum_extension.input.yaml");
-    const EXPECTED_1: &str = include_str!("samples/enum.output.swift");
-    const EXPECTED_2: &str = include_str!("samples/enum_extension.output.swift");
+    const EXPECTED_ENUM: &str = include_str!("samples/enum.output.swift");
+    const EXPECTED_EXTENSION: &str = include_str!("samples/enum_extension.output.swift");
 
     let input = create_intput(INPUT);
     let rendered = render_to_strings(input).unwrap();
@@ -111,9 +111,9 @@ fn enum_with_extension() {
 
     // Check generated enum.
     let (_name, output) = &rendered.enums[0];
-    assert_eq!(output, EXPECTED_1);
+    assert_eq!(output, EXPECTED_ENUM);
 
     // Check generated extension.
     let (_name, output) = &rendered.extensions[0];
-    assert_eq!(output, EXPECTED_2);
+    assert_eq!(output, EXPECTED_EXTENSION);
 }

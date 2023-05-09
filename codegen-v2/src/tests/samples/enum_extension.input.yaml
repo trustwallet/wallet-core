@@ -1,4 +1,4 @@
-name: Enum
+name: EnumExtension
 enums:
 - name: MainEnum
   is_public: true

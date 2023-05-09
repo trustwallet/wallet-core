@@ -91,3 +91,23 @@ pub(super) fn process_inits(
 
     Ok((swift_inits, skipped_inits))
 }
+
+pub(super) fn process_deinits(
+    object: &ObjectVariant,
+    deinit: Vec<DeinitInfo>,
+) -> Result<(Vec<DeinitInfo>, Vec<DeinitInfo>)> {
+    let mut swift_deinits = vec![];
+    let mut skipped_deinits = vec![];
+
+    for deinit in deinit {
+        if deinit.name.starts_with(object.name()) {
+            swift_deinits.push(deinit)
+        } else {
+            // Deinit is not assciated with the object.
+            skipped_deinits.push(deinit);
+            continue;
+        }
+    }
+
+    Ok((swift_deinits, skipped_deinits))
+}

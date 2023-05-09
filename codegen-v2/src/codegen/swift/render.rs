@@ -1,4 +1,4 @@
-use super::*;
+use super::{inits::process_deinits, *};
 
 #[derive(Debug, Clone)]
 pub struct RenderIntput<'a> {
@@ -121,8 +121,9 @@ pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
         let obj = ObjectVariant::Struct(&strct.name);
 
         // Process items.
-        let (inits, mut methods, properties);
+        let (inits, deinits, mut methods, properties);
         (inits, info.inits) = process_inits(&obj, info.inits)?;
+        (deinits, info.deinits) = process_deinits(&obj, info.deinits)?;
         (methods, info.functions) = process_methods(&obj, info.functions)?;
         (properties, info.properties) = process_properties(&obj, info.properties)?;
 
@@ -164,8 +165,7 @@ pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
             superclasses,
             eq_operator,
             inits: inits,
-            // TODO:
-            deinits: info.deinits.clone(),
+            deinits: deinits,
             methods,
             properties,
         });
