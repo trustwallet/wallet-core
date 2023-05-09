@@ -163,7 +163,7 @@ Proto::Output Builder::buildStride() const {
 
     Proto::Output output;
     auto input = Cosmos::Proto::SigningInput();
-    auto visitFunctor = [&input](const TAction& value) {
+    auto visitFunctor = [&input, &output](const TAction& value) {
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
             auto& stride_stake = *input.add_messages()->mutable_msg_stride_liquid_staking_stake();
             stride_stake.set_creator(stake->asset().from_address());
@@ -175,6 +175,8 @@ Proto::Output Builder::buildStride() const {
             stride_redeem.set_amount(unstake->amount());
             stride_redeem.set_host_zone(unstake->receiver_chain_id());
             stride_redeem.set_receiver(unstake->receiver_address());
+        } else {
+            *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, "Stride protocol unstake include withdraw operation");
         }
     };
 
@@ -207,19 +209,21 @@ Proto::Output Builder::buildLidoEVM() const {
 
     auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
 
-    auto visitFunctor = [&transfer, this](const TAction& value) {
+
+    auto visitFunctor = [&transfer, this, &output](const TAction& value) {
         Data payload;
         uint256_t amount;
 
         if (auto* stake = std::get_if<Proto::Stake>(&value); stake) {
             internal::handleStake(*stake, mBlockchain, payload, amount, Proto::Lido);
+        } else {
+            *output.mutable_status() = generateError(Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL, "Lido protocol only support stake action for now");
         }
 
         internal::setTransferDataAndAmount(transfer, payload, amount);
     };
 
     std::visit(visitFunctor, this->mAction);
-
     *output.mutable_ethereum() = input;
     return output;
 }

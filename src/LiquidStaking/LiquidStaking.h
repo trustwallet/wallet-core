@@ -80,6 +80,9 @@ static inline Proto::Status generateError(Proto::StatusCode code, const std::opt
     case Proto::ERROR_INPUT_PROTO_DESERIALIZATION:
         status.set_message(message.value_or("Could not deserialize input proto"));
         break;
+    case Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL:
+        status.set_message(message.value_or("The selected protocol doesn't support this liquid staking operation"));
+        break;
     default:
         return status;
     }
