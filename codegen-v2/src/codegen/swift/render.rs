@@ -51,7 +51,8 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     engine.register_partial("enum", input.enum_template)?;
     engine.register_partial("extension", input.extension_template)?;
     engine.register_partial("proto", input.proto_template)?;
-    engine.register_partial("func_partial", include_str!("../templates/swift/func_partial.hbs"))?;
+    engine.register_partial("partial_init", include_str!("../templates/swift/partial_init.hbs"))?;
+    engine.register_partial("partial_func", include_str!("../templates/swift/partial_func.hbs"))?;
 
     let rendered = generate_swift_types(input.file_info)?;
     let mut out_str = GeneratedSwiftTypesStrings::default();
