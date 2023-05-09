@@ -720,4 +720,70 @@ namespace TW::LiquidStaking::tests {
             verify_tx_functor(output);
         }
     }
+
+    TEST(LiquidStaking, EthereumLidoStakeEth) {
+        Proto::Input input;
+        input.set_blockchain(Proto::ETHEREUM);
+        input.set_protocol(Proto::Lido);
+        input.set_smart_contract_address("0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84");
+        Proto::Stake stake;
+        Proto::Asset asset;
+        asset.set_staking_token(Proto::ETH);
+        *stake.mutable_asset() = asset;
+        stake.set_amount("1000000000000000");
+        *input.mutable_stake() = stake;
+
+        auto ls_output = build(input);
+        ASSERT_EQ(ls_output.status().code(), Proto::OK);
+        auto tx = *ls_output.mutable_ethereum();
+        ASSERT_TRUE(tx.transaction().has_contract_generic());
+        ASSERT_EQ(hex(tx.transaction().contract_generic().data(), true), "0xa1903eab0000000000000000000000000000000000000000000000000000000000000000");
+
+        auto fill_tx_functor = [](auto& tx){
+            // Following fields must be set afterwards, before signing ...
+            const auto chainId = store(uint256_t(1));
+            tx.set_chain_id(chainId.data(), chainId.size());
+            auto nonce = store(uint256_t(0));
+            tx.set_nonce(nonce.data(), nonce.size());
+            auto maxInclusionFeePerGas = store(uint256_t(1500000000));
+            auto maxFeePerGas = store(uint256_t(109039719380));
+            tx.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+            tx.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+            auto gasLimit = store(uint256_t(117093));
+            tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+            auto privKey = parse_hex("d68f3ae9c5b3974d27e606eb9fd8e03cf172380307dd0fe1273394b40c8b33aa");
+            tx.set_private_key(privKey.data(), privKey.size());
+            // ... end
+        };
+
+        {
+            fill_tx_functor(tx);
+            Ethereum::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeEthereum);
+            EXPECT_EQ(hex(output.encoded()), "02f898018085085e42c7c0858fbcc8fcd88301c52094ae7ab96520de3a18e5e111b5eaab095312d7fe8487038d7ea4c68000a4a1903eab0000000000000000000000000000000000000000000000000000000000000000c001a0b94102406fb29a09f935bd4cc44155b8b1f4f33f90593f707cf849163b4c67dda035944b58665c5b4e7ee5cf537f24c375f5c9eaedd94d50bcdcc1cc2e5f21c66c");
+            // Successfully broadcasted https://polygonscan.com/tx/0x0f6c4f7a893c3f08be30d2ea24479d7ed4bdba40875d07cfd607cf97980b7cf0
+        }
+
+        // TW interface
+        {
+            const auto inputData_ = input.SerializeAsString();
+            EXPECT_EQ(hex(inputData_), "0a160a020804121031303030303030303030303030303030222a3078616537616239363532304445334131384535653131314235456141623039353331324437664538342803");
+            const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+            const auto outputTWData_ = WRAPD(TWLiquidStakingBuildRequest(inputTWData_.get()));
+            const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+            EXPECT_EQ(outputData.size(), 99ul);
+            Proto::Output outputProto;
+            EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+            ASSERT_TRUE(outputProto.has_ethereum());
+            ASSERT_EQ(outputProto.status().code(), Proto::OK);
+            auto eth_tx = *ls_output.mutable_ethereum();
+            ASSERT_TRUE(eth_tx.transaction().has_contract_generic());
+            ASSERT_EQ(hex(eth_tx.transaction().contract_generic().data(), true), "0xa1903eab0000000000000000000000000000000000000000000000000000000000000000");
+            fill_tx_functor(eth_tx);
+            Ethereum::Proto::SigningOutput output;
+            ANY_SIGN(tx, TWCoinTypeEthereum);
+            EXPECT_EQ(hex(output.encoded()), "02f898018085085e42c7c0858fbcc8fcd88301c52094ae7ab96520de3a18e5e111b5eaab095312d7fe8487038d7ea4c68000a4a1903eab0000000000000000000000000000000000000000000000000000000000000000c001a0b94102406fb29a09f935bd4cc44155b8b1f4f33f90593f707cf849163b4c67dda035944b58665c5b4e7ee5cf537f24c375f5c9eaedd94d50bcdcc1cc2e5f21c66c");
+            // Successfully broadcasted https://polygonscan.com/tx/0x0f6c4f7a893c3f08be30d2ea24479d7ed4bdba40875d07cfd607cf97980b7cf0
+        }
+    }
 }
