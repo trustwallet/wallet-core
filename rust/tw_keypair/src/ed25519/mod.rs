@@ -14,7 +14,7 @@ mod public;
 mod secret;
 mod signature;
 
-pub use modifications::cardano;
+pub use modifications::{cardano, waves};
 pub use signature::Signature;
 
 /// Standard `ed25519` implementation.
