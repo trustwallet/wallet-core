@@ -1,21 +1,19 @@
 use crate::codegen::swift::{render_to_strings, RenderIntput};
 use crate::manifest::parse_str;
 
-const STRUCT_TEMPLATE: &str = include_str!("../codegen/templates/swift/struct.hbs");
-const ENUM_TEMPLATE: &str = include_str!("../codegen/templates/swift/enum.hbs");
-const EXTENSION_TEMPLATE: &str = include_str!("../codegen/templates/swift/extension.hbs");
-const PROTO_TEMPLATE: &str = include_str!("../codegen/templates/swift/proto.hbs");
-
 /// Convenience function.
 fn create_intput(yaml: &str) -> RenderIntput {
     let file_info = parse_str(yaml).unwrap();
 
     RenderIntput {
         file_info,
-        struct_template: STRUCT_TEMPLATE,
-        enum_template: ENUM_TEMPLATE,
-        extension_template: EXTENSION_TEMPLATE,
-        proto_template: PROTO_TEMPLATE,
+        struct_template: include_str!("../codegen/swift/templates/struct.hbs"),
+        enum_template: include_str!("../codegen/swift/templates/enum.hbs"),
+        extension_template: include_str!("../codegen/swift/templates/extension.hbs"),
+        proto_template: include_str!("../codegen/swift/templates/proto.hbs"),
+        partial_init_template: include_str!("../codegen/swift/templates/partial_init.hbs"),
+        partial_func_tempalte: include_str!("../codegen/swift/templates/partial_func.hbs"),
+        partial_prop_tempalte: include_str!("../codegen/swift/templates/partial_prop.hbs"),
     }
 }
 

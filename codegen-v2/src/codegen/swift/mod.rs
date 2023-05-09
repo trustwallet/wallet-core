@@ -252,7 +252,7 @@ impl From<TypeVariant> for SwiftType {
     }
 }
 
-// Covenience function: process the paremter, returning the operation for
+// Covenience function: process the parameter, returning the operation for
 // handling the C FFI call (if any).
 fn param_c_ffi_call(param: &ParamInfo) -> Option<SwiftOperation> {
     let op = match &param.ty.variant {
