@@ -27,13 +27,13 @@ fn generate_swift_bindings() -> Result<()> {
     const OUT_DIR: &str = "bindings/";
     std::fs::create_dir_all(OUT_DIR)?;
 
-    let struct_t = read_to_string("src/codegen/templates/swift/struct.hbs")?;
-    let enum_t = read_to_string("src/codegen/templates/swift/enum.hbs")?;
-    let ext_t = read_to_string("src/codegen/templates/swift/extension.hbs")?;
-    let proto_t = read_to_string("src/codegen/templates/swift/proto.hbs")?;
-    let part_init_t = read_to_string("src/codegen/templates/swift/partial_init.hbs")?;
-    let part_func_t = read_to_string("src/codegen/templates/swift/partial_func.hbs")?;
-    let part_prop_t = read_to_string("src/codegen/templates/swift/partial_prop.hbs")?;
+    let struct_t = read_to_string("src/codegen/swift/templates/struct.hbs")?;
+    let enum_t = read_to_string("src/codegen/swift/templates/enum.hbs")?;
+    let ext_t = read_to_string("src/codegen/swift/templates/extension.hbs")?;
+    let proto_t = read_to_string("src/codegen/swift/templates/proto.hbs")?;
+    let part_init_t = read_to_string("src/codegen/swift/templates/partial_init.hbs")?;
+    let part_func_t = read_to_string("src/codegen/swift/templates/partial_func.hbs")?;
+    let part_prop_t = read_to_string("src/codegen/swift/templates/partial_prop.hbs")?;
 
     // Read the manifest dir, generate bindings for each entry.
     let file_infos = parse_dir("manifest/")?;

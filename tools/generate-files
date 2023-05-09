@@ -54,7 +54,7 @@ codegen/bin/codegen
 cd codegen-v2/
 cargo run -- swift
 cp -R bindings/ ../swift/Sources/Generated/
-cp src/codegen/swift/WalletCore.h ../swift/Sources/Generated/
+cp src/codegen/swift/templates/WalletCore.h ../swift/Sources/Generated/
 cd ..
 
 # Convert doxygen comments to appropriate format

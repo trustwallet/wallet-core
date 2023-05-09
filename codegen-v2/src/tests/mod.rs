@@ -7,13 +7,13 @@ fn create_intput(yaml: &str) -> RenderIntput {
 
     RenderIntput {
         file_info,
-        struct_template: include_str!("../codegen/templates/swift/struct.hbs"),
-        enum_template: include_str!("../codegen/templates/swift/enum.hbs"),
-        extension_template: include_str!("../codegen/templates/swift/extension.hbs"),
-        proto_template: include_str!("../codegen/templates/swift/proto.hbs"),
-        partial_init_template: include_str!("../codegen/templates/swift/partial_init.hbs"),
-        partial_func_tempalte: include_str!("../codegen/templates/swift/partial_func.hbs"),
-        partial_prop_tempalte: include_str!("../codegen/templates/swift/partial_prop.hbs"),
+        struct_template: include_str!("../codegen/swift/templates/struct.hbs"),
+        enum_template: include_str!("../codegen/swift/templates/enum.hbs"),
+        extension_template: include_str!("../codegen/swift/templates/extension.hbs"),
+        proto_template: include_str!("../codegen/swift/templates/proto.hbs"),
+        partial_init_template: include_str!("../codegen/swift/templates/partial_init.hbs"),
+        partial_func_tempalte: include_str!("../codegen/swift/templates/partial_func.hbs"),
+        partial_prop_tempalte: include_str!("../codegen/swift/templates/partial_prop.hbs"),
     }
 }
 
