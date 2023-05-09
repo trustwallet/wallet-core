@@ -53,6 +53,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     engine.register_partial("proto", input.proto_template)?;
     engine.register_partial("partial_init", include_str!("../templates/swift/partial_init.hbs"))?;
     engine.register_partial("partial_func", include_str!("../templates/swift/partial_func.hbs"))?;
+    engine.register_partial("partial_prop", include_str!("../templates/swift/partial_prop.hbs"))?;
 
     let rendered = generate_swift_types(input.file_info)?;
     let mut out_str = GeneratedSwiftTypesStrings::default();
