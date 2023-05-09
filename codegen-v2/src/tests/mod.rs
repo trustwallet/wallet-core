@@ -31,7 +31,6 @@ fn render_and_compare_struct(input: &str, expected: &str) {
     assert!(rendered.protos.is_empty());
 
     let (_name, output) = &rendered.structs[0];
-    println!("{output}");
     assert_eq!(output, expected);
 }
 
@@ -45,7 +44,6 @@ fn render_and_compare_enum(input: &str, expected: &str) {
     assert!(rendered.protos.is_empty());
 
     let (_name, output) = &rendered.enums[0];
-    println!("{output}");
     assert_eq!(output, expected);
 }
 
@@ -95,4 +93,27 @@ fn privat_enum_with_description() {
     const EXPECTED: &str = include_str!("samples/enum_private.output.swift");
 
     render_and_compare_enum(INPUT, EXPECTED);
+}
+
+#[test]
+fn enum_with_extension() {
+    const INPUT: &str = include_str!("samples/enum_extension.input.yaml");
+    const EXPECTED_1: &str = include_str!("samples/enum.output.swift");
+    const EXPECTED_2: &str = include_str!("samples/enum_extension.output.swift");
+
+    let input = create_intput(INPUT);
+    let rendered = render_to_strings(input).unwrap();
+
+    assert!(rendered.structs.is_empty());
+    assert_eq!(rendered.enums.len(), 1);
+    assert_eq!(rendered.extensions.len(), 1);
+    assert!(rendered.protos.is_empty());
+
+    // Check generated enum.
+    let (_name, output) = &rendered.enums[0];
+    assert_eq!(output, EXPECTED_1);
+
+    // Check generated extension.
+    let (_name, output) = &rendered.extensions[0];
+    assert_eq!(output, EXPECTED_2);
 }
