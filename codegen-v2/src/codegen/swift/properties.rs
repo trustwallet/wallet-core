@@ -6,7 +6,6 @@
 
 use super::*;
 use crate::manifest::PropertyInfo;
-use heck::ToLowerCamelCase;
 
 /// This function checks each property and determines whether there's an
 /// association with the passed on object (struct or enum), based on common name
@@ -65,12 +64,7 @@ pub(super) fn process_properties(
         ops.push(wrap_return(&prop.return_type));
 
         // Prettify name, remove object name prefix from this property.
-        let pretty_name = prop
-            .name
-            .strip_prefix(object.name())
-            // Panicing implies bug, checked at the start of the loop.
-            .unwrap()
-            .to_lower_camel_case();
+        let pretty_name = pretty_object_method_name(object, prop.name);
 
         // Convert return type for property interface.
         let return_type = SwiftReturn {

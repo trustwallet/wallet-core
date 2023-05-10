@@ -7,7 +7,6 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use self::render::strip_proto_suffix;
 use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
@@ -211,7 +210,7 @@ impl TryFrom<ProtoInfo> for SwiftProto {
     fn try_from(value: ProtoInfo) -> std::result::Result<Self, Self::Error> {
         Ok(SwiftProto {
             // Convert the name into an appropriate format.
-            name: strip_proto_suffix(value.0.clone()),
+            name: pretty_object_name(value.0.clone()),
             c_ffi_name: value.0,
         })
     }
@@ -369,4 +368,25 @@ fn wrap_return(ty: &TypeInfo) -> SwiftOperation {
             call: "result".to_string(),
         },
     }
+}
+
+/// Creates a struct, class, enum or proto appropriate name.
+fn pretty_object_name(name: String) -> String {
+    name.replace("TW", "").replace("Proto", "").replace("_", "")
+}
+
+fn pretty_object_method_name(obj: &ObjectVariant, name: String) -> String {
+    // Remove object prefix.
+    let mut pretty = if let Some(new) = name.strip_prefix(&obj.name()) {
+        new.to_string()
+    } else {
+        name
+    };
+
+    // Lowercase first character.
+    if let Some(first) = pretty.get_mut(0..1) {
+        first.make_ascii_lowercase();
+    }
+
+    pretty.replace("_", "")
 }

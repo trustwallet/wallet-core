@@ -36,44 +36,11 @@ struct WithYear<'a, T> {
     pub data: &'a T,
 }
 
-pub fn strip_tw_prefix(name: String) -> String {
-    if let Some(new) = name.strip_prefix("TW") {
-        new.to_string()
-    } else {
-        name
-    }
-}
-
-pub fn strip_proto_suffix(name: String) -> String {
-    if let Some(new) = name.strip_suffix("Proto") {
-        new.to_string()
-    } else {
-        name
-    }
-}
-
-pub fn pretty_object_method(obj: &ObjectVariant, name: String) -> String {
-    let pretty = name.replace("_", "");
-
-    let mut pretty = if let Some(new) = pretty.strip_prefix(&obj.name()) {
-        new.to_string()
-    } else {
-        pretty
-    };
-
-    // Lowercase first character.
-    if let Some(first) = pretty.get_mut(0..1) {
-        first.make_ascii_lowercase();
-    }
-
-    pretty
-}
-
 pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTypesStrings> {
     // The current year for the copyright header in the generated bindings.
     let current_year = crate::current_year();
     // Convert the name into an appropriate format.
-    let pretty_file_name = strip_tw_prefix(input.file_info.name.clone());
+    let pretty_file_name = pretty_object_name(input.file_info.name.clone());
 
     let mut engine = Handlebars::new();
     // Unmatched variables should result in an error.
@@ -168,7 +135,7 @@ pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
         }
 
         // Convert the name into an appropriate format.
-        let pretty_struct_name = strip_tw_prefix(strct.name.clone());
+        let pretty_struct_name = pretty_object_name(strct.name.clone());
 
         // Add superclasses.
         let superclasses = if pretty_struct_name.ends_with("Address") {
@@ -216,7 +183,7 @@ pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
         (properties, info.properties) = process_properties(&obj, info.properties)?;
 
         // Convert the name into an appropriate format.
-        let pretty_enum_name = strip_tw_prefix(enm.name);
+        let pretty_enum_name = pretty_object_name(enm.name);
 
         // Add superclasses.
         let value_type = SwiftType::from(enm.value_type);

@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use super::render::pretty_object_method;
+use super::pretty_object_method_name;
 use super::*;
 use crate::manifest::{FunctionInfo, TypeVariant};
 
@@ -126,7 +126,7 @@ fn do_process_methods(
     };
 
     // Prettify name, remove object name prefix from this property.
-    let pretty_name = pretty_object_method(&object, func.name.clone());
+    let pretty_name = pretty_object_method_name(&object, func.name.clone());
 
     Ok(Some(SwiftFunction {
         name: pretty_name,
