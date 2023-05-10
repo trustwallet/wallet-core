@@ -60,6 +60,7 @@ fn current_year() -> u64 {
         .duration_since(UNIX_EPOCH)
         .expect("System's time is set before the start of the Unix epoch");
 
-    // 31556952 seconds in a year
+    // One Gregorian calendar year has 365.2425 days,
+    // respectively 31556952 seconds.
     1970 + (seconds_since_epoch.as_secs() / 31556952)
 }

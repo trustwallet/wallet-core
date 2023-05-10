@@ -25,15 +25,17 @@ fn main() -> Result<()> {
 fn generate_swift_bindings() -> Result<()> {
     // NOTE: The paths will be configurable, eventually.
     const OUT_DIR: &str = "bindings/";
+    const IN_DIR: &str = "src/codegen/swift/templates";
+
     std::fs::create_dir_all(OUT_DIR)?;
 
-    let struct_t = read_to_string("src/codegen/swift/templates/struct.hbs")?;
-    let enum_t = read_to_string("src/codegen/swift/templates/enum.hbs")?;
-    let ext_t = read_to_string("src/codegen/swift/templates/extension.hbs")?;
-    let proto_t = read_to_string("src/codegen/swift/templates/proto.hbs")?;
-    let part_init_t = read_to_string("src/codegen/swift/templates/partial_init.hbs")?;
-    let part_func_t = read_to_string("src/codegen/swift/templates/partial_func.hbs")?;
-    let part_prop_t = read_to_string("src/codegen/swift/templates/partial_prop.hbs")?;
+    let struct_t = read_to_string(&format!("{IN_DIR}/struct.hbs"))?;
+    let enum_t = read_to_string(&format!("{IN_DIR}/enum.hbs"))?;
+    let ext_t = read_to_string(&format!("{IN_DIR}/extension.hbs"))?;
+    let proto_t = read_to_string(&format!("{IN_DIR}/proto.hbs"))?;
+    let part_init_t = read_to_string(&format!("{IN_DIR}/partial_init.hbs"))?;
+    let part_func_t = read_to_string(&format!("{IN_DIR}/partial_func.hbs"))?;
+    let part_prop_t = read_to_string(&format!("{IN_DIR}/partial_prop.hbs"))?;
 
     // Read the manifest dir, generate bindings for each entry.
     let file_infos = parse_dir("manifest/")?;
