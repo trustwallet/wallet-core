@@ -17,6 +17,9 @@ pub enum Curve {
     Secp256k1 = 0,
     Ed25519 = 1,
     Ed25519Blake2bNano = 2,
+    /// Waves blockchain specific `curve25519`.
+    Curve25519Waves = 3,
+    /// Cardano blockchain specific `ed25519` extended key.
     Ed25519ExtendedCardano = 5,
     Starkex = 6,
 }
@@ -28,6 +31,7 @@ impl Curve {
             0 => Some(Curve::Secp256k1),
             1 => Some(Curve::Ed25519),
             2 => Some(Curve::Ed25519Blake2bNano),
+            3 => Some(Curve::Curve25519Waves),
             5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
             _ => None,
@@ -43,6 +47,9 @@ pub enum PublicKeyType {
     Secp256k1Extended = 1,
     Ed25519 = 4,
     Ed25519Blake2b = 5,
+    /// Waves blockchain specific public key.
+    Curve25519Waves = 6,
+    /// Cardano blockchain specific extended public key.
     Ed25519ExtendedCardano = 7,
     Starkex = 8,
 }
@@ -55,6 +62,7 @@ impl PublicKeyType {
             1 => Some(PublicKeyType::Secp256k1Extended),
             4 => Some(PublicKeyType::Ed25519),
             5 => Some(PublicKeyType::Ed25519Blake2b),
+            6 => Some(PublicKeyType::Curve25519Waves),
             7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
             _ => None,
@@ -72,7 +80,7 @@ mod tests {
             (0, Some(Curve::Secp256k1)),
             (1, Some(Curve::Ed25519)),
             (2, Some(Curve::Ed25519Blake2bNano)),
-            (3, None),
+            (3, Some(Curve::Curve25519Waves)),
             (4, None),
             (5, Some(Curve::Ed25519ExtendedCardano)),
             (6, Some(Curve::Starkex)),
@@ -92,7 +100,7 @@ mod tests {
             (3, None),
             (4, Some(PublicKeyType::Ed25519)),
             (5, Some(PublicKeyType::Ed25519Blake2b)),
-            (6, None),
+            (6, Some(PublicKeyType::Curve25519Waves)),
             (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
             (8, Some(PublicKeyType::Starkex)),
             (9, None),

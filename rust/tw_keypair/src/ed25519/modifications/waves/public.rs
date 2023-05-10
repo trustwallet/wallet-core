@@ -20,7 +20,10 @@ pub struct PublicKey<H: Hasher512> {
     _phantom: PhantomData<H>,
 }
 
+/// cbindgen:ignore
 impl<H: Hasher512> PublicKey<H> {
+    pub const LEN: usize = H256::len();
+
     pub(crate) fn with_standard_pubkey(standard: &StandardPublicKey<H>) -> PublicKey<H> {
         let montgomery_point = standard.edwards_point().to_montgomery();
         PublicKey {
