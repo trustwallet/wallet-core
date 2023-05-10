@@ -28,9 +28,9 @@ enums:
   - name: mtpv
     value: 0x01b26792
   - name: dpub
-    value: 0x02fda926
+    value: 0x2fda926
   - name: dprv
-    value: 0x02fda4e8
+    value: 0x2fda4e8
   - name: dgub
     value: 0x02facafd
   - name: dgpv
