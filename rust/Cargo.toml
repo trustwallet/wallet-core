@@ -18,11 +18,5 @@ debug = true
 debug-assertions = true
 overflow-checks = true
 
-[profile.wasm-release]
-inherits = "release"
-
-[profile.wasm-release.package.curve25519-dalek]
-opt-level = 1
-
 [profile.release.package.curve25519-dalek]
 opt-level = 2
