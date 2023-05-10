@@ -6,17 +6,17 @@ enums:
     variant: u_int32_t
   variants:
   - name: all
-    value: 1
+    value: 0x01
   - name: none
-    value: 2
+    value: 0x02
   - name: single
-    value: 3
+    value: 0x03
   - name: fork
-    value: 64
+    value: 0x40
   - name: forkBtg
-    value: 20288
+    value: 0x4f40
   - name: anyoneCanPay
-    value: 128
+    value: 0x80
 functions:
 - name: TWBitcoinSigHashTypeIsSingle
   is_public: true
