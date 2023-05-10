@@ -9,6 +9,7 @@ use crate::ed25519::modifications::waves::signature::Signature;
 use crate::ed25519::{private::PrivateKey as StandardPrivateKey, Hasher512};
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
+use tw_encoding::hex;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
@@ -39,6 +40,15 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PrivateKey<H> {
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         let standard_key = StandardPrivateKey::try_from(bytes)?;
         Ok(PrivateKey { standard_key })
+    }
+}
+
+impl<'a, H: Hasher512> TryFrom<&'a str> for PrivateKey<H> {
+    type Error = KeyPairError;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }
 
