@@ -9,7 +9,7 @@
 #include "EIP1014.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include <Webauthn.h>
+#include <WebAuthn.h>
 
 namespace TW::Ethereum {
 
@@ -82,7 +82,7 @@ std::string getEIP4337AddressFromOwnerBytes(const std::string& factoryAddress, c
 }
 
 std::string getEIP4337AddressFromOwnerAttestationObject(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAttestationObject) {
-    const std::string& ownerPublicKey = hex(TW::Webauthn::getPublicKey(parse_hex(ownerAttestationObject)));
+    const std::string& ownerPublicKey = hex(TW::WebAuthn::getPublicKey(parse_hex(ownerAttestationObject))->bytes);
     return getEIP4337AddressFromOwnerBytes(factoryAddress, bytecode, diamondCutFacetAddress, accountFacetAddress, verificationFacetAddress, entryPointAddress, securityManagerAddress, facetRegistryAddress, ownerPublicKey);
 }
 
