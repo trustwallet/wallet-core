@@ -11,6 +11,7 @@ use crate::traits::VerifyingKeyTrait;
 use crate::KeyPairError;
 use curve25519_dalek::montgomery::MontgomeryPoint;
 use std::marker::PhantomData;
+use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
@@ -63,6 +64,15 @@ impl<'a, H: Hasher512> TryFrom<&'a [u8]> for PublicKey<H> {
             curve25519_pk,
             _phantom: PhantomData,
         })
+    }
+}
+
+impl<'a, H: Hasher512> TryFrom<&'a str> for PublicKey<H> {
+    type Error = KeyPairError;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
+        Self::try_from(bytes.as_slice())
     }
 }
 

@@ -184,6 +184,27 @@ mod tests {
     }
 
     #[test]
+    fn test_public_verify_invalid_waves() {
+        let invalid_sigs = [
+            "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        ];
+
+        let public = waves::PublicKey::try_from(
+            "b60076cc30ffff5c29c65af9a13ce01c3affc231d09fccbcd1277319c7911634",
+        )
+        .unwrap();
+        let msg = vec![1, 2, 3];
+
+        for invalid_sig_hex in invalid_sigs {
+            let invalid_sig_bytes = hex::decode(invalid_sig_hex).unwrap();
+            let invalid_sig = waves::Signature::try_from(invalid_sig_bytes.as_slice()).unwrap();
+
+            public.verify(invalid_sig, msg.clone());
+        }
+    }
+
+    #[test]
     fn test_private_to_public_extended_cardano() {
         let secret = "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
         e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
@@ -211,6 +232,13 @@ mod tests {
         let signature = "418aff0000000000000000000000000000000000000000000000f600000000000000000000000000000000000000000000000000000000000000000000000010";
         let actual = Signature::try_from(hex::decode(signature).unwrap().as_slice()).unwrap();
         assert_eq!(actual.to_bytes(), H512::from(signature));
+    }
+
+    #[test]
+    fn test_waves_signature_from_bytes() {
+        let sig_bytes = H512::from("af7989256f496e103ce95096b3f52196dd9132e044905fe486da3b829b5e403bcba95ab7e650a4a33948c2d05cfca2dce4d4df747e26402974490fb4c49fbe8f");
+        let signature = waves::Signature::try_from(sig_bytes.as_slice()).unwrap();
+        assert_eq!(signature.to_vec(), sig_bytes.into_vec());
     }
 
     #[test]

@@ -43,10 +43,6 @@ impl Signature {
         self.bytes
     }
 
-    pub fn as_slice(&self) -> &[u8] {
-        self.bytes.as_slice()
-    }
-
     /// Tries to convert the signature to a standard `ed25519` representation by removing the sign bit.
     /// Ported: https://github.com/trustwallet/wallet-core/blob/3.1.31/src/PublicKey.cpp#L159-L162
     pub(crate) fn to_standard_signature(&self) -> KeyPairResult<StandardSignature> {
