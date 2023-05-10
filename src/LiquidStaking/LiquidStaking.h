@@ -32,6 +32,8 @@ class Builder {
     Proto::Output buildTortugaAptos() const;
     Proto::Output buildTortuga() const;
     Proto::Output buildStride() const;
+    Proto::Output buildLidoEVM() const;
+    Proto::Output buildLido() const;
 public:
     Builder() noexcept = default;
 
@@ -77,6 +79,9 @@ static inline Proto::Status generateError(Proto::StatusCode code, const std::opt
         break;
     case Proto::ERROR_INPUT_PROTO_DESERIALIZATION:
         status.set_message(message.value_or("Could not deserialize input proto"));
+        break;
+    case Proto::ERROR_OPERATION_NOT_SUPPORTED_BY_PROTOCOL:
+        status.set_message(message.value_or("The selected protocol doesn't support this liquid staking operation"));
         break;
     default:
         return status;
