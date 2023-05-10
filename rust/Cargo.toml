@@ -9,3 +9,10 @@ members = [
     "tw_proto",
     "wallet_core_rs",
 ]
+
+[profile.wasm-release]
+inherits = "release"
+
+# Fixes an endless compilation.
+[profile.wasm-release.package.curve25519-dalek]
+opt-level = 1
