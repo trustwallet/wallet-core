@@ -1241,6 +1241,36 @@
       "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
+   {
+    "id": "mayachain",
+    "name": "Maya Protocol",
+    "coinId": 931,
+    "symbol": "CACAO",
+    "decimals": 10,
+    "blockchain": "Mayachain",
+    "derivation": [
+      {
+        "path": "m/44'/931'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "maya",
+    "chainId": "mayachain-mainnet-v1",
+    "explorer": {
+      "url": "https://www.explorer.mayachain.info",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "EDAC4F5F975E0408707DCAA2A10073991A9A1A7992F10320805EBFC8A2A6E9CA",
+      "sampleAccount": "maya1x5979k5wqgq58f4864glr7w2rtgyuqqm6l2zhx"
+    },
+    "info": {
+      "url": "https://mayaprotocol.com",
+      "source": "https://gitlab.com/mayachain/mayanode",
+      "rpc": "https://tendermint.mayachain.info",
+      "documentation": "https://docs.mayaprotocol.com"
+    }
+  },
   {
     "id": "poa",
     "name": "POA Network",
