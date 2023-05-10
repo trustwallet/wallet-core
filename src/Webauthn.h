@@ -8,9 +8,10 @@
 
 #include "Data.h"
 #include "PublicKey.h"
+#include <optional>
 
 namespace TW::WebAuthn {
 
-PublicKey getPublicKey(const Data& attestationObject);
+std::optional<PublicKey> getPublicKey(const Data& attestationObject);
 
 }
