@@ -24,6 +24,7 @@ pub struct Signature {
 }
 
 impl Signature {
+    /// Creates a signature by mangling a standard [`StandardSignature`].
     /// Ported: https://github.com/trustwallet/wallet-core/blob/3.1.31/src/PrivateKey.cpp#L225-L230
     pub(crate) fn new_mangling<H: Hasher512>(
         standard_pubkey: &StandardPublicKey<H>,
@@ -39,6 +40,7 @@ impl Signature {
         Signature { bytes }
     }
 
+    /// Returns the signature data (64 bytes).
     pub fn to_bytes(&self) -> H512 {
         self.bytes
     }

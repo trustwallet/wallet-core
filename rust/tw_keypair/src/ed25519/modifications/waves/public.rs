@@ -15,15 +15,20 @@ use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
+/// Represents an `ed25519` public key that is used in Waves blockchain.
 pub struct PublicKey<H: Hasher512> {
+    /// A public key that is calculated through converting
+    /// a standard [`curve25519_dalek::edwards::EdwardsPoint`] to [`MontgomeryPoint`].
     curve25519_pk: H256,
     _phantom: PhantomData<H>,
 }
 
 /// cbindgen:ignore
 impl<H: Hasher512> PublicKey<H> {
+    /// The number of bytes in a serialized public key.
     pub const LEN: usize = H256::len();
 
+    /// Creates a public key from the given standard [`StandardPublicKey`].
     pub(crate) fn with_standard_pubkey(standard: &StandardPublicKey<H>) -> PublicKey<H> {
         let montgomery_point = standard.edwards_point().to_montgomery();
         PublicKey {
@@ -32,6 +37,7 @@ impl<H: Hasher512> PublicKey<H> {
         }
     }
 
+    /// Returns the raw data of the public key (32 bytes).
     pub fn to_bytes(&self) -> H256 {
         self.curve25519_pk
     }

@@ -13,11 +13,13 @@ use tw_encoding::hex;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
+/// Represents an `ed25519` private key that is used in Waves blockchain.
 pub struct PrivateKey<H: Hasher512> {
     standard_key: StandardPrivateKey<H>,
 }
 
 impl<H: Hasher512> PrivateKey<H> {
+    /// Returns an associated Waves `ed25519` public key.
     pub fn public(&self) -> PublicKey<H> {
         PublicKey::with_standard_pubkey(&self.standard_key.public())
     }

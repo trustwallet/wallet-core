@@ -12,6 +12,7 @@ use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 
+/// Represents an `ed25519` key pair that is used in Waves blockchain.
 pub struct KeyPair<H: Hasher512> {
     private: PrivateKey<H>,
     public: PublicKey<H>,
