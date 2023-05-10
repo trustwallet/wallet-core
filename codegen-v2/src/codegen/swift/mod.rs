@@ -7,7 +7,7 @@
 use self::functions::process_methods;
 use self::inits::process_inits;
 use self::properties::process_properties;
-use self::render::pretty_name;
+use self::render::strip_proto_suffix;
 use crate::manifest::{DeinitInfo, FileInfo, ParamInfo, ProtoInfo, TypeInfo, TypeVariant};
 use crate::{Error, Result};
 use handlebars::Handlebars;
@@ -192,7 +192,7 @@ pub struct SwiftOperatorEquality {
 }
 
 /// Used for the individual `process_*` functions.
-enum ObjectVariant<'a> {
+pub enum ObjectVariant<'a> {
     Struct(&'a str),
     Enum(&'a str),
 }
@@ -211,7 +211,7 @@ impl TryFrom<ProtoInfo> for SwiftProto {
     fn try_from(value: ProtoInfo) -> std::result::Result<Self, Self::Error> {
         Ok(SwiftProto {
             // Convert the name into an appropriate format.
-            name: pretty_name(value.0.clone()),
+            name: strip_proto_suffix(value.0.clone()),
             c_ffi_name: value.0,
         })
     }

@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use super::render::pretty_object_method;
 use super::*;
 use crate::manifest::{FunctionInfo, TypeVariant};
-use heck::ToLowerCamelCase;
 
 /// This function checks each function and determines whether there's an
 /// association with the passed on object (struct or enum), based on common name
@@ -126,37 +126,7 @@ fn do_process_methods(
     };
 
     // Prettify name, remove object name prefix from this property.
-    let pretty_name = func
-        .name
-        .strip_prefix(object.name())
-        // Panicing implies bug, checked at the start of the loop.
-        .unwrap()
-        .to_lower_camel_case();
-
-    // Special handling: some functions do not follow standard camelCase
-    // convention.
-    #[rustfmt::skip]
-    let pretty_name = if object.name() == "TWStoredKey" {
-        pretty_name
-            .replace("Json", "JSON")
-            .replace("Hd", "HD")
-    } else if object.name() == "TWPublicKey" {
-        pretty_name
-            .replace("Der", "DER")
-    } else if object.name() == "TWHash" {
-        pretty_name
-            .replace("ripemd", "RIPEMD")
-            .replace("Ripemd", "RIPEMD")
-            .replace("sha512256", "sha512_256")
-            .replace("sha3256", "sha3_256")
-            .replace("sha256sha256", "sha256SHA256")
-    } else if object.name() == "TWAES" {
-        pretty_name
-            .replace("Cbc", "CBC")
-            .replace("Ctr", "CTR")
-    } else {
-        pretty_name
-    };
+    let pretty_name = pretty_object_method(&object, func.name.clone());
 
     Ok(Some(SwiftFunction {
         name: pretty_name,
