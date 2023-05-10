@@ -115,7 +115,7 @@ pub struct EnumInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EnumVariantInfo {
     pub name: String,
-    pub value: usize,
+    pub value: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub as_string: Option<String>,
 }

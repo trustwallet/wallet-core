@@ -6,10 +6,10 @@ enums:
     variant: u_int16_t
   variants:
   - name: accountId
-    value: 48
+    value: 0x30
   - name: seed
-    value: 192
+    value: 0xc0
   - name: preAuthTx
-    value: 200
+    value: 0xc8
   - name: sha256Hash
-    value: 280
+    value: 0x118

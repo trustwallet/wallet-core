@@ -53,7 +53,7 @@ pub struct SwiftEnum {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwiftEnumVariant {
     name: String,
-    value: usize,
+    value: String,
     as_string: Option<String>,
 }
 
