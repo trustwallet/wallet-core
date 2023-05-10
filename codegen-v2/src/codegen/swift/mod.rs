@@ -122,8 +122,8 @@ pub enum SwiftOperation {
     // Results in:
     // ```swift
     // let ptr: UnsafeRawPointer?
-    // if let alphabet = alphabet {
-    //     ptr = TWStringCreateWithNSString(alphabet)
+    // if let <var_name> = <var_name> {
+    //     ptr = <call>
     // } else {
     //     ptr = nil
     // }
@@ -375,13 +375,12 @@ fn pretty_object_name(name: String) -> String {
     name.replace("TW", "").replace("Proto", "").replace("_", "")
 }
 
+/// Creates a method or property appropriate name.
 fn pretty_object_method_name(obj: &ObjectVariant, name: String) -> String {
-    // Remove object prefix.
-    let mut pretty = if let Some(new) = name.strip_prefix(&obj.name()) {
-        new.to_string()
-    } else {
-        name
-    };
+    let mut pretty = name
+        .strip_prefix(&obj.name())
+        .map(ToString::to_string)
+        .unwrap_or(name);
 
     // Lowercase first character.
     if let Some(first) = pretty.get_mut(0..1) {
