@@ -84,17 +84,17 @@ auto findStringKey = [](const auto& map, const auto& key) {
     });
 };
 
-PublicKey getPublicKey(const Data& attestationObject) {
+std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
     const Data authData = findStringKey(TW::Cbor::Decode(attestationObject).getMapElements(), "authData")->second.getBytes();
     if (authData.empty()) {
-        return PublicKey(Data(), TWPublicKeyTypeNIST256p1Extended);
+        return std::nullopt;
     }
 
     const AuthData authDataParsed = parseAuthData(authData);
     const auto COSEPublicKey = TW::Cbor::Decode(authDataParsed.COSEPublicKey).getMapElements();
 
     if (COSEPublicKey.empty()) {
-        return PublicKey(Data(), TWPublicKeyTypeNIST256p1Extended);
+        return std::nullopt;
     }
 
     // https://www.w3.org/TR/webauthn-2/#sctn-encoded-credPubKey-examples
