@@ -27,6 +27,10 @@ impl<H: Hasher512> PublicKey<H> {
             _phantom: PhantomData,
         }
     }
+
+    pub fn to_bytes(&self) -> H256 {
+        self.curve25519_pk
+    }
 }
 
 impl<H: Hasher512> VerifyingKeyTrait for PublicKey<H> {
