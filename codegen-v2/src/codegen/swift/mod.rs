@@ -377,15 +377,18 @@ fn pretty_object_name(name: String) -> String {
 
 /// Creates a method or property appropriate name.
 fn pretty_object_method_name(obj: &ObjectVariant, name: String) -> String {
-    let mut pretty = name
+    let pretty = name
         .strip_prefix(&obj.name())
         .map(ToString::to_string)
         .unwrap_or(name);
+
+    // Special handler for "SHA"
+    let mut pretty = pretty.replace("SHA", "sha");
 
     // Lowercase first character.
     if let Some(first) = pretty.get_mut(0..1) {
         first.make_ascii_lowercase();
     }
 
-    pretty.replace("_", "")
+    pretty
 }
