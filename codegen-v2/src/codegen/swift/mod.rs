@@ -382,8 +382,8 @@ fn pretty_object_method_name(obj: &ObjectVariant, name: String) -> String {
         .map(ToString::to_string)
         .unwrap_or(name);
 
-    // Special handler for "SHA"
-    let mut pretty = pretty.replace("SHA", "sha");
+    // Special handler for "SHA" and "HRP"
+    let mut pretty = pretty.replace("SHA", "sha").replace("HRP", "hrp");
 
     // Lowercase first character.
     if let Some(first) = pretty.get_mut(0..1) {
