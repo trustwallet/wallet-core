@@ -1,0 +1,48 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+package wallet.core.jni;
+
+import java.security.InvalidParameterException;
+
+/**
+ * {{class_name}} encode / decode functions
+*/
+public final class {{class_name}} {
+	{{#if is_class}}
+    private long nativeHandle;
+
+	private {{class_name}}() {
+		nativeHandle = 0;
+	}
+
+    static {{class_name}} createFromNative(long nativeHandle) {
+        {{class_name}} instance = new {{class_name}}();
+        instance.nativeHandle = nativeHandle;
+        {{class_name}}PhantomReference.register(instance, nativeHandle);
+        return instance;
+    }
+	{{/else}}
+    private byte[] bytes;
+
+	private {{class_name}}() {}
+
+    static {{class_name}} createFromNative(byte[] bytes) {
+        {{class_name}} instance = new {{class_name}}();
+        instance.bytes = bytes;
+        return instance;
+    }
+	{{/if}}
+
+	{{/each}}
+	{{#each method}}
+    public {{#if is_static}}static {{/if}}native {{return.value}} {{name}}({{#each params}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}});
+
+	{{/each}}
+}
