@@ -8,6 +8,7 @@
 #include "Ethereum/EIP1014.h"
 #include "Ethereum/EIP4337.h"
 #include "Ethereum/EIP2645.h"
+#include "Ethereum/Barz.h"
 #include <TrustWalletCore/TWEthereum.h>
 
 #include <string>
