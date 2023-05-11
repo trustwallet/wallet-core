@@ -373,6 +373,7 @@ class EthereumTests: XCTestCase {
     }
 
     // EIP4337
+
     func testEIP4337DeploymentAddress() {
         let factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
         let logicAddress = "0x5C9eb5D6a6C2c1B3EFc52255C0b356f116f6f66D"
