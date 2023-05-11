@@ -5,8 +5,12 @@ edition = "2021"
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
+curve25519-dalek = "3"
+blake2 = "0.9"
+digest = "0.9.0"
 lazy_static = "1.4.0"
 k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
+sha2 = "0.9"
 starknet-crypto = "0.5.0"
 starknet-ff = "0.3.2"
 tw_encoding = { path = "../tw_encoding" }

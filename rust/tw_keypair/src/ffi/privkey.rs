@@ -66,26 +66,26 @@ pub unsafe extern "C" fn tw_private_key_is_valid(
 /// Signs a digest using ECDSA and given curve.
 ///
 /// \param key *non-null* pointer to a Private key
-/// \param hash *non-null* byte array.
-/// \param hash_len the length of the `input` array.
+/// \param message *non-null* byte array.
+/// \param message_len the length of the `input` array.
 /// \param curve Eliptic curve.
 /// \return Signature as a C-compatible result with a C-compatible byte array.
 #[no_mangle]
 pub unsafe extern "C" fn tw_private_key_sign(
     key: *mut TWPrivateKey,
-    hash: *const u8,
-    hash_len: usize,
+    message: *const u8,
+    message_len: usize,
     curve: u32,
 ) -> CByteArray {
     let curve = try_or_else!(Curve::from_raw(curve), CByteArray::default);
     let private = try_or_else!(TWPrivateKey::from_ptr_as_ref(key), CByteArray::default);
-    let hash_to_sign = try_or_else!(
-        CByteArrayRef::new(hash, hash_len).as_slice(),
+    let message_to_sign = try_or_else!(
+        CByteArrayRef::new(message, message_len).as_slice(),
         CByteArray::default
     );
 
     // Return an empty signature if an error occurs.
-    let sig = private.0.sign(hash_to_sign, curve).unwrap_or_default();
+    let sig = private.0.sign(message_to_sign, curve).unwrap_or_default();
     CByteArray::from(sig)
 }
 

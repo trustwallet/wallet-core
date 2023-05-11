@@ -4,23 +4,24 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::starkex::private::PrivateKey;
-use crate::starkex::public::PublicKey;
-use crate::starkex::signature::Signature;
+use crate::ed25519::modifications::cardano::{
+    extended_private::ExtendedPrivateKey, extended_public::ExtendedPublicKey,
+};
+use crate::ed25519::{signature::Signature, Hasher512};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 use zeroize::Zeroizing;
 
-/// Represents a pair of private and public keys that are used in `starknet` context.
-pub struct KeyPair {
-    private: PrivateKey,
-    public: PublicKey,
+/// Represents an `ed25519` extended key pair that is used in Cardano blockchain.
+pub struct ExtendedKeyPair<H: Hasher512> {
+    private: ExtendedPrivateKey<H>,
+    public: ExtendedPublicKey<H>,
 }
 
-impl KeyPairTrait for KeyPair {
-    type Private = PrivateKey;
-    type Public = PublicKey;
+impl<H: Hasher512> KeyPairTrait for ExtendedKeyPair<H> {
+    type Private = ExtendedPrivateKey<H>;
+    type Public = ExtendedPublicKey<H>;
 
     fn public(&self) -> &Self::Public {
         &self.public
@@ -31,35 +32,36 @@ impl KeyPairTrait for KeyPair {
     }
 }
 
-impl SigningKeyTrait for KeyPair {
+impl<H: Hasher512> SigningKeyTrait for ExtendedKeyPair<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
-        self.private.sign(message)
+        self.private()
+            .sign_with_public_key(self.public(), message.as_slice())
     }
 }
 
-impl VerifyingKeyTrait for KeyPair {
+impl<H: Hasher512> VerifyingKeyTrait for ExtendedKeyPair<H> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        self.public.verify(signature, message)
+        self.public().verify(signature, message)
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for KeyPair {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for ExtendedKeyPair<H> {
     type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        let private = PrivateKey::try_from(bytes)?;
+        let private = ExtendedPrivateKey::try_from(bytes)?;
         let public = private.public();
-        Ok(KeyPair { private, public })
+        Ok(ExtendedKeyPair { private, public })
     }
 }
 
-impl<'a> TryFrom<&'a str> for KeyPair {
+impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedKeyPair<H> {
     type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {

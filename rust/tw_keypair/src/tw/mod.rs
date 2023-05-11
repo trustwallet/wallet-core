@@ -15,6 +15,9 @@ pub use public::PublicKey;
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Curve {
     Secp256k1 = 0,
+    Ed25519 = 1,
+    Ed25519Blake2bNano = 2,
+    Ed25519ExtendedCardano = 5,
     Starkex = 6,
 }
 
@@ -23,6 +26,9 @@ impl Curve {
     pub fn from_raw(curve: u32) -> Option<Curve> {
         match curve {
             0 => Some(Curve::Secp256k1),
+            1 => Some(Curve::Ed25519),
+            2 => Some(Curve::Ed25519Blake2bNano),
+            5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
             _ => None,
         }
@@ -35,6 +41,9 @@ impl Curve {
 pub enum PublicKeyType {
     Secp256k1 = 0,
     Secp256k1Extended = 1,
+    Ed25519 = 4,
+    Ed25519Blake2b = 5,
+    Ed25519ExtendedCardano = 7,
     Starkex = 8,
 }
 
@@ -44,6 +53,9 @@ impl PublicKeyType {
         match ty {
             0 => Some(PublicKeyType::Secp256k1),
             1 => Some(PublicKeyType::Secp256k1Extended),
+            4 => Some(PublicKeyType::Ed25519),
+            5 => Some(PublicKeyType::Ed25519Blake2b),
+            7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
             _ => None,
         }
@@ -55,12 +67,38 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_starkex_tw_public_key_type_from_raw() {
-        assert_eq!(PublicKeyType::from_raw(8), Some(PublicKeyType::Starkex));
+    fn test_curve_from_raw() {
+        let tests = [
+            (0, Some(Curve::Secp256k1)),
+            (1, Some(Curve::Ed25519)),
+            (2, Some(Curve::Ed25519Blake2bNano)),
+            (3, None),
+            (4, None),
+            (5, Some(Curve::Ed25519ExtendedCardano)),
+            (6, Some(Curve::Starkex)),
+            (7, None),
+        ];
+        for (raw, expected) in tests {
+            assert_eq!(Curve::from_raw(raw), expected);
+        }
     }
 
     #[test]
-    fn test_starkex_curve_from_raw() {
-        assert_eq!(Curve::from_raw(6), Some(Curve::Starkex));
+    fn test_public_key_type_from_raw() {
+        let tests = [
+            (0, Some(PublicKeyType::Secp256k1)),
+            (1, Some(PublicKeyType::Secp256k1Extended)),
+            (2, None),
+            (3, None),
+            (4, Some(PublicKeyType::Ed25519)),
+            (5, Some(PublicKeyType::Ed25519Blake2b)),
+            (6, None),
+            (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
+            (8, Some(PublicKeyType::Starkex)),
+            (9, None),
+        ];
+        for (raw, expected) in tests {
+            assert_eq!(PublicKeyType::from_raw(raw), expected);
+        }
     }
 }

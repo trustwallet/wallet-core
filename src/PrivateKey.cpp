@@ -233,24 +233,18 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result = rust_private_key_sign(key(), digest, curve);
         success = result.size() == 65;
     } break;
+    case TWCurveED25519:
+    case TWCurveED25519Blake2bNano:
     case TWCurveStarkex: {
         result = rust_private_key_sign(key(), digest, curve);
         success = result.size() == 64;
     } break;
-    case TWCurveED25519: {
-        result.resize(64);
-        ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
-        success = true;
-    } break;
-    case TWCurveED25519Blake2bNano: {
-        result.resize(64);
-        ed25519_sign_blake2b(digest.data(), digest.size(), key().data(), result.data());
-        success = true;
-    } break;
     case TWCurveED25519ExtendedCardano: {
-        result.resize(64);
-        ed25519_sign_ext(digest.data(), digest.size(), key().data(), extension().data(), result.data());
-        success = true;
+        if (bytes.size() != cardanoKeySize) {
+            break;
+        }
+        result = rust_private_key_sign(bytes, digest, curve);
+        success = result.size() == 64;
     } break;
     case TWCurveCurve25519: {
         result.resize(64);

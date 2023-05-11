@@ -18,8 +18,9 @@ features = ["arbitrary"]
 [workspace]
 members = ["."]
 
-[profile.release]
-debug = 1
+# https://github.com/rust-lang/rust/issues/95240
+[profile.release.package.curve25519-dalek]
+opt-level = 2
 
 [[bin]]
 name = "tw_private_sign"

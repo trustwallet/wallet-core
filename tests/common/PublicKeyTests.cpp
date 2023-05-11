@@ -189,6 +189,18 @@ TEST(PublicKeyTests, Verify) {
     }
 }
 
+TEST(PublicKeyTests, ED25519_malleability) {
+    const auto publicKey = PublicKey(parse_hex("a96e02312b03116ff88a9f3e7cea40f424af43a5c6ca6c8ed4f98969faf46ade"), TWPublicKeyTypeED25519);
+
+    const Data messageData = TW::data("Hello, world!");
+
+    const Data origSign = parse_hex("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07e7ed7a20a4e2fa1009db3d1443e937e6abb16ff3c3eaecb798faed7fbb40b008");
+    const Data modifiedSign = parse_hex("ea85a47dcc18b512dfea7c209162abaea4808d77c1ec903dc7ba6e2afa3f9f07d4c1707dbe450d69df7735b721e316fbabb16ff3c3eaecb798faed7fbb40b018");
+
+    EXPECT_TRUE(publicKey.verify(origSign, messageData));
+    EXPECT_FALSE(publicKey.verify(modifiedSign, messageData));
+}
+
 TEST(PublicKeyTests, VerifyAsDER) {
     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
 
