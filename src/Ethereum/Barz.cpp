@@ -10,7 +10,7 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include <WebAuthn.h>
-#include "../src/proto/Barz.pb.h"
+#include "../proto/Barz.pb.h"
 
 namespace TW::Barz {
 
@@ -28,10 +28,12 @@ std::string getCounterfactualAddress(const TW::Barz::Proto::ContractAddressInput
 
     Data publicKey;
     switch (input.owner().kind_case()) {
-    case TW::Barz::Proto::ContractOwner::kPublicKey:
+    case TW::Barz::Proto::ContractOwner::KindCase::KIND_NOT_SET:
+        return "";
+    case TW::Barz::Proto::ContractOwner::KindCase::kPublicKey:
         publicKey = parse_hex(input.owner().public_key());
         break;
-    case TW::Barz::Proto::ContractOwner::kAttestationObject:
+    case TW::Barz::Proto::ContractOwner::KindCase::kAttestationObject:
         const auto attestationObject = parse_hex(input.owner().attestation_object());
         publicKey = subData(TW::WebAuthn::getPublicKey(attestationObject)->bytes, 1); // Drop the first byte which corresponds to the public key type
         break;

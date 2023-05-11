@@ -8,7 +8,7 @@
 
 #include "Data.h"
 #include "uint256.h"
-#include "../src/proto/Barz.pb.h"
+#include "../proto/Barz.pb.h"
 
 namespace TW::Barz {
 

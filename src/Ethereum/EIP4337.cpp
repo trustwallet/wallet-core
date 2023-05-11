@@ -10,6 +10,7 @@
 #include "EIP1967.h"
 #include "Hash.h"
 #include "HexCoding.h"
+#include <iostream>
 
 namespace TW::Ethereum {
 
