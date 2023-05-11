@@ -4,6 +4,7 @@ import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.Assert.assertFalse
+import wallet.core.jni.Barz
 
 class TestBarz {
 
