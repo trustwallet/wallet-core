@@ -8,12 +8,12 @@
 
 #include "Data.h"
 #include "uint256.h"
+#include "../src/proto/Ethereum.pb.h"
 
 namespace TW::Ethereum {
 
 std::string getEIP4337DeploymentAddress(const std::string& factoryAddress, const std::string& logicAddress, const std::string& ownerAddress);
-std::string getEIP4337AddressFromOwnerBytes(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerPublicKey);
-std::string getEIP4337AddressFromOwnerAttestationObject(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAttestationObject);
+std::string getEIP4337CounterfactualAddress(const TW::Ethereum::Proto::ContractAddressInput input);
 
 Data getEIP4337AccountInitializeBytecode(const std::string& ownerAddress, const std::string& factoryAddress);
 Data getEIP4337LogicInitializeBytecode(const std::string& ownerAddress);

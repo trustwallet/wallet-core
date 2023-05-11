@@ -9,7 +9,8 @@
 #include "EIP1014.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include <WebAuthn.h>
+#include "WebAuthn.h"
+#include "../src/proto/Ethereum.pb.h"
 
 namespace TW::Ethereum {
 
@@ -59,31 +60,39 @@ std::string getEIP4337DeploymentAddress(const std::string& factoryAddress, const
     return Ethereum::checksumed(Address(hexEncoded(create2Address(factoryAddress, salt, initCodeHash))));
 }
 
-std::string getEIP4337AddressFromOwnerBytes(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerPublicKey) {
-    Data initCode = parse_hex(bytecode);
-
+std::string getEIP4337CounterfactualAddress(const TW::Ethereum::Proto::ContractAddressInput input) {
     auto params = ABI::ParamTuple();
-    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(diamondCutFacetAddress)));
-    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(accountFacetAddress)));
-    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(verificationFacetAddress)));
-    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(entryPointAddress)));
-    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(securityManagerAddress)));
-    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(facetRegistryAddress)));
-    params.addParam(std::make_shared<ABI::ParamByteArray>(parse_hex(ownerPublicKey)));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(input.diamond_cut_facet())));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(input.account_facet())));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(input.verification_facet())));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(input.entry_point())));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(input.security_manager())));
+    params.addParam(std::make_shared<ABI::ParamAddress>(parse_hex(input.facet_registry())));
+
+    Data publicKey;
+    switch (input.owner().owner_oneof_case()) {
+    case TW::Ethereum::Proto::ContractOwner::kPublicKey:
+        publicKey = parse_hex(input.owner().publickey().publickey());
+        break;
+    case TW::Ethereum::Proto::ContractOwner::kAttestationObject:
+        const auto attestationObject = Data(input.owner().attestationobject().attestationobject().begin(), input.owner().attestationobject().attestationobject().end());
+        publicKey = TW::WebAuthn::getPublicKey(attestationObject)->bytes;
+        break;
+    }
+    params.addParam(std::make_shared<ABI::ParamByteArray>(publicKey));
 
     Data encoded;
     params.encode(encoded);
 
+    Data initCode = Data(input.bytecode().begin(), input.bytecode().end());
     append(initCode, encoded);
 
     const Data initCodeHash = Hash::keccak256(initCode);
+    cout << hex(initCodeHash);
+    cout << "\n";
+    cout << hex(initCode);
     const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
-    return Ethereum::checksumed(Address(hexEncoded(create2Address(factoryAddress, salt, initCodeHash))));
-}
-
-std::string getEIP4337AddressFromOwnerAttestationObject(const std::string& factoryAddress, const std::string& bytecode, const std::string& diamondCutFacetAddress, const std::string& accountFacetAddress, const std::string& verificationFacetAddress, const std::string& entryPointAddress, const std::string& securityManagerAddress, const std::string& facetRegistryAddress, const std::string& ownerAttestationObject) {
-    const std::string& ownerPublicKey = hex(TW::WebAuthn::getPublicKey(parse_hex(ownerAttestationObject))->bytes);
-    return getEIP4337AddressFromOwnerBytes(factoryAddress, bytecode, diamondCutFacetAddress, accountFacetAddress, verificationFacetAddress, entryPointAddress, securityManagerAddress, facetRegistryAddress, ownerPublicKey);
+    return Ethereum::checksumed(Address(hexEncoded(create2Address(input.factory(), salt, initCodeHash))));
 }
 
 } // namespace TW::Ethereum
