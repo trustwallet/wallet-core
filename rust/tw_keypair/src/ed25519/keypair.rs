@@ -4,23 +4,22 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::starkex::private::PrivateKey;
-use crate::starkex::public::PublicKey;
-use crate::starkex::signature::Signature;
+use crate::ed25519::{private::PrivateKey, public::PublicKey, signature::Signature, Hasher512};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 use zeroize::Zeroizing;
 
-/// Represents a pair of private and public keys that are used in `starknet` context.
-pub struct KeyPair {
-    private: PrivateKey,
-    public: PublicKey,
+/// Represents a pair of `ed25519` private and public keys.
+#[derive(Debug)]
+pub struct KeyPair<H: Hasher512> {
+    private: PrivateKey<H>,
+    public: PublicKey<H>,
 }
 
-impl KeyPairTrait for KeyPair {
-    type Private = PrivateKey;
-    type Public = PublicKey;
+impl<H: Hasher512> KeyPairTrait for KeyPair<H> {
+    type Private = PrivateKey<H>;
+    type Public = PublicKey<H>;
 
     fn public(&self) -> &Self::Public {
         &self.public
@@ -31,25 +30,25 @@ impl KeyPairTrait for KeyPair {
     }
 }
 
-impl SigningKeyTrait for KeyPair {
+impl<H: Hasher512> SigningKeyTrait for KeyPair<H> {
     type SigningMessage = Vec<u8>;
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
-        self.private.sign(message)
+        self.private().sign_with_public_key(self.public(), &message)
     }
 }
 
-impl VerifyingKeyTrait for KeyPair {
+impl<H: Hasher512> VerifyingKeyTrait for KeyPair<H> {
     type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
     fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
-        self.public.verify(signature, message)
+        self.public().verify(signature, message)
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for KeyPair {
+impl<'a, H: Hasher512> TryFrom<&'a [u8]> for KeyPair<H> {
     type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
@@ -59,7 +58,7 @@ impl<'a> TryFrom<&'a [u8]> for KeyPair {
     }
 }
 
-impl<'a> TryFrom<&'a str> for KeyPair {
+impl<'a, H: Hasher512> TryFrom<&'a str> for KeyPair<H> {
     type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {

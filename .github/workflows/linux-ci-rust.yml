@@ -59,12 +59,7 @@ jobs:
         working-directory: rust
 
       - name: Run tests in WASM
-        run: |
-          source ../emsdk/emsdk_env.sh
-          cargo test --target wasm32-unknown-emscripten --release
-        env:
-          CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER: node
-        working-directory: rust
+        run: tools/rust-test wasm
 
       - name: Rust Test Report
         uses: dorny/test-reporter@v1
