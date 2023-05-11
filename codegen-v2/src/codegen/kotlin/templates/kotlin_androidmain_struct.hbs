@@ -1,0 +1,58 @@
+package com.trustwallet.core
+
+{{#if is_class}}
+actual class {{class_name}} private constructor (
+	private val nativeHandle: Long,
+) {
+{{else}}
+actual object {{class_name}} {
+{{/if}}
+	{{#if is_class}}
+    init {
+        if (nativeHandle == 0L) throw IllegalArgumentException()
+    }
+	{{/if}}
+
+	{{#if is_class}}
+	{{#each inits}}
+	{{#if is_nullable}}
+    @Throws(IllegalArgumentException::class)
+	{{/if}}
+	{{/each}}
+	{{/if}}
+
+	{{! Methods }}
+	{{#each methods}}
+    @JvmStatic
+    @JvmName("{{name}}")
+    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+	{{#unless @last}}
+
+	{{/unless}}
+	{{/each}}
+	{{! Static methods are companion objects }}
+	{{#if is_class}}
+	actual companion object {
+		{{#each static_methods}}
+		@JvmStatic
+		@JvmName("{{name}}")
+		actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+		{{#unless @last}}
+
+		{{/unless}}
+		{{/each}}
+	}
+	{{#unless @last}}
+
+	{{/unless}}
+	{{/if}}
+	{{! Properties }}
+	{{#each properties}}
+    actual val {{name}}: {{return.type}} 
+        @JvmName("{{name}}")
+        external get
+	{{#unless @last}}
+
+	{{/unless}}
+	{{/each}}
+}
