@@ -6,6 +6,7 @@
 
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/TWHash.h>
 #include <Ethereum/EIP4337.h>
 #include <HexCoding.h>
 #include <PrivateKey.h>
