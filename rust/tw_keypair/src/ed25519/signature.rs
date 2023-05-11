@@ -39,6 +39,7 @@ pub struct Signature {
 }
 
 impl Signature {
+    /// Returns the signature data (64 bytes).
     pub fn to_bytes(&self) -> H512 {
         let left = H256::from(self.R.to_bytes());
         let right = H256::from(self.s.to_bytes());

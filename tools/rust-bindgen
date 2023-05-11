@@ -20,7 +20,7 @@ cd rust
 if [[ "$1" != "android" ]]; then
   echo "Generating Native targets"
   cargo build --release
-  cargo build --target wasm32-unknown-emscripten --release
+  cargo build --target wasm32-unknown-emscripten --release --verbose
 fi
 if [[ `uname` == "Darwin" ]]; then
   echo "Generating Android targets"

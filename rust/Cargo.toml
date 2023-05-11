@@ -9,3 +9,14 @@ members = [
     "tw_proto",
     "wallet_core_rs",
 ]
+
+[profile.wasm-test]
+inherits = "release"
+# Fixes an incredibly slow compilation of `curve25519-dalek` package.
+opt-level = 1
+debug = true
+debug-assertions = true
+overflow-checks = true
+
+[profile.release.package.curve25519-dalek]
+opt-level = 2
