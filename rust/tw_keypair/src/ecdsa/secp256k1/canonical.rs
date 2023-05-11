@@ -11,7 +11,7 @@
 //!
 //! **Not production ready**
 
-use crate::secp256k1::{PrivateKey, Signature};
+use crate::ecdsa::secp256k1::{PrivateKey, Signature};
 use crate::Error;
 use k256::ecdsa::hazmat::{bits2field, DigestPrimitive, SignPrimitive};
 use k256::elliptic_curve::generic_array::ArrayLength;

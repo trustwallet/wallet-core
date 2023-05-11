@@ -6,7 +6,7 @@
 
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
-use crate::{ed25519, secp256k1, starkex, KeyPairError, KeyPairResult};
+use crate::{ecdsa::secp256k1, ed25519, starkex, KeyPairError, KeyPairResult};
 use std::ops::Range;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;

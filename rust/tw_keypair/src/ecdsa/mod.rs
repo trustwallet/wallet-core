@@ -1,0 +1,25 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+use ecdsa::elliptic_curve::bigint::U256;
+use ecdsa::elliptic_curve::consts::U32;
+use ecdsa::elliptic_curve::CurveArithmetic;
+use ecdsa::hazmat::DigestPrimitive;
+use ecdsa::PrimeCurve;
+
+pub mod nest256p1;
+pub mod secp256k1;
+mod signature;
+
+pub trait EcdsaCurve:
+    PrimeCurve<FieldBytesSize = U32, Uint = U256> + CurveArithmetic + DigestPrimitive
+{
+}
+
+impl<T> EcdsaCurve for T where
+    T: PrimeCurve<FieldBytesSize = U32, Uint = U256> + CurveArithmetic + DigestPrimitive
+{
+}

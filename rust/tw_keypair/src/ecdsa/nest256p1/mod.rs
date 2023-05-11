@@ -4,16 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-// mod canonical;
+use p256::NistP256;
+
 mod keypair;
 mod private;
 mod public;
-mod signature;
 
 pub use keypair::KeyPair;
 pub use private::PrivateKey;
 pub use public::PublicKey;
-pub use signature::{Signature, VerifySignature};
+
+pub type Signature = crate::ecdsa::signature::Signature<NistP256>;
+pub type VerifySignature = crate::ecdsa::signature::VerifySignature<NistP256>;
 
 #[cfg(test)]
 mod tests {
@@ -78,7 +80,7 @@ mod tests {
         let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
         let signature = private.sign(hash_to_sign).unwrap();
 
-        let expected = H520::from("8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901");
+        let expected = H520::from("8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401");
         assert_eq!(signature.to_bytes(), expected);
 
         let verify_signature = VerifySignature::from(signature);
@@ -117,42 +119,5 @@ mod tests {
         let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
 
         assert!(!private.public().verify(verify_sig, hash_to_sign));
-    }
-
-    #[test]
-    fn test_signature() {
-        let sign_bytes = H520::from("d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a00");
-        let sign = Signature::from_bytes(sign_bytes.as_slice()).unwrap();
-        assert_eq!(
-            sign.r(),
-            H256::from("d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47")
-        );
-        assert_eq!(
-            sign.s(),
-            H256::from("786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a")
-        );
-        assert_eq!(sign.v(), 0);
-        assert_eq!(sign.to_bytes(), sign_bytes);
-    }
-
-    #[test]
-    fn test_signature_from_invalid_bytes() {
-        Signature::from_bytes(b"123").unwrap_err();
-    }
-
-    #[test]
-    fn test_shared_key_hash() {
-        let private = PrivateKey::try_from(
-            "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0",
-        )
-        .unwrap();
-        let public = PublicKey::try_from(
-            "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992",
-        )
-        .unwrap();
-        let actual = private.shared_key_hash(&public);
-        let expected =
-            H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
-        assert_eq!(actual, expected);
     }
 }

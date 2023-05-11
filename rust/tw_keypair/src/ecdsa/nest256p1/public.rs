@@ -4,16 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::secp256k1::signature::VerifySignature;
+use crate::ecdsa::nest256p1::VerifySignature;
 use crate::traits::VerifyingKeyTrait;
 use crate::KeyPairError;
-use k256::ecdsa::signature::hazmat::PrehashVerifier;
-use k256::ecdsa::VerifyingKey;
+use p256::ecdsa::signature::hazmat::PrehashVerifier;
+use p256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
 use tw_misc::traits::ToBytesVec;
 
-/// Represents a `secp256k1` public key.
+/// Represents a `nest256p1` public key.
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }

@@ -6,7 +6,7 @@
 
 use crate::traits::VerifyingKeyTrait;
 use crate::tw::PublicKeyType;
-use crate::{ed25519, secp256k1, starkex, KeyPairError, KeyPairResult};
+use crate::{ed25519, ecdsa::secp256k1, starkex, KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 

@@ -5,12 +5,7 @@ edition = "2021"
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
-curve25519-dalek = "3"
-blake2 = "0.9"
-digest = "0.9.0"
 lazy_static = "1.4.0"
-k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
-sha2 = "0.9"
 starknet-crypto = "0.5.0"
 starknet-ff = "0.3.2"
 tw_encoding = { path = "../tw_encoding" }
@@ -18,6 +13,15 @@ tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 zeroize = "1.6.0"
+# SECP256k1/NEST256p1 specific:
+ecdsa = "0.16.6"
+k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
+p256 = { version = "0.13.0", features = ["ecdsa", "std"], default-features = false }
+# ED25519 specific:
+blake2 = "0.9"
+curve25519-dalek = "3"
+digest = "0.9.0"
+sha2 = "0.9"
 
 [dev-dependencies]
 serde = { version = "1.0.159", features = ["derive"] }

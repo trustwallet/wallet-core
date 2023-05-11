@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::ecdsa::EcdsaCurve;
 use crate::{KeyPairError, KeyPairResult};
-use k256::FieldBytes;
+use ecdsa::elliptic_curve::FieldBytes;
 use std::ops::{Range, RangeInclusive};
 use tw_hash::{H256, H520};
 use tw_misc::traits::ToBytesVec;
@@ -15,26 +16,26 @@ const R_RANGE: Range<usize> = 0..32;
 /// cbindgen:ignore
 const S_RANGE: Range<usize> = 32..64;
 /// cbindgen:ignore
-const RECOVERY_LAST: usize = Signature::len() - 1;
+const RECOVERY_LAST: usize = 64;
 /// Expected signature with or without recovery byte in the end of the slice.
 /// cbindgen:ignore
 const VERIFY_SIGNATURE_LEN_RANGE: RangeInclusive<usize> = 64..=65;
 
 /// Represents an ECDSA signature.
 #[derive(Debug, PartialEq)]
-pub struct Signature {
-    signature: k256::ecdsa::Signature,
+pub struct Signature<C: EcdsaCurve> {
+    signature: ecdsa::Signature<C>,
     v: u8,
 }
 
 /// cbindgen:ignore
-impl Signature {
+impl<C: EcdsaCurve> Signature<C> {
     /// The number of bytes for a serialized signature representation.
     pub const LEN: usize = 65;
 
     /// Creates a `secp256k1` recoverable signature from the given [`k256::ecdsa::Signature`]
     /// and the `v` recovery byte.
-    pub(crate) fn new(signature: k256::ecdsa::Signature, v: u8) -> Signature {
+    pub(crate) fn new(signature: ecdsa::Signature<C>, v: u8) -> Self {
         Signature { signature, v }
     }
 
@@ -61,8 +62,8 @@ impl Signature {
     }
 
     /// Tries to create a Signature from the serialized representation.
-    pub fn from_bytes(sig: &[u8]) -> KeyPairResult<Signature> {
-        if sig.len() != Signature::len() {
+    pub fn from_bytes(sig: &[u8]) -> KeyPairResult<Self> {
+        if sig.len() != Self::len() {
             return Err(KeyPairError::InvalidSignature);
         }
 
@@ -87,26 +88,26 @@ impl Signature {
     /// # Panic
     ///
     /// `r` and `s` must be 32 byte arrays, otherwise the function panics.
-    fn signature_from_slices(r: &[u8], s: &[u8]) -> KeyPairResult<k256::ecdsa::Signature> {
-        let r = FieldBytes::clone_from_slice(r);
-        let s = FieldBytes::clone_from_slice(s);
+    fn signature_from_slices(r: &[u8], s: &[u8]) -> KeyPairResult<ecdsa::Signature<C>> {
+        let r = FieldBytes::<C>::clone_from_slice(r);
+        let s = FieldBytes::<C>::clone_from_slice(s);
 
-        k256::ecdsa::Signature::from_scalars(r, s).map_err(|_| KeyPairError::InvalidSignature)
+        ecdsa::Signature::<C>::from_scalars(r, s).map_err(|_| KeyPairError::InvalidSignature)
     }
 }
 
-impl ToBytesVec for Signature {
+impl<C: EcdsaCurve> ToBytesVec for Signature<C> {
     fn to_vec(&self) -> Vec<u8> {
         self.to_bytes().to_vec()
     }
 }
 
 /// To verify the signature, it's enough to check `r` and `s` parts without the recovery ID.
-pub struct VerifySignature {
-    pub signature: k256::ecdsa::Signature,
+pub struct VerifySignature<C: EcdsaCurve> {
+    pub signature: ecdsa::Signature<C>,
 }
 
-impl<'a> TryFrom<&'a [u8]> for VerifySignature {
+impl<'a, C: EcdsaCurve> TryFrom<&'a [u8]> for VerifySignature<C> {
     type Error = KeyPairError;
 
     fn try_from(sig: &'a [u8]) -> Result<Self, Self::Error> {
@@ -120,10 +121,37 @@ impl<'a> TryFrom<&'a [u8]> for VerifySignature {
     }
 }
 
-impl From<Signature> for VerifySignature {
-    fn from(sig: Signature) -> Self {
+impl<C: EcdsaCurve> From<Signature<C>> for VerifySignature<C> {
+    fn from(sig: Signature<C>) -> Self {
         VerifySignature {
             signature: sig.signature,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use k256::Secp256k1;
+
+    #[test]
+    fn test_signature() {
+        let sign_bytes = H520::from("d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a00");
+        let sign = Signature::<Secp256k1>::from_bytes(sign_bytes.as_slice()).unwrap();
+        assert_eq!(
+            sign.r(),
+            H256::from("d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47")
+        );
+        assert_eq!(
+            sign.s(),
+            H256::from("786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a")
+        );
+        assert_eq!(sign.v(), 0);
+        assert_eq!(sign.to_bytes(), sign_bytes);
+    }
+
+    #[test]
+    fn test_signature_from_invalid_bytes() {
+        Signature::<Secp256k1>::from_bytes(b"123").unwrap_err();
     }
 }

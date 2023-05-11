@@ -6,7 +6,7 @@
 
 use serde::Deserialize;
 use tw_hash::{H256, H520};
-use tw_keypair::secp256k1::{KeyPair, VerifySignature};
+use tw_keypair::ecdsa::secp256k1::{KeyPair, VerifySignature};
 use tw_keypair::traits::{SigningKeyTrait, VerifyingKeyTrait};
 
 /// The tests were generated in C++ using the `trezor-crypto` library.
