@@ -1,0 +1,46 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Barz.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// Represents the access control to the wallet
+message ContractOwner {
+  oneof kind {
+    string public_key = 1;
+    string attestation_object = 2;
+  }
+}
+
+// Input parameters for calculating a counterfactual address for ERC-4337 based smart contract wallet
+message ContractAddressInput {
+  // Address of the contract factory
+  string factory = 1;
+
+  // Diamond proxy facets required for the contract setup
+  string diamond_cut_facet = 2;
+  string account_facet = 3;
+  string verification_facet = 4;
+
+  // ERC-4337 entry point
+  string entry_point = 5;
+
+  // Address of the contract that defines security constraints
+  string security_manager = 6;
+
+  // Address of the contract that defines if a facet is secure
+  string facet_registry = 7;
+
+  // Bytecode of the smart contract to deploy
+  string bytecode = 8;
+
+  // Owner of the wallet
+  ContractOwner owner = 9;
+}
