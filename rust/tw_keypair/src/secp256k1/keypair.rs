@@ -8,9 +8,10 @@ use crate::secp256k1::private::PrivateKey;
 use crate::secp256k1::public::PublicKey;
 use crate::secp256k1::{Signature, VerifySignature};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 use tw_hash::H256;
+use zeroize::Zeroizing;
 
 /// Represents a pair of `secp256k1` private and public keys.
 pub struct KeyPair {
@@ -32,25 +33,25 @@ impl KeyPairTrait for KeyPair {
 }
 
 impl SigningKeyTrait for KeyPair {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type Signature = Signature;
 
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
-        self.private.sign(hash)
+    fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
+        self.private.sign(message)
     }
 }
 
 impl VerifyingKeyTrait for KeyPair {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type VerifySignature = VerifySignature;
 
-    fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
-        self.public.verify(signature, hash)
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
+        self.public.verify(signature, message)
     }
 }
 
 impl<'a> TryFrom<&'a [u8]> for KeyPair {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
         let private = PrivateKey::try_from(bytes)?;
@@ -59,10 +60,11 @@ impl<'a> TryFrom<&'a [u8]> for KeyPair {
     }
 }
 
-impl From<&'static str> for KeyPair {
-    fn from(hex: &'static str) -> Self {
-        // There is no need to zeroize the `bytes` as it has a static lifetime (so most likely included in the binary).
-        let bytes = hex::decode(hex).expect("Expected a valid Secret Key hex");
-        KeyPair::try_from(bytes.as_slice()).expect("Expected a valid Secret Key")
+impl<'a> TryFrom<&'a str> for KeyPair {
+    type Error = KeyPairError;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }

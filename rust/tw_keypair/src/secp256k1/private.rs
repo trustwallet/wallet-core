@@ -7,7 +7,7 @@
 use crate::secp256k1::public::PublicKey;
 use crate::secp256k1::signature::Signature;
 use crate::traits::SigningKeyTrait;
-use crate::Error;
+use crate::{KeyPairError, KeyPairResult};
 use k256::ecdsa::{SigningKey, VerifyingKey};
 use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::{AffinePoint, ProjectivePoint};
@@ -50,33 +50,33 @@ fn diffie_hellman(private: &SigningKey, public: &VerifyingKey) -> AffinePoint {
 }
 
 impl SigningKeyTrait for PrivateKey {
-    type SigningHash = H256;
+    type SigningMessage = H256;
     type Signature = Signature;
 
-    fn sign(&self, hash: Self::SigningHash) -> Result<Self::Signature, Error> {
+    fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         let (signature, recovery_id) = self
             .secret
-            .sign_prehash_recoverable(&hash)
-            .map_err(|_| Error::SigningError)?;
+            .sign_prehash_recoverable(message.as_slice())
+            .map_err(|_| KeyPairError::SigningError)?;
         Ok(Signature::new(signature, recovery_id.to_byte()))
     }
 }
 
-/// Implement `str` -> `PrivateKey` conversion for test purposes.
-impl From<&'static str> for PrivateKey {
-    fn from(hex: &'static str) -> Self {
-        // There is no need to zeroize the `data` as it has a static lifetime (so most likely included in the binary).
-        let data = hex::decode(hex).expect("Expected a valid Secret Key hex");
-        PrivateKey::try_from(data.as_slice()).expect("Expected a valid Secret Key")
+impl<'a> TryFrom<&'a [u8]> for PrivateKey {
+    type Error = KeyPairError;
+
+    fn try_from(data: &'a [u8]) -> Result<Self, Self::Error> {
+        let secret = SigningKey::from_slice(data).map_err(|_| KeyPairError::InvalidSecretKey)?;
+        Ok(PrivateKey { secret })
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for PrivateKey {
-    type Error = Error;
+impl<'a> TryFrom<&'a str> for PrivateKey {
+    type Error = KeyPairError;
 
-    fn try_from(data: &'a [u8]) -> Result<Self, Self::Error> {
-        let secret = SigningKey::from_slice(data).map_err(|_| Error::InvalidSecretKey)?;
-        Ok(PrivateKey { secret })
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidSecretKey)?);
+        Self::try_from(bytes.as_slice())
     }
 }
 
