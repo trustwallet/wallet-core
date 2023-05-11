@@ -11,6 +11,7 @@ use crate::ed25519::Hasher512;
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
+use zeroize::Zeroizing;
 
 /// Represents an `ed25519` key pair that is used in Waves blockchain.
 pub struct KeyPair<H: Hasher512> {
@@ -63,7 +64,7 @@ impl<'a, H: Hasher512> TryFrom<&'a str> for KeyPair<H> {
     type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
-        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
+        let bytes = Zeroizing::new(hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?);
         Self::try_from(bytes.as_slice())
     }
 }
