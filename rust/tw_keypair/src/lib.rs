@@ -44,14 +44,17 @@
 //! assert_eq(eth_signature.v, H256::from(EXPECTED_V));
 //! ```
 
+pub mod ed25519;
 pub mod ffi;
 pub mod secp256k1;
 pub mod starkex;
 pub mod traits;
 pub mod tw;
 
+pub type KeyPairResult<T> = std::result::Result<T, KeyPairError>;
+
 #[derive(Debug)]
-pub enum Error {
+pub enum KeyPairError {
     InvalidSecretKey,
     InvalidPublicKey,
     InvalidSignature,

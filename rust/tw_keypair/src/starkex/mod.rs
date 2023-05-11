@@ -37,7 +37,8 @@ mod tests {
     #[test]
     fn test_key_pair_sign_verify() {
         let keypair =
-            KeyPair::from("0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79");
+            KeyPair::try_from("0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79")
+                .unwrap();
 
         let hash_to_sign =
             hex::decode("06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76")
@@ -111,7 +112,8 @@ mod tests {
     #[test]
     fn test_verify_panic() {
         let public =
-            PublicKey::from("03ee9bffffffffff26ffffffff60ffffffffffffffffffffffffffff004accff");
+            PublicKey::try_from("03ee9bffffffffff26ffffffff60ffffffffffffffffffffffffffff004accff")
+                .unwrap();
         let hash = hex::decode("06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76")
             .unwrap();
         let signature_bytes = hex::decode("06ffffffffffffffffffffffffffffffffffffffffffff06ffff5dffff9bffdf00ffffff9b9b9b9b9b9b9b9bbb9bff9b9bbb9bff9b9b9b9b9b9b9b9b9b9b9b33").unwrap();

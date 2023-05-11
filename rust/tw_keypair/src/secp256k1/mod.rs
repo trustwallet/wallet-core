@@ -40,7 +40,8 @@ mod tests {
     #[test]
     fn test_key_pair_sign() {
         let key_pair =
-            KeyPair::from("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+            KeyPair::try_from("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
+                .unwrap();
 
         let hash_to_sign = keccak256(b"hello");
         let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
@@ -59,7 +60,7 @@ mod tests {
         let expected = hex::decode(hex).unwrap();
 
         // Test `From<&'static str>`.
-        let private = PrivateKey::from(hex);
+        let private = PrivateKey::try_from(hex).unwrap();
         assert_eq!(private.to_zeroizing_vec().as_slice(), expected);
 
         // Test `From<&'a [u8]>`.
@@ -70,7 +71,7 @@ mod tests {
     #[test]
     fn test_private_key_sign_verify() {
         let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-        let private = PrivateKey::from(secret);
+        let private = PrivateKey::try_from(secret).unwrap();
         let public = private.public();
 
         let hash_to_sign = keccak256(b"hello");
@@ -92,13 +93,13 @@ mod tests {
         let expected_uncompressed = H520::from(uncompressed);
 
         // From extended public key.
-        let public = PublicKey::from(uncompressed);
+        let public = PublicKey::try_from(uncompressed).unwrap();
         assert_eq!(public.to_vec(), expected_compressed.into_vec());
         assert_eq!(public.compressed(), expected_compressed);
         assert_eq!(public.uncompressed(), expected_uncompressed);
 
         // From compressed public key.
-        let public = PublicKey::from(compressed);
+        let public = PublicKey::try_from(compressed).unwrap();
         assert_eq!(public.to_vec(), expected_compressed.into_vec());
         assert_eq!(public.compressed(), expected_compressed);
         assert_eq!(public.uncompressed(), expected_uncompressed);
@@ -107,7 +108,7 @@ mod tests {
     #[test]
     fn test_verify_invalid() {
         let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-        let private = PrivateKey::from(secret);
+        let private = PrivateKey::try_from(secret).unwrap();
 
         let signature_bytes  = H520::from("375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f0801");
         let verify_sig = VerifySignature::try_from(signature_bytes.as_slice()).unwrap();
@@ -141,10 +142,14 @@ mod tests {
 
     #[test]
     fn test_shared_key_hash() {
-        let private =
-            PrivateKey::from("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
-        let public =
-            PublicKey::from("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+        let private = PrivateKey::try_from(
+            "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0",
+        )
+        .unwrap();
+        let public = PublicKey::try_from(
+            "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992",
+        )
+        .unwrap();
         let actual = private.shared_key_hash(&public);
         let expected =
             H256::from("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");

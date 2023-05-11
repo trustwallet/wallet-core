@@ -7,7 +7,7 @@
 use crate::starkex::field_element_from_bytes_be;
 use crate::starkex::signature::Signature;
 use crate::traits::VerifyingKeyTrait;
-use crate::Error;
+use crate::KeyPairError;
 use starknet_crypto::verify as ecdsa_verify;
 use starknet_ff::FieldElement;
 use tw_encoding::hex;
@@ -27,11 +27,11 @@ impl PublicKey {
 }
 
 impl VerifyingKeyTrait for PublicKey {
-    type SigningHash = Vec<u8>;
+    type SigningMessage = Vec<u8>;
     type VerifySignature = Signature;
 
-    fn verify(&self, signature: Self::VerifySignature, hash: Self::SigningHash) -> bool {
-        let hash = try_or_false!(field_element_from_bytes_be(&hash));
+    fn verify(&self, signature: Self::VerifySignature, message: Self::SigningMessage) -> bool {
+        let hash = try_or_false!(field_element_from_bytes_be(&message));
         let ecdsa_signature = signature.inner();
         ecdsa_verify(&self.public, &hash, &ecdsa_signature.r, &ecdsa_signature.s)
             .unwrap_or_default()
@@ -39,20 +39,22 @@ impl VerifyingKeyTrait for PublicKey {
 }
 
 impl<'a> TryFrom<&'a [u8]> for PublicKey {
-    type Error = Error;
+    type Error = KeyPairError;
 
     fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
-        let bytes = H256::try_from(bytes).map_err(|_| Error::InvalidPublicKey)?;
-        let public_scalar =
-            FieldElement::from_bytes_be(&bytes.take()).map_err(|_| Error::InvalidPublicKey)?;
+        let bytes = H256::try_from(bytes).map_err(|_| KeyPairError::InvalidPublicKey)?;
+        let public_scalar = FieldElement::from_bytes_be(&bytes.take())
+            .map_err(|_| KeyPairError::InvalidPublicKey)?;
         Ok(PublicKey::from_scalar(public_scalar))
     }
 }
 
-impl From<&'static str> for PublicKey {
-    fn from(hex: &'static str) -> Self {
-        let bytes = hex::decode(hex).expect("Expected a valid Public Key hex");
-        PublicKey::try_from(bytes.as_slice()).expect("Expected a valid Public Key")
+impl<'a> TryFrom<&'a str> for PublicKey {
+    type Error = KeyPairError;
+
+    fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
+        let bytes = hex::decode(hex).map_err(|_| KeyPairError::InvalidPublicKey)?;
+        Self::try_from(bytes.as_slice())
     }
 }
 
