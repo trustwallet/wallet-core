@@ -40,9 +40,8 @@ public final class {{class_name}} {
     }
 	{{/if}}
 
-	{{/each}}
 	{{#each method}}
-    public {{#if is_static}}static {{/if}}native {{return.value}} {{name}}({{#each params}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}});
+    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}native {{return.value}} {{name}}({{#each params}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}});
 
 	{{/each}}
 }
