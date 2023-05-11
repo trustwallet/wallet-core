@@ -7,41 +7,40 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-package wallet.core.jni;
+#include <jni.h>
+#include <stdio.h>
+{{#each includes}}
+#include <{{name}}.h>
+{{/each}}
 
-import java.security.InvalidParameterException;
+#include <TrustWalletCore/TW{{class_name}}.h>
 
-/**
- * {{class_name}} encode / decode functions
-*/
-public final class {{class_name}} {
-	{{#if is_class}}
-    private long nativeHandle;
+#include "TWJNI.h"
+#include "{{class_name}}.h"
 
-	private {{class_name}}() {
-		nativeHandle = 0;
-	}
+{{#each method}}
+{{return.type}} JNICALL {{name}}({{#each params}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}}) {
+	{{return.type}} result = NULL;
 
-    static {{class_name}} createFromNative(long nativeHandle) {
-        {{class_name}} instance = new {{class_name}}();
-        instance.nativeHandle = nativeHandle;
-        {{class_name}}PhantomReference.register(instance, nativeHandle);
-        return instance;
-    }
-	{{/else}}
-    private byte[] bytes;
-
-	private {{class_name}}() {}
-
-    static {{class_name}} createFromNative(byte[] bytes) {
-        {{class_name}} instance = new {{class_name}}();
-        instance.bytes = bytes;
-        return instance;
-    }
+	{{#each operations}}
+	{{#if this.call}}
+    {{this.type}} {{this.var_name}} = {{this.call}};
 	{{/if}}
-
-	{{#each method}}
-    {{#if is_public}}public {{/if}}{{#if is_static}}static {{/if}}native {{return.value}} {{name}}({{#each params}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}});
-
+	{{#if this.call_optional}}
+    {{this.type}} {{this.var_name}} = {{this.call}};
+	if ({{this.call_optional.var_name}} == NULL) {
+		{{#each each}}
+		{{! Usually used for cleanups}}
+		{{this.call}}
+		{{/each}}
+	}
+	{{/if}}
+	{{#if this.return}}
+	return {{this.return.call}}
+	{{/if}}
 	{{/each}}
 }
+{{#unless @last}}
+
+{{/unless}}
+{{/each}}

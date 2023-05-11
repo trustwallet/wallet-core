@@ -1,0 +1,28 @@
+// Copyright © 2017-{{current_year}} Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+#ifndef JNI_TW_BASE32_H
+#define JNI_TW_BASE32_H
+
+#include <jni.h>
+#include <TrustWalletCore/TW{{class_name}}.h>
+
+TW_EXTERN_C_BEGIN
+
+{{#each method}}
+JNIEXPORT
+{{return.type}} JNICALL {{name}}({{#each params}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}});
+{{#unless @last}}
+
+{{/unless}}
+{{/each}}
+
+TW_EXTERN_C_END
+
+#endif // JNI_TW_BASE32_H
