@@ -84,13 +84,11 @@ std::string getEIP4337CounterfactualAddress(const TW::Ethereum::Proto::ContractA
     Data encoded;
     params.encode(encoded);
 
-    Data initCode = Data(input.bytecode().begin(), input.bytecode().end());
+    Data initCode = parse_hex(input.bytecode());
     append(initCode, encoded);
 
     const Data initCodeHash = Hash::keccak256(initCode);
     cout << hex(initCodeHash);
-    cout << "\n";
-    cout << hex(initCode);
     const Data salt = parse_hex("0x0000000000000000000000000000000000000000000000000000000000000000");
     return Ethereum::checksumed(Address(hexEncoded(create2Address(input.factory(), salt, initCodeHash))));
 }

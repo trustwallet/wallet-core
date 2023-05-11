@@ -188,14 +188,18 @@ message UserOperation {
 // Represents the access control to the wallet
 message ContractOwner {
     // Any type of public key that is supported by the contract
-    string publicKey = 1;
+    message PublicKey {
+        string publicKey = 1;
+    }
 
     // WebAuthn
-    string attestation_object = 1;
+    message AttestationObject {
+        string attestationObject = 1;
+    }
 
     oneof owner_oneof {
-        string publicKey = 1;
-        string attestationObject = 2;
+        PublicKey publicKey = 1;
+        AttestationObject attestationObject = 2;
     }
 }
 
@@ -219,7 +223,7 @@ message ContractAddressInput {
     string facet_registry = 7;
 
     // Bytecode of the smart contract to deploy
-    bytes bytecode = 8;
+    string bytecode = 8;
 
     // Owner of the wallet
     ContractOwner owner = 9;
