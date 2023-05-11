@@ -1,0 +1,38 @@
+    {{#if is_public}}public {{/if}}var {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}} {
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
+        {{#if this.call.defer}}
+        defer {
+            {{this.call.defer}}
+        }
+
+        {{/if}}
+        {{/if}}
+        {{#if this.call_optional}}
+        let ptr: UnsafeRawPointer?
+        if let {{this.call_optional.var_name}} = {{this.call_optional.var_name}} {
+            ptr = {{this.call_optional.call}}
+        } else {
+            ptr = nil
+        }
+        {{#if this.call_optional.defer}}
+        defer {
+            if let {{this.call_optional.var_name}}  = ptr {
+                {{this.call_optional.defer}}
+            }
+        }
+        {{/if}}
+        let {{this.call_optional.var_name}} = ptr
+
+        {{/if}}
+        {{#if this.guarded_call}}
+        guard let {{this.guarded_call.var_name}} = {{this.guarded_call.call}} else {
+            return nil
+        }
+        {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
+        {{/if}}
+        {{/each}}
+    }

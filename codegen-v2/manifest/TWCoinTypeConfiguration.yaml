@@ -1,0 +1,120 @@
+name: TWCoinTypeConfiguration
+structs:
+- name: TWCoinTypeConfiguration
+  is_public: true
+  is_class: false
+  fields:
+  - - unused
+    - variant: u_int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+functions:
+- name: TWCoinTypeConfigurationGetSymbol
+  is_public: true
+  is_static: true
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeConfigurationGetDecimals
+  is_public: true
+  is_static: true
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeConfigurationGetTransactionURL
+  is_public: true
+  is_static: true
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: transactionID
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeConfigurationGetAccountURL
+  is_public: true
+  is_static: true
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: accountID
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeConfigurationGetID
+  is_public: true
+  is_static: true
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeConfigurationGetName
+  is_public: true
+  is_static: true
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

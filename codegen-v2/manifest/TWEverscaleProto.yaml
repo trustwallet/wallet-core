@@ -1,0 +1,5 @@
+name: TWEverscaleProto
+protos:
+- TW_Everscale_Proto_Transfer
+- TW_Everscale_Proto_SigningInput
+- TW_Everscale_Proto_SigningOutput

@@ -1,0 +1,51 @@
+name: TWMnemonic
+structs:
+- name: TWMnemonic
+  is_public: true
+  is_class: false
+functions:
+- name: TWMnemonicIsValid
+  is_public: true
+  is_static: true
+  params:
+  - name: mnemonic
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWMnemonicIsValidWord
+  is_public: true
+  is_static: true
+  params:
+  - name: word
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWMnemonicSuggest
+  is_public: true
+  is_static: true
+  params:
+  - name: prefix
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

@@ -1,0 +1,6 @@
+name: TWDecredProto
+protos:
+- TW_Decred_Proto_Transaction
+- TW_Decred_Proto_TransactionInput
+- TW_Decred_Proto_TransactionOutput
+- TW_Decred_Proto_SigningOutput

@@ -1,0 +1,156 @@
+name: TWEthereumMessageSigner
+structs:
+- name: TWEthereumMessageSigner
+  is_public: true
+  is_class: false
+functions:
+- name: TWEthereumMessageSignerSignTypedMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: messageJson
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumMessageSignerSignTypedMessageEip155
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: messageJson
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: chainId
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumMessageSignerSignMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumMessageSignerSignMessageImmutableX
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumMessageSignerSignMessageEip155
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: chainId
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumMessageSignerVerifyMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: pubKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

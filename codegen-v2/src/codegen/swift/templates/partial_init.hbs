@@ -1,0 +1,23 @@
+    {{#if is_public}}public {{/if}}init{{#if is_nullable}}?{{/if}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) {
+        {{#each operations}}
+        {{#if this.call}}
+        let {{this.call.var_name}} = {{this.call.call}}
+        {{#if this.call.defer}}
+        defer {
+            {{this.call.defer}}
+        }
+
+        {{/if}}
+        {{/if}}
+        {{#if this.guarded_call}}
+        guard let {{this.guarded_call.var_name}} = {{this.guarded_call.call}} else {
+            return nil
+        }
+        {{/if}}
+        {{#if this.return}}
+        return {{this.return.call}}
+        {{/if}}
+        {{/each}}
+
+        self.rawValue = result
+    }

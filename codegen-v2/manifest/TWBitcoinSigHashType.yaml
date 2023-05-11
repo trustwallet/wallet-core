@@ -1,0 +1,52 @@
+name: TWBitcoinSigHashType
+enums:
+- name: TWBitcoinSigHashType
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: all
+    value: 0x01
+  - name: none
+    value: 0x02
+  - name: single
+    value: 0x03
+  - name: fork
+    value: 0x40
+  - name: forkBtg
+    value: 0x4f40
+  - name: anyoneCanPay
+    value: 0x80
+functions:
+- name: TWBitcoinSigHashTypeIsSingle
+  is_public: true
+  is_static: false
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWBitcoinSigHashType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinSigHashTypeIsNone
+  is_public: true
+  is_static: false
+  params:
+  - name: type
+    type:
+      variant: enum
+      value: TWBitcoinSigHashType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

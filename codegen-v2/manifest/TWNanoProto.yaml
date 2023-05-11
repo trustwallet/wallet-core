@@ -1,0 +1,4 @@
+name: TWNanoProto
+protos:
+- TW_Nano_Proto_SigningInput
+- TW_Nano_Proto_SigningOutput

@@ -1,0 +1,308 @@
+name: TWAnyAddress
+structs:
+- name: TWPublicKey
+  is_public: false
+  is_class: false
+- name: TWAnyAddress
+  is_public: true
+  is_class: true
+inits:
+- name: TWAnyAddressCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWAnyAddressCreateBech32
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: hrp
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWAnyAddressCreateSS58
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: ss58Prefix
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWAnyAddressCreateWithPublicKey
+  is_public: true
+  is_nullable: false
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWAnyAddressCreateWithPublicKeyDerivation
+  is_public: true
+  is_nullable: false
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWAnyAddressCreateBech32WithPublicKey
+  is_public: true
+  is_nullable: false
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: hrp
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWAnyAddressCreateSS58WithPublicKey
+  is_public: true
+  is_nullable: false
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: ss58Prefix
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWAnyAddressCreateWithPublicKeyFilecoinAddressType
+  is_public: true
+  is_nullable: false
+  params:
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: filecoinAddressType
+    type:
+      variant: enum
+      value: TWFilecoinAddressType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+deinits:
+- name: TWAnyAddressDelete
+functions:
+- name: TWAnyAddressEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWAnyAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: rhs
+    type:
+      variant: struct
+      value: TWAnyAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWAnyAddressIsValid
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWAnyAddressIsValidBech32
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: hrp
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWAnyAddressIsValidSS58
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: ss58Prefix
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWAnyAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWAnyAddressCoin
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWCoinType
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWAnyAddressData
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

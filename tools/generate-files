@@ -46,8 +46,16 @@ mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 # Generate coins info from registry.json
 codegen/bin/coins
 
-# Generate interface code
+# Generate interface code, Swift bindings excluded.
 codegen/bin/codegen
+
+# Generate Swift bindings with codegen-v2. This is a transitionary process 
+# and will eventually deprecate the current codegen/ entirely.
+cd codegen-v2/
+cargo run -- swift
+cp -R bindings/ ../swift/Sources/Generated/
+cp src/codegen/swift/templates/WalletCore.h ../swift/Sources/Generated/
+cd ..
 
 # Convert doxygen comments to appropriate format
 tools/doxygen_convert_comments

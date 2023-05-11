@@ -1,0 +1,86 @@
+name: TWNervosAddress
+structs:
+- name: TWNervosAddress
+  is_public: true
+  is_class: true
+inits:
+- name: TWNervosAddressCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWNervosAddressDelete
+functions:
+- name: TWNervosAddressEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWNervosAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: rhs
+    type:
+      variant: struct
+      value: TWNervosAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWNervosAddressIsValidString
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWNervosAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWNervosAddressCodeHash
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWNervosAddressHashType
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWNervosAddressArgs
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

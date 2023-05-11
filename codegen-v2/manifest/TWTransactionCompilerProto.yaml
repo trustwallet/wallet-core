@@ -1,0 +1,3 @@
+name: TWTransactionCompilerProto
+protos:
+- TW_TxCompiler_Proto_PreSigningOutput

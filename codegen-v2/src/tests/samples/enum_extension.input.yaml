@@ -1,0 +1,47 @@
+name: EnumExtension
+enums:
+- name: MainEnum
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: one 
+    value: 0
+    as_string: one_string
+  - name: two 
+    value: 1
+  - name: three
+    value: 2
+    as_string: three_string
+functions:
+- name: MainEnumFirstFunction
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: int 
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: MainEnumSecondFunction
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: struct
+      value: SomeStruct
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

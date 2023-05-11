@@ -1,0 +1,465 @@
+name: TWCoinType
+structs:
+- name: TWPrivateKey
+  is_public: false
+  is_class: false
+- name: TWPublicKey
+  is_public: false
+  is_class: false
+enums:
+- name: TWCoinType
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: aeternity
+    value: 457
+  - name: aion
+    value: 425
+  - name: binance
+    value: 714
+  - name: bitcoin
+    value: 0
+  - name: bitcoinCash
+    value: 145
+  - name: bitcoinGold
+    value: 156
+  - name: callisto
+    value: 820
+  - name: cardano
+    value: 1815
+  - name: cosmos
+    value: 118
+  - name: dash
+    value: 5
+  - name: decred
+    value: 42
+  - name: digiByte
+    value: 20
+  - name: dogecoin
+    value: 3
+  - name: eos
+    value: 194
+  - name: wax
+    value: 14001
+  - name: ethereum
+    value: 60
+  - name: ethereumClassic
+    value: 61
+  - name: fio
+    value: 235
+  - name: goChain
+    value: 6060
+  - name: groestlcoin
+    value: 17
+  - name: icon
+    value: 74
+  - name: ioTeX
+    value: 304
+  - name: kava
+    value: 459
+  - name: kin
+    value: 2017
+  - name: litecoin
+    value: 2
+  - name: monacoin
+    value: 22
+  - name: nebulas
+    value: 2718
+  - name: nuls
+    value: 8964
+  - name: nano
+    value: 165
+  - name: near
+    value: 397
+  - name: nimiq
+    value: 242
+  - name: ontology
+    value: 1024
+  - name: poanetwork
+    value: 178
+  - name: qtum
+    value: 2301
+  - name: xrp
+    value: 144
+  - name: solana
+    value: 501
+  - name: stellar
+    value: 148
+  - name: tezos
+    value: 1729
+  - name: theta
+    value: 500
+  - name: thunderCore
+    value: 1001
+  - name: neo
+    value: 888
+  - name: tomoChain
+    value: 889
+  - name: tron
+    value: 195
+  - name: veChain
+    value: 818
+  - name: viacoin
+    value: 14
+  - name: wanchain
+    value: 5718350
+  - name: zcash
+    value: 133
+  - name: firo
+    value: 136
+  - name: zilliqa
+    value: 313
+  - name: zelcash
+    value: 19167
+  - name: ravencoin
+    value: 175
+  - name: waves
+    value: 5741564
+  - name: terra
+    value: 330
+  - name: terraV2
+    value: 10000330
+  - name: harmony
+    value: 1023
+  - name: algorand
+    value: 283
+  - name: kusama
+    value: 434
+  - name: polkadot
+    value: 354
+  - name: filecoin
+    value: 461
+  - name: multiversX
+    value: 508
+  - name: bandChain
+    value: 494
+  - name: smartChainLegacy
+    value: 10000714
+  - name: smartChain
+    value: 20000714
+  - name: oasis
+    value: 474
+  - name: polygon
+    value: 966
+  - name: thorchain
+    value: 931
+  - name: bluzelle
+    value: 483
+  - name: optimism
+    value: 10000070
+  - name: zksync
+    value: 10000324
+  - name: arbitrum
+    value: 10042221
+  - name: ecochain
+    value: 10000553
+  - name: avalancheCChain
+    value: 10009000
+  - name: xdai
+    value: 10000100
+  - name: fantom
+    value: 10000250
+  - name: cryptoOrg
+    value: 394
+  - name: celo
+    value: 52752
+  - name: ronin
+    value: 10002020
+  - name: osmosis
+    value: 10000118
+  - name: ecash
+    value: 899
+  - name: cronosChain
+    value: 10000025
+  - name: smartBitcoinCash
+    value: 10000145
+  - name: kuCoinCommunityChain
+    value: 10000321
+  - name: boba
+    value: 10000288
+  - name: metis
+    value: 1001088
+  - name: aurora
+    value: 1323161554
+  - name: evmos
+    value: 10009001
+  - name: nativeEvmos
+    value: 20009001
+  - name: moonriver
+    value: 10001285
+  - name: moonbeam
+    value: 10001284
+  - name: kavaEvm
+    value: 10002222
+  - name: klaytn
+    value: 10008217
+  - name: meter
+    value: 18000
+  - name: okxchain
+    value: 996
+  - name: nervos
+    value: 309
+  - name: everscale
+    value: 396
+  - name: aptos
+    value: 637
+  - name: hedera
+    value: 3030
+  - name: secret
+    value: 529
+  - name: nativeInjective
+    value: 10000060
+  - name: agoric
+    value: 564
+  - name: ton
+    value: 607
+  - name: sui
+    value: 784
+  - name: stargaze
+    value: 20000118
+  - name: polygonzkEVM
+    value: 10001101
+  - name: juno
+    value: 30000118
+  - name: stride
+    value: 40000118
+  - name: axelar
+    value: 50000118
+  - name: crescent
+    value: 60000118
+  - name: kujira
+    value: 70000118
+  - name: ioTeXEVM
+    value: 10004689
+  - name: nativeCanto
+    value: 10007700
+  - name: comdex
+    value: 80000118
+  - name: neutron
+    value: 90000118
+  - name: sommelier
+    value: 11000118
+  - name: fetchAI
+    value: 12000118
+  - name: mars
+    value: 13000118
+  - name: umee
+    value: 14000118
+  - name: coreum
+    value: 10000990
+  - name: quasar
+    value: 15000118
+  - name: persistence
+    value: 16000118
+  - name: akash
+    value: 17000118
+  - name: noble
+    value: 18000118
+functions:
+- name: TWCoinTypeValidate
+  is_public: true
+  is_static: false
+  params:
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeDerivationPath
+  is_public: true
+  is_static: false
+  params:
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeDerivationPathWithDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeDeriveAddress
+  is_public: true
+  is_static: false
+  params:
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeDeriveAddressFromPublicKey
+  is_public: true
+  is_static: false
+  params:
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+properties:
+- name: TWCoinTypeBlockchain
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWBlockchain
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypePurpose
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWPurpose
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeCurve
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWCurve
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeXpubVersion
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWHDVersion
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeXprvVersion
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWHDVersion
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeHRP
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWHRP
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeP2pkhPrefix
+  is_public: true
+  return_type:
+    variant: u_int8_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeP2shPrefix
+  is_public: true
+  return_type:
+    variant: u_int8_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeStaticPrefix
+  is_public: true
+  return_type:
+    variant: u_int8_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeChainId
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWCoinTypeSlip44Id
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypeSS58Prefix
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWCoinTypePublicKeyType
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWPublicKeyType
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

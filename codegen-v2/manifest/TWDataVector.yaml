@@ -1,0 +1,74 @@
+name: TWDataVector
+structs:
+- name: TWDataVector
+  is_public: true
+  is_class: true
+inits:
+- name: TWDataVectorCreate
+  is_public: true
+  is_nullable: false
+- name: TWDataVectorCreateWithData
+  is_public: true
+  is_nullable: false
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWDataVectorDelete
+functions:
+- name: TWDataVectorAdd
+  is_public: true
+  is_static: false
+  params:
+  - name: dataVector
+    type:
+      variant: struct
+      value: TWDataVector
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: void
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDataVectorGet
+  is_public: true
+  is_static: false
+  params:
+  - name: dataVector
+    type:
+      variant: struct
+      value: TWDataVector
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: index
+    type:
+      variant: size_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+properties:
+- name: TWDataVectorSize
+  is_public: true
+  return_type:
+    variant: size_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
