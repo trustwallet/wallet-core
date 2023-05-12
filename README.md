@@ -126,6 +126,12 @@ If you want to add support for a new blockchain also see [Adding Support for a N
 Thanks to all the people who contribute.
 <a href="https://github.com/trustwallet/wallet-core/graphs/contributors"><img src="https://opencollective.com/wallet-core/contributors.svg?width=890&button=false" /></a>
 
+# Disclaimer
+
+Wallet Core is an open source project primarily supported by Trust Wallet developers.  This project is available to many members of the community and is actively used by several projects.  Our goal at Wallet Core is to give other wallets an easy way to add chain support.
+
+While Trust Wallet actively supports this project, any new chains, tokens, or capabilities does not imply that it will be endorsed by Trust Wallet or that Trust Wallet products will integrate all chains provided by Wallet Core.
+
 # License
 
 Trust Wallet Core is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
