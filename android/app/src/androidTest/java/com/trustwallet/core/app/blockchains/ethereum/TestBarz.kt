@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.Assert.assertFalse
 import wallet.core.jni.proto.Barz
-import wallet.core.jni.LiquidStaking as WCBarz
+import wallet.core.jni.Barz as WCBarz
 
 class TestBarz {
 
