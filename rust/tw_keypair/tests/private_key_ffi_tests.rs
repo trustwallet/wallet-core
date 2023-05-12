@@ -6,6 +6,7 @@
 
 use tw_encoding::hex;
 use tw_hash::sha2::sha256;
+use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_keypair::ffi::privkey::{
     tw_private_key_create_with_data, tw_private_key_delete, tw_private_key_get_public_key_by_type,
@@ -98,6 +99,14 @@ fn test_tw_private_key_sign_ed25519_blake2b() {
     let msg = hex::encode(sha256(b"Hello"), false);
     let sign = "5c1473944cd0234ebc5a91b2966b9e707a33b936dadd149417a2e53b6b3fc97bef17b767b1690708c74d7b4c8fe48703fd44a6ef59d4cc5b9f88ba992db0a003";
     test_sign(Curve::Ed25519Blake2bNano, secret, &msg, sign);
+}
+
+#[test]
+fn test_tw_private_key_sign_nist256p1() {
+    let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+    let msg = hex::encode(keccak256(b"hello"), false);
+    let sign = "8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401";
+    test_sign(Curve::Nist256p1, secret, &msg, sign);
 }
 
 #[test]

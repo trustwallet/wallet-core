@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ecdsa::nest256p1::public::PublicKey;
-use crate::ecdsa::nest256p1::Signature;
+use crate::ecdsa::nist256p1::public::PublicKey;
+use crate::ecdsa::nist256p1::Signature;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
 use p256::ecdsa::SigningKey;
@@ -14,13 +14,13 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
-/// Represents a `nest256p1` private key.
+/// Represents a `nist256p1` private key.
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
 }
 
 impl PrivateKey {
-    /// Returns an associated `nest256p1` public key.
+    /// Returns an associated `nist256p1` public key.
     pub fn public(&self) -> PublicKey {
         PublicKey::new(*self.secret.verifying_key())
     }

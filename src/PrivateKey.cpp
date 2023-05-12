@@ -229,7 +229,8 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     Data result;
     bool success = false;
     switch (curve) {
-    case TWCurveSECP256k1: {
+    case TWCurveSECP256k1:
+    case TWCurveNIST256p1: {
         result = rust_private_key_sign(key(), digest, curve);
         success = result.size() == 65;
     } break;
@@ -254,10 +255,6 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result[63] = result[63] & 127;
         result[63] |= sign_bit;
         success = true;
-    } break;
-    case TWCurveNIST256p1: {
-        result.resize(65);
-        success = ecdsa_sign_digest_checked(&nist256p1, key().data(), digest.data(), digest.size(), result.data(), result.data() + 64, nullptr) == 0;
     } break;
     case TWCurveNone:
     default:

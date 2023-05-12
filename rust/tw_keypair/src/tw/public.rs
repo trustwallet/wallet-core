@@ -4,9 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::ecdsa::{nist256p1, secp256k1};
 use crate::traits::VerifyingKeyTrait;
 use crate::tw::PublicKeyType;
-use crate::{ed25519, ecdsa::secp256k1, starkex, KeyPairError, KeyPairResult};
+use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
@@ -14,6 +15,8 @@ use tw_misc::try_or_false;
 pub enum PublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
+    Nist256p1(nist256p1::PublicKey),
+    Nist256p1Extended(nist256p1::PublicKey),
     Ed25519(ed25519::sha512::PublicKey),
     Ed25519Blake2b(ed25519::blake2b::PublicKey),
     Ed25519ExtendedCardano(Box<ed25519::cardano::ExtendedPublicKey>),
@@ -33,6 +36,16 @@ impl PublicKey {
             {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Secp256k1Extended(pubkey))
+            },
+            PublicKeyType::Nist256k1 if nist256p1::PublicKey::COMPRESSED == bytes.len() => {
+                let pubkey = nist256p1::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Nist256p1(pubkey))
+            },
+            PublicKeyType::Nist256k1Extended
+                if nist256p1::PublicKey::UNCOMPRESSED == bytes.len() =>
+            {
+                let pubkey = nist256p1::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Nist256p1Extended(pubkey))
             },
             PublicKeyType::Ed25519 if ed25519::sha512::PublicKey::LEN == bytes.len() => {
                 let pubkey = ed25519::sha512::PublicKey::try_from(bytes.as_slice())?;
@@ -79,6 +92,9 @@ impl PublicKey {
             PublicKey::Secp256k1(secp) | PublicKey::Secp256k1Extended(secp) => {
                 verify_impl(secp, sig, message)
             },
+            PublicKey::Nist256p1(nist) | PublicKey::Nist256p1Extended(nist) => {
+                verify_impl(nist, sig, message)
+            },
             PublicKey::Ed25519(ed) => verify_impl(ed, sig, message),
             PublicKey::Ed25519Blake2b(blake) => verify_impl(blake, sig, message),
             PublicKey::Ed25519ExtendedCardano(cardano) => {
@@ -93,6 +109,8 @@ impl PublicKey {
         match self {
             PublicKey::Secp256k1(secp) => secp.compressed().into_vec(),
             PublicKey::Secp256k1Extended(secp) => secp.uncompressed().into_vec(),
+            PublicKey::Nist256p1(nist) => nist.compressed().into_vec(),
+            PublicKey::Nist256p1Extended(nist) => nist.uncompressed().into_vec(),
             PublicKey::Ed25519(ed) => ed.to_vec(),
             PublicKey::Ed25519Blake2b(blake) => blake.to_vec(),
             PublicKey::Ed25519ExtendedCardano(cardano) => cardano.to_vec(),

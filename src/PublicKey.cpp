@@ -147,14 +147,13 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeNIST256p1Extended:
     case TWPublicKeyTypeED25519:
     case TWPublicKeyTypeED25519Blake2b:
     case TWPublicKeyTypeED25519Cardano:
     case TWPublicKeyTypeStarkex:
         return rust_public_key_verify(bytes, type, signature, message);
-    case TWPublicKeyTypeNIST256p1:
-    case TWPublicKeyTypeNIST256p1Extended:
-        return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeCURVE25519: {
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);

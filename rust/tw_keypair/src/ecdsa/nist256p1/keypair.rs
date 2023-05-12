@@ -4,16 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::ecdsa::nest256p1::private::PrivateKey;
-use crate::ecdsa::nest256p1::public::PublicKey;
-use crate::ecdsa::nest256p1::{Signature, VerifySignature};
+use crate::ecdsa::nist256p1::private::PrivateKey;
+use crate::ecdsa::nist256p1::public::PublicKey;
+use crate::ecdsa::nist256p1::{Signature, VerifySignature};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 use tw_hash::H256;
 use zeroize::Zeroizing;
 
-/// Represents a pair of `nest256p1` private and public keys.
+/// Represents a pair of `nist256p1` private and public keys.
 pub struct KeyPair {
     private: PrivateKey,
     public: PublicKey,

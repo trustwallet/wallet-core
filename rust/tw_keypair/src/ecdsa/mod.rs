@@ -10,7 +10,7 @@ use ecdsa::elliptic_curve::CurveArithmetic;
 use ecdsa::hazmat::DigestPrimitive;
 use ecdsa::PrimeCurve;
 
-pub mod nest256p1;
+pub mod nist256p1;
 pub mod secp256k1;
 mod signature;
 

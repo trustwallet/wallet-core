@@ -34,26 +34,13 @@ mod tests {
         let key_pair = KeyPair::try_from(secret.as_slice()).unwrap();
         assert_eq!(key_pair.private().to_zeroizing_vec().as_slice(), secret);
         assert_eq!(
-            key_pair.public().compressed(),
-            H264::from("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1")
+            key_pair.public().uncompressed(),
+            H520::from("046d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab918b4fe46ccbf56701fb210d67d91c5779468f6b3fdc7a63692b9b62543f47ae")
         );
-    }
-
-    #[test]
-    fn test_key_pair_sign() {
-        let key_pair =
-            KeyPair::try_from("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
-                .unwrap();
-
-        let hash_to_sign = keccak256(b"hello");
-        let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
-        let signature = key_pair.sign(hash_to_sign).unwrap();
-
-        let expected = H520::from("8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901");
-        assert_eq!(signature.to_bytes(), expected);
-
-        let verify_signature = VerifySignature::from(signature);
-        assert!(key_pair.verify(verify_signature, hash_to_sign));
+        assert_eq!(
+            key_pair.public().compressed(),
+            H264::from("026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab"),
+        );
     }
 
     #[test]
@@ -73,24 +60,23 @@ mod tests {
     #[test]
     fn test_private_key_sign_verify() {
         let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-        let private = PrivateKey::try_from(secret).unwrap();
-        let public = private.public();
+        let keypair = KeyPair::try_from(secret).unwrap();
 
         let hash_to_sign = keccak256(b"hello");
         let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
-        let signature = private.sign(hash_to_sign).unwrap();
+        let signature = keypair.sign(hash_to_sign).unwrap();
 
         let expected = H520::from("8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401");
         assert_eq!(signature.to_bytes(), expected);
 
         let verify_signature = VerifySignature::from(signature);
-        assert!(public.verify(verify_signature, hash_to_sign));
+        assert!(keypair.verify(verify_signature, hash_to_sign));
     }
 
     #[test]
     fn test_public_key_from() {
-        let compressed = "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1";
-        let uncompressed = "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91";
+        let compressed = "026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab";
+        let uncompressed = "046d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab918b4fe46ccbf56701fb210d67d91c5779468f6b3fdc7a63692b9b62543f47ae";
         let expected_compressed = H264::from(compressed);
         let expected_uncompressed = H520::from(uncompressed);
 
@@ -119,5 +105,17 @@ mod tests {
         let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
 
         assert!(!private.public().verify(verify_sig, hash_to_sign));
+    }
+
+    // Sign(Nist256p1): msg="c449ff7fe258dc65f5ab98dbb9bfaabf5fd33535b58e46ef51452cc801bd9d2e", secret="4646464646464646464646464646464646464646464646464646464646464646"
+    // Signature: 301766d925382a6ebb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb8300d7215080efb87dd3f35de5f3b6d98aacd6161fbc0845b82d0d8be4b8b6d500
+    // Sign(Nist256p1): msg="c449ff7fe258dc65f5ab98dbb9bfaabf5fd33535b58e46ef51452cc801bd9d2e", secret="4646464646464646464646464646464646464646464646464646464646464652"
+    // Additional signature: 38466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a601
+    //
+    // Expected sign: 301766d925382a6ebb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb7cff28ddaf7f1048822c0ca21a0c4926323a2497875b963f3b8cbd3717aa6e7c01
+    // Expected additional sign: 38466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a601
+    #[test]
+    fn test_sign() {
+        todo!()
     }
 }
