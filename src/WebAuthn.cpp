@@ -11,6 +11,7 @@
 #include <iostream>
 #include <utility>
 #include <algorithm>
+#include <optional>
 
 namespace TW::WebAuthn {
 
