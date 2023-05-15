@@ -16,7 +16,7 @@ options = OpenStruct.new
 # default input / output path
 options.input = "#{CurrentDir}/../../include/TrustWalletCore"
 options.output = "#{CurrentDir}/../../"
-options.swift = false
+options.swift = true
 options.java = true
 options.jni_h = true
 options.jni_c = true
