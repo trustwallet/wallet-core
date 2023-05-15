@@ -11,9 +11,7 @@ actual object {{class_name}} {
     init {
         if (nativeHandle == 0L) throw IllegalArgumentException()
     }
-	{{/if}}
 
-	{{#if is_class}}
 	{{#each inits}}
 	{{#if is_nullable}}
     @Throws(IllegalArgumentException::class)
