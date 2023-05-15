@@ -101,6 +101,14 @@ fn test_tw_private_key_sign_ed25519_blake2b() {
 }
 
 #[test]
+fn test_tw_private_key_sign_curve25519_waves() {
+    let secret = "c45d1ba60a5d929d228d1b69a8f91bd256262498e81d32b6411d6dac9a60ed3b";
+    let msg = "e6167d";
+    let sign = "05db2483b8107187448e7f3d5581e48380a83338d53fe70c59e88b281b995216085518e5d331a2b698f2d0d387529dd94437157df88cb14be8d1925afbb6e80d";
+    test_sign(Curve::Curve25519Waves, secret, msg, sign);
+}
+
+#[test]
 fn test_tw_private_key_sign_ed25519_extended_cardano() {
     let secret = "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa\
         e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276";
