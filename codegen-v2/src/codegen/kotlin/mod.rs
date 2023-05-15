@@ -1,6 +1,7 @@
 use crate::manifest::TypeVariant;
 use std::fmt::Display;
 
+mod functions;
 mod inits;
 mod render;
 
@@ -10,33 +11,37 @@ pub struct AndroidMainStruct {
     is_class: bool,
     is_public: bool,
     inits: AndroidMainInit,
-    methods: AndroidMainMethods,
-    static_methods: AndroidMainMethods,
-    properties: AndroidMainProperties,
+    methods: AndroidMainMethod,
+    static_methods: AndroidMainMethod,
+    properties: AndroidMainProperty,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainInit {
-    params: Vec<AndroidMainParams>,
+    params: Vec<AndroidMainParam>,
     is_nullable: bool,
     return_call: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainMethods {
+pub struct AndroidMainMethod {
     name: String,
-    params: AndroidMainParams,
+    params: Vec<AndroidMainParam>,
+    is_static: bool,
+    is_public: bool,
+    #[serde(rename = "return")]
+    return_ty: AndroidMainReturn,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainProperties {
+pub struct AndroidMainProperty {
     name: String,
     #[serde(rename = "return")]
     return_ty: AndroidMainReturn,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainParams {
+pub struct AndroidMainParam {
     name: String,
     ty: KotlinType,
     is_nullable: bool,

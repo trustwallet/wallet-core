@@ -1,7 +1,7 @@
 use crate::manifest::InitInfo;
 use crate::Result;
 // TODO: Move this to `crate::codegen`.
-use super::{AndroidMainInit, AndroidMainParams, AndroidMainReturn, KotlinType};
+use super::{AndroidMainInit, AndroidMainParam, KotlinType};
 use crate::codegen::swift::ObjectVariant;
 use heck::ToLowerCamelCase;
 
@@ -20,7 +20,7 @@ pub(super) fn process_android_main_inits(
 
         let mut params = Vec::with_capacity(init.params.len());
         for param in init.params {
-            params.push(AndroidMainParams {
+            params.push(AndroidMainParam {
                 name: param.name,
                 ty: KotlinType::from(param.ty.variant),
                 is_nullable: param.ty.is_nullable,
@@ -37,13 +37,13 @@ pub(super) fn process_android_main_inits(
         andmain_inits.push(AndroidMainInit {
             params,
             is_nullable: init.is_nullable,
-			// Creates a constructor return value such as:
-			// `... : this(createWithData(data, string))`
+            // Creates a constructor return value such as:
+            // `... : this(createWithData(data, string))`
             return_call: format!(
                 "{}({param_names})",
                 init.name
                     .strip_prefix(object.name())
-					// Panicing implies bug, checked at the start of the loop.
+                    // Panicing implies bug, checked at the start of the loop.
                     .unwrap()
                     .to_lower_camel_case()
             ),
