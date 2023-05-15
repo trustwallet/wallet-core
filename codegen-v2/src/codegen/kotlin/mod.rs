@@ -1,57 +1,58 @@
-use std::fmt::Display;
 use crate::manifest::TypeVariant;
+use std::fmt::Display;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainStruct {
-	name: String,
-	is_class: bool,
-	is_public: bool,
-	inits: AndroidMainInit,
-	methods: AndroidMainMethods,
-	static_methods: AndroidMainMethods,
-	properties: AndroidMainProperties,
+    name: String,
+    is_class: bool,
+    is_public: bool,
+    inits: AndroidMainInit,
+    methods: AndroidMainMethods,
+    static_methods: AndroidMainMethods,
+    properties: AndroidMainProperties,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainInit {
-	params: Vec<AndroidMainParams>,
-	is_nullable: bool,
-	#[serde(rename = "return")]
-	return_ty: AndroidMainReturn,
+    params: Vec<AndroidMainParams>,
+    is_nullable: bool,
+    #[serde(rename = "return")]
+    return_ty: AndroidMainReturn,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainMethods {
-	name: String,
-	params: AndroidMainParams,
+    name: String,
+    params: AndroidMainParams,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainProperties {
-	name: String,
-	#[serde(rename = "return")]
-	return_ty: AndroidMainReturn,
+    name: String,
+    #[serde(rename = "return")]
+    return_ty: AndroidMainReturn,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainParams {
-	name: String,
-	ty: (),
-	is_nullable: bool,
+    name: String,
+    ty: KotlinType,
+    is_nullable: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainReturn {
-	ty: (),
-	is_nullable: bool,
+    ty: KotlinType,
+    is_nullable: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct KotlinType(String);
 
 impl Display for KotlinType {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{}", self.0)
-	}
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
 }
 
 /// Convert the `TypeVariant` into the appropriate Swift type.
