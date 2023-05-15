@@ -78,6 +78,9 @@ impl PrivateKey {
             Curve::Ed25519Blake2bNano => {
                 ed25519::blake2b::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
             },
+            Curve::Curve25519Waves => {
+                ed25519::waves::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
+            },
             Curve::Nist256p1 => nist256p1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
             Curve::Ed25519ExtendedCardano => {
                 ed25519::cardano::ExtendedPrivateKey::try_from(&bytes[Self::EXTENDED_CARDANO_RANGE])
@@ -102,6 +105,7 @@ impl PrivateKey {
             Curve::Secp256k1 => sign_impl(self.to_secp256k1_privkey()?, message),
             Curve::Ed25519 => sign_impl(self.to_ed25519()?, message),
             Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, message),
+            Curve::Curve25519Waves => sign_impl(self.to_curve25519_waves()?, message),
             Curve::Nist256p1 => sign_impl(self.to_nist256p1_privkey()?, message),
             Curve::Ed25519ExtendedCardano => {
                 sign_impl(self.to_ed25519_extended_cardano()?, message)
@@ -137,6 +141,10 @@ impl PrivateKey {
                 let privkey = self.to_ed25519_blake2b()?;
                 Ok(PublicKey::Ed25519Blake2b(privkey.public()))
             },
+            PublicKeyType::Curve25519Waves => {
+                let privkey = self.to_curve25519_waves()?;
+                Ok(PublicKey::Curve25519Waves(privkey.public()))
+            },
             PublicKeyType::Ed25519ExtendedCardano => {
                 let privkey = self.to_ed25519_extended_cardano()?;
                 Ok(PublicKey::Ed25519ExtendedCardano(Box::new(
@@ -170,7 +178,12 @@ impl PrivateKey {
         ed25519::blake2b::PrivateKey::try_from(self.key().as_slice())
     }
 
-    /// Tries to convert [`PrivateKey::key`] to [`ed25519::cardano::ExtendedPrivateKey`].
+    /// Tries to convert [`PrivateKey::key`] to [`ed25519::waves::PrivateKey`].
+    fn to_curve25519_waves(&self) -> KeyPairResult<ed25519::waves::PrivateKey> {
+        ed25519::waves::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::extended_cardano_key`] to [`ed25519::cardano::ExtendedPrivateKey`].
     fn to_ed25519_extended_cardano(&self) -> KeyPairResult<ed25519::cardano::ExtendedPrivateKey> {
         ed25519::cardano::ExtendedPrivateKey::try_from(self.extended_cardano_key()?)
     }

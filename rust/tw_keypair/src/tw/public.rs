@@ -19,6 +19,7 @@ pub enum PublicKey {
     Nist256p1Extended(nist256p1::PublicKey),
     Ed25519(ed25519::sha512::PublicKey),
     Ed25519Blake2b(ed25519::blake2b::PublicKey),
+    Curve25519Waves(ed25519::waves::PublicKey),
     Ed25519ExtendedCardano(Box<ed25519::cardano::ExtendedPublicKey>),
     Starkex(starkex::PublicKey),
 }
@@ -54,6 +55,10 @@ impl PublicKey {
             PublicKeyType::Ed25519Blake2b if ed25519::blake2b::PublicKey::LEN == bytes.len() => {
                 let pubkey = ed25519::blake2b::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Ed25519Blake2b(pubkey))
+            },
+            PublicKeyType::Curve25519Waves if ed25519::waves::PublicKey::LEN == bytes.len() => {
+                let pubkey = ed25519::waves::PublicKey::try_from(bytes.as_slice())?;
+                Ok(PublicKey::Curve25519Waves(pubkey))
             },
             PublicKeyType::Ed25519ExtendedCardano
                 if ed25519::cardano::ExtendedPublicKey::LEN == bytes.len() =>
@@ -97,6 +102,7 @@ impl PublicKey {
             },
             PublicKey::Ed25519(ed) => verify_impl(ed, sig, message),
             PublicKey::Ed25519Blake2b(blake) => verify_impl(blake, sig, message),
+            PublicKey::Curve25519Waves(waves) => verify_impl(waves, sig, message),
             PublicKey::Ed25519ExtendedCardano(cardano) => {
                 verify_impl(cardano.as_ref(), sig, message)
             },
@@ -113,6 +119,7 @@ impl PublicKey {
             PublicKey::Nist256p1Extended(nist) => nist.uncompressed().into_vec(),
             PublicKey::Ed25519(ed) => ed.to_vec(),
             PublicKey::Ed25519Blake2b(blake) => blake.to_vec(),
+            PublicKey::Curve25519Waves(waves) => waves.to_vec(),
             PublicKey::Ed25519ExtendedCardano(cardano) => cardano.to_vec(),
             PublicKey::Starkex(stark) => stark.to_vec(),
         }
