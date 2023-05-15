@@ -192,13 +192,13 @@ pub struct SwiftOperatorEquality {
 }
 
 /// Used for the individual `process_*` functions.
-enum ObjectVariant<'a> {
+pub enum ObjectVariant<'a> {
     Struct(&'a str),
     Enum(&'a str),
 }
 
 impl<'a> ObjectVariant<'a> {
-    fn name(&'a self) -> &'a str {
+    pub fn name(&'a self) -> &'a str {
         match self {
             ObjectVariant::Struct(n) | ObjectVariant::Enum(n) => n,
         }

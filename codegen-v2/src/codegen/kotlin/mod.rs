@@ -1,6 +1,9 @@
 use crate::manifest::TypeVariant;
 use std::fmt::Display;
 
+mod inits;
+mod render;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainStruct {
     name: String,
@@ -16,8 +19,7 @@ pub struct AndroidMainStruct {
 pub struct AndroidMainInit {
     params: Vec<AndroidMainParams>,
     is_nullable: bool,
-    #[serde(rename = "return")]
-    return_ty: AndroidMainReturn,
+    return_call: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
