@@ -6,7 +6,6 @@
 
 use k256::Secp256k1;
 
-// mod canonical;
 mod keypair;
 mod private;
 mod public;
