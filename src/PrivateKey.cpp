@@ -235,6 +235,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     } break;
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveCurve25519:
     case TWCurveStarkex: {
         result = rust_private_key_sign(key(), digest, curve);
         success = result.size() == 64;
@@ -245,15 +246,6 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         }
         result = rust_private_key_sign(bytes, digest, curve);
         success = result.size() == 64;
-    } break;
-    case TWCurveCurve25519: {
-        result.resize(64);
-        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
-        ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
-        const auto sign_bit = publicKey.bytes[31] & 0x80;
-        result[63] = result[63] & 127;
-        result[63] |= sign_bit;
-        success = true;
     } break;
     case TWCurveNIST256p1: {
         result.resize(65);
