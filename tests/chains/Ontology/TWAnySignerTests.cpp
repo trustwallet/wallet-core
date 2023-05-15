@@ -6,6 +6,7 @@
 
 #include "HexCoding.h"
 #include "TestUtilities.h"
+#include "PublicKeyLegacy.h"
 
 #include "Ontology/Oep4TxBuilder.h"
 #include "Ontology/OngTxBuilder.h"
@@ -18,6 +19,15 @@
 using namespace TW;
 
 namespace TW::Ontology::tests {
+
+void extractVerifySignature(const Data& secret, const Data& txEncoded, const Data& txHash, size_t signStartsAt) {
+    size_t signatureLen {64};
+
+    PrivateKey priv(secret);
+    auto pub = priv.getPublicKey(TWPublicKeyTypeNIST256p1);
+    auto sign = subData(txEncoded, signStartsAt, signatureLen);
+    EXPECT_TRUE(TrezorCrypto::verifyNist256p1Signature(pub.bytes, sign, txHash));
+}
 
 TEST(TWAnySingerOntology, OntBalanceOf) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
@@ -81,12 +91,22 @@ TEST(TWAnySingerOntology, OntTransfer) {
               "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
               "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
               "00000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b6500024140301766d925382a6e"
-              "bb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb7cff28ddaf7f1048822c0ca21a0c4926323a"
-              "2497875b963f3b8cbd3717aa6e7c2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e4"
+              "bb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb8300d7215080efb87dd3f35de5f3b6d98aac"
+              "d6161fbc0845b82d0d8be4b8b6d52321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e4"
               "47125f927b7486ac414038466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860"
               "305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a6232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               hex(output.encoded()));
+
+    auto txHash = parse_hex("c449ff7fe258dc65f5ab98dbb9bfaabf5fd33535b58e46ef51452cc801bd9d2e");
+
+    // Verify the signature signed by the `ownerPrivateKey` using `trezor-crypto`:
+    size_t ownerSignStartsAt {160};
+    extractVerifySignature(ownerPrivateKey, data(output.encoded()), txHash, ownerSignStartsAt);
+
+    // Verify the signature signed by the `payerPrivateKey` using `trezor-crypto`:
+    size_t payerSignStartsAt {262};
+    extractVerifySignature(payerPrivateKey, data(output.encoded()), txHash, payerSignStartsAt);
 }
 
 TEST(TWAnySingerOntology, OngDecimals) {
@@ -151,12 +171,22 @@ TEST(TWAnySingerOntology, OngTransfer) {
               "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
               "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
               "00000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b6500024140e27e935b87855efa"
-              "d62bb76b21c7b591f445f867eff86f888ca6ee1870ecd80f73b8ab199a4d757b4c7b9ed46c4ff8cfa8ae"
-              "faa90b7fb6485e358034448cba752321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e4"
+              "d62bb76b21c7b591f445f867eff86f888ca6ee1870ecd80f8c4754e565b28a85b384612b93b007301438"
+              "00049b97e83c95844a8eb7d66adc2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e4"
               "47125f927b7486ac4140450047b2efb384129a16ec4c707790e9379b978cc7085170071d8d7c5c037d74"
-              "3b078bd4e21bb4404c0182a32ee05260e22454dffb34dacccf458dfbee6d32db232103d9fd62df332403"
+              "c4f8742a1de44bc0b3fe7d5cd11fad9edac2a5cdabe2c3b824743cc70df5f276232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               hex(output.encoded()));
+
+    auto txHash = parse_hex("41ca828f53256c3e58e4ccfa1e332a6ab22f6a2e8fe4aa199831311d2349702b");
+
+    // Verify the signature signed by the `ownerPrivateKey` using `trezor-crypto`:
+    size_t ownerSignStartsAt {160};
+    extractVerifySignature(ownerPrivateKey, data(output.encoded()), txHash, ownerSignStartsAt);
+
+    // Verify the signature signed by the `payerPrivateKey` using `trezor-crypto`:
+    size_t payerSignStartsAt {262};
+    extractVerifySignature(payerPrivateKey, data(output.encoded()), txHash, payerSignStartsAt);
 }
 
 TEST(TWAnySingerOntology, OngWithdraw) {
