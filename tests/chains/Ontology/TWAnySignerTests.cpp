@@ -6,7 +6,7 @@
 
 #include "HexCoding.h"
 #include "TestUtilities.h"
-#include "PublicKeyLegacy.h"
+#include "ExtractVerifySign.h"
 
 #include "Ontology/Oep4TxBuilder.h"
 #include "Ontology/OngTxBuilder.h"
@@ -19,15 +19,6 @@
 using namespace TW;
 
 namespace TW::Ontology::tests {
-
-void extractVerifySignature(const Data& secret, const Data& txEncoded, const Data& txHash, size_t signStartsAt) {
-    size_t signatureLen {64};
-
-    PrivateKey priv(secret);
-    auto pub = priv.getPublicKey(TWPublicKeyTypeNIST256p1);
-    auto sign = subData(txEncoded, signStartsAt, signatureLen);
-    EXPECT_TRUE(TrezorCrypto::verifyNist256p1Signature(pub.bytes, sign, txHash));
-}
 
 TEST(TWAnySingerOntology, OntBalanceOf) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
@@ -102,11 +93,11 @@ TEST(TWAnySingerOntology, OntTransfer) {
 
     // Verify the signature signed by the `ownerPrivateKey` using `trezor-crypto`:
     size_t ownerSignStartsAt {160};
-    extractVerifySignature(ownerPrivateKey, data(output.encoded()), txHash, ownerSignStartsAt);
+    EXPECT_TRUE(extractVerifySignature(PrivateKey(ownerPrivateKey), data(output.encoded()), txHash, ownerSignStartsAt));
 
     // Verify the signature signed by the `payerPrivateKey` using `trezor-crypto`:
     size_t payerSignStartsAt {262};
-    extractVerifySignature(payerPrivateKey, data(output.encoded()), txHash, payerSignStartsAt);
+    EXPECT_TRUE(extractVerifySignature(PrivateKey(payerPrivateKey), data(output.encoded()), txHash, payerSignStartsAt));
 }
 
 TEST(TWAnySingerOntology, OngDecimals) {
@@ -182,11 +173,11 @@ TEST(TWAnySingerOntology, OngTransfer) {
 
     // Verify the signature signed by the `ownerPrivateKey` using `trezor-crypto`:
     size_t ownerSignStartsAt {160};
-    extractVerifySignature(ownerPrivateKey, data(output.encoded()), txHash, ownerSignStartsAt);
+    EXPECT_TRUE(extractVerifySignature(PrivateKey(ownerPrivateKey), data(output.encoded()), txHash, ownerSignStartsAt));
 
     // Verify the signature signed by the `payerPrivateKey` using `trezor-crypto`:
     size_t payerSignStartsAt {262};
-    extractVerifySignature(payerPrivateKey, data(output.encoded()), txHash, payerSignStartsAt);
+    EXPECT_TRUE(extractVerifySignature(PrivateKey(payerPrivateKey), data(output.encoded()), txHash, payerSignStartsAt));
 }
 
 TEST(TWAnySingerOntology, OngWithdraw) {
@@ -264,7 +255,17 @@ TEST(TWAnySingerOntology, Oep4Transfer) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeOntology);
 
-    EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa22871cfb819923fe01e9cb1e9ed16baa2b05c2feb76bcbe2ec125f72701c5e965232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9da4bb5dacd23dafba868cb31bacb38b4a6ff2607682a426c1dc09b05a1e158d6cd2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", hex(output.encoded()));
+    auto rawTx = data(output.encoded());
+    auto rawTxHex = hex(rawTx);
+    EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa2d78e3046e66dc020e1634e1612e9455d0c8acac2305ae0563293d39bfa9d3bec232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9dab44a2531dc2504589734ce4534c74b58bdc0f3457cd53267331ec5211b0a4e842321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", rawTxHex);
+
+    auto txHash = parse_hex("1a459cd8323e25e93d0fd6084d160e042a122baccc1e5bbd837bf846ba8ce363");
+
+    size_t ownerSignStartsAt {124};
+    EXPECT_TRUE(extractVerifySignature(PrivateKey(ownerPrivateKey), rawTx, txHash, ownerSignStartsAt));
+
+    size_t payerSignStartsAt {226};
+    EXPECT_TRUE(extractVerifySignature(PrivateKey(payerPrivateKey), rawTx, txHash, payerSignStartsAt));
 }
 
 } // namespace TW::Ontology::tests

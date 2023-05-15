@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include "PublicKeyLegacy.h"
+#include "ExtractVerifySign.h"
 
 #include "Ontology/Oep4.h"
 #include "Ontology/Signer.h"
@@ -112,21 +112,15 @@ TEST(OntologyOep4, transfer) {
     // https://explorer.ont.io/testnet/tx/710266b8d497e794ecd47e01e269e4aeb6f4ff2b01eaeafc4cd371e062b13757
     EXPECT_EQ(rawTx, "00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa2d78e3046e66dc020e1634e1612e9455d0c8acac2305ae0563293d39bfa9d3bec232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9dab44a2531dc2504589734ce4534c74b58bdc0f3457cd53267331ec5211b0a4e842321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac");
 
-    size_t signatureLen {64};
     auto txHash = Hash::sha256(tx.txHash());
-    auto verifyLegacy = [&](const PrivateKey& privKey, size_t signStartsAt) {
-        auto pubKey = privKey.getPublicKey(TWPublicKeyTypeNIST256p1);
-        auto sign = subData(rawTxBytes, signStartsAt, signatureLen);
-        EXPECT_TRUE(TrezorCrypto::verifyNist256p1Signature(pubKey.bytes, sign, txHash));
-    };
 
     // Verify the signature signed by the `fromPrivate` using `trezor-crypto`:
     size_t fromSignStartsAt {124};
-    verifyLegacy(fromPrivate, fromSignStartsAt);
+    EXPECT_TRUE(extractVerifySignature(fromPrivate, rawTxBytes, txHash, fromSignStartsAt));
 
     // Verify the signature signed by the `fromPrivate` using `trezor-crypto`:
     size_t payerSignStartsAt {226};
-    verifyLegacy(payerPrivate, payerSignStartsAt);
+    EXPECT_TRUE(extractVerifySignature(payerPrivate, rawTxBytes, txHash, payerSignStartsAt));
 }
 
 TEST(OntologyOep4, transferMainnet) {
