@@ -1,0 +1,48 @@
+package com.trustwallet.core
+
+{{#if is_class}}
+actual class {{class_name}} constructor (
+    val jsValue: Js{{class_name}},
+) {
+{{else}}
+actual object {{class_name}} {
+{{/if}}
+    {{! Inits }}
+    {{#if is_class}}
+    {{#each inits}}
+    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.type.is_nullabe}}?{{/if}} =
+        {{return.call}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    {{/if}}
+    {{! Static methods are companion objects }}
+    {{#if is_class}}
+    actual companion object {
+        {{#each static_methods}}
+        actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}} =
+            {{return.call}}
+        {{#unless @last}}
+
+        {{/unless}}
+        {{/each}}
+    }
+    {{else}}
+    {{#each method}}
+    actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}} =
+        {{return.call}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    {{/if}}
+    {{! Properties }}
+    {{#each properties}}
+    actual val {{name}}: {{return.type}}
+        get() = {{return.call}}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+}

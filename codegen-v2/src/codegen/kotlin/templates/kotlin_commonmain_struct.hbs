@@ -1,0 +1,43 @@
+package com.trustwallet.core
+
+expect {{#if is_class}}class{{else}}object{{/if}} Base32 {
+    {{! Inits }}
+    {{#if is_class}}
+    {{#each inits}}
+    {{#if is_nullable}}
+    @Throws(IllegalArgumentException::class)
+    {{/if}}
+    constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}})
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    {{/if}}
+    {{! Static methods are companion objects }}
+    {{#if is_class}}
+    companion object {
+        {{#each static_methods}}
+        fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+        {{#unless @last}}
+
+        {{/unless}}
+        {{/each}}
+    }
+    {{else}}
+    {{#each method}}
+    fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    {{/if}}
+    {{! Properties }}
+    {{#each properties}}
+    val {{name}}: {{return.type}} 
+        @JvmName("{{name}}")
+        external get
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+}
