@@ -58,6 +58,16 @@ impl<H: Hasher512> PublicKey<H> {
         PublicKey::multiply_by_basepoint_to_produce_public_key(bits)
     }
 
+    /// Creates a public key with the given [`EdwardsPoint`].
+    pub(crate) fn with_edwards_point(point: EdwardsPoint) -> Self {
+        let compressed = point.compress();
+        PublicKey {
+            compressed,
+            point,
+            _phantom: PhantomData,
+        }
+    }
+
     /// Returns the raw data of the public key (32 bytes).
     pub fn to_bytes(&self) -> H256 {
         H256::from(self.compressed.to_bytes())
@@ -66,6 +76,11 @@ impl<H: Hasher512> PublicKey<H> {
     /// Returns the raw data of the data of the public key.
     pub fn as_slice(&self) -> &[u8] {
         self.compressed.as_bytes()
+    }
+
+    /// Returns a reference to the [`EdwardsPoint`].
+    pub(crate) fn edwards_point(&self) -> &EdwardsPoint {
+        &self.point
     }
 
     /// Internal utility function for mangling the bits of a (formerly
@@ -86,13 +101,7 @@ impl<H: Hasher512> PublicKey<H> {
     /// Source: https://github.com/dalek-cryptography/ed25519-dalek/blob/1.0.1/src/public.rs#L157-L160
     fn multiply_by_basepoint_to_produce_public_key(bits: [u8; 32]) -> PublicKey<H> {
         let point = &Scalar::from_bits(bits) * &constants::ED25519_BASEPOINT_TABLE;
-        let compressed = point.compress();
-
-        PublicKey {
-            compressed,
-            point,
-            _phantom: PhantomData,
-        }
+        PublicKey::with_edwards_point(point)
     }
 }
 

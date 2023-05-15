@@ -14,7 +14,7 @@ mod public;
 mod secret;
 mod signature;
 
-pub use modifications::cardano;
+pub use modifications::{cardano, waves};
 pub use signature::Signature;
 
 /// Standard `ed25519` implementation.
@@ -131,6 +131,33 @@ mod tests {
     }
 
     #[test]
+    fn test_keypair_sign_verify_waves() {
+        let keypair = waves::KeyPair::try_from(
+            "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
+        )
+        .unwrap();
+        let to_sign = hex::decode("0402559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d00000000016372e852120000000005f5e1000000000005f5e10001570acc4110b78a6d38b34d879b5bba38806202ecf1732f8542000766616c6166656c").unwrap();
+        let actual = keypair.sign(to_sign.clone()).unwrap();
+
+        let expected = H512::from("af7989256f496e103ce95096b3f52196dd9132e044905fe486da3b829b5e403bcba95ab7e650a4a33948c2d05cfca2dce4d4df747e26402974490fb4c49fbe8f");
+        assert_eq!(actual.to_bytes(), expected);
+
+        assert!(keypair.verify(actual, to_sign));
+    }
+
+    #[test]
+    fn test_private_to_public_waves() {
+        let private = waves::PrivateKey::try_from(
+            "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
+        )
+        .unwrap();
+        let actual = private.public();
+        let expected =
+            H256::from("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d");
+        assert_eq!(actual.to_vec().as_slice(), expected.as_slice());
+    }
+
+    #[test]
     fn test_private_from_bytes_cardano() {
         let secret = "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4\
         639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
@@ -154,6 +181,27 @@ mod tests {
         assert_eq!(actual.to_bytes(), expected);
 
         assert!(keypair.verify(actual, message));
+    }
+
+    #[test]
+    fn test_public_verify_invalid_waves() {
+        let invalid_sigs = [
+            "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        ];
+
+        let public = waves::PublicKey::try_from(
+            "b60076cc30ffff5c29c65af9a13ce01c3affc231d09fccbcd1277319c7911634",
+        )
+        .unwrap();
+        let msg = vec![1, 2, 3];
+
+        for invalid_sig_hex in invalid_sigs {
+            let invalid_sig_bytes = hex::decode(invalid_sig_hex).unwrap();
+            let invalid_sig = waves::Signature::try_from(invalid_sig_bytes.as_slice()).unwrap();
+
+            public.verify(invalid_sig, msg.clone());
+        }
     }
 
     #[test]
@@ -184,6 +232,13 @@ mod tests {
         let signature = "418aff0000000000000000000000000000000000000000000000f600000000000000000000000000000000000000000000000000000000000000000000000010";
         let actual = Signature::try_from(hex::decode(signature).unwrap().as_slice()).unwrap();
         assert_eq!(actual.to_bytes(), H512::from(signature));
+    }
+
+    #[test]
+    fn test_waves_signature_from_bytes() {
+        let sig_bytes = H512::from("af7989256f496e103ce95096b3f52196dd9132e044905fe486da3b829b5e403bcba95ab7e650a4a33948c2d05cfca2dce4d4df747e26402974490fb4c49fbe8f");
+        let signature = waves::Signature::try_from(sig_bytes.as_slice()).unwrap();
+        assert_eq!(signature.to_vec(), sig_bytes.into_vec());
     }
 
     #[test]
