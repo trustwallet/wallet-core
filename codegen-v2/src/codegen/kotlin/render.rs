@@ -5,9 +5,19 @@ use crate::codegen::kotlin::properties::process_android_main_properties;
 use crate::codegen::swift::ObjectVariant;
 use crate::manifest::FileInfo;
 use crate::Result;
+use handlebars::Handlebars;
 
 pub fn pretty_name(name: String) -> String {
     name.replace("_", "").replace("TW", "").replace("Proto", "")
+}
+
+/// Convenience wrapper for setting copyright year when generating bindings.
+// TODO: Unify with Swift.
+#[derive(Debug, Clone, Serialize)]
+pub struct WithYear<'a, T> {
+    pub current_year: u64,
+    #[serde(flatten)]
+    pub data: &'a T,
 }
 
 pub struct RenderIntput<'a> {
@@ -15,9 +25,43 @@ pub struct RenderIntput<'a> {
     pub android_main_template: &'a str,
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct GeneratedAndroidMainTypes {
     pub structs: Vec<AndroidMainStruct>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct GeneratedAndroidMainTypesStrings {
+    pub structs: Vec<(String, String)>,
+}
+
+pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedAndroidMainTypesStrings> {
+    // The current year for the copyright header in the generated bindings.
+    let current_year = crate::current_year();
+    // Convert the name into an appropriate format.
+    let pretty_file_name = pretty_name(input.file_info.name.clone());
+
+    let mut engine = Handlebars::new();
+    engine.set_strict_mode(true);
+
+    engine.register_partial("androidmain_struct", input.android_main_template)?;
+
+    let generated = generate_android_main_types(input.file_info)?;
+    let mut out_strings = GeneratedAndroidMainTypesStrings::default();
+
+    for strct in generated.structs {
+        let out = engine.render(
+            "androidmain_struct",
+            &WithYear {
+                current_year,
+                data: &strct,
+            },
+        )?;
+
+        out_strings.structs.push((strct.name, out));
+    }
+
+    Ok(out_strings)
 }
 
 pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedAndroidMainTypes> {

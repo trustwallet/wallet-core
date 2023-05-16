@@ -36,7 +36,7 @@ pub struct GeneratedSwiftTypes {
 
 /// Convenience wrapper for setting copyright year when generating bindings.
 #[derive(Debug, Clone, Serialize)]
-struct WithYear<'a, T> {
+pub struct WithYear<'a, T> {
     pub current_year: u64,
     #[serde(flatten)]
     pub data: &'a T,
@@ -64,11 +64,11 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     engine.register_partial("partial_func", input.partial_func_tempalte)?;
     engine.register_partial("partial_prop", input.partial_prop_tempalte)?;
 
-    let rendered = generate_swift_types(input.file_info)?;
+    let generated = generate_swift_types(input.file_info)?;
     let mut out_str = GeneratedSwiftTypesStrings::default();
 
     //  Render structs.
-    for strct in rendered.structs {
+    for strct in generated.structs {
         let out = engine.render(
             "struct",
             &WithYear {
@@ -81,7 +81,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     }
 
     //  Render enums.
-    for enm in rendered.enums {
+    for enm in generated.enums {
         let out = engine.render(
             "enum",
             &WithYear {
@@ -94,7 +94,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     }
 
     //  Render extensions.
-    for ext in rendered.extensions {
+    for ext in generated.extensions {
         let out = engine.render(
             "extension",
             &WithYear {
@@ -107,17 +107,18 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedSwiftTy
     }
 
     //  Render protos.
-    if !rendered.protos.is_empty() {
+    if !generated.protos.is_empty() {
         let out = engine.render(
             "proto",
             &WithYear {
                 current_year,
                 data: &json!({
-                    "protos": &rendered.protos
+                    "protos": &generated.protos
                 }),
             },
         )?;
 
+        // TODO: Should this be returned like this? With 'pretty_file_name'?
         out_str.protos.push((pretty_file_name, out));
     }
 
