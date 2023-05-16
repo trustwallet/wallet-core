@@ -12,7 +12,7 @@ actual enum class MainEnum(
     companion object {
         @JvmStatic
         @JvmName("createFromValue")
-        fun fromValue(value: UInt): CoinType? =
+        fun fromValue(value: UInt): MainEnum? =
             values().firstOrNull { it.value == value }
     }
 }

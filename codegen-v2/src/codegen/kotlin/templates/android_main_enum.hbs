@@ -19,7 +19,7 @@ actual enum class {{enum_name}}(
     companion object {
         @JvmStatic
         @JvmName("createFromValue")
-        fun fromValue(value: UInt): CoinType? =
+        fun fromValue(value: {{value_type}}): {{enum_name}}? =
             values().firstOrNull { it.value == value }
     }
 }
