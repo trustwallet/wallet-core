@@ -5,7 +5,7 @@ use crate::codegen::swift::ObjectVariant;
 use crate::manifest::FunctionInfo;
 use crate::Result;
 
-pub(super) fn process_android_main_function(
+pub(super) fn process_android_main_methods(
     object: &ObjectVariant,
     functions: Vec<FunctionInfo>,
 ) -> Result<(Vec<AndroidMainMethod>, Vec<FunctionInfo>)> {
@@ -38,7 +38,6 @@ pub(super) fn process_android_main_function(
             name: pretty_name,
             params,
             is_static: func.is_static,
-            is_public: func.is_public,
             return_ty: AndroidMainReturn {
                 ty: KotlinType::from(func.return_type.variant),
                 is_nullable: func.return_type.is_nullable,

@@ -3,17 +3,17 @@ use std::fmt::Display;
 
 mod functions;
 mod inits;
+mod properties;
 mod render;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainStruct {
     name: String,
     is_class: bool,
-    is_public: bool,
-    inits: AndroidMainInit,
-    methods: AndroidMainMethod,
-    static_methods: AndroidMainMethod,
-    properties: AndroidMainProperty,
+    inits: Vec<AndroidMainInit>,
+    methods: Vec<AndroidMainMethod>,
+    static_methods: Vec<AndroidMainMethod>,
+    properties: Vec<AndroidMainProperty>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,7 +28,6 @@ pub struct AndroidMainMethod {
     name: String,
     params: Vec<AndroidMainParam>,
     is_static: bool,
-    is_public: bool,
     #[serde(rename = "return")]
     return_ty: AndroidMainReturn,
 }
