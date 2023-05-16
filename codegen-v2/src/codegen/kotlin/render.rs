@@ -58,7 +58,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedAndroid
             },
         )?;
 
-        out_strings.structs.push((strct.name, out));
+        out_strings.structs.push((strct.struct_name, out));
     }
 
     Ok(out_strings)
@@ -88,7 +88,7 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedAndroi
         let pretty_struct_name = pretty_name(strct.name.clone());
 
         outputs.structs.push(AndroidMainStruct {
-            name: pretty_struct_name,
+            struct_name: pretty_struct_name,
             is_class: strct.is_class,
             inits,
             methods,

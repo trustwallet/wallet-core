@@ -8,7 +8,7 @@ use crate::codegen::swift::{render_to_strings, RenderIntput};
 use crate::manifest::parse_str;
 
 /// Convenience function.
-fn create_intput(yaml: &str) -> RenderIntput {
+fn create_input(yaml: &str) -> RenderIntput {
     let file_info = parse_str(yaml).unwrap();
 
     RenderIntput {
@@ -26,7 +26,7 @@ fn create_intput(yaml: &str) -> RenderIntput {
 // Convenience function: runs the codegen on the given `input` and compares it
 // with the `expected` value. Expects a single, rendered file as output.
 fn render_and_compare_struct(input: &str, expected: &str) {
-    let input = create_intput(input);
+    let input = create_input(input);
     let rendered = render_to_strings(input).unwrap();
 
     assert_eq!(rendered.structs.len(), 1);
@@ -40,7 +40,7 @@ fn render_and_compare_struct(input: &str, expected: &str) {
 }
 
 fn render_and_compare_enum(input: &str, expected: &str) {
-    let input = create_intput(input);
+    let input = create_input(input);
     let rendered = render_to_strings(input).unwrap();
 
     assert!(rendered.structs.is_empty());
@@ -106,7 +106,7 @@ fn enum_with_extension() {
     const EXPECTED_ENUM: &str = include_str!("bindings/enum.output.swift");
     const EXPECTED_EXTENSION: &str = include_str!("bindings/enum_extension.output.swift");
 
-    let input = create_intput(INPUT);
+    let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
     assert!(rendered.structs.is_empty());

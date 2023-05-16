@@ -11,7 +11,7 @@ mod render;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainStruct {
-    name: String,
+    struct_name: String,
     is_class: bool,
     inits: Vec<AndroidMainInit>,
     methods: Vec<AndroidMainMethod>,
@@ -45,12 +45,14 @@ pub struct AndroidMainProperty {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainParam {
     name: String,
+    #[serde(rename = "type")]
     ty: KotlinType,
     is_nullable: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainReturn {
+    #[serde(rename = "type")]
     ty: KotlinType,
     is_nullable: bool,
 }
