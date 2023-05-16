@@ -17,10 +17,8 @@ actual object {{struct_name}} {
     {{#if is_nullable}}
     @Throws(IllegalArgumentException::class)
     {{/if}}
-    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) : this({{return.call}}))
-    {{#unless @last}}
+    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) : this({{return_call}}))
 
-    {{/unless}}
     {{/each}}
     {{/if}}
     {{! Methods }}
@@ -62,6 +60,8 @@ actual object {{struct_name}} {
     actual val {{name}}: {{return.type}} 
         @JvmName("{{name}}")
         external get
+    {{#unless @last}}
 
+    {{/unless}}
     {{/each}}
 }
