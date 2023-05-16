@@ -33,7 +33,6 @@ pub struct AndroidMainStruct {
     is_class: bool,
     inits: Vec<AndroidMainInit>,
     methods: Vec<AndroidMainMethod>,
-    static_methods: Vec<AndroidMainMethod>,
     properties: Vec<AndroidMainProperty>,
 }
 

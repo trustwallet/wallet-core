@@ -98,10 +98,6 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedAndroi
             continue;
         }
 
-        // Split methods into static and non-static methods.
-        let static_methods = methods.iter().cloned().filter(|m| m.is_static).collect();
-        let methods = methods.into_iter().filter(|m| !m.is_static).collect();
-
         // Convert the name into an appropriate format.
         let pretty_name = pretty_name(strct.name.clone());
 
@@ -110,7 +106,6 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedAndroi
             is_class: strct.is_class,
             inits,
             methods,
-            static_methods,
             properties,
         });
     }

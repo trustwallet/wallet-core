@@ -27,6 +27,7 @@ fn androidmain_single_struct() {
     // Check generated enum.
     let (name, output) = &rendered.structs[0];
     assert_eq!(name, "MainStruct");
+    println!("{output}");
     assert_eq!(output, EXPECTED);
 }
 

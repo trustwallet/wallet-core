@@ -23,19 +23,22 @@ actual object {{struct_name}} {
     {{/if}}
     {{! Methods }}
     {{#each methods}}
+    {{#if ../is_class}}
+    {{#unless is_static}}
     @JvmName("{{name}}")
     actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
 
-    {{/each}}
-    {{! Static methos in case of non-class}}
-    {{#unless is_class}}
-    {{#each static_methods}}
-    @JvmStatic
-    @JvmName("{{name}}")
-    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
-
-    {{/each}}
     {{/unless}}
+    {{else}}
+    {{#if is_static}}
+    {{! TODO: Is this correct?}}
+    @JvmStatic
+    {{/if}}
+    @JvmName("{{name}}")
+    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
+
+    {{/if}}
+    {{/each}}
     {{! Static methods are companion objects in case of class}}
     {{#if is_class}}
     actual companion object {
@@ -43,13 +46,15 @@ actual object {{struct_name}} {
         @JvmName("createFromNative")
         private fun createFromNative(nativeHandle: Long) = {{struct_name}}(nativeHandle)
 
-        {{#each static_methods}}
+        {{#each methods}}
+        {{#if is_static}}
         @JvmStatic
         @JvmName("{{name}}")
         actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
         {{#unless @last}}
 
         {{/unless}}
+        {{/if}}
         {{/each}}
     }
 
