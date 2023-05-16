@@ -10,8 +10,25 @@ mod properties;
 mod render;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AndroidMainEnum {
+    #[serde(rename = "enum_name")]
+    name: String,
+    value_type: KotlinType,
+    variants: Vec<AndroidMainEnumVariant>,
+    methods: Vec<AndroidMainMethod>,
+    properties: Vec<AndroidMainProperty>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AndroidMainEnumVariant {
+    name: String,
+    value: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainStruct {
-    struct_name: String,
+    #[serde(rename = "struct_name")]
+    name: String,
     is_class: bool,
     inits: Vec<AndroidMainInit>,
     methods: Vec<AndroidMainMethod>,

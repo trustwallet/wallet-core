@@ -86,8 +86,8 @@ fn optional() {
 
 #[test]
 fn enum_with_description() {
-    const INPUT: &str = include_str!("../manifest/enum.input.yaml");
-    const EXPECTED: &str = include_str!("bindings/enum.output.swift");
+    const INPUT: &str = include_str!("../manifest/enum_descriptions.yaml");
+    const EXPECTED: &str = include_str!("bindings/enum_descriptions.swift");
 
     render_and_compare_enum(INPUT, EXPECTED);
 }
@@ -103,7 +103,7 @@ fn privat_enum_with_description() {
 #[test]
 fn enum_with_extension() {
     const INPUT: &str = include_str!("../manifest/enum_extension.input.yaml");
-    const EXPECTED_ENUM: &str = include_str!("bindings/enum.output.swift");
+    const EXPECTED_ENUM: &str = include_str!("bindings/enum_descriptions.swift");
     const EXPECTED_EXTENSION: &str = include_str!("bindings/enum_extension.output.swift");
 
     let input = create_input(INPUT);

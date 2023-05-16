@@ -7,7 +7,9 @@ enums:
   variants:
   - name: one 
     value: 0
+    as_string: one_string
   - name: two 
     value: 1
   - name: three
     value: 2
+    as_string: three_string

@@ -7,13 +7,13 @@ fn create_input(yaml: &str) -> RenderIntput {
 
     RenderIntput {
         file_info,
-        android_main_template: include_str!(
-            "../../codegen/kotlin/templates/androidmain_struct.hbs"
-        ),
+        android_main_struct: include_str!("../../codegen/kotlin/templates/android_main_struct.hbs"),
+        android_main_enum: include_str!("../../codegen/kotlin/templates/android_main_enum.hbs"),
     }
 }
 
 #[test]
+// TODO: Check whether non-classes should render properties.
 fn androidmain_single_struct() {
     const INPUT: &str = include_str!("../manifest/struct.input.yaml");
     const EXPECTED: &str = include_str!("bindings/struct.kt");
@@ -60,5 +60,23 @@ fn androidmain_optional() {
     let (name, output) = &rendered.structs[0];
     println!("{output}");
     assert_eq!(name, "MainStruct");
+    assert_eq!(output, EXPECTED);
+}
+
+#[test]
+fn androidmain_single_enum() {
+    const INPUT: &str = include_str!("../manifest/enum.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/enum.kt");
+
+    let input = create_input(INPUT);
+    let rendered = render_to_strings(input).unwrap();
+
+    assert!(rendered.structs.is_empty());
+    assert_eq!(rendered.enums.len(), 1);
+
+    // Check generated enum.
+    let (name, output) = &rendered.enums[0];
+    println!("{output}");
+    assert_eq!(name, "MainEnum");
     assert_eq!(output, EXPECTED);
 }

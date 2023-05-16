@@ -5,7 +5,7 @@ actual object MainStruct {
     @JvmName("firstFunction")
     actual external fun firstFunction(first_param: Int): Bool
 
-    actual val firstProperty: Bool 
+    actual val firstProperty: Bool
         @JvmName("firstProperty")
         external get
 }
