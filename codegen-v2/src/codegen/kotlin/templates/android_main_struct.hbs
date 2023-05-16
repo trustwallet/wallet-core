@@ -23,7 +23,6 @@ actual object {{struct_name}} {
     {{/if}}
     {{! Methods }}
     {{#each methods}}
-    @JvmStatic
     @JvmName("{{name}}")
     actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
 

@@ -11,7 +11,9 @@ actual enum class {{enum_name}}(
 
     {{! Methods }}
     {{#each methods}}
+    {{#if is_static}}
     @JvmStatic
+    {{/if}}
     @JvmName("{{name}}")
     actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
 
