@@ -54,57 +54,57 @@ fn render_and_compare_enum(input: &str, expected: &str) {
 
 #[test]
 fn single_struct() {
-    const INPUT: &str = include_str!("samples/struct.input.yaml");
-    const EXPECTED: &str = include_str!("samples/struct.output.swift");
+    const INPUT: &str = include_str!("../manifest/struct.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/struct.output.swift");
 
     render_and_compare_struct(INPUT, EXPECTED);
 }
 
 #[test]
 fn single_class() {
-    const INPUT: &str = include_str!("samples/class.input.yaml");
-    const EXPECTED: &str = include_str!("samples/class.output.swift");
+    const INPUT: &str = include_str!("../manifest/class.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/class.output.swift");
 
     render_and_compare_struct(INPUT, EXPECTED);
 }
 
 #[test]
 fn private() {
-    const INPUT: &str = include_str!("samples/private_class.input.yaml");
-    const EXPECTED: &str = include_str!("samples/private_class.output.swift");
+    const INPUT: &str = include_str!("../manifest/private_class.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/private_class.output.swift");
 
     render_and_compare_struct(INPUT, EXPECTED);
 }
 
 #[test]
 fn optional() {
-    const INPUT: &str = include_str!("samples/optional.input.yaml");
-    const EXPECTED: &str = include_str!("samples/optional.output.swift");
+    const INPUT: &str = include_str!("../manifest/optional.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/optional.output.swift");
 
     render_and_compare_struct(INPUT, EXPECTED);
 }
 
 #[test]
 fn enum_with_description() {
-    const INPUT: &str = include_str!("samples/enum.input.yaml");
-    const EXPECTED: &str = include_str!("samples/enum.output.swift");
+    const INPUT: &str = include_str!("../manifest/enum.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/enum.output.swift");
 
     render_and_compare_enum(INPUT, EXPECTED);
 }
 
 #[test]
 fn privat_enum_with_description() {
-    const INPUT: &str = include_str!("samples/enum_private.input.yaml");
-    const EXPECTED: &str = include_str!("samples/enum_private.output.swift");
+    const INPUT: &str = include_str!("../manifest/enum_private.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/enum_private.output.swift");
 
     render_and_compare_enum(INPUT, EXPECTED);
 }
 
 #[test]
 fn enum_with_extension() {
-    const INPUT: &str = include_str!("samples/enum_extension.input.yaml");
-    const EXPECTED_ENUM: &str = include_str!("samples/enum.output.swift");
-    const EXPECTED_EXTENSION: &str = include_str!("samples/enum_extension.output.swift");
+    const INPUT: &str = include_str!("../manifest/enum_extension.input.yaml");
+    const EXPECTED_ENUM: &str = include_str!("bindings/enum.output.swift");
+    const EXPECTED_EXTENSION: &str = include_str!("bindings/enum_extension.output.swift");
 
     let input = create_intput(INPUT);
     let rendered = render_to_strings(input).unwrap();
@@ -125,8 +125,8 @@ fn enum_with_extension() {
 
 #[test]
 fn non_associated() {
-    const INPUT: &str = include_str!("samples/non-associated.input.yaml");
-    const EXPECTED: &str = include_str!("samples/non-associated.output.swift");
+    const INPUT: &str = include_str!("../manifest/non-associated.input.yaml");
+    const EXPECTED: &str = include_str!("bindings/non-associated.output.swift");
 
     render_and_compare_struct(INPUT, EXPECTED);
 }

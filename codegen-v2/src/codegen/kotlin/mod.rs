@@ -1,6 +1,9 @@
 use crate::manifest::TypeVariant;
 use std::fmt::Display;
 
+// Re-exports
+pub use self::render::{generate_android_main_types, render_to_strings, RenderIntput};
+
 mod functions;
 mod inits;
 mod properties;
