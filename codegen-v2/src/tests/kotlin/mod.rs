@@ -64,9 +64,27 @@ fn androidmain_optional() {
 }
 
 #[test]
-fn androidmain_single_enum() {
+fn androidmain_enum_single() {
     const INPUT: &str = include_str!("../manifest/enum.input.yaml");
     const EXPECTED: &str = include_str!("bindings/enum.kt");
+
+    let input = create_input(INPUT);
+    let rendered = render_to_strings(input).unwrap();
+
+    assert!(rendered.structs.is_empty());
+    assert_eq!(rendered.enums.len(), 1);
+
+    // Check generated enum.
+    let (name, output) = &rendered.enums[0];
+    println!("{output}");
+    assert_eq!(name, "MainEnum");
+    assert_eq!(output, EXPECTED);
+}
+
+#[test]
+fn androidmain_enum_with_descriptions() {
+    const INPUT: &str = include_str!("../manifest/enum_descriptions.yaml");
+    const EXPECTED: &str = include_str!("bindings/enum_descriptions.kt");
 
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();

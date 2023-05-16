@@ -5,7 +5,7 @@ actual enum class {{enum_name}}(
     val value: {{value_type}},
 ) {
     {{#each variants}}
-    {{name}}({{value}}),
+    {{name}}({{value}}{{#if as_string}}, "{{as_string}}"{{/if}}),
     {{/each}}
     ;
 

@@ -122,12 +122,14 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedAndroi
         (methods, info.functions) = process_android_main_methods(&obj, info.functions)?;
         (properties, info.properties) = process_android_main_properties(&obj, info.properties)?;
 
+        // TODO: Just deprecate `AndroidMainEnumVariant`?
         let variants = enm
             .variants
             .into_iter()
             .map(|enm| AndroidMainEnumVariant {
                 name: enm.name,
                 value: enm.value,
+                as_string: enm.as_string,
             })
             .collect();
 

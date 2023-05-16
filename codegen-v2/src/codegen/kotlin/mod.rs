@@ -23,6 +23,7 @@ pub struct AndroidMainEnum {
 pub struct AndroidMainEnumVariant {
     name: String,
     value: String,
+    as_string: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
