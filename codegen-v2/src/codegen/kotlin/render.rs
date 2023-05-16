@@ -47,6 +47,7 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedAndroid
     engine.register_partial("androidmain_struct", input.android_main_template)?;
 
     let generated = generate_android_main_types(input.file_info)?;
+    dbg!(&generated);
     let mut out_strings = GeneratedAndroidMainTypesStrings::default();
 
     for strct in generated.structs {

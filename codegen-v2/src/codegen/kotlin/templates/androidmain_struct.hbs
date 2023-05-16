@@ -17,7 +17,7 @@ actual object {{struct_name}} {
     {{#if is_nullable}}
     @Throws(IllegalArgumentException::class)
     {{/if}}
-    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) : this({{return_call}}))
+    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) : this({{return_call}}))
 
     {{/each}}
     {{/if}}
@@ -25,7 +25,7 @@ actual object {{struct_name}} {
     {{#each methods}}
     @JvmStatic
     @JvmName("{{name}}")
-    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
 
     {{/each}}
     {{! Static methos in case of non-class}}
@@ -33,7 +33,7 @@ actual object {{struct_name}} {
     {{#each static_methods}}
     @JvmStatic
     @JvmName("{{name}}")
-    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+    actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
 
     {{/each}}
     {{/unless}}
@@ -47,7 +47,7 @@ actual object {{struct_name}} {
         {{#each static_methods}}
         @JvmStatic
         @JvmName("{{name}}")
-        actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}}
+        actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
         {{#unless @last}}
 
         {{/unless}}
@@ -57,7 +57,7 @@ actual object {{struct_name}} {
     {{/if}}
     {{! Properties }}
     {{#each properties}}
-    actual val {{name}}: {{return.type}} 
+    actual val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
         @JvmName("{{name}}")
         external get
     {{#unless @last}}
