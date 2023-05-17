@@ -34,19 +34,22 @@ pub(super) fn process_android_main_inits(
             .collect::<Vec<&str>>()
             .join(",");
 
+        let pretty_name = init
+            .name
+            .strip_prefix(object.name())
+            // Panicing implies bug, checked at the start of the loop.
+            .unwrap()
+            .to_lower_camel_case();
+
+        let return_call = format!("{pretty_name}({param_names})");
+
         andmain_inits.push(AndroidMainInit {
+            name: pretty_name,
             params,
             is_nullable: init.is_nullable,
             // Creates a constructor return value such as:
             // `... : this(createWithData(data, string))`
-            return_call: format!(
-                "{}({param_names})",
-                init.name
-                    .strip_prefix(object.name())
-                    // Panicing implies bug, checked at the start of the loop.
-                    .unwrap()
-                    .to_lower_camel_case()
-            ),
+            return_call,
         });
     }
 

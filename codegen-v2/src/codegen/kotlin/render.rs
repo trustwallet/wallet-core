@@ -3,7 +3,7 @@ use crate::codegen::kotlin::functions::process_android_main_methods;
 use crate::codegen::kotlin::inits::process_android_main_inits;
 use crate::codegen::kotlin::properties::process_android_main_properties;
 use crate::codegen::swift::ObjectVariant;
-use crate::manifest::{EnumVariantInfo, FileInfo};
+use crate::manifest::FileInfo;
 use crate::Result;
 use handlebars::Handlebars;
 
@@ -51,7 +51,6 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedAndroid
     engine.register_partial("android_main_enum", input.android_main_enum)?;
 
     let generated = generate_android_main_types(input.file_info)?;
-    dbg!(&generated);
     let mut out_strings = GeneratedAndroidMainTypesStrings::default();
 
     for strct in generated.structs {

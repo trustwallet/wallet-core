@@ -51,10 +51,20 @@ actual object {{struct_name}} {
         @JvmStatic
         @JvmName("{{name}}")
         actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
+
+        {{/if}}
+        {{/each}}
+        {{! Inits }}
+        {{#each inits}}
+        {{#if is_nullable}}
+        @Throws(IllegalArgumentException::class)
+        {{/if}}
+        @JvmStatic
+        @JvmName("{{name}}")
+        private external fn {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): Long
         {{#unless @last}}
 
         {{/unless}}
-        {{/if}}
         {{/each}}
     }
 

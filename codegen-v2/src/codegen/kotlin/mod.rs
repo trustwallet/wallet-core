@@ -38,6 +38,7 @@ pub struct AndroidMainStruct {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AndroidMainInit {
+    name: String,
     params: Vec<AndroidMainParam>,
     is_nullable: bool,
     return_call: String,

@@ -4,7 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use libparser::codegen::swift::RenderIntput;
+use libparser::codegen::kotlin;
+use libparser::codegen::swift;
 use libparser::manifest::parse_dir;
 use libparser::{Error, Result};
 use std::fs::read_to_string;
@@ -18,13 +19,50 @@ fn main() -> Result<()> {
 
     match args[1].as_str() {
         "swift" => generate_swift_bindings(),
+        "kotlin" => generate_kotlin_bindings(),
         _ => Err(Error::InvalidCommand),
     }
 }
 
+fn generate_kotlin_bindings() -> Result<()> {
+    const OUT_DIR: &str = "bindings/kotlin/";
+    const IN_DIR: &str = "src/codegen/kotlin/templates";
+
+    std::fs::create_dir_all(OUT_DIR)?;
+
+    let struct_t = read_to_string(&format!("{IN_DIR}/android_main_struct.hbs"))?;
+    let enum_t = read_to_string(&format!("{IN_DIR}/android_main_enum.hbs"))?;
+
+    // Read the manifest dir, generate bindings for each entry.
+    let file_infos = parse_dir("manifest/")?;
+
+    for file_info in file_infos {
+        let input = kotlin::RenderIntput {
+            file_info,
+            android_main_struct: &struct_t,
+            android_main_enum: &enum_t,
+        };
+
+        let rendered = kotlin::render_to_strings(input)?;
+
+        for (name, rendered) in rendered.structs {
+            let file_path = format!("{OUT_DIR}/{name}.kt");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+
+        for (name, rendered) in rendered.enums {
+            let file_path = format!("{OUT_DIR}/{name}.kt");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+    }
+
+    println!("Created bindings in directory 'bindings/kotlin/'!");
+    Ok(())
+}
+
 fn generate_swift_bindings() -> Result<()> {
     // NOTE: The paths will be configurable, eventually.
-    const OUT_DIR: &str = "bindings/";
+    const OUT_DIR: &str = "bindings/swift/";
     const IN_DIR: &str = "src/codegen/swift/templates";
 
     std::fs::create_dir_all(OUT_DIR)?;
@@ -41,7 +79,7 @@ fn generate_swift_bindings() -> Result<()> {
     let file_infos = parse_dir("manifest/")?;
 
     for file_info in file_infos {
-        let input = RenderIntput {
+        let input = swift::RenderIntput {
             file_info,
             struct_template: &struct_t,
             enum_template: &enum_t,
@@ -52,7 +90,7 @@ fn generate_swift_bindings() -> Result<()> {
             partial_prop_tempalte: &part_prop_t,
         };
 
-        let rendered = libparser::codegen::swift::render_to_strings(input)?;
+        let rendered = swift::render_to_strings(input)?;
 
         // Enum declarations go into their own subfolder.
         if !rendered.enums.is_empty() {
@@ -87,6 +125,6 @@ fn generate_swift_bindings() -> Result<()> {
         }
     }
 
-    println!("Created bindings in directory 'bindings/'!");
+    println!("Created bindings in directory 'bindings/swift/'!");
     Ok(())
 }
