@@ -89,7 +89,7 @@ impl From<TypeVariant> for KotlinType {
     fn from(value: TypeVariant) -> Self {
         let res = match value {
             TypeVariant::Void => "Void".to_string(),
-            TypeVariant::Bool => "Bool".to_string(),
+            TypeVariant::Bool => "Boolean".to_string(),
             TypeVariant::Char => "Char".to_string(),
             TypeVariant::ShortInt => "Short".to_string(),
             TypeVariant::Int => "Int".to_string(),

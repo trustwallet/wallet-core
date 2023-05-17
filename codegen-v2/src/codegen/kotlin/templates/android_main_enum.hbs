@@ -18,6 +18,13 @@ actual enum class {{enum_name}}(
     actual external fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
 
     {{/each}}
+    {{! Properties }}
+    {{#each properties}}
+    actual val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
+        @JvmName("{{name}}")
+        external get
+
+    {{/each}}
     companion object {
         @JvmStatic
         @JvmName("createFromValue")
