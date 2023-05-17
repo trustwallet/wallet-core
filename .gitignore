@@ -10,7 +10,6 @@ cmake-build-debug/
 .cxx/
 .cache/
 build_pvs_studio/
-target/
 
 # Dependencies
 node_modules
@@ -28,11 +27,14 @@ lib/protobuf
 
 # Generated files
 jni/android/generated
+jni/cpp/generated
 jni/java/wallet/core/jni
 jni/proto/wallet
 jni/dokka-out
 swift/Sources/Generated
 swift/wallet-core/
+codegen-v2/bindings/
+
 src/Generated/*.cpp
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
