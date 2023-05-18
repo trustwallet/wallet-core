@@ -3,6 +3,8 @@ structs:
 - name: TWPublicKey
   is_public: true
   is_class: true
+  comments:
+  - Represents a public key.
 inits:
 - name: TWPublicKeyCreateWithData
   is_public: true
@@ -11,18 +13,23 @@ inits:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: type
     type:
       variant: enum
       value: TWPublicKeyType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Create a public key from a block of data
+  - \param data Non-null block of data representing the public key
+  - \param type type of the public key
+  - \note Should be deleted with \TWPublicKeyDelete
+  - \return Nullable pointer to the public key
 deinits:
 - name: TWPublicKeyDelete
+  comments:
+  - Delete the given public key
+  - \param pk Non-null pointer to a public key
 functions:
 - name: TWPublicKeyIsValid
   is_public: true
@@ -31,21 +38,20 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: type
     type:
       variant: enum
       value: TWPublicKeyType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the given public key is valid or not
+  - \param data Non-null block of data representing the public key
+  - \param type type of the public key
+  - \return true if the block of data is a valid public key, false otherwise
 - name: TWPublicKeyVerify
   is_public: true
   is_static: false
@@ -54,26 +60,24 @@ functions:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: signature
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Verify the validity of a signature and a message using the given public key
+  - \param pk Non-null pointer to a public key
+  - \param signature Non-null pointer to a block of data corresponding to the signature
+  - \param message Non-null pointer to a block of data corresponding to the message
+  - \return true if the signature and the message belongs to the given public key, false otherwise
 - name: TWPublicKeyVerifyAsDER
   is_public: true
   is_static: false
@@ -82,26 +86,24 @@ functions:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: signature
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Verify the validity as DER of a signature and a message using the given public key
+  - \param pk Non-null pointer to a public key
+  - \param signature Non-null pointer to a block of data corresponding to the signature
+  - \param message Non-null pointer to a block of data corresponding to the message
+  - \return true if the signature and the message belongs to the given public key, false otherwise
 - name: TWPublicKeyVerifyZilliqaSchnorr
   is_public: true
   is_static: false
@@ -110,26 +112,24 @@ functions:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: signature
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Verify a Zilliqa schnorr signature with a signature and message.
+  - \param pk Non-null pointer to a public key
+  - \param signature Non-null pointer to a block of data corresponding to the signature
+  - \param message Non-null pointer to a block of data corresponding to the message
+  - \return true if the signature and the message belongs to the given public key, false otherwise
 - name: TWPublicKeyRecover
   is_public: true
   is_static: true
@@ -137,64 +137,76 @@ functions:
   - name: signature
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Try to get a public key from a given signature and a message
+  - \param signature Non-null pointer to a block of data corresponding to the signature
+  - \param message Non-null pointer to a block of data corresponding to the message
+  - \return Null pointer if the public key can't be recover from the given signature and message,
+  - pointer to the public key otherwise
 properties:
 - name: TWPublicKeyIsCompressed
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the given public key is compressed or not
+  - \param pk Non-null pointer to a public key
+  - \return true if the public key is compressed, false otherwise
 - name: TWPublicKeyCompressed
   is_public: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Give the compressed public key of the given non-compressed public key
+  - \param from Non-null pointer to a non-compressed public key
+  - \return Non-null pointer to the corresponding compressed public-key
 - name: TWPublicKeyUncompressed
   is_public: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Give the non-compressed public key of a corresponding compressed public key
+  - \param from Non-null pointer to the corresponding compressed public key
+  - \return Non-null pointer to the corresponding non-compressed public key
 - name: TWPublicKeyData
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Gives the raw data of a given public-key
+  - \param pk Non-null pointer to a public key
+  - \return Non-null pointer to the raw block of data of the given public key
 - name: TWPublicKeyKeyType
   is_public: true
   return_type:
     variant: enum
     value: TWPublicKeyType
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Give the public key type (eliptic) of a given public key
+  - \param publicKey Non-null pointer to a public key
+  - \return The public key type of the given public key (eliptic)
 - name: TWPublicKeyDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Get the public key description from a given public key
+  - \param publicKey Non-null pointer to a public key
+  - \return Non-null pointer to a string representing the description of the public key

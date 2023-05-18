@@ -9,3 +9,6 @@ enums:
     value: 0
   - name: kusama
     value: 2
+  comments:
+  - Substrate based chains Address Type
+  - \see https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)#address-type

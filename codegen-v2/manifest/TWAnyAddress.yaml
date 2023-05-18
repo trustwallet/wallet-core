@@ -6,6 +6,8 @@ structs:
 - name: TWAnyAddress
   is_public: true
   is_class: true
+  comments:
+  - Represents an address in C++ for almost any blockchain.
 inits:
 - name: TWAnyAddressCreateWithString
   is_public: true
@@ -14,16 +16,17 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an address from a string representation and a coin type. Must be deleted with TWAnyAddressDelete after use.
+  - \param string address to create.
+  - \param coin coin type of the address.
+  - \return TWAnyAddress pointer or nullptr if address and coin are invalid.
 - name: TWAnyAddressCreateBech32
   is_public: true
   is_nullable: true
@@ -31,22 +34,22 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: hrp
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates an bech32 address from a string representation, a coin type and the given hrp. Must be deleted with TWAnyAddressDelete after use.
+  - \param string address to create.
+  - \param coin coin type of the address.
+  - \param hrp hrp of the address.
+  - \return TWAnyAddress pointer or nullptr if address and coin are invalid.
 - name: TWAnyAddressCreateSS58
   is_public: true
   is_nullable: true
@@ -54,22 +57,22 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: ss58Prefix
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an SS58 address from a string representation, a coin type and the given ss58Prefix. Must be deleted with TWAnyAddressDelete after use.
+  - \param string address to create.
+  - \param coin coin type of the address.
+  - \param ss58Prefix ss58Prefix of the SS58 address.
+  - \return TWAnyAddress pointer or nullptr if address and coin are invalid.
 - name: TWAnyAddressCreateWithPublicKey
   is_public: true
   is_nullable: false
@@ -78,16 +81,17 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an address from a public key.
+  - \param publicKey derivates the address from the public key.
+  - \param coin coin type of the address.
+  - \return TWAnyAddress pointer or nullptr if public key is invalid.
 - name: TWAnyAddressCreateWithPublicKeyDerivation
   is_public: true
   is_nullable: false
@@ -96,23 +100,23 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an address from a public key and derivation option.
+  - \param publicKey derivates the address from the public key.
+  - \param coin coin type of the address.
+  - \param derivation the custom derivation to use.
+  - \return TWAnyAddress pointer or nullptr if public key is invalid.
 - name: TWAnyAddressCreateBech32WithPublicKey
   is_public: true
   is_nullable: false
@@ -121,22 +125,22 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: hrp
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates an bech32 address from a public key and a given hrp.
+  - \param publicKey derivates the address from the public key.
+  - \param coin coin type of the address.
+  - \param hrp hrp of the address.
+  - \return TWAnyAddress pointer or nullptr if public key is invalid.
 - name: TWAnyAddressCreateSS58WithPublicKey
   is_public: true
   is_nullable: false
@@ -145,22 +149,22 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: ss58Prefix
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an SS58 address from a public key and a given ss58Prefix.
+  - \param publicKey derivates the address from the public key.
+  - \param coin coin type of the address.
+  - \param ss58Prefix ss58Prefix of the SS58 address.
+  - \return TWAnyAddress pointer or nullptr if public key is invalid.
 - name: TWAnyAddressCreateWithPublicKeyFilecoinAddressType
   is_public: true
   is_nullable: false
@@ -169,18 +173,22 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: filecoinAddressType
     type:
       variant: enum
       value: TWFilecoinAddressType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates a Filecoin address from a public key and a given address type.
+  - \param publicKey derivates the address from the public key.
+  - \param filecoinAddressType Filecoin address type.
+  - \return TWAnyAddress pointer or nullptr if public key is invalid.
 deinits:
 - name: TWAnyAddressDelete
+  comments:
+  - Deletes an address.
+  - \param address address to delete.
 functions:
 - name: TWAnyAddressEqual
   is_public: true
@@ -190,21 +198,20 @@ functions:
     type:
       variant: struct
       value: TWAnyAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: rhs
     type:
       variant: struct
       value: TWAnyAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Compares two addresses for equality.
+  - \param lhs The first address to compare.
+  - \param rhs The second address to compare.
+  - \return bool indicating the addresses are equal.
 - name: TWAnyAddressIsValid
   is_public: true
   is_static: true
@@ -212,21 +219,20 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Any address.
+  - \param string address to validate.
+  - \param coin coin type of the address.
+  - \return bool indicating if the address is valid.
 - name: TWAnyAddressIsValidBech32
   is_public: true
   is_static: true
@@ -234,27 +240,25 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: hrp
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Any address with the given hrp.
+  - \param string address to validate.
+  - \param coin coin type of the address.
+  - \param hrp explicit given hrp of the given address.
+  - \return bool indicating if the address is valid.
 - name: TWAnyAddressIsValidSS58
   is_public: true
   is_static: true
@@ -262,47 +266,48 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: ss58Prefix
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Any address with the given SS58 network prefix.
+  - \param string address to validate.
+  - \param coin coin type of the address.
+  - \param ss58Prefix ss58Prefix of the given address.
+  - \return bool indicating if the address is valid.
 properties:
 - name: TWAnyAddressDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address string representation.
+  - \param address address to get the string representation of.
 - name: TWAnyAddressCoin
   is_public: true
   return_type:
     variant: enum
     value: TWCoinType
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns coin type of address.
+  - \param address address to get the coin type of.
 - name: TWAnyAddressData
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns underlaying data (public key or key hash)
+  - \param address address to get the data of.

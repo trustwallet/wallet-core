@@ -3,6 +3,8 @@ structs:
 - name: TWStoredKey
   is_public: true
   is_class: true
+  comments:
+  - Represents a key stored as an encrypted file.
 inits:
 - name: TWStoredKeyCreateLevel
   is_public: true
@@ -11,22 +13,23 @@ inits:
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: encryptionLevel
     type:
       variant: enum
       value: TWStoredKeyEncryptionLevel
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates a new key, with given encryption strength level. Returned object needs to be deleted.
+  - \param name The name of the key to be stored
+  - \param password Non-null block of data, password of the stored key
+  - \param encryptionLevel The level of encryption, see \TWStoredKeyEncryptionLevel
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return The stored key as a non-null pointer
 - name: TWStoredKeyCreateLevelAndEncryption
   is_public: true
   is_nullable: false
@@ -34,29 +37,29 @@ inits:
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: encryptionLevel
     type:
       variant: enum
       value: TWStoredKeyEncryptionLevel
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: encryption
     type:
       variant: enum
       value: TWStoredKeyEncryption
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates a new key, with given encryption strength level. Returned object needs to be deleted.
+  - \param name The name of the key to be stored
+  - \param password Non-null block of data, password of the stored key
+  - \param encryptionLevel The level of encryption, see \TWStoredKeyEncryptionLevel
+  - \param encryption cipher encryption mode
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return The stored key as a non-null pointer
 - name: TWStoredKeyCreate
   is_public: true
   is_nullable: false
@@ -64,15 +67,18 @@ inits:
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates a new key.
+  - \deprecated use TWStoredKeyCreateLevel.
+  - \param name The name of the key to be stored
+  - \param password Non-null block of data, password of the stored key
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return The stored key as a non-null pointer
 - name: TWStoredKeyCreateEncryption
   is_public: true
   is_nullable: false
@@ -80,24 +86,29 @@ inits:
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: encryption
     type:
       variant: enum
       value: TWStoredKeyEncryption
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates a new key.
+  - \deprecated use TWStoredKeyCreateLevel.
+  - \param name The name of the key to be stored
+  - \param password Non-null block of data, password of the stored key
+  - \param encryption cipher encryption mode
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return The stored key as a non-null pointer
 deinits:
 - name: TWStoredKeyDelete
+  comments:
+  - Delete a stored key
+  - \param key The key to be deleted
 functions:
 - name: TWStoredKeyLoad
   is_public: true
@@ -106,15 +117,16 @@ functions:
   - name: path
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWStoredKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Loads a key from a file.
+  - \param path filepath to the key as a non-null string
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return Nullptr if the key can't be load, the stored key otherwise
 - name: TWStoredKeyImportPrivateKey
   is_public: true
   is_static: true
@@ -122,34 +134,32 @@ functions:
   - name: privateKey
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWStoredKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Imports a private key.
+  - \param privateKey Non-null Block of data private key
+  - \param name The name of the stored key to import as a non-null string
+  - \param password Non-null block of data, password of the stored key
+  - \param coin the coin type
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return Nullptr if the key can't be imported, the stored key otherwise
 - name: TWStoredKeyImportPrivateKeyWithEncryption
   is_public: true
   is_static: true
@@ -157,41 +167,38 @@ functions:
   - name: privateKey
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: encryption
     type:
       variant: enum
       value: TWStoredKeyEncryption
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWStoredKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Imports a private key.
+  - \param privateKey Non-null Block of data private key
+  - \param name The name of the stored key to import as a non-null string
+  - \param password Non-null block of data, password of the stored key
+  - \param coin the coin type
+  - \param encryption cipher encryption mode
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return Nullptr if the key can't be imported, the stored key otherwise
 - name: TWStoredKeyImportHDWallet
   is_public: true
   is_static: true
@@ -199,34 +206,32 @@ functions:
   - name: mnemonic
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWStoredKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Imports an HD wallet.
+  - \param mnemonic Non-null bip39 mnemonic
+  - \param name The name of the stored key to import as a non-null string
+  - \param password Non-null block of data, password of the stored key
+  - \param coin the coin type
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return Nullptr if the key can't be imported, the stored key otherwise
 - name: TWStoredKeyImportHDWalletWithEncryption
   is_public: true
   is_static: true
@@ -234,41 +239,38 @@ functions:
   - name: mnemonic
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: encryption
     type:
       variant: enum
       value: TWStoredKeyEncryption
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWStoredKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Imports an HD wallet.
+  - \param mnemonic Non-null bip39 mnemonic
+  - \param name The name of the stored key to import as a non-null string
+  - \param password Non-null block of data, password of the stored key
+  - \param coin the coin type
+  - \param encryption cipher encryption mode
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return Nullptr if the key can't be imported, the stored key otherwise
 - name: TWStoredKeyImportJSON
   is_public: true
   is_static: true
@@ -276,15 +278,16 @@ functions:
   - name: json
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWStoredKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Imports a key from JSON.
+  - \param json Json stored key import format as a non-null block of data
+  - \note Returned object needs to be deleted with \TWStoredKeyDelete
+  - \return Nullptr if the key can't be imported, the stored key otherwise
 - name: TWStoredKeyAccount
   is_public: true
   is_static: false
@@ -293,21 +296,21 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: index
     type:
       variant: size_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWAccount
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Returns the account at a given index.
+  - \param key Non-null pointer to a stored key
+  - \param index the account index to be retrieved
+  - \note Returned object needs to be deleted with \TWAccountDelete
+  - \return Null pointer if the associated account is not found, pointer to the account otherwise.
 - name: TWStoredKeyAccountForCoin
   is_public: true
   is_static: false
@@ -316,29 +319,28 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: wallet
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: true
-      is_pointer: true
   return_type:
     variant: struct
     value: TWAccount
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Returns the account for a specific coin, creating it if necessary.
+  - \param key Non-null pointer to a stored key
+  - \param coin The coin type
+  - \param wallet The associated HD wallet, can be null.
+  - \note Returned object needs to be deleted with \TWAccountDelete
+  - \return Null pointer if the associated account is not found/not created, pointer to the account otherwise.
 - name: TWStoredKeyAccountForCoinDerivation
   is_public: true
   is_static: false
@@ -347,36 +349,34 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: wallet
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: true
-      is_pointer: true
   return_type:
     variant: struct
     value: TWAccount
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Returns the account for a specific coin + derivation, creating it if necessary.
+  - \param key Non-null pointer to a stored key
+  - \param coin The coin type
+  - \param derivation The derivation for the given coin
+  - \param wallet the associated HD wallet, can be null.
+  - \note Returned object needs to be deleted with \TWAccountDelete
+  - \return Null pointer if the associated account is not found/not created, pointer to the account otherwise.
 - name: TWStoredKeyAddAccountDerivation
   is_public: true
   is_static: false
@@ -385,52 +385,46 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: address
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivationPath
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: publicKey
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: extendedPublicKey
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: void
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adds a new account, using given derivation (usually TWDerivationDefault)
+  - and derivation path (usually matches path from derivation, but custom possible).
+  - \param key Non-null pointer to a stored key
+  - \param address Non-null pointer to the address of the coin for this account
+  - \param coin coin type
+  - \param derivation derivation of the given coin type
+  - \param derivationPath HD bip44 derivation path of the given coin
+  - \param publicKey Non-null public key of the given coin/address
+  - \param extendedPublicKey Non-null extended public key of the given coin/address
 - name: TWStoredKeyAddAccount
   is_public: true
   is_static: false
@@ -439,45 +433,40 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: address
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivationPath
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: publicKey
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: extendedPublicKey
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: void
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adds a new account, using given derivation path.
+  - \deprecated Use TWStoredKeyAddAccountDerivation (with TWDerivationDefault) instead.
+  - \param key Non-null pointer to a stored key
+  - \param address Non-null pointer to the address of the coin for this account
+  - \param coin coin type
+  - \param derivationPath HD bip44 derivation path of the given coin
+  - \param publicKey Non-null public key of the given coin/address
+  - \param extendedPublicKey Non-null extended public key of the given coin/address
 - name: TWStoredKeyRemoveAccountForCoin
   is_public: true
   is_static: false
@@ -486,21 +475,19 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: void
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Remove the account for a specific coin
+  - \param key Non-null pointer to a stored key
+  - \param coin Account coin type to be removed
 - name: TWStoredKeyRemoveAccountForCoinDerivation
   is_public: true
   is_static: false
@@ -509,28 +496,25 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: void
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Remove the account for a specific coin with the given derivation.
+  - \param key Non-null pointer to a stored key
+  - \param coin Account coin type to be removed
+  - \param derivation The derivation of the given coin type
 - name: TWStoredKeyRemoveAccountForCoinDerivationPath
   is_public: true
   is_static: false
@@ -539,27 +523,24 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivationPath
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: void
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Remove the account for a specific coin with the given derivation path.
+  - \param key Non-null pointer to a stored key
+  - \param coin Account coin type to be removed
+  - \param derivationPath The derivation path (bip44) of the given coin type
 - name: TWStoredKeyStore
   is_public: true
   is_static: false
@@ -568,20 +549,19 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: path
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Saves the key to a file.
+  - \param key Non-null pointer to a stored key
+  - \param path Non-null string filepath where the key will be saved
+  - \return true if the key was successfully stored in the given filepath file, false otherwise
 - name: TWStoredKeyDecryptPrivateKey
   is_public: true
   is_static: false
@@ -590,20 +570,19 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Decrypts the private key.
+  - \param key Non-null pointer to a stored key
+  - \param password Non-null block of data, password of the stored key
+  - \return Decrypted private key as a block of data if success, null pointer otherwise
 - name: TWStoredKeyDecryptMnemonic
   is_public: true
   is_static: false
@@ -612,20 +591,19 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Decrypts the mnemonic phrase.
+  - \param key Non-null pointer to a stored key
+  - \param password Non-null block of data, password of the stored key
+  - \return Bip39 decrypted mnemonic if success, null pointer otherwise
 - name: TWStoredKeyPrivateKey
   is_public: true
   is_static: false
@@ -634,28 +612,26 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Returns the private key for a specific coin.  Returned object needs to be deleted.
+  - \param key Non-null pointer to a stored key
+  - \param coin Account coin type to be queried
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return Null pointer on failure, pointer to the private key otherwise
 - name: TWStoredKeyWallet
   is_public: true
   is_static: false
@@ -664,21 +640,21 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWHDWallet
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
+  - \param key Non-null pointer to a stored key
+  - \param password Non-null block of data, password of the stored key
+  - \note Returned object needs to be deleted with \TWHDWalletDelete
+  - \return Null pointer on failure, pointer to the HDWallet otherwise
 - name: TWStoredKeyExportJSON
   is_public: true
   is_static: false
@@ -687,14 +663,14 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Exports the key as JSON
+  - \param key Non-null pointer to a stored key
+  - \return Null pointer on failure, pointer to a block of data containing the json otherwise
 - name: TWStoredKeyFixAddresses
   is_public: true
   is_static: false
@@ -703,53 +679,65 @@ functions:
     type:
       variant: struct
       value: TWStoredKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Fills in empty and invalid addresses.
+  - This method needs the encryption password to re-derive addresses from private keys.
+  - \param key Non-null pointer to a stored key
+  - \param password Non-null block of data, password of the stored key
+  - \return `false` if the password is incorrect, true otherwise.
 properties:
 - name: TWStoredKeyIdentifier
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Stored key unique identifier.
+  - \param key Non-null pointer to a stored key
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return The stored key unique identifier if it's found, null pointer otherwise.
 - name: TWStoredKeyName
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Stored key namer.
+  - \param key Non-null pointer to a stored key
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return The stored key name as a non-null string pointer.
 - name: TWStoredKeyIsMnemonic
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Whether this key is a mnemonic phrase for a HD wallet.
+  - \param key Non-null pointer to a stored key
+  - \return true if the given stored key is a mnemonic, false otherwise
 - name: TWStoredKeyAccountCount
   is_public: true
   return_type:
     variant: size_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - The number of accounts.
+  - \param key Non-null pointer to a stored key
+  - \return the number of accounts associated to the given stored key
 - name: TWStoredKeyEncryptionParameters
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Retrieve stored key encoding parameters, as JSON string.
+  - \param key Non-null pointer to a stored key
+  - \return Null pointer on failure, encoding parameter as a json string otherwise.

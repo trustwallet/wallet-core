@@ -3,6 +3,8 @@ structs:
 - name: TWFilecoinAddressConverter
   is_public: true
   is_class: false
+  comments:
+  - Filecoin-Ethereum address converter.
 functions:
 - name: TWFilecoinAddressConverterConvertToEthereum
   is_public: true
@@ -11,14 +13,14 @@ functions:
   - name: filecoinAddress
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Converts a Filecoin address to Ethereum.
+  - '\param filecoinAddress: a Filecoin address.'
+  - \returns the Ethereum address. On invalid input empty string is returned. Returned object needs to be deleted after use.
 - name: TWFilecoinAddressConverterConvertFromEthereum
   is_public: true
   is_static: true
@@ -26,11 +28,11 @@ functions:
   - name: ethAddress
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Converts an Ethereum address to Filecoin.
+  - '\param ethAddress: an Ethereum address.'
+  - \returns the Filecoin address. On invalid input empty string is returned. Returned object needs to be deleted after use.

@@ -3,6 +3,8 @@ structs:
 - name: TWLiquidStaking
   is_public: true
   is_class: false
+  comments:
+  - THORChain swap functions
 functions:
 - name: TWLiquidStakingBuildRequest
   is_public: true
@@ -11,11 +13,11 @@ functions:
   - name: input
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a LiquidStaking transaction input.
+  - \param input The serialized data of LiquidStakingInput.
+  - \return The serialized data of LiquidStakingOutput.

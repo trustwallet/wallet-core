@@ -155,6 +155,9 @@ enums:
   - name: neutron
     value: 49
     as_string: neutron
+  comments:
+  - Registered human-readable parts for BIP-0173
+  - '- SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0173.md'
 functions:
 - name: stringForHRP
   is_public: false
@@ -164,14 +167,10 @@ functions:
     type:
       variant: enum
       value: TWHRP
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: char
-    is_constant: true
     is_nullable: true
-    is_pointer: true
 - name: hrpForString
   is_public: false
   is_static: false
@@ -179,12 +178,8 @@ functions:
   - name: string
     type:
       variant: char
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: enum
     value: TWHRP
-    is_constant: false
     is_nullable: false
-    is_pointer: false

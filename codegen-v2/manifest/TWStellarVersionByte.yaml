@@ -6,10 +6,12 @@ enums:
     variant: u_int16_t
   variants:
   - name: accountId
-    value: 0x30
+    value: 48
   - name: seed
-    value: 0xc0
+    value: 192
   - name: preAuthTx
-    value: 0xc8
+    value: 200
   - name: sha256Hash
-    value: 0x118
+    value: 280
+  comments:
+  - Stellar address version byte.

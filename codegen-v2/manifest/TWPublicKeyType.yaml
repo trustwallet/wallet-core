@@ -23,3 +23,5 @@ enums:
     value: 7
   - name: starkex
     value: 8
+  comments:
+  - Public key types

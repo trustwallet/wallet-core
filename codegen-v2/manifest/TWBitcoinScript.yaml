@@ -3,10 +3,15 @@ structs:
 - name: TWBitcoinScript
   is_public: true
   is_class: true
+  comments:
+  - Bitcoin script manipulating functions
 inits:
 - name: TWBitcoinScriptCreate
   is_public: true
   is_nullable: false
+  comments:
+  - Creates an empty script.
+  - \return A pointer to the script
 - name: TWBitcoinScriptCreateWithData
   is_public: true
   is_nullable: false
@@ -14,9 +19,30 @@ inits:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates a script from a raw data representation.
+  - \param data The data buffer
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the script
+- name: TWBitcoinScriptCreateWithBytes
+  is_public: false
+  is_nullable: false
+  params:
+  - name: bytes
+    type:
+      variant: u_int8_t
+      is_nullable: false
+  - name: size
+    type:
+      variant: size_t
+      is_nullable: false
+  comments:
+  - Creates a script from a raw bytes and size.
+  - \param bytes The buffer
+  - \param size The size of the buffer
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the script
 - name: TWBitcoinScriptCreateCopy
   is_public: true
   is_nullable: false
@@ -25,11 +51,17 @@ inits:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates a script by copying an existing script.
+  - \param script Non-null pointer to a script
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the script
 deinits:
 - name: TWBitcoinScriptDelete
+  comments:
+  - Delete/Deallocate a given script.
+  - \param script Non-null pointer to a script
 functions:
 - name: TWBitcoinScriptEqual
   is_public: true
@@ -39,21 +71,20 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: rhs
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether 2 scripts have the same content
+  - \param lhs Non-null pointer to the first script
+  - \param rhs Non-null pointer to the second script
+  - \return true if both script have the same content
 - name: TWBitcoinScriptMatchPayToPubkey
   is_public: true
   is_static: false
@@ -62,14 +93,14 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Matches the script to a pay-to-public-key (P2PK) script.
+  - \param script Non-null pointer to a script
+  - \return The public key.
 - name: TWBitcoinScriptMatchPayToPubkeyHash
   is_public: true
   is_static: false
@@ -78,14 +109,14 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Matches the script to a pay-to-public-key-hash (P2PKH).
+  - \param script Non-null pointer to a script
+  - \return the key hash.
 - name: TWBitcoinScriptMatchPayToScriptHash
   is_public: true
   is_static: false
@@ -94,14 +125,14 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Matches the script to a pay-to-script-hash (P2SH).
+  - \param script Non-null pointer to a script
+  - \return the script hash.
 - name: TWBitcoinScriptMatchPayToWitnessPublicKeyHash
   is_public: true
   is_static: false
@@ -110,14 +141,14 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Matches the script to a pay-to-witness-public-key-hash (P2WPKH).
+  - \param script Non-null pointer to a script
+  - \return the key hash.
 - name: TWBitcoinScriptMatchPayToWitnessScriptHash
   is_public: true
   is_static: false
@@ -126,14 +157,14 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Matches the script to a pay-to-witness-script-hash (P2WSH).
+  - \param script Non-null pointer to a script
+  - \return the script hash, a SHA256 of the witness script..
 - name: TWBitcoinScriptEncode
   is_public: true
   is_static: false
@@ -142,14 +173,14 @@ functions:
     type:
       variant: struct
       value: TWBitcoinScript
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Encodes the script.
+  - \param script Non-null pointer to a script
+  - \return The encoded script
 - name: TWBitcoinScriptBuildPayToPublicKey
   is_public: true
   is_static: true
@@ -157,15 +188,16 @@ functions:
   - name: pubkey
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWBitcoinScript
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a standard 'pay to public key' script.
+  - \param pubkey Non-null pointer to a pubkey
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the built script
 - name: TWBitcoinScriptBuildPayToPublicKeyHash
   is_public: true
   is_static: true
@@ -173,15 +205,16 @@ functions:
   - name: hash
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWBitcoinScript
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a standard 'pay to public key hash' script.
+  - \param hash Non-null pointer to a PublicKey hash
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the built script
 - name: TWBitcoinScriptBuildPayToScriptHash
   is_public: true
   is_static: true
@@ -189,15 +222,16 @@ functions:
   - name: scriptHash
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWBitcoinScript
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a standard 'pay to script hash' script.
+  - \param scriptHash Non-null pointer to a script hash
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the built script
 - name: TWBitcoinScriptBuildPayToWitnessPubkeyHash
   is_public: true
   is_static: true
@@ -205,15 +239,16 @@ functions:
   - name: hash
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWBitcoinScript
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a pay-to-witness-public-key-hash (P2WPKH) script..
+  - \param hash Non-null pointer to a witness public key hash
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the built script
 - name: TWBitcoinScriptBuildPayToWitnessScriptHash
   is_public: true
   is_static: true
@@ -221,15 +256,16 @@ functions:
   - name: scriptHash
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWBitcoinScript
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a pay-to-witness-script-hash (P2WSH) script.
+  - \param scriptHash Non-null pointer to a script hash
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the built script
 - name: TWBitcoinScriptLockScriptForAddress
   is_public: true
   is_static: true
@@ -237,22 +273,22 @@ functions:
   - name: address
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWBitcoinScript
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a appropriate lock script for the given address..
+  - \param address Non-null pointer to an address
+  - \param coin coin type
+  - \note Must be deleted with \TWBitcoinScriptDelete
+  - \return A pointer to the built script
 - name: TWBitcoinScriptHashTypeForCoin
   is_public: true
   is_static: true
@@ -261,61 +297,75 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
+  - \param coinType coin type
+  - \return default HashType for the given coin
 properties:
 - name: TWBitcoinScriptSize
   is_public: true
   return_type:
     variant: size_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Get size of a script
+  - \param script Non-null pointer to a script
+  - \return size of the script
 - name: TWBitcoinScriptData
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Get data of a script
+  - \param script Non-null pointer to a script
+  - \return data of the given script
 - name: TWBitcoinScriptScriptHash
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Return script hash of a script
+  - \param script Non-null pointer to a script
+  - \return script hash of the given script
 - name: TWBitcoinScriptIsPayToScriptHash
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether this is a pay-to-script-hash (P2SH) script.
+  - \param script Non-null pointer to a script
+  - \return true if this is a pay-to-script-hash (P2SH) script, false otherwise
 - name: TWBitcoinScriptIsPayToWitnessScriptHash
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether this is a pay-to-witness-script-hash (P2WSH) script.
+  - \param script Non-null pointer to a script
+  - \return true if this is a pay-to-witness-script-hash (P2WSH) script, false otherwise
 - name: TWBitcoinScriptIsPayToWitnessPublicKeyHash
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether this is a pay-to-witness-public-key-hash (P2WPKH) script.
+  - \param script Non-null pointer to a script
+  - \return true if this is a pay-to-witness-public-key-hash (P2WPKH) script, false otherwise
 - name: TWBitcoinScriptIsWitnessProgram
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether this is a witness program script.
+  - \param script Non-null pointer to a script
+  - \return true if this is a witness program script, false otherwise

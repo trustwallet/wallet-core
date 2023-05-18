@@ -3,6 +3,8 @@ structs:
 - name: TWBase58
   is_public: true
   is_class: false
+  comments:
+  - Base58 encode / decode functions
 functions:
 - name: TWBase58Encode
   is_public: true
@@ -19,6 +21,10 @@ functions:
     is_constant: true
     is_nullable: false
     is_pointer: true
+  comments:
+  - Encodes data as a Base58 string, including the checksum.
+  - \param data The data to encode.
+  - \return the encoded Base58 string with checksum.
 - name: TWBase58EncodeNoCheck
   is_public: true
   is_static: true
@@ -34,6 +40,10 @@ functions:
     is_constant: true
     is_nullable: false
     is_pointer: true
+  comments:
+  - Encodes data as a Base58 string, not including the checksum.
+  - \param data The data to encode.
+  - \return then encoded Base58 string without checksum.
 - name: TWBase58Decode
   is_public: true
   is_static: true
@@ -49,6 +59,10 @@ functions:
     is_constant: true
     is_nullable: true
     is_pointer: true
+  comments:
+  - Decodes a Base58 string, checking the checksum. Returns null if the string is not a valid Base58 string.
+  - \param string The Base58 string to decode.
+  - \return the decoded data, empty if the string is not a valid Base58 string with checksum.
 - name: TWBase58DecodeNoCheck
   is_public: true
   is_static: true
@@ -64,3 +78,7 @@ functions:
     is_constant: true
     is_nullable: true
     is_pointer: true
+  comments:
+  - Decodes a Base58 string, w/o checking the checksum. Returns null if the string is not a valid Base58 string.
+  - \param string The Base58 string to decode.
+  - \return the decoded data, empty if the string is not a valid Base58 string without checksum.

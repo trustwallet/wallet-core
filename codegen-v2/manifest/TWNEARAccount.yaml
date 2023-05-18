@@ -3,6 +3,8 @@ structs:
 - name: TWNEARAccount
   is_public: true
   is_class: true
+  comments:
+  - Represents a NEAR Account name
 inits:
 - name: TWNEARAccountCreateWithString
   is_public: true
@@ -11,16 +13,24 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Create a NEAR Account
+  - \param string Account name
+  - \note Account should be deleted by calling \TWNEARAccountDelete
+  - \return Pointer to a nullable NEAR Account.
 deinits:
 - name: TWNEARAccountDelete
+  comments:
+  - Delete the given Near Account
+  - \param account Pointer to a non-null NEAR Account
 properties:
 - name: TWNEARAccountDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the user friendly string representation.
+  - \param account Pointer to a non-null NEAR Account
+  - \return Non-null string account description

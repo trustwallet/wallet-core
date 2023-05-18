@@ -19,3 +19,5 @@ enums:
     value: 5
   - name: solanaSolana
     value: 6
+  comments:
+  - Non-default coin address derivation names (default, unnamed derivations are not included).

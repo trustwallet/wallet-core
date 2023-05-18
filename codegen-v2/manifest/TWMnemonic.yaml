@@ -3,6 +3,8 @@ structs:
 - name: TWMnemonic
   is_public: true
   is_class: false
+  comments:
+  - Mnemonic validate / lookup functions
 functions:
 - name: TWMnemonicIsValid
   is_public: true
@@ -11,14 +13,14 @@ functions:
   - name: mnemonic
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether a BIP39 English mnemonic phrase is valid.
+  - \param mnemonic Non-null BIP39 english mnemonic
+  - \return true if the mnemonic is valid, false otherwise
 - name: TWMnemonicIsValidWord
   is_public: true
   is_static: true
@@ -26,14 +28,14 @@ functions:
   - name: word
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines whether word is a valid BIP39 English mnemonic word.
+  - \param word Non-null BIP39 English mnemonic word
+  - \return true if the word is a valid BIP39 English mnemonic word, false otherwise
 - name: TWMnemonicSuggest
   is_public: true
   is_static: true
@@ -41,11 +43,11 @@ functions:
   - name: prefix
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Return BIP39 English words that match the given prefix. A single string is returned, with space-separated list of words.
+  - \param prefix Non-null string prefix
+  - \return Single non-null string, space-separated list of words containing BIP39 words that match the given prefix.

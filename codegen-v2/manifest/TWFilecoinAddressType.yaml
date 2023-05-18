@@ -9,3 +9,5 @@ enums:
     value: 0
   - name: delegated
     value: 1
+  comments:
+  - Filecoin address type.

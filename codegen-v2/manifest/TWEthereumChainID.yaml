@@ -75,3 +75,6 @@ enums:
     value: 56
   - name: aurora
     value: 1313161554
+  comments:
+  - Chain identifiers for Ethereum-based blockchains, for convenience. Recommended to use the dynamic CoinType.ChainId() instead.
+  - See also TWChainId.

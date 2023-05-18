@@ -3,6 +3,8 @@ structs:
 - name: TWBase64
   is_public: true
   is_class: false
+  comments:
+  - Base64 encode / decode functions
 functions:
 - name: TWBase64Decode
   is_public: true
@@ -19,6 +21,10 @@ functions:
     is_constant: true
     is_nullable: true
     is_pointer: true
+  comment:
+  - Decode a Base64 input with the default alphabet (RFC4648 with '+', '/')
+  - \param string Encoded input to be decoded
+  - \return The decoded data, empty if decoding failed.
 - name: TWBase64DecodeUrl
   is_public: true
   is_static: true
@@ -34,6 +40,10 @@ functions:
     is_constant: true
     is_nullable: true
     is_pointer: true
+  comments:
+  - Decode a Base64 input with the alphabet safe for URL-s and filenames (RFC4648 with '-', '_')
+  - \param string Encoded base64 input to be decoded
+  - \return The decoded data, empty if decoding failed.
 - name: TWBase64Encode
   is_public: true
   is_static: true
@@ -49,6 +59,10 @@ functions:
     is_constant: true
     is_nullable: false
     is_pointer: true
+  comments:
+  - Encode an input to Base64 with the default alphabet (RFC4648 with '+', '/')
+  - \param data Data to be encoded (raw bytes)
+  - \return The encoded data
 - name: TWBase64EncodeUrl
   is_public: true
   is_static: true
@@ -64,3 +78,7 @@ functions:
     is_constant: true
     is_nullable: false
     is_pointer: true
+  comments:
+  - Encode an input to Base64 with the alphabet safe for URL-s and filenames (RFC4648 with '-', '_')
+  - \param data Data to be encoded (raw bytes)
+  - \return The encoded data

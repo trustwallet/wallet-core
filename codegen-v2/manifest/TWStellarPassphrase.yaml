@@ -11,3 +11,5 @@ enums:
   - name: kin
     value: 1
     as_string: Kin Mainnet ; December 2018
+  comments:
+  - Stellar network passphrase string.

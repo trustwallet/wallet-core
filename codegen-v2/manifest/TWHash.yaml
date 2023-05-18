@@ -6,9 +6,9 @@ structs:
   fields:
   - - unused
     - variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Hash functions
 functions:
 - name: TWHashSHA1
   is_public: true
@@ -17,14 +17,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA1 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA1 block of data
 - name: TWHashSHA256
   is_public: true
   is_static: true
@@ -32,14 +32,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA256 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA256 block of data
 - name: TWHashSHA512
   is_public: true
   is_static: true
@@ -47,14 +47,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA512 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA512 block of data
 - name: TWHashSHA512_256
   is_public: true
   is_static: true
@@ -62,14 +62,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA512_256 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA512_256 block of data
 - name: TWHashKeccak256
   is_public: true
   is_static: true
@@ -77,14 +77,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Keccak256 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Keccak256 block of data
 - name: TWHashKeccak512
   is_public: true
   is_static: true
@@ -92,14 +92,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Keccak512 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Keccak512 block of data
 - name: TWHashSHA3_256
   is_public: true
   is_static: true
@@ -107,14 +107,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA3_256 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA3_256 block of data
 - name: TWHashSHA3_512
   is_public: true
   is_static: true
@@ -122,14 +122,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA3_512 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA3_512 block of data
 - name: TWHashRIPEMD
   is_public: true
   is_static: true
@@ -137,14 +137,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the RIPEMD of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed RIPEMD block of data
 - name: TWHashBlake256
   is_public: true
   is_static: true
@@ -152,14 +152,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Blake256 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Blake256 block of data
 - name: TWHashBlake2b
   is_public: true
   is_static: true
@@ -167,20 +167,18 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: size
     type:
       variant: size_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Blake2b of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Blake2b block of data
 - name: TWHashGroestl512
   is_public: true
   is_static: true
@@ -188,14 +186,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Groestl512 of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Groestl512 block of data
 - name: TWHashSHA256SHA256
   is_public: true
   is_static: true
@@ -203,14 +201,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA256D of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA256D block of data
 - name: TWHashSHA256RIPEMD
   is_public: true
   is_static: true
@@ -218,14 +216,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA256RIPEMD of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA256RIPEMD block of data
 - name: TWHashSHA3_256RIPEMD
   is_public: true
   is_static: true
@@ -233,14 +231,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the SHA3_256RIPEMD of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed SHA3_256RIPEMD block of data
 - name: TWHashBlake256Blake256
   is_public: true
   is_static: true
@@ -248,14 +246,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Blake256D of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Blake256D block of data
 - name: TWHashBlake256RIPEMD
   is_public: true
   is_static: true
@@ -263,14 +261,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Blake256RIPEMD of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Blake256RIPEMD block of data
 - name: TWHashGroestl512Groestl512
   is_public: true
   is_static: true
@@ -278,11 +276,11 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Computes the Groestl512D of a block of data.
+  - \param data Non-null block of data
+  - \return Non-null computed Groestl512D block of data

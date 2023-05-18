@@ -13,3 +13,5 @@ enums:
     value: 2
   - name: aes256Ctr
     value: 3
+  comments:
+  - Preset encryption kind

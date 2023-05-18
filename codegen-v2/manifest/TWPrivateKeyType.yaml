@@ -9,3 +9,5 @@ enums:
     value: 0
   - name: cardano
     value: 1
+  comments:
+  - Private key types, the vast majority of chains use the default, 32-byte key.

@@ -3,6 +3,8 @@ structs:
 - name: TWNervosAddress
   is_public: true
   is_class: true
+  comments:
+  - Represents a Nervos address.
 inits:
 - name: TWNervosAddressCreateWithString
   is_public: true
@@ -11,11 +13,16 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Initializes an address from a sring representaion.
+  - \param string Bech32 string to initialize the address from.
+  - \return TWNervosAddress pointer or nullptr if string is invalid.
 deinits:
 - name: TWNervosAddressDelete
+  comments:
+  - Deletes a Nervos address.
+  - \param address Address to delete.
 functions:
 - name: TWNervosAddressEqual
   is_public: true
@@ -25,21 +32,20 @@ functions:
     type:
       variant: struct
       value: TWNervosAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: rhs
     type:
       variant: struct
       value: TWNervosAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Compares two addresses for equality.
+  - \param lhs The first address to compare.
+  - \param rhs The second address to compare.
+  - \return bool indicating the addresses are equal.
 - name: TWNervosAddressIsValidString
   is_public: true
   is_static: true
@@ -47,40 +53,44 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Nervos address.
+  - \param string string to validate.
+  - \return bool indicating if the address is valid.
 properties:
 - name: TWNervosAddressDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address string representation.
+  - \param address Address to get the string representation of.
 - name: TWNervosAddressCodeHash
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Code hash
+  - \param address Address to get the keyhash data of.
 - name: TWNervosAddressHashType
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address hash type
+  - \param address Address to get the hash type of.
 - name: TWNervosAddressArgs
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address args data.
+  - \param address Address to get the args data of.

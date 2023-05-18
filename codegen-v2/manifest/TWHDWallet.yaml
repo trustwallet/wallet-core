@@ -3,6 +3,8 @@ structs:
 - name: TWHDWallet
   is_public: true
   is_class: true
+  comments:
+  - Hierarchical Deterministic (HD) Wallet
 inits:
 - name: TWHDWalletCreate
   is_public: true
@@ -11,15 +13,18 @@ inits:
   - name: strength
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: passphrase
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates a new HDWallet with a new random mnemonic with the provided strength in bits.
+  - \param strength strength in bits
+  - \param passphrase non-null passphrase
+  - \note Null is returned on invalid strength
+  - \note Returned object needs to be deleted with \TWHDWalletDelete
+  - \return Nullable TWHDWallet
 - name: TWHDWalletCreateWithMnemonic
   is_public: true
   is_nullable: true
@@ -27,15 +32,18 @@ inits:
   - name: mnemonic
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: passphrase
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates an HDWallet from a valid BIP39 English mnemonic and a passphrase.
+  - \param mnemonic non-null Valid BIP39 mnemonic
+  - \param passphrase  non-null passphrase
+  - \note Null is returned on invalid mnemonic
+  - \note Returned object needs to be deleted with \TWHDWalletDelete
+  - \return Nullable TWHDWallet
 - name: TWHDWalletCreateWithMnemonicCheck
   is_public: true
   is_nullable: true
@@ -43,21 +51,23 @@ inits:
   - name: mnemonic
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: passphrase
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: check
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an HDWallet from a BIP39 mnemonic, a passphrase and validation flag.
+  - \param mnemonic non-null Valid BIP39 mnemonic
+  - \param passphrase  non-null passphrase
+  - \param check validation flag
+  - \note Null is returned on invalid mnemonic
+  - \note Returned object needs to be deleted with \TWHDWalletDelete
+  - \return Nullable TWHDWallet
 - name: TWHDWalletCreateWithEntropy
   is_public: true
   is_nullable: true
@@ -65,17 +75,23 @@ inits:
   - name: entropy
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: passphrase
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates an HDWallet from entropy (corresponding to a mnemonic).
+  - \param entropy Non-null entropy data (corresponding to a mnemonic)
+  - \param passphrase non-null passphrase
+  - \note Null is returned on invalid input
+  - \note Returned object needs to be deleted with \TWHDWalletDelete
+  - \return Nullable TWHDWallet
 deinits:
 - name: TWHDWalletDelete
+  comments:
+  - Deletes a wallet.
+  - \param wallet non-null TWHDWallet
 functions:
 - name: TWHDWalletGetMasterKey
   is_public: true
@@ -85,22 +101,22 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: curve
     type:
       variant: enum
       value: TWCurve
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns master key.
+  - \param wallet non-null TWHDWallet
+  - \param curve  a curve
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return Non-null corresponding private key
 - name: TWHDWalletGetKeyForCoin
   is_public: true
   is_static: false
@@ -109,22 +125,24 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the default private key for the specified coin, using default derivation.
+  - \see TWHDWalletGetKey
+  - \see TWHDWalletGetKeyDerivation
+  - \param wallet non-null TWHDWallet
+  - \param coin  a coin type
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return return the default private key for the specified coin
 - name: TWHDWalletGetAddressForCoin
   is_public: true
   is_static: false
@@ -133,21 +151,21 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the default address for the specified coin (without exposing intermediary private key), default derivation.
+  - \see TWHDWalletGetAddressDerivation
+  - \param wallet non-null TWHDWallet
+  - \param coin  a coin type
+  - \return return the default address for the specified coin as a non-null TWString
 - name: TWHDWalletGetAddressDerivation
   is_public: true
   is_static: false
@@ -156,28 +174,27 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the default address for the specified coin and derivation (without exposing intermediary private key).
+  - \see TWHDWalletGetAddressForCoin
+  - \param wallet non-null TWHDWallet
+  - \param coin  a coin type
+  - \param derivation  a (custom) derivation to use
+  - \return return the default address for the specified coin as a non-null TWString
 - name: TWHDWalletGetKey
   is_public: true
   is_static: false
@@ -186,28 +203,29 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivationPath
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the private key for the specified derivation path.
+  - \see TWHDWalletGetKeyForCoin
+  - \see TWHDWalletGetKeyDerivation
+  - \param wallet non-null TWHDWallet
+  - \param coin a coin type
+  - \param derivationPath  a non-null derivation path
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return The private key for the specified derivation path/coin
 - name: TWHDWalletGetKeyDerivation
   is_public: true
   is_static: false
@@ -216,29 +234,30 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the private key for the specified derivation.
+  - \see TWHDWalletGetKey
+  - \see TWHDWalletGetKeyForCoin
+  - \param wallet non-null TWHDWallet
+  - \param coin a coin type
+  - \param derivation a (custom) derivation to use
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return The private key for the specified derivation path/coin
 - name: TWHDWalletGetKeyByCurve
   is_public: true
   is_static: false
@@ -247,28 +266,27 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: curve
     type:
       variant: enum
       value: TWCurve
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivationPath
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the private key for the specified derivation path and curve.
+  - \param wallet non-null TWHDWallet
+  - \param curve a curve
+  - \param derivationPath  a non-null derivation path
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return The private key for the specified derivation path/curve
 - name: TWHDWalletGetDerivedKey
   is_public: true
   is_static: false
@@ -277,40 +295,38 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: account
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: change
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: address
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Shortcut method to generate private key with the specified account/change/address (bip44 standard).
+  - \see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+  - \param wallet non-null TWHDWallet
+  - \param coin a coin type
+  - \param account valid bip44 account
+  - \param change valid bip44 change
+  - \param address valid bip44 address
+  - \note Returned object needs to be deleted with \TWPrivateKeyDelete
+  - \return The private key for the specified bip44 parameters
 - name: TWHDWalletGetExtendedPrivateKey
   is_public: true
   is_static: false
@@ -319,35 +335,33 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: purpose
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: version
     type:
       variant: enum
       value: TWHDVersion
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the extended private key (for default 0 account).
+  - \param wallet non-null TWHDWallet
+  - \param purpose a purpose
+  - \param coin a coin type
+  - \param version hd version
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return  Extended private key as a non-null TWString
 - name: TWHDWalletGetExtendedPublicKey
   is_public: true
   is_static: false
@@ -356,35 +370,33 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: purpose
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: version
     type:
       variant: enum
       value: TWHDVersion
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the extended public key (for default 0 account).
+  - \param wallet non-null TWHDWallet
+  - \param purpose a purpose
+  - \param coin a coin type
+  - \param version hd version
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return  Extended public key as a non-null TWString
 - name: TWHDWalletGetExtendedPrivateKeyAccount
   is_public: true
   is_static: false
@@ -393,48 +405,44 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: purpose
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: version
     type:
       variant: enum
       value: TWHDVersion
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: account
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the extended private key, for custom account.
+  - \param wallet non-null TWHDWallet
+  - \param purpose a purpose
+  - \param coin a coin type
+  - \param derivation a derivation
+  - \param version an hd version
+  - \param account valid bip44 account
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return  Extended private key as a non-null TWString
 - name: TWHDWalletGetExtendedPublicKeyAccount
   is_public: true
   is_static: false
@@ -443,48 +451,44 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: purpose
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: version
     type:
       variant: enum
       value: TWHDVersion
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: account
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the extended public key, for custom account.
+  - \param wallet non-null TWHDWallet
+  - \param purpose a purpose
+  - \param coin a coin type
+  - \param derivation a derivation
+  - \param version an hd version
+  - \param account valid bip44 account
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return Extended public key as a non-null TWString
 - name: TWHDWalletGetExtendedPrivateKeyDerivation
   is_public: true
   is_static: false
@@ -493,42 +497,39 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: purpose
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: version
     type:
       variant: enum
       value: TWHDVersion
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the extended private key (for default 0 account with derivation).
+  - \param wallet non-null TWHDWallet
+  - \param purpose a purpose
+  - \param coin a coin type
+  - \param derivation a derivation
+  - \param version an hd version
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return  Extended private key as a non-null TWString
 - name: TWHDWalletGetExtendedPublicKeyDerivation
   is_public: true
   is_static: false
@@ -537,42 +538,39 @@ functions:
     type:
       variant: struct
       value: TWHDWallet
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: purpose
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: version
     type:
       variant: enum
       value: TWHDVersion
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the extended public key (for default 0 account with derivation).
+  - \param wallet non-null TWHDWallet
+  - \param purpose a purpose
+  - \param coin a coin type
+  - \param derivation a derivation
+  - \param version an hd version
+  - \note Returned object needs to be deleted with \TWStringDelete
+  - \return  Extended public key as a non-null TWString
 - name: TWHDWalletGetPublicKeyFromExtended
   is_public: true
   is_static: true
@@ -580,47 +578,52 @@ functions:
   - name: extended
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coin
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivationPath
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Computes the public key from an extended public key representation.
+  - \param extended extended public key
+  - \param coin a coin type
+  - \param derivationPath a derivation path
+  - \note Returned object needs to be deleted with \TWPublicKeyDelete
+  - \return Nullable TWPublic key
 properties:
 - name: TWHDWalletSeed
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Wallet seed.
+  - \param wallet non-null TWHDWallet
+  - \return The wallet seed as a Non-null block of data.
 - name: TWHDWalletMnemonic
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Wallet Mnemonic
+  - \param wallet non-null TWHDWallet
+  - \return The wallet mnemonic as a non-null TWString
 - name: TWHDWalletEntropy
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Wallet entropy
+  - \param wallet non-null TWHDWallet
+  - \return The wallet entropy as a non-null block of data.

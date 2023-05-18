@@ -42,9 +42,7 @@ pub fn parse_str(str: &str) -> Result<FileInfo> {
 pub struct TypeInfo {
     #[serde(flatten)]
     pub variant: TypeVariant,
-    pub is_constant: bool,
     pub is_nullable: bool,
-    pub is_pointer: bool,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]

@@ -3,6 +3,8 @@ structs:
 - name: TWDerivationPath
   is_public: true
   is_class: true
+  comments:
+  - Represents a BIP44 DerivationPath in C++.
 inits:
 - name: TWDerivationPathCreate
   is_public: true
@@ -12,33 +14,32 @@ inits:
     type:
       variant: enum
       value: TWPurpose
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: coin
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: account
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: change
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: address
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates a new DerivationPath with a purpose, coin, account, change and address.
+  - Must be deleted with TWDerivationPathDelete after use.
+  - \param purpose The purpose of the Path.
+  - \param coin The coin type of the Path.
+  - \param account The derivation of the Path.
+  - \param change The derivation path of the Path.
+  - \param address hex encoded public key.
+  - \return A new DerivationPath.
 - name: TWDerivationPathCreateWithString
   is_public: true
   is_nullable: true
@@ -46,11 +47,16 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates a new DerivationPath with a string
+  - \param string The string of the Path.
+  - \return A new DerivationPath or null if string is invalid.
 deinits:
 - name: TWDerivationPathDelete
+  comments:
+  - Deletes a DerivationPath.
+  - \param path DerivationPath to delete.
 functions:
 - name: TWDerivationPathIndexAt
   is_public: true
@@ -60,21 +66,20 @@ functions:
     type:
       variant: struct
       value: TWDerivationPath
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: index
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWDerivationPathIndex
-    is_constant: false
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Returns the index component of a DerivationPath.
+  - \param path DerivationPath to get the index of.
+  - \param index The index component of the DerivationPath.
+  - \return DerivationPathIndex or null if index is invalid.
 - name: TWDerivationPathIndicesCount
   is_public: true
   is_static: false
@@ -83,55 +88,67 @@ functions:
     type:
       variant: struct
       value: TWDerivationPath
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the indices count of a DerivationPath.
+  - \param path DerivationPath to get the indices count of.
+  - \return The indices count of the DerivationPath.
 properties:
 - name: TWDerivationPathPurpose
   is_public: true
   return_type:
     variant: enum
     value: TWPurpose
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the purpose enum of a DerivationPath.
+  - \param path DerivationPath to get the purpose of.
+  - \return DerivationPathPurpose.
 - name: TWDerivationPathCoin
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the coin value of a derivation path.
+  - \param path DerivationPath to get the coin of.
+  - \return The coin part of the DerivationPath.
 - name: TWDerivationPathAccount
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the account value of a derivation path.
+  - \param path DerivationPath to get the account of.
+  - \return the account part of a derivation path.
 - name: TWDerivationPathChange
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the change value of a derivation path.
+  - \param path DerivationPath to get the change of.
+  - \return The change part of a derivation path.
 - name: TWDerivationPathAddress
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the address value of a derivation path.
+  - \param path DerivationPath to get the address of.
+  - \return The address part of the derivation path.
 - name: TWDerivationPathDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the string description of a derivation path.
+  - \param path DerivationPath to get the address of.
+  - \return The string description of the derivation path.

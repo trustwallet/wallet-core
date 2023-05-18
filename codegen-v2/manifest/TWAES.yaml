@@ -6,9 +6,9 @@ structs:
   fields:
   - - unused
     - variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - AES encryption/decryption methods.
 functions:
 - name: TWAESEncryptCBC
   is_public: true
@@ -17,33 +17,30 @@ functions:
   - name: key
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: iv
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: mode
     type:
       variant: enum
       value: TWAESPaddingMode
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Encrypts a block of Data using AES in Cipher Block Chaining (CBC) mode.
+  - \param key encryption key Data, must be 16, 24, or 32 bytes long.
+  - \param data Data to encrypt.
+  - \param iv initialization vector.
+  - \param mode padding mode.
+  - \return encrypted Data.
 - name: TWAESDecryptCBC
   is_public: true
   is_static: true
@@ -51,33 +48,30 @@ functions:
   - name: key
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: iv
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: mode
     type:
       variant: enum
       value: TWAESPaddingMode
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Decrypts a block of data using AES in Cipher Block Chaining (CBC) mode.
+  - \param key decryption key Data, must be 16, 24, or 32 bytes long.
+  - \param data Data to decrypt.
+  - \param iv initialization vector Data.
+  - \param mode padding mode.
+  - \return decrypted Data.
 - name: TWAESEncryptCTR
   is_public: true
   is_static: true
@@ -85,26 +79,24 @@ functions:
   - name: key
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: iv
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Encrypts a block of data using AES in Counter (CTR) mode.
+  - \param key encryption key Data, must be 16, 24, or 32 bytes long.
+  - \param data Data to encrypt.
+  - \param iv initialization vector Data.
+  - \return encrypted Data.
 - name: TWAESDecryptCTR
   is_public: true
   is_static: true
@@ -112,23 +104,21 @@ functions:
   - name: key
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: iv
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Decrypts a block of data using AES in Counter (CTR) mode.
+  - \param key decryption key Data, must be 16, 24, or 32 bytes long.
+  - \param data Data to decrypt.
+  - \param iv initialization vector Data.
+  - \return decrypted Data.

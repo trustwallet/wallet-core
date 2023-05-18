@@ -12,18 +12,17 @@ functions:
     type:
       variant: struct
       value: TWDerivationPath
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: signature
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPrivateKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Generates the private stark key at the given derivation path from a valid eth signature
+  - \param derivationPath non-null StarkEx Derivation path
+  - \param signature valid eth signature
+  - \return  The private key for the specified derivation path/signature

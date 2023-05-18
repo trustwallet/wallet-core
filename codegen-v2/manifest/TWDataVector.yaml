@@ -3,10 +3,16 @@ structs:
 - name: TWDataVector
   is_public: true
   is_class: true
+  comments:
+  - A vector of TWData byte arrays
 inits:
 - name: TWDataVectorCreate
   is_public: true
   is_nullable: false
+  comments:
+  - Creates a Vector of Data.
+  - \note Must be deleted with \TWDataVectorDelete
+  - \return a non-null Vector of Data.
 - name: TWDataVectorCreateWithData
   is_public: true
   is_nullable: false
@@ -17,8 +23,15 @@ inits:
       is_constant: true
       is_nullable: false
       is_pointer: true
+  comments:
+  - Creates a Vector of Data with the given element
+  - \param data A non-null valid block of data
+  - \return A Vector of data with a single given element
 deinits:
 - name: TWDataVectorDelete
+  comments:
+  - Delete/Deallocate a Vector of Data
+  - \param dataVector A non-null Vector of data
 functions:
 - name: TWDataVectorAdd
   is_public: true
@@ -42,6 +55,11 @@ functions:
     is_constant: false
     is_nullable: false
     is_pointer: false
+  comments:
+  - Add an element to a Vector of Data. Element is cloned
+  - \param dataVector A non-null Vector of data
+  - \param data A non-null valid block of data
+  - \note data input parameter must be deleted on its own
 - name: TWDataVectorGet
   is_public: true
   is_static: false
@@ -64,6 +82,12 @@ functions:
     is_constant: true
     is_nullable: true
     is_pointer: true
+  comments:
+  - Retrieve the n-th element.
+  - \param dataVector A non-null Vector of data
+  - \param index index element of the vector to be retrieved, need to be < TWDataVectorSize
+  - \note Returned element must be freed with \TWDataDelete
+  - \return A non-null block of data
 properties:
 - name: TWDataVectorSize
   is_public: true
@@ -72,3 +96,7 @@ properties:
     is_constant: false
     is_nullable: false
     is_pointer: false
+  comments:
+  - Retrieve the number of elements
+  - \param dataVector A non-null Vector of data
+  - \return the size of the given vector.

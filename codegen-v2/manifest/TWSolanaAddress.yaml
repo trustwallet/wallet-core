@@ -3,6 +3,8 @@ structs:
 - name: TWSolanaAddress
   is_public: true
   is_class: true
+  comments:
+  - Solana address helper functions
 inits:
 - name: TWSolanaAddressCreateWithString
   is_public: true
@@ -11,11 +13,17 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates an address from a string representation.
+  - \param string Non-null pointer to a solana address string
+  - \note Should be deleted with \TWSolanaAddressDelete
+  - \return Non-null pointer to a Solana address data structure
 deinits:
 - name: TWSolanaAddressDelete
+  comments:
+  - Delete the given Solana address
+  - \param address Non-null pointer to a Solana Address
 functions:
 - name: TWSolanaAddressDefaultTokenAddress
   is_public: true
@@ -25,25 +33,26 @@ functions:
     type:
       variant: struct
       value: TWSolanaAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: tokenMintAddress
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Derive default token address for token
+  - \param address Non-null pointer to a Solana Address
+  - \param tokenMintAddress Non-null pointer to a token mint address as a string
+  - \return Null pointer if the Default token address for a token is not found, valid pointer otherwise
 properties:
 - name: TWSolanaAddressDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address string representation.
+  - \param address Non-null pointer to a Solana Address
+  - \return Non-null pointer to the Solana address string representation

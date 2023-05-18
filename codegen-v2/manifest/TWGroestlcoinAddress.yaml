@@ -6,6 +6,8 @@ structs:
 - name: TWGroestlcoinAddress
   is_public: true
   is_class: true
+  comments:
+  - Represents a legacy Groestlcoin address.
 inits:
 - name: TWGroestlcoinAddressCreateWithString
   is_public: true
@@ -14,9 +16,12 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Create an address from a base58 string representation.
+  - \param string Non-null string
+  - \note Must be deleted with \TWGroestlcoinAddressDelete
+  - \return Non-null GroestlcoinAddress
 - name: TWGroestlcoinAddressCreateWithPublicKey
   is_public: true
   is_nullable: false
@@ -25,17 +30,22 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: prefix
     type:
       variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Create an address from a public key and a prefix byte.
+  - \param publicKey Non-null public key
+  - \param prefix public key prefix
+  - \note Must be deleted with \TWGroestlcoinAddressDelete
+  - \return Non-null GroestlcoinAddress
 deinits:
 - name: TWGroestlcoinAddressDelete
+  comments:
+  - Delete a Groestlcoin address
+  - \param address Non-null GroestlcoinAddress
 functions:
 - name: TWGroestlcoinAddressEqual
   is_public: true
@@ -45,21 +55,20 @@ functions:
     type:
       variant: struct
       value: TWGroestlcoinAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: rhs
     type:
       variant: struct
       value: TWGroestlcoinAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Compares two addresses for equality.
+  - \param lhs left Non-null GroestlCoin address to be compared
+  - \param rhs right Non-null GroestlCoin address to be compared
+  - \return true if both address are equal, false otherwise
 - name: TWGroestlcoinAddressIsValidString
   is_public: true
   is_static: true
@@ -67,19 +76,21 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Groestlcoin address.
+  - \param string Non-null string.
+  - \return true if it's a valid address, false otherwise
 properties:
 - name: TWGroestlcoinAddressDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address base58 string representation.
+  - \param address Non-null GroestlcoinAddress
+  - \return Address description as a non-null string

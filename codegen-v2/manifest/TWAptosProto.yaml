@@ -8,6 +8,10 @@ protos:
 - TW_Aptos_Proto_OfferNftMessage
 - TW_Aptos_Proto_CancelOfferNftMessage
 - TW_Aptos_Proto_ClaimNftMessage
+- TW_Aptos_Proto_TortugaClaim
+- TW_Aptos_Proto_TortugaStake
+- TW_Aptos_Proto_TortugaUnstake
+- TW_Aptos_Proto_LiquidStaking
 - TW_Aptos_Proto_NftMessage
 - TW_Aptos_Proto_SigningInput
 - TW_Aptos_Proto_TransactionAuthenticator

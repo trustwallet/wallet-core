@@ -3,6 +3,8 @@ structs:
 - name: TWPBKDF2
   is_public: true
   is_class: false
+  comments:
+  - Password-Based Key Derivation Function 2
 functions:
 - name: TWPBKDF2HmacSha256
   is_public: true
@@ -11,32 +13,29 @@ functions:
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: salt
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: iterations
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: dkLen
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Derives a key from a password and a salt using PBKDF2 + Sha256.
+  - \param password is the master password from which a derived key is generated
+  - \param salt is a sequence of bits, known as a cryptographic salt
+  - \param iterations is the number of iterations desired
+  - \param dkLen is the desired bit-length of the derived key
+  - \return the derived key data.
 - name: TWPBKDF2HmacSha512
   is_public: true
   is_static: true
@@ -44,29 +43,26 @@ functions:
   - name: password
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: salt
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: iterations
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: dkLen
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Derives a key from a password and a salt using PBKDF2 + Sha512.
+  - \param password is the master password from which a derived key is generated
+  - \param salt is a sequence of bits, known as a cryptographic salt
+  - \param iterations is the number of iterations desired
+  - \param dkLen is the desired bit-length of the derived key
+  - \return the derived key data.

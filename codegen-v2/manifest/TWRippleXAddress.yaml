@@ -6,6 +6,8 @@ structs:
 - name: TWRippleXAddress
   is_public: true
   is_class: true
+  comments:
+  - Represents a Ripple X-address.
 inits:
 - name: TWRippleXAddressCreateWithString
   is_public: true
@@ -14,9 +16,12 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates an address from a string representation.
+  - \param string Non-null pointer to a string that should be a valid ripple address
+  - \note Should be deleted with \TWRippleXAddressDelete
+  - \return Null pointer if the given string is an invalid ripple address, pointer to a Ripple address otherwise
 - name: TWRippleXAddressCreateWithPublicKey
   is_public: true
   is_nullable: false
@@ -25,17 +30,22 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: tag
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates an address from a public key and destination tag.
+  - \param publicKey Non-null pointer to a public key
+  - \param tag valid ripple destination tag (1-10)
+  - \note Should be deleted with \TWRippleXAddressDelete
+  - \return Non-null pointer to a Ripple Address
 deinits:
 - name: TWRippleXAddressDelete
+  comments:
+  - Delete the given ripple address
+  - \param address Non-null pointer to a Ripple Address
 functions:
 - name: TWRippleXAddressEqual
   is_public: true
@@ -45,21 +55,20 @@ functions:
     type:
       variant: struct
       value: TWRippleXAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: rhs
     type:
       variant: struct
       value: TWRippleXAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Compares two addresses for equality.
+  - \param lhs left non-null pointer to a Ripple Address
+  - \param rhs right non-null pointer to a Ripple Address
+  - \return true if both address are equal, false otherwise
 - name: TWRippleXAddressIsValidString
   is_public: true
   is_static: true
@@ -67,26 +76,30 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Ripple address.
+  - \param string Non-null pointer to a string that represent the Ripple Address to be checked
+  - \return true if the given address is a valid Ripple address, false otherwise
 properties:
 - name: TWRippleXAddressDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address string representation.
+  - \param address Non-null pointer to a Ripple Address
+  - \return Non-null pointer to the ripple address string representation
 - name: TWRippleXAddressTag
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the destination tag.
+  - \param address Non-null pointer to a Ripple Address
+  - \return The destination tag of the given Ripple Address (1-10)

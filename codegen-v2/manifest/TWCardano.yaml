@@ -3,6 +3,8 @@ structs:
 - name: TWCardano
   is_public: true
   is_class: false
+  comments:
+  - Cardano helper functions
 functions:
 - name: TWCardanoMinAdaAmount
   is_public: true
@@ -11,14 +13,16 @@ functions:
   - name: tokenBundle
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: u_int64_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Calculates the minimum ADA amount needed for a UTXO.
+  - \deprecated consider using `TWCardanoOutputMinAdaAmount` instead.
+  - \see reference https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+  - \param tokenBundle serialized data of TW.Cardano.Proto.TokenBundle.
+  - \return the minimum ADA amount.
 - name: TWCardanoOutputMinAdaAmount
   is_public: true
   is_static: true
@@ -26,26 +30,25 @@ functions:
   - name: toAddress
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: tokenBundle
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: coinsPerUtxoByte
     type:
       variant: u_int64_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: u_int64_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Calculates the minimum ADA amount needed for an output.
+  - \see reference https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+  - \param toAddress valid destination address, as string.
+  - \param tokenBundle serialized data of TW.Cardano.Proto.TokenBundle.
+  - \param coinsPerUtxoByte cost per one byte of a serialized UTXO.
+  - \return the minimum ADA amount.
 - name: TWCardanoGetStakingAddress
   is_public: true
   is_static: true
@@ -53,11 +56,12 @@ functions:
   - name: baseAddress
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Return the staking address associated to (contained in) this address. Must be a Base address.
+  - Empty string is returned on error. Result must be freed.
+  - \param baseAddress A valid base address, as string.
+  - \return the associated staking (reward) address, as string, or empty string on error.

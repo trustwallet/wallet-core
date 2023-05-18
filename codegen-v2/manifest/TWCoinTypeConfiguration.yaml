@@ -6,9 +6,9 @@ structs:
   fields:
   - - unused
     - variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - CoinTypeConfiguration functions
 functions:
 - name: TWCoinTypeConfigurationGetSymbol
   is_public: true
@@ -18,14 +18,15 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns stock symbol of coin
+  - \param type A coin type
+  - \return A non-null TWString stock symbol of coin
+  - \note Caller must free returned object
 - name: TWCoinTypeConfigurationGetDecimals
   is_public: true
   is_static: true
@@ -34,14 +35,14 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns max count decimal places for minimal coin unit
+  - \param type A coin type
+  - \return Returns max count decimal places for minimal coin unit
 - name: TWCoinTypeConfigurationGetTransactionURL
   is_public: true
   is_static: true
@@ -50,20 +51,19 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: transactionID
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns transaction url in blockchain explorer
+  - \param type A coin type
+  - \param transactionID A transaction identifier
+  - \return Returns a non-null TWString transaction url in blockchain explorer
 - name: TWCoinTypeConfigurationGetAccountURL
   is_public: true
   is_static: true
@@ -72,20 +72,19 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: accountID
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns account url in blockchain explorer
+  - \param type A coin type
+  - \param accountID an Account identifier
+  - \return Returns a non-null TWString account url in blockchain explorer
 - name: TWCoinTypeConfigurationGetID
   is_public: true
   is_static: true
@@ -94,14 +93,14 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns full name of coin in lower case
+  - \param type A coin type
+  - \return Returns a non-null TWString, full name of coin in lower case
 - name: TWCoinTypeConfigurationGetName
   is_public: true
   is_static: true
@@ -110,11 +109,11 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns full name of coin
+  - \param type A coin type
+  - \return Returns a non-null TWString, full name of coin

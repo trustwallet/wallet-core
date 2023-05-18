@@ -15,3 +15,5 @@ enums:
     value: 3
   - name: return
     value: 4
+  comments:
+  - Stellar memo type.

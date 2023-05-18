@@ -3,6 +3,8 @@ structs:
 - name: TWDerivationPathIndex
   is_public: true
   is_class: true
+  comments:
+  - Represents a derivation path index in C++ with value and hardened flag.
 inits:
 - name: TWDerivationPathIndexCreate
   is_public: true
@@ -11,36 +13,46 @@ inits:
   - name: value
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: hardened
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Creates a new Index with a value and hardened flag.
+  - Must be deleted with TWDerivationPathIndexDelete after use.
+  - \param value Index value
+  - \param hardened Indicates if the Index is hardened.
+  - \return A new Index.
 deinits:
 - name: TWDerivationPathIndexDelete
+  comments:
+  - Deletes an Index.
+  - \param index Index to delete.
 properties:
 - name: TWDerivationPathIndexValue
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns numeric value of an Index.
+  - \param index Index to get the numeric value of.
 - name: TWDerivationPathIndexHardened
   is_public: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns hardened flag of an Index.
+  - \param index Index to get hardened flag.
+  - \return true if hardened, false otherwise.
 - name: TWDerivationPathIndexDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the string description of a derivation path index.
+  - \param path Index to get the address of.
+  - \return The string description of the derivation path index.

@@ -3,6 +3,8 @@ structs:
 - name: TWEthereumAbiFunction
   is_public: false
   is_class: false
+  comments:
+  - Wrapper class for Ethereum ABI encoding & decoding.
 - name: TWEthereumAbi
   is_public: true
   is_class: false
@@ -15,14 +17,14 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Encode function to Eth ABI binary
+  - \param fn Non-null Eth abi function
+  - \return Non-null encoded block of data
 - name: TWEthereumAbiDecodeOutput
   is_public: true
   is_static: true
@@ -31,20 +33,19 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: encoded
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Decode function output from Eth ABI binary, fill output parameters
+  - \param[in] fn Non-null Eth abi function
+  - \param[out] encoded Non-null block of data
+  - \return true if encoded have been filled correctly, false otherwise
 - name: TWEthereumAbiDecodeCall
   is_public: true
   is_static: true
@@ -52,20 +53,19 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: abi
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Decode function call data to human readable json format, according to input abi json
+  - \param data Non-null block of data
+  - \param abi Non-null string
+  - \return Non-null json string function call data
 - name: TWEthereumAbiEncodeTyped
   is_public: true
   is_static: true
@@ -73,11 +73,45 @@ functions:
   - name: messageJson
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Compute the hash of a struct, used for signing, according to EIP712 ("v4").
+  - 'Input is a Json object (as string), with following fields:'
+  - '- types: map of used struct types (see makeTypes())'
+  - '- primaryType: the type of the message (string)'
+  - '- domain: EIP712 domain specifier values'
+  - '- message: the message (object).'
+  - Throws on error.
+  - 'Example input:'
+  - R"({
+  - '"types": {'
+  - '"EIP712Domain": ['
+  - '{"name": "name", "type": "string"},'
+  - '{"name": "version", "type": "string"},'
+  - '{"name": "chainId", "type": "uint256"},'
+  - '{"name": "verifyingContract", "type": "address"}'
+  - '],'
+  - '"Person": ['
+  - '{"name": "name", "type": "string"},'
+  - '{"name": "wallet", "type": "address"}'
+  - ']'
+  - '},'
+  - '"primaryType": "Person",'
+  - '"domain": {'
+  - '"name": "Ether Person",'
+  - '"version": "1",'
+  - '"chainId": 1,'
+  - '"verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"'
+  - '},'
+  - '"message": {'
+  - '"name": "Cow",'
+  - '"wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"'
+  - '}'
+  - '})");'
+  - On error, empty Data is returned.
+  - 'Returned data must be deleted (hint: use WRAPD() macro).'
+  - \param messageJson Non-null json abi input
+  - \return Non-null block of data, encoded abi input

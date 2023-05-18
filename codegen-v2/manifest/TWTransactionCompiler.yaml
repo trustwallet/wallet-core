@@ -3,6 +3,8 @@ structs:
 - name: TWTransactionCompiler
   is_public: true
   is_class: false
+  comments:
+  - Non-core transaction utility methods, like building a transaction using an external signature.
 functions:
 - name: TWTransactionCompilerBuildInput
   is_public: true
@@ -12,50 +14,44 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: from
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: to
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: amount
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: asset
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: memo
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: chainId
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Builds a coin-specific SigningInput (proto object) from a simple transaction.
+  - \param coin coin type.
+  - \param from sender of the transaction.
+  - \param to receiver of the transaction.
+  - \param amount transaction amount in string
+  - \param asset optional asset name, like "BNB"
+  - \param memo optional memo
+  - \param chainId optional chainId to override default
+  - \return serialized data of the SigningInput proto object.
 - name: TWTransactionCompilerPreImageHashes
   is_public: true
   is_static: true
@@ -64,20 +60,21 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: txInputData
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Obtains pre-signing hashes of a transaction.
+  - 'We provide a default `PreSigningOutput` in TransactionCompiler.proto. '
+  - For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
+  - \param coin coin type.
+  - \param txInputData The serialized data of a signing input
+  - \return serialized data of a proto object `PreSigningOutput` includes hash.
 - name: TWTransactionCompilerCompileWithSignatures
   is_public: true
   is_static: true
@@ -86,31 +83,31 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: txInputData
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: signatures
     type:
       variant: struct
       value: TWDataVector
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: publicKeys
     type:
       variant: struct
       value: TWDataVector
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Compiles a complete transation with one or more external signatures.
+  - Puts together from transaction input and provided public keys and signatures. The signatures must match the hashes
+  - returned by TWTransactionCompilerPreImageHashes, in the same order. The publicKeyHash attached
+  - to the hashes enable identifying the private key needed for signing the hash.
+  - \param coin coin type.
+  - \param txInputData The serialized data of a signing input.
+  - \param signatures signatures to compile, using TWDataVector.
+  - \param publicKeys public keys for signers to match private keys, using TWDataVector.
+  - \return serialized data of a proto object `SigningOutput`.

@@ -9,3 +9,5 @@ enums:
     value: 0
   - name: pkcs7
     value: 1
+  comments:
+  - Padding mode used in AES encryption.

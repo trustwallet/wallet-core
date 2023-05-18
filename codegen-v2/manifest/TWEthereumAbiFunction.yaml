@@ -3,6 +3,8 @@ structs:
 - name: TWEthereumAbiFunction
   is_public: true
   is_class: true
+  comments:
+  - Represents Ethereum ABI function
 inits:
 - name: TWEthereumAbiFunctionCreateWithString
   is_public: true
@@ -11,11 +13,16 @@ inits:
   - name: name
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Creates a function object, with the given name and empty parameter list.  It must be deleted at the end.
+  - \param name function name
+  - \return Non-null Ethereum abi function
 deinits:
 - name: TWEthereumAbiFunctionDelete
+  comments:
+  - Deletes a function object created with a 'TWEthereumAbiFunctionCreateWithString' method.
+  - \param fn Non-null Ethereum abi function
 functions:
 - name: TWEthereumAbiFunctionGetType
   is_public: true
@@ -25,14 +32,14 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Return the function type signature, of the form "baz(int32,uint256)"
+  - \param fn A Non-null eth abi function
+  - \return function type signature as a Non-null string.
 - name: TWEthereumAbiFunctionAddParamUInt8
   is_public: true
   is_static: false
@@ -41,26 +48,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a uint8 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamUInt16
   is_public: true
   is_static: false
@@ -69,26 +74,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: u_int16_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a uint16 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamUInt32
   is_public: true
   is_static: false
@@ -97,26 +100,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a uint32 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamUInt64
   is_public: true
   is_static: false
@@ -125,26 +126,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: u_int64_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a uint64 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamUInt256
   is_public: true
   is_static: false
@@ -153,26 +152,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a uint256 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamUIntN
   is_public: true
   is_static: false
@@ -181,32 +178,28 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: bits
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a uint(bits) type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamInt8
   is_public: true
   is_static: false
@@ -215,26 +208,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a int8 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamInt16
   is_public: true
   is_static: false
@@ -243,26 +234,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: int16_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a int16 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamInt32
   is_public: true
   is_static: false
@@ -271,26 +260,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a int32 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamInt64
   is_public: true
   is_static: false
@@ -299,26 +286,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: int64_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a int64 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamInt256
   is_public: true
   is_static: false
@@ -327,26 +312,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a int256 type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified (stored in a block of data)
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamIntN
   is_public: true
   is_static: false
@@ -355,32 +338,29 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: bits
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a int(bits) type parameter
+  - \param fn A Non-null eth abi function
+  - \param bits Number of bits of the integer parameter
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamBool
   is_public: true
   is_static: false
@@ -389,26 +369,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a bool type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamString
   is_public: true
   is_static: false
@@ -417,26 +395,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a string type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamAddress
   is_public: true
   is_static: false
@@ -445,26 +421,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add an address type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamBytes
   is_public: true
   is_static: false
@@ -473,26 +447,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a bytes type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamBytesFix
   is_public: true
   is_static: false
@@ -501,32 +473,29 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: size
     type:
       variant: size_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a bytes[N] type parameter
+  - \param fn A Non-null eth abi function
+  - \param size fixed size of the bytes array parameter (val).
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionAddParamArray
   is_public: true
   is_static: false
@@ -535,20 +504,20 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Add a type[] type parameter
+  - \param fn A Non-null eth abi function
+  - \param val for output parameters, value has to be specified
+  - \param isOutput determines if the parameter is an input or output
+  - \return the index of the parameter (0-based).
 - name: TWEthereumAbiFunctionGetParamUInt8
   is_public: true
   is_static: false
@@ -557,26 +526,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: idx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: u_int8_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Get a uint8 type parameter at the given index
+  - \param fn A Non-null eth abi function
+  - \param idx index for the parameter (0-based).
+  - \param isOutput determines if the parameter is an input or output
+  - \return the value of the parameter.
 - name: TWEthereumAbiFunctionGetParamUInt64
   is_public: true
   is_static: false
@@ -585,26 +552,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: idx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: u_int64_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Get a uint64 type parameter at the given index
+  - \param fn A Non-null eth abi function
+  - \param idx index for the parameter (0-based).
+  - \param isOutput determines if the parameter is an input or output
+  - \return the value of the parameter.
 - name: TWEthereumAbiFunctionGetParamUInt256
   is_public: true
   is_static: false
@@ -613,26 +578,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: idx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Get a uint256 type parameter at the given index
+  - \param fn A Non-null eth abi function
+  - \param idx index for the parameter (0-based).
+  - \param isOutput determines if the parameter is an input or output
+  - \return the value of the parameter stored in a block of data.
 - name: TWEthereumAbiFunctionGetParamBool
   is_public: true
   is_static: false
@@ -641,26 +604,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: idx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Get a bool type parameter at the given index
+  - \param fn A Non-null eth abi function
+  - \param idx index for the parameter (0-based).
+  - \param isOutput determines if the parameter is an input or output
+  - \return the value of the parameter.
 - name: TWEthereumAbiFunctionGetParamString
   is_public: true
   is_static: false
@@ -669,26 +630,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: idx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Get a string type parameter at the given index
+  - \param fn A Non-null eth abi function
+  - \param idx index for the parameter (0-based).
+  - \param isOutput determines if the parameter is an input or output
+  - \return the value of the parameter.
 - name: TWEthereumAbiFunctionGetParamAddress
   is_public: true
   is_static: false
@@ -697,26 +656,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: idx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: isOutput
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Get an address type parameter at the given index
+  - \param fn A Non-null eth abi function
+  - \param idx index for the parameter (0-based).
+  - \param isOutput determines if the parameter is an input or output
+  - \return the value of the parameter.
 - name: TWEthereumAbiFunctionAddInArrayParamUInt8
   is_public: true
   is_static: false
@@ -725,26 +682,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a uint8 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamUInt16
   is_public: true
   is_static: false
@@ -753,26 +708,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: u_int16_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a uint16 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamUInt32
   is_public: true
   is_static: false
@@ -781,26 +734,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: u_int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a uint32 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamUInt64
   is_public: true
   is_static: false
@@ -809,26 +760,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: u_int64_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a uint64 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamUInt256
   is_public: true
   is_static: false
@@ -837,26 +786,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a uint256 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter stored in a block of data
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamUIntN
   is_public: true
   is_static: false
@@ -865,32 +812,29 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: bits
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a uint[N] type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param bits Number of bits of the integer parameter
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter stored in a block of data
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamInt8
   is_public: true
   is_static: false
@@ -899,26 +843,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int8 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamInt16
   is_public: true
   is_static: false
@@ -927,26 +869,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: int16_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int16 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamInt32
   is_public: true
   is_static: false
@@ -955,26 +895,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: int32_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int32 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamInt64
   is_public: true
   is_static: false
@@ -983,26 +921,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: int64_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int64 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamInt256
   is_public: true
   is_static: false
@@ -1011,26 +947,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int256 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter stored in a block of data
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamIntN
   is_public: true
   is_static: false
@@ -1039,32 +973,29 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: bits
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int[N] type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param bits Number of bits of the integer parameter
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter stored in a block of data
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamBool
   is_public: true
   is_static: false
@@ -1073,26 +1004,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a bool type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamString
   is_public: true
   is_static: false
@@ -1101,26 +1030,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a string type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamAddress
   is_public: true
   is_static: false
@@ -1129,26 +1056,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding an address type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamBytes
   is_public: true
   is_static: false
@@ -1157,26 +1082,24 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a bytes type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).
 - name: TWEthereumAbiFunctionAddInArrayParamBytesFix
   is_public: true
   is_static: false
@@ -1185,29 +1108,26 @@ functions:
     type:
       variant: struct
       value: TWEthereumAbiFunction
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: arrayIdx
     type:
       variant: int
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: size
     type:
       variant: size_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: val
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: int
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Adding a int64 type parameter of to the top-level input parameter array
+  - \param fn A Non-null eth abi function
+  - \param arrayIdx array index for the abi function (0-based).
+  - \param size fixed size of the bytes array parameter (val).
+  - \param val the value of the parameter
+  - \return the index of the added parameter (0-based).

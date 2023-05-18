@@ -3,10 +3,16 @@ structs:
 - name: TWPrivateKey
   is_public: true
   is_class: true
+  comments:
+  - Represents a private key.
 inits:
 - name: TWPrivateKeyCreate
   is_public: true
   is_nullable: false
+  comments:
+  - Create a random private key
+  - \note Should be deleted with \TWPrivateKeyDelete
+  - \return Non-null Private key
 - name: TWPrivateKeyCreateWithData
   is_public: true
   is_nullable: true
@@ -14,9 +20,12 @@ inits:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Create a private key with the given block of data
+  - \param data a block of data
+  - \note Should be deleted with \TWPrivateKeyDelete
+  - \return Nullable pointer to Private Key
 - name: TWPrivateKeyCreateCopy
   is_public: true
   is_nullable: true
@@ -25,11 +34,17 @@ inits:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Deep copy a given private key
+  - \param key Non-null private key to be copied
+  - \note Should be deleted with \TWPrivateKeyDelete
+  - \return Deep copy, Nullable pointer to Private key
 deinits:
 - name: TWPrivateKeyDelete
+  comments:
+  - Delete the given private key
+  - \param pk Non-null pointer to private key
 functions:
 - name: TWPrivateKeyIsValid
   is_public: true
@@ -38,21 +53,20 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: curve
     type:
       variant: enum
       value: TWCurve
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the given private key is valid or not.
+  - \param data block of data (private key bytes)
+  - \param curve Eliptic curve of the private key
+  - \return true if the private key is valid, false otherwise
 - name: TWPrivateKeyGetPublicKey
   is_public: true
   is_static: false
@@ -61,22 +75,21 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: coinType
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the public key associated with the given coinType and privateKey
+  - \param pk Non-null pointer to the private key
+  - \param coinType coinType of the given private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeyByType
   is_public: true
   is_static: false
@@ -85,22 +98,21 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: pubkeyType
     type:
       variant: enum
       value: TWPublicKeyType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the public key associated with the given pubkeyType and privateKey
+  - \param pk Non-null pointer to the private key
+  - \param pubkeyType pubkeyType of the given private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeySecp256k1
   is_public: true
   is_static: false
@@ -109,21 +121,20 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: compressed
     type:
       variant: bool
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Secp256k1 public key associated with the given private key
+  - \param pk Non-null pointer to the private key
+  - \param compressed if the given private key is compressed or not
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeyNist256p1
   is_public: true
   is_static: false
@@ -132,15 +143,15 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Nist256p1 public key associated with the given private key
+  - \param pk Non-null pointer to the private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeyEd25519
   is_public: true
   is_static: false
@@ -149,15 +160,15 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Ed25519 public key associated with the given private key
+  - \param pk Non-null pointer to the private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeyEd25519Blake2b
   is_public: true
   is_static: false
@@ -166,15 +177,15 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Ed25519Blake2b public key associated with the given private key
+  - \param pk Non-null pointer to the private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeyEd25519Cardano
   is_public: true
   is_static: false
@@ -183,15 +194,15 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Ed25519Cardano public key associated with the given private key
+  - \param pk Non-null pointer to the private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetPublicKeyCurve25519
   is_public: true
   is_static: false
@@ -200,15 +211,15 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: struct
     value: TWPublicKey
-    is_constant: false
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the Curve25519 public key associated with the given private key
+  - \param pk Non-null pointer to the private key
+  - \return Non-null pointer to the corresponding public key
 - name: TWPrivateKeyGetSharedKey
   is_public: true
   is_static: false
@@ -217,28 +228,27 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: publicKey
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: curve
     type:
       variant: enum
       value: TWCurve
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Computes an EC Diffie-Hellman secret in constant time
+  - 'Supported curves: secp256k1'
+  - \param pk Non-null pointer to a Private key
+  - \param publicKey Non-null pointer to the corresponding public key
+  - \param curve Eliptic curve
+  - \return The corresponding shared key as a non-null block of data
 - name: TWPrivateKeySign
   is_public: true
   is_static: false
@@ -247,27 +257,25 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: digest
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: curve
     type:
       variant: enum
       value: TWCurve
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Signs a digest using ECDSA and given curve.
+  - \param pk  Non-null pointer to a Private key
+  - \param digest Non-null digest block of data
+  - \param curve Eliptic curve
+  - \return Signature as a Non-null block of data
 - name: TWPrivateKeySignAsDER
   is_public: true
   is_static: false
@@ -276,20 +284,19 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: digest
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Signs a digest using ECDSA. The result is encoded with DER.
+  - \param pk  Non-null pointer to a Private key
+  - \param digest Non-null digest block of data
+  - \return Signature as a Non-null block of data
 - name: TWPrivateKeySignZilliqaSchnorr
   is_public: true
   is_static: false
@@ -298,25 +305,26 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: true
-    is_pointer: true
+  comments:
+  - Signs a digest using ECDSA and Zilliqa schnorr signature scheme.
+  - \param pk Non-null pointer to a Private key
+  - \param message Non-null message
+  - \return Signature as a Non-null block of data
 properties:
 - name: TWPrivateKeyData
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Convert the given private key to raw-bytes block of data
+  - \param pk Non-null pointer to the private key
+  - \return Non-null block of data (raw bytes) of the given private key

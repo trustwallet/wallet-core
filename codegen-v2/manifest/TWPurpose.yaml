@@ -13,3 +13,8 @@ enums:
     value: 84
   - name: bip1852
     value: 1852
+  comments:
+  - HD wallet purpose
+  - \see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+  - \see https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki
+  - \see https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki

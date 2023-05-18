@@ -6,6 +6,8 @@ structs:
 - name: TWBitcoinAddress
   is_public: true
   is_class: true
+  comments:
+  - Represents a legacy Bitcoin address in C++.
 inits:
 - name: TWBitcoinAddressCreateWithString
   is_public: true
@@ -14,9 +16,11 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Initializes an address from a Base58 sring. Must be deleted with TWBitcoinAddressDelete after use.
+  - \param string Base58 string to initialize the address from.
+  - \return TWBitcoinAddress pointer or nullptr if string is invalid.
 - name: TWBitcoinAddressCreateWithData
   is_public: true
   is_nullable: true
@@ -24,9 +28,11 @@ inits:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Initializes an address from raw data.
+  - \param data Raw data to initialize the address from. Must be deleted with TWBitcoinAddressDelete after use.
+  - \return TWBitcoinAddress pointer or nullptr if data is invalid.
 - name: TWBitcoinAddressCreateWithPublicKey
   is_public: true
   is_nullable: true
@@ -35,17 +41,21 @@ inits:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: prefix
     type:
       variant: u_int8_t
-      is_constant: false
       is_nullable: false
-      is_pointer: false
+  comments:
+  - Initializes an address from a public key and a prefix byte.
+  - \param publicKey Public key to initialize the address from.
+  - \param prefix Prefix byte (p2pkh, p2sh, etc).
+  - \return TWBitcoinAddress pointer or nullptr if public key is invalid.
 deinits:
 - name: TWBitcoinAddressDelete
+  comments:
+  - Deletes a legacy Bitcoin address.
+  - \param address Address to delete.
 functions:
 - name: TWBitcoinAddressEqual
   is_public: true
@@ -55,21 +65,20 @@ functions:
     type:
       variant: struct
       value: TWBitcoinAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   - name: rhs
     type:
       variant: struct
       value: TWBitcoinAddress
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Compares two addresses for equality.
+  - \param lhs The first address to compare.
+  - \param rhs The second address to compare.
+  - \return bool indicating the addresses are equal.
 - name: TWBitcoinAddressIsValid
   is_public: true
   is_static: true
@@ -77,14 +86,14 @@ functions:
   - name: data
     type:
       variant: data
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the data is a valid Bitcoin address.
+  - \param data data to validate.
+  - \return bool indicating if the address data is valid.
 - name: TWBitcoinAddressIsValidString
   is_public: true
   is_static: true
@@ -92,33 +101,36 @@ functions:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Determines if the string is a valid Bitcoin address.
+  - \param string string to validate.
+  - \return bool indicating if the address string is valid.
 properties:
 - name: TWBitcoinAddressDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the address in Base58 string representation.
+  - \param address Address to get the string representation of.
 - name: TWBitcoinAddressPrefix
   is_public: true
   return_type:
     variant: u_int8_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the address prefix.
+  - \param address Address to get the prefix of.
 - name: TWBitcoinAddressKeyhash
   is_public: true
   return_type:
     variant: data
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the key hash data.
+  - \param address Address to get the keyhash data of.

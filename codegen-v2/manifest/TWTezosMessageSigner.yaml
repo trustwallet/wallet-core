@@ -3,6 +3,8 @@ structs:
 - name: TWTezosMessageSigner
   is_public: true
   is_class: false
+  comments:
+  - Tezos message signing, verification and utilities.
 functions:
 - name: TWTezosMessageSignerFormatMessage
   is_public: true
@@ -11,20 +13,19 @@ functions:
   - name: message
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: url
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Implement format input as described in https://tezostaquito.io/docs/signing/
+  - '\param message message to format e.g: Hello, World'
+  - '\param dAppUrl the app url, e.g: testUrl'
+  - \returns the formatted message as a string
 - name: TWTezosMessageSignerInputToPayload
   is_public: true
   is_static: true
@@ -32,14 +33,14 @@ functions:
   - name: message
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - 'Implement input to payload as described in: https://tezostaquito.io/docs/signing/'
+  - \param message formatted message to be turned into an hex payload
+  - \return the hexpayload of the formated message as a hex string
 - name: TWTezosMessageSignerSignMessage
   is_public: true
   is_static: true
@@ -48,20 +49,19 @@ functions:
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Sign a message as described in https://tezostaquito.io/docs/signing/
+  - '\param privateKey: the private key used for signing'
+  - '\param message: A custom message payload (hex) which is input to the signing.'
+  - \returns the signature, Hex-encoded. On invalid input empty string is returned. Returned object needs to be deleted after use.
 - name: TWTezosMessageSignerVerifyMessage
   is_public: true
   is_static: true
@@ -70,23 +70,21 @@ functions:
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: message
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   - name: signature
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Verify signature for a message as described in https://tezostaquito.io/docs/signing/
+  - '\param pubKey: pubKey that will verify the message from the signature'
+  - '\param message: the message signed as a payload (hex)'
+  - '\param signature: in Base58-encoded form.'
+  - \returns false on any invalid input (does not throw), true if the message can be verified from the signature

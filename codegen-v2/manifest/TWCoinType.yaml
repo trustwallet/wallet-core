@@ -3,9 +3,13 @@ structs:
 - name: TWPrivateKey
   is_public: false
   is_class: false
+  comments:
+  - Represents a private key.
 - name: TWPublicKey
   is_public: false
   is_class: false
+  comments:
+  - Represents a public key.
 enums:
 - name: TWCoinType
   is_public: true
@@ -256,6 +260,9 @@ enums:
     value: 17000118
   - name: noble
     value: 18000118
+  comments:
+  - Coin type for Level 2 of BIP44.
+  - \see https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 functions:
 - name: TWCoinTypeValidate
   is_public: true
@@ -265,20 +272,19 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: address
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: bool
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Validates an address string.
+  - \param coin A coin type
+  - \param address A public address
+  - \return true if the address is a valid public address of the given coin, false otherwise.
 - name: TWCoinTypeDerivationPath
   is_public: true
   is_static: false
@@ -287,14 +293,14 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the default derivation path for a particular coin.
+  - \param coin A coin type
+  - \return the default derivation path for the given coin type.
 - name: TWCoinTypeDerivationPathWithDerivation
   is_public: true
   is_static: false
@@ -303,21 +309,20 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: derivation
     type:
       variant: enum
       value: TWDerivation
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the derivation path for a particular coin with the explicit given derivation.
+  - \param coin A coin type
+  - \param derivation A derivation type
+  - \return the derivation path for the given coin with the explicit given derivation
 - name: TWCoinTypeDeriveAddress
   is_public: true
   is_static: false
@@ -326,21 +331,20 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: privateKey
     type:
       variant: struct
       value: TWPrivateKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Derives the address for a particular coin from the private key.
+  - \param coin A coin type
+  - \param privateKey A valid private key
+  - \return Derived address for the given coin from the private key.
 - name: TWCoinTypeDeriveAddressFromPublicKey
   is_public: true
   is_static: false
@@ -349,117 +353,143 @@ functions:
     type:
       variant: enum
       value: TWCoinType
-      is_constant: false
       is_nullable: false
-      is_pointer: false
   - name: publicKey
     type:
       variant: struct
       value: TWPublicKey
-      is_constant: false
       is_nullable: false
-      is_pointer: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Derives the address for a particular coin from the public key.
+  - \param coin A coin type
+  - \param publicKey A valid public key
+  - \return Derived address for the given coin from the public key.
 properties:
 - name: TWCoinTypeBlockchain
   is_public: true
   return_type:
     variant: enum
     value: TWBlockchain
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the blockchain for a coin type.
+  - \param coin A coin type
+  - \return blockchain associated to the given coin type
 - name: TWCoinTypePurpose
   is_public: true
   return_type:
     variant: enum
     value: TWPurpose
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the purpose for a coin type.
+  - \param coin A coin type
+  - \return purpose associated to the given coin type
 - name: TWCoinTypeCurve
   is_public: true
   return_type:
     variant: enum
     value: TWCurve
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the curve that should be used for a coin type.
+  - \param coin A coin type
+  - \return curve that should be used for the given coin type
 - name: TWCoinTypeXpubVersion
   is_public: true
   return_type:
     variant: enum
     value: TWHDVersion
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the xpub HD version that should be used for a coin type.
+  - \param coin A coin type
+  - \return xpub HD version that should be used for the given coin type
 - name: TWCoinTypeXprvVersion
   is_public: true
   return_type:
     variant: enum
     value: TWHDVersion
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Returns the xprv HD version that should be used for a coin type.
+  - \param coin A coin type
+  - \return the xprv HD version that should be used for the given coin type.
 - name: TWCoinTypeHRP
   is_public: true
   return_type:
     variant: enum
     value: TWHRP
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - HRP for this coin type
+  - \param coin A coin type
+  - \return HRP of the given coin type.
 - name: TWCoinTypeP2pkhPrefix
   is_public: true
   return_type:
     variant: u_int8_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - P2PKH prefix for this coin type
+  - \param coin A coin type
+  - \return P2PKH prefix for the given coin type
 - name: TWCoinTypeP2shPrefix
   is_public: true
   return_type:
     variant: u_int8_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - P2SH prefix for this coin type
+  - \param coin A coin type
+  - \return P2SH prefix for the given coin type
 - name: TWCoinTypeStaticPrefix
   is_public: true
   return_type:
     variant: u_int8_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - Static prefix for this coin type
+  - \param coin A coin type
+  - \return Static prefix for the given coin type
 - name: TWCoinTypeChainId
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - ChainID for this coin type.
+  - \param coin A coin type
+  - \return ChainID for the given coin type.
+  - \note Caller must free returned object.
 - name: TWCoinTypeSlip44Id
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - SLIP-0044 id for this coin type
+  - \param coin A coin type
+  - \return SLIP-0044 id for the given coin type
 - name: TWCoinTypeSS58Prefix
   is_public: true
   return_type:
     variant: u_int32_t
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - SS58Prefix for this coin type
+  - \param coin A coin type
+  - \return SS58Prefix for the given coin type
 - name: TWCoinTypePublicKeyType
   is_public: true
   return_type:
     variant: enum
     value: TWPublicKeyType
-    is_constant: false
     is_nullable: false
-    is_pointer: false
+  comments:
+  - public key type for this coin type
+  - \param coin A coin type
+  - \return public key type for the given coin type

@@ -13,3 +13,5 @@ enums:
     value: 2
   - name: standard
     value: 3
+  comments:
+  - Preset encryption parameter with different security strength, for key store

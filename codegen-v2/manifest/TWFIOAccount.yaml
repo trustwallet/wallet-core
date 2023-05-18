@@ -3,6 +3,8 @@ structs:
 - name: TWFIOAccount
   is_public: true
   is_class: true
+  comments:
+  - Represents a FIO Account name
 inits:
 - name: TWFIOAccountCreateWithString
   is_public: true
@@ -11,16 +13,24 @@ inits:
   - name: string
     type:
       variant: string
-      is_constant: true
       is_nullable: false
-      is_pointer: true
+  comments:
+  - Create a FIO Account
+  - \param string Account name
+  - \note Must be deleted with \TWFIOAccountDelete
+  - \return Pointer to a nullable FIO Account
 deinits:
 - name: TWFIOAccountDelete
+  comments:
+  - Delete a FIO Account
+  - \param account Pointer to a non-null FIO Account
 properties:
 - name: TWFIOAccountDescription
   is_public: true
   return_type:
     variant: string
-    is_constant: true
     is_nullable: false
-    is_pointer: true
+  comments:
+  - Returns the short account string representation.
+  - \param account Pointer to a non-null FIO Account
+  - \return Account non-null string representation
