@@ -8,33 +8,33 @@ enums:
   - name: None
     value: 0
   - name: XPUB
-    value: 76067358
+    value: 0x0488b21e
   - name: XPRV
-    value: 76066276
+    value: 0x0488ade4
   - name: YPUB
-    value: 77429938
+    value: 0x049d7cb2
   - name: YPRV
-    value: 77428856
+    value: 0x049d7878
   - name: ZPUB
-    value: 78792518
+    value: 0x04b24746
   - name: ZPRV
-    value: 78791436
+    value: 0x04b2430c
   - name: LTUB
-    value: 27108450
+    value: 0x019da462
   - name: LTPV
-    value: 27106558
+    value: 0x019d9cfe
   - name: MTUB
-    value: 28471030
+    value: 0x01b26ef6
   - name: MTPV
-    value: 28469138
+    value: 0x01b26792
   - name: DPUB
-    value: 50178342
+    value: 0x2fda926
   - name: DPRV
-    value: 50177256
+    value: 0x2fda4e8
   - name: DGUB
-    value: 49990397
+    value: 0x02facafd
   - name: DGPV
-    value: 49988504
+    value: 0x02fac398
   comments:
   - Registered HD version bytes
   - \see https://github.com/satoshilabs/slips/blob/master/slip-0132.md

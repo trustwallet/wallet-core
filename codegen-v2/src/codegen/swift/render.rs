@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use heck::ToLowerCamelCase;
+
 use super::{inits::process_deinits, *};
 
 #[derive(Debug, Clone)]
@@ -212,7 +214,14 @@ pub fn generate_swift_types(mut info: FileInfo) -> Result<GeneratedSwiftTypes> {
                 }
 
                 SwiftEnumVariant {
-                    name: info.name,
+                    name: {
+                        // TODO: Solve this differently.
+                        if pretty_enum_name == "HDVersion" {
+                            info.name.to_lowercase()
+                        } else {
+                            info.name
+                        }
+                    },
                     value: info.value,
                     as_string: info.as_string,
                 }
