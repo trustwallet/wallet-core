@@ -9,6 +9,8 @@ fn create_input(yaml: &str) -> RenderIntput {
         file_info,
         android_main_struct: include_str!("../../codegen/kotlin/templates/android_main_struct.hbs"),
         android_main_enum: include_str!("../../codegen/kotlin/templates/android_main_enum.hbs"),
+        common_main_struct: include_str!("../../codegen/kotlin/templates/common_main_struct.hbs"),
+        common_main_enum: include_str!("../../codegen/kotlin/templates/common_main_enum.hbs"),
     }
 }
 
@@ -22,10 +24,10 @@ fn androidmain_single_struct() {
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
-    assert_eq!(rendered.structs.len(), 1);
+    assert_eq!(rendered.android_main.structs.len(), 1);
 
     // Check generated enum.
-    let (name, output) = &rendered.structs[0];
+    let (name, output) = &rendered.android_main.structs[0];
     assert_eq!(name, "MainStruct");
     println!("{output}");
     assert_eq!(output, EXPECTED);
@@ -39,10 +41,10 @@ fn androidmain_single_class() {
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
-    assert_eq!(rendered.structs.len(), 1);
+    assert_eq!(rendered.android_main.structs.len(), 1);
 
     // Check generated enum.
-    let (name, output) = &rendered.structs[0];
+    let (name, output) = &rendered.android_main.structs[0];
     println!("{output}");
     assert_eq!(name, "MainStruct");
     assert_eq!(output, EXPECTED);
@@ -56,10 +58,10 @@ fn androidmain_optional() {
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
-    assert_eq!(rendered.structs.len(), 1);
+    assert_eq!(rendered.android_main.structs.len(), 1);
 
     // Check generated enum.
-    let (name, output) = &rendered.structs[0];
+    let (name, output) = &rendered.android_main.structs[0];
     println!("{output}");
     assert_eq!(name, "MainStruct");
     assert_eq!(output, EXPECTED);
@@ -73,11 +75,11 @@ fn androidmain_enum_single() {
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
-    assert!(rendered.structs.is_empty());
-    assert_eq!(rendered.enums.len(), 1);
+    assert!(rendered.android_main.structs.is_empty());
+    assert_eq!(rendered.common_main.enums.len(), 1);
 
     // Check generated enum.
-    let (name, output) = &rendered.enums[0];
+    let (name, output) = &rendered.common_main.enums[0];
     println!("{output}");
     assert_eq!(name, "MainEnum");
     assert_eq!(output, EXPECTED);
@@ -91,11 +93,11 @@ fn androidmain_enum_with_descriptions() {
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
-    assert!(rendered.structs.is_empty());
-    assert_eq!(rendered.enums.len(), 1);
+    assert!(rendered.android_main.structs.is_empty());
+    assert_eq!(rendered.common_main.enums.len(), 1);
 
     // Check generated enum.
-    let (name, output) = &rendered.enums[0];
+    let (name, output) = &rendered.common_main.enums[0];
     println!("{output}");
     assert_eq!(name, "MainEnum");
     assert_eq!(output, EXPECTED);
@@ -110,11 +112,11 @@ fn androidmain_enum_with_methods() {
     let input = create_input(INPUT);
     let rendered = render_to_strings(input).unwrap();
 
-    assert!(rendered.structs.is_empty());
-    assert_eq!(rendered.enums.len(), 1);
+    assert!(rendered.android_main.structs.is_empty());
+    assert_eq!(rendered.common_main.enums.len(), 1);
 
     // Check generated enum.
-    let (name, output) = &rendered.enums[0];
+    let (name, output) = &rendered.common_main.enums[0];
     println!("{output}");
     assert_eq!(name, "MainEnum");
     assert_eq!(output, EXPECTED);
