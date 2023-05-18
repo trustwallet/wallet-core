@@ -9,7 +9,6 @@ expect {{#if is_class}}class{{else}}object{{/if}} {{struct_name}} {
     constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}})
 
     {{/each}}
-    {{/if}}
     {{! Methods }}
     {{#each methods}}
     {{#if ../is_class}}

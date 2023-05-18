@@ -25,14 +25,16 @@ fn main() -> Result<()> {
 }
 
 fn generate_kotlin_bindings() -> Result<()> {
-    const OUT_DIR: &str = "bindings/kotlin/";
     const IN_DIR: &str = "src/codegen/kotlin/templates";
+    const ANDROID_MAIN_OUT_DIR: &str = "bindings/kotlin/androidMain";
+    const COMMON_MAIN_OUT_DIR: &str = "bindings/kotlin/commonMain";
 
-    std::fs::create_dir_all(OUT_DIR)?;
+    std::fs::create_dir_all(ANDROID_MAIN_OUT_DIR)?;
+    std::fs::create_dir_all(COMMON_MAIN_OUT_DIR)?;
 
     let am_struct_t = read_to_string(&format!("{IN_DIR}/android_main_struct.hbs"))?;
     let am_enum_t = read_to_string(&format!("{IN_DIR}/android_main_enum.hbs"))?;
-    let cm_struct_t = read_to_string(&format!("{IN_DIR}/commom_main_struct.hbs"))?;
+    let cm_struct_t = read_to_string(&format!("{IN_DIR}/common_main_struct.hbs"))?;
     let cm_enum_t = read_to_string(&format!("{IN_DIR}/common_main_enum.hbs"))?;
 
     // Read the manifest dir, generate bindings for each entry.
@@ -50,12 +52,17 @@ fn generate_kotlin_bindings() -> Result<()> {
         let rendered = kotlin::render_to_strings(input)?;
 
         for (name, rendered) in rendered.android_main.structs {
-            let file_path = format!("{OUT_DIR}/{name}.kt");
+            let file_path = format!("{ANDROID_MAIN_OUT_DIR}/{name}.kt");
             std::fs::write(&file_path, rendered.as_bytes())?;
         }
 
         for (name, rendered) in rendered.android_main.enums {
-            let file_path = format!("{OUT_DIR}/{name}.kt");
+            let file_path = format!("{ANDROID_MAIN_OUT_DIR}/{name}.kt");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
+
+        for (name, rendered) in rendered.common_main.structs {
+            let file_path = format!("{COMMON_MAIN_OUT_DIR}/{name}.kt");
             std::fs::write(&file_path, rendered.as_bytes())?;
         }
     }
