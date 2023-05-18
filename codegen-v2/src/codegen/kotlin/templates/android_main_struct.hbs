@@ -39,8 +39,15 @@ actual object {{struct_name}} {
 
     {{/if}}
     {{/each}}
+    {{! Properties }}
+    {{#each properties}}
+    actual val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
+        @JvmName("{{name}}")
+        external get
+    {{/each}}
     {{! Static methods are companion objects in case of class}}
     {{#if is_class}}
+
     actual companion object {
         @JvmStatic
         @JvmName("createFromNative")
@@ -67,15 +74,5 @@ actual object {{struct_name}} {
         {{/unless}}
         {{/each}}
     }
-
     {{/if}}
-    {{! Properties }}
-    {{#each properties}}
-    actual val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
-        @JvmName("{{name}}")
-        external get
-    {{#unless @last}}
-
-    {{/unless}}
-    {{/each}}
 }

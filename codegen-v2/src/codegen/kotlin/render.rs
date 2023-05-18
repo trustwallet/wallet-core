@@ -142,8 +142,25 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         let pretty_name = pretty_name(strct.name.clone());
 
         outputs.android_main.structs.push(AndroidMainStruct {
+            name: pretty_name.clone(),
+            is_class: strct.is_class,
+            inits: inits.clone(),
+            methods: methods.clone(),
+            properties: properties.clone(),
+        });
+
+        // If there's only one init, we add it to the struct header and remove
+        // it from the body.
+        let (header_init, inits) = if inits.len() == 1 {
+            (Some(inits[0].clone()), vec![])
+        } else {
+            (None, inits)
+        };
+
+        outputs.common_main.structs.push(CommonMainStruct {
             name: pretty_name,
             is_class: strct.is_class,
+            header_init,
             inits,
             methods,
             properties,
