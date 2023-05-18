@@ -1,6 +1,12 @@
 package com.trustwallet.core
 
-expect {{#if is_class}}class{{else}}object{{/if}} {{struct_name}} {
+expect {{#if is_class}}class{{else}}object{{/if}} {{struct_name}}
+{{~#if header_init}} (
+{{#each header_init.params}}
+    {{name}}: {{type}}{{#if is_nullable}}?{{/if}},
+{{/each}}
+)
+{{~/if}} {
     {{! Inits }}
     {{#each inits}}
     {{#if is_nullable}}
@@ -9,38 +15,30 @@ expect {{#if is_class}}class{{else}}object{{/if}} {{struct_name}} {
     constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}})
 
     {{/each}}
-    {{/if}}
     {{! Methods }}
     {{#each methods}}
     {{#if ../is_class}}
     {{#unless is_static}}
     fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
-
     {{/unless}}
     {{else}}
     fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
-
     {{/if}}
+    {{/each}}
+
+    {{! Properties }}
+    {{#each properties}}
+    val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
     {{/each}}
     {{! Static methods are companion objects in case of class}}
     {{#if is_class}}
+
     companion object {
         {{#each methods}}
         {{#if is_static}}
         fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
-        {{#unless @last}}
-
-        {{/unless}}
         {{/if}}
         {{/each}}
     }
-
     {{/if}}
-    {{! Properties }}
-    {{#each properties}}
-    val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
-    {{#unless @last}}
-
-    {{/unless}}
-    {{/each}}
 }

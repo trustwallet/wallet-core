@@ -1,79 +1,17 @@
 use crate::manifest::TypeVariant;
 use std::fmt::Display;
 
-// Re-exports
-pub use self::render::{generate_android_main_types, render_to_strings, RenderIntput};
-
 mod functions;
 mod inits;
+mod primitives_android_main;
+mod primitives_common_main;
 mod properties;
 mod render;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainEnum {
-    #[serde(rename = "enum_name")]
-    name: String,
-    value_type: KotlinType,
-    variants: Vec<AndroidMainEnumVariant>,
-    methods: Vec<AndroidMainMethod>,
-    properties: Vec<AndroidMainProperty>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainEnumVariant {
-    name: String,
-    value: String,
-    as_string: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainStruct {
-    #[serde(rename = "struct_name")]
-    name: String,
-    is_class: bool,
-    inits: Vec<AndroidMainInit>,
-    methods: Vec<AndroidMainMethod>,
-    properties: Vec<AndroidMainProperty>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainInit {
-    name: String,
-    params: Vec<AndroidMainParam>,
-    is_nullable: bool,
-    return_call: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainMethod {
-    name: String,
-    params: Vec<AndroidMainParam>,
-    is_static: bool,
-    #[serde(rename = "return")]
-    return_ty: AndroidMainReturn,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainProperty {
-    name: String,
-    #[serde(rename = "return")]
-    return_ty: AndroidMainReturn,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainParam {
-    name: String,
-    #[serde(rename = "type")]
-    ty: KotlinType,
-    is_nullable: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AndroidMainReturn {
-    #[serde(rename = "type")]
-    ty: KotlinType,
-    is_nullable: bool,
-}
+// Re-exports
+pub use self::primitives_android_main::*;
+pub use self::primitives_common_main::*;
+pub use self::render::{generate_android_main_types, render_to_strings, RenderIntput};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct KotlinType(String);
