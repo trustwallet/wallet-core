@@ -55,3 +55,12 @@ pub(super) fn process_android_main_inits(
 
     Ok((andmain_inits, skipped_inits))
 }
+
+pub(super) fn process_common_main_inits(
+    object: &ObjectVariant,
+    inits: Vec<InitInfo>,
+) -> Result<(Vec<AndroidMainInit>, Vec<InitInfo>)> {
+    let (commain_inits, skipped_inits) = process_android_main_inits(object, inits)?;
+
+    Ok((commain_inits, skipped_inits))
+}
