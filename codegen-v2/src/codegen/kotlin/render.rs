@@ -9,6 +9,7 @@ use crate::codegen::swift::ObjectVariant;
 use crate::manifest::FileInfo;
 use crate::Result;
 use handlebars::Handlebars;
+use heck::ToUpperCamelCase;
 
 pub fn pretty_name(name: String) -> String {
     name.replace("_", "").replace("TW", "").replace("Proto", "")
@@ -118,6 +119,18 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedMultipl
         out_strings.common_main.structs.push((strct.name, out));
     }
 
+    for enm in generated.common_main.enums {
+        let out = engine.render(
+            "common_main_enum",
+            &WithYear {
+                current_year,
+                data: &enm,
+            },
+        )?;
+
+        out_strings.common_main.enums.push((enm.name, out));
+    }
+
     Ok(out_strings)
 }
 
@@ -179,7 +192,7 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
             .variants
             .into_iter()
             .map(|enm| AndroidMainEnumVariant {
-                name: enm.name,
+                name: enm.name.to_upper_camel_case(),
                 value: enm.value,
                 as_string: enm.as_string,
             })
@@ -188,13 +201,16 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         // Convert the name into an appropriate format.
         let pretty_name = pretty_name(enm.name.clone());
 
-        outputs.android_main.enums.push(AndroidMainEnum {
+        let andmain_enum = AndroidMainEnum {
             name: pretty_name,
             value_type: KotlinType::from(enm.value_type),
             methods,
             properties,
             variants,
-        })
+        };
+
+        outputs.android_main.enums.push(andmain_enum.clone());
+        outputs.common_main.enums.push(andmain_enum);
     }
 
     Ok(outputs)

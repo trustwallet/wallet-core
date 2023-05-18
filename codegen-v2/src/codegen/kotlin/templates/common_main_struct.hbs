@@ -25,6 +25,7 @@ expect {{#if is_class}}class{{else}}object{{/if}} {{struct_name}}
     fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
     {{/if}}
     {{/each}}
+
     {{! Properties }}
     {{#each properties}}
     val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}

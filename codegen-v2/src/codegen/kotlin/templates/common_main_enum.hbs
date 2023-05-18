@@ -1,0 +1,18 @@
+package com.trustwallet.core
+
+expect enum class {{enum_name}} {
+	{{#each variants}}
+	{{name}}
+	{{/each}}
+    ;
+
+    {{! Properties }}
+    {{#each properties}}
+    val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
+    {{/each}}
+
+    {{! Methods }}
+    {{#each methods}}
+    fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullable}}?{{/if}}
+    {{/each}}
+}

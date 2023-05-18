@@ -65,6 +65,11 @@ fn generate_kotlin_bindings() -> Result<()> {
             let file_path = format!("{COMMON_MAIN_OUT_DIR}/{name}.kt");
             std::fs::write(&file_path, rendered.as_bytes())?;
         }
+
+        for (name, rendered) in rendered.common_main.enums {
+            let file_path = format!("{COMMON_MAIN_OUT_DIR}/{name}.kt");
+            std::fs::write(&file_path, rendered.as_bytes())?;
+        }
     }
 
     println!("Created bindings in directory 'bindings/kotlin/'!");
