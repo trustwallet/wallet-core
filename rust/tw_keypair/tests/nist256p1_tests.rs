@@ -40,7 +40,8 @@ fn test_nist256p1_verify() {
 
 #[test]
 fn test_nist256p1_priv_to_pub() {
-    let tests: Vec<Nist256p1PrivToPubCompressedTest> = serde_json::from_str(NIST256P1_PRIV_TO_PUB_COMPRESSED).unwrap();
+    let tests: Vec<Nist256p1PrivToPubCompressedTest> =
+        serde_json::from_str(NIST256P1_PRIV_TO_PUB_COMPRESSED).unwrap();
     for test in tests {
         let private = PrivateKey::try_from(test.secret.as_slice()).unwrap();
         let actual_public = private.public().compressed();
