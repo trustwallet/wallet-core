@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HexCoding.h"
 #include "ExtractVerifySign.h"
+#include "HexCoding.h"
 
 #include "Ontology/Oep4.h"
 #include "Ontology/Signer.h"
@@ -89,10 +89,10 @@ TEST(OntologyOep4, addressHack) {
 
 TEST(OntologyOep4, transfer) {
     PrivateKey fromPrivate(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
-    auto from = Signer(fromPrivate);
+    Signer from(fromPrivate);
 
     PrivateKey payerPrivate(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
-    auto payer = Signer(payerPrivate);
+    Signer payer(payerPrivate);
 
     auto toAddress = Address("AVY6LfvxauVQAVHDV9hC3ZCv7cQqzfDotH");
 

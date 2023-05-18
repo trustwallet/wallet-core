@@ -36,13 +36,13 @@ TEST(OntologyOng, balanceOf) {
 }
 
 TEST(OntologyOng, transfer) {
-    auto privateKey1 = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
-    auto signer1 = Signer(privateKey1);
+    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    Signer signer1(privateKey1);
 
-    auto privateKey2 = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
-    auto signer2 = Signer(privateKey2);
+    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
+    Signer signer2(privateKey2);
 
-    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
+    Address toAddress("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     uint32_t nonce = 0;
     uint64_t amount = 1, gasPrice = 500, gasLimit = 20000;
 
@@ -70,11 +70,11 @@ TEST(OntologyOng, transfer) {
 }
 
 TEST(OntologyOng, withdraw) {
-    auto privateKey1 = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
-    auto signer1 = Signer(privateKey1);
+    PrivateKey privateKey1(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    Signer signer1(privateKey1);
 
-    auto privateKey2 = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
-    auto signer2 = Signer(privateKey2);
+    PrivateKey privateKey2(parse_hex("4646464646464646464646464646464646464646464646464646464646464652"));
+    Signer signer2(privateKey2);
 
     uint32_t nonce = 0;
     uint64_t amount = 1, gasPrice = 500, gasLimit = 20000;

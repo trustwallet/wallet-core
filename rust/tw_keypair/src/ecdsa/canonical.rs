@@ -11,12 +11,14 @@
 //!
 //! **Not production ready**
 
+#![allow(dead_code)]
+
 use crate::ecdsa::signature::Signature;
 use crate::ecdsa::EcdsaCurve;
 use crate::{KeyPairError, KeyPairResult};
 use ecdsa::elliptic_curve::generic_array::ArrayLength;
 use ecdsa::elliptic_curve::subtle::{Choice, ConditionallySelectable, ConstantTimeEq};
-use ecdsa::elliptic_curve::{Curve, Field, FieldBytesEncoding, PrimeField, Scalar};
+use ecdsa::elliptic_curve::{Curve, FieldBytesEncoding, PrimeField, Scalar};
 use ecdsa::hazmat::{bits2field, DigestPrimitive, SignPrimitive};
 use ecdsa::SigningKey;
 use k256::sha2::digest::crypto_common::BlockSizeUser;
@@ -24,6 +26,8 @@ use k256::sha2::digest::{FixedOutput, FixedOutputReset};
 use k256::sha2::Digest;
 use rfc6979::{ByteArray, HmacDrbg};
 use tw_hash::H256;
+
+type CurveDigest<C> = <C as DigestPrimitive>::Digest;
 
 /// Implements https://github.com/trustwallet/wallet-core/blob/d9e35ec485b1366dd10509192d02d9dbb6877ab3/src/PrivateKey.cpp#L253-L282
 pub(crate) fn sign_with_canonical<C: EcdsaCurve, F>(
@@ -44,12 +48,11 @@ where
     let n = &C::ORDER.encode_field_bytes();
     let additional_data = &[];
 
-    let mut hmac_drbg =
-        HmacDrbg::<<C as DigestPrimitive>::Digest>::new(entropy_input, &nonce, additional_data);
+    let mut hmac_drbg = HmacDrbg::<CurveDigest<C>>::new(entropy_input, &nonce, additional_data);
 
     for _ in 0..10000 {
         // The `k` number is different on each iteration due to the `hmac_drbg` mutation.
-        let k = generate_k::<<C as DigestPrimitive>::Digest, _>(&mut hmac_drbg, n);
+        let k = generate_k::<CurveDigest<C>, _>(&mut hmac_drbg, n);
         let k_scalar = Scalar::<C>::from_repr(k).unwrap();
 
         let (sig, r) = priv_scalar

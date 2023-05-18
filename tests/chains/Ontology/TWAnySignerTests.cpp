@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "ExtractVerifySign.h"
 #include "HexCoding.h"
 #include "TestUtilities.h"
-#include "ExtractVerifySign.h"
 
 #include "Ontology/Oep4TxBuilder.h"
 #include "Ontology/OngTxBuilder.h"

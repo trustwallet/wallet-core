@@ -109,6 +109,7 @@ fn test_tw_private_key_sign_nist256p1() {
     test_sign(Curve::Nist256p1, secret, &msg, sign);
 }
 
+#[test]
 fn test_tw_private_key_sign_curve25519_waves() {
     let secret = "c45d1ba60a5d929d228d1b69a8f91bd256262498e81d32b6411d6dac9a60ed3b";
     let msg = "e6167d";

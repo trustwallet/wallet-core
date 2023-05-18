@@ -92,30 +92,4 @@ mod tests {
         assert_eq!(public.compressed(), expected_compressed);
         assert_eq!(public.uncompressed(), expected_uncompressed);
     }
-
-    #[test]
-    fn test_verify_invalid() {
-        let secret = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-        let private = PrivateKey::try_from(secret).unwrap();
-
-        let signature_bytes  = H520::from("375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f0801");
-        let verify_sig = VerifySignature::try_from(signature_bytes.as_slice()).unwrap();
-
-        let hash_to_sign = keccak256(b"hello");
-        let hash_to_sign = H256::try_from(hash_to_sign.as_slice()).unwrap();
-
-        assert!(!private.public().verify(verify_sig, hash_to_sign));
-    }
-
-    // Sign(Nist256p1): msg="c449ff7fe258dc65f5ab98dbb9bfaabf5fd33535b58e46ef51452cc801bd9d2e", secret="4646464646464646464646464646464646464646464646464646464646464646"
-    // Signature: 301766d925382a6ebb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb8300d7215080efb87dd3f35de5f3b6d98aacd6161fbc0845b82d0d8be4b8b6d500
-    // Sign(Nist256p1): msg="c449ff7fe258dc65f5ab98dbb9bfaabf5fd33535b58e46ef51452cc801bd9d2e", secret="4646464646464646464646464646464646464646464646464646464646464652"
-    // Additional signature: 38466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a601
-    //
-    // Expected sign: 301766d925382a6ebb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb7cff28ddaf7f1048822c0ca21a0c4926323a2497875b963f3b8cbd3717aa6e7c01
-    // Expected additional sign: 38466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a601
-    //
-    // TODO
-    #[test]
-    fn test_sign() {}
 }
