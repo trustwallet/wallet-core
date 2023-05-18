@@ -372,9 +372,9 @@ class EthereumTests: XCTestCase {
         XCTAssertTrue(EthereumMessageSigner.verifyMessage(pubKey: pubKey, message: msg, signature: signature))
     }
 
-    // EIP4337
+    // ERC4337
 
-    func testEIP4337DeploymentAddress() {
+    func testERC4337DeploymentAddress() {
         let factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
         let logicAddress = "0x5C9eb5D6a6C2c1B3EFc52255C0b356f116f6f66D"
         let ownerAddress = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988"
@@ -382,7 +382,7 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(result, "0xbEaA87cEEaC906C21aaacd258FbFB87CfA3c90a8")
     }
 
-    func testEIP4337NativeTransferAccountNotDeployed() throws {
+    func testERC4337NativeTransferAccountNotDeployed() throws {
         let input = EthereumSigningInput.with {
             $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
@@ -395,11 +395,8 @@ class EthereumTests: XCTestCase {
 
             $0.userOperation = EthereumUserOperation.with {
                 $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
-                $0.isAccountDeployed = false
-
+                $0.sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
+                $0.initCode = Data(hexString: "00")!
                 $0.preVerificationGas = Data(hexString: "0xbc18")!
                 $0.verificationGasLimit = Data(hexString: "0x073272")!
             }
@@ -415,11 +412,12 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
+        XCTAssertEqual(String(data: output.pre_hash, encoding: .utf8), "")
         XCTAssertEqual(try input.serializedData().hexString, "0a010512010018022a02558032010f3a0501952f1f85422a3078636536343233353546613535336634303843333461323635304164324634413136333464303333614a20f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8520b0a090a072386f26fc100005ab9010a2a307831333036623031624333653441443230323631324433383433333837653934373337363733463533122a3078354138373230396237353537383163463635664565456464333835356164653033313766346139321a2a307832316363323764376462346661313938353761333730323635336137613637656533306361363230222a3078373864394333326239364262383732443636443531383138323237353633663434653637453233383202bc183a03073272")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"21888\",\"initCode\":\"0x5a87209b755781cf65feeedd3855ade0317f4a925fbfb9cf00000000000000000000000078d9c32b96bb872d66d51818227563f44e67e2380000000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"6797860741\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"48152\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x1560b19d17613ec8580cb0feaf7ac2953771404c5bd7830f585e5062e6ddd4b82ae3bb8dbddb659c0300e8009857b5c77501e1cfd5bbab48d03de0ea7207d07c1b\",\"verificationGasLimit\":\"471666\"}");
     }
 
-    func testEIP4337NativeTransferAccountDeployed() throws {
+    func testERC4337NativeTransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
             $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
@@ -432,11 +430,7 @@ class EthereumTests: XCTestCase {
 
             $0.userOperation = EthereumUserOperation.with {
                 $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
-                $0.isAccountDeployed = true
-
+                $0.sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
                 $0.preVerificationGas = Data(hexString: "0xb708")!
                 $0.verificationGasLimit = Data(hexString: "0x0186a0")!
             }
@@ -452,11 +446,12 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
+        XCTAssertEqual(String(data: output.pre_hash, encoding: .utf8), "")
         XCTAssertEqual(try input.serializedData().hexString, "0a010512010118022a029d5532010f3a0501a339c9e9422a3078636536343233353546613535336634303843333461323635304164324634413136333464303333614a20f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8520b0a090a072386f26fc100005abb010a2a307831333036623031624333653441443230323631324433383433333837653934373337363733463533122a3078354138373230396237353537383163463635664565456464333835356164653033313766346139321a2a307832316363323764376462346661313938353761333730323635336137613637656533306361363230222a30783738643943333262393642623837324436364435313831383232373536336634346536374532333828013202b7083a030186a0")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f6000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"40277\",\"initCode\":\"0x\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"1\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xaed2011e5cf267de495b38ecf86ad6f1d4c05217a99e59f47e8d52ba3d41c10144785893fa3e7c116a054999e3902fc2771064d0545148bc49f6d7c827fc7a9a1c\",\"verificationGasLimit\":\"100000\"}");
     }
 
-    func testEIP4337ERC20TransferAccountDeployed() throws {
+    func testERC4337ERC20TransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
             $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
@@ -470,11 +465,7 @@ class EthereumTests: XCTestCase {
 
             $0.userOperation = EthereumUserOperation.with {
                 $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
-                $0.isAccountDeployed = true
-
+                $0.sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
                 $0.preVerificationGas = Data(hexString: "0xbb10")!
                 $0.verificationGasLimit = Data(hexString: "0x0186a0")!
             }
@@ -491,10 +482,11 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
+        XCTAssertEqual(String(data: output.pre_hash, encoding: .utf8), "")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f600000000000000000000000098339d8c260052b7ad81c28c16c0b98420f2b46a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044a9059cbb000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"63374\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"6\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"47888\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0xd006c93d6a8753b5e7c1e6349de0dea34eab2e7a533106e0f2e1a3a3b013c8e97b007546dab9d7b8fc471ad14ff2e8aa351dc4f1ecb63bf20f33858dc7366cbe1c\",\"verificationGasLimit\":\"100000\"}");
     }
 
-    func testEIP4337ERC20ApproveAccountDeployed() throws {
+    func testERC4337ERC20ApproveAccountDeployed() throws {
         let input = EthereumSigningInput.with {
             $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
@@ -507,11 +499,7 @@ class EthereumTests: XCTestCase {
 
             $0.userOperation = EthereumUserOperation.with {
                 $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
-                $0.isAccountDeployed = true
-
+                $0.sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
                 $0.preVerificationGas = Data(hexString: "0xbb10")!
                 $0.verificationGasLimit = Data(hexString: "0x0186a0")!
             }
@@ -528,10 +516,11 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
+        XCTAssertEqual(String(data: output.pre_hash, encoding: .utf8), "")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f600000000000000000000000098339d8c260052b7ad81c28c16c0b98420f2b46a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"63374\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"9\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"47888\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x262a67dd8cf3d16a72b7809b3b5ed55e9f4c2b93eedd5a3c6be035fbbd7111164464ec933d0fdfa359e266e318f3ac22702ae428ce14fc142e4475603e6ec15e1c\",\"verificationGasLimit\":\"100000\"}");
     }
 
-    func testEIP4337ERC721TransferAccountDeployed() throws {
+    func testERC4337ERC721TransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
             $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
@@ -544,11 +533,7 @@ class EthereumTests: XCTestCase {
 
             $0.userOperation = EthereumUserOperation.with {
                 $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-                $0.accountFactory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
-                $0.accountLogic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620"
-                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
-                $0.isAccountDeployed = true
-
+                $0.sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92"
                 $0.preVerificationGas = Data(hexString: "0xC34F")!
                 $0.verificationGasLimit = Data(hexString: "0x16E360")!
             }
@@ -566,10 +551,11 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
+        XCTAssertEqual(String(data: output.pre_hash, encoding: .utf8), "")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f6000000000000000000000000f5de760f2e916647fd766b4ad9e85ff943ce3a2b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000006423b872dd0000000000000000000000008ce23b8769ac01d0df0d5f47be1a38fea97f3879000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a00000000000000000000000000000000000000000000000000000000002a8e5700000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"6337400\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"12\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"49999\",\"sender\":\"0x8ce23b8769ac01d0df0d5f47be1a38fea97f3879\",\"signature\":\"0x5951cc161a4d60d6b59503efb93e446f5d1a2e3a41d4503ba6393bcf2a2637340d0a865ed5d4d7650a68cbb95915eaa7ed54fd2c42b4bf7c83376f5c5d70691d1b\",\"verificationGasLimit\":\"1500000\"}");
     }
 
-    func testEIP4337ERC1155TransferAccountDeployed() throws {
+    func testERC4337ERC1155TransferAccountDeployed() throws {
         let input = EthereumSigningInput.with {
             $0.txMode = .userOp
             $0.chainID = Data(hexString: "05")!
@@ -582,11 +568,7 @@ class EthereumTests: XCTestCase {
 
             $0.userOperation = EthereumUserOperation.with {
                 $0.entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53"
-                $0.accountFactory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
-                $0.accountLogic = "0x510ab68bd111ce7115df797118b0334d727d564b"
-                $0.owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238"
-                $0.isAccountDeployed = true
-
+                $0.sender = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD"
                 $0.preVerificationGas = Data(hexString: "0xC738")!
                 $0.verificationGasLimit = Data(hexString: "0x16E360")!
             }
@@ -606,6 +588,7 @@ class EthereumTests: XCTestCase {
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
         let json = String(data: output.encoded, encoding: .utf8)
 
+        XCTAssertEqual(String(data: output.pre_hash, encoding: .utf8), "")
         XCTAssertEqual(json, "{\"callData\":\"0xb61d27f6000000000000000000000000428ce4b916332e1afccfddce08baecc97cb40b120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c4f242432a0000000000000000000000008c560e00680b973645900528ede71a99b8d4dca8000000000000000000000000ce642355fa553f408c34a2650ad2f4a1634d033a0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"6337400\",\"initCode\":\"0x\",\"maxFeePerGas\":\"96818533647\",\"maxPriorityFeePerGas\":\"15\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"51000\",\"sender\":\"0x8c560e00680b973645900528ede71a99b8d4dca8\",\"signature\":\"0xaae38bcf9f946921541b44c2a66596968beecb9420471e2c9c531f758a2d652930ffdeeab95742e57e8520fb5c8ca4fee6a8e47e37336d4201fe104103f85e111c\",\"verificationGasLimit\":\"1500000\"}");
     }
 }

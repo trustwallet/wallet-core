@@ -311,10 +311,9 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
     auto maxInclusionFeePerGas = store(uint256_t(0x0f));
     auto preVerificationGas = store(uint256_t(0xbc18));
     auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
-    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+    auto sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
     auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
+    auto initCode = parse_hex("0xce642355Fa553f408C34a2650Ad2F4A1634d033a");
 
     auto key = parse_hex("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8");
 
@@ -329,11 +328,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
     auto& user_operation = *input.mutable_user_operation();
     user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    user_operation.set_is_account_deployed(false);
-    user_operation.set_entry_point(entryPoint);
-    user_operation.set_account_factory(factory);
-    user_operation.set_account_logic(logic);
-    user_operation.set_owner(owner);
+    user_operation.set_sender(sender);
+    user_operation.set_init_code(initCode.data(), initCode.size());
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
@@ -345,6 +341,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountNotDeployed) {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
+        ASSERT_EQ(std::string(output.pre_hash()), "");
         ASSERT_EQ(std::string(output.encoded()), expected);
     }
 }
@@ -361,10 +358,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
     auto maxInclusionFeePerGas = store(uint256_t(0xf));
     auto preVerificationGas = store(uint256_t(0xb708));
     auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
-    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
-    auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
+    auto sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
+    auto to = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
 
     auto key = parse_hex("0xf9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8");
 
@@ -379,11 +374,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
     auto& user_operation = *input.mutable_user_operation();
     user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    user_operation.set_is_account_deployed(true);
     user_operation.set_entry_point(entryPoint);
-    user_operation.set_account_factory(factory);
-    user_operation.set_account_logic(logic);
-    user_operation.set_owner(owner);
+    user_operation.set_sender(sender);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
@@ -396,6 +388,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignTransferAccountDeployed) {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
+        ASSERT_EQ(std::string(output.pre_hash()), "");
         ASSERT_EQ(std::string(output.encoded()), expected);
     }
 }
@@ -412,9 +405,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20TransferAccountDeployed) {
     auto maxInclusionFeePerGas = store(uint256_t(0xf));
     auto preVerificationGas = store(uint256_t(0xbb10));
     auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
-    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+    auto sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
     auto tokenContract = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a";
     auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
 
@@ -431,11 +422,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20TransferAccountDeployed) {
     auto& user_operation = *input.mutable_user_operation();
     user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    user_operation.set_is_account_deployed(true);
     user_operation.set_entry_point(entryPoint);
-    user_operation.set_account_factory(factory);
-    user_operation.set_account_logic(logic);
-    user_operation.set_owner(owner);
+    user_operation.set_sender(sender);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc20_transfer();
@@ -448,6 +436,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20TransferAccountDeployed) {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
+        ASSERT_EQ(std::string(output.pre_hash()), "");
         ASSERT_EQ(std::string(output.encoded()), expected);
     }
 }
@@ -464,9 +453,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20ApproveAccountDeployed) {
     auto maxInclusionFeePerGas = store(uint256_t(0xf));
     auto preVerificationGas = store(uint256_t(0xbb10));
     auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
-    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+    auto sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
     auto tokenContract = "0x98339d8c260052b7ad81c28c16c0b98420f2b46a";
     auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
 
@@ -483,11 +470,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20ApproveAccountDeployed) {
     auto& user_operation = *input.mutable_user_operation();
     user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    user_operation.set_is_account_deployed(true);
     user_operation.set_entry_point(entryPoint);
-    user_operation.set_account_factory(factory);
-    user_operation.set_account_logic(logic);
-    user_operation.set_owner(owner);
+    user_operation.set_sender(sender);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc20_approve();
@@ -500,6 +484,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC20ApproveAccountDeployed) {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
+        ASSERT_EQ(std::string(output.pre_hash()), "");
         ASSERT_EQ(std::string(output.encoded()), expected);
     }
 }
@@ -516,9 +501,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC721TransferAccountDeployed) {
     auto maxInclusionFeePerGas = store(uint256_t(0xf));
     auto preVerificationGas = store(uint256_t(49999));
     auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
-    auto logic = "0x21cc27d7db4fa19857a3702653a7a67ee30ca620";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+    auto sender = "0x5A87209b755781cF65fEeEdd3855ade0317f4a92";
     auto tokenContract = "0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b";
     auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
     auto from = "0x8cE23B8769ac01d0df0d5f47Be1A38FeA97F3879";
@@ -536,11 +519,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC721TransferAccountDeployed) {
     auto& user_operation = *input.mutable_user_operation();
     user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    user_operation.set_is_account_deployed(true);
     user_operation.set_entry_point(entryPoint);
-    user_operation.set_account_factory(factory);
-    user_operation.set_account_logic(logic);
-    user_operation.set_owner(owner);
+    user_operation.set_sender(sender);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc721_transfer();
@@ -570,9 +550,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC1155TransferAccountDeployed) {
     auto maxInclusionFeePerGas = store(uint256_t(0xf));
     auto preVerificationGas = store(uint256_t(51000));
     auto entryPoint = "0x1306b01bC3e4AD202612D3843387e94737673F53";
-    auto factory = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD";
-    auto logic = "0x510ab68bd111ce7115df797118b0334d727d564b";
-    auto owner = "0x78d9C32b96Bb872D66D51818227563f44e67E238";
+    auto sender = "0x76627b8D1E01fAF0C73B69625BC1fCb8FA19a2AD";
     auto tokenContract = "0x428ce4b916332e1afccfddce08baecc97cb40b12";
     auto to = "0xce642355Fa553f408C34a2650Ad2F4A1634d033a";
     auto from = "0x8c560E00680b973645900528EDe71a99b8d4dca8";
@@ -590,11 +568,8 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC1155TransferAccountDeployed) {
     auto& user_operation = *input.mutable_user_operation();
     user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
-    user_operation.set_is_account_deployed(true);
     user_operation.set_entry_point(entryPoint);
-    user_operation.set_account_factory(factory);
-    user_operation.set_account_logic(logic);
-    user_operation.set_owner(owner);
+    user_operation.set_sender(sender);
 
     input.set_private_key(key.data(), key.size());
     auto& transfer = *input.mutable_transaction()->mutable_erc1155_transfer();
@@ -608,6 +583,7 @@ TEST(TWAnySignerEthereum, EIP4337_SignERC1155TransferAccountDeployed) {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
+        ASSERT_EQ(std::string(output.pre_hash()), "");
         ASSERT_EQ(std::string(output.encoded()), expected);
     }
 }

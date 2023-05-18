@@ -187,30 +187,30 @@ public:
 
     // Factory methods
     // Create a native transfer transaction
-    static UserOperationPtr buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                   const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
-                                                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                   const Data& paymasterAndData = {}, const Data& payload = {});
+    static UserOperationPtr buildNativeTransfer(const Data& entryPointAddress, const Data& senderAddress,
+                                                const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
+                                                const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                const Data& paymasterAndData = {}, const Data& initCode = {}, const Data& payload = {});
     // Create an ERC20 token transfer transaction
-    static UserOperationPtr buildERC20Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                  const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
-                                                                  const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                  const Data& paymasterAndData = {});
+    static UserOperationPtr buildERC20Transfer(const Data& entryPointAddress, const Data& senderAddress,
+                                               const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
+                                               const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                               const Data& paymasterAndData = {}, const Data& initCode = {});
     // Create an ERC20 approve transaction
-    static UserOperationPtr buildERC20Approve(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                 const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
-                                                                 const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                 const Data& paymasterAndData = {});
+    static UserOperationPtr buildERC20Approve(const Data& entryPointAddress, const Data& senderAddress,
+                                              const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce,
+                                              const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                              const Data& paymasterAndData = {}, const Data& initCode = {});
     // Create an ERC721 NFT transfer transaction
-    static UserOperationPtr buildERC721Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                   const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce, const bool& isAccountDeployed,
-                                                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                   const Data& paymasterAndData = {});
+    static UserOperationPtr buildERC721Transfer(const Data& entryPointAddress, const Data& senderAddress,
+                                                const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce,
+                                                const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                const Data& paymasterAndData = {}, const Data& initCode = {});
     // Create an ERC1155 NFT transfer transaction
-    static UserOperationPtr buildERC1155Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                                                    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data, const uint256_t& nonce, const bool& isAccountDeployed,
-                                                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                                                    const Data& paymasterAndData = {});
+    static UserOperationPtr buildERC1155Transfer(const Data& entryPointAddress, const Data& senderAddress,
+                                                 const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data, const uint256_t& nonce,
+                                                 const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                                 const Data& paymasterAndData = {}, const Data& initCode = {});
 
     virtual Data preHash(const uint256_t chainID) const;
     virtual Data serialize(const uint256_t chainID) const;
@@ -218,8 +218,8 @@ public:
 
 public:
     UserOperation(const Data& entryPoint, const Data& sender, const uint256_t& nonce, const Data& initCode,
-                       const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                       const Data& payload = {}, const Data& paymasterAndData = {})
+                  const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                  const Data& payload = {}, const Data& paymasterAndData = {})
         : TransactionTyped(TxType_Eip4337, nonce, payload)
         , entryPoint(std::move(entryPoint))
         , sender(std::move(sender))
