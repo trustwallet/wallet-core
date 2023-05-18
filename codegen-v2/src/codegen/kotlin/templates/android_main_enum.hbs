@@ -8,7 +8,7 @@ actual enum class {{enum_name}}(
     {{/if}}
 ) {
     {{#each variants}}
-    {{name}}({{value}}{{#if as_string}}, "{{as_string}}"{{/if}}),
+    {{name}}({{value}}{{#if ../add_string_value}}, "{{as_string}}"{{/if}}),
     {{/each}}
     ;
 
