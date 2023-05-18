@@ -191,10 +191,17 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         let variants = enm
             .variants
             .into_iter()
-            .map(|enm| AndroidMainEnumVariant {
-                name: enm.name.to_upper_camel_case(),
-                value: enm.value,
-                as_string: enm.as_string,
+            .map(|variant| AndroidMainEnumVariant {
+                name: {
+                    // TODO: Do this differently.
+                    if enm.name == "TWHDVersion" {
+                        variant.name.to_uppercase()
+                    } else {
+                        variant.name.to_upper_camel_case()
+                    }
+                },
+                value: variant.value,
+                as_string: variant.as_string,
             })
             .collect();
 
