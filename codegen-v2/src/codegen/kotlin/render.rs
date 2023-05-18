@@ -9,7 +9,6 @@ use crate::codegen::swift::ObjectVariant;
 use crate::manifest::FileInfo;
 use crate::Result;
 use handlebars::Handlebars;
-use heck::ToUpperCamelCase;
 
 pub fn pretty_name(name: String) -> String {
     name.replace("_", "").replace("TW", "").replace("Proto", "")
@@ -192,13 +191,18 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         let variants = enm
             .variants
             .into_iter()
-            .map(|variant| {
+            .map(|mut variant| {
                 // If `as_string` is present, we add a description function via
                 // the template.
                 add_string_value = variant.as_string.is_some();
 
                 AndroidMainEnumVariant {
-                    name: variant.name,
+                    name: {
+                        if let Some(f) = variant.name.get_mut(0..1) {
+                            f.make_ascii_uppercase();
+                        }
+                        variant.name
+                    },
                     value: variant.value,
                     as_string: variant.as_string,
                 }
