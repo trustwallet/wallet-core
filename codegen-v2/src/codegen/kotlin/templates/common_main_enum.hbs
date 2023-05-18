@@ -10,6 +10,10 @@ expect enum class {{enum_name}} {
     {{#each properties}}
     val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
     {{/each}}
+    {{! Add `stringValue` for variant descriptions}}
+    {{#if add_string_value}}
+    val stringValue: String
+    {{/if}}
 
     {{! Methods }}
     {{#each methods}}

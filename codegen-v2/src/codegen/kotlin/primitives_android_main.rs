@@ -5,6 +5,7 @@ pub struct AndroidMainEnum {
     #[serde(rename = "enum_name")]
     pub name: String,
     pub value_type: KotlinType,
+    pub add_string_value: bool,
     pub variants: Vec<AndroidMainEnumVariant>,
     pub methods: Vec<AndroidMainMethod>,
     pub properties: Vec<AndroidMainProperty>,

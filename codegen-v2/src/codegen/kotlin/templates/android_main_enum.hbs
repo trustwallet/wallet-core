@@ -3,6 +3,9 @@ package com.trustwallet.core
 actual enum class {{enum_name}}(
     @get:JvmName("value")
     val value: {{value_type}},
+    {{#if add_string_value}}
+    actual val stringValue: String,
+    {{/if}}
 ) {
     {{#each variants}}
     {{name}}({{value}}{{#if as_string}}, "{{as_string}}"{{/if}}),

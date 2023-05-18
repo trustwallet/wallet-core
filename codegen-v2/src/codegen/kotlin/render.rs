@@ -188,13 +188,20 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         (properties, info.properties) = process_android_main_properties(&obj, info.properties)?;
 
         // TODO: Just deprecate `AndroidMainEnumVariant`?
+        let mut add_string_value = false;
         let variants = enm
             .variants
             .into_iter()
-            .map(|variant| AndroidMainEnumVariant {
-                name: variant.name,
-                value: variant.value,
-                as_string: variant.as_string,
+            .map(|variant| {
+                // If `as_string` is present, we add a description function via
+                // the template.
+                add_string_value = variant.as_string.is_some();
+
+                AndroidMainEnumVariant {
+                    name: variant.name,
+                    value: variant.value,
+                    as_string: variant.as_string,
+                }
             })
             .collect();
 
@@ -204,6 +211,7 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         let andmain_enum = AndroidMainEnum {
             name: pretty_name,
             value_type: KotlinType::from(enm.value_type),
+            add_string_value,
             methods,
             properties,
             variants,
