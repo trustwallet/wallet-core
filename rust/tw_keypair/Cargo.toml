@@ -17,6 +17,7 @@ zeroize = "1.6.0"
 ecdsa = "0.16.6"
 k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
 p256 = { version = "0.13.0", features = ["ecdsa", "std"], default-features = false }
+rfc6979 = "0.4.0"
 # ED25519 specific:
 blake2 = "0.9"
 curve25519-dalek = "3"
