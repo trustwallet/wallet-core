@@ -5,35 +5,35 @@ enums:
   value_type:
     variant: u_int32_t
   variants:
-  - name: none
+  - name: None
     value: 0
-  - name: xpub
+  - name: XPUB
     value: 76067358
-  - name: xprv
+  - name: XPRV
     value: 76066276
-  - name: ypub
+  - name: YPUB
     value: 77429938
-  - name: yprv
+  - name: YPRV
     value: 77428856
-  - name: zpub
+  - name: ZPUB
     value: 78792518
-  - name: zprv
+  - name: ZPRV
     value: 78791436
-  - name: ltub
+  - name: LTUB
     value: 27108450
-  - name: ltpv
+  - name: LTPV
     value: 27106558
-  - name: mtub
+  - name: MTUB
     value: 28471030
-  - name: mtpv
+  - name: MTPV
     value: 28469138
-  - name: dpub
+  - name: DPUB
     value: 50178342
-  - name: dprv
+  - name: DPRV
     value: 50177256
-  - name: dgub
+  - name: DGUB
     value: 49990397
-  - name: dgpv
+  - name: DGPV
     value: 49988504
   comments:
   - Registered HD version bytes
