@@ -12,7 +12,7 @@ pub struct CommonMainStruct {
 }
 
 // We just alias those types since they'd basically be identical. We can create
-// new types of required.
+// new types if required.
 pub type CommonMainInit = AndroidMainInit;
 pub type CommonMainMethod = AndroidMainMethod;
 pub type CommonMainProperty = AndroidMainProperty;
