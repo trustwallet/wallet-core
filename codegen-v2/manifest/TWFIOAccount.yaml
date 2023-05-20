@@ -1,0 +1,26 @@
+name: TWFIOAccount
+structs:
+- name: TWFIOAccount
+  is_public: true
+  is_class: true
+inits:
+- name: TWFIOAccountCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWFIOAccountDelete
+properties:
+- name: TWFIOAccountDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

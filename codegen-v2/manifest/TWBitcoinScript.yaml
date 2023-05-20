@@ -1,0 +1,321 @@
+name: TWBitcoinScript
+structs:
+- name: TWBitcoinScript
+  is_public: true
+  is_class: true
+inits:
+- name: TWBitcoinScriptCreate
+  is_public: true
+  is_nullable: false
+- name: TWBitcoinScriptCreateWithData
+  is_public: true
+  is_nullable: false
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWBitcoinScriptCreateCopy
+  is_public: true
+  is_nullable: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWBitcoinScriptDelete
+functions:
+- name: TWBitcoinScriptEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: rhs
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinScriptMatchPayToPubkey
+  is_public: true
+  is_static: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBitcoinScriptMatchPayToPubkeyHash
+  is_public: true
+  is_static: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBitcoinScriptMatchPayToScriptHash
+  is_public: true
+  is_static: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBitcoinScriptMatchPayToWitnessPublicKeyHash
+  is_public: true
+  is_static: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBitcoinScriptMatchPayToWitnessScriptHash
+  is_public: true
+  is_static: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBitcoinScriptEncode
+  is_public: true
+  is_static: false
+  params:
+  - name: script
+    type:
+      variant: struct
+      value: TWBitcoinScript
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptBuildPayToPublicKey
+  is_public: true
+  is_static: true
+  params:
+  - name: pubkey
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptBuildPayToPublicKeyHash
+  is_public: true
+  is_static: true
+  params:
+  - name: hash
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptBuildPayToScriptHash
+  is_public: true
+  is_static: true
+  params:
+  - name: scriptHash
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptBuildPayToWitnessPubkeyHash
+  is_public: true
+  is_static: true
+  params:
+  - name: hash
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptBuildPayToWitnessScriptHash
+  is_public: true
+  is_static: true
+  params:
+  - name: scriptHash
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptLockScriptForAddress
+  is_public: true
+  is_static: true
+  params:
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptHashTypeForCoin
+  is_public: true
+  is_static: true
+  params:
+  - name: coinType
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWBitcoinScriptSize
+  is_public: true
+  return_type:
+    variant: size_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinScriptData
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptScriptHash
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinScriptIsPayToScriptHash
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinScriptIsPayToWitnessScriptHash
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinScriptIsPayToWitnessPublicKeyHash
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWBitcoinScriptIsWitnessProgram
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

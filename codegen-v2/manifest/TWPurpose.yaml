@@ -1,0 +1,15 @@
+name: TWPurpose
+enums:
+- name: TWPurpose
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: bip44
+    value: 44
+  - name: bip49
+    value: 49
+  - name: bip84
+    value: 84
+  - name: bip1852
+    value: 1852

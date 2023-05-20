@@ -1,0 +1,12 @@
+name: TWBitcoinProto
+protos:
+- TW_Bitcoin_Proto_Transaction
+- TW_Bitcoin_Proto_TransactionInput
+- TW_Bitcoin_Proto_OutPoint
+- TW_Bitcoin_Proto_TransactionOutput
+- TW_Bitcoin_Proto_UnspentTransaction
+- TW_Bitcoin_Proto_SigningInput
+- TW_Bitcoin_Proto_TransactionPlan
+- TW_Bitcoin_Proto_SigningOutput
+- TW_Bitcoin_Proto_HashPublicKey
+- TW_Bitcoin_Proto_PreSigningOutput

@@ -1,0 +1,4 @@
+name: TWFilecoinProto
+protos:
+- TW_Filecoin_Proto_SigningInput
+- TW_Filecoin_Proto_SigningOutput

@@ -704,7 +704,7 @@
     "coinId": 90000118,
     "symbol": "NTRN",
     "decimals": 6,
-    "chainId": "pion-1",
+    "chainId": "neutron-1",
     "blockchain": "Cosmos",
     "derivation": [
       {
@@ -716,7 +716,7 @@
     "hrp": "neutron",
     "addressHasher": "sha256ripemd",
     "explorer": {
-      "url": "https://testnet.mintscan.io/neutron-testnet",
+      "url": "https://www.mintscan.io/neutron",
       "txPath": "/txs/",
       "accountPath": "/account/",
       "sampleTx": "E18BA087009A05EB6A15A22FE30BA99379B909F74A74120E6F92B9882C45F0D7",

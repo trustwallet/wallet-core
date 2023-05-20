@@ -1,0 +1,9 @@
+name: TWIoTeXProto
+protos:
+- TW_IoTeX_Proto_Transfer
+- TW_IoTeX_Proto_Staking
+- TW_IoTeX_Proto_ContractCall
+- TW_IoTeX_Proto_SigningInput
+- TW_IoTeX_Proto_SigningOutput
+- TW_IoTeX_Proto_ActionCore
+- TW_IoTeX_Proto_Action

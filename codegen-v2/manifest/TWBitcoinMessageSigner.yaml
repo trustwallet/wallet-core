@@ -1,0 +1,61 @@
+name: TWBitcoinMessageSigner
+structs:
+- name: TWBitcoinMessageSigner
+  is_public: true
+  is_class: false
+functions:
+- name: TWBitcoinMessageSignerSignMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: privateKey
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBitcoinMessageSignerVerifyMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: address
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

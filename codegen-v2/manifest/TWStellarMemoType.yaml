@@ -1,0 +1,17 @@
+name: TWStellarMemoType
+enums:
+- name: TWStellarMemoType
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: none
+    value: 0
+  - name: text
+    value: 1
+  - name: id
+    value: 2
+  - name: hash
+    value: 3
+  - name: return
+    value: 4

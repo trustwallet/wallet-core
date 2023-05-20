@@ -1,0 +1,108 @@
+name: TWSegwitAddress
+structs:
+- name: TWPublicKey
+  is_public: false
+  is_class: false
+- name: TWSegwitAddress
+  is_public: true
+  is_class: true
+inits:
+- name: TWSegwitAddressCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWSegwitAddressCreateWithPublicKey
+  is_public: true
+  is_nullable: false
+  params:
+  - name: hrp
+    type:
+      variant: enum
+      value: TWHRP
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWSegwitAddressDelete
+functions:
+- name: TWSegwitAddressEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWSegwitAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: rhs
+    type:
+      variant: struct
+      value: TWSegwitAddress
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWSegwitAddressIsValidString
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWSegwitAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWSegwitAddressHRP
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWHRP
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWSegwitAddressWitnessVersion
+  is_public: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWSegwitAddressWitnessProgram
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
