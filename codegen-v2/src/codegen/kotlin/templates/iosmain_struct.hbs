@@ -1,58 +1,32 @@
 package com.trustwallet.core
 
 {{#if is_class}}
-import cnames.structs.{{ffi_name}}
+import cnames.structs.TW{{struct_name}}
 import kotlinx.cinterop.CPointer
 
-actual class {{class_name}} private constructor (
-    val pointer: CPointer<{{ffi_name}}>,
+actual class {{struct_name}} constructor(
+    val pointer: CPointer<TWAccount>,
 ) {
 {{else}}
-actual object {{class_name}} {
+actual object {{struct_name}} {
 {{/if}}
-    {{! Inits }}
-    {{#if is_class}}
+    {{! Inites}}
     {{#each inits}}
-    {{#if is_nullable}}
-    @Throws(IllegalArgumentException::class)
-    {{/if}}
-    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): this(
-        {{return.call}}
+    actual constructor({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}) : this(
+        {{c_ffi_name}}({{#each param_pass}}{{this}}{{#unless @last}}, {{/unless}}{{/each}})!!
     )
-    {{#unless @last}}
 
-    {{/unless}}
     {{/each}}
-    {{/if}}
-    {{! Static methods are companion objects }}
-    {{#if is_class}}
-    companion object {
-        {{#each static_methods}}
-        actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}} =
-            {{return.call}}
-        {{#unless @last}}
+    {{! Methods}}
+    {{#each methods}}
+    actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.value}}{{#if is_nullable}}?{{/if}} =
+        {{call}}!!
 
-        {{/unless}}
-        {{/each}}
-    }
-    {{else}}
-    {{#each method}}
-    {{#if is_nullabe}}
-    @Throws(IllegalArgumentException::class)
-    {{/if}}
-    actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullabe}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if return.is_nullabe}}?{{/if}} =
-        {{return.call}}
-    {{#unless @last}}
-
-    {{/unless}}
     {{/each}}
-    {{/if}}
-    {{! Properties }}
+    {{! Properties}}
     {{#each properties}}
-    actual val {{name}}: {{return.type}} 
-        get() = {{return.call}}}
-    {{#unless @last}}
+    actual val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
+        get() = {{call}}!!
 
-    {{/unless}}
     {{/each}}
 }

@@ -5,6 +5,7 @@ mod functions;
 mod inits;
 mod primitives_android_main;
 mod primitives_common_main;
+mod primitives_ios_main;
 mod properties;
 mod render;
 
