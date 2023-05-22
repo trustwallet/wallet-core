@@ -8,8 +8,8 @@
 
 #include <optional>
 
-#include "Data.h"
-#include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "../Data.h"
+#include "bindgen/WalletCoreRSBindgen.h"
 
 namespace TW::Rust {
 

@@ -4,16 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::secp256k1::signature::VerifySignature;
+use crate::ecdsa::nist256p1::{Signature, VerifySignature};
 use crate::traits::VerifyingKeyTrait;
-use crate::KeyPairError;
-use k256::ecdsa::signature::hazmat::PrehashVerifier;
-use k256::ecdsa::VerifyingKey;
+use crate::{KeyPairError, KeyPairResult};
+use p256::ecdsa::signature::hazmat::PrehashVerifier;
+use p256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
 use tw_misc::traits::ToBytesVec;
 
-/// Represents a `secp256k1` public key.
+/// Represents a `nist256p1` public key.
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }
@@ -24,6 +24,13 @@ impl PublicKey {
     pub const COMPRESSED: usize = H264::len();
     /// The number of bytes in an uncompressed public key.
     pub const UNCOMPRESSED: usize = H520::len();
+
+    /// Recover a [`PublicKey`] from the given `message` and the signature over that.
+    pub fn recover(sign: Signature, message: H256) -> KeyPairResult<Self> {
+        VerifyingKey::recover_from_prehash(message.as_slice(), &sign.signature, sign.v)
+            .map(|public| PublicKey { public })
+            .map_err(|_| KeyPairError::InvalidSignature)
+    }
 
     /// Creates a public key from the given [`VerifyingKey`].
     pub(crate) fn new(public: VerifyingKey) -> PublicKey {
