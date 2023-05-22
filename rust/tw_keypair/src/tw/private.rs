@@ -4,9 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::ecdsa::{nist256p1, secp256k1};
 use crate::traits::SigningKeyTrait;
 use crate::tw::{Curve, PublicKey, PublicKeyType};
-use crate::{ed25519, secp256k1, starkex, KeyPairError, KeyPairResult};
+use crate::{ed25519, starkex, KeyPairError, KeyPairResult};
 use std::ops::Range;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
@@ -80,6 +81,7 @@ impl PrivateKey {
             Curve::Curve25519Waves => {
                 ed25519::waves::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok()
             },
+            Curve::Nist256p1 => nist256p1::PrivateKey::try_from(&bytes[Self::KEY_RANGE]).is_ok(),
             Curve::Ed25519ExtendedCardano => {
                 ed25519::cardano::ExtendedPrivateKey::try_from(&bytes[Self::EXTENDED_CARDANO_RANGE])
                     .is_ok()
@@ -104,6 +106,7 @@ impl PrivateKey {
             Curve::Ed25519 => sign_impl(self.to_ed25519()?, message),
             Curve::Ed25519Blake2bNano => sign_impl(self.to_ed25519_blake2b()?, message),
             Curve::Curve25519Waves => sign_impl(self.to_curve25519_waves()?, message),
+            Curve::Nist256p1 => sign_impl(self.to_nist256p1_privkey()?, message),
             Curve::Ed25519ExtendedCardano => {
                 sign_impl(self.to_ed25519_extended_cardano()?, message)
             },
@@ -121,6 +124,14 @@ impl PrivateKey {
             PublicKeyType::Secp256k1Extended => {
                 let privkey = self.to_secp256k1_privkey()?;
                 Ok(PublicKey::Secp256k1Extended(privkey.public()))
+            },
+            PublicKeyType::Nist256k1 => {
+                let privkey = self.to_nist256p1_privkey()?;
+                Ok(PublicKey::Nist256p1(privkey.public()))
+            },
+            PublicKeyType::Nist256k1Extended => {
+                let privkey = self.to_nist256p1_privkey()?;
+                Ok(PublicKey::Nist256p1Extended(privkey.public()))
             },
             PublicKeyType::Ed25519 => {
                 let privkey = self.to_ed25519()?;
@@ -150,6 +161,11 @@ impl PrivateKey {
     /// Tries to convert [`PrivateKey::key`] to [`secp256k1::PrivateKey`].
     fn to_secp256k1_privkey(&self) -> KeyPairResult<secp256k1::PrivateKey> {
         secp256k1::PrivateKey::try_from(self.key().as_slice())
+    }
+
+    /// Tries to convert [`PrivateKey::key`] to [`nist256p1::PrivateKey`].
+    fn to_nist256p1_privkey(&self) -> KeyPairResult<nist256p1::PrivateKey> {
+        nist256p1::PrivateKey::try_from(self.key().as_slice())
     }
 
     /// Tries to convert [`PrivateKey::key`] to [`ed25519::sha512::PrivateKey`].

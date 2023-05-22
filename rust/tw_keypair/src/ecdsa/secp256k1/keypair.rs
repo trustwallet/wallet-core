@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::secp256k1::private::PrivateKey;
-use crate::secp256k1::public::PublicKey;
-use crate::secp256k1::{Signature, VerifySignature};
+use crate::ecdsa::secp256k1::private::PrivateKey;
+use crate::ecdsa::secp256k1::public::PublicKey;
+use crate::ecdsa::secp256k1::{Signature, VerifySignature};
 use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
