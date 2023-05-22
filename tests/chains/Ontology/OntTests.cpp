@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "ExtractVerifySign.h"
 #include "HexCoding.h"
 #include "Ontology/Ont.h"
 
@@ -58,14 +57,47 @@ TEST(OntologyOnt, transfer) {
               "fa89284e6d054503f6ec59833074d0717fbb23a4afaedbc98bd6f7cba2e2cf49232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               rawTxHex);
+}
 
-    auto txHash = parse_hex("788562b8c1e2e1113059542025b2b810c975d2603629729da3a7220069393b38");
+// Successfully broadcasted: https://explorer.ont.io/tx/785af64758886099b995e2aed914c56b15ab63c6e0c5acf42b66f3bbc3e95f98
+TEST(OntologyOnt, transferUpdatedSign) {
+    PrivateKey privateKey1(parse_hex("3b2bca95860af1baf5ef55f60167ef59db098b5871617c889f42dee4ffcb0c6f"));
+    Signer signer1(privateKey1);
 
-    size_t sign1StartsAt {160};
-    EXPECT_TRUE(extractVerifySignature(privateKey1, rawTx, txHash, sign1StartsAt));
+    PrivateKey privateKey2(parse_hex("3b2bca95860af1baf5ef55f60167ef59db098b5871617c889f42dee4ffcb0c6f"));
+    Signer signer2(privateKey2);
 
-    size_t sign2StartsAt {262};
-    EXPECT_TRUE(extractVerifySignature(privateKey2, rawTx, txHash, sign2StartsAt));
+    auto toAddress = Address("AUyL4TZ1zFEcSKDJrjFnD7vsq5iFZMZqT7");
+    uint32_t nonce = 2760697417;
+
+    uint64_t amount = 1, gasPrice = 2500, gasLimit = 20000;
+    auto tx = Ont().transfer(signer1, toAddress, amount, signer2, gasPrice, gasLimit, nonce);
+    auto rawTx = tx.serialize();
+    auto rawTxHex = hex(rawTx);
+
+    // The transaction hex signed by using Rust implementation:
+    EXPECT_EQ("00d149e68ca4c409000000000000204e0000000000007ae1b6c6e44a518f8bcffc44e75236c7a2a8f3c2"
+              "7100c66b147ae1b6c6e44a518f8bcffc44e75236c7a2a8f3c26a7cc81490c44262e0c9740f7b3c0e3d04"
+              "6c106901c72cc46a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
+              "00000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b6500024140362bc7dd7d005b47"
+              "464a2a2f84edd146e993267ceefb4174ef30d0cba0a1aa42bcd043b2349ba7030c2a3d7700d6653cc921"
+              "d17a9f8942d46a93e84ae7968ed223210332aa8304797de2817ca65ce25aede0b176c3c5a61a20caffaf"
+              "2df7fb6bb0b1b4ac4140362bc7dd7d005b47464a2a2f84edd146e993267ceefb4174ef30d0cba0a1aa42"
+              "bcd043b2349ba7030c2a3d7700d6653cc921d17a9f8942d46a93e84ae7968ed223210332aa8304797de2"
+              "817ca65ce25aede0b176c3c5a61a20caffaf2df7fb6bb0b1b4ac",
+              rawTxHex);
+
+    // The transaction hex signed by using `trezor-crypto`:
+    EXPECT_NE("00d149e68ca4c409000000000000204e0000000000007ae1b6c6e44a518f8bcffc44e75236c7a2a8f3c2"
+              "7100c66b147ae1b6c6e44a518f8bcffc44e75236c7a2a8f3c26a7cc81490c44262e0c9740f7b3c0e3d04"
+              "6c106901c72cc46a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
+              "00000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b6500024140362bc7dd7d005b47"
+              "464a2a2f84edd146e993267ceefb4174ef30d0cba0a1aa42432fbc4ccb6458fdf3d5c288ff299ac2f3c5"
+              "2933078e5bb08925e27814cc967f23210332aa8304797de2817ca65ce25aede0b176c3c5a61a20caffaf"
+              "2df7fb6bb0b1b4ac4140362bc7dd7d005b47464a2a2f84edd146e993267ceefb4174ef30d0cba0a1aa42"
+              "432fbc4ccb6458fdf3d5c288ff299ac2f3c52933078e5bb08925e27814cc967f23210332aa8304797de2"
+              "817ca65ce25aede0b176c3c5a61a20caffaf2df7fb6bb0b1b4ac",
+              rawTxHex);
 }
 
 } // namespace TW::Ontology::tests

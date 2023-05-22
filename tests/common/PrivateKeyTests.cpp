@@ -352,7 +352,10 @@ TEST(PrivateKey, SignNIST256p1VerifyLegacy) {
         auto signature = privateKey.sign(msg, TWCurveNIST256p1);
 
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
-        EXPECT_TRUE(TrezorCrypto::verifyNist256p1Signature(publicKey.bytes, signature, msg));
+        EXPECT_TRUE(TrezorCrypto::verifyNist256p1Signature(publicKey.bytes, signature, msg))
+            << "Error verifying nist256p1 signature" << std::endl
+            << "Private key: " << hex(secret) << std::endl
+            << "Message: " << hex(msg);
     }
 }
 

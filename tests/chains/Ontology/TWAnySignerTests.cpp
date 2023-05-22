@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "ExtractVerifySign.h"
 #include "HexCoding.h"
 #include "TestUtilities.h"
 
@@ -88,16 +87,6 @@ TEST(TWAnySingerOntology, OntTransfer) {
               "305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a6232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               hex(output.encoded()));
-
-    auto txHash = parse_hex("c449ff7fe258dc65f5ab98dbb9bfaabf5fd33535b58e46ef51452cc801bd9d2e");
-
-    // Verify the signature signed by the `ownerPrivateKey` using `trezor-crypto`:
-    size_t ownerSignStartsAt {160};
-    EXPECT_TRUE(extractVerifySignature(PrivateKey(ownerPrivateKey), data(output.encoded()), txHash, ownerSignStartsAt));
-
-    // Verify the signature signed by the `payerPrivateKey` using `trezor-crypto`:
-    size_t payerSignStartsAt {262};
-    EXPECT_TRUE(extractVerifySignature(PrivateKey(payerPrivateKey), data(output.encoded()), txHash, payerSignStartsAt));
 }
 
 TEST(TWAnySingerOntology, OngDecimals) {
@@ -168,16 +157,6 @@ TEST(TWAnySingerOntology, OngTransfer) {
               "c4f8742a1de44bc0b3fe7d5cd11fad9edac2a5cdabe2c3b824743cc70df5f276232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               hex(output.encoded()));
-
-    auto txHash = parse_hex("41ca828f53256c3e58e4ccfa1e332a6ab22f6a2e8fe4aa199831311d2349702b");
-
-    // Verify the signature signed by the `ownerPrivateKey` using `trezor-crypto`:
-    size_t ownerSignStartsAt {160};
-    EXPECT_TRUE(extractVerifySignature(PrivateKey(ownerPrivateKey), data(output.encoded()), txHash, ownerSignStartsAt));
-
-    // Verify the signature signed by the `payerPrivateKey` using `trezor-crypto`:
-    size_t payerSignStartsAt {262};
-    EXPECT_TRUE(extractVerifySignature(PrivateKey(payerPrivateKey), data(output.encoded()), txHash, payerSignStartsAt));
 }
 
 TEST(TWAnySingerOntology, OngWithdraw) {
@@ -258,14 +237,6 @@ TEST(TWAnySingerOntology, Oep4Transfer) {
     auto rawTx = data(output.encoded());
     auto rawTxHex = hex(rawTx);
     EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa2d78e3046e66dc020e1634e1612e9455d0c8acac2305ae0563293d39bfa9d3bec232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9dab44a2531dc2504589734ce4534c74b58bdc0f3457cd53267331ec5211b0a4e842321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", rawTxHex);
-
-    auto txHash = parse_hex("1a459cd8323e25e93d0fd6084d160e042a122baccc1e5bbd837bf846ba8ce363");
-
-    size_t ownerSignStartsAt {124};
-    EXPECT_TRUE(extractVerifySignature(PrivateKey(ownerPrivateKey), rawTx, txHash, ownerSignStartsAt));
-
-    size_t payerSignStartsAt {226};
-    EXPECT_TRUE(extractVerifySignature(PrivateKey(payerPrivateKey), rawTx, txHash, payerSignStartsAt));
 }
 
 } // namespace TW::Ontology::tests

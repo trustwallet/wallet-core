@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "ExtractVerifySign.h"
 #include "HexCoding.h"
 
 #include "Ontology/Ong.h"
@@ -59,14 +58,6 @@ TEST(OntologyOng, transfer) {
               "b777d70bf73d9c4dad78c9c1ae52273273d38bf82cde221a1523eb4222c1c2cf232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               rawTxHex);
-
-    auto txHash = parse_hex("4dcd7deea2db4e9ff7b1278f35dbaf2ac136c782c3783d2cf72e0fc8b339ed6e");
-
-    size_t sign1StartsAt {160};
-    EXPECT_TRUE(extractVerifySignature(privateKey1, rawTx, txHash, sign1StartsAt));
-
-    size_t sign2StartsAt {262};
-    EXPECT_TRUE(extractVerifySignature(privateKey2, rawTx, txHash, sign2StartsAt));
 }
 
 TEST(OntologyOng, withdraw) {
@@ -94,14 +85,6 @@ TEST(OntologyOng, withdraw) {
         "0ea6435f6f2b1335192a5d1b346fd431e8af912bfa4e1a23ad7d0ab7fc5b808655af5c9043232103d9fd62df33"
         "2403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
         rawTxHex);
-
-    auto txHash = parse_hex("270f14880339fc72bdefb0ef6b8eca639415ffddede532ca4cc7d8f06db73710");
-
-    size_t sign1StartsAt {186};
-    EXPECT_TRUE(extractVerifySignature(privateKey1, rawTx, txHash, sign1StartsAt));
-
-    size_t sign2StartsAt {288};
-    EXPECT_TRUE(extractVerifySignature(privateKey2, rawTx, txHash, sign2StartsAt));
 }
 
 } // namespace TW::Ontology::tests
