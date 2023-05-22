@@ -58,7 +58,7 @@ impl SigningKeyTrait for PrivateKey {
             .secret
             .sign_prehash_recoverable(message.as_slice())
             .map_err(|_| KeyPairError::SigningError)?;
-        Ok(Signature::new(signature, recovery_id.to_byte()))
+        Ok(Signature::new(signature, recovery_id))
     }
 }
 

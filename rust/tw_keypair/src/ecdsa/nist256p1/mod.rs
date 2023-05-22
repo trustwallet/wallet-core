@@ -92,4 +92,18 @@ mod tests {
         assert_eq!(public.compressed(), expected_compressed);
         assert_eq!(public.uncompressed(), expected_uncompressed);
     }
+
+    #[test]
+    fn test_public_key_recover() {
+        let sign_bytes = H520::from("8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401");
+        let sign = Signature::from_bytes(sign_bytes.as_slice()).unwrap();
+
+        let signed_hash = keccak256(b"hello");
+        let signed_hash = H256::try_from(signed_hash.as_slice()).unwrap();
+
+        let actual = PublicKey::recover(sign, signed_hash).unwrap();
+        let expected_compressed =
+            H264::from("026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab");
+        assert_eq!(actual.compressed(), expected_compressed);
+    }
 }

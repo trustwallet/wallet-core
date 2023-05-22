@@ -24,8 +24,8 @@ const VERIFY_SIGNATURE_LEN_RANGE: RangeInclusive<usize> = 64..=65;
 /// Represents an ECDSA signature.
 #[derive(Debug, PartialEq)]
 pub struct Signature<C: EcdsaCurve> {
-    signature: ecdsa::Signature<C>,
-    v: u8,
+    pub(crate) signature: ecdsa::Signature<C>,
+    pub(crate) v: ecdsa::RecoveryId,
 }
 
 /// cbindgen:ignore
@@ -35,7 +35,7 @@ impl<C: EcdsaCurve> Signature<C> {
 
     /// Creates a `secp256k1` recoverable signature from the given [`k256::ecdsa::Signature`]
     /// and the `v` recovery byte.
-    pub(crate) fn new(signature: ecdsa::Signature<C>, v: u8) -> Self {
+    pub(crate) fn new(signature: ecdsa::Signature<C>, v: ecdsa::RecoveryId) -> Self {
         Signature { signature, v }
     }
 
@@ -58,7 +58,7 @@ impl<C: EcdsaCurve> Signature<C> {
 
     /// Returns a recovery ID.
     pub fn v(&self) -> u8 {
-        self.v
+        self.v.to_byte()
     }
 
     /// Tries to create a Signature from the serialized representation.
@@ -67,9 +67,12 @@ impl<C: EcdsaCurve> Signature<C> {
             return Err(KeyPairError::InvalidSignature);
         }
 
+        let v = ecdsa::RecoveryId::from_byte(sig[RECOVERY_LAST])
+            .ok_or(KeyPairError::InvalidSignature)?;
+
         Ok(Signature {
             signature: Self::signature_from_slices(&sig[R_RANGE], &sig[S_RANGE])?,
-            v: sig[RECOVERY_LAST],
+            v,
         })
     }
 
@@ -81,7 +84,7 @@ impl<C: EcdsaCurve> Signature<C> {
         let mut dest = H520::default();
         dest[R_RANGE].copy_from_slice(r.as_slice());
         dest[S_RANGE].copy_from_slice(s.as_slice());
-        dest[RECOVERY_LAST] = self.v;
+        dest[RECOVERY_LAST] = self.v.to_byte();
         dest
     }
 

@@ -60,7 +60,7 @@ where
             .map_err(|_| KeyPairError::SigningError)?;
         let r = r.ok_or(KeyPairError::SigningError)?;
 
-        let signature = Signature::<C>::new(sig, r.to_byte());
+        let signature = Signature::<C>::new(sig, r);
         if is_canonical(&signature) {
             return Ok(signature);
         }
