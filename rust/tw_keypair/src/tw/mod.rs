@@ -19,6 +19,7 @@ pub enum Curve {
     Ed25519Blake2bNano = 2,
     /// Waves blockchain specific `curve25519`.
     Curve25519Waves = 3,
+    Nist256p1 = 4,
     /// Cardano blockchain specific `ed25519` extended key.
     Ed25519ExtendedCardano = 5,
     Starkex = 6,
@@ -32,6 +33,7 @@ impl Curve {
             1 => Some(Curve::Ed25519),
             2 => Some(Curve::Ed25519Blake2bNano),
             3 => Some(Curve::Curve25519Waves),
+            4 => Some(Curve::Nist256p1),
             5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
             _ => None,
@@ -45,6 +47,8 @@ impl Curve {
 pub enum PublicKeyType {
     Secp256k1 = 0,
     Secp256k1Extended = 1,
+    Nist256k1 = 2,
+    Nist256k1Extended = 3,
     Ed25519 = 4,
     Ed25519Blake2b = 5,
     /// Waves blockchain specific public key.
@@ -60,6 +64,8 @@ impl PublicKeyType {
         match ty {
             0 => Some(PublicKeyType::Secp256k1),
             1 => Some(PublicKeyType::Secp256k1Extended),
+            2 => Some(PublicKeyType::Nist256k1),
+            3 => Some(PublicKeyType::Nist256k1Extended),
             4 => Some(PublicKeyType::Ed25519),
             5 => Some(PublicKeyType::Ed25519Blake2b),
             6 => Some(PublicKeyType::Curve25519Waves),
@@ -81,7 +87,7 @@ mod tests {
             (1, Some(Curve::Ed25519)),
             (2, Some(Curve::Ed25519Blake2bNano)),
             (3, Some(Curve::Curve25519Waves)),
-            (4, None),
+            (4, Some(Curve::Nist256p1)),
             (5, Some(Curve::Ed25519ExtendedCardano)),
             (6, Some(Curve::Starkex)),
             (7, None),
@@ -96,8 +102,8 @@ mod tests {
         let tests = [
             (0, Some(PublicKeyType::Secp256k1)),
             (1, Some(PublicKeyType::Secp256k1Extended)),
-            (2, None),
-            (3, None),
+            (2, Some(PublicKeyType::Nist256k1)),
+            (3, Some(PublicKeyType::Nist256k1Extended)),
             (4, Some(PublicKeyType::Ed25519)),
             (5, Some(PublicKeyType::Ed25519Blake2b)),
             (6, Some(PublicKeyType::Curve25519Waves)),

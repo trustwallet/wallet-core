@@ -112,6 +112,14 @@ fn test_tw_public_key_verify_secp256k1() {
 }
 
 #[test]
+fn test_tw_public_key_verify_nist256p1() {
+    let public = "026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab";
+    let msg = hex::encode(keccak256(b"hello").as_slice(), false);
+    let sign = "8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401";
+    test_verify(PublicKeyType::Nist256k1, public, &msg, sign);
+}
+
+#[test]
 fn test_tw_public_key_verify_ed25519() {
     let public = "4870d56d074c50e891506d78faa4fb69ca039cc5f131eb491e166b975880e867";
     let msg = hex::encode(sha256(b"Hello").as_slice(), false);
