@@ -1,0 +1,6 @@
+name: TWEthereumProto
+protos:
+- TW_Ethereum_Proto_Transaction
+- TW_Ethereum_Proto_UserOperation
+- TW_Ethereum_Proto_SigningInput
+- TW_Ethereum_Proto_SigningOutput

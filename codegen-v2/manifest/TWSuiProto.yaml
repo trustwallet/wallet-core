@@ -1,0 +1,5 @@
+name: TWSuiProto
+protos:
+- TW_Sui_Proto_SignDirect
+- TW_Sui_Proto_SigningInput
+- TW_Sui_Proto_SigningOutput

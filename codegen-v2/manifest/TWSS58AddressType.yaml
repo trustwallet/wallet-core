@@ -1,0 +1,11 @@
+name: TWSS58AddressType
+enums:
+- name: TWSS58AddressType
+  is_public: true
+  value_type:
+    variant: u_int8_t
+  variants:
+  - name: polkadot
+    value: 0
+  - name: kusama
+    value: 2

@@ -1,0 +1,72 @@
+name: TWPBKDF2
+structs:
+- name: TWPBKDF2
+  is_public: true
+  is_class: false
+functions:
+- name: TWPBKDF2HmacSha256
+  is_public: true
+  is_static: true
+  params:
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: salt
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: iterations
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: dkLen
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWPBKDF2HmacSha512
+  is_public: true
+  is_static: true
+  params:
+  - name: password
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: salt
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: iterations
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: dkLen
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true

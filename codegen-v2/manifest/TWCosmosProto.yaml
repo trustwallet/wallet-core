@@ -1,0 +1,8 @@
+name: TWCosmosProto
+protos:
+- TW_Cosmos_Proto_Amount
+- TW_Cosmos_Proto_Fee
+- TW_Cosmos_Proto_Height
+- TW_Cosmos_Proto_Message
+- TW_Cosmos_Proto_SigningInput
+- TW_Cosmos_Proto_SigningOutput

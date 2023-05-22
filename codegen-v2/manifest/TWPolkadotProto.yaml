@@ -1,0 +1,7 @@
+name: TWPolkadotProto
+protos:
+- TW_Polkadot_Proto_Era
+- TW_Polkadot_Proto_Balance
+- TW_Polkadot_Proto_Staking
+- TW_Polkadot_Proto_SigningInput
+- TW_Polkadot_Proto_SigningOutput

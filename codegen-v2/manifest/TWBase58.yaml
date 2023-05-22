@@ -1,0 +1,66 @@
+name: TWBase58
+structs:
+- name: TWBase58
+  is_public: true
+  is_class: false
+functions:
+- name: TWBase58Encode
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBase58EncodeNoCheck
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBase58Decode
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBase58DecodeNoCheck
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true

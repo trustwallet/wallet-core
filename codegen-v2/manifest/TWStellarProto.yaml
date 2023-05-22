@@ -1,0 +1,15 @@
+name: TWStellarProto
+protos:
+- TW_Stellar_Proto_Asset
+- TW_Stellar_Proto_OperationCreateAccount
+- TW_Stellar_Proto_OperationPayment
+- TW_Stellar_Proto_OperationChangeTrust
+- TW_Stellar_Proto_Claimant
+- TW_Stellar_Proto_OperationCreateClaimableBalance
+- TW_Stellar_Proto_OperationClaimClaimableBalance
+- TW_Stellar_Proto_MemoVoid
+- TW_Stellar_Proto_MemoText
+- TW_Stellar_Proto_MemoId
+- TW_Stellar_Proto_MemoHash
+- TW_Stellar_Proto_SigningInput
+- TW_Stellar_Proto_SigningOutput

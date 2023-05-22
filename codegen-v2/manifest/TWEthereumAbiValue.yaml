@@ -1,0 +1,198 @@
+name: TWEthereumAbiValue
+structs:
+- name: TWEthereumAbiValue
+  is_public: true
+  is_class: false
+functions:
+- name: TWEthereumAbiValueEncodeBool
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeInt32
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeUInt32
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeInt256
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeUInt256
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeAddress
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeString
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeBytes
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueEncodeBytesDyn
+  is_public: true
+  is_static: true
+  params:
+  - name: value
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueDecodeUInt256
+  is_public: true
+  is_static: true
+  params:
+  - name: input
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueDecodeValue
+  is_public: true
+  is_static: true
+  params:
+  - name: input
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: type
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiValueDecodeArray
+  is_public: true
+  is_static: true
+  params:
+  - name: input
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: type
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

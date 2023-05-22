@@ -1,0 +1,25 @@
+// Copyright © 2017-{{current_year}} Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+extension {{name}} {
+    {{! Methods }}
+    {{#each methods}}
+    {{~> partial_func}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    {{! Properties }}
+    {{#each properties}}
+    {{~> partial_prop}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+}

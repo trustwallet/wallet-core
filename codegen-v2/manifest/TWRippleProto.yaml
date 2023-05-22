@@ -1,0 +1,11 @@
+name: TWRippleProto
+protos:
+- TW_Ripple_Proto_CurrencyAmount
+- TW_Ripple_Proto_OperationTrustSet
+- TW_Ripple_Proto_OperationPayment
+- TW_Ripple_Proto_OperationNFTokenBurn
+- TW_Ripple_Proto_OperationNFTokenCreateOffer
+- TW_Ripple_Proto_OperationNFTokenAcceptOffer
+- TW_Ripple_Proto_OperationNFTokenCancelOffer
+- TW_Ripple_Proto_SigningInput
+- TW_Ripple_Proto_SigningOutput

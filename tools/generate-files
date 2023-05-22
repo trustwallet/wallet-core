@@ -46,7 +46,7 @@ mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 # Generate coins info from registry.json
 codegen/bin/coins
 
-# Generate interface code
+# Generate interface code, Swift bindings excluded.
 codegen/bin/codegen
 
 # Convert doxygen comments to appropriate format

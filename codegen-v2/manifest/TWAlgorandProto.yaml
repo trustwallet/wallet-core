@@ -1,0 +1,7 @@
+name: TWAlgorandProto
+protos:
+- TW_Algorand_Proto_Transfer
+- TW_Algorand_Proto_AssetTransfer
+- TW_Algorand_Proto_AssetOptIn
+- TW_Algorand_Proto_SigningInput
+- TW_Algorand_Proto_SigningOutput

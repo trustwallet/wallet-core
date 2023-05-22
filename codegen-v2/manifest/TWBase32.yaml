@@ -1,0 +1,78 @@
+name: TWBase32
+structs:
+- name: TWBase32
+  is_public: true
+  is_class: false
+functions:
+- name: TWBase32DecodeWithAlphabet
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: alphabet
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBase32Decode
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBase32EncodeWithAlphabet
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: alphabet
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBase32Encode
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

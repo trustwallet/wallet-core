@@ -1,0 +1,15 @@
+name: TWStoredKeyEncryptionLevel
+enums:
+- name: TWStoredKeyEncryptionLevel
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: default
+    value: 0
+  - name: minimal
+    value: 1
+  - name: weak
+    value: 2
+  - name: standard
+    value: 3

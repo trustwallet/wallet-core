@@ -1,0 +1,42 @@
+name: Struct
+structs:
+- name: MainStruct 
+  is_public: true
+  is_class: false 
+inits:
+- name: MainStructCreate
+  is_public: true
+  is_nullable: false
+  params:
+  - name: string 
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: MainStructDelete
+functions:
+- name: MainStructFirstFunction
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: int 
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: MainStructFirstProperty
+  is_public: true
+  return_type:
+    variant: bool 
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

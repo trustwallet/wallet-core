@@ -1,0 +1,25 @@
+name: TWBinanceProto
+protos:
+- TW_Binance_Proto_Transaction
+- TW_Binance_Proto_Signature
+- TW_Binance_Proto_TradeOrder
+- TW_Binance_Proto_CancelTradeOrder
+- TW_Binance_Proto_SendOrder
+- TW_Binance_Proto_TokenIssueOrder
+- TW_Binance_Proto_TokenMintOrder
+- TW_Binance_Proto_TokenBurnOrder
+- TW_Binance_Proto_TokenFreezeOrder
+- TW_Binance_Proto_TokenUnfreezeOrder
+- TW_Binance_Proto_HTLTOrder
+- TW_Binance_Proto_DepositHTLTOrder
+- TW_Binance_Proto_ClaimHTLOrder
+- TW_Binance_Proto_RefundHTLTOrder
+- TW_Binance_Proto_TransferOut
+- TW_Binance_Proto_SideChainDelegate
+- TW_Binance_Proto_SideChainRedelegate
+- TW_Binance_Proto_SideChainUndelegate
+- TW_Binance_Proto_TimeLockOrder
+- TW_Binance_Proto_TimeRelockOrder
+- TW_Binance_Proto_TimeUnlockOrder
+- TW_Binance_Proto_SigningInput
+- TW_Binance_Proto_SigningOutput
