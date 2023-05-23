@@ -10,11 +10,11 @@ import WalletCore
 class BarzTests: XCTestCase {
 
     func testInitCode() {
-        let factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
-        let ownerAddress = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988"
-        let verificationFacet = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988"
+        let factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
+        let ownerAddress = "0x1dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58"
+        let verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
         let result = Barz.getInitCode(factory: factoryAddress, owner: ownerAddress, verificationFacet: verificationFacet)
-        XCTAssertEqual(result, "0xbEaA87cEEaC906C21aaacd258FbFB87CfA3c90a8")
+        XCTAssertEqual(result, "0x296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58")
     }
 
     func testCounterfactualAddressFromPublicKey() {
