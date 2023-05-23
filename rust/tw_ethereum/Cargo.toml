@@ -1,0 +1,9 @@
+[package]
+name = "tw_ethereum"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
+tw_keypair = { path = "../tw_keypair" }

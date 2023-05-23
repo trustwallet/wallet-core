@@ -1166,6 +1166,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_ethereum"
+version = "0.1.0"
+dependencies = [
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+]
+
+[[package]]
 name = "tw_hash"
 version = "0.1.0"
 dependencies = [
