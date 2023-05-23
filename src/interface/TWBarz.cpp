@@ -19,3 +19,10 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input) {
 
     return TWStringCreateWithUTF8Bytes(TW::Barz::getCounterfactualAddress(inputProto).c_str());
 }
+
+TWString *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, TWString* _Nonnull owner, TWString* _Nonnull verificationFacet) {
+    const auto& factoryStr = *reinterpret_cast<const std::string*>(factory);
+    const auto& ownerStr = *reinterpret_cast<const std::string*>(owner);
+    const auto& verificationFacetStr = *reinterpret_cast<const std::string*>(verificationFacet);
+    return new std::string(TW::Barz::getInitCode(factoryStr, ownerStr, verificationFacetStr));
+}

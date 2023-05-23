@@ -9,6 +9,14 @@ import WalletCore
 
 class BarzTests: XCTestCase {
 
+    func testInitCode() {
+        let factoryAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"
+        let ownerAddress = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988"
+        let verificationFacet = "0xA5a1dddEF094095AfB7b6e322dE72961DF2e1988"
+        let result = Barz.getInitCode(factory: factoryAddress, owner: ownerAddress, verificationFacet: verificationFacet)
+        XCTAssertEqual(result, "0xbEaA87cEEaC906C21aaacd258FbFB87CfA3c90a8")
+    }
+
     func testCounterfactualAddressFromPublicKey() {
         let input = BarzContractAddressInput.with {
             $0.factory = factory
@@ -16,7 +24,6 @@ class BarzTests: XCTestCase {
             $0.accountFacet = accountFacet
             $0.verificationFacet = verificationFacet
             $0.entryPoint = entryPoint
-            $0.securityManager = securityManager
             $0.facetRegistry = facetRegistry
             $0.bytecode = bytecode
             $0.owner = BarzContractOwner.with {
@@ -34,7 +41,6 @@ class BarzTests: XCTestCase {
             $0.accountFacet = accountFacet
             $0.verificationFacet = verificationFacet
             $0.entryPoint = entryPoint
-            $0.securityManager = securityManager
             $0.facetRegistry = facetRegistry
             $0.bytecode = bytecode
             $0.owner = BarzContractOwner.with {
