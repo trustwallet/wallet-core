@@ -403,7 +403,7 @@ TEST(BitcoinInputSelector, SelectZcashMaxAmount) {
     auto selector = InputSelector<UTXO>(utxos, getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.selectMaxAmount(1);
 
-    EXPECT_TRUE(verifySelectedUTXOs(selected, {100000, 2592, 73774}));
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {100000, 73774}));
 }
 
 TEST(BitcoinInputSelector, SelectZcashMaxUnspents2) {

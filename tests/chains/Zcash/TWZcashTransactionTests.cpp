@@ -112,6 +112,7 @@ TEST(TWZcashTransaction, SaplingSigning) {
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS");
+    input.set_use_max_amount(true);
 
     auto hash0 = DATA("53685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a");
     auto utxo0 = input.add_utxo();

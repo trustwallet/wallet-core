@@ -100,4 +100,23 @@ TEST(BitcoinFeeCalculator, DecredCalculateNoDustFilter) {
     EXPECT_EQ(feeCalculator.calculateSingleInput(1), 0);
 }
 
+TEST(BitcoinFeeCalculator, ZcashCalculate) {
+    const FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeZcash);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 10000);
+    EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 10000);
+    EXPECT_EQ(feeCalculator.calculate(3, 1, 1), 15000);
+    EXPECT_EQ(feeCalculator.calculate(3, 1, 2), 30000);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(1), 10000);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(3), 10000);
+}
+
+TEST(BitcoinFeeCalculator, ZcashCalculateNoDustFilter) {
+    const FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeZcash, true);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 10000);
+    EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 10000);
+    EXPECT_EQ(feeCalculator.calculate(3, 1, 1), 15000);
+    EXPECT_EQ(feeCalculator.calculate(3, 1, 2), 30000);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(1), 0);
+}
+
 } // namespace TW::Bitcoin
