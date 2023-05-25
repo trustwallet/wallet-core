@@ -2720,6 +2720,38 @@
     }
   },
   {
+    "id": "scroll",
+    "name": "Scroll",
+    "displayName": "Scroll",
+    "coinId": 534353,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "534353",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://blockscout.scroll.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d",
+      "sampleAccount": "0xFE993660cd35d68D94b6Eba29F4D928d979cd65B"
+    },
+    "info": {
+      "url": "https://scroll.io",
+      "source": "https://github.com/scroll-tech",
+      "rpc": "https://alpha-rpc.scroll.io/l2",
+      "documentation": "https://guide.scroll.io"
+    }
+  },
+  {
     "id": "arbitrum",
     "name": "Arbitrum",
     "coinId": 10042221,
