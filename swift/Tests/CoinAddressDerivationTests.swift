@@ -76,6 +76,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .optimism,
                      .zksync,
                      .polygonzkEVM,
+                     .scroll,
                      .arbitrum,
                      .ecochain,
                      .avalancheCChain,
