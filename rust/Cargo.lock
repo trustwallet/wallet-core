@@ -987,6 +987,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25996b82292a7a57ed3508f052cfff8640d38d32018784acd714758b43da9c8f"
 dependencies = [
  "bitcoin_hashes",
+ "rand",
  "secp256k1-sys",
 ]
 
@@ -1309,6 +1310,8 @@ name = "tw_bitcoin"
 version = "0.1.0"
 dependencies = [
  "bitcoin",
+ "rand",
+ "secp256k1",
 ]
 
 [[package]]
