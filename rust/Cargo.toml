@@ -6,5 +6,6 @@ members = [
     "tw_move_parser",
     "tw_proto",
     "tw_starknet",
+    "tw_bitcoin",
     "wallet_core_rs",
 ]
