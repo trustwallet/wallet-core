@@ -1,9 +1,12 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::blockdata::script::ScriptBuf;
+use bitcoin::blockdata::transaction::OutPoint;
+use bitcoin::hash_types::Txid;
+use bitcoin::hashes::sha256d::Hash;
 use bitcoin::key::UntweakedPublicKey;
 use bitcoin::taproot::{LeafVersion, TaprootBuilder};
 use bitcoin::transaction::Transaction;
-use bitcoin::{TxIn, TxOut};
+use bitcoin::{Sequence, TxIn, TxOut, Witness};
 use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 
 pub mod transaction;
@@ -32,9 +35,6 @@ fn poc() {
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
 
-pub struct PublicKey();
-pub struct Hash();
-
 pub enum ScriptVariant {
     P2pk,
     P2pkh,
@@ -48,6 +48,28 @@ pub enum ScriptVariant {
     NonStandard,
 }
 
+impl From<ScriptBuf> for ScriptVariant {
+	fn from(s: ScriptBuf) -> Self {
+        // TODO: Extend to all `ScriptVariant`'s.
+        if s.is_p2pk() {
+            ScriptVariant::P2pk
+        } else if s.is_p2pkh() {
+            ScriptVariant::P2pkh
+        } else if s.is_p2sh() {
+            ScriptVariant::P2sh
+        } else if s.is_v0_p2wpkh() {
+            ScriptVariant::P2wpkh
+        } else if s.is_v0_p2wsh() {
+            ScriptVariant::P2wsh
+        } else if s.is_v1_p2tr() {
+            // TODO:
+            ScriptVariant::P2trScriptPath
+        } else {
+            ScriptVariant::NonStandard
+        }
+	}
+}
+
 pub struct TransactionBuilder {
     tx: Transaction,
 }
@@ -56,6 +78,7 @@ impl TransactionBuilder {
     fn new() -> Self {
         TransactionBuilder {
             tx: Transaction {
+                // TODO: Check
                 version: 2,
                 lock_time: LockTime::Blocks(Height::ZERO),
                 input: vec![],
@@ -87,8 +110,39 @@ impl TransactionBuilder {
 // TODO: Rename to "Spendable"?
 pub struct Claimable {
     input: TxContext<TxIn>,
-	claim_script: (),
+    claim_script: (),
     output: TxContext<TxOut>,
+}
+
+impl Claimable {
+    fn from(tx: TxOut, tx_hash: Hash) -> Self {
+		// Determine the script for unlocking output.
+		let variant = ScriptVariant::from(tx.script_pubkey);
+
+		// TODO: Depending on the variant, we need different type of data.
+		let script_sig = match variant {
+			ScriptVariant::P2pkh => {
+				todo!()
+			}
+			_ => todo!()
+		};
+
+		// PoC
+        let txin = TxIn {
+            previous_output: OutPoint {
+                txid: Txid::from_raw_hash(tx_hash),
+                vout: 0,
+            },
+			// Provide the necessary data to claim the output.
+            script_sig: ScriptBuf::new(),
+            // Use default value of `0xFFFFFFFF`.
+            sequence: Sequence::default(),
+			// Provide the necessary witness to claim the output.
+            witness: Witness::new(),
+        };
+
+        todo!()
+    }
 }
 
 struct TxContext<T> {
@@ -96,31 +150,6 @@ struct TxContext<T> {
     variant: ScriptVariant,
 }
 
-impl From<TxOut> for Claimable {
-    fn from(tx: TxOut) -> Self {
-        let s = tx.script_pubkey;
-        // TODO: Extend to all `ScriptVariant`'s.
-        let variant = if s.is_p2pk() {
-            ScriptVariant::P2pk
-        } else if s.is_p2pkh() {
-            ScriptVariant::P2pkh
-        } else if s.is_p2sh() {
-            ScriptVariant::P2sh
-        } else if s.is_v0_p2wpkh() {
-            ScriptVariant::P2wpkh
-        } else if s.is_v0_p2wsh() {
-            ScriptVariant::P2wsh
-        } else if s.is_v1_p2tr() {
-            // TODO:
-            ScriptVariant::P2trScriptPath
-        } else {
-            ScriptVariant::NonStandard
-        };
-
-        todo!()
-    }
-}
-
-pub fn new_p2pk(pubkey: PublicKey) {}
-pub fn new_p2pkh(hash: Hash) {}
+pub fn new_p2pk() {}
+pub fn new_p2pkh() {}
 pub fn new_p2tr(script: ScriptBuf) {}
