@@ -15,9 +15,9 @@
 
 TEST(TWScrollCoinType, TWCoinType) {
     const auto coin = TWCoinTypeScroll;
+    const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
-    const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto chainId = WRAPS(TWCoinTypeChainId(coin));
     const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
