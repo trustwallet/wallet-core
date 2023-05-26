@@ -9,7 +9,11 @@ use bitcoin::transaction::Transaction;
 use bitcoin::{Sequence, TxIn, TxOut, Witness};
 use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 
-pub mod transaction;
+pub type Result<T> = std::result::Result<T, Error>;
+
+pub enum Error {
+    Todo,
+}
 
 #[test]
 fn poc() {
@@ -36,38 +40,8 @@ fn poc() {
 }
 
 pub enum ScriptVariant {
-    P2pk,
-    P2pkh,
-    P2sh,
-    P2shP2wpkh,
-    P2shP2wsh,
-    P2wpkh,
-    P2wsh,
-    P2trKeyPath,
-    P2trScriptPath,
+    P2pkh(ClaimP2pkhBuilder),
     NonStandard,
-}
-
-impl From<ScriptBuf> for ScriptVariant {
-	fn from(s: ScriptBuf) -> Self {
-        // TODO: Extend to all `ScriptVariant`'s.
-        if s.is_p2pk() {
-            ScriptVariant::P2pk
-        } else if s.is_p2pkh() {
-            ScriptVariant::P2pkh
-        } else if s.is_p2sh() {
-            ScriptVariant::P2sh
-        } else if s.is_v0_p2wpkh() {
-            ScriptVariant::P2wpkh
-        } else if s.is_v0_p2wsh() {
-            ScriptVariant::P2wsh
-        } else if s.is_v1_p2tr() {
-            // TODO:
-            ScriptVariant::P2trScriptPath
-        } else {
-            ScriptVariant::NonStandard
-        }
-	}
 }
 
 pub struct TransactionBuilder {
@@ -100,56 +74,56 @@ impl TransactionBuilder {
             },
         }
     }
-    pub fn add_claimable(mut self, claim: Claimable) -> Self {
-        self.tx.input.push(claim.input.tx);
-        self.tx.output.push(claim.output.tx);
-        self
+}
+
+pub struct PublicKey;
+pub struct PublicKeyHash;
+pub struct ScriptHash;
+
+fn claim_utxo(utxo: TxOut, point: OutPoint) -> ScriptVariant {
+    let s = utxo.script_pubkey;
+
+    if s.is_p2pkh() {
+        ScriptVariant::P2pkh(ClaimP2pkhBuilder {
+            ctx: InputContext {
+                previous_output: point,
+                script_sig: s,
+                sequence: None,
+                witness: None,
+                value: None,
+            },
+        })
+    } else {
+        ScriptVariant::NonStandard
     }
 }
 
-// TODO: Rename to "Spendable"?
-pub struct Claimable {
-    input: TxContext<TxIn>,
-    claim_script: (),
-    output: TxContext<TxOut>,
+struct InputContext {
+    previous_output: OutPoint,
+    script_sig: ScriptBuf,
+    sequence: Option<Sequence>,
+    witness: Option<Witness>,
+    value: Option<u64>,
 }
 
-impl Claimable {
-    fn from(tx: TxOut, tx_hash: Hash) -> Self {
-		// Determine the script for unlocking output.
-		let variant = ScriptVariant::from(tx.script_pubkey);
+pub struct ClaimP2pkhBuilder {
+    ctx: InputContext,
+}
 
-		// TODO: Depending on the variant, we need different type of data.
-		let script_sig = match variant {
-			ScriptVariant::P2pkh => {
-				todo!()
-			}
-			_ => todo!()
-		};
+pub struct ClaimP2pkh {
+    input: TxIn,
+    output: TxOut,
+}
 
-		// PoC
-        let txin = TxIn {
-            previous_output: OutPoint {
-                txid: Txid::from_raw_hash(tx_hash),
-                vout: 0,
-            },
-			// Provide the necessary data to claim the output.
-            script_sig: ScriptBuf::new(),
-            // Use default value of `0xFFFFFFFF`.
-            sequence: Sequence::default(),
-			// Provide the necessary witness to claim the output.
-            witness: Witness::new(),
-        };
-
+impl ClaimP2pkhBuilder {
+    fn with_pubkey(self, pubkey: PublicKey) -> ClaimP2pkhBuilder {
+        todo!()
+    }
+    fn with_value(mut self, value: u64) -> ClaimP2pkhBuilder {
+        self.ctx.value = Some(value);
+        self
+    }
+    fn finalize(self) -> Result<ClaimP2pkh> {
         todo!()
     }
 }
-
-struct TxContext<T> {
-    tx: T,
-    variant: ScriptVariant,
-}
-
-pub fn new_p2pk() {}
-pub fn new_p2pkh() {}
-pub fn new_p2tr(script: ScriptBuf) {}
