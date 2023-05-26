@@ -40,7 +40,7 @@ fn poc() {
 }
 
 pub enum ScriptVariant {
-    P2pkh(ClaimP2pkhBuilder),
+    P2pkh(ClaimP2pkh),
     NonStandard,
 }
 
@@ -77,20 +77,19 @@ impl TransactionBuilder {
 }
 
 pub struct PublicKey;
-pub struct PublicKeyHash;
+pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
 fn claim_utxo(utxo: TxOut, point: OutPoint) -> ScriptVariant {
     let s = utxo.script_pubkey;
 
     if s.is_p2pkh() {
-        ScriptVariant::P2pkh(ClaimP2pkhBuilder {
+        ScriptVariant::P2pkh(ClaimP2pkh {
             ctx: InputContext {
                 previous_output: point,
-                script_sig: s,
+                script_sig: None,
                 sequence: None,
                 witness: None,
-                value: None,
             },
         })
     } else {
@@ -100,30 +99,33 @@ fn claim_utxo(utxo: TxOut, point: OutPoint) -> ScriptVariant {
 
 struct InputContext {
     previous_output: OutPoint,
-    script_sig: ScriptBuf,
+    // Script for claiming the output.
+    script_sig: Option<ScriptBuf>,
+    // Document.
     sequence: Option<Sequence>,
+    // Witness data for Segwit/Taproot transactions.
     witness: Option<Witness>,
-    value: Option<u64>,
-}
-
-pub struct ClaimP2pkhBuilder {
-    ctx: InputContext,
 }
 
 pub struct ClaimP2pkh {
-    input: TxIn,
-    output: TxOut,
+    ctx: InputContext,
 }
 
-impl ClaimP2pkhBuilder {
-    fn with_pubkey(self, pubkey: PublicKey) -> ClaimP2pkhBuilder {
-        todo!()
+impl ClaimP2pkh {
+    fn with_pubkey_hash(self, hash: PublicKeyHash) -> Spendable {
+        Spendable {
+            input: TxIn {
+                previous_output: self.ctx.previous_output,
+                script_sig: ScriptBuf::new_p2pkh(&hash.0),
+                // Use `0xffffffff` default.
+                sequence: Sequence::default(),
+                // Empty witness.
+                witness: Witness::new(),
+            },
+        }
     }
-    fn with_value(mut self, value: u64) -> ClaimP2pkhBuilder {
-        self.ctx.value = Some(value);
-        self
-    }
-    fn finalize(self) -> Result<ClaimP2pkh> {
-        todo!()
-    }
+}
+
+pub struct Spendable {
+    input: TxIn,
 }
