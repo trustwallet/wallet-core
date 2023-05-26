@@ -4,6 +4,7 @@ use bitcoin::blockdata::transaction::OutPoint;
 use bitcoin::hash_types::Txid;
 use bitcoin::hashes::sha256d::Hash;
 use bitcoin::key::UntweakedPublicKey;
+use bitcoin::psbt::Input;
 use bitcoin::taproot::{LeafVersion, TaprootBuilder};
 use bitcoin::transaction::Transaction;
 use bitcoin::{Sequence, TxIn, TxOut, Witness};
@@ -40,7 +41,7 @@ fn poc() {
 }
 
 pub enum ScriptVariant {
-    P2pkh(ClaimP2pkh),
+    P2pkh(ClaimP2pkhBuilder),
     NonStandard,
 }
 
@@ -74,6 +75,9 @@ impl TransactionBuilder {
             },
         }
     }
+    fn add_spendable(self, spend: Spendable) -> Self {
+        todo!()
+    }
 }
 
 pub struct PublicKey;
@@ -81,51 +85,70 @@ pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
 fn claim_utxo(utxo: TxOut, point: OutPoint) -> ScriptVariant {
-    let s = utxo.script_pubkey;
-
-    if s.is_p2pkh() {
-        ScriptVariant::P2pkh(ClaimP2pkh {
-            ctx: InputContext {
+    if utxo.script_pubkey.is_p2pkh() {
+        ScriptVariant::P2pkh(ClaimP2pkhBuilder {
+            ctx: InputContextBuilder {
                 previous_output: point,
-                script_sig: None,
+                script_pub_key: utxo.script_pubkey,
                 sequence: None,
                 witness: None,
             },
+            script_sig: None,
         })
     } else {
         ScriptVariant::NonStandard
     }
 }
 
-struct InputContext {
+struct InputContextBuilder {
     previous_output: OutPoint,
-    // Script for claiming the output.
-    script_sig: Option<ScriptBuf>,
-    // Document.
+    // The condition for claiming the output.
+    script_pub_key: ScriptBuf,
+    // TODO: Document this.
     sequence: Option<Sequence>,
     // Witness data for Segwit/Taproot transactions.
     witness: Option<Witness>,
 }
 
-pub struct ClaimP2pkh {
-    ctx: InputContext,
+// TODO: Should be private.
+pub struct InputContext {
+    previous_output: OutPoint,
+    // The condition for claiming the output.
+    script_pub_key: ScriptBuf,
+    // TODO: Document this.
+    sequence: Sequence,
+    // Witness data for Segwit/Taproot transactions.
+    witness: Witness,
 }
 
-impl ClaimP2pkh {
-    fn with_pubkey_hash(self, hash: PublicKeyHash) -> Spendable {
-        Spendable {
-            input: TxIn {
+pub struct ClaimP2pkhBuilder {
+    ctx: InputContextBuilder,
+    // Script for claiming the output.
+    script_sig: Option<ScriptBuf>,
+}
+
+impl ClaimP2pkhBuilder {
+    fn my_pubkey_hash(self, hash: PublicKeyHash) -> Spendable {
+        Spendable::P2pkh {
+            // TODO: We probably don't need to construct this here, but in the
+            // `TransactionBuilder`.
+            input: InputContext {
                 previous_output: self.ctx.previous_output,
-                script_sig: ScriptBuf::new_p2pkh(&hash.0),
-                // Use `0xffffffff` default.
+                script_pub_key: self.ctx.script_pub_key,
+                // Use `0xFFFFFFFF` default.
                 sequence: Sequence::default(),
                 // Empty witness.
                 witness: Witness::new(),
             },
+            // This hash
+            hash,
         }
     }
 }
 
-pub struct Spendable {
-    input: TxIn,
+pub enum Spendable {
+    P2pkh {
+        input: InputContext,
+        hash: PublicKeyHash,
+    },
 }
