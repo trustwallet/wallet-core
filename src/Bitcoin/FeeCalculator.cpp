@@ -66,7 +66,7 @@ public:
         return static_cast<int64_t>(gZcashMarginalFee * std::max(static_cast<int64_t>(gZcashGraceActions), std::max(inputs, outputs))) * byteFee;
     }
 
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
+    [[nodiscard]] int64_t calculateSingleInput([[maybe_unused]] int64_t byteFee) const noexcept override {
         if (disableDustFilter) { 
             return 0; 
         }

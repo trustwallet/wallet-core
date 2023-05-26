@@ -232,7 +232,7 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
                     extraOut.assetId = load(parse_hex(plan.outputs(i).asset_id()));
                     extraOut.value = (int64_t)plan.outputs(i).extra_outputs(j).amount();
                     auto extraScriptHash = TW::NEO::Address(plan.outputs(i).extra_outputs(j).to_address()).toScriptHash();
-                    extraOut.scriptHash = load(scriptHash);
+                    extraOut.scriptHash = load(extraScriptHash);
                     transaction->outputs.push_back(extraOut);
                 }
             }
