@@ -83,6 +83,8 @@ pub trait TransactionSigner {
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH>;
+
+    // P2PKH signer with `SIGHASH_ALL`
     fn sign_p2pkh(&self, utxo: &TxOut, hash: H256) -> Result<ClaimP2PKH> {
         <Self as TransactionSigner>::sign_p2pkh_with_sighash(self, utxo, hash, SigHashType::All)
     }
@@ -171,75 +173,23 @@ impl TransactionSigner for secp256k1::KeyPair {
     }
 }
 
-pub enum KeyPair {
-    Secp256k1(secp256k1::KeyPair),
-}
-
-impl KeyPair {
-    // TODO: Prefix `as_`
-    pub fn private(&self) -> PrivateKeyRef {
-        match self {
-            KeyPair::Secp256k1(pair) => PrivateKeyRef::Secp256k1(pair.private()),
-        }
-    }
-    pub fn public(&self) -> PublicKeyRef {
-        match self {
-            KeyPair::Secp256k1(pair) => PublicKeyRef::Secp256k1(pair.public()),
-        }
-    }
-}
-
-pub enum PrivateKeyRef<'a> {
-    Secp256k1(&'a secp256k1::PrivateKey),
-}
-
-impl<'a> PrivateKeyRef<'a> {
-    fn sign_h256(&self, msg: H256) -> Result<Signature> {
-        match self {
-            PrivateKeyRef::Secp256k1(key) => Ok(Signature::Secp256k1(
-                key.sign(msg).map_err(|_| Error::Todo)?,
-            )),
-        }
-    }
-}
-
-pub enum PublicKey {
-    Secp256k1(secp256k1::PublicKey),
-}
-
-pub enum PublicKeyRef<'a> {
-    Secp256k1(&'a secp256k1::PublicKey),
-}
-
-impl<'a> PublicKeyRef<'a> {
-    pub fn hash(&self) -> PublicKeyHash {
-        todo!()
-    }
-}
-
-pub enum Signature {
-    Secp256k1(secp256k1::Signature),
-}
-
 pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
 pub struct TransactionBuilder {
     version: i32,
     lock_time: LockTime,
-    keypair: KeyPair,
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
 }
 
 impl TransactionBuilder {
-    fn new(keypair: KeyPair) -> Self {
+    fn new() -> Self {
         TransactionBuilder {
             // TODO: Check this.
             version: 2,
             // No lock time, transaction is immediately spendable.
             lock_time: LockTime::Blocks(Height::ZERO),
-            keypair,
             inputs: vec![],
             outputs: vec![],
         }
@@ -305,6 +255,7 @@ impl TransactionBuilder {
             output: vec![],
         };
 
+        // Prepare the inputs for `bitcoin` crate.
         for input in &self.inputs {
             let btc_txin = match input {
                 // TODO: `TxIn` should implement `From<TxInput>`.
@@ -314,6 +265,7 @@ impl TransactionBuilder {
             tx.input.push(btc_txin);
         }
 
+        // Prepare the outputs for `bitcoin` crate.
         for output in self.outputs {
             let btc_txout = TxOut::from(output);
             tx.output.push(btc_txout);
@@ -321,9 +273,9 @@ impl TransactionBuilder {
 
         let cache = SighashCache::new(tx);
 
-        //let mut input_scriptsigs = vec![];
         let mut legacy_hashes = vec![];
 
+        // For each input (index), we create a hash which is to be signed.
         for (index, input) in self.inputs.into_iter().enumerate() {
             // TODO: Prettify this.
             let script_pubkey = match input {
@@ -349,7 +301,7 @@ impl TransactionBuilder {
 
 pub enum Recipient {
     LegacyHash(PublicKeyHash),
-    LegacyPubkey(PublicKey),
+    LegacyPubkey(()),
     Segwit(()),
     Taproot(()),
 }
