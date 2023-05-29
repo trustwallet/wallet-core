@@ -50,6 +50,7 @@ pub struct TransactionBuilder {
     tx: Transaction,
     privkey: PrivateKey,
     pubkey: PublicKey,
+    inputs: Vec<Spendable>,
 }
 
 impl TransactionBuilder {
@@ -64,6 +65,7 @@ impl TransactionBuilder {
             },
             privkey,
             pubkey,
+            inputs: vec![],
         }
     }
     pub fn version(mut self, version: i32) -> Self {
@@ -81,11 +83,13 @@ impl TransactionBuilder {
     fn add_input(mut self, utxo: TxOut, point: OutPoint) -> Self {
         match claim_utxo(utxo, point) {
             ScriptVariant::P2pkh(builder) => {
-                let x = builder
+                let input = builder
                     .my_pubkey_hash(self.pubkey.hash())
                     .build()
                     // Panicing implies bug.
                     .unwrap();
+
+                self.inputs.push(input);
             },
             ScriptVariant::NonStandard => {
                 todo!()
@@ -138,7 +142,7 @@ impl InputContext {
             previous_output: point,
             // Empty scriptbuf.
             script_sig: ScriptBuf::new(),
-            // Empty scriptbuf.
+            // TODO: Document this.
             script_pub_key: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF`.
             sequence: Sequence::default(),
