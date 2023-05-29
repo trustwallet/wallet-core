@@ -41,16 +41,29 @@ fn poc() {
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
 
-pub enum ScriptVariant {
-    P2pkh(ClaimP2pkhBuilder),
+pub enum TxInputBuilder {
+    P2pkh(P2pkhInputBuilder),
     NonStandard,
+}
+
+impl TxInputBuilder {
+    fn from_utxo(utxo: TxOut, point: OutPoint) -> Self {
+        if utxo.script_pubkey.is_p2pkh() {
+            TxInputBuilder::P2pkh(P2pkhInputBuilder {
+                ctx: InputContext::new(utxo, point),
+                hash: None,
+            })
+        } else {
+            TxInputBuilder::NonStandard
+        }
+    }
 }
 
 pub struct TransactionBuilder {
     tx: Transaction,
     privkey: PrivateKey,
     pubkey: PublicKey,
-    inputs: Vec<Spendable>,
+    inputs: Vec<TxInput>,
 }
 
 impl TransactionBuilder {
@@ -72,17 +85,17 @@ impl TransactionBuilder {
         self.tx.version = version;
         self
     }
-    // TODO: handle locktime blocks/seconds.
+    // TODO: handle locktime seconds?.
     pub fn lock_time(mut self, height: u32) -> Self {
         self.tx.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
         self
     }
-    fn add_spendable(self, spend: Spendable) -> Self {
+    fn add_tx_input(self, spend: TxInput) -> Self {
         todo!()
     }
-    fn add_input(mut self, utxo: TxOut, point: OutPoint) -> Self {
-        match claim_utxo(utxo, point) {
-            ScriptVariant::P2pkh(builder) => {
+    fn add_tx_input_from_utxo(mut self, utxo: TxOut, point: OutPoint) -> Self {
+        match TxInputBuilder::from_utxo(utxo, point) {
+            TxInputBuilder::P2pkh(builder) => {
                 let input = builder
                     .my_pubkey_hash(self.pubkey.hash())
                     .build()
@@ -91,7 +104,7 @@ impl TransactionBuilder {
 
                 self.inputs.push(input);
             },
-            ScriptVariant::NonStandard => {
+            TxInputBuilder::NonStandard => {
                 todo!()
             },
         }
@@ -111,17 +124,6 @@ impl PublicKey {
 
 pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
-
-fn claim_utxo(utxo: TxOut, point: OutPoint) -> ScriptVariant {
-    if utxo.script_pubkey.is_p2pkh() {
-        ScriptVariant::P2pkh(ClaimP2pkhBuilder {
-            ctx: InputContext::new(utxo, point),
-            hash: None,
-        })
-    } else {
-        ScriptVariant::NonStandard
-    }
-}
 
 // TODO: Should be private.
 pub struct InputContext {
@@ -152,25 +154,25 @@ impl InputContext {
     }
 }
 
-pub struct ClaimP2pkhBuilder {
+pub struct P2pkhInputBuilder {
     ctx: InputContext,
     hash: Option<PublicKeyHash>,
 }
 
-impl ClaimP2pkhBuilder {
+impl P2pkhInputBuilder {
     pub fn my_pubkey_hash(mut self, hash: PublicKeyHash) -> Self {
         self.hash = Some(hash);
         self
     }
-    pub fn build(self) -> Result<Spendable> {
-        Ok(Spendable::P2pkh {
+    pub fn build(self) -> Result<TxInput> {
+        Ok(TxInput::P2pkh {
             input: self.ctx,
             hash: self.hash.ok_or(Error::Todo)?,
         })
     }
 }
 
-pub enum Spendable {
+pub enum TxInput {
     P2pkh {
         input: InputContext,
         hash: PublicKeyHash,
