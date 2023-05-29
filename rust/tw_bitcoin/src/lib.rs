@@ -10,6 +10,7 @@ use bitcoin::taproot::{LeafVersion, TaprootBuilder};
 use bitcoin::transaction::Transaction;
 use bitcoin::{Sequence, TxIn, TxOut, Witness};
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
+use ripemd::{Digest, Ripemd160};
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
@@ -18,34 +19,30 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 const SIGHASH_ALL: u32 = 1;
 
+pub enum SigHashType {
+    All,
+    None,
+    Single,
+    AnyoneCanPay,
+}
+
+impl SigHashType {
+    fn to_le_byte(&self) -> u8 {
+        match self {
+            SigHashType::All => 1_u8.to_le(),
+            SigHashType::None => 2_u8.to_le(),
+            SigHashType::Single => 3_u8.to_le(),
+            // 0x80 = 128
+            SigHashType::AnyoneCanPay => 128_u8.to_le(),
+        }
+    }
+}
+
 fn convert_legacy_btc_hash_to_h256(hash: LegacySighash) -> H256 {
     let slice: &[u8] = hash.as_raw_hash().as_ref();
     debug_assert_eq!(slice.len(), 32);
     let bytes: [u8; 32] = slice.try_into().unwrap();
     H256::from(bytes)
-}
-
-// TODO: `tw_keypair` should offer this function/method.
-fn to_der_signature(sig: &[u8; 64]) -> Vec<u8> {
-    let mut der_sig = vec![];
-
-    // Add the DER prefix
-    der_sig.push(0x30);
-
-    // Length of the rest of the signature
-    der_sig.push(68);
-
-    // Add the 'r' component
-    der_sig.push(0x02); // integer marker
-    der_sig.push(32); // length of the 'r' component
-    der_sig.extend(&sig[0..32]);
-
-    // Add the 's' component
-    der_sig.push(0x02); // integer marker
-    der_sig.push(32); // length of the 's' component
-    der_sig.extend(&sig[32..64]);
-
-    der_sig
 }
 
 #[derive(Debug, Clone)]
@@ -78,6 +75,89 @@ fn poc() {
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
 */
+
+pub trait TransactionSigner {
+    fn sign_p2pkh(&self, utxo: &TxOut, hash: H256) -> Result<ClaimP2PKH> {
+        <Self as TransactionSigner>::sign_p2pkh_with_sighash(self, utxo, hash, SigHashType::All)
+    }
+    fn sign_p2pkh_with_sighash(
+        &self,
+        utxo: &TxOut,
+        hash: H256,
+        sighash: SigHashType,
+    ) -> Result<ClaimP2PKH>;
+}
+
+pub struct ClaimP2PKH {
+    sig_len: u8,
+    sig: Vec<u8>,
+    sighash: SigHashType,
+    pubkey_len: u8,
+    pubkey: Vec<u8>,
+}
+
+impl TransactionSigner for secp256k1::KeyPair {
+    fn sign_p2pkh_with_sighash(
+        &self,
+        utxo: &TxOut,
+        hash: H256,
+        sighash: SigHashType,
+    ) -> Result<ClaimP2PKH> {
+        // Sanity check; make sure the scriptPubKey is actually a `P2PKH` script.
+        let script_pubkey = &utxo.script_pubkey;
+        if script_pubkey.is_p2pkh() {
+            return Err(Error::Todo);
+        }
+
+        // Extract the expected recipient from the scriptPubKey.
+        let expected_recipient = &utxo.script_pubkey.as_bytes()[2..23];
+
+        // The expected recipient is a RIPEMD160 hash, so first we check
+        // whether it's a hash from the _compressed_ public key.
+        let mut hasher = Ripemd160::new();
+        hasher.update(self.public().compressed().as_slice());
+        let finalized = hasher.finalize();
+        let hashed_pubkey = &finalized[..];
+
+        debug_assert_eq!(expected_recipient.len(), hashed_pubkey.len());
+
+        // If the expected recipient is a RIPEMD160 hash of the uncompressed
+        // key...
+        let pubkey = if expected_recipient == hashed_pubkey {
+            self.public().compressed().to_vec()
+        }
+        // ... if not, then we check whether it is a RIPEMD160 hash of the
+        // _uncompressed_ public key.
+        else {
+            let mut hasher = Ripemd160::new();
+            hasher.update(self.public().uncompressed().as_slice());
+            let finalized = hasher.finalize();
+            let hashed_pubkey = &finalized[..];
+
+            if expected_recipient == hashed_pubkey {
+                self.public().uncompressed().to_vec()
+            } else {
+                // Invalid, wrong signer!
+                return Err(Error::Todo);
+            }
+        };
+
+        // Sign the hash of the transaction data (OP_CHECKSIG).
+        let sig = self.private().sign(hash).map_err(|_| Error::Todo)?;
+        // Encode signature as DER.
+        let der_sig = sig.to_der();
+
+        debug_assert_eq!(der_sig.len(), 70);
+
+        Ok(ClaimP2PKH {
+            sig_len: der_sig.len() as u8,
+            sig: der_sig.as_bytes().to_vec(),
+            sighash,
+            pubkey_len: pubkey.len() as u8,
+            pubkey,
+        })
+    }
+}
 
 pub enum KeyPair {
     Secp256k1(secp256k1::KeyPair),
@@ -129,14 +209,6 @@ pub enum Signature {
     Secp256k1(secp256k1::Signature),
 }
 
-impl Signature {
-    pub fn to_der(&self) -> &[u8] {
-        match self {
-            Signature::Secp256k1(sig) => sig.to_der(),
-        }
-    }
-}
-
 pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
@@ -173,6 +245,8 @@ impl TransactionBuilder {
         self.inputs.push(input);
         self
     }
+    // TODO: Add something like this later.
+    /*
     fn add_input_from_utxo(mut self, utxo: TxOut, point: OutPoint) -> Self {
         match TxInputBuilder::from_utxo(utxo, point) {
             TxInputBuilder::P2pkh(builder) => {
@@ -191,6 +265,7 @@ impl TransactionBuilder {
 
         self
     }
+    */
     /// Alias for `add_output_pk2pkh`.
     fn add_output_transfer(self, recipient: Recipient, satoshis: u64) -> Self {
         self.add_output_p2pkh(recipient, satoshis)
@@ -243,15 +318,15 @@ impl TransactionBuilder {
             let btc_hash = cache
                 .legacy_signature_hash(
                     index,
-                    // TODO: Add note that this is same as `scriptPubKey` handled
-                    // somewhere else.
+                    // TODO: Add note that this is same as `scriptPubKey`,
+                    // handled somewhere else.
                     &script_pubkey,
                     SIGHASH_ALL,
                 )
                 .map_err(|_| Error::Todo)?;
 
             let hash = convert_legacy_btc_hash_to_h256(btc_hash);
-            let sig = self.keypair.private().sign_h256(hash)?.to_der();
+            //let sig = self.keypair.private().sign_h256(hash)?.to_der();
 
             //input_scriptsigs.push()
         }
