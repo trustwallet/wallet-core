@@ -5,12 +5,15 @@ use bitcoin::hash_types::Txid;
 use bitcoin::hashes::sha256d::Hash;
 use bitcoin::key::UntweakedPublicKey;
 use bitcoin::psbt::Input;
+use bitcoin::sighash::SighashCache;
 use bitcoin::taproot::{LeafVersion, TaprootBuilder};
 use bitcoin::transaction::Transaction;
 use bitcoin::{Sequence, TxIn, TxOut, Witness};
 use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+const SIGHASH_ALL: u32 = 1;
 
 #[derive(Debug, Clone)]
 pub enum Error {
@@ -54,40 +57,41 @@ pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
 pub struct TransactionBuilder {
-    tx: Transaction,
+    version: i32,
+    lock_time: LockTime,
     privkey: PrivateKey,
     pubkey: PublicKey,
     inputs: Vec<TxInput>,
+    outputs: Vec<TxOutput>,
 }
 
 impl TransactionBuilder {
     fn new(privkey: PrivateKey, pubkey: PublicKey) -> Self {
         TransactionBuilder {
-            tx: Transaction {
-                // TODO: Check
-                version: 2,
-                lock_time: LockTime::Blocks(Height::ZERO),
-                input: vec![],
-                output: vec![],
-            },
+            // TODO: Check this.
+            version: 2,
+            // No lock time, transaction is immediately spendable.
+            lock_time: LockTime::Blocks(Height::ZERO),
             privkey,
             pubkey,
             inputs: vec![],
+            outputs: vec![],
         }
     }
     pub fn version(mut self, version: i32) -> Self {
-        self.tx.version = version;
+        self.version = version;
         self
     }
     // TODO: handle locktime seconds?.
     pub fn lock_time(mut self, height: u32) -> Self {
-        self.tx.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
+        self.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
         self
     }
-    fn add_tx_input(self, spend: TxInput) -> Self {
-        todo!()
+    fn add_input(mut self, input: TxInput) -> Self {
+        self.inputs.push(input);
+        self
     }
-    fn add_tx_input_from_utxo(mut self, utxo: TxOut, point: OutPoint) -> Self {
+    fn add_input_from_utxo(mut self, utxo: TxOut, point: OutPoint) -> Self {
         match TxInputBuilder::from_utxo(utxo, point) {
             TxInputBuilder::P2pkh(builder) => {
                 let input = builder
@@ -105,8 +109,76 @@ impl TransactionBuilder {
 
         self
     }
+    /// Alias for `add_output_pk2pkh`.
+    fn add_output_transfer(self, recipient: Recipient, satoshis: u64) -> Self {
+        self.add_output_p2pkh(recipient, satoshis)
+    }
+    fn add_output_p2pkh(mut self, recipient: Recipient, satoshis: u64) -> Self {
+        match recipient {
+            Recipient::LegacyHash(hash) => {
+                self.outputs.push(TxOutput::P2pkh {
+                    satoshis,
+                    script_pubkey: ScriptBuf::new_p2pkh(&hash.0),
+                });
+            },
+            _ => todo!(),
+        }
+
+        self
+    }
+    fn build(self) -> Result<usize> {
+        let mut tx = Transaction {
+            version: self.version,
+            lock_time: self.lock_time,
+            input: vec![],
+            output: vec![],
+        };
+
+        for input in &self.inputs {
+            let btc_txin = match input {
+                // TODO: `TxIn` should implement `From<TxInput>`.
+                TxInput::P2pkh { ctx, hash: _ } => TxIn::from(ctx.clone()),
+            };
+
+            tx.input.push(btc_txin);
+        }
+
+        for output in self.outputs {
+            let btc_txout = TxOut::from(output);
+            tx.output.push(btc_txout);
+        }
+
+        let cache = SighashCache::new(tx);
+
+        for (index, input) in self.inputs.into_iter().enumerate() {
+            // TODO: Prettify this.
+            let script_pubkey = match input {
+                TxInput::P2pkh { ctx, hash: _ } => ctx.script_pub_key,
+            };
+
+            let _hash = cache
+                .legacy_signature_hash(
+                    index,
+                    // TODO: Add note that this is same as `scriptPubKey` handled
+                    // somewhere else.
+                    &script_pubkey,
+                    SIGHASH_ALL,
+                )
+                .map_err(|_| Error::Todo)?;
+        }
+
+        todo!()
+    }
 }
 
+pub enum Recipient {
+    LegacyHash(PublicKeyHash),
+    LegacyPubkey(PublicKey),
+    Segwit(()),
+    Taproot(()),
+}
+
+#[derive(Debug, Clone)]
 // TODO: Should be private.
 pub struct InputContext {
     previous_output: OutPoint,
@@ -118,6 +190,17 @@ pub struct InputContext {
     sequence: Sequence,
     // Witness data for Segwit/Taproot transactions.
     witness: Witness,
+}
+
+impl From<InputContext> for TxIn {
+    fn from(ctx: InputContext) -> Self {
+        TxIn {
+            previous_output: ctx.previous_output,
+            script_sig: ctx.script_sig,
+            sequence: ctx.sequence,
+            witness: ctx.witness,
+        }
+    }
 }
 
 impl InputContext {
@@ -148,15 +231,36 @@ impl P2pkhInputBuilder {
     }
     pub fn build(self) -> Result<TxInput> {
         Ok(TxInput::P2pkh {
-            input: self.ctx,
+            ctx: self.ctx,
             hash: self.hash.ok_or(Error::Todo)?,
         })
     }
 }
 
+pub enum TxOutput {
+    P2pkh {
+        satoshis: u64,
+        script_pubkey: ScriptBuf,
+    },
+}
+
+impl From<TxOutput> for TxOut {
+    fn from(out: TxOutput) -> Self {
+        match out {
+            TxOutput::P2pkh {
+                satoshis,
+                script_pubkey,
+            } => TxOut {
+                value: satoshis,
+                script_pubkey,
+            },
+        }
+    }
+}
+
 pub enum TxInput {
     P2pkh {
-        input: InputContext,
+        ctx: InputContext,
         hash: PublicKeyHash,
     },
 }
