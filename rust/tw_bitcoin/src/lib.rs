@@ -173,6 +173,7 @@ impl TransactionSigner for secp256k1::KeyPair {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
@@ -247,7 +248,7 @@ impl TransactionBuilder {
     }
     /// The legacy signature hash that must be signed to spend an input.
     /// Used for **P2PKH** and **P2SH**.
-    fn legacy_signature_hashes(self) -> Result<Vec<H256>> {
+    fn legacy_signature_hashes(self) -> Result<Vec<(usize, H256)>> {
         let mut tx = Transaction {
             version: self.version,
             lock_time: self.lock_time,
@@ -256,10 +257,11 @@ impl TransactionBuilder {
         };
 
         // Prepare the inputs for `bitcoin` crate.
-        for input in &self.inputs {
+        for input in self.inputs.iter().cloned().collect::<Vec<TxInput>>() {
             let btc_txin = match input {
                 // TODO: `TxIn` should implement `From<TxInput>`.
-                TxInput::P2pkh { ctx, hash: _ } => TxIn::from(ctx.clone()),
+                TxInput::P2pkh { ctx, hash: _ } => TxIn::from(ctx),
+                TxInput::NonStandard { ctx } => TxIn::from(ctx),
             };
 
             tx.input.push(btc_txin);
@@ -280,6 +282,8 @@ impl TransactionBuilder {
             // TODO: Prettify this.
             let script_pubkey = match input {
                 TxInput::P2pkh { ctx, hash: _ } => ctx.script_pub_key,
+                // Skip.
+                TxInput::NonStandard { ctx: _ } => continue,
             };
 
             let legacy_hash = cache
@@ -292,7 +296,7 @@ impl TransactionBuilder {
                 )
                 .map_err(|_| Error::Todo)?;
 
-            legacy_hashes.push(convert_legacy_btc_hash_to_h256(legacy_hash))
+            legacy_hashes.push((index, convert_legacy_btc_hash_to_h256(legacy_hash)))
         }
 
         Ok(legacy_hashes)
@@ -386,10 +390,14 @@ impl From<TxOutput> for TxOut {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum TxInput {
     P2pkh {
         ctx: InputContext,
         hash: PublicKeyHash,
+    },
+    NonStandard {
+        ctx: InputContext,
     },
 }
 
