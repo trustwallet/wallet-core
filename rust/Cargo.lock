@@ -1312,6 +1312,8 @@ dependencies = [
  "bitcoin",
  "rand",
  "secp256k1",
+ "tw_hash",
+ "tw_keypair",
 ]
 
 [[package]]
