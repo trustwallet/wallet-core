@@ -246,9 +246,7 @@ impl TransactionBuilder {
 
         self
     }
-    /// The legacy signature hash that must be signed to spend an input.
-    /// Used for **P2PKH** and **P2SH**.
-    fn legacy_signature_hashes(self) -> Result<Vec<(usize, H256)>> {
+    fn signature_hashes(self) -> Result<Vec<(usize, TransactionSigHashType)>> {
         let mut tx = Transaction {
             version: self.version,
             lock_time: self.lock_time,
@@ -275,32 +273,37 @@ impl TransactionBuilder {
 
         let cache = SighashCache::new(tx);
 
-        let mut legacy_hashes = vec![];
+        let mut sig_hashes = vec![];
 
         // For each input (index), we create a hash which is to be signed.
         for (index, input) in self.inputs.into_iter().enumerate() {
-            // TODO: Prettify this.
-            let script_pubkey = match input {
-                TxInput::P2pkh { ctx, hash: _ } => ctx.script_pub_key,
+            match input {
+                TxInput::P2pkh { ctx, hash: _ } => {
+                    let legacy_hash = cache
+                        .legacy_signature_hash(
+                            index,
+                            // TODO: Add note that this is same as `scriptPubKey`,
+                            // handled somewhere else.
+                            &ctx.script_pub_key,
+                            SIGHASH_ALL,
+                        )
+                        .map_err(|_| Error::Todo)?;
+
+                    let h256 = convert_legacy_btc_hash_to_h256(legacy_hash);
+
+                    sig_hashes.push((index, TransactionSigHashType::Legacy(h256)))
+                },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
             };
-
-            let legacy_hash = cache
-                .legacy_signature_hash(
-                    index,
-                    // TODO: Add note that this is same as `scriptPubKey`,
-                    // handled somewhere else.
-                    &script_pubkey,
-                    SIGHASH_ALL,
-                )
-                .map_err(|_| Error::Todo)?;
-
-            legacy_hashes.push((index, convert_legacy_btc_hash_to_h256(legacy_hash)))
         }
 
-        Ok(legacy_hashes)
+        Ok(sig_hashes)
     }
+}
+
+pub enum TransactionSigHashType {
+    Legacy(H256),
 }
 
 pub enum Recipient {
