@@ -41,23 +41,17 @@ fn poc() {
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
 
-pub enum TxInputBuilder {
-    P2pkh(P2pkhInputBuilder),
-    NonStandard,
-}
+pub struct PrivateKey;
+pub struct PublicKey;
 
-impl TxInputBuilder {
-    fn from_utxo(utxo: TxOut, point: OutPoint) -> Self {
-        if utxo.script_pubkey.is_p2pkh() {
-            TxInputBuilder::P2pkh(P2pkhInputBuilder {
-                ctx: InputContext::new(utxo, point),
-                hash: None,
-            })
-        } else {
-            TxInputBuilder::NonStandard
-        }
+impl PublicKey {
+    pub fn hash(&self) -> PublicKeyHash {
+        todo!()
     }
 }
+
+pub struct PublicKeyHash(bitcoin::PubkeyHash);
+pub struct ScriptHash;
 
 pub struct TransactionBuilder {
     tx: Transaction,
@@ -113,18 +107,6 @@ impl TransactionBuilder {
     }
 }
 
-pub struct PrivateKey;
-pub struct PublicKey;
-
-impl PublicKey {
-    pub fn hash(&self) -> PublicKeyHash {
-        todo!()
-    }
-}
-
-pub struct PublicKeyHash(bitcoin::PubkeyHash);
-pub struct ScriptHash;
-
 // TODO: Should be private.
 pub struct InputContext {
     previous_output: OutPoint,
@@ -177,4 +159,22 @@ pub enum TxInput {
         input: InputContext,
         hash: PublicKeyHash,
     },
+}
+
+pub enum TxInputBuilder {
+    P2pkh(P2pkhInputBuilder),
+    NonStandard,
+}
+
+impl TxInputBuilder {
+    fn from_utxo(utxo: TxOut, point: OutPoint) -> Self {
+        if utxo.script_pubkey.is_p2pkh() {
+            TxInputBuilder::P2pkh(P2pkhInputBuilder {
+                ctx: InputContext::new(utxo, point),
+                hash: None,
+            })
+        } else {
+            TxInputBuilder::NonStandard
+        }
+    }
 }
