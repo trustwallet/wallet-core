@@ -84,7 +84,7 @@ pub trait TransactionSigner {
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH>;
 
-    // P2PKH signer with `SIGHASH_ALL`
+    // P2PKH signer with `SIGHASH_ALL` as default.
     fn sign_p2pkh(&self, utxo: &TxOut, hash: H256) -> Result<ClaimP2PKH> {
         <Self as TransactionSigner>::sign_p2pkh_with_sighash(self, utxo, hash, SigHashType::All)
     }
@@ -247,6 +247,7 @@ impl TransactionBuilder {
         self
     }
     fn signature_hashes(self) -> Result<Vec<(usize, TransactionSigHashType)>> {
+        // Prepare boilerplate transaction for `bitcoin` crate.
         let mut tx = Transaction {
             version: self.version,
             lock_time: self.lock_time,
@@ -255,7 +256,7 @@ impl TransactionBuilder {
         };
 
         // Prepare the inputs for `bitcoin` crate.
-        for input in self.inputs.iter().cloned().collect::<Vec<TxInput>>() {
+        for input in self.inputs.iter().cloned() {
             let btc_txin = match input {
                 // TODO: `TxIn` should implement `From<TxInput>`.
                 TxInput::P2pkh { ctx, hash: _ } => TxIn::from(ctx),
@@ -402,6 +403,12 @@ pub enum TxInput {
     NonStandard {
         ctx: InputContext,
     },
+}
+
+impl TxInput {
+    fn from_slice(slice: &[u8]) -> Result<Self> {
+        todo!()
+    }
 }
 
 pub enum TxInputBuilder {
