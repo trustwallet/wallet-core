@@ -12,6 +12,7 @@ use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug, Clone)]
 pub enum Error {
     Todo,
 }
@@ -47,10 +48,12 @@ pub enum ScriptVariant {
 
 pub struct TransactionBuilder {
     tx: Transaction,
+    privkey: PrivateKey,
+    pubkey: PublicKey,
 }
 
 impl TransactionBuilder {
-    fn new() -> Self {
+    fn new(privkey: PrivateKey, pubkey: PublicKey) -> Self {
         TransactionBuilder {
             tx: Transaction {
                 // TODO: Check
@@ -59,60 +62,68 @@ impl TransactionBuilder {
                 input: vec![],
                 output: vec![],
             },
+            privkey,
+            pubkey,
         }
     }
-    pub fn version(self, version: i32) -> Self {
-        Self {
-            tx: Transaction { version, ..self.tx },
-        }
+    pub fn version(mut self, version: i32) -> Self {
+        self.tx.version = version;
+        self
     }
     // TODO: handle locktime blocks/seconds.
-    pub fn lock_time(self, height: u32) -> Self {
-        Self {
-            tx: Transaction {
-                lock_time: LockTime::Blocks(Height::from_consensus(height).unwrap()),
-                ..self.tx
-            },
-        }
+    pub fn lock_time(mut self, height: u32) -> Self {
+        self.tx.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
+        self
     }
     fn add_spendable(self, spend: Spendable) -> Self {
         todo!()
     }
+    fn add_input(mut self, utxo: TxOut, point: OutPoint) -> Self {
+        match claim_utxo(utxo, point) {
+            ScriptVariant::P2pkh(builder) => {
+                let x = builder
+                    .my_pubkey_hash(self.pubkey.hash())
+                    .build()
+                    // Panicing implies bug.
+                    .unwrap();
+            },
+            ScriptVariant::NonStandard => {
+                todo!()
+            },
+        }
+
+        self
+    }
 }
 
+pub struct PrivateKey;
 pub struct PublicKey;
+
+impl PublicKey {
+    pub fn hash(&self) -> PublicKeyHash {
+        todo!()
+    }
+}
+
 pub struct PublicKeyHash(bitcoin::PubkeyHash);
 pub struct ScriptHash;
 
 fn claim_utxo(utxo: TxOut, point: OutPoint) -> ScriptVariant {
     if utxo.script_pubkey.is_p2pkh() {
         ScriptVariant::P2pkh(ClaimP2pkhBuilder {
-            ctx: InputContextBuilder {
-                previous_output: point,
-                script_pub_key: utxo.script_pubkey,
-                sequence: None,
-                witness: None,
-            },
-            script_sig: None,
+            ctx: InputContext::new(utxo, point),
+            hash: None,
         })
     } else {
         ScriptVariant::NonStandard
     }
 }
 
-struct InputContextBuilder {
-    previous_output: OutPoint,
-    // The condition for claiming the output.
-    script_pub_key: ScriptBuf,
-    // TODO: Document this.
-    sequence: Option<Sequence>,
-    // Witness data for Segwit/Taproot transactions.
-    witness: Option<Witness>,
-}
-
 // TODO: Should be private.
 pub struct InputContext {
     previous_output: OutPoint,
+    // Inputs for `script_pub_key`.
+    script_sig: ScriptBuf,
     // The condition for claiming the output.
     script_pub_key: ScriptBuf,
     // TODO: Document this.
@@ -121,28 +132,37 @@ pub struct InputContext {
     witness: Witness,
 }
 
+impl InputContext {
+    pub fn new(utxo: TxOut, point: OutPoint) -> Self {
+        InputContext {
+            previous_output: point,
+            // Empty scriptbuf.
+            script_sig: ScriptBuf::new(),
+            // Empty scriptbuf.
+            script_pub_key: utxo.script_pubkey,
+            // Default value of `0xFFFFFFFF`.
+            sequence: Sequence::default(),
+            // Empty witness.
+            witness: Witness::new(),
+        }
+    }
+}
+
 pub struct ClaimP2pkhBuilder {
-    ctx: InputContextBuilder,
-    // Script for claiming the output.
-    script_sig: Option<ScriptBuf>,
+    ctx: InputContext,
+    hash: Option<PublicKeyHash>,
 }
 
 impl ClaimP2pkhBuilder {
-    fn my_pubkey_hash(self, hash: PublicKeyHash) -> Spendable {
-        Spendable::P2pkh {
-            // TODO: We probably don't need to construct this here, but in the
-            // `TransactionBuilder`.
-            input: InputContext {
-                previous_output: self.ctx.previous_output,
-                script_pub_key: self.ctx.script_pub_key,
-                // Use `0xFFFFFFFF` default.
-                sequence: Sequence::default(),
-                // Empty witness.
-                witness: Witness::new(),
-            },
-            // This hash
-            hash,
-        }
+    pub fn my_pubkey_hash(mut self, hash: PublicKeyHash) -> Self {
+        self.hash = Some(hash);
+        self
+    }
+    pub fn build(self) -> Result<Spendable> {
+        Ok(Spendable::P2pkh {
+            input: self.ctx,
+            hash: self.hash.ok_or(Error::Todo)?,
+        })
     }
 }
 
