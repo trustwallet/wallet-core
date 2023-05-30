@@ -118,8 +118,8 @@ impl TransactionBuilder {
         S: TransactionSigner,
     {
         self.sign_inputs_fn(|input, sighash| match input {
-            TxInput::P2pkh { ctx, recipient: _ } => signer
-                .claim_p2pkh(&ctx.script_pubkey, sighash)
+            TxInput::P2PKH(p2pkh) => signer
+                .claim_p2pkh(p2pkh, sighash)
                 // TODO: Should not convert into ScriptBuf here.
                 .map(|claim| claim.into_script_buf()),
             TxInput::NonStandard { ctx: _ } => {
@@ -143,7 +143,7 @@ impl TransactionBuilder {
         for input in self.inputs.iter().cloned() {
             let btc_txin = match input {
                 // TODO: `TxIn` should implement `From<TxInput>`.
-                TxInput::P2pkh { ctx, recipient: _ } => TxIn::from(ctx),
+                TxInput::P2PKH(p2pkh) => TxIn::from(p2pkh.ctx),
                 TxInput::NonStandard { ctx } => TxIn::from(ctx),
             };
 
@@ -164,13 +164,13 @@ impl TransactionBuilder {
         // For each input (index), we create a hash which is to be signed.
         for (index, input) in self.inputs.iter().enumerate() {
             match input {
-                TxInput::P2pkh { ctx, recipient: _ } => {
+                TxInput::P2PKH(p2pkh) => {
                     let legacy_hash = cache
                         .legacy_signature_hash(
                             index,
                             // TODO: Add note that this is same as `scriptPubKey`,
                             // handled somewhere else.
-                            &ctx.script_pubkey,
+                            &p2pkh.ctx.script_pubkey,
                             // TODO: Make adjustable.
                             SIGHASH_ALL,
                         )
@@ -295,16 +295,14 @@ impl From<TxOutput> for TxOut {
 
 #[derive(Debug, Clone)]
 pub enum TxInput {
-    P2pkh {
-        ctx: InputContext,
-        // TODO: Needed?
-        // TODO: Yes, pass this to the claimer, pubkey hash extraction should
-        // happen before.
-        recipient: RecipientHash160,
-    },
-    NonStandard {
-        ctx: InputContext,
-    },
+    P2PKH(TxInputP2PKH),
+    NonStandard { ctx: InputContext },
+}
+
+#[derive(Debug, Clone)]
+pub struct TxInputP2PKH {
+    ctx: InputContext,
+    recipient: RecipientHash160,
 }
 
 impl TxInput {
@@ -326,12 +324,13 @@ impl TxInput {
             let mut hash = [0; 20];
             hash.clone_from_slice(&ctx.script_pubkey.as_bytes()[3..23]);
 
-            Ok(TxInput::P2pkh {
+            Ok(TxInput::P2PKH(TxInputP2PKH {
                 ctx,
                 recipient: RecipientHash160(hash),
-            })
+            }))
         } else {
-            Ok(TxInput::NonStandard { ctx })
+            //Ok(TxInput::NonStandard { ctx })
+            panic!()
         }
     }
 }
