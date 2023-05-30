@@ -1,3 +1,6 @@
+use std::str::FromStr;
+
+use bitcoin::address::{Address as BTCAddress, Payload as BTCPayload};
 use bitcoin::blockdata::locktime::absolute::{Height as BTCHeight, LockTime as BTCLockTime};
 use bitcoin::blockdata::script::ScriptBuf as BTCScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint as BTCOutPoint;
@@ -8,6 +11,7 @@ use bitcoin::{Sequence as BTCSequence, TxIn as BTCTxIn, TxOut as BTCTxOut, Witne
 use claim::TransactionSigner;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use bitcoin::consensus::{Decodable, Encodable};
+use ripemd::{Digest, Ripemd160};
 use secp256k1::hashes::Hash;
 use tw_hash::H256;
 
@@ -78,6 +82,23 @@ fn poc() {
 pub struct RecipientHash160([u8; 20]);
 
 impl RecipientHash160 {
+    pub fn from_address_str(slice: &str) -> Result<Self> {
+        let checked = BTCAddress::from_str(slice).map_err(|_| Error::Todo)?;
+
+        // TODO: Network should be checked.
+        let hash = match checked.payload {
+            BTCPayload::PubkeyHash(hash) => {
+                let hash_ref: &[u8] = hash.as_ref();
+
+                let mut hasher = Ripemd160::new();
+                hasher.update(hash_ref);
+                hasher.finalize().try_into().unwrap()
+            },
+            _ => todo!(),
+        };
+
+        Ok(RecipientHash160(hash))
+    }
     pub fn from_bytes(bytes: [u8; 20]) -> Self {
         RecipientHash160(bytes)
     }
@@ -94,7 +115,7 @@ pub struct TransactionBuilder {
 }
 
 impl TransactionBuilder {
-    fn new() -> Self {
+    pub fn new() -> Self {
         TransactionBuilder {
             // TODO: Check this.
             version: 2,
@@ -282,10 +303,13 @@ impl From<InputContext> for BTCTxIn {
 
 #[derive(Debug, Clone)]
 pub enum TxOutput {
-    P2pkh {
-        satoshis: u64,
-        script_pubkey: BTCScriptBuf,
-    },
+    P2PKH(TxOutputP2PKH),
+}
+
+impl From<TxOutputP2PKH> for TxOutput {
+    fn from(output: TxOutputP2PKH) -> Self {
+        TxOutput::P2PKH(output)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -295,7 +319,7 @@ pub struct TxOutputP2PKH {
 }
 
 impl TxOutputP2PKH {
-    fn new(satoshis: u64, recipient: RecipientHash160) -> Self {
+    pub fn new(satoshis: u64, recipient: RecipientHash160) -> Self {
         TxOutputP2PKH {
             satoshis,
             script_pubkey: BTCScriptBuf::new_p2pkh(&BTCPubkeyHash::from_byte_array(recipient.0)),
@@ -306,12 +330,9 @@ impl TxOutputP2PKH {
 impl From<TxOutput> for BTCTxOut {
     fn from(out: TxOutput) -> Self {
         match out {
-            TxOutput::P2pkh {
-                satoshis,
-                script_pubkey,
-            } => BTCTxOut {
-                value: satoshis,
-                script_pubkey,
+            TxOutput::P2PKH(p2pkh) => BTCTxOut {
+                value: p2pkh.satoshis,
+                script_pubkey: p2pkh.script_pubkey,
             },
         }
     }

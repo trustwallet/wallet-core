@@ -1,10 +1,10 @@
-use tw_bitcoin::{RecipientHash160, TxInput};
-use tw_encoding::hex;
+use bitcoin::hashes::Hash;
 use bitcoin::{
     OutPoint as BTCOutPoint, ScriptBuf as BTCScriptBuf, Sequence as BTCSequence, Txid as BTCTxid,
     Witness as BTCWitness,
 };
-use bitcoin::hashes::Hash;
+use tw_bitcoin::{RecipientHash160, TxInput};
+use tw_encoding::hex;
 
 #[test]
 fn tx_input_p2pkh_from_slice() {
