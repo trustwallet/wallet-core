@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use bitcoin::address::{Address as BTCAddress, Payload as BTCPayload};
 use bitcoin::blockdata::locktime::absolute::{Height as BTCHeight, LockTime as BTCLockTime};
 use bitcoin::blockdata::script::ScriptBuf as BTCScriptBuf;
@@ -12,8 +10,7 @@ use bitcoin::sighash::{LegacySighash as BTCLegacySighash, SighashCache as BTCSig
 use bitcoin::transaction::Transaction as BTCTransaction;
 use bitcoin::{Sequence as BTCSequence, TxIn as BTCTxIn, TxOut as BTCTxOut, Witness as BTCWitness};
 use claim::TransactionSigner;
-use ripemd::{Digest, Ripemd160};
-use tw_encoding::hex;
+use std::str::FromStr;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::KeyPairTrait;
@@ -84,31 +81,6 @@ fn poc() {
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
 */
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct RecipientHash160([u8; 20]);
-
-impl RecipientHash160 {
-    pub fn from_address_str(slice: &str) -> Result<Self> {
-        let checked = BTCAddress::from_str(slice).map_err(|_| Error::Todo)?;
-
-        // TODO: Network should be checked.
-        let hash = match checked.payload {
-            BTCPayload::PubkeyHash(hash) => {
-                // NOTE: The `hash` already is hashed with RIPEMD160 (as the
-                // name might imply), so no further work to do.
-                let hash_ref: &[u8] = hash.as_ref();
-                hash_ref.as_ref().try_into().unwrap()
-            },
-            _ => todo!(),
-        };
-
-        Ok(RecipientHash160(hash))
-    }
-    pub fn from_bytes(bytes: [u8; 20]) -> Self {
-        RecipientHash160(bytes)
-    }
-}
 
 pub struct ScriptHash;
 
@@ -330,10 +302,10 @@ pub struct TxOutputP2PKH {
 }
 
 impl TxOutputP2PKH {
-    pub fn new(satoshis: u64, recipient: RecipientHash160) -> Self {
+    pub fn new(satoshis: u64, recipient: &PubkeyHash) -> Self {
         TxOutputP2PKH {
             satoshis,
-            script_pubkey: BTCScriptBuf::new_p2pkh(&BTCPubkeyHash::from_byte_array(recipient.0)),
+            script_pubkey: BTCScriptBuf::new_p2pkh(&recipient.0),
         }
     }
 }
@@ -365,13 +337,22 @@ pub struct TxInputP2PKH {
 pub struct PubkeyHash(BTCPubkeyHash);
 
 impl PubkeyHash {
+    pub fn from_address_str(slice: &str) -> Result<Self> {
+        let checked = BTCAddress::from_str(slice).map_err(|_| Error::Todo)?;
+
+        // TODO: Network should be checked.
+        let hash = match checked.payload {
+            BTCPayload::PubkeyHash(hash) => hash,
+            _ => todo!(),
+        };
+
+        Ok(PubkeyHash(hash))
+    }
     pub fn from_keypair(keypair: &secp256k1::KeyPair, compressed: bool) -> Result<Self> {
         let bhash = if compressed {
-            BTCHash::from_slice(keypair.public().compressed().as_slice())
-                .map_err(|_| Error::Todo)?
+            BTCHash::hash(keypair.public().compressed().as_slice())
         } else {
-            BTCHash::from_slice(keypair.public().uncompressed().as_slice())
-                .map_err(|_| Error::Todo)?
+            BTCHash::hash(keypair.public().uncompressed().as_slice())
         };
 
         let pubkey = BTCPubkeyHash::from_raw_hash(bhash);

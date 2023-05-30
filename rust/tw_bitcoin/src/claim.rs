@@ -1,7 +1,8 @@
-use bitcoin::ScriptBuf as BTCScriptBuf;
+use bitcoin::blockdata::script::PushBytesBuf as BTCPushBytesBuf;
+use bitcoin::consensus::Encodable;
+use bitcoin::{ScriptBuf as BTCScriptBuf, VarInt};
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
-use crate::{Error, PubkeyHash, RecipientHash160, Result, SigHashType, TxInputP2PKH};
-use ripemd::{Digest, Ripemd160};
+use crate::{Error, PubkeyHash, Result, SigHashType, TxInputP2PKH};
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
@@ -22,16 +23,27 @@ pub trait TransactionSigner {
 }
 
 pub struct ClaimP2PKH {
-    sig_len: u8,
     sig: Vec<u8>,
     sighash: SigHashType,
-    pubkey_len: u8,
     pubkey: Vec<u8>,
 }
 
 impl ClaimP2PKH {
+    // TODO: Should unwraps be handled?
     pub fn into_script_buf(self) -> BTCScriptBuf {
-        todo!()
+        // We let the `bitcoin` crate handle the encoding of the public key.
+        let pubkey = bitcoin::key::PublicKey::from_slice(&self.pubkey).unwrap();
+
+        let mut buf = BTCPushBytesBuf::new();
+        // DER-encoding handles the prefix with the length of the signature. No
+        // need to do it manually.
+        buf.extend_from_slice(&self.sig).unwrap();
+        buf.push(self.sighash.to_le_byte()).unwrap();
+
+        BTCScriptBuf::builder()
+            .push_slice(buf)
+            .push_key(&pubkey)
+            .into_script()
     }
 }
 
@@ -42,7 +54,7 @@ impl TransactionSigner for secp256k1::KeyPair {
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH> {
-        let my_pubkey = PubkeyHash::from_keypair(&self, true)?;
+        let my_pubkey = PubkeyHash::from_keypair(self, true)?;
 
         // If the expected recipient is a RIPEMD160 hash of the COMPRESSED
         // key...
@@ -53,7 +65,7 @@ impl TransactionSigner for secp256k1::KeyPair {
         // ... if not, then we check whether it is a RIPEMD160 hash of the
         // UNCOMPRESSEd public key.
         else {
-            let my_pubkey = PubkeyHash::from_keypair(&self, false)?;
+            let my_pubkey = PubkeyHash::from_keypair(self, false)?;
 
             if input.recipient == my_pubkey {
                 self.public().uncompressed().to_vec()
@@ -69,23 +81,15 @@ impl TransactionSigner for secp256k1::KeyPair {
         // Encode signature as DER.
         let der_sig = sig.to_der();
 
-        debug_assert_eq!(der_sig.len(), 70);
-        debug_assert!(
-            pubkey.len() == secp256k1::PublicKey::COMPRESSED
-                || pubkey.len() == secp256k1::PublicKey::UNCOMPRESSED
-        );
-
         Ok(
             // The expected script to claim the P2PKH.
             ClaimP2PKH {
                 // Signature length, one byte.
-                sig_len: der_sig.len() as u8,
                 // Signature, 70-72 bytes and DER-encoded.
                 sig: der_sig.as_bytes().to_vec(),
                 // SIGHASH type, one byte.
                 sighash,
                 // Public key length, one byte.
-                pubkey_len: pubkey.len() as u8,
                 // Public key itself, compressed (33 bytes) or uncompressed (65 bytes).
                 pubkey,
             },

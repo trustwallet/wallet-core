@@ -1,4 +1,4 @@
-use tw_bitcoin::{keypair_from_wif, RecipientHash160, TransactionBuilder, TxInput, TxOutputP2PKH};
+use tw_bitcoin::{keypair_from_wif, PubkeyHash, TransactionBuilder, TxInput, TxOutputP2PKH};
 use tw_encoding::hex;
 
 #[test]
@@ -21,15 +21,15 @@ fn sig_transaction() {
         hex::decode(&format!("{txid}{vout}{var_int}{script_pubkey}{sequence}")).unwrap();
 
     // The encoded transaction *without* signature.
-    static EXPECTED_NON_SIG: &str = "020000000166e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f30000000000ffffffff0100f2052a010000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
+    static EXPECTED_NON_SIG: &str = "020000000166e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f30000000000ffffffff01c0aff629010000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
     // The encoded transaction *with* signature.
-    static EXPECTED_SIG: &str = "020000000166e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f3000000006a4730440220697525358a5887731de155539f544d7592e9e18f1ab817d13fd503d69905e5bd0220318a12e9476990062dc7b115241a2e6c758ce4210460fc0dbcdd8cdc016479020121025d935858e4c56f24a8d634a94c678ad00b48fc86ec391c9d8215abec7e200e42ffffffff0100f2052a010000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
+    static EXPECTED_SIG: &str = "020000000166e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f3000000006a473044022050d3a1f393e8a27a277d0769f39f772ed35f5ddcac2d3f21e7186d45da72cd4d0220261b9daec08ef9ac34d91ccaac03b0843e21b5a40b7631b78dbf93bfa1678d530121025d935858e4c56f24a8d634a94c678ad00b48fc86ec391c9d8215abec7e200e42ffffffff01c0aff629010000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
 
     // Decode the `TxInput` from the slice. We expect a `P2PKH` variant.
     let input = TxInput::from_slice(&raw_tx_input).unwrap();
     let output = TxOutputP2PKH::new(
-        5_000_000_000,
-        RecipientHash160::from_address_str(recipient_address).unwrap(),
+        4_999_000_000,
+        &PubkeyHash::from_address_str(recipient_address).unwrap(),
     );
 
     let builder = TransactionBuilder::new()
