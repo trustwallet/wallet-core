@@ -42,7 +42,14 @@ impl TransactionSigner for secp256k1::KeyPair {
         }
 
         // Extract the expected recipient from the scriptPubKey.
-        let expected_recipient = &utxo.script_pubkey.as_bytes()[2..23];
+		//
+        // script[0] == OP_DUP
+        // script[1] == OP_HASH160
+        // script[2] == OP_PUSHBYTES_20
+        // script[3..23] == <PUBKEY-RIPEMD160>
+        // script[23] == OP_EQUALVERIFY
+        // script[24] == OP_CHECKSIG
+        let expected_recipient = &utxo.script_pubkey.as_bytes()[3..23];
 
         // The expected recipient is a RIPEMD160 hash, so first we check
         // whether it's a hash from the COMPRESSED public key.
