@@ -1,4 +1,4 @@
-use bitcoin::TxOut;
+use bitcoin::{TxOut, ScriptBuf};
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use crate::{Error, Result, SigHashType};
 use ripemd::{Digest, Ripemd160};
@@ -9,14 +9,14 @@ use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 pub trait TransactionSigner {
     fn claim_p2pkh_with_sighash(
         &self,
-        utxo: &TxOut,
+        script_pubkey: &ScriptBuf,
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH>;
 
     // P2PKH signer with `SIGHASH_ALL` as default.
-    fn claim_p2pkh(&self, utxo: &TxOut, hash: H256) -> Result<ClaimP2PKH> {
-        <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, utxo, hash, SigHashType::All)
+    fn claim_p2pkh(&self, script_pubkey: &ScriptBuf, hash: H256) -> Result<ClaimP2PKH> {
+        <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, script_pubkey, hash, SigHashType::All)
     }
 }
 
@@ -31,12 +31,11 @@ pub struct ClaimP2PKH {
 impl TransactionSigner for secp256k1::KeyPair {
     fn claim_p2pkh_with_sighash(
         &self,
-        utxo: &TxOut,
+        script_pubkey: &ScriptBuf,
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH> {
         // Sanity check; make sure the scriptPubKey is actually a `P2PKH` script.
-        let script_pubkey = &utxo.script_pubkey;
         if script_pubkey.is_p2pkh() {
             return Err(Error::Todo);
         }
@@ -49,7 +48,7 @@ impl TransactionSigner for secp256k1::KeyPair {
         // script[3..23] == <PUBKEY-RIPEMD160>
         // script[23] == OP_EQUALVERIFY
         // script[24] == OP_CHECKSIG
-        let expected_recipient = &utxo.script_pubkey.as_bytes()[3..23];
+        let expected_recipient = &script_pubkey.as_bytes()[3..23];
 
         // The expected recipient is a RIPEMD160 hash, so first we check
         // whether it's a hash from the COMPRESSED public key.
