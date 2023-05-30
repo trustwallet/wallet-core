@@ -3,7 +3,7 @@ use bitcoin::{
     OutPoint as BTCOutPoint, ScriptBuf as BTCScriptBuf, Sequence as BTCSequence, Txid as BTCTxid,
     Witness as BTCWitness,
 };
-use tw_bitcoin::{PubkeyHash, RecipientHash160, TxInput};
+use tw_bitcoin::{PubkeyHash, TxInput};
 use tw_encoding::hex;
 
 #[test]
