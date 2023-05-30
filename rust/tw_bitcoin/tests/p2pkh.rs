@@ -3,7 +3,7 @@ use bitcoin::{
     OutPoint as BTCOutPoint, ScriptBuf as BTCScriptBuf, Sequence as BTCSequence, Txid as BTCTxid,
     Witness as BTCWitness,
 };
-use tw_bitcoin::{RecipientHash160, TxInput};
+use tw_bitcoin::{PubkeyHash, RecipientHash160, TxInput};
 use tw_encoding::hex;
 
 #[test]
@@ -50,7 +50,8 @@ fn tx_input_p2pkh_from_slice() {
         // Expected recipient.
         assert_eq!(
             p2pkh.recipient,
-            RecipientHash160::from_bytes(hex::decode(recipient_hash).unwrap().try_into().unwrap())
+            PubkeyHash::from_bytes(hex::decode(recipient_hash).unwrap().try_into().unwrap())
+                .unwrap()
         );
     }
 
