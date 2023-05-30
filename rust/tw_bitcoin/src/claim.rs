@@ -1,4 +1,4 @@
-use bitcoin::{ScriptBuf, TxIn, TxOut};
+use bitcoin::ScriptBuf as BTCScriptBuf;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use crate::{Error, Result, SigHashType, TxInputP2PKH};
 use ripemd::{Digest, Ripemd160};
@@ -30,7 +30,7 @@ pub struct ClaimP2PKH {
 }
 
 impl ClaimP2PKH {
-    pub fn into_script_buf(self) -> ScriptBuf {
+    pub fn into_script_buf(self) -> BTCScriptBuf {
         todo!()
     }
 }

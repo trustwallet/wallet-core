@@ -1,13 +1,14 @@
 use bitcoin::blockdata::locktime::absolute::{Height as BTCHeight, LockTime as BTCLockTime};
 use bitcoin::blockdata::script::ScriptBuf as BTCScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint as BTCOutPoint;
+use bitcoin::hash_types::PubkeyHash as BTCPubkeyHash;
 use bitcoin::sighash::{LegacySighash as BTCLegacySighash, SighashCache as BTCSighashCache};
 use bitcoin::transaction::Transaction as BTCTransaction;
 use bitcoin::{Sequence as BTCSequence, TxIn as BTCTxIn, TxOut as BTCTxOut, Witness as BTCWitness};
 use claim::TransactionSigner;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use bitcoin::consensus::{Decodable, Encodable};
-use ripemd::{Digest, Ripemd160};
+use secp256k1::hashes::Hash;
 use tw_hash::H256;
 
 pub mod claim;
@@ -75,6 +76,13 @@ fn poc() {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct RecipientHash160([u8; 20]);
+
+impl RecipientHash160 {
+    pub fn from_bytes(bytes: [u8; 20]) -> Self {
+        RecipientHash160(bytes)
+    }
+}
+
 pub struct ScriptHash;
 
 pub struct TransactionBuilder {
@@ -226,13 +234,13 @@ impl TransactionSigHashType {
 #[derive(Debug, Clone)]
 // TODO: Should be private.
 pub struct InputContext {
-    previous_output: BTCOutPoint,
+    pub previous_output: BTCOutPoint,
     // The condition for claiming the output.
-    script_pubkey: BTCScriptBuf,
+    pub script_pubkey: BTCScriptBuf,
     // TODO: Document this.
-    sequence: BTCSequence,
+    pub sequence: BTCSequence,
     // BTCWitness data for Segwit/Taproot transactions.
-    witness: BTCWitness,
+    pub witness: BTCWitness,
 }
 
 impl InputContext {
@@ -280,6 +288,21 @@ pub enum TxOutput {
     },
 }
 
+#[derive(Debug, Clone)]
+pub struct TxOutputP2PKH {
+    satoshis: u64,
+    script_pubkey: BTCScriptBuf,
+}
+
+impl TxOutputP2PKH {
+    fn new(satoshis: u64, recipient: RecipientHash160) -> Self {
+        TxOutputP2PKH {
+            satoshis,
+            script_pubkey: BTCScriptBuf::new_p2pkh(&BTCPubkeyHash::from_byte_array(recipient.0)),
+        }
+    }
+}
+
 impl From<TxOutput> for BTCTxOut {
     fn from(out: TxOutput) -> Self {
         match out {
@@ -302,8 +325,8 @@ pub enum TxInput {
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
-    ctx: InputContext,
-    recipient: RecipientHash160,
+    pub ctx: InputContext,
+    pub recipient: RecipientHash160,
 }
 
 impl TxInput {
@@ -333,71 +356,5 @@ impl TxInput {
             //Ok(TxInput::NonStandard { ctx })
             panic!()
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use bitcoin::hashes::Hash;
-    use bitcoin::Txid as BTCTxid;
-    use tw_encoding::hex;
-
-    #[test]
-    fn temp() {
-        let script_pubkey = "76a9143836741d8f4a925483cba7634aa3ed0ddd37c54e88ac";
-        let var_int = (script_pubkey.len() / 2) as u8;
-        println!(">> {var_int}");
-        let hex = hex::encode(var_int.to_le_bytes(), false);
-        println!(">> {hex}");
-    }
-
-    #[test]
-    fn tx_input_p2pkh_from_slice() {
-        // One byte VarInt, size of scriptPubKey (25 bytes, hex representation of little endian encoding).
-        let var_int = "19";
-        // 25 bytes, the scriptPubKey for claiming.
-        let script_pubkey = "76a9143836741d8f4a925483cba7634aa3ed0ddd37c54e88ac";
-        // Four bytes, using default value
-        let sequence = "FFFFFFFF";
-        // 32 bytes, hash (ID) of the input transaction.
-        let txid = "f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466";
-        // Four bytes, vout value of zero.
-        let vout = "00000000";
-        // 20 bytes, RIPEMD160 hash of the recipient.
-        let recipient_hash = "3836741d8f4a925483cba7634aa3ed0ddd37c54e";
-
-        // The full RAW TX INPUT
-        let raw_tx_input =
-            hex::decode(&format!("{txid}{vout}{var_int}{script_pubkey}{sequence}")).unwrap();
-
-        // Decode the `TxInput` from the slice. We expect a `P2PKH` variant.
-        let tx_input = TxInput::from_slice(&raw_tx_input).unwrap();
-        if let TxInput::P2PKH(p2pkh) = tx_input {
-            // Expected `previous_output`
-            assert_eq!(
-                p2pkh.ctx.previous_output,
-                BTCOutPoint {
-                    txid: BTCTxid::from_byte_array(hex::decode(txid).unwrap().try_into().unwrap()),
-                    vout: 0,
-                }
-            );
-            // Expected `script_pubkey`
-            assert_eq!(
-                p2pkh.ctx.script_pubkey,
-                BTCScriptBuf::from_hex(script_pubkey).unwrap()
-            );
-            // Expected sequence
-            assert_eq!(p2pkh.ctx.sequence, BTCSequence::default());
-            // Expected witness
-            assert_eq!(p2pkh.ctx.witness, BTCWitness::default());
-            // Expected recipient.
-            assert_eq!(
-                p2pkh.recipient,
-                RecipientHash160(hex::decode(recipient_hash).unwrap().try_into().unwrap())
-            );
-        }
-
-        //println!("{:?}", x);
     }
 }
