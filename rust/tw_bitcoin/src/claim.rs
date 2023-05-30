@@ -53,24 +53,22 @@ impl TransactionSigner for secp256k1::KeyPair {
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH> {
-        let my_pubkey = PubkeyHash::from_keypair(self, true)?;
-
-        // If the expected recipient is a RIPEMD160 hash of the COMPRESSED
-        // key...
-        // TODO: `RecipientHash160` should implement Deref
+        // If the expected recipient is the hash of the COMPRESSED key...
+        let compressed = true;
+        let my_pubkey = PubkeyHash::from_keypair(self, compressed)?;
         let pubkey = if input.recipient == my_pubkey {
             self.public().compressed().to_vec()
         }
-        // ... if not, then we check whether it is a RIPEMD160 hash of the
+        // ... if not, then we check whether the recipient is the hash of the
         // UNCOMPRESSEd public key.
         else {
-            let my_pubkey = PubkeyHash::from_keypair(self, false)?;
+            let compressed = false;
+            let my_pubkey = PubkeyHash::from_keypair(self, compressed)?;
 
             if input.recipient == my_pubkey {
                 self.public().uncompressed().to_vec()
             } else {
-                // Invalid, wrong signer!
-                println!("INVALID SIGNER");
+                // Invalid/wrong signer!
                 return Err(Error::Todo);
             }
         };
