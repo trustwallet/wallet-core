@@ -2,7 +2,7 @@ use tw_bitcoin::{keypair_from_wif, PubkeyHash, TransactionBuilder, TxInput, TxOu
 use tw_encoding::hex;
 
 #[test]
-fn sig_transaction() {
+fn sign_p2pkh_transaction() {
     // One byte VarInt, size of scriptPubKey (25 bytes, hex representation of little endian encoding).
     let var_int = "19";
     // 25 bytes, the scriptPubKey for claiming.
