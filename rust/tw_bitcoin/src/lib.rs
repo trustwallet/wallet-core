@@ -88,11 +88,10 @@ impl RecipientHash160 {
         // TODO: Network should be checked.
         let hash = match checked.payload {
             BTCPayload::PubkeyHash(hash) => {
+                // NOTE: The `hash` already is hashed with RIPEMD160 (as the
+                // name might imply), so no further work to do.
                 let hash_ref: &[u8] = hash.as_ref();
-
-                let mut hasher = Ripemd160::new();
-                hasher.update(hash_ref);
-                hasher.finalize().try_into().unwrap()
+                hash_ref.as_ref().try_into().unwrap()
             },
             _ => todo!(),
         };
@@ -157,10 +156,7 @@ impl TransactionBuilder {
             },
         })
     }
-    pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
-    where
-        F: Fn(&TxInput, H256) -> Result<BTCScriptBuf>,
-    {
+    pub fn prepare_for_signing(mut self) -> Self {
         // Prepare boilerplate transaction for `bitcoin` crate.
         let mut tx = BTCTransaction {
             version: self.version,
@@ -187,7 +183,14 @@ impl TransactionBuilder {
             tx.output.push(btc_txout);
         }
 
-        let cache = BTCSighashCache::new(tx);
+        self.btc_tx = Some(tx);
+        self
+    }
+    pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
+    where
+        F: Fn(&TxInput, H256) -> Result<BTCScriptBuf>,
+    {
+        let cache = BTCSighashCache::new(self.btc_tx.unwrap());
 
         let mut updated_scriptsigs = vec![];
 
@@ -294,7 +297,7 @@ impl From<InputContext> for BTCTxIn {
         BTCTxIn {
             previous_output: ctx.previous_output,
             // TODO: Document this.
-            script_sig: ctx.script_pubkey,
+            script_sig: BTCScriptBuf::default(),
             sequence: ctx.sequence,
             witness: ctx.witness,
         }

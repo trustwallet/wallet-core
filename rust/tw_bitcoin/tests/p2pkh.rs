@@ -15,7 +15,10 @@ fn tx_input_p2pkh_from_slice() {
     // Four bytes, using default value
     let sequence = "FFFFFFFF";
     // 32 bytes, hash (ID) of the input transaction.
-    let txid = "f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466";
+    let mut txid =
+        hex::decode("f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466").unwrap();
+    txid.reverse();
+    let txid = hex::encode(&txid, false);
     // Four bytes, vout value of zero.
     let vout = "00000000";
     // 20 bytes, RIPEMD160 hash of the recipient.
@@ -32,7 +35,7 @@ fn tx_input_p2pkh_from_slice() {
         assert_eq!(
             p2pkh.ctx.previous_output,
             BTCOutPoint {
-                txid: BTCTxid::from_byte_array(hex::decode(txid).unwrap().try_into().unwrap()),
+                txid: BTCTxid::from_byte_array(hex::decode(&txid).unwrap().try_into().unwrap()),
                 vout: 0,
             }
         );
