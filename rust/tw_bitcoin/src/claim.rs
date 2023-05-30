@@ -48,12 +48,16 @@ impl TransactionSigner for secp256k1::KeyPair {
         hasher.update(self.public().compressed().as_slice());
         let finalized = hasher.finalize();
         let hashed_pubkey = &finalized[..];
+        //let hashed_pubkey: Vec<u8> = finalized.iter().rev().cloned().collect();
+        //let hashed_pubkey: [u8; 20] = hashed_pubkey.try_into().unwrap();
 
         debug_assert_eq!(input.recipient.0.len(), hashed_pubkey.len());
 
         // If the expected recipient is a RIPEMD160 hash of the COMPRESSED
         // key...
         // TODO: `RecipientHash160` should implement Deref
+        dbg!(&input.recipient.0);
+        dbg!(&hashed_pubkey);
         let pubkey = if input.recipient.0 == hashed_pubkey {
             self.public().compressed().to_vec()
         }
@@ -64,11 +68,16 @@ impl TransactionSigner for secp256k1::KeyPair {
             hasher.update(self.public().uncompressed().as_slice());
             let finalized = hasher.finalize();
             let hashed_pubkey = &finalized[..];
+            //let hashed_pubkey: Vec<u8> = finalized.iter().rev().cloned().collect();
+            //let hashed_pubkey: [u8; 20] = hashed_pubkey.try_into().unwrap();
 
+            dbg!(&input.recipient.0);
+            dbg!(&hashed_pubkey);
             if input.recipient.0 == hashed_pubkey {
                 self.public().uncompressed().to_vec()
             } else {
                 // Invalid, wrong signer!
+                println!("INVALID SIGNER");
                 return Err(Error::Todo);
             }
         };

@@ -1,9 +1,4 @@
-use bitcoin::hashes::Hash;
-use bitcoin::{
-    OutPoint as BTCOutPoint, ScriptBuf as BTCScriptBuf, Sequence as BTCSequence, Txid as BTCTxid,
-    Witness as BTCWitness,
-};
-use tw_bitcoin::{RecipientHash160, TransactionBuilder, TxInput, TxOutput, TxOutputP2PKH};
+use tw_bitcoin::{RecipientHash160, TransactionBuilder, TxInput, TxOutputP2PKH, keypair_from_wif};
 use tw_encoding::hex;
 
 #[test]
@@ -14,12 +9,8 @@ fn sig_transaction() {
     let script_pubkey = "76a9143836741d8f4a925483cba7634aa3ed0ddd37c54e88ac";
     // Four bytes, using default value
     let sequence = "FFFFFFFF";
-    // 32 bytes, hash (ID) of the input transaction.
-    // TODO: Find prettier way to do this.
-    let mut txid =
-        hex::decode("f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466").unwrap();
-    txid.reverse();
-    let txid = hex::encode(&txid, false);
+    // 32 bytes, reversed, little-endian encoded hash (ID) of the input transaction.
+    let txid = "66e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f3";
     // Four bytes, vout value of zero.
     let vout = "00000000";
     // 20 bytes, recipient address (Base58Check of the RIPEMD160 hash of the public key).
@@ -41,14 +32,22 @@ fn sig_transaction() {
         RecipientHash160::from_address_str(recipient_address).unwrap(),
     );
 
-    let serialized = TransactionBuilder::new()
+    let builder = TransactionBuilder::new()
         .add_input(input)
         .add_output(output.into())
-        .prepare_for_signing()
+        .prepare_for_signing();
+
+	let serialized = builder
         .serialize()
         .unwrap();
 
     let hex_serialized = hex::encode(&serialized, false);
-
     assert_eq!(hex_serialized, EXPECTED_NON_SIG);
+
+	let my_private_key = "cUGCA4LGsXbHDpurvWM63Snk4Q1FVySw2wESD7a35mkQyEyXneRv";
+	let keypair = keypair_from_wif(my_private_key).unwrap();
+
+	let serialized = builder.sign_inputs(keypair).unwrap().serialize().unwrap();
+    let hex_serialized = hex::encode(&serialized, false);
+    assert_eq!(hex_serialized, EXPECTED_SIG);
 }
