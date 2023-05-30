@@ -1,4 +1,4 @@
-use bitcoin::{TxOut, ScriptBuf};
+use bitcoin::{ScriptBuf, TxOut};
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use crate::{Error, Result, SigHashType};
 use ripemd::{Digest, Ripemd160};
@@ -10,13 +10,19 @@ pub trait TransactionSigner {
     fn claim_p2pkh_with_sighash(
         &self,
         script_pubkey: &ScriptBuf,
+        // TODO: Should be wrapped.
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH>;
 
     // P2PKH signer with `SIGHASH_ALL` as default.
     fn claim_p2pkh(&self, script_pubkey: &ScriptBuf, hash: H256) -> Result<ClaimP2PKH> {
-        <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, script_pubkey, hash, SigHashType::All)
+        <Self as TransactionSigner>::claim_p2pkh_with_sighash(
+            self,
+            script_pubkey,
+            hash,
+            SigHashType::All,
+        )
     }
 }
 
@@ -26,6 +32,12 @@ pub struct ClaimP2PKH {
     sighash: SigHashType,
     pubkey_len: u8,
     pubkey: Vec<u8>,
+}
+
+impl ClaimP2PKH {
+    pub fn into_script_buf(self) -> ScriptBuf {
+        todo!()
+    }
 }
 
 impl TransactionSigner for secp256k1::KeyPair {
@@ -41,7 +53,7 @@ impl TransactionSigner for secp256k1::KeyPair {
         }
 
         // Extract the expected recipient from the scriptPubKey.
-		//
+        //
         // script[0] == OP_DUP
         // script[1] == OP_HASH160
         // script[2] == OP_PUSHBYTES_20
