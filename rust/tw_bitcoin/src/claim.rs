@@ -29,7 +29,7 @@ pub struct ClaimP2PKH {
 
 impl ClaimP2PKH {
     // TODO: Should unwraps be handled?
-    pub fn into_script_buf(self) -> BScriptBuf {
+    pub fn into_script(self) -> BScriptBuf {
         // We let the `bitcoin` crate handle the encoding of the public key.
         let pubkey = bitcoin::key::PublicKey::from_slice(&self.pubkey).unwrap();
 
@@ -81,12 +81,10 @@ impl TransactionSigner for secp256k1::KeyPair {
         Ok(
             // The expected script to claim the P2PKH.
             ClaimP2PKH {
-                // Signature length, one byte.
                 // Signature, 70-72 bytes and DER-encoded.
                 sig: der_sig.as_bytes().to_vec(),
                 // SIGHASH type, one byte.
                 sighash,
-                // Public key length, one byte.
                 // Public key itself, compressed (33 bytes) or uncompressed (65 bytes).
                 pubkey,
             },

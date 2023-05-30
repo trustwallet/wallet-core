@@ -166,7 +166,7 @@ impl TransactionBuilder {
             TxInput::P2PKH(p2pkh) => signer
                 .claim_p2pkh(p2pkh, sighash)
                 // TODO: Should not convert into BScriptBuf here.
-                .map(|claim| claim.into_script_buf()),
+                .map(|claim| claim.into_script()),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
             },
