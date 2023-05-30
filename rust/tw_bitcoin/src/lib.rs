@@ -6,6 +6,7 @@ use bitcoin::transaction::Transaction;
 use bitcoin::{Sequence, TxIn, TxOut, Witness};
 use claim::TransactionSigner;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
+use bitcoin::consensus::{Decodable, Encodable};
 use tw_hash::H256;
 
 pub mod claim;
@@ -72,7 +73,7 @@ fn poc() {
 */
 
 #[derive(Debug, Clone)]
-pub struct PublicKeyHash(bitcoin::PubkeyHash);
+pub struct RecipientHash160([u8; 20]);
 pub struct ScriptHash;
 
 pub struct TransactionBuilder {
@@ -80,6 +81,7 @@ pub struct TransactionBuilder {
     lock_time: LockTime,
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
+    btc_tx: Option<Transaction>,
 }
 
 impl TransactionBuilder {
@@ -91,6 +93,7 @@ impl TransactionBuilder {
             lock_time: LockTime::Blocks(Height::ZERO),
             inputs: vec![],
             outputs: vec![],
+            btc_tx: None,
         }
     }
     pub fn version(mut self, version: i32) -> Self {
@@ -102,20 +105,20 @@ impl TransactionBuilder {
         self.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
         self
     }
-    fn add_input(mut self, input: TxInput) -> Self {
+    pub fn add_input(mut self, input: TxInput) -> Self {
         self.inputs.push(input);
         self
     }
-    fn add_output(mut self, output: TxOutput) -> Self {
+    pub fn add_output(mut self, output: TxOutput) -> Self {
         self.outputs.push(output);
         self
     }
-    fn finalize<S>(self, signer: S) -> Result<Self>
+    pub fn sign_inputs<S>(self, signer: S) -> Result<Self>
     where
         S: TransactionSigner,
     {
-        self.finalize_fn(|input, sighash| match input {
-            TxInput::P2pkh { ctx, hash: _ } => signer
+        self.sign_inputs_fn(|input, sighash| match input {
+            TxInput::P2pkh { ctx, recipient: _ } => signer
                 .claim_p2pkh(&ctx.script_pubkey, sighash)
                 // TODO: Should not convert into ScriptBuf here.
                 .map(|claim| claim.into_script_buf()),
@@ -124,7 +127,7 @@ impl TransactionBuilder {
             },
         })
     }
-    fn finalize_fn<F>(self, fun: F) -> Result<Self>
+    pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
     where
         F: Fn(&TxInput, H256) -> Result<ScriptBuf>,
     {
@@ -140,7 +143,7 @@ impl TransactionBuilder {
         for input in self.inputs.iter().cloned() {
             let btc_txin = match input {
                 // TODO: `TxIn` should implement `From<TxInput>`.
-                TxInput::P2pkh { ctx, hash: _ } => TxIn::from(ctx),
+                TxInput::P2pkh { ctx, recipient: _ } => TxIn::from(ctx),
                 TxInput::NonStandard { ctx } => TxIn::from(ctx),
             };
 
@@ -161,7 +164,7 @@ impl TransactionBuilder {
         // For each input (index), we create a hash which is to be signed.
         for (index, input) in self.inputs.iter().enumerate() {
             match input {
-                TxInput::P2pkh { ctx, hash: _ } => {
+                TxInput::P2pkh { ctx, recipient: _ } => {
                     let legacy_hash = cache
                         .legacy_signature_hash(
                             index,
@@ -175,7 +178,7 @@ impl TransactionBuilder {
 
                     let h256 = convert_legacy_btc_hash_to_h256(legacy_hash);
                     // TODO: Rename closure var.
-                    let updated = fun(input, h256)?;
+                    let updated = signer(input, h256)?;
 
                     updated_scriptsigs.push((index, updated));
                 },
@@ -186,13 +189,24 @@ impl TransactionBuilder {
 
         let mut tx = cache.into_transaction();
 
-        // UPdate the Transaction with the updated scriptSig's.
+        // Update the transaction with the updated scriptSig's.
         for (index, script_sig) in updated_scriptsigs {
             tx.input[index].script_sig = script_sig;
         }
 
+        self.btc_tx = Some(tx);
+
         // TODO: Return new type.
         Ok(self)
+    }
+    pub fn serialize(&self) -> Result<Vec<u8>> {
+        let mut buffer = vec![];
+        self.btc_tx
+            .as_ref()
+            .unwrap()
+            .consensus_encode(&mut buffer)
+            .map_err(|_| Error::Todo)?;
+        Ok(buffer)
     }
 }
 
@@ -206,13 +220,6 @@ impl TransactionSigHashType {
             TransactionSigHashType::Legacy(h256) => h256,
         }
     }
-}
-
-pub enum Recipient {
-    LegacyHash(PublicKeyHash),
-    LegacyPubkey(()),
-    Segwit(()),
-    Taproot(()),
 }
 
 #[derive(Debug, Clone)]
@@ -238,6 +245,17 @@ impl InputContext {
             // Empty witness.
             witness: Witness::new(),
         }
+    }
+    pub fn from_slice(mut slice: &[u8]) -> Result<Self> {
+        Ok(InputContext {
+            previous_output: Decodable::consensus_decode_from_finite_reader(&mut slice)
+                .map_err(|_| Error::Todo)?,
+            script_pubkey: Decodable::consensus_decode_from_finite_reader(&mut slice)
+                .map_err(|_| Error::Todo)?,
+            sequence: Decodable::consensus_decode_from_finite_reader(&mut slice)
+                .map_err(|_| Error::Todo)?,
+            witness: Witness::default(),
+        })
     }
 }
 
@@ -282,7 +300,7 @@ pub enum TxInput {
         // TODO: Needed?
         // TODO: Yes, pass this to the claimer, pubkey hash extraction should
         // happen before.
-        hash: PublicKeyHash,
+        recipient: RecipientHash160,
     },
     NonStandard {
         ctx: InputContext,
@@ -290,7 +308,30 @@ pub enum TxInput {
 }
 
 impl TxInput {
-    fn from_slice(slice: &[u8]) -> Result<Self> {
+    pub fn new_p2pkh() -> Self {
         todo!()
+    }
+    pub fn from_slice(slice: &[u8]) -> Result<Self> {
+        let ctx = InputContext::from_slice(slice)?;
+
+        if ctx.script_pubkey.is_p2pkh() {
+            // Extract the expected recipient from the scriptPubKey.
+            //
+            // script[0] == OP_DUP
+            // script[1] == OP_HASH160
+            // script[2] == OP_PUSHBYTES_20
+            // script[3..23] == <PUBKEY-RIPEMD160>
+            // script[23] == OP_EQUALVERIFY
+            // script[24] == OP_CHECKSIG
+            let mut hash = [0; 20];
+            hash.clone_from_slice(&ctx.script_pubkey.as_bytes()[3..23]);
+
+            Ok(TxInput::P2pkh {
+                ctx,
+                recipient: RecipientHash160(hash),
+            })
+        } else {
+            Ok(TxInput::NonStandard { ctx })
+        }
     }
 }
