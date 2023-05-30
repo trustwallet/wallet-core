@@ -1313,6 +1313,7 @@ dependencies = [
  "rand",
  "ripemd",
  "secp256k1",
+ "tw_encoding",
  "tw_hash",
  "tw_keypair",
 ]

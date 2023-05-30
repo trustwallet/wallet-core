@@ -1,12 +1,14 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::blockdata::script::ScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint;
+use bitcoin::hashes::Hash;
 use bitcoin::sighash::{LegacySighash, SighashCache};
 use bitcoin::transaction::Transaction;
-use bitcoin::{Sequence, TxIn, TxOut, Witness};
+use bitcoin::{Sequence, TxIn, TxOut, Txid, Witness};
 use claim::TransactionSigner;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use bitcoin::consensus::{Decodable, Encodable};
+use ripemd::{Ripemd160, Digest};
 use tw_hash::H256;
 
 pub mod claim;
@@ -72,7 +74,7 @@ fn poc() {
 }
 */
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct RecipientHash160([u8; 20]);
 pub struct ScriptHash;
 
@@ -240,7 +242,7 @@ impl InputContext {
             previous_output: point,
             // TODO: Document this.
             script_pubkey: utxo.script_pubkey,
-            // Default value of `0xFFFFFFFF`.
+            // Default value of `0xFFFFFFFF = 4294967295`.
             sequence: Sequence::default(),
             // Empty witness.
             witness: Witness::new(),
@@ -332,5 +334,70 @@ impl TxInput {
             //Ok(TxInput::NonStandard { ctx })
             panic!()
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::str::FromStr;
+    use tw_encoding::hex;
+
+    #[test]
+    fn temp() {
+        let script_pubkey = "76a9143836741d8f4a925483cba7634aa3ed0ddd37c54e88ac";
+        let var_int = (script_pubkey.len() / 2) as u8;
+        println!(">> {var_int}");
+        let hex = hex::encode(var_int.to_le_bytes(), false);
+        println!(">> {hex}");
+    }
+
+    #[test]
+    fn tx_input_p2pkh_from_slice() {
+        // One byte VarInt, size of scriptPubKey (25 bytes, hex representation of little endian encoding).
+        let var_int = "19";
+        // 25 bytes, the scriptPubKey for claiming.
+        let script_pubkey = "76a9143836741d8f4a925483cba7634aa3ed0ddd37c54e88ac";
+        // Four bytes, using default value
+        let sequence = "FFFFFFFF";
+        // 32 bytes, hash (ID) of the input transaction.
+        let txid = "f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466";
+        // Four bytes, vout value of zero.
+        let vout = "00000000";
+        // 20 bytes, RIPEMD160 hash of the recipient.
+        let recipient_hash = "3836741d8f4a925483cba7634aa3ed0ddd37c54e";
+
+        // RAW TX INPUT
+        let raw_tx_input =
+            hex::decode(&format!("{txid}{vout}{var_int}{script_pubkey}{sequence}")).unwrap();
+
+        // Decode the `TxInput` from the slice. We expect a `P2PKH` variant.
+        let tx_input = TxInput::from_slice(&raw_tx_input).unwrap();
+        if let TxInput::P2PKH(p2pkh) = tx_input {
+            // Expected `previous_output`
+            assert_eq!(
+                p2pkh.ctx.previous_output,
+                OutPoint {
+                    txid: Txid::from_byte_array(hex::decode(txid).unwrap().try_into().unwrap()),
+                    vout: 0,
+                }
+            );
+            // Expected `script_pubkey`
+            assert_eq!(
+                p2pkh.ctx.script_pubkey,
+                ScriptBuf::from_hex(script_pubkey).unwrap()
+            );
+            // Expected sequence
+            assert_eq!(p2pkh.ctx.sequence, Sequence::default());
+            // Expected witness
+            assert_eq!(p2pkh.ctx.witness, Witness::default());
+            // Expected recipient.
+            assert_eq!(
+                p2pkh.recipient,
+                RecipientHash160(hex::decode(recipient_hash).unwrap().try_into().unwrap())
+            );
+        }
+
+        //println!("{:?}", x);
     }
 }
