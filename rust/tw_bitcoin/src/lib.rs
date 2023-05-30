@@ -1,14 +1,13 @@
-use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
-use bitcoin::blockdata::script::ScriptBuf;
-use bitcoin::blockdata::transaction::OutPoint;
-use bitcoin::hashes::Hash;
-use bitcoin::sighash::{LegacySighash, SighashCache};
-use bitcoin::transaction::Transaction;
-use bitcoin::{Sequence, TxIn, TxOut, Txid, Witness};
+use bitcoin::blockdata::locktime::absolute::{Height as BTCHeight, LockTime as BTCLockTime};
+use bitcoin::blockdata::script::ScriptBuf as BTCScriptBuf;
+use bitcoin::blockdata::transaction::OutPoint as BTCOutPoint;
+use bitcoin::sighash::{LegacySighash as BTCLegacySighash, SighashCache as BTCSighashCache};
+use bitcoin::transaction::Transaction as BTCTransaction;
+use bitcoin::{Sequence as BTCSequence, TxIn as BTCTxIn, TxOut as BTCTxOut, Witness as BTCWitness};
 use claim::TransactionSigner;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use bitcoin::consensus::{Decodable, Encodable};
-use ripemd::{Ripemd160, Digest};
+use ripemd::{Digest, Ripemd160};
 use tw_hash::H256;
 
 pub mod claim;
@@ -36,7 +35,7 @@ impl SigHashType {
     }
 }
 
-fn convert_legacy_btc_hash_to_h256(hash: LegacySighash) -> H256 {
+fn convert_legacy_btc_hash_to_h256(hash: BTCLegacySighash) -> H256 {
     let slice: &[u8] = hash.as_raw_hash().as_ref();
     debug_assert_eq!(slice.len(), 32);
     let bytes: [u8; 32] = slice.try_into().unwrap();
@@ -55,8 +54,8 @@ fn poc() {
     let (private, public) = generate_keypair(&mut rand::thread_rng());
     let tweaked = UntweakedPublicKey::from(public);
 
-    let script1 = ScriptBuf::new();
-    let script2 = ScriptBuf::new();
+    let script1 = BTCScriptBuf::new();
+    let script2 = BTCScriptBuf::new();
 
     let spend_info = TaprootBuilder::new()
         .add_leaf(1, script1.clone())
@@ -68,7 +67,7 @@ fn poc() {
 
     let root = spend_info.merkle_root().unwrap();
 
-    let tapscript = ScriptBuf::new_v1_p2tr(&secp, tweaked, Some(root));
+    let tapscript = BTCScriptBuf::new_v1_p2tr(&secp, tweaked, Some(root));
 
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
@@ -80,10 +79,10 @@ pub struct ScriptHash;
 
 pub struct TransactionBuilder {
     version: i32,
-    lock_time: LockTime,
+    lock_time: BTCLockTime,
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
-    btc_tx: Option<Transaction>,
+    btc_tx: Option<BTCTransaction>,
 }
 
 impl TransactionBuilder {
@@ -92,7 +91,7 @@ impl TransactionBuilder {
             // TODO: Check this.
             version: 2,
             // No lock time, transaction is immediately spendable.
-            lock_time: LockTime::Blocks(Height::ZERO),
+            lock_time: BTCLockTime::Blocks(BTCHeight::ZERO),
             inputs: vec![],
             outputs: vec![],
             btc_tx: None,
@@ -104,7 +103,7 @@ impl TransactionBuilder {
     }
     // TODO: handle locktime seconds?.
     pub fn lock_time(mut self, height: u32) -> Self {
-        self.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
+        self.lock_time = BTCLockTime::Blocks(BTCHeight::from_consensus(height).unwrap());
         self
     }
     pub fn add_input(mut self, input: TxInput) -> Self {
@@ -122,7 +121,7 @@ impl TransactionBuilder {
         self.sign_inputs_fn(|input, sighash| match input {
             TxInput::P2PKH(p2pkh) => signer
                 .claim_p2pkh(p2pkh, sighash)
-                // TODO: Should not convert into ScriptBuf here.
+                // TODO: Should not convert into BTCScriptBuf here.
                 .map(|claim| claim.into_script_buf()),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
@@ -131,10 +130,10 @@ impl TransactionBuilder {
     }
     pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
     where
-        F: Fn(&TxInput, H256) -> Result<ScriptBuf>,
+        F: Fn(&TxInput, H256) -> Result<BTCScriptBuf>,
     {
         // Prepare boilerplate transaction for `bitcoin` crate.
-        let mut tx = Transaction {
+        let mut tx = BTCTransaction {
             version: self.version,
             lock_time: self.lock_time,
             input: vec![],
@@ -144,9 +143,9 @@ impl TransactionBuilder {
         // Prepare the inputs for `bitcoin` crate.
         for input in self.inputs.iter().cloned() {
             let btc_txin = match input {
-                // TODO: `TxIn` should implement `From<TxInput>`.
-                TxInput::P2PKH(p2pkh) => TxIn::from(p2pkh.ctx),
-                TxInput::NonStandard { ctx } => TxIn::from(ctx),
+                // TODO: `BTCTxIn` should implement `From<TxInput>`.
+                TxInput::P2PKH(p2pkh) => BTCTxIn::from(p2pkh.ctx),
+                TxInput::NonStandard { ctx } => BTCTxIn::from(ctx),
             };
 
             tx.input.push(btc_txin);
@@ -155,11 +154,11 @@ impl TransactionBuilder {
         // Prepare the outputs for `bitcoin` crate.
         for output in &self.outputs {
             // TODO: Doable without clone?
-            let btc_txout = TxOut::from(output.clone());
+            let btc_txout = BTCTxOut::from(output.clone());
             tx.output.push(btc_txout);
         }
 
-        let cache = SighashCache::new(tx);
+        let cache = BTCSighashCache::new(tx);
 
         let mut updated_scriptsigs = vec![];
 
@@ -227,25 +226,25 @@ impl TransactionSigHashType {
 #[derive(Debug, Clone)]
 // TODO: Should be private.
 pub struct InputContext {
-    previous_output: OutPoint,
+    previous_output: BTCOutPoint,
     // The condition for claiming the output.
-    script_pubkey: ScriptBuf,
+    script_pubkey: BTCScriptBuf,
     // TODO: Document this.
-    sequence: Sequence,
-    // Witness data for Segwit/Taproot transactions.
-    witness: Witness,
+    sequence: BTCSequence,
+    // BTCWitness data for Segwit/Taproot transactions.
+    witness: BTCWitness,
 }
 
 impl InputContext {
-    pub fn new(utxo: TxOut, point: OutPoint) -> Self {
+    pub fn new(utxo: BTCTxOut, point: BTCOutPoint) -> Self {
         InputContext {
             previous_output: point,
             // TODO: Document this.
             script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF = 4294967295`.
-            sequence: Sequence::default(),
+            sequence: BTCSequence::default(),
             // Empty witness.
-            witness: Witness::new(),
+            witness: BTCWitness::new(),
         }
     }
     pub fn from_slice(mut slice: &[u8]) -> Result<Self> {
@@ -256,14 +255,14 @@ impl InputContext {
                 .map_err(|_| Error::Todo)?,
             sequence: Decodable::consensus_decode_from_finite_reader(&mut slice)
                 .map_err(|_| Error::Todo)?,
-            witness: Witness::default(),
+            witness: BTCWitness::default(),
         })
     }
 }
 
-impl From<InputContext> for TxIn {
+impl From<InputContext> for BTCTxIn {
     fn from(ctx: InputContext) -> Self {
-        TxIn {
+        BTCTxIn {
             previous_output: ctx.previous_output,
             // TODO: Document this.
             script_sig: ctx.script_pubkey,
@@ -277,17 +276,17 @@ impl From<InputContext> for TxIn {
 pub enum TxOutput {
     P2pkh {
         satoshis: u64,
-        script_pubkey: ScriptBuf,
+        script_pubkey: BTCScriptBuf,
     },
 }
 
-impl From<TxOutput> for TxOut {
+impl From<TxOutput> for BTCTxOut {
     fn from(out: TxOutput) -> Self {
         match out {
             TxOutput::P2pkh {
                 satoshis,
                 script_pubkey,
-            } => TxOut {
+            } => BTCTxOut {
                 value: satoshis,
                 script_pubkey,
             },
@@ -340,7 +339,8 @@ impl TxInput {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::str::FromStr;
+    use bitcoin::hashes::Hash;
+    use bitcoin::Txid as BTCTxid;
     use tw_encoding::hex;
 
     #[test]
@@ -367,7 +367,7 @@ mod tests {
         // 20 bytes, RIPEMD160 hash of the recipient.
         let recipient_hash = "3836741d8f4a925483cba7634aa3ed0ddd37c54e";
 
-        // RAW TX INPUT
+        // The full RAW TX INPUT
         let raw_tx_input =
             hex::decode(&format!("{txid}{vout}{var_int}{script_pubkey}{sequence}")).unwrap();
 
@@ -377,20 +377,20 @@ mod tests {
             // Expected `previous_output`
             assert_eq!(
                 p2pkh.ctx.previous_output,
-                OutPoint {
-                    txid: Txid::from_byte_array(hex::decode(txid).unwrap().try_into().unwrap()),
+                BTCOutPoint {
+                    txid: BTCTxid::from_byte_array(hex::decode(txid).unwrap().try_into().unwrap()),
                     vout: 0,
                 }
             );
             // Expected `script_pubkey`
             assert_eq!(
                 p2pkh.ctx.script_pubkey,
-                ScriptBuf::from_hex(script_pubkey).unwrap()
+                BTCScriptBuf::from_hex(script_pubkey).unwrap()
             );
             // Expected sequence
-            assert_eq!(p2pkh.ctx.sequence, Sequence::default());
+            assert_eq!(p2pkh.ctx.sequence, BTCSequence::default());
             // Expected witness
-            assert_eq!(p2pkh.ctx.witness, Witness::default());
+            assert_eq!(p2pkh.ctx.witness, BTCWitness::default());
             // Expected recipient.
             assert_eq!(
                 p2pkh.recipient,
