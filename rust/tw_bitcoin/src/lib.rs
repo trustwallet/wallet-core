@@ -208,21 +208,8 @@ impl TransactionBuilder {
         self.inputs.push(input);
         self
     }
-    /// Alias for `add_output_pk2pkh`.
-    fn add_output_transfer(self, recipient: Recipient, satoshis: u64) -> Self {
-        self.add_output_p2pkh(recipient, satoshis)
-    }
-    fn add_output_p2pkh(mut self, recipient: Recipient, satoshis: u64) -> Self {
-        match recipient {
-            Recipient::LegacyHash(hash) => {
-                self.outputs.push(TxOutput::P2pkh {
-                    satoshis,
-                    script_pubkey: ScriptBuf::new_p2pkh(&hash.0),
-                });
-            },
-            _ => todo!(),
-        }
-
+    fn add_output(mut self, output: TxOutput) -> Self {
+        self.outputs.push(output);
         self
     }
     fn signature_hashes(self) -> Result<Vec<(usize, TransactionSigHashType)>> {
