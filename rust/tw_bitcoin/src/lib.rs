@@ -3,12 +3,14 @@ use bitcoin::blockdata::locktime::absolute::{Height as BHeight, LockTime as BLoc
 use bitcoin::blockdata::script::ScriptBuf as BScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint as BOutPoint;
 use bitcoin::consensus::{Decodable, Encodable};
-use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
-use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
+use bitcoin::hashes::hash160::Hash as BHash;
+use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
+use bitcoin::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::sighash::{LegacySighash as BLegacySighash, SighashCache as BSighashCache};
 use bitcoin::transaction::Transaction as BTransaction;
 use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as BWitness};
+use bitcoin::opcodes::All as AnyOpcode;
 use claim::TransactionSigner;
 use std::str::FromStr;
 use tw_hash::H256;
@@ -389,4 +391,54 @@ impl TxInput {
 
         Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
     }
+}
+
+fn get_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
+    use bitcoin::opcodes::all::*;
+
+    let ret = match size {
+        // OP_PUSHBYTES[0|1|2|...|75]
+        0..=75 => (bitcoin::opcodes::All::from(size as u8), None),
+        76..=255 => (OP_PUSHDATA1, Some(size.to_le_bytes().to_vec())),
+        256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
+        65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
+        _ => return Err(Error::Todo)
+    };
+
+    Ok(ret)
+}
+
+fn create_envelope(content_type: &str, data: &str) -> Result<BScriptBuf> {
+    use bitcoin::opcodes::*;
+    use bitcoin::opcodes::all::*;
+
+    // TODO: Check overflow
+    // Prepare content-type buffer.
+    let mut content_ty_buf = BPushBytesBuf::new();
+    let (op_push, size_buf) = get_push(content_type.len() as u32)?;
+
+    // For any sizes below 75, we use encode as `OP_PUSHBYTES[0|1|2|...|75]`.
+    // Fany any sized above 75, we use encode as `OP_PUSHDATA[1|2|3|4] <SIZE_BUF>`.
+    content_ty_buf.push(op_push.to_u8()).unwrap();
+    if let Some(size_buf) = size_buf {
+        content_ty_buf.extend_from_slice(size_buf.as_slice()).unwrap();
+    }
+
+    // Prepare data buffer.
+    let mut data_buf = BPushBytesBuf::new();
+
+    let x = BScriptBuf::builder()
+        .push_opcode(OP_FALSE)
+        .push_opcode(OP_IF)
+        // Push three bytes of "orb"
+        .push_opcode(OP_PUSHBYTES_3)
+        .push_slice(BPushBytesBuf::try_from(b"orb").unwrap())
+        // OP_TRUE = OP_1
+        .push_opcode(OP_TRUE)
+        .push_slice(content_ty_buf)
+        .push_opcode(OP_0)
+        .push_slice(data_buf)
+        .push_opcode(OP_ENDIF);
+
+    todo!()
 }
