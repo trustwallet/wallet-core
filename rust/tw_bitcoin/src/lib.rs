@@ -4,6 +4,7 @@ use bitcoin::blockdata::transaction::OutPoint;
 use bitcoin::sighash::{LegacySighash, SighashCache};
 use bitcoin::transaction::Transaction;
 use bitcoin::{Sequence, TxIn, TxOut, Witness};
+use claim::TransactionSigner;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use tw_hash::H256;
 
@@ -109,7 +110,24 @@ impl TransactionBuilder {
         self.outputs.push(output);
         self
     }
-    fn signature_hashes(self) -> Result<Vec<(usize, TransactionSigHashType)>> {
+    fn finalize<S>(self, signer: S) -> Result<Self>
+    where
+        S: TransactionSigner,
+    {
+        self.finalize_fn(|input, sighash| match input {
+            TxInput::P2pkh { ctx, hash: _ } => signer
+                .claim_p2pkh(&ctx.script_pubkey, sighash)
+                // TODO: Should not convert into ScriptBuf here.
+                .map(|claim| claim.into_script_buf()),
+            TxInput::NonStandard { ctx: _ } => {
+                panic!()
+            },
+        })
+    }
+    fn finalize_fn<F>(self, fun: F) -> Result<Self>
+    where
+        F: Fn(&TxInput, H256) -> Result<ScriptBuf>,
+    {
         // Prepare boilerplate transaction for `bitcoin` crate.
         let mut tx = Transaction {
             version: self.version,
@@ -130,17 +148,18 @@ impl TransactionBuilder {
         }
 
         // Prepare the outputs for `bitcoin` crate.
-        for output in self.outputs {
-            let btc_txout = TxOut::from(output);
+        for output in &self.outputs {
+            // TODO: Doable without clone?
+            let btc_txout = TxOut::from(output.clone());
             tx.output.push(btc_txout);
         }
 
         let cache = SighashCache::new(tx);
 
-        let mut sig_hashes = vec![];
+        let mut updated_scriptsigs = vec![];
 
         // For each input (index), we create a hash which is to be signed.
-        for (index, input) in self.inputs.into_iter().enumerate() {
+        for (index, input) in self.inputs.iter().enumerate() {
             match input {
                 TxInput::P2pkh { ctx, hash: _ } => {
                     let legacy_hash = cache
@@ -155,15 +174,25 @@ impl TransactionBuilder {
                         .map_err(|_| Error::Todo)?;
 
                     let h256 = convert_legacy_btc_hash_to_h256(legacy_hash);
+                    // TODO: Rename closure var.
+                    let updated = fun(input, h256)?;
 
-                    sig_hashes.push((index, TransactionSigHashType::Legacy(h256)))
+                    updated_scriptsigs.push((index, updated));
                 },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
             };
         }
 
-        Ok(sig_hashes)
+        let mut tx = cache.into_transaction();
+
+        // UPdate the Transaction with the updated scriptSig's.
+        for (index, script_sig) in updated_scriptsigs {
+            tx.input[index].script_sig = script_sig;
+        }
+
+        // TODO: Return new type.
+        Ok(self)
     }
 }
 
@@ -224,6 +253,7 @@ impl From<InputContext> for TxIn {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum TxOutput {
     P2pkh {
         satoshis: u64,
@@ -249,6 +279,9 @@ impl From<TxOutput> for TxOut {
 pub enum TxInput {
     P2pkh {
         ctx: InputContext,
+        // TODO: Needed?
+        // TODO: Yes, pass this to the claimer, pubkey hash extraction should
+        // happen before.
         hash: PublicKeyHash,
     },
     NonStandard {
