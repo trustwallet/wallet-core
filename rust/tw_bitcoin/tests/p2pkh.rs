@@ -14,11 +14,10 @@ fn tx_input_p2pkh_from_slice() {
     let script_pubkey = "76a9143836741d8f4a925483cba7634aa3ed0ddd37c54e88ac";
     // Four bytes, using default value
     let sequence = "FFFFFFFF";
-    // 32 bytes, hash (ID) of the input transaction.
-    let mut txid =
-        hex::decode("f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466").unwrap();
-    txid.reverse();
-    let txid = hex::encode(&txid, false);
+    // 32 bytes, reversed, little-endian encoded hash (ID) of the input transaction.
+    // TODO: Check ordianess in asserts at the end.
+    let txid_original = "f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466";
+    let txid = "66e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f3";
     // Four bytes, vout value of zero.
     let vout = "00000000";
     // 20 bytes, RIPEMD160 hash of the recipient.

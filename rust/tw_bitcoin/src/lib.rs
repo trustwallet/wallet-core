@@ -5,14 +5,14 @@ use bitcoin::blockdata::locktime::absolute::{Height as BTCHeight, LockTime as BT
 use bitcoin::blockdata::script::ScriptBuf as BTCScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint as BTCOutPoint;
 use bitcoin::hash_types::PubkeyHash as BTCPubkeyHash;
+use bitcoin::hashes::Hash as BTCHash;
 use bitcoin::sighash::{LegacySighash as BTCLegacySighash, SighashCache as BTCSighashCache};
 use bitcoin::transaction::Transaction as BTCTransaction;
 use bitcoin::{Sequence as BTCSequence, TxIn as BTCTxIn, TxOut as BTCTxOut, Witness as BTCWitness};
 use claim::TransactionSigner;
-//use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use bitcoin::consensus::{Decodable, Encodable};
 use ripemd::{Digest, Ripemd160};
-use secp256k1::hashes::Hash;
+use tw_keypair::ecdsa::secp256k1;
 use tw_hash::H256;
 
 pub mod claim;
@@ -38,6 +38,10 @@ impl SigHashType {
             SigHashType::AnyoneCanPay => 128_u8.to_le(),
         }
     }
+}
+
+pub fn keypair_from_wif(wif: &str) -> Result<secp256k1::KeyPair> {
+    secp256k1::KeyPair::from_wif(wif).map_err(|_| Error::Todo)
 }
 
 fn convert_legacy_btc_hash_to_h256(hash: BTCLegacySighash) -> H256 {
@@ -142,20 +146,6 @@ impl TransactionBuilder {
         self.outputs.push(output);
         self
     }
-    pub fn sign_inputs<S>(self, signer: S) -> Result<Self>
-    where
-        S: TransactionSigner,
-    {
-        self.sign_inputs_fn(|input, sighash| match input {
-            TxInput::P2PKH(p2pkh) => signer
-                .claim_p2pkh(p2pkh, sighash)
-                // TODO: Should not convert into BTCScriptBuf here.
-                .map(|claim| claim.into_script_buf()),
-            TxInput::NonStandard { ctx: _ } => {
-                panic!()
-            },
-        })
-    }
     pub fn prepare_for_signing(mut self) -> Self {
         // Prepare boilerplate transaction for `bitcoin` crate.
         let mut tx = BTCTransaction {
@@ -186,6 +176,21 @@ impl TransactionBuilder {
         self.btc_tx = Some(tx);
         self
     }
+    pub fn sign_inputs<S>(self, signer: S) -> Result<Self>
+    where
+        S: TransactionSigner,
+    {
+        self.sign_inputs_fn(|input, sighash| match input {
+            TxInput::P2PKH(p2pkh) => signer
+                .claim_p2pkh(p2pkh, sighash)
+                // TODO: Should not convert into BTCScriptBuf here.
+                .map(|claim| claim.into_script_buf()),
+            TxInput::NonStandard { ctx: _ } => {
+                panic!()
+            },
+        })
+    }
+    // TODO: Does this have to return `Result<T>`?
     pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
     where
         F: Fn(&TxInput, H256) -> Result<BTCScriptBuf>,
