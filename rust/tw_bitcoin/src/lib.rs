@@ -208,27 +208,6 @@ impl TransactionBuilder {
         self.inputs.push(input);
         self
     }
-    // TODO: Add something like this later.
-    /*
-    fn add_input_from_utxo(mut self, utxo: TxOut, point: OutPoint) -> Self {
-        match TxInputBuilder::from_utxo(utxo, point) {
-            TxInputBuilder::P2pkh(builder) => {
-                let input = builder
-                    .my_pubkey_hash(self.keypair.public().hash())
-                    .build()
-                    // Panicing implies bug.
-                    .unwrap();
-
-                self.inputs.push(input);
-            },
-            TxInputBuilder::NonStandard => {
-                todo!()
-            },
-        }
-
-        self
-    }
-    */
     /// Alias for `add_output_pk2pkh`.
     fn add_output_transfer(self, recipient: Recipient, satoshis: u64) -> Self {
         self.add_output_p2pkh(recipient, satoshis)
@@ -285,7 +264,7 @@ impl TransactionBuilder {
                             index,
                             // TODO: Add note that this is same as `scriptPubKey`,
                             // handled somewhere else.
-                            &ctx.script_pub_key,
+                            &ctx.script_pubkey,
                             SIGHASH_ALL,
                         )
                         .map_err(|_| Error::Todo)?;
@@ -307,6 +286,14 @@ pub enum TransactionSigHashType {
     Legacy(H256),
 }
 
+impl TransactionSigHashType {
+    pub fn as_h256(&self) -> &H256 {
+        match self {
+            TransactionSigHashType::Legacy(h256) => h256,
+        }
+    }
+}
+
 pub enum Recipient {
     LegacyHash(PublicKeyHash),
     LegacyPubkey(()),
@@ -318,35 +305,20 @@ pub enum Recipient {
 // TODO: Should be private.
 pub struct InputContext {
     previous_output: OutPoint,
-    // Inputs for `script_pub_key`.
-    script_sig: ScriptBuf,
     // The condition for claiming the output.
-    script_pub_key: ScriptBuf,
+    script_pubkey: ScriptBuf,
     // TODO: Document this.
     sequence: Sequence,
     // Witness data for Segwit/Taproot transactions.
     witness: Witness,
 }
 
-impl From<InputContext> for TxIn {
-    fn from(ctx: InputContext) -> Self {
-        TxIn {
-            previous_output: ctx.previous_output,
-            script_sig: ctx.script_sig,
-            sequence: ctx.sequence,
-            witness: ctx.witness,
-        }
-    }
-}
-
 impl InputContext {
     pub fn new(utxo: TxOut, point: OutPoint) -> Self {
         InputContext {
             previous_output: point,
-            // Empty scriptbuf.
-            script_sig: ScriptBuf::new(),
             // TODO: Document this.
-            script_pub_key: utxo.script_pubkey,
+            script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF`.
             sequence: Sequence::default(),
             // Empty witness.
@@ -355,21 +327,15 @@ impl InputContext {
     }
 }
 
-pub struct P2pkhInputBuilder {
-    ctx: InputContext,
-    hash: Option<PublicKeyHash>,
-}
-
-impl P2pkhInputBuilder {
-    pub fn my_pubkey_hash(mut self, hash: PublicKeyHash) -> Self {
-        self.hash = Some(hash);
-        self
-    }
-    pub fn build(self) -> Result<TxInput> {
-        Ok(TxInput::P2pkh {
-            ctx: self.ctx,
-            hash: self.hash.ok_or(Error::Todo)?,
-        })
+impl From<InputContext> for TxIn {
+    fn from(ctx: InputContext) -> Self {
+        TxIn {
+            previous_output: ctx.previous_output,
+            // TODO: Document this.
+            script_sig: ctx.script_pubkey,
+            sequence: ctx.sequence,
+            witness: ctx.witness,
+        }
     }
 }
 
@@ -408,23 +374,5 @@ pub enum TxInput {
 impl TxInput {
     fn from_slice(slice: &[u8]) -> Result<Self> {
         todo!()
-    }
-}
-
-pub enum TxInputBuilder {
-    P2pkh(P2pkhInputBuilder),
-    NonStandard,
-}
-
-impl TxInputBuilder {
-    fn from_utxo(utxo: TxOut, point: OutPoint) -> Self {
-        if utxo.script_pubkey.is_p2pkh() {
-            TxInputBuilder::P2pkh(P2pkhInputBuilder {
-                ctx: InputContext::new(utxo, point),
-                hash: None,
-            })
-        } else {
-            TxInputBuilder::NonStandard
-        }
     }
 }
