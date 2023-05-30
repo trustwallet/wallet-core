@@ -4,16 +4,19 @@ use bitcoin::address::{Address as BTCAddress, Payload as BTCPayload};
 use bitcoin::blockdata::locktime::absolute::{Height as BTCHeight, LockTime as BTCLockTime};
 use bitcoin::blockdata::script::ScriptBuf as BTCScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint as BTCOutPoint;
+use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hash_types::PubkeyHash as BTCPubkeyHash;
-use bitcoin::hashes::Hash as BTCHash;
+use bitcoin::hashes::hash160::Hash as BTCHash;
+use bitcoin::hashes::Hash as BTCHashTrait;
 use bitcoin::sighash::{LegacySighash as BTCLegacySighash, SighashCache as BTCSighashCache};
 use bitcoin::transaction::Transaction as BTCTransaction;
 use bitcoin::{Sequence as BTCSequence, TxIn as BTCTxIn, TxOut as BTCTxOut, Witness as BTCWitness};
 use claim::TransactionSigner;
-use bitcoin::consensus::{Decodable, Encodable};
 use ripemd::{Digest, Ripemd160};
-use tw_keypair::ecdsa::secp256k1;
+use tw_encoding::hex;
 use tw_hash::H256;
+use tw_keypair::ecdsa::secp256k1;
+use tw_keypair::traits::KeyPairTrait;
 
 pub mod claim;
 
@@ -355,7 +358,37 @@ pub enum TxInput {
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
     pub ctx: InputContext,
-    pub recipient: RecipientHash160,
+    pub recipient: PubkeyHash,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct PubkeyHash(BTCPubkeyHash);
+
+impl PubkeyHash {
+    pub fn from_keypair(keypair: &secp256k1::KeyPair, compressed: bool) -> Result<Self> {
+        let bhash = if compressed {
+            BTCHash::from_slice(keypair.public().compressed().as_slice())
+                .map_err(|_| Error::Todo)?
+        } else {
+            BTCHash::from_slice(keypair.public().uncompressed().as_slice())
+                .map_err(|_| Error::Todo)?
+        };
+
+        let pubkey = BTCPubkeyHash::from_raw_hash(bhash);
+
+        Ok(PubkeyHash(pubkey))
+    }
+    pub fn from_bytes(bytes: [u8; 20]) -> Result<Self> {
+        Ok(PubkeyHash(BTCPubkeyHash::from_byte_array(bytes)))
+    }
+    pub fn from_script(script: &BTCScriptBuf) -> Result<Self> {
+        let pubkey = match BTCPayload::from_script(script).map_err(|_| Error::Todo)? {
+            BTCPayload::PubkeyHash(hash) => PubkeyHash(hash),
+            _ => return Err(Error::Todo),
+        };
+
+        Ok(pubkey)
+    }
 }
 
 impl TxInput {
@@ -364,26 +397,8 @@ impl TxInput {
     }
     pub fn from_slice(slice: &[u8]) -> Result<Self> {
         let ctx = InputContext::from_slice(slice)?;
+        let recipient = PubkeyHash::from_script(&ctx.script_pubkey)?;
 
-        if ctx.script_pubkey.is_p2pkh() {
-            // Extract the expected recipient from the scriptPubKey.
-            //
-            // script[0] == OP_DUP
-            // script[1] == OP_HASH160
-            // script[2] == OP_PUSHBYTES_20
-            // script[3..23] == <PUBKEY-RIPEMD160>
-            // script[23] == OP_EQUALVERIFY
-            // script[24] == OP_CHECKSIG
-            let mut hash = [0; 20];
-            hash.clone_from_slice(&ctx.script_pubkey.as_bytes()[3..23]);
-
-            Ok(TxInput::P2PKH(TxInputP2PKH {
-                ctx,
-                recipient: RecipientHash160(hash),
-            }))
-        } else {
-            //Ok(TxInput::NonStandard { ctx })
-            panic!()
-        }
+        Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
     }
 }

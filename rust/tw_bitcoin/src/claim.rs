@@ -1,6 +1,6 @@
 use bitcoin::ScriptBuf as BTCScriptBuf;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
-use crate::{Error, Result, SigHashType, TxInputP2PKH};
+use crate::{Error, PubkeyHash, RecipientHash160, Result, SigHashType, TxInputP2PKH};
 use ripemd::{Digest, Ripemd160};
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
@@ -42,38 +42,20 @@ impl TransactionSigner for secp256k1::KeyPair {
         hash: H256,
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH> {
-        // The expected recipient is a RIPEMD160 hash, so first we check
-        // whether it's a hash from the COMPRESSED public key.
-        let mut hasher = Ripemd160::new();
-        hasher.update(self.public().compressed().as_slice());
-        let finalized = hasher.finalize();
-        let hashed_pubkey = &finalized[..];
-        //let hashed_pubkey: Vec<u8> = finalized.iter().rev().cloned().collect();
-        //let hashed_pubkey: [u8; 20] = hashed_pubkey.try_into().unwrap();
-
-        debug_assert_eq!(input.recipient.0.len(), hashed_pubkey.len());
+        let my_pubkey = PubkeyHash::from_keypair(&self, true)?;
 
         // If the expected recipient is a RIPEMD160 hash of the COMPRESSED
         // key...
         // TODO: `RecipientHash160` should implement Deref
-        dbg!(&input.recipient.0);
-        dbg!(&hashed_pubkey);
-        let pubkey = if input.recipient.0 == hashed_pubkey {
+        let pubkey = if input.recipient == my_pubkey {
             self.public().compressed().to_vec()
         }
         // ... if not, then we check whether it is a RIPEMD160 hash of the
         // UNCOMPRESSEd public key.
         else {
-            let mut hasher = Ripemd160::new();
-            hasher.update(self.public().uncompressed().as_slice());
-            let finalized = hasher.finalize();
-            let hashed_pubkey = &finalized[..];
-            //let hashed_pubkey: Vec<u8> = finalized.iter().rev().cloned().collect();
-            //let hashed_pubkey: [u8; 20] = hashed_pubkey.try_into().unwrap();
+            let my_pubkey = PubkeyHash::from_keypair(&self, false)?;
 
-            dbg!(&input.recipient.0);
-            dbg!(&hashed_pubkey);
-            if input.recipient.0 == hashed_pubkey {
+            if input.recipient == my_pubkey {
                 self.public().uncompressed().to_vec()
             } else {
                 // Invalid, wrong signer!
