@@ -1,6 +1,5 @@
-use bitcoin::blockdata::script::PushBytesBuf as BTCPushBytesBuf;
-use bitcoin::consensus::Encodable;
-use bitcoin::{ScriptBuf as BTCScriptBuf, VarInt};
+use bitcoin::blockdata::script::PushBytesBuf as BPushBytesBuf;
+use bitcoin::{ScriptBuf as BScriptBuf};
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use crate::{Error, PubkeyHash, Result, SigHashType, TxInputP2PKH};
 use tw_hash::H256;
@@ -30,17 +29,17 @@ pub struct ClaimP2PKH {
 
 impl ClaimP2PKH {
     // TODO: Should unwraps be handled?
-    pub fn into_script_buf(self) -> BTCScriptBuf {
+    pub fn into_script_buf(self) -> BScriptBuf {
         // We let the `bitcoin` crate handle the encoding of the public key.
         let pubkey = bitcoin::key::PublicKey::from_slice(&self.pubkey).unwrap();
 
-        let mut buf = BTCPushBytesBuf::new();
+        let mut buf = BPushBytesBuf::new();
         // DER-encoding handles the prefix with the length of the signature. No
         // need to do it manually.
         buf.extend_from_slice(&self.sig).unwrap();
         buf.push(self.sighash.to_le_byte()).unwrap();
 
-        BTCScriptBuf::builder()
+        BScriptBuf::builder()
             .push_slice(buf)
             .push_key(&pubkey)
             .into_script()

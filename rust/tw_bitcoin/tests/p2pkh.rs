@@ -1,7 +1,7 @@
 use bitcoin::hashes::Hash;
 use bitcoin::{
-    OutPoint as BTCOutPoint, ScriptBuf as BTCScriptBuf, Sequence as BTCSequence, Txid as BTCTxid,
-    Witness as BTCWitness,
+    OutPoint as BOutPoint, ScriptBuf as BScriptBuf, Sequence as BSequence, Txid as BTxid,
+    Witness as BWitness,
 };
 use tw_bitcoin::{PubkeyHash, TxInput};
 use tw_encoding::hex;
@@ -16,7 +16,7 @@ fn tx_input_p2pkh_from_slice() {
     let sequence = "FFFFFFFF";
     // 32 bytes, reversed, little-endian encoded hash (ID) of the input transaction.
     // TODO: Check ordianess in asserts at the end.
-    let txid_original = "f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466";
+    let _txid_original = "f342ee6bd3fd94e528103d7a0cc95d4882b8284fed9c727e2a221f9bd34fe466";
     let txid = "66e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f3";
     // Four bytes, vout value of zero.
     let vout = "00000000";
@@ -33,20 +33,20 @@ fn tx_input_p2pkh_from_slice() {
         // Expected `previous_output`
         assert_eq!(
             p2pkh.ctx.previous_output,
-            BTCOutPoint {
-                txid: BTCTxid::from_byte_array(hex::decode(&txid).unwrap().try_into().unwrap()),
+            BOutPoint {
+                txid: BTxid::from_byte_array(hex::decode(txid).unwrap().try_into().unwrap()),
                 vout: 0,
             }
         );
         // Expected `script_pubkey`
         assert_eq!(
             p2pkh.ctx.script_pubkey,
-            BTCScriptBuf::from_hex(script_pubkey).unwrap()
+            BScriptBuf::from_hex(script_pubkey).unwrap()
         );
         // Expected sequence
-        assert_eq!(p2pkh.ctx.sequence, BTCSequence::default());
+        assert_eq!(p2pkh.ctx.sequence, BSequence::default());
         // Expected witness
-        assert_eq!(p2pkh.ctx.witness, BTCWitness::default());
+        assert_eq!(p2pkh.ctx.witness, BWitness::default());
         // Expected recipient.
         assert_eq!(
             p2pkh.recipient,
