@@ -172,7 +172,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
 
     const auto ExpectedTx = "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779";
     {
-        EXPECT_EQ(TWDataSize(outputData.get()), 183ul);
+        EXPECT_EQ(TWDataSize(outputData.get()), 217ul);
         Ethereum::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()), (int)TWDataSize(outputData.get())));
 

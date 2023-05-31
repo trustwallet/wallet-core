@@ -159,23 +159,24 @@ message SigningInput {
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
-    // Encoded transaction bytes.
-    bytes pre_hash = 1;
 
     // Signed and encoded transaction bytes.
-    bytes encoded = 2;
+    bytes encoded = 1;
 
     // The V, R, S components of the resulting signature, (each uint256, serialized little endian)
-    bytes v = 3;
-    bytes r = 4;
-    bytes s = 5;
+    bytes v = 2;
+    bytes r = 3;
+    bytes s = 4;
 
     // The payload part, supplied in the input or assembled from input parameters
-    bytes data = 6;
+    bytes data = 5;
 
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 7;
+    Common.Proto.SigningError error = 6;
 
     // error code description
-    string error_message = 8;
+    string error_message = 7;
+
+    // Encoded transaction bytes.
+    bytes pre_hash = 8;
 }
