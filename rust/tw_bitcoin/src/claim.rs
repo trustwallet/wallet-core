@@ -1,5 +1,5 @@
 use bitcoin::blockdata::script::PushBytesBuf as BPushBytesBuf;
-use bitcoin::{ScriptBuf as BScriptBuf};
+use bitcoin::ScriptBuf as BScriptBuf;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use crate::{Error, PubkeyHash, Result, SigHashType, TxInputP2PKH};
 use tw_hash::H256;
