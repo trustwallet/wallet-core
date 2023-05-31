@@ -2,17 +2,21 @@ package com.trustwallet.core.app.blockchains.ethereum
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
-import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.Assert.assertFalse
-import wallet.core.jni.proto.Barz
-import wallet.core.jni.Barz as WCBarz
-import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType
+import wallet.core.jni.CoinType.ETHEREUM
+import wallet.core.jni.proto.Ethereum
+import wallet.core.jni.EthereumAbi
+import wallet.core.jni.EthereumAbiFunction
 import wallet.core.jni.proto.Ethereum.SigningOutput
 import wallet.core.jni.proto.Ethereum.TransactionMode
+import com.trustwallet.core.app.utils.Numeric
+import org.junit.Assert.assertArrayEquals
+import wallet.core.jni.proto.Barz
+import wallet.core.jni.Barz as WCBarz
 
 class TestBarz {
 
