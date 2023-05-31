@@ -68,6 +68,7 @@ class BarzTests: XCTestCase {
         XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0x85a6290917d1DC2C507Ff2D545Ba5aF13e964Ba1");
     }
 
+    // https://testnet.bscscan.com/tx/0x43fc13dfdf06bbb09da8ce070953753764f1e43782d0c8b621946d8b45749419
     func testSignK1TransferAccountDeployed() {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "61")!
