@@ -1,7 +1,7 @@
 use bitcoin::blockdata::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::ScriptBuf as BScriptBuf;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
-use crate::{Error, PubkeyHash, Result, SigHashType, TxInputP2PKH};
+use crate::{Error, PubkeyHash, Result, SigHashType, TxInputP2PKH, TxInputP2TRKeySpend};
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
@@ -15,10 +15,21 @@ pub trait TransactionSigner {
         sighash: SigHashType,
     ) -> Result<ClaimP2PKH>;
 
+    fn claim_p2tr_key_spend_sighash(
+        &self,
+        input: &TxInputP2TRKeySpend,
+        hash: H256,
+        sighash: SigHashType,
+    ) -> Result<ClaimP2TRKeySpend>;
+
     // P2PKH signer with `SIGHASH_ALL` as default.
     fn claim_p2pkh(&self, input: &TxInputP2PKH, hash: H256) -> Result<ClaimP2PKH> {
         <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, input, hash, SigHashType::All)
     }
+}
+
+pub struct ClaimP2TRKeySpend {
+
 }
 
 pub struct ClaimP2PKH {
@@ -47,6 +58,15 @@ impl ClaimP2PKH {
 }
 
 impl TransactionSigner for secp256k1::KeyPair {
+    fn claim_p2tr_key_spend_sighash(
+        &self,
+        input: &TxInputP2TRKeySpend,
+        hash: H256,
+        sighash: SigHashType,
+    ) -> Result<ClaimP2TRKeySpend> {
+        todo!()
+    }
+
     fn claim_p2pkh_with_sighash(
         &self,
         input: &TxInputP2PKH,

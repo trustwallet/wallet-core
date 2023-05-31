@@ -6,6 +6,7 @@ use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
 use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
+use bitcoin::key::TapTweak;
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::sighash::{LegacySighash as BLegacySighash, SighashCache as BSighashCache};
@@ -14,7 +15,7 @@ use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as 
 use claim::TransactionSigner;
 use std::str::FromStr;
 use tw_hash::H256;
-use tw_keypair::ecdsa::secp256k1;
+use tw_keypair::ecdsa::secp256k1::{self, PublicKey};
 use tw_keypair::traits::KeyPairTrait;
 
 pub mod claim;
@@ -305,6 +306,7 @@ impl From<TxInput> for BTxIn {
 #[derive(Debug, Clone)]
 pub enum TxOutput {
     P2PKH(TxOutputP2PKH),
+    P2TRKeyPath(TxOutputP2TKeyPath),
 }
 
 impl From<TxOutputP2PKH> for TxOutput {
@@ -328,6 +330,31 @@ impl TxOutputP2PKH {
     }
 }
 
+// TODO.
+fn tweak_key(pubkey: PublicKey) {
+    use bitcoin::key::XOnlyPublicKey;
+
+    let schnorr = pubkey.to_schnorr_pubkey_bip340();
+    let buf = schnorr.to_bytes();
+
+    let x_only = XOnlyPublicKey::from_slice(&buf).unwrap();
+
+    let engine = bitcoin::key::Secp256k1::gen_new();
+    x_only.tap_tweak(&engine, None);
+}
+
+#[derive(Debug, Clone)]
+pub struct TxOutputP2TKeyPath {
+    satoshis: u64,
+    witness: BWitness,
+}
+
+impl TxOutputP2TKeyPath {
+    pub fn new(satoshis: u64, recipient: ()) -> Self {
+        todo!()
+    }
+}
+
 impl From<TxOutput> for BTxOut {
     fn from(out: TxOutput) -> Self {
         match out {
@@ -335,6 +362,7 @@ impl From<TxOutput> for BTxOut {
                 value: p2pkh.satoshis,
                 script_pubkey: p2pkh.script_pubkey,
             },
+            _ => todo!()
         }
     }
 }
