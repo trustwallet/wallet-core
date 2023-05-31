@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "RLP.h"
 #include "Signer.h"
-#include <Ethereum/EIP4337.h>
+#include <Ethereum/ERC4337.h>
 #include <Ethereum/MessageSigner.h>
 #include <nlohmann/json.hpp>
 
@@ -287,7 +287,7 @@ UserOperation::buildNativeTransfer(const Data& entryPointAddress, const Data& se
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(toAddress, amount, payload),
+        Ethereum::getERC4337ExecuteBytecode(toAddress, amount, payload),
         paymasterAndData);
 }
 
@@ -306,7 +306,7 @@ UserOperation::buildERC20Transfer(const Data& entryPointAddress, const Data& sen
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20TransferCall(toAddress, amount)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20TransferCall(toAddress, amount)),
         paymasterAndData);
 }
 
@@ -325,7 +325,7 @@ UserOperation::buildERC20Approve(const Data& entryPointAddress, const Data& send
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20ApproveCall(spenderAddress, amount)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20ApproveCall(spenderAddress, amount)),
         paymasterAndData);
 }
 
@@ -344,7 +344,7 @@ UserOperation::buildERC721Transfer(const Data& entryPointAddress, const Data& se
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId)),
         paymasterAndData);
 }
 
@@ -363,7 +363,7 @@ UserOperation::buildERC1155Transfer(const Data& entryPointAddress, const Data& s
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC1155TransferFromCall(from, to, tokenId, value, data)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC1155TransferFromCall(from, to, tokenId, value, data)),
         paymasterAndData);
 }
 
