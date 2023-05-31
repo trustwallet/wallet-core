@@ -16,6 +16,54 @@
 
 namespace TW::Barz::tests {
 
+// https://testnet.bscscan.com/tx/0x434f5861b7d14b3bf790b57e5eb1be98355d77f528defe732f2994fc9d6d3f2e
+TEST(Barz, GetInitCodeFromPublicKey) {
+    // C++
+    {
+        const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
+        const std::string& publicKey = "0x1dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58";
+        const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
+
+        const auto& initCode = Barz::getInitCodeFromPublicKey(factoryAddress, publicKey, verificationFacetAddress);
+        ASSERT_EQ(hexEncoded(initCode), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
+    }
+
+    // C
+    {
+        const auto factoryAddress = STRING("0x3fC708630d85A3B5ec217E53100eC2b735d4f800");
+        const auto publicKey = STRING("0x1dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
+        const auto verificationFacetAddress = STRING("0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf");
+
+        const auto& initCodeData = TWBarzGetInitCodeFromPublicKey(factoryAddress.get(), publicKey.get(), verificationFacetAddress.get());
+        const auto& initCode = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(initCodeData).get()));
+        EXPECT_EQ(initCode, "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
+    }
+}
+
+// https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
+TEST(Barz, GetInitCodeFromAttestationObject) {
+    // C++
+    {
+        const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
+        const std::string& attestationObject = "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d0000000000000000000000000000000000000000001464193b58d01d4047694ba4634750047a5fcd637ea5010203262001215820e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79225820eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02";
+        const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
+
+        const auto& initCode = Barz::getInitCodeFromAttestationObject(factoryAddress, attestationObject, verificationFacetAddress);
+        ASSERT_EQ(hexEncoded(initCode), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02");
+    }
+
+    // C
+    {
+        const auto factoryAddress = STRING("0x3fC708630d85A3B5ec217E53100eC2b735d4f800");
+        const auto attestationObject = STRING("0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d0000000000000000000000000000000000000000001464193b58d01d4047694ba4634750047a5fcd637ea5010203262001215820e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79225820eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02");
+        const auto verificationFacetAddress = STRING("0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf");
+
+        const auto& initCodeData = TWBarzGetInitCodeFromAttestationObject(factoryAddress.get(), attestationObject.get(), verificationFacetAddress.get());
+        const auto& initCode = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(initCodeData).get()));
+        EXPECT_EQ(initCode, "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02");
+    }
+}
+
 // https://testnet.bscscan.com/address/0x5d51930e0ce5cc08a67a1763fadb66892c0994d1
 TEST(Barz, GetCounterfactualAddressFromPublicKey) {
     TW::Barz::Proto::ContractAddressInput input;
@@ -79,17 +127,6 @@ TEST(Barz, GetCounterfactualAddressFromAttestationObject) {
     }
 }
 
-// https://testnet.bscscan.com/tx/0x434f5861b7d14b3bf790b57e5eb1be98355d77f528defe732f2994fc9d6d3f2e
-TEST(Barz, GetInitCode) {
-    {
-        const std::string& ownerAddress = "0x1dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58";
-        const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
-        const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
-        const auto& initCode = Barz::getInitCodeFromPublicKey(factoryAddress, ownerAddress, verificationFacetAddress);
-        ASSERT_EQ(hexEncoded(initCode), "0x296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
-    }
-}
-
 // https://testnet.bscscan.com/tx/0x43fc13dfdf06bbb09da8ce070953753764f1e43782d0c8b621946d8b45749419
 TEST(Barz, SignK1TransferAccountDeployed) {
     TW::Ethereum::Proto::SigningInput input;
@@ -125,16 +162,15 @@ TEST(Barz, SignK1TransferAccountDeployed) {
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
     transfer.set_amount(amount.data(), amount.size());
 
-    std::string expected = "1";
+    std::string expected = "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"100000\",\"initCode\":\"0x\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"2\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0xb16db98b365b1f89191996942612b14f1da4bd5f\",\"signature\":\"0x3d29240a2decf2a1f47c88d1cb5923815ed50d24f8f01a9697e229ba69ce18d13779d2d96a5c93f5df29110677de62e75f4d751ab7baf5830276eb4ca257fb471b\",\"verificationGasLimit\":\"100000\"}";
 
     {
         // sign test
         TW::Ethereum::Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
-        //ASSERT_EQ(hexEncoded(output.pre_hash()), "3");
+        ASSERT_EQ(hexEncoded(output.pre_hash()), "0x731dd74cbf212bee883c6decbad07ad8980be89ca2e6c64de310af04e562d866");
         ASSERT_EQ(std::string(output.encoded()), expected);
-        //ASSERT_EQ(output.pre_hash(), expected);
     }
 }
 

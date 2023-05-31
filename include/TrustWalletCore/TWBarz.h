@@ -29,7 +29,7 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input);
 /// \param verificationFacet Verification facet address
 /// \return The address.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nonnull TWBarzGetInitCodeFromPublicKey(TWString* _Nonnull factory, TWString* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
+TWData *_Nonnull TWBarzGetInitCodeFromPublicKey(TWString* _Nonnull factory, TWString* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
 
 /// Returns the init code parameter of ERC-4337 User Operation
 ///
@@ -38,6 +38,6 @@ TWString *_Nonnull TWBarzGetInitCodeFromPublicKey(TWString* _Nonnull factory, TW
 /// \param verificationFacet Verification facet address
 /// \return The address.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull factory, TWString* _Nonnull attestationObject, TWString* _Nonnull verificationFacet);
+TWData *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull factory, TWString* _Nonnull attestationObject, TWString* _Nonnull verificationFacet);
 
 TW_EXTERN_C_END
