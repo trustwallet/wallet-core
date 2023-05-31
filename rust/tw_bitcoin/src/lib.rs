@@ -3,14 +3,14 @@ use bitcoin::blockdata::locktime::absolute::{Height as BHeight, LockTime as BLoc
 use bitcoin::blockdata::script::ScriptBuf as BScriptBuf;
 use bitcoin::blockdata::transaction::OutPoint as BOutPoint;
 use bitcoin::consensus::{Decodable, Encodable};
-use bitcoin::hashes::Hash as BHashTrait;
-use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
+use bitcoin::hashes::hash160::Hash as BHash;
+use bitcoin::hashes::Hash as BHashTrait;
+use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::sighash::{LegacySighash as BLegacySighash, SighashCache as BSighashCache};
 use bitcoin::transaction::Transaction as BTransaction;
 use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as BWitness};
-use bitcoin::opcodes::All as AnyOpcode;
 use claim::TransactionSigner;
 use std::str::FromStr;
 use tw_hash::H256;
@@ -141,13 +141,8 @@ impl TransactionBuilder {
 
         // Prepare the inputs for `bitcoin` crate.
         for input in self.inputs.iter().cloned() {
-            let btc_txin = match input {
-                // TODO: `BTxIn` should implement `From<TxInput>`.
-                TxInput::P2PKH(p2pkh) => BTxIn::from(p2pkh.ctx),
-                TxInput::NonStandard { ctx } => BTxIn::from(ctx),
-            };
-
-            tx.input.push(btc_txin);
+            let btxin = BTxIn::from(input);
+            tx.input.push(btxin);
         }
 
         // Prepare the outputs for `bitcoin` crate.
@@ -169,6 +164,7 @@ impl TransactionBuilder {
                 .claim_p2pkh(p2pkh, sighash)
                 // TODO: Should not convert into BScriptBuf here.
                 .map(|claim| claim.into_script()),
+            TxInput::P2TRKeySpend(_) => todo!(),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
             },
@@ -204,6 +200,7 @@ impl TransactionBuilder {
 
                     updated_scriptsigs.push((index, updated));
                 },
+                TxInput::P2TRKeySpend(_) => todo!(),
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
             };
@@ -285,10 +282,22 @@ impl From<InputContext> for BTxIn {
     fn from(ctx: InputContext) -> Self {
         BTxIn {
             previous_output: ctx.previous_output,
-            // TODO: Document this.
             script_sig: BScriptBuf::default(),
             sequence: ctx.sequence,
             witness: ctx.witness,
+        }
+    }
+}
+
+impl From<TxInput> for BTxIn {
+    fn from(input: TxInput) -> Self {
+        let ctx = input.ctx();
+
+        BTxIn {
+            previous_output: ctx.previous_output,
+            script_sig: BScriptBuf::default(),
+            sequence: ctx.sequence,
+            witness: ctx.witness.clone(),
         }
     }
 }
@@ -333,13 +342,30 @@ impl From<TxOutput> for BTxOut {
 #[derive(Debug, Clone)]
 pub enum TxInput {
     P2PKH(TxInputP2PKH),
+    P2TRKeySpend(TxInputP2TRKeySpend),
     NonStandard { ctx: InputContext },
+}
+
+impl TxInput {
+    fn ctx(&self) -> &InputContext {
+        match self {
+            TxInput::P2PKH(t) => &t.ctx,
+            TxInput::P2TRKeySpend(t) => &t.ctx,
+            TxInput::NonStandard { ctx } => &ctx,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
     pub ctx: InputContext,
     pub recipient: PubkeyHash,
+}
+
+#[derive(Debug, Clone)]
+pub struct TxInputP2TRKeySpend {
+    pub ctx: InputContext,
+    pub recipient: (),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -402,15 +428,15 @@ fn get_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
         76..=255 => (OP_PUSHDATA1, Some(size.to_le_bytes().to_vec())),
         256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
         65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
-        _ => return Err(Error::Todo)
+        _ => return Err(Error::Todo),
     };
 
     Ok(ret)
 }
 
 fn create_envelope(content_type: &str, data: &str) -> Result<BScriptBuf> {
-    use bitcoin::opcodes::*;
     use bitcoin::opcodes::all::*;
+    use bitcoin::opcodes::*;
 
     // TODO: Check overflow
     // Prepare content-type buffer.
@@ -421,7 +447,9 @@ fn create_envelope(content_type: &str, data: &str) -> Result<BScriptBuf> {
     // Fany any sized above 75, we use encode as `OP_PUSHDATA[1|2|3|4] <SIZE_BUF>`.
     content_ty_buf.push(op_push.to_u8()).unwrap();
     if let Some(size_buf) = size_buf {
-        content_ty_buf.extend_from_slice(size_buf.as_slice()).unwrap();
+        content_ty_buf
+            .extend_from_slice(size_buf.as_slice())
+            .unwrap();
     }
 
     // Prepare data buffer.
