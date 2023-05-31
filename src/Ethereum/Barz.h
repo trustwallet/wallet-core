@@ -13,6 +13,6 @@
 namespace TW::Barz {
 
 std::string getCounterfactualAddress(const TW::Barz::Proto::ContractAddressInput input);
-std::string getInitCode(const std::string& factoryAddress, const std::string& owner, const std::string& verificationFacet);
-
+Data getInitCodeFromPublicKey(const std::string& factoryAddress, const std::string& owner, const std::string& verificationFacet);
+Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const std::string& attestationObject, const std::string& verificationFacet);
 }

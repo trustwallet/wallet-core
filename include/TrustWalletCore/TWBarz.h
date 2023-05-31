@@ -25,10 +25,19 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input);
 /// Returns the init code parameter of ERC-4337 User Operation
 ///
 /// \param factory Wallet factory address (BarzFactory)
-/// \param factory Owner bytes for the verification facet
+/// \param publicKey Public key for the verification facet
 /// \param verificationFacet Verification facet address
 /// \return The address.
 TW_EXPORT_STATIC_METHOD
-TWString *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, TWString* _Nonnull owner, TWString* _Nonnull verificationFacet);
+TWString *_Nonnull TWBarzGetInitCodeFromPublicKey(TWString* _Nonnull factory, TWString* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
+
+/// Returns the init code parameter of ERC-4337 User Operation
+///
+/// \param factory Wallet factory address (BarzFactory)
+/// \param attestationObject Attestation object from created webauthn credentials
+/// \param verificationFacet Verification facet address
+/// \return The address.
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull factory, TWString* _Nonnull attestationObject, TWString* _Nonnull verificationFacet);
 
 TW_EXTERN_C_END

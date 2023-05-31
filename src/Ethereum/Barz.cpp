@@ -23,7 +23,8 @@ std::string getCounterfactualAddress(const TW::Barz::Proto::ContractAddressInput
     params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.account_facet())));
     params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.verification_facet())));
     params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.entry_point())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.security_manager())));
+    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_loupe_facet())));
+    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_init())));
     params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.facet_registry())));
 
     Data publicKey;
@@ -50,5 +51,26 @@ std::string getCounterfactualAddress(const TW::Barz::Proto::ContractAddressInput
     const Data salt(32, 0);
     return Ethereum::checksumed(TW::Ethereum::Address(hexEncoded(TW::Ethereum::create2Address(input.factory(), salt, initCodeHash))));
 }
+
+Data getInitCodeFromPublicKey(const std::string& factoryAddress, const std::string& publicKey, const std::string& verificationFacet) {
+    auto createAccountFunc = TW::Ethereum::ABI::Function("createAccount", ParamCollection{
+                                                                std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(verificationFacet)),
+                                                                std::make_shared<TW::Ethereum::ABI::ParamByteArray>(parse_hex(publicKey)),
+                                                                std::make_shared<TW::Ethereum::ABI::ParamUInt256>(0)});
+    Data createAccountFuncEncoded;
+    createAccountFunc.encode(createAccountFuncEncoded);
+
+    Data envelope;
+    append(envelope, parse_hex(factoryAddress));
+    append(envelope, createAccountFuncEncoded);
+    return envelope;
+}
+
+Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const std::string& attestationObject, const std::string& verificationFacet) {
+    const auto publicKey = subData(TW::WebAuthn::getPublicKey(parse_hex(attestationObject))->bytes, 1);
+    return getInitCodeFromPublicKey(factoryAddress, hexEncoded(publicKey), verificationFacet);
+}
+
+
 
 } // namespace TW::Barz

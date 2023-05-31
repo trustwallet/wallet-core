@@ -148,7 +148,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     // EIP4337
     Data entryPointAddress = addressStringToData(input.user_operation().entry_point());
     Data senderAddress = addressStringToData(input.user_operation().sender());
-    Data initCode = addressStringToData(input.user_operation().init_code());
+    Data initCode = Data(input.user_operation().init_code().begin(), input.user_operation().init_code().end());
     uint256_t preVerificationGas = load(input.user_operation().pre_verification_gas());
     uint256_t verificationGasLimit = load(input.user_operation().verification_gas_limit());
     Data paymasterAndData = Data(input.user_operation().paymaster_and_data().begin(), input.user_operation().paymaster_and_data().end());

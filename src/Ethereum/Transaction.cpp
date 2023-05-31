@@ -238,19 +238,18 @@ Data UserOperation::serialize([[maybe_unused]] const uint256_t chainID) const {
     auto params = ABI::ParamTuple(ParamCollection{
         std::make_shared<ABI::ParamAddress>(sender),
         std::make_shared<ABI::ParamUInt256>(nonce),
-        std::make_shared<ABI::ParamByteArray>(initCode),
-        std::make_shared<ABI::ParamByteArray>(payload),
+        std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(initCode)),
+        std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(payload)),
         std::make_shared<ABI::ParamUInt256>(gasLimit),
         std::make_shared<ABI::ParamUInt256>(verificationGasLimit),
         std::make_shared<ABI::ParamUInt256>(preVerificationGas),
         std::make_shared<ABI::ParamUInt256>(maxFeePerGas),
         std::make_shared<ABI::ParamUInt256>(maxInclusionFeePerGas),
-        std::make_shared<ABI::ParamByteArray>(paymasterAndData),
-        std::make_shared<ABI::ParamByteArray>(parse_hex("0x"))});
+        std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(paymasterAndData))});
     Data serialized;
     params.encode(serialized);
 
-    return Data(serialized.begin(), serialized.end() - 32); // remove trailing word (zero-length signature)
+    return serialized;
 }
 
 Data UserOperation::encoded(const Signature& signature, [[maybe_unused]] const uint256_t chainID) const {
