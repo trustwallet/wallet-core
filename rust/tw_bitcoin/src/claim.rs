@@ -1,11 +1,9 @@
 use bitcoin::blockdata::script::PushBytesBuf as BPushBytesBuf;
+use bitcoin::secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::{ScriptBuf as BScriptBuf, Witness as BWitness};
-use bitcoin::secp256k1;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
-use crate::{
-    Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend,
-};
+use crate::{Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
 
 pub enum ClaimLocation {
     Script(BScriptBuf),
@@ -43,7 +41,12 @@ pub trait TransactionSigner {
 
     // P2PKH signer with `SIGHASH_ALL` as default.
     fn claim_p2pkh(&self, input: &TxInputP2PKH, hash: secp256k1::Message) -> Result<ClaimP2PKH> {
-        <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, input, hash, EcdsaSighashType::All)
+        <Self as TransactionSigner>::claim_p2pkh_with_sighash(
+            self,
+            input,
+            hash,
+            EcdsaSighashType::All,
+        )
     }
 }
 
@@ -85,12 +88,12 @@ impl TransactionSigner for secp256k1::KeyPair {
     ) -> Result<ClaimP2PKH> {
         let my_pubkey = bitcoin::PublicKey::new(self.public_key());
         if input.recipient != PubkeyHash::from(my_pubkey) {
-            return Err(Error::Todo)
+            return Err(Error::Todo);
         }
 
         let sig = bitcoin::ecdsa::Signature {
             sig: self.secret_key().sign_ecdsa(hash),
-            hash_ty: sighash
+            hash_ty: sighash,
         };
 
         let script = BScriptBuf::builder()

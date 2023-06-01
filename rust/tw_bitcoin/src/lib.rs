@@ -1,3 +1,4 @@
+use bitcoin::address::Payload;
 use bitcoin::address::{Address as BAddress, Payload as BPayload};
 use bitcoin::blockdata::locktime::absolute::{Height as BHeight, LockTime as BLockTime};
 use bitcoin::blockdata::script::ScriptBuf as BScriptBuf;
@@ -7,30 +8,29 @@ use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
 use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
 use bitcoin::key::{
-    TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey as BUntweakedPublicKey, TapTweak,
-    KeyPair, PrivateKey,
+    KeyPair, PrivateKey, TapTweak, TweakedPublicKey as BTweakedPublicKey,
+    UntweakedPublicKey as BUntweakedPublicKey,
 };
-use bitcoin::secp256k1::PublicKey;
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
+use bitcoin::secp256k1::PublicKey;
+use bitcoin::secp256k1::{self, XOnlyPublicKey};
+use bitcoin::sighash::LegacySighash;
 use bitcoin::sighash::{
     LegacySighash as BLegacySighash, SighashCache as BSighashCache, TapSighash,
 };
 use bitcoin::transaction::Transaction as BTransaction;
 use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as BWitness};
-use bitcoin::secp256k1::{self, XOnlyPublicKey};
-use bitcoin::sighash::LegacySighash;
 use claim::{ClaimLocation, TransactionSigner};
-use bitcoin::address::Payload;
 use std::str::FromStr;
 
 pub mod claim;
 
-pub fn pubkey_hash_from_string(string: &str) -> Result<PubkeyHash> {
+pub fn pubkey_hash_from_address(string: &str) -> Result<PubkeyHash> {
     let addr = Address::from_str(string).map_err(|_| Error::Todo)?;
     match addr.payload {
         Payload::PubkeyHash(hash) => Ok(hash),
-        _ => Err(Error::Todo)
+        _ => Err(Error::Todo),
     }
 }
 
@@ -41,8 +41,8 @@ pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
 }
 
 // Reexports
-pub use bitcoin::{PubkeyHash, Address};
 pub use bitcoin;
+pub use bitcoin::{Address, PubkeyHash};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -227,7 +227,8 @@ impl TransactionBuilder {
                         .map_err(|_| Error::Todo)?;
 
                     // TODO: Rename closure var.
-                    let message: secp256k1::Message = TransactionHash::from_legacy_sig_hash(hash).into();
+                    let message: secp256k1::Message =
+                        TransactionHash::from_legacy_sig_hash(hash).into();
                     let updated = signer(input, message)?;
 
                     updated_scriptsigs.push((index, updated));
@@ -241,7 +242,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message: secp256k1::Message = TransactionHash::from_tapsig_hash(hash).into();
+                    let message: secp256k1::Message =
+                        TransactionHash::from_tapsig_hash(hash).into();
                     let updated = signer(input, message)?;
 
                     updated_scriptsigs.push((index, updated));
@@ -441,7 +443,7 @@ impl TxInput {
     pub fn from_slice(slice: &[u8], value: Option<u64>) -> Result<Self> {
         let ctx = InputContext::from_slice(slice, value)?;
         let recipient = match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
-            Payload::PubkeyHash(hash) =>  hash,
+            Payload::PubkeyHash(hash) => hash,
             _ => todo!(),
         };
 
