@@ -7,8 +7,10 @@ use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
 use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
 use bitcoin::key::{
-    TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey as BUntweakedPublicKey,
+    TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey as BUntweakedPublicKey, TapTweak,
 };
+use bitcoin::secp256k1::PublicKey;
+use bitcoin::hash_types::PubkeyHash;
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::sighash::{
@@ -16,11 +18,11 @@ use bitcoin::sighash::{
 };
 use bitcoin::transaction::Transaction as BTransaction;
 use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as BWitness};
+use bitcoin::secp256k1::{self, XOnlyPublicKey};
+use bitcoin::sighash::LegacySighash;
 use claim::{ClaimLocation, TransactionSigner};
+use bitcoin::address::Payload;
 use std::str::FromStr;
-use tw_hash::H256;
-use tw_keypair::ecdsa::secp256k1::{self, PublicKey};
-use tw_keypair::traits::KeyPairTrait;
 
 pub mod claim;
 
@@ -28,41 +30,22 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 const SIGHASH_ALL: u32 = 1;
 
-pub enum SigHashType {
-    All,
-    None,
-    Single,
-    AnyoneCanPay,
-}
+pub struct TransactionHash([u8; 32]);
 
-impl SigHashType {
-    fn to_le_byte(&self) -> u8 {
-        match self {
-            SigHashType::All => 1_u8.to_le(),
-            SigHashType::None => 2_u8.to_le(),
-            SigHashType::Single => 3_u8.to_le(),
-            // 0x80 = 128
-            SigHashType::AnyoneCanPay => 128_u8.to_le(),
-        }
+impl TransactionHash {
+    pub fn from_legacy_sig_hash(hash: LegacySighash) -> Self {
+        TransactionHash(hash.to_byte_array())
+    }
+    pub fn from_tapsig_hash(hash: TapSighash) -> Self {
+        TransactionHash(hash.to_byte_array())
     }
 }
 
-pub fn keypair_from_wif(wif: &str) -> Result<secp256k1::KeyPair> {
-    secp256k1::KeyPair::from_wif(wif).map_err(|_| Error::Todo)
-}
-
-fn convert_legacy_btc_hash_to_h256(hash: BLegacySighash) -> H256 {
-    let slice: &[u8] = hash.as_raw_hash().as_ref();
-    debug_assert_eq!(slice.len(), 32);
-    let bytes: [u8; 32] = slice.try_into().unwrap();
-    H256::from(bytes)
-}
-
-fn convert_taproot_btc_hash_to_h256(hash: TapSighash) -> H256 {
-    let slice: &[u8] = hash.as_raw_hash().as_ref();
-    debug_assert_eq!(slice.len(), 32);
-    let bytes: [u8; 32] = slice.try_into().unwrap();
-    H256::from(bytes)
+impl From<TransactionHash> for secp256k1::Message {
+    fn from(hash: TransactionHash) -> Self {
+        // Never fails since the byte array is always 32 bytes.
+        secp256k1::Message::from_slice(&hash.0).unwrap()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -182,7 +165,7 @@ impl TransactionBuilder {
             TxInput::P2PKH(p2pkh) => signer
                 .claim_p2pkh(p2pkh, sighash)
                 // TODO: Should not convert into BScriptBuf here.
-                .map(|claim| ClaimLocation::Script(claim.into_script())),
+                .map(|claim| ClaimLocation::Script(claim.0)),
             TxInput::P2TRKeySpend(_p2tr) => todo!(),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
@@ -192,7 +175,7 @@ impl TransactionBuilder {
     // TODO: Does this have to return `Result<T>`?
     pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
     where
-        F: Fn(&TxInput, H256) -> Result<ClaimLocation>,
+        F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
     {
         // TODO: Document
         struct PartialTxOuts {
@@ -225,17 +208,15 @@ impl TransactionBuilder {
                     let hash = cache
                         .legacy_signature_hash(
                             index,
-                            // TODO: Add note that this is same as `scriptPubKey`,
-                            // handled somewhere else.
                             &p2pkh.ctx.script_pubkey,
                             // TODO: Make adjustable.
                             SIGHASH_ALL,
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let h256 = convert_legacy_btc_hash_to_h256(hash);
                     // TODO: Rename closure var.
-                    let updated = signer(input, h256)?;
+                    let message: secp256k1::Message = TransactionHash::from_legacy_sig_hash(hash).into();
+                    let updated = signer(input, message)?;
 
                     updated_scriptsigs.push((index, updated));
                 },
@@ -248,8 +229,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let h256 = convert_taproot_btc_hash_to_h256(hash);
-                    let updated = signer(input, h256)?;
+                    let message: secp256k1::Message = TransactionHash::from_tapsig_hash(hash).into();
+                    let updated = signer(input, message)?;
 
                     updated_scriptsigs.push((index, updated));
                 },
@@ -285,18 +266,6 @@ impl TransactionBuilder {
             .consensus_encode(&mut buffer)
             .map_err(|_| Error::Todo)?;
         Ok(buffer)
-    }
-}
-
-pub enum TransactionSigHashType {
-    Legacy(H256),
-}
-
-impl TransactionSigHashType {
-    pub fn as_h256(&self) -> &H256 {
-        match self {
-            TransactionSigHashType::Legacy(h256) => h256,
-        }
     }
 }
 
@@ -388,24 +357,9 @@ impl TxOutputP2PKH {
     pub fn new(satoshis: u64, recipient: &PubkeyHash) -> Self {
         TxOutputP2PKH {
             satoshis,
-            script_pubkey: BScriptBuf::new_p2pkh(&recipient.0),
+            script_pubkey: BScriptBuf::new_p2pkh(recipient),
         }
     }
-}
-
-// TODO.
-/// We just convert a `PublicKey` (`tw_keypair` crate) into the
-/// `BTweakedPublicKey` type, not applying an (optional) script.
-fn as_tweaked(pubkey: &PublicKey) -> BTweakedPublicKey {
-    use bitcoin::key::Secp256k1;
-    use bitcoin::key::TapTweak;
-    use bitcoin::key::XOnlyPublicKey;
-
-    let schnorr = pubkey.to_schnorr_pubkey_bip340();
-    let xonly = XOnlyPublicKey::from_slice(&schnorr.to_bytes()).unwrap();
-    let (tweaked, _) = BUntweakedPublicKey::tap_tweak(xonly, &Secp256k1::new(), None);
-
-    tweaked
 }
 
 #[derive(Debug, Clone)]
@@ -415,10 +369,14 @@ pub struct TxOutputP2TKeyPath {
 }
 
 impl TxOutputP2TKeyPath {
-    pub fn new(satoshis: u64, recipient: &PublicKey) -> Self {
+    pub fn new(satoshis: u64, recipient: PublicKey) -> Self {
+        // TODO: Comment on this
+        let xonly = XOnlyPublicKey::from(recipient);
+        let (tweaked, _) = xonly.tap_tweak(&bitcoin::secp256k1::Secp256k1::new(), None);
+
         TxOutputP2TKeyPath {
             satoshis,
-            script_pubkey: BScriptBuf::new_v1_p2tr_tweaked(as_tweaked(recipient)),
+            script_pubkey: BScriptBuf::new_v1_p2tr_tweaked(tweaked),
         }
     }
 }
@@ -461,55 +419,7 @@ pub struct TxInputP2PKH {
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeySpend {
     pub ctx: InputContext,
-    pub recipient: TaprootPubkey,
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct TaprootPubkey(BTweakedPublicKey);
-
-impl TaprootPubkey {
-    pub fn from_keypair(keypair: &secp256k1::KeyPair) -> Result<Self> {
-        Ok(TaprootPubkey(as_tweaked(keypair.public())))
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct PubkeyHash(BPubkeyHash);
-
-impl PubkeyHash {
-    pub fn from_address_str(slice: &str) -> Result<Self> {
-        let checked = BAddress::from_str(slice).map_err(|_| Error::Todo)?;
-
-        // TODO: Network should be checked.
-        let hash = match checked.payload {
-            BPayload::PubkeyHash(hash) => hash,
-            _ => todo!(),
-        };
-
-        Ok(PubkeyHash(hash))
-    }
-    pub fn from_keypair(keypair: &secp256k1::KeyPair, compressed: bool) -> Result<Self> {
-        let bhash = if compressed {
-            BHash::hash(keypair.public().compressed().as_slice())
-        } else {
-            BHash::hash(keypair.public().uncompressed().as_slice())
-        };
-
-        let pubkey = BPubkeyHash::from_raw_hash(bhash);
-
-        Ok(PubkeyHash(pubkey))
-    }
-    pub fn from_bytes(bytes: [u8; 20]) -> Result<Self> {
-        Ok(PubkeyHash(BPubkeyHash::from_byte_array(bytes)))
-    }
-    pub fn from_script(script: &BScriptBuf) -> Result<Self> {
-        let pubkey = match BPayload::from_script(script).map_err(|_| Error::Todo)? {
-            BPayload::PubkeyHash(hash) => PubkeyHash(hash),
-            _ => return Err(Error::Todo),
-        };
-
-        Ok(pubkey)
-    }
+    pub recipient: BTweakedPublicKey,
 }
 
 impl TxInput {
@@ -518,7 +428,10 @@ impl TxInput {
     }
     pub fn from_slice(slice: &[u8], value: Option<u64>) -> Result<Self> {
         let ctx = InputContext::from_slice(slice, value)?;
-        let recipient = PubkeyHash::from_script(&ctx.script_pubkey)?;
+        let recipient = match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
+            Payload::PubkeyHash(hash) =>  hash,
+            _ => todo!(),
+        };
 
         Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
     }
