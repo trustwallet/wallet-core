@@ -8,7 +8,7 @@ use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
 use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
 use bitcoin::key::{
-    KeyPair, PrivateKey, TapTweak, TweakedPublicKey as BTweakedPublicKey,
+    KeyPair, PrivateKey, TapTweak, TweakedKeyPair, TweakedPublicKey as BTweakedPublicKey,
     UntweakedPublicKey as BUntweakedPublicKey,
 };
 use bitcoin::opcodes::All as AnyOpcode;
@@ -38,6 +38,16 @@ pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
     let pk = PrivateKey::from_wif(string).map_err(|_| Error::Todo)?;
     let keypair = KeyPair::from_secret_key(&secp256k1::Secp256k1::new(), &pk.inner);
     Ok(keypair)
+}
+
+fn tweak_pubkey(pubkey: PublicKey) -> BTweakedPublicKey {
+    let xonly = XOnlyPublicKey::from(pubkey);
+    let (tweaked, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
+    tweaked
+}
+
+fn tweak_keypair(keypair: &KeyPair) -> TweakedKeyPair {
+    keypair.tap_tweak(&secp256k1::Secp256k1::new(), None)
 }
 
 // Reexports
@@ -181,10 +191,12 @@ impl TransactionBuilder {
     {
         self.sign_inputs_fn(|input, sighash| match input {
             TxInput::P2PKH(p2pkh) => signer
-                .claim_p2pkh(p2pkh, sighash)
+                .claim_p2pkh(p2pkh, sighash, None)
                 // TODO: Should not convert into BScriptBuf here.
                 .map(|claim| ClaimLocation::Script(claim.0)),
-            TxInput::P2TRKeySpend(_p2tr) => todo!(),
+            TxInput::P2TRKeySpend(p2tr) => signer
+                .claim_p2tr_key_spend(p2tr, sighash, None)
+                .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
             },
@@ -384,9 +396,7 @@ pub struct TxOutputP2TKeyPath {
 
 impl TxOutputP2TKeyPath {
     pub fn new(satoshis: u64, recipient: PublicKey) -> Self {
-        // TODO: Comment on this
-        let xonly = XOnlyPublicKey::from(recipient);
-        let (tweaked, _) = xonly.tap_tweak(&bitcoin::secp256k1::Secp256k1::new(), None);
+        let tweaked = tweak_pubkey(recipient);
 
         TxOutputP2TKeyPath {
             satoshis,
