@@ -36,10 +36,10 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
         break;
     case Proto::ContractOwner::KindCase::kAttestationObject:
         const auto attestationObject = parse_hex(input.owner().attestation_object());
-        publicKey = subData(TW::WebAuthn::getPublicKey(attestationObject)->bytes, 1); // Drop the first byte which corresponds to the public key type
+        publicKey = subData(WebAuthn::getPublicKey(attestationObject)->bytes, 1); // Drop the first byte which corresponds to the public key type
         break;
     }
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamByteArray>(publicKey));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamByteArray>(publicKey));
 
     Data encoded;
     params.encode(encoded);
@@ -49,14 +49,14 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
 
     const Data initCodeHash = Hash::keccak256(initCode);
     const Data salt(32, 0);
-    return Ethereum::checksumed(TW::Ethereum::Address(hexEncoded(TW::Ethereum::create2Address(input.factory(), salt, initCodeHash))));
+    return Ethereum::checksumed(Ethereum::Address(hexEncoded(Ethereum::create2Address(input.factory(), salt, initCodeHash))));
 }
 
 Data getInitCodeFromPublicKey(const std::string& factoryAddress, const std::string& publicKey, const std::string& verificationFacet) {
-    auto createAccountFunc = TW::Ethereum::ABI::Function("createAccount", ParamCollection{
-                                                                std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(verificationFacet)),
-                                                                std::make_shared<TW::Ethereum::ABI::ParamByteArray>(parse_hex(publicKey)),
-                                                                std::make_shared<TW::Ethereum::ABI::ParamUInt256>(0)});
+    auto createAccountFunc = Ethereum::ABI::Function("createAccount", ParamCollection{
+                                                                std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(verificationFacet)),
+                                                                std::make_shared<Ethereum::ABI::ParamByteArray>(parse_hex(publicKey)),
+                                                                std::make_shared<Ethereum::ABI::ParamUInt256>(0)});
     Data createAccountFuncEncoded;
     createAccountFunc.encode(createAccountFuncEncoded);
 
@@ -67,7 +67,7 @@ Data getInitCodeFromPublicKey(const std::string& factoryAddress, const std::stri
 }
 
 Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const std::string& attestationObject, const std::string& verificationFacet) {
-    const auto publicKey = subData(TW::WebAuthn::getPublicKey(parse_hex(attestationObject))->bytes, 1);
+    const auto publicKey = subData(WebAuthn::getPublicKey(parse_hex(attestationObject))->bytes, 1);
     return getInitCodeFromPublicKey(factoryAddress, hexEncoded(publicKey), verificationFacet);
 }
 
