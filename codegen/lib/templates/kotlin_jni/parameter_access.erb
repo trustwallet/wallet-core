@@ -1,6 +1,6 @@
 <%
   method = locals[:method]
-  if method.static && !method.name.include?('Init')
+  if method.static && !method.name.start_with?('Init')
       parameters = method.parameters
   else
       parameters = method.parameters.drop(1)
