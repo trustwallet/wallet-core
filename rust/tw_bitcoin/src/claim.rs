@@ -1,13 +1,12 @@
+use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
 use bitcoin::key::KeyPair;
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
-use bitcoin::{ScriptBuf as BScriptBuf, Witness as BWitness};
-//use secp256k1::{generate_keypair, KeyPair, Secp256k1};
-use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
+use bitcoin::{ScriptBuf, Witness};
 
 pub enum ClaimLocation {
-    Script(BScriptBuf),
-    Witness(BWitness),
+    Script(ScriptBuf),
+    Witness(Witness),
 }
 
 pub trait TransactionSigner {
@@ -26,10 +25,9 @@ pub trait TransactionSigner {
     ) -> Result<ClaimP2TRKeySpend>;
 }
 
-pub struct ClaimP2TRKeySpend(pub BWitness);
+pub struct ClaimP2TRKeySpend(pub Witness);
 
-// TODO: Create `BScriptBuf` directly, skip this structure.
-pub struct ClaimP2PKH(pub BScriptBuf);
+pub struct ClaimP2PKH(pub ScriptBuf);
 
 impl TransactionSigner for KeyPair {
     fn claim_p2tr_key_spend(
@@ -56,7 +54,7 @@ impl TransactionSigner for KeyPair {
         };
 
         // Construct the witness for claiming.
-        Ok(ClaimP2TRKeySpend(BWitness::from_slice(&[
+        Ok(ClaimP2TRKeySpend(Witness::from_slice(&[
             schnorr_sig.to_vec()
         ])))
     }
@@ -83,7 +81,7 @@ impl TransactionSigner for KeyPair {
         };
 
         // Construct the Script for claiming.
-        let script = BScriptBuf::builder()
+        let script = ScriptBuf::builder()
             .push_slice(sig.serialize())
             .push_key(&my_pubkey)
             .into_script();

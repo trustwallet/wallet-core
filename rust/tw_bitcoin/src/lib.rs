@@ -1,27 +1,17 @@
+use crate::claim::{ClaimLocation, TransactionSigner};
 use bitcoin::address::Payload;
-use bitcoin::address::{Address as BAddress, Payload as BPayload};
 use bitcoin::blockdata::locktime::absolute::{Height as BHeight, LockTime as BLockTime};
-use bitcoin::blockdata::script::ScriptBuf as BScriptBuf;
-use bitcoin::blockdata::transaction::OutPoint as BOutPoint;
 use bitcoin::consensus::{Decodable, Encodable};
-use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
-use bitcoin::hashes::hash160::Hash as BHash;
-use bitcoin::hashes::Hash as BHashTrait;
+use bitcoin::hashes::Hash;
 use bitcoin::key::{
     KeyPair, PrivateKey, TapTweak, TweakedKeyPair, TweakedPublicKey as BTweakedPublicKey,
-    UntweakedPublicKey as BUntweakedPublicKey,
 };
 use bitcoin::opcodes::All as AnyOpcode;
-use bitcoin::script::PushBytesBuf as BPushBytesBuf;
-use bitcoin::secp256k1::PublicKey;
-use bitcoin::secp256k1::{self, XOnlyPublicKey};
-use bitcoin::sighash::LegacySighash;
-use bitcoin::sighash::{
-    LegacySighash as BLegacySighash, SighashCache as BSighashCache, TapSighash,
-};
-use bitcoin::transaction::Transaction as BTransaction;
-use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as BWitness};
-use claim::{ClaimLocation, TransactionSigner};
+use bitcoin::script::{PushBytesBuf, ScriptBuf};
+use bitcoin::secp256k1::{self, PublicKey, XOnlyPublicKey};
+use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
+use bitcoin::transaction::Transaction;
+use bitcoin::{OutPoint, Sequence, TxIn, TxOut, Witness};
 use std::str::FromStr;
 
 pub mod claim;
@@ -88,8 +78,8 @@ fn poc() {
     let (private, public) = generate_keypair(&mut rand::thread_rng());
     let tweaked = UntweakedPublicKey::from(public);
 
-    let script1 = BScriptBuf::new();
-    let script2 = BScriptBuf::new();
+    let script1 = ScriptBuf::new();
+    let script2 = ScriptBuf::new();
 
     let spend_info = TaprootBuilder::new()
         .add_leaf(1, script1.clone())
@@ -101,7 +91,7 @@ fn poc() {
 
     let root = spend_info.merkle_root().unwrap();
 
-    let tapscript = BScriptBuf::new_v1_p2tr(&secp, tweaked, Some(root));
+    let tapscript = ScriptBuf::new_v1_p2tr(&secp, tweaked, Some(root));
 
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
@@ -116,7 +106,7 @@ pub struct TransactionBuilder {
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
     contains_taproot: bool,
-    btc_tx: Option<BTransaction>,
+    btc_tx: Option<Transaction>,
 }
 
 impl Default for TransactionBuilder {
@@ -162,7 +152,7 @@ impl TransactionBuilder {
     }
     pub fn prepare_for_signing(mut self) -> Self {
         // Prepare boilerplate transaction for `bitcoin` crate.
-        let mut tx = BTransaction {
+        let mut tx = Transaction {
             version: self.version,
             lock_time: self.lock_time,
             input: vec![],
@@ -171,14 +161,14 @@ impl TransactionBuilder {
 
         // Prepare the inputs for `bitcoin` crate.
         for input in self.inputs.iter().cloned() {
-            let btxin = BTxIn::from(input);
+            let btxin = TxIn::from(input);
             tx.input.push(btxin);
         }
 
         // Prepare the outputs for `bitcoin` crate.
         for output in &self.outputs {
             // TODO: Doable without clone?
-            let btc_txout = BTxOut::from(output.clone());
+            let btc_txout = TxOut::from(output.clone());
             tx.output.push(btc_txout);
         }
 
@@ -192,7 +182,7 @@ impl TransactionBuilder {
         self.sign_inputs_fn(|input, sighash| match input {
             TxInput::P2PKH(p2pkh) => signer
                 .claim_p2pkh(p2pkh, sighash, None)
-                // TODO: Should not convert into BScriptBuf here.
+                // TODO: Should not convert into ScriptBuf here.
                 .map(|claim| ClaimLocation::Script(claim.0)),
             TxInput::P2TRKeySpend(p2tr) => signer
                 .claim_p2tr_key_spend(p2tr, sighash, None)
@@ -213,14 +203,14 @@ impl TransactionBuilder {
         let mut btxouts = vec![];
         if self.contains_taproot {
             for input in &self.inputs {
-                btxouts.push(BTxOut {
+                btxouts.push(TxOut {
                     value: input.ctx().value.ok_or(Error::Todo)?,
                     script_pubkey: input.ctx().script_pubkey.clone(),
                 });
             }
         }
 
-        let mut cache = BSighashCache::new(self.btc_tx.unwrap());
+        let mut cache = SighashCache::new(self.btc_tx.unwrap());
 
         // TODO: Rename.
         let mut updated_scriptsigs = vec![];
@@ -298,29 +288,29 @@ impl TransactionBuilder {
 #[derive(Debug, Clone)]
 // TODO: Should be private.
 pub struct InputContext {
-    pub previous_output: BOutPoint,
+    pub previous_output: OutPoint,
     pub value: Option<u64>,
-    // The condition for claiming the output.
-    pub script_pubkey: BScriptBuf,
+    // The condition for claiming the outputr
+    pub script_pubkey: ScriptBuf,
     // TODO: Document this.
-    pub sequence: BSequence,
-    // BWitness data for Segwit/Taproot transactions.
+    pub sequence: Sequence,
+    // Witness data for Segwit/Taproot transactions.
     // TODO: Remove this?
-    pub witness: BWitness,
+    pub witness: Witness,
 }
 
 impl InputContext {
-    pub fn new(utxo: BTxOut, point: BOutPoint) -> Self {
+    pub fn new(utxo: TxOut, point: OutPoint) -> Self {
         InputContext {
             previous_output: point,
-            // TODO: Track `BTxOut` directly?
+            // TODO: Track `TxOut` directly?
             value: Some(utxo.value),
             // TODO: Document this.
             script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF = 4294967295`.
-            sequence: BSequence::default(),
+            sequence: Sequence::default(),
             // Empty witness.
-            witness: BWitness::new(),
+            witness: Witness::new(),
         }
     }
     pub fn from_slice(mut slice: &[u8], value: Option<u64>) -> Result<Self> {
@@ -332,29 +322,29 @@ impl InputContext {
                 .map_err(|_| Error::Todo)?,
             sequence: Decodable::consensus_decode_from_finite_reader(&mut slice)
                 .map_err(|_| Error::Todo)?,
-            witness: BWitness::default(),
+            witness: Witness::default(),
         })
     }
 }
 
-impl From<InputContext> for BTxIn {
+impl From<InputContext> for TxIn {
     fn from(ctx: InputContext) -> Self {
-        BTxIn {
+        TxIn {
             previous_output: ctx.previous_output,
-            script_sig: BScriptBuf::default(),
+            script_sig: ScriptBuf::default(),
             sequence: ctx.sequence,
             witness: ctx.witness,
         }
     }
 }
 
-impl From<TxInput> for BTxIn {
+impl From<TxInput> for TxIn {
     fn from(input: TxInput) -> Self {
         let ctx = input.ctx();
 
-        BTxIn {
+        TxIn {
             previous_output: ctx.previous_output,
-            script_sig: BScriptBuf::default(),
+            script_sig: ScriptBuf::default(),
             sequence: ctx.sequence,
             witness: ctx.witness.clone(),
         }
@@ -376,14 +366,14 @@ impl From<TxOutputP2PKH> for TxOutput {
 #[derive(Debug, Clone)]
 pub struct TxOutputP2PKH {
     satoshis: u64,
-    script_pubkey: BScriptBuf,
+    script_pubkey: ScriptBuf,
 }
 
 impl TxOutputP2PKH {
     pub fn new(satoshis: u64, recipient: &PubkeyHash) -> Self {
         TxOutputP2PKH {
             satoshis,
-            script_pubkey: BScriptBuf::new_p2pkh(recipient),
+            script_pubkey: ScriptBuf::new_p2pkh(recipient),
         }
     }
 }
@@ -391,7 +381,7 @@ impl TxOutputP2PKH {
 #[derive(Debug, Clone)]
 pub struct TxOutputP2TKeyPath {
     satoshis: u64,
-    script_pubkey: BScriptBuf,
+    script_pubkey: ScriptBuf,
 }
 
 impl TxOutputP2TKeyPath {
@@ -400,15 +390,15 @@ impl TxOutputP2TKeyPath {
 
         TxOutputP2TKeyPath {
             satoshis,
-            script_pubkey: BScriptBuf::new_v1_p2tr_tweaked(tweaked),
+            script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(tweaked),
         }
     }
 }
 
-impl From<TxOutput> for BTxOut {
+impl From<TxOutput> for TxOut {
     fn from(out: TxOutput) -> Self {
         match out {
-            TxOutput::P2PKH(p2pkh) => BTxOut {
+            TxOutput::P2PKH(p2pkh) => TxOut {
                 value: p2pkh.satoshis,
                 script_pubkey: p2pkh.script_pubkey,
             },
@@ -476,13 +466,13 @@ fn get_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
     Ok(ret)
 }
 
-fn create_envelope(content_type: &str, data: &str) -> Result<BScriptBuf> {
+fn create_envelope(content_type: &str, data: &str) -> Result<ScriptBuf> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
     // TODO: Check overflow
     // Prepare content-type buffer.
-    let mut content_ty_buf = BPushBytesBuf::new();
+    let mut content_ty_buf = PushBytesBuf::new();
     let (op_push, size_buf) = get_push(content_type.len() as u32)?;
 
     // For any sizes below 75, we use encode as `OP_PUSHBYTES[0|1|2|...|75]`.
@@ -495,14 +485,14 @@ fn create_envelope(content_type: &str, data: &str) -> Result<BScriptBuf> {
     }
 
     // Prepare data buffer.
-    let mut data_buf = BPushBytesBuf::new();
+    let mut data_buf = PushBytesBuf::new();
 
-    let x = BScriptBuf::builder()
+    let x = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         // Push three bytes of "orb"
         .push_opcode(OP_PUSHBYTES_3)
-        .push_slice(BPushBytesBuf::try_from(b"orb").unwrap())
+        .push_slice(PushBytesBuf::try_from(b"orb").unwrap())
         // OP_TRUE = OP_1
         .push_opcode(OP_TRUE)
         .push_slice(content_ty_buf)
