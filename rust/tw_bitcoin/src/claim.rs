@@ -1,9 +1,9 @@
-use bitcoin::blockdata::script::PushBytesBuf as BPushBytesBuf;
-use bitcoin::secp256k1;
+use bitcoin::key::KeyPair;
+use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::{ScriptBuf as BScriptBuf, Witness as BWitness};
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
-use crate::{Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
+use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
 
 pub enum ClaimLocation {
     Script(BScriptBuf),
@@ -11,91 +11,78 @@ pub enum ClaimLocation {
 }
 
 pub trait TransactionSigner {
-    fn claim_p2pkh_with_sighash(
+    fn claim_p2pkh(
         &self,
         input: &TxInputP2PKH,
-        // TODO: Should be wrapped.
         hash: secp256k1::Message,
-        sighash: EcdsaSighashType,
+        sighash_type: Option<EcdsaSighashType>,
     ) -> Result<ClaimP2PKH>;
-
-    fn claim_p2tr_key_spend_sighash(
-        &self,
-        input: &TxInputP2TRKeySpend,
-        hash: secp256k1::Message,
-        sighash: TapSighashType,
-    ) -> Result<ClaimP2TRKeySpend>;
 
     fn claim_p2tr_key_spend(
         &self,
         input: &TxInputP2TRKeySpend,
         hash: secp256k1::Message,
-    ) -> Result<ClaimP2TRKeySpend> {
-        <Self as TransactionSigner>::claim_p2tr_key_spend_sighash(
-            self,
-            input,
-            hash,
-            TapSighashType::All,
-        )
-    }
-
-    // P2PKH signer with `SIGHASH_ALL` as default.
-    fn claim_p2pkh(&self, input: &TxInputP2PKH, hash: secp256k1::Message) -> Result<ClaimP2PKH> {
-        <Self as TransactionSigner>::claim_p2pkh_with_sighash(
-            self,
-            input,
-            hash,
-            EcdsaSighashType::All,
-        )
-    }
+        sighash_type: Option<TapSighashType>,
+    ) -> Result<ClaimP2TRKeySpend>;
 }
 
-pub struct ClaimP2TRKeySpend(BWitness);
+pub struct ClaimP2TRKeySpend(pub BWitness);
 
 // TODO: Create `BScriptBuf` directly, skip this structure.
 pub struct ClaimP2PKH(pub BScriptBuf);
 
-impl TransactionSigner for secp256k1::KeyPair {
-    fn claim_p2tr_key_spend_sighash(
+impl TransactionSigner for KeyPair {
+    fn claim_p2tr_key_spend(
         &self,
         input: &TxInputP2TRKeySpend,
-        hash: secp256k1::Message,
-        sighash: TapSighashType,
+        sighash: secp256k1::Message,
+        sighash_type: Option<TapSighashType>,
     ) -> Result<ClaimP2TRKeySpend> {
-        /*
-        let my_pubkey = TaprootPubkey::from_keypair(self)?;
+        // Given that we're using the "key spend" method of P2TR, we tweak the
+        // key without a Merkle root.
+        let my_pubkey = tweak_pubkey(self.public_key());
 
+        // Check whether we can actually claim the input.
         if input.recipient != my_pubkey {
             return Err(Error::Todo);
         }
 
-        let sig = self.private().sign_schnorr_bip340(hash);
+        let sighash_type = sighash_type.unwrap_or(TapSighashType::All);
 
-        Ok(
-            // This is weird, but the `from_slice` function wants a parameter that.
-            // TODO: Open an issue?
-            ClaimP2TRKeySpend(BWitness::from_slice(&[sig.to_bytes()])),
-        )
-        */
-        todo!()
+        // We the this structure handle the serialization.
+        let schnorr_sig = bitcoin::taproot::Signature {
+            sig: Secp256k1::new().sign_schnorr(&sighash, self),
+            hash_ty: sighash_type,
+        };
+
+        // Construct the witness for claiming.
+        Ok(ClaimP2TRKeySpend(BWitness::from_slice(&[
+            schnorr_sig.to_vec()
+        ])))
     }
 
-    fn claim_p2pkh_with_sighash(
+    fn claim_p2pkh(
         &self,
         input: &TxInputP2PKH,
         hash: secp256k1::Message,
-        sighash: EcdsaSighashType,
+        sighash_type: Option<EcdsaSighashType>,
     ) -> Result<ClaimP2PKH> {
         let my_pubkey = bitcoin::PublicKey::new(self.public_key());
+
+        // Check whether we can actually claim the input.
         if input.recipient != PubkeyHash::from(my_pubkey) {
             return Err(Error::Todo);
         }
 
+        let sighash_type = sighash_type.unwrap_or(EcdsaSighashType::All);
+
+        // Construct the signature for claiming.
         let sig = bitcoin::ecdsa::Signature {
             sig: self.secret_key().sign_ecdsa(hash),
-            hash_ty: sighash,
+            hash_ty: sighash_type,
         };
 
+        // Construct the Script for claiming.
         let script = BScriptBuf::builder()
             .push_slice(sig.serialize())
             .push_key(&my_pubkey)
