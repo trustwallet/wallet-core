@@ -95,6 +95,7 @@ pub struct TransactionBuilder {
     lock_time: BLockTime,
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
+    contains_taproot: bool,
     btc_tx: Option<BTransaction>,
 }
 
@@ -107,6 +108,7 @@ impl Default for TransactionBuilder {
             lock_time: BLockTime::Blocks(BHeight::ZERO),
             inputs: vec![],
             outputs: vec![],
+            contains_taproot: false,
             btc_tx: None,
         }
     }
@@ -126,6 +128,11 @@ impl TransactionBuilder {
         self
     }
     pub fn add_input(mut self, input: TxInput) -> Self {
+        match input {
+            TxInput::P2TRKeySpend(_) => self.contains_taproot = true,
+            _ => {},
+        }
+
         self.inputs.push(input);
         self
     }
@@ -178,7 +185,26 @@ impl TransactionBuilder {
     where
         F: Fn(&TxInput, H256) -> Result<BScriptBuf>,
     {
-        let cache = BSighashCache::new(self.btc_tx.unwrap());
+        // TODO: Document
+        struct PartialTxOuts {
+            value: Option<u64>,
+            script_pubkey: BScriptBuf,
+        }
+
+        // If Taproot is enabled, we prepare the full `BTxOuts` (value and
+        // scriptPubKey) for hashing, which will then be signed.
+        // TODO: Document some more.
+        let mut btxouts = vec![];
+        if self.contains_taproot {
+            for input in &self.inputs {
+                btxouts.push(BTxOut {
+                    value: input.ctx().value.ok_or(Error::Todo)?,
+                    script_pubkey: input.ctx().script_pubkey.clone(),
+                });
+            }
+        }
+
+        let mut cache = BSighashCache::new(self.btc_tx.unwrap());
 
         let mut updated_scriptsigs = vec![];
 
@@ -204,11 +230,13 @@ impl TransactionBuilder {
                     updated_scriptsigs.push((index, updated));
                 },
                 TxInput::P2TRKeySpend(_) => {
-                    todo!()
-                    /*
                     let taproot_hash = cache
-                        .taproot_key_spend_signature_hash(index, bitcoin::sighash::Prevouts::All(&self.), bitcoin::sighash::TapSighashType::All)
-                    */
+                        .taproot_key_spend_signature_hash(
+                            index,
+                            &bitcoin::psbt::Prevouts::All(&btxouts),
+                            bitcoin::sighash::TapSighashType::All,
+                        )
+                        .map_err(|_| Error::Todo)?;
                 },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
@@ -254,6 +282,7 @@ impl TransactionSigHashType {
 // TODO: Should be private.
 pub struct InputContext {
     pub previous_output: BOutPoint,
+    pub value: Option<u64>,
     // The condition for claiming the output.
     pub script_pubkey: BScriptBuf,
     // TODO: Document this.
@@ -267,6 +296,8 @@ impl InputContext {
     pub fn new(utxo: BTxOut, point: BOutPoint) -> Self {
         InputContext {
             previous_output: point,
+            // TODO: Track `BTxOut` directly?
+            value: Some(utxo.value),
             // TODO: Document this.
             script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF = 4294967295`.
@@ -275,10 +306,11 @@ impl InputContext {
             witness: BWitness::new(),
         }
     }
-    pub fn from_slice(mut slice: &[u8]) -> Result<Self> {
+    pub fn from_slice(mut slice: &[u8], value: Option<u64>) -> Result<Self> {
         Ok(InputContext {
             previous_output: Decodable::consensus_decode_from_finite_reader(&mut slice)
                 .map_err(|_| Error::Todo)?,
+            value,
             script_pubkey: Decodable::consensus_decode_from_finite_reader(&mut slice)
                 .map_err(|_| Error::Todo)?,
             sequence: Decodable::consensus_decode_from_finite_reader(&mut slice)
@@ -462,8 +494,8 @@ impl TxInput {
     pub fn new_p2pkh() -> Self {
         todo!()
     }
-    pub fn from_slice(slice: &[u8]) -> Result<Self> {
-        let ctx = InputContext::from_slice(slice)?;
+    pub fn from_slice(slice: &[u8], value: Option<u64>) -> Result<Self> {
+        let ctx = InputContext::from_slice(slice, value)?;
         let recipient = PubkeyHash::from_script(&ctx.script_pubkey)?;
 
         Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))

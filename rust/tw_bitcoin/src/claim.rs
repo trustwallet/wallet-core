@@ -24,8 +24,17 @@ pub trait TransactionSigner {
         sighash: SigHashType,
     ) -> Result<ClaimP2TRKeySpend>;
 
-    fn claim_p2tr_key_spend(&self, input: &TxInputP2TRKeySpend, hash: H256) -> Result<ClaimP2TRKeySpend> {
-        <Self as TransactionSigner>::claim_p2tr_key_spend_sighash(self, input, hash, SigHashType::All)
+    fn claim_p2tr_key_spend(
+        &self,
+        input: &TxInputP2TRKeySpend,
+        hash: H256,
+    ) -> Result<ClaimP2TRKeySpend> {
+        <Self as TransactionSigner>::claim_p2tr_key_spend_sighash(
+            self,
+            input,
+            hash,
+            SigHashType::All,
+        )
     }
 
     // P2PKH signer with `SIGHASH_ALL` as default.

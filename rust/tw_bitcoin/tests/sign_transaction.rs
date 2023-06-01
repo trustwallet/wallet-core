@@ -26,7 +26,7 @@ fn sign_p2pkh_transaction() {
     static EXPECTED_SIG: &str = "020000000166e44fd39b1f222a7e729ced4f28b882485dc90c7a3d1028e594fdd36bee42f3000000006a473044022050d3a1f393e8a27a277d0769f39f772ed35f5ddcac2d3f21e7186d45da72cd4d0220261b9daec08ef9ac34d91ccaac03b0843e21b5a40b7631b78dbf93bfa1678d530121025d935858e4c56f24a8d634a94c678ad00b48fc86ec391c9d8215abec7e200e42ffffffff01c0aff629010000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
 
     // Decode the `TxInput` from the slice. We expect a `P2PKH` variant.
-    let input = TxInput::from_slice(&raw_tx_input).unwrap();
+    let input = TxInput::from_slice(&raw_tx_input, None).unwrap();
     let output = TxOutputP2PKH::new(
         4_999_000_000,
         &PubkeyHash::from_address_str(recipient_address).unwrap(),
