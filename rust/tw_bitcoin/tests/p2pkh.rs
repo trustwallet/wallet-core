@@ -28,7 +28,7 @@ fn tx_input_p2pkh_from_slice() {
         hex::decode(&format!("{txid}{vout}{var_int}{script_pubkey}{sequence}")).unwrap();
 
     // Decode the `TxInput` from the slice. We expect a `P2PKH` variant.
-    let tx_input = TxInput::from_slice(&raw_tx_input).unwrap();
+    let tx_input = TxInput::from_slice(&raw_tx_input, None).unwrap();
     if let TxInput::P2PKH(p2pkh) = tx_input {
         // Expected `previous_output`
         assert_eq!(
