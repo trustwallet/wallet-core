@@ -28,9 +28,7 @@ pub trait TransactionSigner {
     }
 }
 
-pub struct ClaimP2TRKeySpend {
-
-}
+pub struct ClaimP2TRKeySpend {}
 
 pub struct ClaimP2PKH {
     sig: Vec<u8>,
