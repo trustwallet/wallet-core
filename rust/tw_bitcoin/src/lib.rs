@@ -6,7 +6,9 @@ use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hash_types::PubkeyHash as BPubkeyHash;
 use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
-use bitcoin::key::TapTweak;
+use bitcoin::key::{
+    TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey as BUntweakedPublicKey,
+};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::sighash::{LegacySighash as BLegacySighash, SighashCache as BSighashCache};
@@ -331,27 +333,32 @@ impl TxOutputP2PKH {
 }
 
 // TODO.
-fn tweak_key(pubkey: PublicKey) {
-    use bitcoin::key::XOnlyPublicKey;
+/// We just convert a PublicKey into a `BTweakedPublicKey` type, not applying an
+/// (optional) script.
+fn into_tweaked(pubkey: PublicKey) -> BTweakedPublicKey {
+    use bitcoin::key::TapTweak;
 
     let schnorr = pubkey.to_schnorr_pubkey_bip340();
-    let buf = schnorr.to_bytes();
+    let xonly = bitcoin::key::XOnlyPublicKey::from_slice(&schnorr.to_bytes()).unwrap();
+    let (tweaked, _) = BUntweakedPublicKey::tap_tweak(xonly, &bitcoin::key::Secp256k1::new(), None);
 
-    let x_only = XOnlyPublicKey::from_slice(&buf).unwrap();
-
-    let engine = bitcoin::key::Secp256k1::gen_new();
-    x_only.tap_tweak(&engine, None);
+    tweaked
 }
 
 #[derive(Debug, Clone)]
 pub struct TxOutputP2TKeyPath {
     satoshis: u64,
     witness: BWitness,
+    script_pubkey: BScriptBuf,
 }
 
 impl TxOutputP2TKeyPath {
-    pub fn new(satoshis: u64, recipient: ()) -> Self {
-        todo!()
+    pub fn new(satoshis: u64, recipient: PublicKey) -> Self {
+        TxOutputP2TKeyPath {
+            satoshis,
+            witness: BWitness::default(),
+            script_pubkey: BScriptBuf::new_v1_p2tr_tweaked(into_tweaked(recipient)),
+        }
     }
 }
 
@@ -362,7 +369,7 @@ impl From<TxOutput> for BTxOut {
                 value: p2pkh.satoshis,
                 script_pubkey: p2pkh.script_pubkey,
             },
-            _ => todo!()
+            _ => todo!(),
         }
     }
 }
