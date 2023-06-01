@@ -9,7 +9,13 @@
 #include "../BinaryCoding.h"
 #include "../PrivateKey.h"
 
+#include <nlohmann/json.hpp>
+
 namespace TW::NEAR {
+
+using json = nlohmann::json;
+
+static constexpr auto tokenTransferMethodName = "ft_transfer";
 
 static void writeU8(Data& data, uint8_t number) {
     data.push_back(number);
@@ -105,8 +111,31 @@ static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAcc
     writeString(data, deleteAccount.beneficiary_id());
 }
 
+static void writeTokenTransfer(Data& data, const Proto::TokenTransfer& tokenTransfer) {
+    writeString(data, tokenTransferMethodName);
+
+    json functionCallArgs = {
+        {"amount", tokenTransfer.token_amount()},
+        {"receiver_id", tokenTransfer.receiver_id()},
+    };
+    auto functionCallArgsStr = functionCallArgs.dump();
+
+    writeU32(data, static_cast<uint32_t>(functionCallArgsStr.size()));
+    writeRawBuffer(data, functionCallArgsStr);
+
+    writeU64(data, tokenTransfer.gas());
+    writeU128(data, tokenTransfer.deposit());
+}
+
 static void writeAction(Data& data, const Proto::Action& action) {
-    writeU8(data, action.payload_case() - Proto::Action::kCreateAccount);
+    uint8_t actionByte = action.payload_case() - Proto::Action::kCreateAccount;
+    // `TokenTransfer` action is actually a `FunctionCall`,
+    // so we need to set the actionByte to the proper value.
+    if (action.payload_case() == Proto::Action::kTokenTransfer) {
+        actionByte = Proto::Action::kFunctionCall - Proto::Action::kCreateAccount;
+    }
+
+    writeU8(data, actionByte);
     switch (action.payload_case()) {
     case Proto::Action::kFunctionCall:
         writeFunctionCall(data, action.function_call());
@@ -125,6 +154,9 @@ static void writeAction(Data& data, const Proto::Action& action) {
         return;
     case Proto::Action::kDeleteAccount:
         writeDeleteAccount(data, action.delete_account());
+        return;
+    case Proto::Action::kTokenTransfer:
+        writeTokenTransfer(data, action.token_transfer());
         return;
     default:
         return;

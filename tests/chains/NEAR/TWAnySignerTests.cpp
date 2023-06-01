@@ -130,16 +130,15 @@ TEST(TWAnySignerNEAR, SignUnstakeMainnetReplication) {
 /// Implements NEP-141:
 /// https://nomicon.io/Standards/Tokens/FungibleToken/Core
 ///
-/// Successfully broadcasted tx
+/// Successfully broadcasted tx:
+/// https://explorer.near.org/transactions/ABQY6nfLdNrRVynHYNjYkfUM6Up5pDHHpuhRJe6FCMRu
 TEST(TWAnySignerNEAR, SignTokenTransfer) {
     auto privateKey = parse_hex("77006e227658c18da47546413926a26b839204b1b19e807c4a13d994d661c72e");
 
     auto blockHash = Base58::decode("2dQBYs8XjprLLgtH7eVsJ3e58A5QuRcbuqFisSk9fFWQ");
 
     // Deposit should be 1 yocto NEAR for security purposes.
-    auto amount = parse_hex("01000000000000000000000000000000");
-
-    auto transfer_args = R"r({"amount":"100000000000000000","receiver_id":"c6d5e3e8f328436f595856a598239b691d3d136b24c05a4614f9e9716edc14fe"})r";
+    auto deposit = parse_hex("01000000000000000000000000000000");
 
     Proto::SigningInput input;
     input.set_signer_id("105396228ac2e0ef144b93bcc5322fca1167d524422bb73d17440d35c714a58f");
@@ -149,11 +148,11 @@ TEST(TWAnySignerNEAR, SignTokenTransfer) {
     input.set_block_hash(blockHash.data(), blockHash.size());
 
     auto& action = *input.add_actions();
-    auto& call = *action.mutable_function_call();
-    call.set_method_name("ft_transfer");
-    call.set_args(transfer_args);
-    call.set_gas(15000000000000);
-    call.set_deposit(amount.data(), amount.size());
+    auto& tokenTransfer = *action.mutable_token_transfer();
+    tokenTransfer.set_token_amount("100000000000000000");
+    tokenTransfer.set_receiver_id("c6d5e3e8f328436f595856a598239b691d3d136b24c05a4614f9e9716edc14fe");
+    tokenTransfer.set_gas(15000000000000);
+    tokenTransfer.set_deposit(deposit.data(), deposit.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNEAR);
