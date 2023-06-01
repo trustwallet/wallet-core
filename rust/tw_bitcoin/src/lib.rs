@@ -167,7 +167,7 @@ impl TransactionBuilder {
                 .claim_p2pkh(p2pkh, sighash)
                 // TODO: Should not convert into BScriptBuf here.
                 .map(|claim| claim.into_script()),
-            TxInput::P2TRKeySpend(_) => todo!(),
+            TxInput::P2TRKeySpend(_p2tr) => todo!(),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
             },
@@ -203,7 +203,13 @@ impl TransactionBuilder {
 
                     updated_scriptsigs.push((index, updated));
                 },
-                TxInput::P2TRKeySpend(_) => todo!(),
+                TxInput::P2TRKeySpend(_) => {
+                    todo!()
+                    /*
+                    let taproot_hash = cache
+                        .taproot_key_spend_signature_hash(index, bitcoin::sighash::Prevouts::All(&self.), bitcoin::sighash::TapSighashType::All)
+                    */
+                },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
             };
@@ -253,6 +259,7 @@ pub struct InputContext {
     // TODO: Document this.
     pub sequence: BSequence,
     // BWitness data for Segwit/Taproot transactions.
+    // TODO: Remove this?
     pub witness: BWitness,
 }
 
@@ -333,14 +340,16 @@ impl TxOutputP2PKH {
 }
 
 // TODO.
-/// We just convert a PublicKey into a `BTweakedPublicKey` type, not applying an
-/// (optional) script.
-fn into_tweaked(pubkey: PublicKey) -> BTweakedPublicKey {
+/// We just convert a `PublicKey` (`tw_keypair` crate) into the
+/// `BTweakedPublicKey` type, not applying an (optional) script.
+fn as_tweaked(pubkey: &PublicKey) -> BTweakedPublicKey {
+    use bitcoin::key::Secp256k1;
     use bitcoin::key::TapTweak;
+    use bitcoin::key::XOnlyPublicKey;
 
     let schnorr = pubkey.to_schnorr_pubkey_bip340();
-    let xonly = bitcoin::key::XOnlyPublicKey::from_slice(&schnorr.to_bytes()).unwrap();
-    let (tweaked, _) = BUntweakedPublicKey::tap_tweak(xonly, &bitcoin::key::Secp256k1::new(), None);
+    let xonly = XOnlyPublicKey::from_slice(&schnorr.to_bytes()).unwrap();
+    let (tweaked, _) = BUntweakedPublicKey::tap_tweak(xonly, &Secp256k1::new(), None);
 
     tweaked
 }
@@ -348,16 +357,14 @@ fn into_tweaked(pubkey: PublicKey) -> BTweakedPublicKey {
 #[derive(Debug, Clone)]
 pub struct TxOutputP2TKeyPath {
     satoshis: u64,
-    witness: BWitness,
     script_pubkey: BScriptBuf,
 }
 
 impl TxOutputP2TKeyPath {
-    pub fn new(satoshis: u64, recipient: PublicKey) -> Self {
+    pub fn new(satoshis: u64, recipient: &PublicKey) -> Self {
         TxOutputP2TKeyPath {
             satoshis,
-            witness: BWitness::default(),
-            script_pubkey: BScriptBuf::new_v1_p2tr_tweaked(into_tweaked(recipient)),
+            script_pubkey: BScriptBuf::new_v1_p2tr_tweaked(as_tweaked(recipient)),
         }
     }
 }
@@ -400,7 +407,16 @@ pub struct TxInputP2PKH {
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeySpend {
     pub ctx: InputContext,
-    pub recipient: (),
+    pub recipient: TaprootPubkey,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct TaprootPubkey(BTweakedPublicKey);
+
+impl TaprootPubkey {
+    pub fn from_keypair(keypair: &secp256k1::KeyPair) -> Result<Self> {
+        Ok(TaprootPubkey(as_tweaked(keypair.public())))
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
