@@ -1,12 +1,11 @@
 use bitcoin::blockdata::script::PushBytesBuf as BPushBytesBuf;
+use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::{ScriptBuf as BScriptBuf, Witness as BWitness};
+use bitcoin::secp256k1;
 //use secp256k1::{generate_keypair, KeyPair, Secp256k1};
 use crate::{
-    Error, PubkeyHash, Result, SigHashType, TaprootPubkey, TxInputP2PKH, TxInputP2TRKeySpend,
+    Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend,
 };
-use tw_hash::H256;
-use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 
 pub enum ClaimLocation {
     Script(BScriptBuf),
@@ -18,71 +17,49 @@ pub trait TransactionSigner {
         &self,
         input: &TxInputP2PKH,
         // TODO: Should be wrapped.
-        hash: H256,
-        sighash: SigHashType,
+        hash: secp256k1::Message,
+        sighash: EcdsaSighashType,
     ) -> Result<ClaimP2PKH>;
 
     fn claim_p2tr_key_spend_sighash(
         &self,
         input: &TxInputP2TRKeySpend,
-        hash: H256,
-        sighash: SigHashType,
+        hash: secp256k1::Message,
+        sighash: TapSighashType,
     ) -> Result<ClaimP2TRKeySpend>;
 
     fn claim_p2tr_key_spend(
         &self,
         input: &TxInputP2TRKeySpend,
-        hash: H256,
+        hash: secp256k1::Message,
     ) -> Result<ClaimP2TRKeySpend> {
         <Self as TransactionSigner>::claim_p2tr_key_spend_sighash(
             self,
             input,
             hash,
-            SigHashType::All,
+            TapSighashType::All,
         )
     }
 
     // P2PKH signer with `SIGHASH_ALL` as default.
-    fn claim_p2pkh(&self, input: &TxInputP2PKH, hash: H256) -> Result<ClaimP2PKH> {
-        <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, input, hash, SigHashType::All)
+    fn claim_p2pkh(&self, input: &TxInputP2PKH, hash: secp256k1::Message) -> Result<ClaimP2PKH> {
+        <Self as TransactionSigner>::claim_p2pkh_with_sighash(self, input, hash, EcdsaSighashType::All)
     }
 }
 
 pub struct ClaimP2TRKeySpend(BWitness);
 
 // TODO: Create `BScriptBuf` directly, skip this structure.
-pub struct ClaimP2PKH {
-    sig: Vec<u8>,
-    sighash: SigHashType,
-    pubkey: Vec<u8>,
-}
-
-impl ClaimP2PKH {
-    // TODO: Should unwraps be handled?
-    pub fn into_script(self) -> BScriptBuf {
-        // We let the `bitcoin` crate handle the encoding of the public key.
-        let pubkey = bitcoin::key::PublicKey::from_slice(&self.pubkey).unwrap();
-
-        let mut buf = BPushBytesBuf::new();
-        // DER-encoding handles the prefix with the length of the signature. No
-        // need to do it manually.
-        buf.extend_from_slice(&self.sig).unwrap();
-        buf.push(self.sighash.to_le_byte()).unwrap();
-
-        BScriptBuf::builder()
-            .push_slice(buf)
-            .push_key(&pubkey)
-            .into_script()
-    }
-}
+pub struct ClaimP2PKH(pub BScriptBuf);
 
 impl TransactionSigner for secp256k1::KeyPair {
     fn claim_p2tr_key_spend_sighash(
         &self,
         input: &TxInputP2TRKeySpend,
-        hash: H256,
-        sighash: SigHashType,
+        hash: secp256k1::Message,
+        sighash: TapSighashType,
     ) -> Result<ClaimP2TRKeySpend> {
+        /*
         let my_pubkey = TaprootPubkey::from_keypair(self)?;
 
         if input.recipient != my_pubkey {
@@ -96,49 +73,32 @@ impl TransactionSigner for secp256k1::KeyPair {
             // TODO: Open an issue?
             ClaimP2TRKeySpend(BWitness::from_slice(&[sig.to_bytes()])),
         )
+        */
+        todo!()
     }
 
     fn claim_p2pkh_with_sighash(
         &self,
         input: &TxInputP2PKH,
-        hash: H256,
-        sighash: SigHashType,
+        hash: secp256k1::Message,
+        sighash: EcdsaSighashType,
     ) -> Result<ClaimP2PKH> {
-        // If the expected recipient is the hash of the COMPRESSED key...
-        let compressed = true;
-        let my_pubkey = PubkeyHash::from_keypair(self, compressed)?;
-        let pubkey = if input.recipient == my_pubkey {
-            self.public().compressed().to_vec()
+        let my_pubkey = bitcoin::PublicKey::new(self.public_key());
+        if input.recipient != PubkeyHash::from(my_pubkey) {
+            return Err(Error::Todo)
         }
-        // ... if not, then we check whether the recipient is the hash of the
-        // UNCOMPRESSEd public key.
-        else {
-            let compressed = false;
-            let my_pubkey = PubkeyHash::from_keypair(self, compressed)?;
-
-            if input.recipient == my_pubkey {
-                self.public().uncompressed().to_vec()
-            } else {
-                // Invalid/wrong signer!
-                return Err(Error::Todo);
-            }
-        };
 
         // Sign the hash of the transaction data (OP_CHECKSIG).
-        let sig = self.private().sign(hash).map_err(|_| Error::Todo)?;
+        //let sig = self.pri().sign(hash).map_err(|_| Error::Todo)?;
         // Encode signature as DER.
-        let der_sig = sig.to_der();
+        //let der_sig = sig.to_der();
+        let sig = bitcoin::ecdsa::Signature::sighash_all(self.secret_key().sign_ecdsa(hash));
 
-        Ok(
-            // The expected script to claim the P2PKH.
-            ClaimP2PKH {
-                // Signature, 70-72 bytes and DER-encoded.
-                sig: der_sig.as_bytes().to_vec(),
-                // SIGHASH type, one byte.
-                sighash,
-                // Public key itself, compressed (33 bytes) or uncompressed (65 bytes).
-                pubkey,
-            },
-        )
+        let script = BScriptBuf::builder()
+            .push_slice(sig.serialize())
+            .push_key(&my_pubkey)
+            .into_script();
+
+        Ok(ClaimP2PKH(script))
     }
 }
