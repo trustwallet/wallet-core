@@ -215,6 +215,7 @@ impl TransactionBuilder {
 
         let mut cache = BSighashCache::new(self.btc_tx.unwrap());
 
+        // TODO: Rename.
         let mut updated_scriptsigs = vec![];
 
         // For each input (index), we create a hash which is to be signed.
@@ -249,6 +250,8 @@ impl TransactionBuilder {
 
                     let h256 = convert_taproot_btc_hash_to_h256(hash);
                     let updated = signer(input, h256)?;
+
+                    updated_scriptsigs.push((index, updated));
                 },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
