@@ -8,9 +8,9 @@ use bitcoin::hashes::hash160::Hash as BHash;
 use bitcoin::hashes::Hash as BHashTrait;
 use bitcoin::key::{
     TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey as BUntweakedPublicKey, TapTweak,
+    KeyPair, PrivateKey,
 };
 use bitcoin::secp256k1::PublicKey;
-use bitcoin::hash_types::PubkeyHash;
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
 use bitcoin::sighash::{
@@ -25,6 +25,24 @@ use bitcoin::address::Payload;
 use std::str::FromStr;
 
 pub mod claim;
+
+pub fn pubkey_hash_from_string(string: &str) -> Result<PubkeyHash> {
+    let addr = Address::from_str(string).map_err(|_| Error::Todo)?;
+    match addr.payload {
+        Payload::PubkeyHash(hash) => Ok(hash),
+        _ => Err(Error::Todo)
+    }
+}
+
+pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
+    let pk = PrivateKey::from_wif(string).map_err(|_| Error::Todo)?;
+    let keypair = KeyPair::from_secret_key(&secp256k1::Secp256k1::new(), &pk.inner);
+    Ok(keypair)
+}
+
+// Reexports
+pub use bitcoin::{PubkeyHash, Address};
+pub use bitcoin;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -177,12 +195,6 @@ impl TransactionBuilder {
     where
         F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
     {
-        // TODO: Document
-        struct PartialTxOuts {
-            value: Option<u64>,
-            script_pubkey: BScriptBuf,
-        }
-
         // If Taproot is enabled, we prepare the full `BTxOuts` (value and
         // scriptPubKey) for hashing, which will then be signed.
         // TODO: Document some more.

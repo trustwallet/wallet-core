@@ -88,11 +88,10 @@ impl TransactionSigner for secp256k1::KeyPair {
             return Err(Error::Todo)
         }
 
-        // Sign the hash of the transaction data (OP_CHECKSIG).
-        //let sig = self.pri().sign(hash).map_err(|_| Error::Todo)?;
-        // Encode signature as DER.
-        //let der_sig = sig.to_der();
-        let sig = bitcoin::ecdsa::Signature::sighash_all(self.secret_key().sign_ecdsa(hash));
+        let sig = bitcoin::ecdsa::Signature {
+            sig: self.secret_key().sign_ecdsa(hash),
+            hash_ty: sighash
+        };
 
         let script = BScriptBuf::builder()
             .push_slice(sig.serialize())

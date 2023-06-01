@@ -1,4 +1,6 @@
-use tw_bitcoin::{keypair_from_wif, PubkeyHash, TransactionBuilder, TxInput, TxOutputP2PKH};
+use std::str::FromStr;
+
+use tw_bitcoin::{Address, PubkeyHash, TransactionBuilder, TxInput, TxOutputP2PKH, pubkey_hash_from_string, keypair_from_wif};
 use tw_encoding::hex;
 
 #[test]
@@ -29,7 +31,7 @@ fn sign_p2pkh_transaction() {
     let input = TxInput::from_slice(&raw_tx_input, None).unwrap();
     let output = TxOutputP2PKH::new(
         4_999_000_000,
-        &PubkeyHash::from_address_str(recipient_address).unwrap(),
+        &pubkey_hash_from_string(recipient_address).unwrap(),
     );
 
     let builder = TransactionBuilder::new()
