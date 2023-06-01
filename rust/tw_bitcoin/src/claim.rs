@@ -8,6 +8,11 @@ use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 
+pub enum ClaimLocation {
+    Script(BScriptBuf),
+    Witness(BWitness),
+}
+
 pub trait TransactionSigner {
     fn claim_p2pkh_with_sighash(
         &self,
