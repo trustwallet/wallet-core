@@ -147,7 +147,7 @@ class TestBarz {
                 sender = "0x1392Ae041BfBdBAA0cFF9234a0C8F64df97B7218"
                 preVerificationGas = ByteString.copyFrom("0xb708".toHexByteArray())
                 verificationGasLimit = ByteString.copyFrom("0x2DC6C0".toHexByteArray())
-                initCode = ByteString.copyFrom(WCBarz.getInitCodeFromPublicKey(factoryAddress, attestationObject, verificationFacet))
+                initCode = ByteString.copyFrom(Numeric.toHexString(WCBarz.getInitCodeFromPublicKey(factoryAddress, attestationObject, verificationFacet).toHexByteArray()))
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
