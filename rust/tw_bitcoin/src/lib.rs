@@ -11,10 +11,12 @@ use bitcoin::key::{
 };
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::PushBytesBuf as BPushBytesBuf;
-use bitcoin::sighash::{LegacySighash as BLegacySighash, SighashCache as BSighashCache};
+use bitcoin::sighash::{
+    LegacySighash as BLegacySighash, SighashCache as BSighashCache, TapSighash,
+};
 use bitcoin::transaction::Transaction as BTransaction;
 use bitcoin::{Sequence as BSequence, TxIn as BTxIn, TxOut as BTxOut, Witness as BWitness};
-use claim::TransactionSigner;
+use claim::{ClaimLocation, TransactionSigner};
 use std::str::FromStr;
 use tw_hash::H256;
 use tw_keypair::ecdsa::secp256k1::{self, PublicKey};
@@ -50,6 +52,13 @@ pub fn keypair_from_wif(wif: &str) -> Result<secp256k1::KeyPair> {
 }
 
 fn convert_legacy_btc_hash_to_h256(hash: BLegacySighash) -> H256 {
+    let slice: &[u8] = hash.as_raw_hash().as_ref();
+    debug_assert_eq!(slice.len(), 32);
+    let bytes: [u8; 32] = slice.try_into().unwrap();
+    H256::from(bytes)
+}
+
+fn convert_taproot_btc_hash_to_h256(hash: TapSighash) -> H256 {
     let slice: &[u8] = hash.as_raw_hash().as_ref();
     debug_assert_eq!(slice.len(), 32);
     let bytes: [u8; 32] = slice.try_into().unwrap();
@@ -173,7 +182,7 @@ impl TransactionBuilder {
             TxInput::P2PKH(p2pkh) => signer
                 .claim_p2pkh(p2pkh, sighash)
                 // TODO: Should not convert into BScriptBuf here.
-                .map(|claim| claim.into_script()),
+                .map(|claim| ClaimLocation::Script(claim.into_script())),
             TxInput::P2TRKeySpend(_p2tr) => todo!(),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
@@ -183,7 +192,7 @@ impl TransactionBuilder {
     // TODO: Does this have to return `Result<T>`?
     pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
     where
-        F: Fn(&TxInput, H256) -> Result<BScriptBuf>,
+        F: Fn(&TxInput, H256) -> Result<ClaimLocation>,
     {
         // TODO: Document
         struct PartialTxOuts {
@@ -212,7 +221,7 @@ impl TransactionBuilder {
         for (index, input) in self.inputs.iter().enumerate() {
             match input {
                 TxInput::P2PKH(p2pkh) => {
-                    let legacy_hash = cache
+                    let hash = cache
                         .legacy_signature_hash(
                             index,
                             // TODO: Add note that this is same as `scriptPubKey`,
@@ -223,20 +232,23 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let h256 = convert_legacy_btc_hash_to_h256(legacy_hash);
+                    let h256 = convert_legacy_btc_hash_to_h256(hash);
                     // TODO: Rename closure var.
                     let updated = signer(input, h256)?;
 
                     updated_scriptsigs.push((index, updated));
                 },
                 TxInput::P2TRKeySpend(_) => {
-                    let taproot_hash = cache
+                    let hash = cache
                         .taproot_key_spend_signature_hash(
                             index,
                             &bitcoin::psbt::Prevouts::All(&btxouts),
                             bitcoin::sighash::TapSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
+
+                    let h256 = convert_taproot_btc_hash_to_h256(hash);
+                    let updated = signer(input, h256)?;
                 },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
@@ -246,8 +258,15 @@ impl TransactionBuilder {
         let mut tx = cache.into_transaction();
 
         // Update the transaction with the updated scriptSig's.
-        for (index, script_sig) in updated_scriptsigs {
-            tx.input[index].script_sig = script_sig;
+        for (index, claim_loc) in updated_scriptsigs {
+            match claim_loc {
+                ClaimLocation::Script(script) => {
+                    tx.input[index].script_sig = script;
+                },
+                ClaimLocation::Witness(witness) => {
+                    tx.input[index].witness = witness;
+                },
+            }
         }
 
         self.btc_tx = Some(tx);
