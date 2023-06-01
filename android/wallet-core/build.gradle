@@ -13,7 +13,7 @@ android {
         versionName "1.0"
         externalNativeBuild {
             cmake {
-                arguments "-DCMAKE_BUILD_TYPE=Release", "-DTW_UNITY_BUILD=ON"
+                arguments "-DCMAKE_BUILD_TYPE=Release"
             }
         }
     }

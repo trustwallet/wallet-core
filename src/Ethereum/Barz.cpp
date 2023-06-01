@@ -14,27 +14,27 @@
 
 namespace TW::Barz {
 
-using ParamBasePtr = std::shared_ptr<TW::Ethereum::ABI::ParamBase>;
+using ParamBasePtr = std::shared_ptr<Ethereum::ABI::ParamBase>;
 using ParamCollection = std::vector<ParamBasePtr>;
 
-std::string getCounterfactualAddress(const TW::Barz::Proto::ContractAddressInput input) {
-    auto params = TW::Ethereum::ABI::ParamTuple();
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_cut_facet())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.account_facet())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.verification_facet())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.entry_point())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_loupe_facet())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_init())));
-    params.addParam(std::make_shared<TW::Ethereum::ABI::ParamAddress>(parse_hex(input.facet_registry())));
+std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
+    auto params = Ethereum::ABI::ParamTuple();
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_cut_facet())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.account_facet())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.verification_facet())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.entry_point())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_loupe_facet())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_init())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.facet_registry())));
 
     Data publicKey;
     switch (input.owner().kind_case()) {
-    case TW::Barz::Proto::ContractOwner::KindCase::KIND_NOT_SET:
+    case Proto::ContractOwner::KindCase::KIND_NOT_SET:
         return "";
-    case TW::Barz::Proto::ContractOwner::KindCase::kPublicKey:
+    case Proto::ContractOwner::KindCase::kPublicKey:
         publicKey = parse_hex(input.owner().public_key());
         break;
-    case TW::Barz::Proto::ContractOwner::KindCase::kAttestationObject:
+    case Proto::ContractOwner::KindCase::kAttestationObject:
         const auto attestationObject = parse_hex(input.owner().attestation_object());
         publicKey = subData(TW::WebAuthn::getPublicKey(attestationObject)->bytes, 1); // Drop the first byte which corresponds to the public key type
         break;
@@ -70,7 +70,5 @@ Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const s
     const auto publicKey = subData(TW::WebAuthn::getPublicKey(parse_hex(attestationObject))->bytes, 1);
     return getInitCodeFromPublicKey(factoryAddress, hexEncoded(publicKey), verificationFacet);
 }
-
-
 
 } // namespace TW::Barz
