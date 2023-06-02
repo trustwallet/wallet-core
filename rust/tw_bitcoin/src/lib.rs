@@ -83,6 +83,27 @@ pub struct Recipient<T> {
     network: Network,
 }
 
+impl Recipient<PubkeyHash> {
+    pub fn from_keypair(keypair: &KeyPair, network: Network) -> Self {
+        Recipient {
+            t: PublicKey::new(keypair.public_key()).into(),
+            network,
+        }
+    }
+    pub fn pubkey_hash(&self) -> &PubkeyHash {
+        &self.t
+    }
+}
+
+impl From<Recipient<PublicKey>> for Recipient<PubkeyHash> {
+    fn from(val: Recipient<PublicKey>) -> Self {
+        Recipient {
+            t: PubkeyHash::from(val.t),
+            network: val.network,
+        }
+    }
+}
+
 impl Recipient<PublicKey> {
     pub fn from_wif(wif: &str, network: Network) -> Result<Self> {
         let keypair = keypair_from_wif(wif)?;

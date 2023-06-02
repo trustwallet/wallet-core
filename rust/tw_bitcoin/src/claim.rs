@@ -61,7 +61,7 @@ impl TransactionSigner for KeyPair {
         let me = Recipient::<PublicKey>::from_keypair(self, Network::Regtest);
 
         // Check whether we can actually claim the input.
-        if input.recipient != me {
+        if input.recipient != Recipient::<PubkeyHash>::from(me.clone()) {
             return Err(Error::Todo);
         }
 

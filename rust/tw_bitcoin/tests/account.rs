@@ -1,5 +1,5 @@
-use tw_bitcoin::Recipient;
 use bitcoin::{Network, PublicKey};
+use tw_bitcoin::Recipient;
 
 mod common;
 use common::*;

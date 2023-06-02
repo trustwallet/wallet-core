@@ -55,7 +55,7 @@ impl TxInput {
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
     pub(crate) ctx: InputContext,
-    pub(crate) recipient: Recipient<PublicKey>,
+    pub(crate) recipient: Recipient<PubkeyHash>,
 }
 
 impl TxInputP2PKH {
@@ -63,9 +63,11 @@ impl TxInputP2PKH {
     pub fn new(
         txid: Txid,
         vout: u32,
-        recipient: Recipient<PublicKey>,
+        recipient: impl Into<Recipient<PubkeyHash>>,
         satoshis: Option<u64>,
     ) -> Self {
+        let recipient: Recipient<PubkeyHash> = recipient.into();
+
         TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
@@ -86,7 +88,14 @@ pub struct TxInputP2TRKeyPath {
 }
 
 impl TxInputP2TRKeyPath {
-    pub fn new(txid: Txid, vout: u32, recipient: Recipient<PublicKey>, satoshis: u64) -> Self {
+    pub fn new(
+        txid: Txid,
+        vout: u32,
+        recipient: impl Into<Recipient<PublicKey>>,
+        satoshis: u64,
+    ) -> Self {
+        let recipient: Recipient<PublicKey> = recipient.into();
+
         TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
