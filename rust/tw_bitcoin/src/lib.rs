@@ -12,7 +12,7 @@ use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::{self, PublicKey, XOnlyPublicKey};
 use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
 use bitcoin::transaction::Transaction;
-use bitcoin::{OutPoint, Sequence, TxIn, TxOut, Witness, Txid};
+use bitcoin::{OutPoint, Sequence, TxIn, TxOut, Txid, Witness};
 use std::str::FromStr;
 
 pub mod claim;
@@ -39,6 +39,13 @@ fn tweak_pubkey(pubkey: PublicKey) -> BTweakedPublicKey {
 
 fn tweak_keypair(keypair: &KeyPair) -> TweakedKeyPair {
     keypair.tap_tweak(&secp256k1::Secp256k1::new(), None)
+}
+
+fn pubkey_hash_from_script(script: &ScriptBuf) -> Result<PubkeyHash> {
+    match Payload::from_script(script).map_err(|_| Error::Todo)? {
+        Payload::PubkeyHash(hash) => Ok(hash),
+        _ => Err(Error::Todo),
+    }
 }
 
 // Reexports
@@ -286,6 +293,48 @@ impl TransactionBuilder {
     }
 }
 
+pub struct TransactionSigned {
+    tx: Transaction,
+}
+
+impl TransactionSigned {
+    pub fn into_inputs_outpus(self) -> Result<TxInputsOuputs> {
+        let mut inputs = vec![];
+        for txin in self.tx.input {
+            let s = &txin.script_sig;
+            if s.is_p2pkh() {
+                inputs.push(
+                    TxInputP2PKH::new(
+                        txin.previous_output.txid,
+                        txin.previous_output.vout,
+                        pubkey_hash_from_script(s)?,
+                        None,
+                    )
+                    .into(),
+                )
+            } else if s.is_v1_p2tr() {
+                // TODO...
+            }
+        }
+
+        let mut outputs = vec![];
+        for txout in self.tx.output {
+            let s = &txout.script_pubkey;
+            if s.is_p2pkh() {
+                let recipient = pubkey_hash_from_script(s)?;
+                outputs.push(TxOutputP2PKH::new(txout.value, &recipient).into())
+            }
+        }
+
+        Ok(TxInputsOuputs { inputs, outputs })
+    }
+}
+
+pub struct TxInputsOuputs {
+    pub inputs: Vec<TxInput>,
+    pub outputs: Vec<TxOutput>,
+}
+
 #[derive(Debug, Clone)]
 // TODO: Should be private.
 pub struct InputContext {
@@ -448,29 +497,19 @@ pub struct TxInputP2PKH {
 }
 
 impl TxInputP2PKH {
-    pub fn new(txid: Txid, vout: u32, recipient: PubkeyHash, satoshis: u64) -> Self {
+    pub fn new(txid: Txid, vout: u32, recipient: PubkeyHash, satoshis: Option<u64>) -> Self {
         TxInputP2PKH {
             ctx: InputContext {
-                previous_output: OutPoint {
-                    txid,
-                    vout,
-                },
-                value: Some(satoshis),
+                previous_output: OutPoint { txid, vout },
+                value: satoshis,
                 script_pubkey: ScriptBuf::new_p2pkh(&recipient),
                 sequence: Sequence::default(),
                 witness: Witness::default(),
             },
-            recipient
-        }
-    }
-    pub fn new_with_todo(utxo: TxOut, point: OutPoint, recipient: PubkeyHash) -> Self {
-        let ctx = InputContext::new(utxo, point);
-
-        TxInputP2PKH {
-            ctx,
             recipient,
         }
     }
+    // TODO: Needed?
     pub fn new_with_ctx(ctx: InputContext, recipient: PubkeyHash) -> Self {
         TxInputP2PKH { ctx, recipient }
     }
@@ -483,15 +522,17 @@ pub struct TxInputP2TRKeySpend {
 }
 
 impl TxInput {
+    // TODO: Cleanup.
     pub fn from_slice(slice: &[u8], value: Option<u64>) -> Result<Self> {
         let ctx = InputContext::from_slice(slice, value)?;
 
         if ctx.script_pubkey.is_p2pkh() {
-            let recipient = match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
-                Payload::PubkeyHash(hash) => hash,
-                // Never panics given that `is_p2pkh` passed.
-                _ => panic!(),
-            };
+            let recipient =
+                match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
+                    Payload::PubkeyHash(hash) => hash,
+                    // Never panics given that `is_p2pkh` passed.
+                    _ => panic!(),
+                };
 
             Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
         } else if ctx.script_pubkey.is_v1_p2tr() {
