@@ -4,9 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use starknet_crypto::{get_public_key, Signature};
+use starknet_crypto::{get_public_key, rfc6979_generate_k, sign, verify, SignError, Signature};
 use starknet_ff::{FieldElement, FromByteArrayError};
-use starknet_signers::{SigningKey, VerifyingKey};
 use tw_encoding::hex::{self as tw_hex, FromHexError};
 
 pub type Result<T> = std::result::Result<T, StarknetKeyPairError>;
@@ -15,6 +14,7 @@ pub enum StarknetKeyPairError {
     HexError(FromHexError),
     ByteArrayError(FromByteArrayError),
     InvalidLength,
+    ErrorSigning,
 }
 
 impl From<FromHexError> for StarknetKeyPairError {
@@ -37,8 +37,7 @@ pub fn starknet_pubkey_from_private(priv_key: &str) -> Result<String> {
 pub fn starknet_sign(priv_key: &str, hash: &str) -> Result<String> {
     let private_key = field_element_from_be_hex(priv_key)?;
     let hash_field = field_element_from_be_hex(hash)?;
-    let signing_key = SigningKey::from_secret_scalar(private_key);
-    let signature = signing_key.sign(&hash_field).unwrap();
+    let signature = ecdsa_sign(&private_key, &hash_field)?;
     Ok(signature.to_string())
 }
 
@@ -47,10 +46,8 @@ pub fn starknet_verify(pub_key: &str, hash: &str, r: &str, s: &str) -> Result<bo
     let hash = field_element_from_be_hex(hash)?;
     let r = field_element_from_be_hex(r)?;
     let s = field_element_from_be_hex(s)?;
-    let verifying_key = VerifyingKey::from_scalar(pub_key);
-    Ok(verifying_key
-        .verify(&hash, &Signature { r, s })
-        .unwrap_or_default())
+
+    Ok(verify(&pub_key, &hash, &r, &s).unwrap_or_default())
 }
 
 fn field_element_from_be_hex(hex: &str) -> Result<FieldElement> {
@@ -63,4 +60,29 @@ fn field_element_from_be_hex(hex: &str) -> Result<FieldElement> {
     buffer[(32 - decoded.len())..].copy_from_slice(&decoded[..]);
 
     FieldElement::from_bytes_be(&buffer).map_err(StarknetKeyPairError::from)
+}
+
+/// `starknet-core` depends on an out-dated `starknet-crypto` crate.
+/// We need to reimplement the same but using the latest `starknet-crypto` version.
+/// https://github.com/xJonathanLEI/starknet-rs/blob/0c78b365c2a7a7d4138553cba42fa69d695aa73d/starknet-core/src/crypto.rs#L34-L59
+pub fn ecdsa_sign(private_key: &FieldElement, message_hash: &FieldElement) -> Result<Signature> {
+    // Seed-retry logic ported from `cairo-lang`
+    let mut seed = None;
+    loop {
+        let k = rfc6979_generate_k(message_hash, private_key, seed.as_ref());
+
+        match sign(private_key, message_hash, &k) {
+            Ok(sig) => {
+                return Ok(Signature { r: sig.r, s: sig.s });
+            },
+            Err(SignError::InvalidMessageHash) => return Err(StarknetKeyPairError::ErrorSigning),
+            Err(SignError::InvalidK) => {
+                // Bump seed and retry
+                seed = match seed {
+                    Some(prev_seed) => Some(prev_seed + FieldElement::ONE),
+                    None => Some(FieldElement::ONE),
+                };
+            },
+        };
+    }
 }
