@@ -4,12 +4,12 @@ use bitcoin::blockdata::locktime::absolute::{Height as BHeight, LockTime as BLoc
 use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hashes::Hash;
 use bitcoin::key::{
-    KeyPair, PrivateKey, TapTweak, TweakedKeyPair, TweakedPublicKey as BTweakedPublicKey,
-    UntweakedPublicKey,
+    KeyPair, PrivateKey, PublicKey, TapTweak, TweakedKeyPair,
+    TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey,
 };
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::secp256k1::{self, PublicKey, XOnlyPublicKey};
+use bitcoin::secp256k1::{self, XOnlyPublicKey};
 use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
 use bitcoin::transaction::Transaction;
 use bitcoin::{OutPoint, Sequence, TxIn, TxOut, Txid, Witness};
@@ -32,7 +32,7 @@ pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
 }
 
 fn tweak_pubkey(pubkey: PublicKey) -> BTweakedPublicKey {
-    let xonly = XOnlyPublicKey::from(pubkey);
+    let xonly = XOnlyPublicKey::from(pubkey.inner);
     let (tweaked, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
     tweaked
 }
@@ -185,7 +185,6 @@ impl TransactionBuilder {
             },
         })
     }
-    // TODO: Does this have to return `Result<T>`?
     pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<TransactionSigned>
     where
         F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
@@ -423,6 +422,9 @@ pub enum TxOutput {
 }
 
 impl TxOutput {
+    pub fn from_address(address: Address) -> Result<Self> {
+        todo!()
+    }
     pub fn satoshis(&self) -> u64 {
         match self {
             TxOutput::P2PKH(p) => p.satoshis,
@@ -504,6 +506,12 @@ impl From<TxInputP2PKH> for TxInput {
     }
 }
 
+impl From<TxInputP2TRKeySpend> for TxInput {
+    fn from(input: TxInputP2TRKeySpend) -> Self {
+        TxInput::P2TRKeySpend(input)
+    }
+}
+
 impl TxInput {
     fn ctx(&self) -> &InputContext {
         match self {
@@ -551,6 +559,23 @@ impl TxInputP2PKH {
 pub struct TxInputP2TRKeySpend {
     pub ctx: InputContext,
     pub recipient: BTweakedPublicKey,
+}
+
+impl TxInputP2TRKeySpend {
+    pub fn new(txid: Txid, vout: u32, recipient: PublicKey, satoshis: u64) -> Self {
+        let tweaked = tweak_pubkey(recipient);
+
+        TxInputP2TRKeySpend {
+            ctx: InputContext {
+                previous_output: OutPoint { txid, vout },
+                value: Some(satoshis),
+                script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(tweaked),
+                sequence: Sequence::default(),
+                witness: Witness::default(),
+            },
+            recipient: tweaked,
+        }
+    }
 }
 
 impl TxInput {

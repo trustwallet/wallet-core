@@ -1,5 +1,5 @@
 use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
-use bitcoin::key::KeyPair;
+use bitcoin::key::{KeyPair, PublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::{ScriptBuf, Witness};
@@ -36,9 +36,10 @@ impl TransactionSigner for KeyPair {
         sighash: secp256k1::Message,
         sighash_type: Option<TapSighashType>,
     ) -> Result<ClaimP2TRKeySpend> {
+        println!("{:?}", sighash);
         // Given that we're using the "key spend" method of P2TR, we tweak the
         // key without a Merkle root.
-        let my_pubkey = tweak_pubkey(self.public_key());
+        let my_pubkey = tweak_pubkey(PublicKey::new(self.public_key()));
 
         // Check whether we can actually claim the input.
         if input.recipient != my_pubkey {
