@@ -2,10 +2,13 @@ use std::str::FromStr;
 
 use bitcoin::hashes::Hash;
 use bitcoin::{
-    OutPoint as BOutPoint, ScriptBuf as BScriptBuf, Sequence as BSequence, Txid as BTxid,
-    Witness as BWitness, TxOut, PublicKey
+    OutPoint as BOutPoint, PublicKey, ScriptBuf as BScriptBuf, Sequence as BSequence, TxOut,
+    Txid as BTxid, Witness as BWitness,
 };
-use tw_bitcoin::{PubkeyHash, TxInput, TxInputP2PKH, keypair_from_wif, pubkey_hash_from_address, TransactionBuilder, TxOutputP2PKH};
+use tw_bitcoin::{
+    keypair_from_wif, pubkey_hash_from_address, PubkeyHash, TransactionBuilder, TxInput,
+    TxInputP2PKH, TxOutputP2PKH,
+};
 use tw_encoding::hex;
 
 const ONE_BTC: u64 = 100_000_000;
@@ -46,6 +49,8 @@ fn sign_input_p2pkh_output_p2pkh() {
 
     let hex = hex::encode(signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED);
+
+    // TODO
 }
 
 #[test]
