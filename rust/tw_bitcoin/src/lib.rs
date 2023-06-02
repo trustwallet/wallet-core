@@ -1,12 +1,14 @@
 use crate::claim::{ClaimLocation, TransactionSigner};
+use bitcoin::address::{Payload, WitnessProgram};
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hashes::Hash;
+use bitcoin::key::{KeyPair, UntweakedPublicKey};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::secp256k1;
 use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
 use bitcoin::transaction::Transaction;
+use bitcoin::{secp256k1, Network, PublicKey};
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
 pub mod claim;
@@ -71,6 +73,47 @@ fn poc() {
     let control_block = spend_info.control_block(&(script1, LeafVersion::TapScript));
 }
 */
+
+pub struct AccountManager {
+    keypair: KeyPair,
+    network: Network,
+}
+
+impl AccountManager {
+    pub fn from_wif(wif: &str, network: Network) -> Result<Self> {
+        let keypair = keypair_from_wif(wif)?;
+
+        Ok(AccountManager { keypair, network })
+    }
+    // Covenience function, converts a `secp256k1::PublicKey` into a
+    // `bitcoin::key::PublicKey` type.
+    pub fn public_key(&self) -> PublicKey {
+        PublicKey::new(self.keypair.public_key())
+    }
+    pub fn get_legacy_address(&self) -> Address {
+        Address::p2pkh(&self.public_key(), self.network)
+    }
+    pub fn get_segwit_address(&self) -> Address {
+        let pk = self.public_key();
+        // The key is always compressed.
+        debug_assert!(pk.compressed);
+        // "Will only return an Error if an uncompressed public key is provided."
+        Address::p2wpkh(&pk, self.network).unwrap()
+    }
+    pub fn get_taproot_address(&self) -> Address {
+        let untweaked = UntweakedPublicKey::from(self.keypair.public_key());
+        Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, self.network)
+    }
+    pub fn get_legacy_address_string(&self) -> String {
+        self.get_legacy_address().to_string()
+    }
+    pub fn get_segwit_address_string(&self) -> String {
+        self.get_segwit_address().to_string()
+    }
+    pub fn get_taproot_address_string(&self) -> String {
+        self.get_taproot_address().to_string()
+    }
+}
 
 pub struct ScriptHash;
 
