@@ -1,4 +1,4 @@
-use tw_bitcoin::{keypair_from_wif, TransactionBuilder, TxOutputP2TKeyPath, TxInput, TxInputP2PKH};
+use tw_bitcoin::{keypair_from_wif, TransactionBuilder, TxInput, TxInputP2PKH, TxOutputP2TKeyPath};
 use tw_encoding::hex;
 
 #[test]
@@ -33,9 +33,9 @@ fn sign_tx_output_p2tr_key_spend() {
 
     let bob_pk = "cUGCA4LGsXbHDpurvWM63Snk4Q1FVySw2wESD7a35mkQyEyXneRv";
     let bob_keypair = keypair_from_wif(bob_pk).unwrap();
-	let pubkey = bob_keypair.public_key();
+    let pubkey = bob_keypair.public_key();
 
-	let output = TxOutputP2TKeyPath::new(4_999_000_000, pubkey);
+    let output = TxOutputP2TKeyPath::new(4_999_000_000, pubkey);
 
     let builder = TransactionBuilder::new()
         .add_input(input)
@@ -44,5 +44,5 @@ fn sign_tx_output_p2tr_key_spend() {
 
     let serialized = builder.sign_inputs(keypair).unwrap().serialize().unwrap();
     let hex_serialized = hex::encode(&serialized, false);
-	println!("{hex_serialized}");
+    println!("{hex_serialized}");
 }

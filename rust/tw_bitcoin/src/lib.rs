@@ -5,6 +5,7 @@ use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hashes::Hash;
 use bitcoin::key::{
     KeyPair, PrivateKey, TapTweak, TweakedKeyPair, TweakedPublicKey as BTweakedPublicKey,
+    UntweakedPublicKey,
 };
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
@@ -410,7 +411,7 @@ impl From<TxOutput> for TxOut {
             },
             TxOutput::P2TRKeyPath(p2trkp) => TxOut {
                 value: p2trkp.satoshis,
-                script_pubkey: p2trkp.script_pubkey
+                script_pubkey: p2trkp.script_pubkey,
             },
             _ => todo!(),
         }
@@ -447,17 +448,31 @@ pub struct TxInputP2TRKeySpend {
 }
 
 impl TxInput {
-    pub fn new_p2pkh() -> Self {
-        todo!()
-    }
     pub fn from_slice(slice: &[u8], value: Option<u64>) -> Result<Self> {
         let ctx = InputContext::from_slice(slice, value)?;
-        let recipient = match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
-            Payload::PubkeyHash(hash) => hash,
-            _ => todo!(),
-        };
 
-        Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
+        if ctx.script_pubkey.is_p2pkh() {
+            let recipient = match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
+                Payload::PubkeyHash(hash) => hash,
+                // Never panics given that `is_p2pkh` passed.
+                _ => panic!(),
+            };
+
+            Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
+        } else if ctx.script_pubkey.is_v1_p2tr() {
+            // Skip the first byte, which is the version indicator.
+            let raw = &ctx.script_pubkey.as_bytes()[1..];
+            let untweaked: UntweakedPublicKey =
+                XOnlyPublicKey::from_slice(raw).map_err(|_| Error::Todo)?;
+
+            let (recipient, _) = untweaked.tap_tweak(&secp256k1::Secp256k1::new(), None);
+            Ok(TxInput::P2TRKeySpend(TxInputP2TRKeySpend {
+                ctx,
+                recipient,
+            }))
+        } else {
+            Err(Error::Todo)
+        }
     }
 }
 
