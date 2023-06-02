@@ -1,4 +1,4 @@
-use crate::{tweak_pubkey, InputContext};
+use crate::{tweak_pubkey, InputContext, Recipient};
 use bitcoin::key::{PublicKey, TweakedPublicKey as BTweakedPublicKey};
 use bitcoin::script::ScriptBuf;
 use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, Witness};
@@ -55,17 +55,22 @@ impl TxInput {
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
     pub(crate) ctx: InputContext,
-    pub(crate) recipient: PubkeyHash,
+    pub(crate) recipient: Recipient<PublicKey>,
 }
 
 impl TxInputP2PKH {
     // TODO: `satoshis` should be mandatory.
-    pub fn new(txid: Txid, vout: u32, recipient: PubkeyHash, satoshis: Option<u64>) -> Self {
+    pub fn new(
+        txid: Txid,
+        vout: u32,
+        recipient: Recipient<PublicKey>,
+        satoshis: Option<u64>,
+    ) -> Self {
         TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_p2pkh(&recipient),
+                script_pubkey: ScriptBuf::new_p2pkh(&recipient.pubkey_hash()),
                 sequence: Sequence::default(),
                 witness: Witness::default(),
             },
@@ -77,22 +82,20 @@ impl TxInputP2PKH {
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeyPath {
     pub(crate) ctx: InputContext,
-    pub(crate) recipient: BTweakedPublicKey,
+    pub(crate) recipient: Recipient<PublicKey>,
 }
 
 impl TxInputP2TRKeyPath {
-    pub fn new(txid: Txid, vout: u32, recipient: PublicKey, satoshis: u64) -> Self {
-        let tweaked = tweak_pubkey(recipient);
-
+    pub fn new(txid: Txid, vout: u32, recipient: Recipient<PublicKey>, satoshis: u64) -> Self {
         TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: Some(satoshis),
-                script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(tweaked),
+                script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
                 sequence: Sequence::default(),
                 witness: Witness::default(),
             },
-            recipient: tweaked,
+            recipient,
         }
     }
 }

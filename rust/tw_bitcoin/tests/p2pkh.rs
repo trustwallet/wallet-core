@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use bitcoin::{PubkeyHash, PublicKey, Txid};
-use tw_bitcoin::{keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
+use tw_bitcoin::{keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
 use tw_encoding::hex;
 
 mod common;
@@ -23,13 +23,13 @@ fn sign_input_p2pkh_output_p2pkh() {
     let txid = Txid::from_str(GENESIS_TXID).unwrap();
     let vout = 0;
     // TODO: this can be done nicer
-    let recipient = PubkeyHash::from(PublicKey::new(alice.public_key()));
+    let recipient = Recipient::<PublicKey>::from_keypair(&alice, bitcoin::Network::Regtest);
     let satoshis = FULL_AMOUNT;
 
     let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
 
     // Prepare outputs for Bob.
-    let recipient = PubkeyHash::from(PublicKey::new(bob.public_key()));
+    let recipient = Recipient::<PublicKey>::from_keypair(&bob, bitcoin::Network::Regtest);
     let satoshis = SEND_AMOUNT;
 
     let output = TxOutputP2PKH::new(satoshis, &recipient);
