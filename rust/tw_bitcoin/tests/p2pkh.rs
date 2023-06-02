@@ -1,3 +1,5 @@
+use std::{str::FromStr, f32::MIN};
+
 use tw_bitcoin::{
     bitcoin::{hashes::Hash, PublicKey, Txid},
     keypair_from_wif, PubkeyHash, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH,
@@ -9,30 +11,33 @@ use common::*;
 
 #[test]
 fn sign_input_p2pkh_output_p2pkh() {
-    const EXPECTED_RAW_SIGNED: &str = "020000000115a009856a979cea16875cec396f5154e80d0a4c461d90516ceec6ce1da37aad000000006a47304402205b2b1633c6192c9eed16d624e43ee0c6fbc6f3bbeb9fd07f668afb37eaccff740220638dec2889d4c7129655234abe9b5647b193f30768d3719afbb065c55b2bd37c0121025d935858e4c56f24a8d634a94c678ad00b48fc86ec391c9d8215abec7e200e42ffffffff0100e1f505000000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
+    const EXPECTED_RAW_SIGNED: &str = "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000";
+
+    const FULL_AMOUNT: u64 = ONE_BTC * 50;
+    const MINER_FEE: u64 = ONE_BTC / 100;
+    const SEND_AMOUNT: u64= FULL_AMOUNT - MINER_FEE;
 
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
     // Prepare inputs for Alice.
-    let txid = Txid::hash(b"random");
+    let txid = Txid::from_str(GENESIS_TXID).unwrap();
     let vout = 0;
     // TODO: this can be done nicer
     let recipient = PubkeyHash::from(PublicKey::new(alice.public_key()));
-    let satoshis = ONE_BTC * 10;
+    let satoshis = FULL_AMOUNT;
 
     let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
 
     // Prepare outputs for Bob.
     let recipient = PubkeyHash::from(PublicKey::new(bob.public_key()));
-    let satoshis = ONE_BTC;
+    let satoshis = SEND_AMOUNT;
 
     let output = TxOutputP2PKH::new(satoshis, &recipient);
 
     // Alice signs the transaction.
     let signed_transaction = TransactionBuilder::new()
-        // TODO: Set return address, decrease miner fee.
-        .miner_fee(ONE_BTC * 9)
+        .miner_fee(MINER_FEE)
         .add_input(input.into())
         .add_output(output.into())
         .sign_inputs(alice)
@@ -42,6 +47,4 @@ fn sign_input_p2pkh_output_p2pkh() {
 
     let hex = hex::encode(signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED);
-
-    // TODO
 }

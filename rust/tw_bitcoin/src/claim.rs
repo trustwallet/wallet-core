@@ -36,7 +36,6 @@ impl TransactionSigner for KeyPair {
         sighash: secp256k1::Message,
         sighash_type: Option<TapSighashType>,
     ) -> Result<ClaimP2TRKeySpend> {
-        println!("{:?}", sighash);
         // Given that we're using the "key spend" method of P2TR, we tweak the
         // key without a Merkle root.
         let my_pubkey = tweak_pubkey(PublicKey::new(self.public_key()));
