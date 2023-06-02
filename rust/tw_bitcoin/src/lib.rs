@@ -157,7 +157,7 @@ impl TransactionBuilder {
     }
     pub fn add_input(mut self, input: TxInput) -> Self {
         match input {
-            TxInput::P2TRKeySpend(_) => self.contains_taproot = true,
+            TxInput::P2TRKeyPath(_) => self.contains_taproot = true,
             _ => {},
         }
 
@@ -177,8 +177,8 @@ impl TransactionBuilder {
                 .claim_p2pkh(p2pkh, sighash, None)
                 // TODO: Should not convert into ScriptBuf here.
                 .map(|claim| ClaimLocation::Script(claim.0)),
-            TxInput::P2TRKeySpend(p2tr) => signer
-                .claim_p2tr_key_spend(p2tr, sighash)
+            TxInput::P2TRKeyPath(p2tr) => signer
+                .claim_p2tr_key_path(p2tr, sighash)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
@@ -261,7 +261,7 @@ impl TransactionBuilder {
 
                     updated_scriptsigs.push((index, updated));
                 },
-                TxInput::P2TRKeySpend(_) => {
+                TxInput::P2TRKeyPath(_) => {
                     let hash = cache
                         .taproot_key_spend_signature_hash(
                             index,
@@ -496,7 +496,7 @@ impl From<TxOutput> for TxOut {
 #[derive(Debug, Clone)]
 pub enum TxInput {
     P2PKH(TxInputP2PKH),
-    P2TRKeySpend(TxInputP2TRKeySpend),
+    P2TRKeyPath(TxInputP2TRKeyPath),
     NonStandard { ctx: InputContext },
 }
 
@@ -506,9 +506,9 @@ impl From<TxInputP2PKH> for TxInput {
     }
 }
 
-impl From<TxInputP2TRKeySpend> for TxInput {
-    fn from(input: TxInputP2TRKeySpend) -> Self {
-        TxInput::P2TRKeySpend(input)
+impl From<TxInputP2TRKeyPath> for TxInput {
+    fn from(input: TxInputP2TRKeyPath) -> Self {
+        TxInput::P2TRKeyPath(input)
     }
 }
 
@@ -516,14 +516,14 @@ impl TxInput {
     fn ctx(&self) -> &InputContext {
         match self {
             TxInput::P2PKH(t) => &t.ctx,
-            TxInput::P2TRKeySpend(t) => &t.ctx,
+            TxInput::P2TRKeyPath(t) => &t.ctx,
             TxInput::NonStandard { ctx } => ctx,
         }
     }
     fn satoshis(&self) -> Option<u64> {
         match self {
             TxInput::P2PKH(p) => p.ctx.value,
-            TxInput::P2TRKeySpend(p) => p.ctx.value,
+            TxInput::P2TRKeyPath(p) => p.ctx.value,
             TxInput::NonStandard { ctx } => ctx.value,
         }
     }
@@ -556,16 +556,16 @@ impl TxInputP2PKH {
 }
 
 #[derive(Debug, Clone)]
-pub struct TxInputP2TRKeySpend {
+pub struct TxInputP2TRKeyPath {
     pub ctx: InputContext,
     pub recipient: BTweakedPublicKey,
 }
 
-impl TxInputP2TRKeySpend {
+impl TxInputP2TRKeyPath {
     pub fn new(txid: Txid, vout: u32, recipient: PublicKey, satoshis: u64) -> Self {
         let tweaked = tweak_pubkey(recipient);
 
-        TxInputP2TRKeySpend {
+        TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: Some(satoshis),
@@ -601,10 +601,7 @@ impl TxInput {
 
             let (recipient, _) = untweaked.tap_tweak(&secp256k1::Secp256k1::new(), None);
 
-            Ok(TxInput::P2TRKeySpend(TxInputP2TRKeySpend {
-                ctx,
-                recipient,
-            }))
+            Ok(TxInput::P2TRKeyPath(TxInputP2TRKeyPath { ctx, recipient }))
         } else {
             Err(Error::Todo)
         }
