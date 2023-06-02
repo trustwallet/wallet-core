@@ -8,7 +8,7 @@ mod common;
 use common::*;
 
 #[test]
-fn sign_input_p2pkh_output_p2tr() {
+fn sign_input_p2pkh_output_p2tr_key_path() {
     // This passed the `bitcoin-cli -retest testmempoolaccept` command.
     const EXPECTED_RAW_SIGNED: &str = "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a47304402206cd6484a6f9199d0f8ae1696bff915f70ddee994349e3aa474e048dc8ad4604002206a7a562d28dfd663cb30b54039a791af65acdcfac38c3e212518256fa3e21d3b0121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000002251202842b4039775688d0c12c6a97a72fa618f1eda45241c665437ff53709442e31300000000";
 
