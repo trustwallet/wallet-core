@@ -1,4 +1,5 @@
-use crate::{tweak_pubkey, Result};
+use crate::{tweak_pubkey, Error, Result};
+use bitcoin::address::Payload;
 use bitcoin::script::ScriptBuf;
 use bitcoin::{Address, PubkeyHash, PublicKey, TxOut};
 
@@ -10,7 +11,12 @@ pub enum TxOutput {
 
 impl TxOutput {
     pub fn from_address(address: Address) -> Result<Self> {
-        todo!()
+        match address.payload {
+            Payload::PubkeyHash(hash) => todo!(),
+            Payload::ScriptHash(hash) => todo!(),
+            Payload::WitnessProgram(program) => todo!(),
+            _ => Err(Error::Todo),
+        }
     }
     pub fn satoshis(&self) -> u64 {
         match self {
