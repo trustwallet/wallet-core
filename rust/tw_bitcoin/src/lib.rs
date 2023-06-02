@@ -1,14 +1,17 @@
+use std::str::FromStr;
+
 use crate::claim::{ClaimLocation, TransactionSigner};
-use bitcoin::address::{Payload, WitnessProgram};
+use bitcoin::address::NetworkChecked;
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
-use bitcoin::consensus::{Decodable, Encodable};
+use bitcoin::consensus::{Encodable};
 use bitcoin::hashes::Hash;
-use bitcoin::key::{KeyPair, UntweakedPublicKey};
+use bitcoin::key::{KeyPair, UntweakedPublicKey, TweakedPublicKey};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
+use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash, EcdsaSighashType};
 use bitcoin::transaction::Transaction;
-use bitcoin::{secp256k1, Network, PublicKey};
+use bitcoin::sighash::TapSighashType;
+use bitcoin::{secp256k1, Network, PublicKey, network};
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
 pub mod claim;
@@ -23,8 +26,7 @@ pub use utils::*;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-const SIGHASH_ALL: u32 = 1;
-
+// TODO: Deprecate this.
 pub struct TransactionHash([u8; 32]);
 
 impl TransactionHash {
@@ -74,16 +76,58 @@ fn poc() {
 }
 */
 
-pub struct AccountManager {
+pub struct Recipient<T> {
+    t: T,
+    network: Network,
+}
+
+impl Recipient<PublicKey> {
+    pub fn from_keypair(keypair: &KeyPair, network: Network) -> Self {
+        Recipient {
+            t: PublicKey::new(keypair.public_key()),
+            network,
+        }
+    }
+    pub fn pubkey_hash(&self) -> PubkeyHash {
+        PubkeyHash::from(self.t)
+    }
+    pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
+        tweak_pubkey(self.t)
+    }
+    pub fn legacy_address(&self) -> Address {
+        Address::p2pkh(&self.t, self.network)
+    }
+    pub fn segwit_address(&self) -> Address {
+        // The key is always compressed.
+        debug_assert!(self.t.compressed);
+        // "Will only return an Error if an uncompressed public key is provided."
+        Address::p2wpkh(&self.t, self.network).unwrap()
+    }
+    pub fn taproot_address(&self) -> Address {
+        let untweaked = UntweakedPublicKey::from(self.t.inner);
+        Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, self.network)
+    }
+    pub fn legacy_address_string(&self) -> String {
+        self.legacy_address().to_string()
+    }
+    pub fn segwit_address_string(&self) -> String {
+        self.segwit_address().to_string()
+    }
+    pub fn taproot_address_string(&self) -> String {
+        self.taproot_address().to_string()
+    }
+}
+
+pub struct Account {
     keypair: KeyPair,
     network: Network,
 }
 
-impl AccountManager {
+impl Account {
     pub fn from_wif(wif: &str, network: Network) -> Result<Self> {
         let keypair = keypair_from_wif(wif)?;
 
-        Ok(AccountManager { keypair, network })
+        Ok(Account { keypair, network })
     }
     // Covenience function, converts a `secp256k1::PublicKey` into a
     // `bitcoin::key::PublicKey` type.
@@ -115,10 +159,9 @@ impl AccountManager {
     }
 }
 
-pub struct ScriptHash;
-
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
+    network: Network,
     version: i32,
     lock_time: LockTime,
     inputs: Vec<TxInput>,
@@ -128,9 +171,10 @@ pub struct TransactionBuilder {
     contains_taproot: bool,
 }
 
-impl Default for TransactionBuilder {
-    fn default() -> Self {
+impl TransactionBuilder {
+    pub fn new(network: Network) -> Self {
         TransactionBuilder {
+            network,
             // TODO: Check this.
             version: 2,
             // No lock time, transaction is immediately spendable.
@@ -141,12 +185,6 @@ impl Default for TransactionBuilder {
             return_address: None,
             contains_taproot: false,
         }
-    }
-}
-
-impl TransactionBuilder {
-    pub fn new() -> Self {
-        Self::default()
     }
     pub fn version(mut self, version: i32) -> Self {
         self.version = version;
@@ -257,8 +295,7 @@ impl TransactionBuilder {
                         .legacy_signature_hash(
                             index,
                             &p2pkh.ctx.script_pubkey,
-                            // TODO: Make adjustable.
-                            SIGHASH_ALL,
+                            EcdsaSighashType::All.to_u32(),
                         )
                         .map_err(|_| Error::Todo)?;
 
@@ -273,7 +310,7 @@ impl TransactionBuilder {
                         .taproot_key_spend_signature_hash(
                             index,
                             &bitcoin::psbt::Prevouts::All(&prevouts),
-                            bitcoin::sighash::TapSighashType::All,
+                            TapSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
 

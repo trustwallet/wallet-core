@@ -35,7 +35,7 @@ fn sign_input_p2pkh_output_p2pkh() {
     let output = TxOutputP2PKH::new(satoshis, &recipient);
 
     // Alice signs the transaction.
-    let signed_transaction = TransactionBuilder::new()
+    let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
         .miner_fee(MINER_FEE)
         .add_input(input.into())
         .add_output(output.into())

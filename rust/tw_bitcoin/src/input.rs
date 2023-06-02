@@ -54,8 +54,8 @@ impl TxInput {
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
-    pub ctx: InputContext,
-    pub recipient: PubkeyHash,
+    pub(crate) ctx: InputContext,
+    pub(crate) recipient: PubkeyHash,
 }
 
 impl TxInputP2PKH {
@@ -76,8 +76,8 @@ impl TxInputP2PKH {
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeyPath {
-    pub ctx: InputContext,
-    pub recipient: BTweakedPublicKey,
+    pub(crate) ctx: InputContext,
+    pub(crate) recipient: BTweakedPublicKey,
 }
 
 impl TxInputP2TRKeyPath {
