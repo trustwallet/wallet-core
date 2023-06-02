@@ -1,9 +1,7 @@
 use std::str::FromStr;
 
-use tw_bitcoin::{
-    bitcoin::{PublicKey, Txid},
-    keypair_from_wif, PubkeyHash, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH,
-};
+use bitcoin::{PubkeyHash, PublicKey, Txid};
+use tw_bitcoin::{keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
 use tw_encoding::hex;
 
 mod common;
