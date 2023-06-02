@@ -363,6 +363,12 @@ impl From<TxOutputP2PKH> for TxOutput {
     }
 }
 
+impl From<TxOutputP2TKeyPath> for TxOutput {
+    fn from(output: TxOutputP2TKeyPath) -> Self {
+        TxOutput::P2TRKeyPath(output)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct TxOutputP2PKH {
     satoshis: u64,
@@ -402,6 +408,10 @@ impl From<TxOutput> for TxOut {
                 value: p2pkh.satoshis,
                 script_pubkey: p2pkh.script_pubkey,
             },
+            TxOutput::P2TRKeyPath(p2trkp) => TxOut {
+                value: p2trkp.satoshis,
+                script_pubkey: p2trkp.script_pubkey
+            },
             _ => todo!(),
         }
     }
@@ -419,7 +429,7 @@ impl TxInput {
         match self {
             TxInput::P2PKH(t) => &t.ctx,
             TxInput::P2TRKeySpend(t) => &t.ctx,
-            TxInput::NonStandard { ctx } => &ctx,
+            TxInput::NonStandard { ctx } => ctx,
         }
     }
 }
@@ -466,36 +476,38 @@ fn get_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
     Ok(ret)
 }
 
-fn create_envelope(content_type: &str, data: &str) -> Result<ScriptBuf> {
+fn create_envelope(mime: &str, data: &str) -> Result<ScriptBuf> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
     // TODO: Check overflow
+    let (op_push, size_buf) = get_push(mime.len() as u32)?;
+
     // Prepare content-type buffer.
-    let mut content_ty_buf = PushBytesBuf::new();
-    let (op_push, size_buf) = get_push(content_type.len() as u32)?;
+    let mut mime_buf = PushBytesBuf::new();
 
     // For any sizes below 75, we use encode as `OP_PUSHBYTES[0|1|2|...|75]`.
     // Fany any sized above 75, we use encode as `OP_PUSHDATA[1|2|3|4] <SIZE_BUF>`.
-    content_ty_buf.push(op_push.to_u8()).unwrap();
+    mime_buf.push(op_push.to_u8()).unwrap();
     if let Some(size_buf) = size_buf {
-        content_ty_buf
-            .extend_from_slice(size_buf.as_slice())
-            .unwrap();
+        mime_buf.extend_from_slice(size_buf.as_slice()).unwrap();
     }
 
     // Prepare data buffer.
     let mut data_buf = PushBytesBuf::new();
+    data_buf
+        .extend_from_slice(data.as_bytes())
+        .map_err(|_| Error::Todo)?;
 
     let x = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         // Push three bytes of "orb"
         .push_opcode(OP_PUSHBYTES_3)
-        .push_slice(PushBytesBuf::try_from(b"orb").unwrap())
+        .push_slice(b"orb")
         // OP_TRUE = OP_1
         .push_opcode(OP_TRUE)
-        .push_slice(content_ty_buf)
+        .push_slice(mime_buf)
         .push_opcode(OP_0)
         .push_slice(data_buf)
         .push_opcode(OP_ENDIF);
