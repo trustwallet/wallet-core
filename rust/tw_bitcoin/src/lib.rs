@@ -441,9 +441,11 @@ fn create_envelope(mime: &str, data: &str) -> Result<ScriptBuf> {
     todo!()
 }
 
+pub struct OrdInputs(Vec<Ordinals>);
+
 pub struct Ordinals(u64, u64);
 
-pub fn ordinal_theory(height: u64, transactions: &[(&[Ordinals], &[u64])]) {
+pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInputs], &[u64])]) {
     const ONE_BTC: u64 = 100_000_000;
 
     // Number of satoshis minded at `height`, with the consideration of havlings
@@ -486,9 +488,11 @@ pub fn ordinal_theory(height: u64, transactions: &[(&[Ordinals], &[u64])]) {
         // Here, the first input contains ordinals 100 to 200,
         // the second entry contains 300 to 400, etc.
         let mut ordinals = vec![];
-        for ord in *inputs {
-            let (from, to) = (ord.0, ord.1);
-            ordinals.push((from, to));
+        for input in *inputs {
+            for ord in &input.0 {
+                let (from, to) = (ord.0, ord.1);
+                ordinals.push((from, to));
+            }
         }
 
         // We go through each output and remove the number of (spent) satoshis
