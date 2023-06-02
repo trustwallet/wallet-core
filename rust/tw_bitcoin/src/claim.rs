@@ -2,7 +2,7 @@ use crate::{tweak_pubkey, Error, PubkeyHash, Recipient, Result, TxInputP2PKH, Tx
 use bitcoin::key::{KeyPair, PublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
-use bitcoin::{Network, ScriptBuf, Witness};
+use bitcoin::{ScriptBuf, Witness};
 
 pub enum ClaimLocation {
     Script(ScriptBuf),
@@ -34,8 +34,7 @@ impl TransactionSigner for KeyPair {
         input: &TxInputP2TRKeyPath,
         sighash: secp256k1::Message,
     ) -> Result<ClaimP2TRKeyPath> {
-        // TODO: Pass network as param.
-        let me = Recipient::<PublicKey>::from_keypair(self, Network::Regtest);
+        let me = Recipient::<PublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
         if input.recipient != me {
@@ -58,7 +57,7 @@ impl TransactionSigner for KeyPair {
         sighash_type: Option<EcdsaSighashType>,
     ) -> Result<ClaimP2PKH> {
         // TODO: Pass network as param.
-        let me = Recipient::<PublicKey>::from_keypair(self, Network::Regtest);
+        let me = Recipient::<PublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
         if input.recipient != Recipient::<PubkeyHash>::from(me.clone()) {
