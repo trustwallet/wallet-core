@@ -3,10 +3,50 @@ use std::str::FromStr;
 use bitcoin::hashes::Hash;
 use bitcoin::{
     OutPoint as BOutPoint, ScriptBuf as BScriptBuf, Sequence as BSequence, Txid as BTxid,
-    Witness as BWitness,
+    Witness as BWitness, TxOut, PublicKey
 };
-use tw_bitcoin::{PubkeyHash, TxInput};
+use tw_bitcoin::{PubkeyHash, TxInput, TxInputP2PKH, keypair_from_wif, pubkey_hash_from_address, TransactionBuilder, TxOutputP2PKH};
 use tw_encoding::hex;
+
+const ONE_BTC: u64 = 100_000_000;
+const ALICE_WIF: &str = "cUGCA4LGsXbHDpurvWM63Snk4Q1FVySw2wESD7a35mkQyEyXneRv";
+const BOB_WIF: &str = "cV3Fp99spihU4t28JwEggbywmKXEY9KKX9PwtRqHaZnzCrvnF4yr";
+
+#[test]
+fn sign_input_p2pkh_output_p2pkh() {
+    const EXPECTED_RAW_SIGNED: &str = "020000000115a009856a979cea16875cec396f5154e80d0a4c461d90516ceec6ce1da37aad000000006a47304402205b2b1633c6192c9eed16d624e43ee0c6fbc6f3bbeb9fd07f668afb37eaccff740220638dec2889d4c7129655234abe9b5647b193f30768d3719afbb065c55b2bd37c0121025d935858e4c56f24a8d634a94c678ad00b48fc86ec391c9d8215abec7e200e42ffffffff0100e1f505000000001976a914f173727012cef132acff9630b622a5d62508b9cc88ac00000000";
+
+    let alice = keypair_from_wif(ALICE_WIF).unwrap();
+    let bob = keypair_from_wif(BOB_WIF).unwrap();
+
+    // Prepare inputs for Alice.
+    let txid = BTxid::hash(b"random");
+    let vout = 0;
+    // TODO: this can be done nicer
+    let recipient = PubkeyHash::from(PublicKey::new(alice.public_key()));
+    let satoshis = ONE_BTC * 10;
+
+    let input = TxInputP2PKH::new(txid, vout, recipient, satoshis);
+
+    // Prepare outputs for Bob.
+    let recipient = PubkeyHash::from(PublicKey::new(bob.public_key()));
+    let satoshis = ONE_BTC;
+
+    let output = TxOutputP2PKH::new(satoshis, &recipient);
+
+    // Alice signs the transaction.
+    let signed_transaction = TransactionBuilder::new()
+        .add_input(input.into())
+        .add_output(output.into())
+        .prepare_for_signing()
+        .sign_inputs(alice)
+        .unwrap()
+        .serialize()
+        .unwrap();
+
+    let hex = hex::encode(signed_transaction, false);
+    assert_eq!(&hex, EXPECTED_RAW_SIGNED);
+}
 
 #[test]
 fn tx_input_p2pkh_from_slice() {

@@ -12,7 +12,7 @@ use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::{self, PublicKey, XOnlyPublicKey};
 use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
 use bitcoin::transaction::Transaction;
-use bitcoin::{OutPoint, Sequence, TxIn, TxOut, Witness};
+use bitcoin::{OutPoint, Sequence, TxIn, TxOut, Witness, Txid};
 use std::str::FromStr;
 
 pub mod claim;
@@ -425,6 +425,12 @@ pub enum TxInput {
     NonStandard { ctx: InputContext },
 }
 
+impl From<TxInputP2PKH> for TxInput {
+    fn from(input: TxInputP2PKH) -> Self {
+        TxInput::P2PKH(input)
+    }
+}
+
 impl TxInput {
     fn ctx(&self) -> &InputContext {
         match self {
@@ -439,6 +445,35 @@ impl TxInput {
 pub struct TxInputP2PKH {
     pub ctx: InputContext,
     pub recipient: PubkeyHash,
+}
+
+impl TxInputP2PKH {
+    pub fn new(txid: Txid, vout: u32, recipient: PubkeyHash, satoshis: u64) -> Self {
+        TxInputP2PKH {
+            ctx: InputContext {
+                previous_output: OutPoint {
+                    txid,
+                    vout,
+                },
+                value: Some(satoshis),
+                script_pubkey: ScriptBuf::new_p2pkh(&recipient),
+                sequence: Sequence::default(),
+                witness: Witness::default(),
+            },
+            recipient
+        }
+    }
+    pub fn new_with_todo(utxo: TxOut, point: OutPoint, recipient: PubkeyHash) -> Self {
+        let ctx = InputContext::new(utxo, point);
+
+        TxInputP2PKH {
+            ctx,
+            recipient,
+        }
+    }
+    pub fn new_with_ctx(ctx: InputContext, recipient: PubkeyHash) -> Self {
+        TxInputP2PKH { ctx, recipient }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -462,10 +497,12 @@ impl TxInput {
         } else if ctx.script_pubkey.is_v1_p2tr() {
             // Skip the first byte, which is the version indicator.
             let raw = &ctx.script_pubkey.as_bytes()[1..];
+            // Assume untweaked, tweak manually.
             let untweaked: UntweakedPublicKey =
                 XOnlyPublicKey::from_slice(raw).map_err(|_| Error::Todo)?;
 
             let (recipient, _) = untweaked.tap_tweak(&secp256k1::Secp256k1::new(), None);
+
             Ok(TxInput::P2TRKeySpend(TxInputP2TRKeySpend {
                 ctx,
                 recipient,
