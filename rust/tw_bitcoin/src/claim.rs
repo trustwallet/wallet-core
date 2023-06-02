@@ -1,8 +1,8 @@
-use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeyPath};
+use crate::{tweak_pubkey, Error, PubkeyHash, Recipient, Result, TxInputP2PKH, TxInputP2TRKeyPath};
 use bitcoin::key::{KeyPair, PublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
-use bitcoin::{ScriptBuf, Witness};
+use bitcoin::{Network, ScriptBuf, Witness};
 
 pub enum ClaimLocation {
     Script(ScriptBuf),
@@ -34,12 +34,11 @@ impl TransactionSigner for KeyPair {
         input: &TxInputP2TRKeyPath,
         sighash: secp256k1::Message,
     ) -> Result<ClaimP2TRKeyPath> {
-        // Given that we're using the "key spend" method of P2TR, we tweak the
-        // key without a Merkle root.
-        let my_pubkey = tweak_pubkey(PublicKey::new(self.public_key()));
+        // TODO: Pass network as param.
+        let me = Recipient::<PublicKey>::from_keypair(self, Network::Regtest);
 
         // Check whether we can actually claim the input.
-        if input.recipient != my_pubkey {
+        if input.recipient != me {
             return Err(Error::Todo);
         }
 
@@ -58,10 +57,11 @@ impl TransactionSigner for KeyPair {
         hash: secp256k1::Message,
         sighash_type: Option<EcdsaSighashType>,
     ) -> Result<ClaimP2PKH> {
-        let my_pubkey = bitcoin::PublicKey::new(self.public_key());
+        // TODO: Pass network as param.
+        let me = Recipient::<PublicKey>::from_keypair(self, Network::Regtest);
 
         // Check whether we can actually claim the input.
-        if input.recipient != PubkeyHash::from(my_pubkey) {
+        if input.recipient != me {
             return Err(Error::Todo);
         }
 
@@ -76,7 +76,7 @@ impl TransactionSigner for KeyPair {
         // Construct the Script for claiming.
         let script = ScriptBuf::builder()
             .push_slice(sig.serialize())
-            .push_key(&my_pubkey)
+            .push_key(&me.public_key())
             .into_script();
 
         Ok(ClaimP2PKH(script))

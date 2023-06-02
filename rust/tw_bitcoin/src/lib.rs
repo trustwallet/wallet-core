@@ -3,15 +3,15 @@ use std::str::FromStr;
 use crate::claim::{ClaimLocation, TransactionSigner};
 use bitcoin::address::NetworkChecked;
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
-use bitcoin::consensus::{Encodable};
+use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
-use bitcoin::key::{KeyPair, UntweakedPublicKey, TweakedPublicKey};
+use bitcoin::key::{KeyPair, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash, EcdsaSighashType};
-use bitcoin::transaction::Transaction;
 use bitcoin::sighash::TapSighashType;
-use bitcoin::{secp256k1, Network, PublicKey, network};
+use bitcoin::sighash::{EcdsaSighashType, LegacySighash, SighashCache, TapSighash};
+use bitcoin::transaction::Transaction;
+use bitcoin::{network, secp256k1, Network, PublicKey};
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
 pub mod claim;
@@ -76,6 +76,7 @@ fn poc() {
 }
 */
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Recipient<T> {
     t: T,
     network: Network,
@@ -87,6 +88,9 @@ impl Recipient<PublicKey> {
             t: PublicKey::new(keypair.public_key()),
             network,
         }
+    }
+    pub fn public_key(&self) -> PublicKey {
+        self.t
     }
     pub fn pubkey_hash(&self) -> PubkeyHash {
         PubkeyHash::from(self.t)
@@ -348,36 +352,6 @@ pub struct TransactionSigned {
 }
 
 impl TransactionSigned {
-    pub fn into_inputs_outpus(self) -> Result<TxInputsOuputs> {
-        let mut inputs = vec![];
-        for txin in self.tx.input {
-            let s = &txin.script_sig;
-            if s.is_p2pkh() {
-                inputs.push(
-                    TxInputP2PKH::new(
-                        txin.previous_output.txid,
-                        txin.previous_output.vout,
-                        pubkey_hash_from_script(s)?,
-                        None,
-                    )
-                    .into(),
-                )
-            } else if s.is_v1_p2tr() {
-                todo!()
-            }
-        }
-
-        let mut outputs = vec![];
-        for txout in self.tx.output {
-            let s = &txout.script_pubkey;
-            if s.is_p2pkh() {
-                let recipient = pubkey_hash_from_script(s)?;
-                outputs.push(TxOutputP2PKH::new(txout.value, &recipient).into())
-            }
-        }
-
-        Ok(TxInputsOuputs { inputs, outputs })
-    }
     pub fn serialize(&self) -> Result<Vec<u8>> {
         let mut buffer = vec![];
         self.tx
