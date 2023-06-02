@@ -113,6 +113,8 @@ pub struct TransactionBuilder {
     lock_time: BLockTime,
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
+    miner_fee: Option<u64>,
+    return_address: Option<Address>,
     contains_taproot: bool,
 }
 
@@ -125,6 +127,8 @@ impl Default for TransactionBuilder {
             lock_time: BLockTime::Blocks(BHeight::ZERO),
             inputs: vec![],
             outputs: vec![],
+            miner_fee: None,
+            return_address: None,
             contains_taproot: false,
         }
     }
@@ -141,6 +145,14 @@ impl TransactionBuilder {
     // TODO: handle locktime seconds?.
     pub fn lock_time(mut self, height: u32) -> Self {
         self.lock_time = BLockTime::Blocks(BHeight::from_consensus(height).unwrap());
+        self
+    }
+    pub fn return_address(mut self, address: Address) -> Self {
+        self.return_address = Some(address);
+        self
+    }
+    pub fn miner_fee(mut self, satoshis: u64) -> Self {
+        self.miner_fee = Some(satoshis);
         self
     }
     pub fn add_input(mut self, input: TxInput) -> Self {
@@ -187,25 +199,39 @@ impl TransactionBuilder {
         };
 
         // Prepare the inputs for `bitcoin` crate.
+        let mut total_satoshi_inputs = 0;
         for input in self.inputs.iter().cloned() {
+            total_satoshi_inputs += input.satoshis().unwrap();
+
             let btxin = TxIn::from(input);
             tx.input.push(btxin);
         }
 
         // Prepare the outputs for `bitcoin` crate.
+        let mut total_satoshis_outputs = 0;
         for output in &self.outputs {
+            total_satoshis_outputs += output.satoshis();
+
             // TODO: Doable without clone?
             let btc_txout = TxOut::from(output.clone());
             tx.output.push(btc_txout);
         }
 
-        // If Taproot is enabled, we prepare the full `BTxOuts` (value and
-        // scriptPubKey) for hashing, which will then be signed.
-        // TODO: Document some more.
-        let mut btxouts = vec![];
+        // Satoshi output check
+        let miner_fee = self.miner_fee.ok_or(Error::Todo)?;
+        if total_satoshis_outputs + miner_fee > total_satoshi_inputs {
+            // TODO: More precise error message.
+            return Err(Error::Todo);
+        }
+
+        // If Taproot is enabled, we prepare the full `TxOuts` (value and
+        // scriptPubKey) for hashing, which will then be signed. What
+        // distinguishes this from legacy signing is that the output value in
+        // satoshis is actually part of the signature.
+        let mut prevouts = vec![];
         if self.contains_taproot {
             for input in &self.inputs {
-                btxouts.push(TxOut {
+                prevouts.push(TxOut {
                     value: input.ctx().value.ok_or(Error::Todo)?,
                     script_pubkey: input.ctx().script_pubkey.clone(),
                 });
@@ -230,7 +256,6 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    // TODO: Rename closure var.
                     let message: secp256k1::Message =
                         TransactionHash::from_legacy_sig_hash(hash).into();
                     let updated = signer(input, message)?;
@@ -241,7 +266,7 @@ impl TransactionBuilder {
                     let hash = cache
                         .taproot_key_spend_signature_hash(
                             index,
-                            &bitcoin::psbt::Prevouts::All(&btxouts),
+                            &bitcoin::psbt::Prevouts::All(&prevouts),
                             bitcoin::sighash::TapSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
@@ -397,6 +422,15 @@ pub enum TxOutput {
     P2TRKeyPath(TxOutputP2TKeyPath),
 }
 
+impl TxOutput {
+    pub fn satoshis(&self) -> u64 {
+        match self {
+            TxOutput::P2PKH(p) => p.satoshis,
+            TxOutput::P2TRKeyPath(p) => p.satoshis,
+        }
+    }
+}
+
 impl From<TxOutputP2PKH> for TxOutput {
     fn from(output: TxOutputP2PKH) -> Self {
         TxOutput::P2PKH(output)
@@ -478,6 +512,13 @@ impl TxInput {
             TxInput::NonStandard { ctx } => ctx,
         }
     }
+    fn satoshis(&self) -> Option<u64> {
+        match self {
+            TxInput::P2PKH(p) => p.ctx.value,
+            TxInput::P2TRKeySpend(p) => p.ctx.value,
+            TxInput::NonStandard { ctx } => ctx.value,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -487,6 +528,7 @@ pub struct TxInputP2PKH {
 }
 
 impl TxInputP2PKH {
+    // TODO: `satoshis` should be mandatory.
     pub fn new(txid: Txid, vout: u32, recipient: PubkeyHash, satoshis: Option<u64>) -> Self {
         TxInputP2PKH {
             ctx: InputContext {
