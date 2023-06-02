@@ -21,7 +21,6 @@ pub trait TransactionSigner {
         &self,
         input: &TxInputP2TRKeySpend,
         hash: secp256k1::Message,
-        sighash_type: Option<TapSighashType>,
     ) -> Result<ClaimP2TRKeySpend>;
 }
 
@@ -34,7 +33,6 @@ impl TransactionSigner for KeyPair {
         &self,
         input: &TxInputP2TRKeySpend,
         sighash: secp256k1::Message,
-        sighash_type: Option<TapSighashType>,
     ) -> Result<ClaimP2TRKeySpend> {
         // Given that we're using the "key spend" method of P2TR, we tweak the
         // key without a Merkle root.
@@ -45,17 +43,12 @@ impl TransactionSigner for KeyPair {
             return Err(Error::Todo);
         }
 
-        let sighash_type = sighash_type.unwrap_or(TapSighashType::All);
-
         // We the this structure handle the serialization.
-        let schnorr_sig = bitcoin::taproot::Signature {
-            sig: Secp256k1::new().sign_schnorr(&sighash, self),
-            hash_ty: sighash_type,
-        };
+        let schnorr_sig = Secp256k1::new().sign_schnorr(&sighash, self);
 
         // Construct the witness for claiming.
         Ok(ClaimP2TRKeySpend(Witness::from_slice(&[
-            schnorr_sig.to_vec()
+            schnorr_sig.as_ref()
         ])))
     }
 

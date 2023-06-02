@@ -178,7 +178,7 @@ impl TransactionBuilder {
                 // TODO: Should not convert into ScriptBuf here.
                 .map(|claim| ClaimLocation::Script(claim.0)),
             TxInput::P2TRKeySpend(p2tr) => signer
-                .claim_p2tr_key_spend(p2tr, sighash, None)
+                .claim_p2tr_key_spend(p2tr, sighash)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
