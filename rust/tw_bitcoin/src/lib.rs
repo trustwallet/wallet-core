@@ -440,3 +440,113 @@ fn create_envelope(mime: &str, data: &str) -> Result<ScriptBuf> {
 
     todo!()
 }
+
+pub struct OrdInput {
+    start: u64,
+    end: u64,
+}
+
+pub struct OrdOutPoint {
+    value: u64,
+}
+
+pub struct OrdOuput {
+    start: u64,
+    end: u64,
+}
+
+pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])]) {
+    const ONE_BTC: u64 = 100_000_000;
+
+    // Number of satoshis minded at `height`, with the consideration of havlings
+    // (every 210'000 blocks)
+    fn subsidy(height: u64) -> u64 {
+        (50 * ONE_BTC) >> (height / 210_000)
+    }
+
+    // We save the amount of satoshis that have been mined at the start (`cb_start`) and
+    // the end (`cb_end`) of the block.
+    // E.g:
+    // At height 0, start = 0 * ONE_BTC  , end = 50 * ONE_BTC 
+    // At height 1, start = 50 * ONE_BTC , end = 100 * ONE_BTC 
+    // At height 2, start = 100 * ONE_BTC, end = 150 * ONE_BTC
+    let mut cb_start = 0;
+    for num in 0..height {
+        cb_start += subsidy(num);
+    }
+
+    let cb_end = cb_start + subsidy(height);
+
+    //let coinbase_ordinals: Vec<u64> = (first..last).collect();
+
+    dbg!(cb_start);
+    dbg!(cb_end);
+
+    let mut tx_ord = vec![];
+    for (inputs, outputs) in transactions {
+        // We track the ordinals per transaction. While the example in
+        // the (unofficial) BIP saves each individual number of a range in a
+        // list, we just save the starting point and and ending point - for each
+        // individual input. Do note that there might be gaps.
+        //
+        // Eg. the list of ordinals could be:
+        // ```
+        // 100,200
+        // 300,400
+        // ...
+        // ```
+        // Here, the first input contains ordinals 100 to 200,
+        // the second entry contains 300 to 400, etc.
+        let mut ordinals = vec![];
+        for input in *inputs {
+            ordinals.push((input.start, input.end));
+        }
+
+        // We go through each output and remove the number of (spent) satoshis
+        // from the tracked ordinals. We deplete the smallest numbers first.
+        'outputs: for output in *outputs {
+            // Total satoshis spent in this output.
+            let mut spent = output.value;
+
+            let mut to_delete = vec![];
+            for (idx, (from, to)) in ordinals.iter_mut().enumerate() {
+                // We drain the ordinals in the list. If the list is large
+                // enough, we just update the current entry and continue with
+                // the next output.
+                //
+                // E.g. if the first entry in the list of ordinals is `100,200`,
+                // and the satoshis spent is 60, then the entry in the list gets
+                // updated to `160,200`.
+                if *from + spent < *to {
+                    *from += spent;
+                    continue 'outputs;
+                }
+                // If the total satoshis spent is larger than the ordinal range,
+                // we delete the entry and move on to the next entry in the
+                // ordinal list. Additionally, we update how many satoshis are
+                // getting carried over..
+                // 
+                // E.g. if the entry in the list of ordinals is `100,200`, and
+                // the satoshis spent is 160, then the entry gets deleted and we
+                // carry over 60 satoshis to the next entry in the ordinal list.
+                else {
+                    spent - (*to - *from);
+                    to_delete.push(idx);
+                }
+
+                // TODO: Handle case of `spent = 0`.
+            }
+
+            // TODO: Drain
+        }
+
+        // Handle excess
+    }
+}
+
+#[test]
+fn test_ordinal_theory() {
+    let x = ordinal_theory(0, &[]);
+    let x = ordinal_theory(1, &[]);
+    let x = ordinal_theory(2, &[]);
+}
