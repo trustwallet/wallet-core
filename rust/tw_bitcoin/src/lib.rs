@@ -441,21 +441,9 @@ fn create_envelope(mime: &str, data: &str) -> Result<ScriptBuf> {
     todo!()
 }
 
-pub struct OrdInput {
-    start: u64,
-    end: u64,
-}
+pub struct Ordinals(u64, u64);
 
-pub struct OrdOutPoint {
-    value: u64,
-}
-
-pub struct OrdOuput {
-    start: u64,
-    end: u64,
-}
-
-pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])]) {
+pub fn ordinal_theory(height: u64, transactions: &[(&[Ordinals], &[u64])]) {
     const ONE_BTC: u64 = 100_000_000;
 
     // Number of satoshis minded at `height`, with the consideration of havlings
@@ -467,8 +455,8 @@ pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])
     // We save the amount of satoshis that have been mined at the start (`cb_start`) and
     // the end (`cb_end`) of the block.
     // E.g:
-    // At height 0, start = 0 * ONE_BTC  , end = 50 * ONE_BTC 
-    // At height 1, start = 50 * ONE_BTC , end = 100 * ONE_BTC 
+    // At height 0, start = 0 * ONE_BTC  , end = 50 * ONE_BTC
+    // At height 1, start = 50 * ONE_BTC , end = 100 * ONE_BTC
     // At height 2, start = 100 * ONE_BTC, end = 150 * ONE_BTC
     let mut cb_start = 0;
     for num in 0..height {
@@ -482,7 +470,7 @@ pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])
     dbg!(cb_start);
     dbg!(cb_end);
 
-    let mut tx_ord = vec![];
+    let mut updated = vec![];
     for (inputs, outputs) in transactions {
         // We track the ordinals per transaction. While the example in
         // the (unofficial) BIP saves each individual number of a range in a
@@ -498,15 +486,17 @@ pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])
         // Here, the first input contains ordinals 100 to 200,
         // the second entry contains 300 to 400, etc.
         let mut ordinals = vec![];
-        for input in *inputs {
-            ordinals.push((input.start, input.end));
+        for ord in *inputs {
+            let (from, to) = (ord.0, ord.1);
+            ordinals.push((from, to));
         }
 
         // We go through each output and remove the number of (spent) satoshis
         // from the tracked ordinals. We deplete the smallest numbers first.
-        'outputs: for output in *outputs {
+        let mut outs = vec![];
+        'outputs: for spend_output in *outputs {
             // Total satoshis spent in this output.
-            let mut spent = output.value;
+            let mut spent = *spend_output;
 
             let mut to_delete = vec![];
             for (idx, (from, to)) in ordinals.iter_mut().enumerate() {
@@ -518,6 +508,8 @@ pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])
                 // and the satoshis spent is 60, then the entry in the list gets
                 // updated to `160,200`.
                 if *from + spent < *to {
+                    outs.push(Ordinals(*from, *from + spent));
+
                     *from += spent;
                     continue 'outputs;
                 }
@@ -525,28 +517,29 @@ pub fn ordinal_theory(height: u64, transactions: &[(&[OrdInput], &[OrdOutPoint])
                 // we delete the entry and move on to the next entry in the
                 // ordinal list. Additionally, we update how many satoshis are
                 // getting carried over..
-                // 
+                //
                 // E.g. if the entry in the list of ordinals is `100,200`, and
                 // the satoshis spent is 160, then the entry gets deleted and we
                 // carry over 60 satoshis to the next entry in the ordinal list.
                 else {
-                    spent - (*to - *from);
-                    to_delete.push(idx);
-                }
+                    outs.push(Ordinals(*from, *to));
 
-                // TODO: Handle case of `spent = 0`.
+                    spent -= *to - *from;
+                    to_delete.push(idx);
+
+                    // Fully depleted, continue with next output.
+                    if spent == 0 {
+                        continue 'outputs;
+                    }
+                }
             }
 
-            // TODO: Drain
+            // Remove depleted entries.
+            for idx in to_delete {
+                ordinals.remove(idx);
+            }
         }
 
-        // Handle excess
+        updated.push(outs);
     }
-}
-
-#[test]
-fn test_ordinal_theory() {
-    let x = ordinal_theory(0, &[]);
-    let x = ordinal_theory(1, &[]);
-    let x = ordinal_theory(2, &[]);
 }
