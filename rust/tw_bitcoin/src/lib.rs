@@ -79,15 +79,12 @@ fn poc() {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Recipient<T> {
     t: T,
-    // TODO: Should this contain the network?
-    network: Network,
 }
 
 impl Recipient<PubkeyHash> {
-    pub fn from_keypair(keypair: &KeyPair, network: Network) -> Self {
+    pub fn from_keypair(keypair: &KeyPair) -> Self {
         Recipient {
             t: PublicKey::new(keypair.public_key()).into(),
-            network,
         }
     }
     pub fn pubkey_hash(&self) -> &PubkeyHash {
@@ -99,20 +96,18 @@ impl From<Recipient<PublicKey>> for Recipient<PubkeyHash> {
     fn from(val: Recipient<PublicKey>) -> Self {
         Recipient {
             t: PubkeyHash::from(val.t),
-            network: val.network,
         }
     }
 }
 
 impl Recipient<PublicKey> {
-    pub fn from_wif(wif: &str, network: Network) -> Result<Self> {
+    pub fn from_wif(wif: &str) -> Result<Self> {
         let keypair = keypair_from_wif(wif)?;
-        Ok(Self::from_keypair(&keypair, network))
+        Ok(Self::from_keypair(&keypair))
     }
-    pub fn from_keypair(keypair: &KeyPair, network: Network) -> Self {
+    pub fn from_keypair(keypair: &KeyPair) -> Self {
         Recipient {
             t: PublicKey::new(keypair.public_key()),
-            network,
         }
     }
     pub fn public_key(&self) -> PublicKey {
@@ -124,27 +119,27 @@ impl Recipient<PublicKey> {
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
         tweak_pubkey(self.t)
     }
-    pub fn legacy_address(&self) -> Address {
-        Address::p2pkh(&self.t, self.network)
+    pub fn legacy_address(&self, network: Network) -> Address {
+        Address::p2pkh(&self.t, network)
     }
-    pub fn segwit_address(&self) -> Address {
+    pub fn segwit_address(&self, network: Network) -> Address {
         // The key is always compressed.
         debug_assert!(self.t.compressed);
         // "Will only return an Error if an uncompressed public key is provided."
-        Address::p2wpkh(&self.t, self.network).unwrap()
+        Address::p2wpkh(&self.t, network).unwrap()
     }
-    pub fn taproot_address(&self) -> Address {
+    pub fn taproot_address(&self, network: Network) -> Address {
         let untweaked = UntweakedPublicKey::from(self.t.inner);
-        Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, self.network)
+        Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, network)
     }
-    pub fn legacy_address_string(&self) -> String {
-        self.legacy_address().to_string()
+    pub fn legacy_address_string(&self, network: Network) -> String {
+        self.legacy_address(network).to_string()
     }
-    pub fn segwit_address_string(&self) -> String {
-        self.segwit_address().to_string()
+    pub fn segwit_address_string(&self, network: Network) -> String {
+        self.segwit_address(network).to_string()
     }
-    pub fn taproot_address_string(&self) -> String {
-        self.taproot_address().to_string()
+    pub fn taproot_address_string(&self, network: Network) -> String {
+        self.taproot_address(network).to_string()
     }
 }
 

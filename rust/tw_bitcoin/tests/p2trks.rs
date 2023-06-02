@@ -25,16 +25,16 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     let txid = Txid::from_str(GENESIS_TXID).unwrap();
     let vout = 0;
     // TODO: this can be done nicer
-    let recipient = Recipient::<PublicKey>::from_keypair(&alice, bitcoin::Network::Regtest);
+    let recipient = Recipient::<PublicKey>::from_keypair(&alice);
     let satoshis = FULL_AMOUNT;
 
     let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
 
     // Prepare outputs for Bob
-    let recipient = Recipient::<PublicKey>::from_keypair(&bob, bitcoin::Network::Regtest);
+    let recipient = Recipient::<PublicKey>::from_keypair(&bob);
     let satoshis = SEND_AMOUNT;
 
-    let output = TxOutputP2TKeyPath::new(satoshis, &recipient);
+    let output = TxOutputP2TKeyPath::new(satoshis, recipient);
 
     let signed_transaction = TransactionBuilder::new(Network::Regtest)
         // TODO: Set return address, decrease miner fee.

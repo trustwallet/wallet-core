@@ -61,10 +61,12 @@ pub struct TxOutputP2PKH {
 }
 
 impl TxOutputP2PKH {
-    pub fn new(satoshis: u64, recipient: &Recipient<PublicKey>) -> Self {
+    pub fn new(satoshis: u64, recipient: impl Into<Recipient<PubkeyHash>>) -> Self {
+        let recipient: Recipient<PubkeyHash> = recipient.into();
+
         TxOutputP2PKH {
             satoshis,
-            script_pubkey: ScriptBuf::new_p2pkh(&recipient.pubkey_hash()),
+            script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
         }
     }
 }
@@ -76,7 +78,9 @@ pub struct TxOutputP2TKeyPath {
 }
 
 impl TxOutputP2TKeyPath {
-    pub fn new(satoshis: u64, recipient: &Recipient<PublicKey>) -> Self {
+    pub fn new(satoshis: u64, recipient: impl Into<Recipient<PublicKey>>) -> Self {
+        let recipient: Recipient<PublicKey> = recipient.into();
+
         TxOutputP2TKeyPath {
             satoshis,
             script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
