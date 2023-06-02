@@ -142,7 +142,6 @@ impl TransactionBuilder {
         self.sign_inputs_fn(|input, sighash| match input {
             TxInput::P2PKH(p2pkh) => signer
                 .claim_p2pkh(p2pkh, sighash, None)
-                // TODO: Should not convert into ScriptBuf here.
                 .map(|claim| ClaimLocation::Script(claim.0)),
             TxInput::P2TRKeyPath(p2tr) => signer
                 .claim_p2tr_key_path(p2tr, sighash)
@@ -186,7 +185,6 @@ impl TransactionBuilder {
         // Satoshi output check
         let miner_fee = self.miner_fee.ok_or(Error::Todo)?;
         if total_satoshis_outputs + miner_fee > total_satoshi_inputs {
-            // TODO: More precise error message.
             return Err(Error::Todo);
         }
 
@@ -206,8 +204,7 @@ impl TransactionBuilder {
 
         let mut cache = SighashCache::new(tx);
 
-        // TODO: Rename.
-        let mut updated_scriptsigs = vec![];
+        let mut claims = vec![];
 
         // For each input (index), we create a hash which is to be signed.
         for (index, input) in self.inputs.iter().enumerate() {
@@ -226,7 +223,7 @@ impl TransactionBuilder {
                         TransactionHash::from_legacy_sig_hash(hash).into();
                     let updated = signer(input, message)?;
 
-                    updated_scriptsigs.push((index, updated));
+                    claims.push((index, updated));
                 },
                 TxInput::P2TRKeyPath(_) => {
                     let hash = cache
@@ -241,7 +238,7 @@ impl TransactionBuilder {
                         TransactionHash::from_tapsig_hash(hash).into();
                     let updated = signer(input, message)?;
 
-                    updated_scriptsigs.push((index, updated));
+                    claims.push((index, updated));
                 },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
@@ -251,7 +248,7 @@ impl TransactionBuilder {
         let mut tx = cache.into_transaction();
 
         // Update the transaction with the updated scriptSig's.
-        for (index, claim_loc) in updated_scriptsigs {
+        for (index, claim_loc) in claims {
             match claim_loc {
                 ClaimLocation::Script(script) => {
                     tx.input[index].script_sig = script;
