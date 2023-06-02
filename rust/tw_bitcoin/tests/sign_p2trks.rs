@@ -37,12 +37,14 @@ fn sign_tx_output_p2tr_key_spend() {
 
     let output = TxOutputP2TKeyPath::new(4_999_000_000, pubkey);
 
-    let builder = TransactionBuilder::new()
+    let serialized = TransactionBuilder::new()
         .add_input(input)
         .add_output(output.into())
-        .prepare_for_signing();
+        .sign_inputs(keypair)
+        .unwrap()
+        .serialize()
+        .unwrap();
 
-    let serialized = builder.sign_inputs(keypair).unwrap().serialize().unwrap();
     let hex_serialized = hex::encode(&serialized, false);
     println!("{hex_serialized}");
 }

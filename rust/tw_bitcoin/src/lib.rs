@@ -114,7 +114,6 @@ pub struct TransactionBuilder {
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
     contains_taproot: bool,
-    btc_tx: Option<Transaction>,
 }
 
 impl Default for TransactionBuilder {
@@ -127,7 +126,6 @@ impl Default for TransactionBuilder {
             inputs: vec![],
             outputs: vec![],
             contains_taproot: false,
-            btc_tx: None,
         }
     }
 }
@@ -158,7 +156,28 @@ impl TransactionBuilder {
         self.outputs.push(output);
         self
     }
-    pub fn prepare_for_signing(mut self) -> Self {
+    pub fn sign_inputs<S>(self, signer: S) -> Result<TransactionSigned>
+    where
+        S: TransactionSigner,
+    {
+        self.sign_inputs_fn(|input, sighash| match input {
+            TxInput::P2PKH(p2pkh) => signer
+                .claim_p2pkh(p2pkh, sighash, None)
+                // TODO: Should not convert into ScriptBuf here.
+                .map(|claim| ClaimLocation::Script(claim.0)),
+            TxInput::P2TRKeySpend(p2tr) => signer
+                .claim_p2tr_key_spend(p2tr, sighash, None)
+                .map(|claim| ClaimLocation::Witness(claim.0)),
+            TxInput::NonStandard { ctx: _ } => {
+                panic!()
+            },
+        })
+    }
+    // TODO: Does this have to return `Result<T>`?
+    pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<TransactionSigned>
+    where
+        F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
+    {
         // Prepare boilerplate transaction for `bitcoin` crate.
         let mut tx = Transaction {
             version: self.version,
@@ -180,31 +199,6 @@ impl TransactionBuilder {
             tx.output.push(btc_txout);
         }
 
-        self.btc_tx = Some(tx);
-        self
-    }
-    pub fn sign_inputs<S>(self, signer: S) -> Result<Self>
-    where
-        S: TransactionSigner,
-    {
-        self.sign_inputs_fn(|input, sighash| match input {
-            TxInput::P2PKH(p2pkh) => signer
-                .claim_p2pkh(p2pkh, sighash, None)
-                // TODO: Should not convert into ScriptBuf here.
-                .map(|claim| ClaimLocation::Script(claim.0)),
-            TxInput::P2TRKeySpend(p2tr) => signer
-                .claim_p2tr_key_spend(p2tr, sighash, None)
-                .map(|claim| ClaimLocation::Witness(claim.0)),
-            TxInput::NonStandard { ctx: _ } => {
-                panic!()
-            },
-        })
-    }
-    // TODO: Does this have to return `Result<T>`?
-    pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<Self>
-    where
-        F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
-    {
         // If Taproot is enabled, we prepare the full `BTxOuts` (value and
         // scriptPubKey) for hashing, which will then be signed.
         // TODO: Document some more.
@@ -218,7 +212,7 @@ impl TransactionBuilder {
             }
         }
 
-        let mut cache = SighashCache::new(self.btc_tx.unwrap());
+        let mut cache = SighashCache::new(tx);
 
         // TODO: Rename.
         let mut updated_scriptsigs = vec![];
@@ -277,19 +271,7 @@ impl TransactionBuilder {
             }
         }
 
-        self.btc_tx = Some(tx);
-
-        // TODO: Return new type.
-        Ok(self)
-    }
-    pub fn serialize(&self) -> Result<Vec<u8>> {
-        let mut buffer = vec![];
-        self.btc_tx
-            .as_ref()
-            .unwrap()
-            .consensus_encode(&mut buffer)
-            .map_err(|_| Error::Todo)?;
-        Ok(buffer)
+        Ok(TransactionSigned { tx })
     }
 }
 
@@ -327,6 +309,14 @@ impl TransactionSigned {
         }
 
         Ok(TxInputsOuputs { inputs, outputs })
+    }
+    pub fn serialize(&self) -> Result<Vec<u8>> {
+        let mut buffer = vec![];
+        self.tx
+            .consensus_encode(&mut buffer)
+            .map_err(|_| Error::Todo)?;
+
+        Ok(buffer)
     }
 }
 
