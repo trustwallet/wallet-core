@@ -29,7 +29,7 @@ fn sign_input_p2pkh_output_p2pkh() {
     let recipient = PubkeyHash::from(PublicKey::new(alice.public_key()));
     let satoshis = ONE_BTC * 10;
 
-    let input = TxInputP2PKH::new(txid, vout, recipient, satoshis);
+    let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
 
     // Prepare outputs for Bob.
     let recipient = PubkeyHash::from(PublicKey::new(bob.public_key()));
@@ -41,7 +41,6 @@ fn sign_input_p2pkh_output_p2pkh() {
     let signed_transaction = TransactionBuilder::new()
         .add_input(input.into())
         .add_output(output.into())
-        .prepare_for_signing()
         .sign_inputs(alice)
         .unwrap()
         .serialize()
