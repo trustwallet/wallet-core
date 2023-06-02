@@ -283,7 +283,7 @@ impl TransactionSigned {
                     .into(),
                 )
             } else if s.is_v1_p2tr() {
-                // TODO...
+                todo!()
             }
         }
 
@@ -314,7 +314,6 @@ pub struct TxInputsOuputs {
 }
 
 #[derive(Debug, Clone)]
-// TODO: Should be private.
 pub struct InputContext {
     pub previous_output: OutPoint,
     pub value: Option<u64>,
@@ -340,18 +339,6 @@ impl InputContext {
             // Empty witness.
             witness: Witness::new(),
         }
-    }
-    pub fn from_slice(mut slice: &[u8], value: Option<u64>) -> Result<Self> {
-        Ok(InputContext {
-            previous_output: Decodable::consensus_decode_from_finite_reader(&mut slice)
-                .map_err(|_| Error::Todo)?,
-            value,
-            script_pubkey: Decodable::consensus_decode_from_finite_reader(&mut slice)
-                .map_err(|_| Error::Todo)?,
-            sequence: Decodable::consensus_decode_from_finite_reader(&mut slice)
-                .map_err(|_| Error::Todo)?,
-            witness: Witness::default(),
-        })
     }
 }
 
