@@ -1,10 +1,6 @@
-use crate::{tweak_pubkey, Error, InputContext, Result};
-use bitcoin::address::Payload;
-use bitcoin::key::{
-    PublicKey, TapTweak, TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey,
-};
+use crate::{tweak_pubkey, InputContext};
+use bitcoin::key::{PublicKey, TweakedPublicKey as BTweakedPublicKey};
 use bitcoin::script::ScriptBuf;
-use bitcoin::secp256k1::{self, XOnlyPublicKey};
 use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, Witness};
 
 #[derive(Debug, Clone)]
@@ -40,33 +36,6 @@ impl From<TxInput> for TxIn {
 }
 
 impl TxInput {
-    // TODO: Cleanup.
-    pub fn from_slice(slice: &[u8], value: Option<u64>) -> Result<Self> {
-        let ctx = InputContext::from_slice(slice, value)?;
-
-        if ctx.script_pubkey.is_p2pkh() {
-            let recipient =
-                match Payload::from_script(&ctx.script_pubkey).map_err(|_| Error::Todo)? {
-                    Payload::PubkeyHash(hash) => hash,
-                    // Never panics given that `is_p2pkh` passed.
-                    _ => panic!(),
-                };
-
-            Ok(TxInput::P2PKH(TxInputP2PKH { ctx, recipient }))
-        } else if ctx.script_pubkey.is_v1_p2tr() {
-            // Skip the first byte, which is the version indicator.
-            let raw = &ctx.script_pubkey.as_bytes()[1..];
-            // Assume untweaked, tweak manually.
-            let untweaked: UntweakedPublicKey =
-                XOnlyPublicKey::from_slice(raw).map_err(|_| Error::Todo)?;
-
-            let (recipient, _) = untweaked.tap_tweak(&secp256k1::Secp256k1::new(), None);
-
-            Ok(TxInput::P2TRKeyPath(TxInputP2TRKeyPath { ctx, recipient }))
-        } else {
-            Err(Error::Todo)
-        }
-    }
     pub fn ctx(&self) -> &InputContext {
         match self {
             TxInput::P2PKH(t) => &t.ctx,
@@ -102,10 +71,6 @@ impl TxInputP2PKH {
             },
             recipient,
         }
-    }
-    // TODO: Needed?
-    pub fn new_with_ctx(ctx: InputContext, recipient: PubkeyHash) -> Self {
-        TxInputP2PKH { ctx, recipient }
     }
 }
 

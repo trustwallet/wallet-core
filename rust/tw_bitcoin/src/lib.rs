@@ -1,59 +1,25 @@
 use crate::claim::{ClaimLocation, TransactionSigner};
-use bitcoin::address::Payload;
-use bitcoin::blockdata::locktime::absolute::{Height as BHeight, LockTime as BLockTime};
+use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::{Decodable, Encodable};
 use bitcoin::hashes::Hash;
-use bitcoin::key::{
-    KeyPair, PrivateKey, PublicKey, TapTweak, TweakedKeyPair,
-    TweakedPublicKey as BTweakedPublicKey, UntweakedPublicKey,
-};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::secp256k1::{self, XOnlyPublicKey};
+use bitcoin::secp256k1;
 use bitcoin::sighash::{LegacySighash, SighashCache, TapSighash};
 use bitcoin::transaction::Transaction;
-use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Txid, Witness};
-use std::str::FromStr;
-
-pub use input::*;
-pub use output::*;
+use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
 pub mod claim;
 pub mod input;
 pub mod output;
+pub mod utils;
+
+// Reexports
+pub use input::*;
+pub use output::*;
+pub use utils::*;
 
 pub type Result<T> = std::result::Result<T, Error>;
-
-pub fn pubkey_hash_from_address(string: &str) -> Result<PubkeyHash> {
-    let addr = Address::from_str(string).map_err(|_| Error::Todo)?;
-    match addr.payload {
-        Payload::PubkeyHash(hash) => Ok(hash),
-        _ => Err(Error::Todo),
-    }
-}
-
-pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
-    let pk = PrivateKey::from_wif(string).map_err(|_| Error::Todo)?;
-    let keypair = KeyPair::from_secret_key(&secp256k1::Secp256k1::new(), &pk.inner);
-    Ok(keypair)
-}
-
-fn tweak_pubkey(pubkey: PublicKey) -> BTweakedPublicKey {
-    let xonly = XOnlyPublicKey::from(pubkey.inner);
-    let (tweaked, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
-    tweaked
-}
-
-fn tweak_keypair(keypair: &KeyPair) -> TweakedKeyPair {
-    keypair.tap_tweak(&secp256k1::Secp256k1::new(), None)
-}
-
-fn pubkey_hash_from_script(script: &ScriptBuf) -> Result<PubkeyHash> {
-    match Payload::from_script(script).map_err(|_| Error::Todo)? {
-        Payload::PubkeyHash(hash) => Ok(hash),
-        _ => Err(Error::Todo),
-    }
-}
 
 const SIGHASH_ALL: u32 = 1;
 
@@ -111,7 +77,7 @@ pub struct ScriptHash;
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
     version: i32,
-    lock_time: BLockTime,
+    lock_time: LockTime,
     inputs: Vec<TxInput>,
     outputs: Vec<TxOutput>,
     miner_fee: Option<u64>,
@@ -125,7 +91,7 @@ impl Default for TransactionBuilder {
             // TODO: Check this.
             version: 2,
             // No lock time, transaction is immediately spendable.
-            lock_time: BLockTime::Blocks(BHeight::ZERO),
+            lock_time: LockTime::Blocks(Height::ZERO),
             inputs: vec![],
             outputs: vec![],
             miner_fee: None,
@@ -145,7 +111,7 @@ impl TransactionBuilder {
     }
     // TODO: handle locktime seconds?.
     pub fn lock_time(mut self, height: u32) -> Self {
-        self.lock_time = BLockTime::Blocks(BHeight::from_consensus(height).unwrap());
+        self.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
         self
     }
     pub fn return_address(mut self, address: Address) -> Self {
