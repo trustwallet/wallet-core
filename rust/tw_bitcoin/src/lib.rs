@@ -79,10 +79,15 @@ fn poc() {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Recipient<T> {
     t: T,
+    // TODO: Should this contain the network?
     network: Network,
 }
 
 impl Recipient<PublicKey> {
+    pub fn from_wif(wif: &str, network: Network) -> Result<Self> {
+        let keypair = keypair_from_wif(wif)?;
+        Ok(Self::from_keypair(&keypair, network))
+    }
     pub fn from_keypair(keypair: &KeyPair, network: Network) -> Self {
         Recipient {
             t: PublicKey::new(keypair.public_key()),
@@ -119,47 +124,6 @@ impl Recipient<PublicKey> {
     }
     pub fn taproot_address_string(&self) -> String {
         self.taproot_address().to_string()
-    }
-}
-
-pub struct Account {
-    keypair: KeyPair,
-    network: Network,
-}
-
-impl Account {
-    pub fn from_wif(wif: &str, network: Network) -> Result<Self> {
-        let keypair = keypair_from_wif(wif)?;
-
-        Ok(Account { keypair, network })
-    }
-    // Covenience function, converts a `secp256k1::PublicKey` into a
-    // `bitcoin::key::PublicKey` type.
-    pub fn public_key(&self) -> PublicKey {
-        PublicKey::new(self.keypair.public_key())
-    }
-    pub fn get_legacy_address(&self) -> Address {
-        Address::p2pkh(&self.public_key(), self.network)
-    }
-    pub fn get_segwit_address(&self) -> Address {
-        let pk = self.public_key();
-        // The key is always compressed.
-        debug_assert!(pk.compressed);
-        // "Will only return an Error if an uncompressed public key is provided."
-        Address::p2wpkh(&pk, self.network).unwrap()
-    }
-    pub fn get_taproot_address(&self) -> Address {
-        let untweaked = UntweakedPublicKey::from(self.keypair.public_key());
-        Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, self.network)
-    }
-    pub fn get_legacy_address_string(&self) -> String {
-        self.get_legacy_address().to_string()
-    }
-    pub fn get_segwit_address_string(&self) -> String {
-        self.get_segwit_address().to_string()
-    }
-    pub fn get_taproot_address_string(&self) -> String {
-        self.get_taproot_address().to_string()
     }
 }
 
