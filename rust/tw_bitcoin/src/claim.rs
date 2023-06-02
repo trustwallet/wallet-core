@@ -1,4 +1,4 @@
-use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeySpend};
+use crate::{tweak_pubkey, Error, PubkeyHash, Result, TxInputP2PKH, TxInputP2TRKeyPath};
 use bitcoin::key::{KeyPair, PublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
@@ -17,23 +17,23 @@ pub trait TransactionSigner {
         sighash_type: Option<EcdsaSighashType>,
     ) -> Result<ClaimP2PKH>;
 
-    fn claim_p2tr_key_spend(
+    fn claim_p2tr_key_path(
         &self,
-        input: &TxInputP2TRKeySpend,
+        input: &TxInputP2TRKeyPath,
         hash: secp256k1::Message,
-    ) -> Result<ClaimP2TRKeySpend>;
+    ) -> Result<ClaimP2TRKeyPath>;
 }
 
-pub struct ClaimP2TRKeySpend(pub Witness);
+pub struct ClaimP2TRKeyPath(pub Witness);
 
 pub struct ClaimP2PKH(pub ScriptBuf);
 
 impl TransactionSigner for KeyPair {
-    fn claim_p2tr_key_spend(
+    fn claim_p2tr_key_path(
         &self,
-        input: &TxInputP2TRKeySpend,
+        input: &TxInputP2TRKeyPath,
         sighash: secp256k1::Message,
-    ) -> Result<ClaimP2TRKeySpend> {
+    ) -> Result<ClaimP2TRKeyPath> {
         // Given that we're using the "key spend" method of P2TR, we tweak the
         // key without a Merkle root.
         let my_pubkey = tweak_pubkey(PublicKey::new(self.public_key()));
@@ -47,7 +47,7 @@ impl TransactionSigner for KeyPair {
         let schnorr_sig = Secp256k1::new().sign_schnorr(&sighash, self);
 
         // Construct the witness for claiming.
-        Ok(ClaimP2TRKeySpend(Witness::from_slice(&[
+        Ok(ClaimP2TRKeyPath(Witness::from_slice(&[
             schnorr_sig.as_ref()
         ])))
     }
