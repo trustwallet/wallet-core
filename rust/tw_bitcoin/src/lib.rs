@@ -21,6 +21,7 @@ use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
 pub mod claim;
 pub mod input;
+pub mod ordinals;
 pub mod output;
 pub mod utils;
 
@@ -148,12 +149,21 @@ impl Recipient<PublicKey> {
     }
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TaprootScript {
     pubkey: PublicKey,
     merkle_root: TapNodeHash,
 }
 
 impl Recipient<TaprootScript> {
+    pub fn from_keypair(keypair: &KeyPair, merkle_root: TapNodeHash) -> Self {
+        Recipient {
+            t: TaprootScript {
+                pubkey: PublicKey::new(keypair.public_key()),
+                merkle_root,
+            },
+        }
+    }
     pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
         XOnlyPublicKey::from(self.t.pubkey.inner)
     }
