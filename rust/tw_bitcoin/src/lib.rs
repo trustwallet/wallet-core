@@ -447,9 +447,9 @@ fn create_envelope(mime: &str, data: &str) -> Result<ScriptBuf> {
     let x = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
-        // Push three bytes of "orb"
+        // Push three bytes of "ord"
         .push_opcode(OP_PUSHBYTES_3)
-        .push_slice(b"orb")
+        .push_slice(b"ord")
         // OP_TRUE = OP_1
         .push_opcode(OP_TRUE)
         .push_slice(mime_buf)
