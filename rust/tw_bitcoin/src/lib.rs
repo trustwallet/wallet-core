@@ -5,13 +5,18 @@ use bitcoin::address::NetworkChecked;
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
-use bitcoin::key::{KeyPair, TweakedPublicKey, UntweakedPublicKey};
+use bitcoin::key::{KeyPair, TapTweak, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::sighash::TapSighashType;
 use bitcoin::sighash::{EcdsaSighashType, LegacySighash, SighashCache, TapSighash};
+use bitcoin::taproot::TapNodeHash;
 use bitcoin::transaction::Transaction;
-use bitcoin::{network, secp256k1, Network, PublicKey};
+use bitcoin::{
+    network,
+    secp256k1::{self, XOnlyPublicKey},
+    Network, PublicKey,
+};
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
 pub mod claim;
@@ -140,6 +145,20 @@ impl Recipient<PublicKey> {
     }
     pub fn taproot_address_string(&self, network: Network) -> String {
         self.taproot_address(network).to_string()
+    }
+}
+
+pub struct TaprootScript {
+    pubkey: PublicKey,
+    merkle_root: TapNodeHash,
+}
+
+impl Recipient<TaprootScript> {
+    pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
+        XOnlyPublicKey::from(self.t.pubkey.inner)
+    }
+    pub fn merkle_root(&self) -> TapNodeHash {
+        self.t.merkle_root
     }
 }
 
