@@ -44,15 +44,18 @@ impl From<TxOutputP2TKeyPath> for TxOutput {
 impl From<TxOutput> for TxOut {
     fn from(out: TxOutput) -> Self {
         match out {
-            TxOutput::P2PKH(p2pkh) => TxOut {
-                value: p2pkh.satoshis,
-                script_pubkey: p2pkh.script_pubkey,
+            TxOutput::P2PKH(p) => TxOut {
+                value: p.satoshis,
+                script_pubkey: p.script_pubkey,
             },
-            TxOutput::P2TRKeyPath(p2trkp) => TxOut {
-                value: p2trkp.satoshis,
-                script_pubkey: p2trkp.script_pubkey,
+            TxOutput::P2WPKH(p) => TxOut {
+                value: p.satoshis,
+                script_pubkey: p.script_pubkey,
             },
-            _ => todo!(),
+            TxOutput::P2TRKeyPath(p) => TxOut {
+                value: p.satoshis,
+                script_pubkey: p.script_pubkey,
+            },
         }
     }
 }
