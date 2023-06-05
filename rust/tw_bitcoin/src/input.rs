@@ -7,6 +7,7 @@ use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, WPubkeyHash, Witness};
 #[derive(Debug, Clone)]
 pub enum TxInput {
     P2PKH(TxInputP2PKH),
+    P2WPKH(TxInputP2WPKH),
     P2TRKeyPath(TxInputP2TRKeyPath),
     NonStandard { ctx: InputContext },
 }
@@ -40,14 +41,16 @@ impl TxInput {
     pub fn ctx(&self) -> &InputContext {
         match self {
             TxInput::P2PKH(t) => &t.ctx,
+            TxInput::P2WPKH(t) => &t.ctx,
             TxInput::P2TRKeyPath(t) => &t.ctx,
             TxInput::NonStandard { ctx } => ctx,
         }
     }
     pub fn satoshis(&self) -> Option<u64> {
         match self {
-            TxInput::P2PKH(p) => p.ctx.value,
-            TxInput::P2TRKeyPath(p) => p.ctx.value,
+            TxInput::P2PKH(t) => t.ctx.value,
+            TxInput::P2WPKH(t) => t.ctx.value,
+            TxInput::P2TRKeyPath(t) => t.ctx.value,
             TxInput::NonStandard { ctx } => ctx.value,
         }
     }
@@ -148,6 +151,7 @@ impl TxInputP2TRScriptPath {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct TxInputP2WPKH {
     pub(crate) ctx: InputContext,
     pub(crate) recipient: Recipient<WPubkeyHash>,
