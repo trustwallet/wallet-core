@@ -152,6 +152,8 @@ impl TransactionSigner for KeyPair {
             return Err(Error::Todo);
         }
 
+        // The control block contains information on which script of the
+        // script-path is being executed.
         let control_block = input
             .spend_info
             // TODO: Can cloning be avoided here?
