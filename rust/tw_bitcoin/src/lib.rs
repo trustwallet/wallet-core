@@ -17,7 +17,7 @@ use bitcoin::{
     secp256k1::{self, XOnlyPublicKey},
     Network, PublicKey,
 };
-use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
+use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, WPubkeyHash, Witness};
 
 pub mod brc20;
 pub mod claim;
@@ -86,6 +86,12 @@ fn poc() {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Recipient<T> {
     t: T,
+}
+
+impl Recipient<WPubkeyHash> {
+    pub fn pubkey_hash(&self) -> WPubkeyHash {
+        todo!()
+    }
 }
 
 impl Recipient<PubkeyHash> {
