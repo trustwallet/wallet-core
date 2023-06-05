@@ -52,6 +52,21 @@ impl BRC20<TransferInfo> {
     }
 }
 
+impl BRC20<MintInfo> {
+    const OPERATION: &str = "mint";
+
+    pub fn new(ticker: String, amount: usize) -> Self {
+        BRC20 {
+            p: Self::PROTOCOL_ID,
+            op: Self::OPERATION,
+            inner: MintInfo {
+                tick: ticker,
+                amt: amount,
+            },
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct DeploymentInfo {
     pub tick: String,
@@ -115,7 +130,6 @@ impl BRC20Transfer {
         }
 
         let data = BRC20::<TransferInfo>::new(ticker, amount);
-
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
@@ -123,11 +137,49 @@ impl BRC20Transfer {
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20Transfer> {
         let inscription = new_ordinals_inscription(
-            b"text/plain;charset=utf-8",
+            BRC20::<TransferInfo>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
 
         Ok(BRC20Transfer(inscription))
+    }
+}
+
+/// The structure is the same as `TransferInfo`, we'll keep it separate for
+/// clarity.
+#[derive(Serialize, Deserialize)]
+pub struct MintInfo {
+    pub tick: String,
+    pub amt: usize,
+}
+
+pub struct BRC20Mint(OrdinalsInscription);
+
+impl BRC20Mint {
+    pub fn new(
+        recipient: Recipient<PublicKey>,
+        ticker: String,
+        amount: usize,
+    ) -> Result<BRC20Mint> {
+        // Ticker must be a 4-letter identifier.
+        if ticker.len() != 4 {
+            return Err(Error::Todo);
+        }
+
+        let data = BRC20::<MintInfo>::new(ticker, amount);
+        Self::from_payload(data, recipient)
+    }
+    pub fn from_payload(
+        data: BRC20<MintInfo>,
+        recipient: Recipient<PublicKey>,
+    ) -> Result<BRC20Mint> {
+        let inscription = new_ordinals_inscription(
+            BRC20::<BRC20Mint>::MIME,
+            &serde_json::to_vec(&data).unwrap(),
+            recipient,
+        )?;
+
+        Ok(BRC20Mint(inscription))
     }
 }
