@@ -169,6 +169,7 @@ enum TWCoinType {
     TWCoinTypeAcala = 787,
     TWCoinTypeAcalaEVM = 10000787,
     TWCoinTypeOpBNBtestnet = 5611,
+    TWCoinTypeMAYAChain = 10000931,
 };
 
 /// Returns the blockchain for a coin type.

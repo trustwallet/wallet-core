@@ -212,6 +212,20 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
+        case Proto::Message::kMayachainSendMessage:
+            {
+                assert(msg.has_mayachain_send_message());
+                const auto& send = msg.mayachain_send_message();
+                auto msgSend =types::MsgSend();
+                msgSend.set_from_address(send.from_address());
+                msgSend.set_to_address(send.to_address());
+                for (auto i = 0; i < send.amounts_size(); ++i) {
+                    *msgSend.add_amount() = convertCoin(send.amounts(i));
+                }
+                any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
         case Proto::Message::kWasmTerraExecuteContractGeneric: {
             assert(msg.has_wasm_terra_execute_contract_generic());
                 const auto& wasmExecute = msg.wasm_terra_execute_contract_generic();

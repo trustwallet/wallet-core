@@ -153,6 +153,13 @@ message Message {
         repeated Amount amounts = 3;
     }
 
+    // mayachain/MsgSend
+    message MAYAChainSend {
+        bytes from_address = 1;
+        bytes to_address = 2;
+        repeated Amount amounts = 3;
+    }
+
     // execute within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractGeneric {
         // sender address
@@ -345,6 +352,7 @@ message Message {
         MsgVote msg_vote = 20;
         MsgStrideLiquidStakingStake msg_stride_liquid_staking_stake = 21;
         MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 22;
+        MAYAChainSend mayachain_send_message = 23;
     }
 }
 

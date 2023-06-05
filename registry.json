@@ -3014,6 +3014,36 @@
     }
   },
   {
+    "id": "mayachain",
+    "name": "MAYAChain",
+    "coinId": 10000931,
+    "symbol": "CACAO",
+    "decimals": 10,
+    "blockchain": "Mayachain",
+    "derivation": [
+      {
+        "path": "m/44'/931'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "maya",
+    "chainId": "mayachain-mainnet-v1",
+    "explorer": {
+      "url": "https://explorer.mayachain.info",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "908E8634B357FE5BAB92C0304D3022F9B2A5437A11B459E3C3226EA8E66EC337",
+      "sampleAccount": "maya127ywj4hgff8kskkg5nsa5rkt3vu2gvz3f7m5my"
+    },
+    "info": {
+      "url": "https://mayaprotocol.com",
+      "source": "https://gitlab.com/mayachain/mayanode",
+      "rpc": "https://tendermint.mayachain.info/",
+      "documentation": "https://docs.mayaprotocol.com"
+    }
+  },
+  {
     "id": "optimism",
     "name": "Optimism",
     "displayName": "Optimism Ethereum",

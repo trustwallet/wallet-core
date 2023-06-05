@@ -260,6 +260,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeTHORChain:
             EXPECT_EQ(address, "thor1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0luxce7");
             break;
+        case TWCoinTypeMAYAChain:
+            EXPECT_EQ(address, "maya1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0ltc50w");
+            break;
         case TWCoinTypeTezos:
             EXPECT_EQ(address, "tz1gcEWswVU6dxfNQWbhTgaZrUrNUFwrsT4z");
             break;
