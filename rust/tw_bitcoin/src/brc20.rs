@@ -4,26 +4,30 @@ use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct BRC20<T> {
+pub struct BRC20Payload<T> {
     p: &'static str,
     op: &'static str,
     #[serde(flatten)]
     inner: T,
 }
 
-impl<T> BRC20<T> {
+type BRC20DeployPayload = BRC20Payload<DeployPayload>;
+type BRC20MintPayload = BRC20Payload<MintPayload>;
+type BRC20TransferPayload = BRC20Payload<TransferPayload>;
+
+impl<T> BRC20Payload<T> {
     const PROTOCOL_ID: &str = "brc-20";
     const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
 
-impl BRC20<DeploymentInfo> {
+impl BRC20DeployPayload {
     const OPERATION: &str = "deploy";
 
     pub fn new(ticker: String, max: usize, limit: Option<usize>, decimals: Option<usize>) -> Self {
-        BRC20 {
+        BRC20Payload {
             p: Self::PROTOCOL_ID,
             op: Self::OPERATION,
-            inner: DeploymentInfo {
+            inner: DeployPayload {
                 tick: ticker,
                 max,
                 lim: limit,
@@ -33,14 +37,14 @@ impl BRC20<DeploymentInfo> {
     }
 }
 
-impl BRC20<TransferInfo> {
+impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
     pub fn new(ticker: String, amount: usize) -> Self {
-        BRC20 {
+        BRC20Payload {
             p: Self::PROTOCOL_ID,
             op: Self::OPERATION,
-            inner: TransferInfo {
+            inner: TransferPayload {
                 tick: ticker,
                 amt: amount,
             },
@@ -48,14 +52,14 @@ impl BRC20<TransferInfo> {
     }
 }
 
-impl BRC20<MintInfo> {
+impl BRC20MintPayload {
     const OPERATION: &str = "mint";
 
     pub fn new(ticker: String, amount: usize) -> Self {
-        BRC20 {
+        BRC20Payload {
             p: Self::PROTOCOL_ID,
             op: Self::OPERATION,
-            inner: MintInfo {
+            inner: MintPayload {
                 tick: ticker,
                 amt: amount,
             },
@@ -64,7 +68,7 @@ impl BRC20<MintInfo> {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct DeploymentInfo {
+pub struct DeployPayload {
     pub tick: String,
     pub max: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -88,16 +92,16 @@ impl BRC20Deploy {
             return Err(Error::Todo);
         }
 
-        let data = BRC20::<DeploymentInfo>::new(ticker, max, limit, decimals);
+        let data = BRC20Payload::<DeployPayload>::new(ticker, max, limit, decimals);
 
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
-        data: BRC20<DeploymentInfo>,
+        data: BRC20DeployPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20Deploy> {
         let inscription = new_ordinals_inscription(
-            BRC20::<DeploymentInfo>::MIME,
+            BRC20Payload::<DeployPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
@@ -107,7 +111,7 @@ impl BRC20Deploy {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct TransferInfo {
+pub struct TransferPayload {
     pub tick: String,
     pub amt: usize,
 }
@@ -125,15 +129,15 @@ impl BRC20Transfer {
             return Err(Error::Todo);
         }
 
-        let data = BRC20::<TransferInfo>::new(ticker, amount);
+        let data = BRC20Payload::<TransferPayload>::new(ticker, amount);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
-        data: BRC20<TransferInfo>,
+        data: BRC20TransferPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20Transfer> {
         let inscription = new_ordinals_inscription(
-            BRC20::<TransferInfo>::MIME,
+            BRC20Payload::<TransferPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
@@ -142,10 +146,10 @@ impl BRC20Transfer {
     }
 }
 
-/// The structure is the same as `TransferInfo`, we'll keep it separate for
+/// The structure is the same as `TransferPayload`, we'll keep it separate for
 /// clarity.
 #[derive(Serialize, Deserialize)]
-pub struct MintInfo {
+pub struct MintPayload {
     pub tick: String,
     pub amt: usize,
 }
@@ -163,15 +167,15 @@ impl BRC20Mint {
             return Err(Error::Todo);
         }
 
-        let data = BRC20::<MintInfo>::new(ticker, amount);
+        let data = BRC20Payload::<MintPayload>::new(ticker, amount);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
-        data: BRC20<MintInfo>,
+        data: BRC20MintPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20Mint> {
         let inscription = new_ordinals_inscription(
-            BRC20::<MintInfo>::MIME,
+            BRC20Payload::<MintPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
