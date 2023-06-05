@@ -89,6 +89,12 @@ pub struct Recipient<T> {
 }
 
 impl Recipient<WPubkeyHash> {
+    pub fn from_keypair(keypair: &KeyPair) -> Self {
+        todo!()
+    }
+    pub fn public_key(&self) -> PublicKey {
+        todo!()
+    }
     pub fn pubkey_hash(&self) -> WPubkeyHash {
         todo!()
     }
@@ -128,6 +134,9 @@ impl Recipient<PublicKey> {
     }
     pub fn pubkey_hash(&self) -> PubkeyHash {
         PubkeyHash::from(self.t)
+    }
+    pub fn w_pubkey_hash(&self) -> WPubkeyHash {
+        todo!()
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
         tweak_pubkey(self.t)
