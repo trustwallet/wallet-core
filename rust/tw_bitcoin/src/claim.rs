@@ -42,7 +42,7 @@ pub trait TransactionSigner {
 
 pub struct ClaimP2PKH(pub ScriptBuf);
 
-pub struct ClaimP2WPKH(pub ScriptBuf);
+pub struct ClaimP2WPKH(pub Witness);
 
 pub struct ClaimP2TRKeyPath(pub Witness);
 
@@ -95,13 +95,12 @@ impl TransactionSigner for KeyPair {
             hash_ty: sighash_type,
         };
 
-        // Construct the Script for claiming.
-        let script = ScriptBuf::builder()
-            .push_slice(sig.serialize())
-            .push_key(&me.public_key())
-            .into_script();
+        // Construct the Witness for claiming.
+        let mut witness = Witness::default();
+        witness.push(sig.serialize());
+        witness.push(me.public_key().to_bytes());
 
-        Ok(ClaimP2WPKH(script))
+        Ok(ClaimP2WPKH(witness))
     }
     fn claim_p2tr_key_path(
         &self,
