@@ -77,16 +77,16 @@ pub struct DeployPayload {
     pub dec: Option<usize>,
 }
 
-pub struct BRC20Deploy(OrdinalsInscription);
+pub struct BRC20DeployInscription(OrdinalsInscription);
 
-impl BRC20Deploy {
+impl BRC20DeployInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: String,
         max: usize,
         limit: Option<usize>,
         decimals: Option<usize>,
-    ) -> Result<BRC20Deploy> {
+    ) -> Result<BRC20DeployInscription> {
         // Ticker must be a 4-letter identifier.
         if ticker.len() != 4 {
             return Err(Error::Todo);
@@ -99,14 +99,14 @@ impl BRC20Deploy {
     pub fn from_payload(
         data: BRC20DeployPayload,
         recipient: Recipient<PublicKey>,
-    ) -> Result<BRC20Deploy> {
+    ) -> Result<BRC20DeployInscription> {
         let inscription = new_ordinals_inscription(
             BRC20Payload::<DeployPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
 
-        Ok(BRC20Deploy(inscription))
+        Ok(BRC20DeployInscription(inscription))
     }
 }
 
@@ -116,14 +116,14 @@ pub struct TransferPayload {
     pub amt: usize,
 }
 
-pub struct BRC20Transfer(OrdinalsInscription);
+pub struct BRC20TransferInscription(OrdinalsInscription);
 
-impl BRC20Transfer {
+impl BRC20TransferInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: String,
         amount: usize,
-    ) -> Result<BRC20Transfer> {
+    ) -> Result<BRC20TransferInscription> {
         // Ticker must be a 4-letter identifier.
         if ticker.len() != 4 {
             return Err(Error::Todo);
@@ -135,14 +135,14 @@ impl BRC20Transfer {
     pub fn from_payload(
         data: BRC20TransferPayload,
         recipient: Recipient<PublicKey>,
-    ) -> Result<BRC20Transfer> {
+    ) -> Result<BRC20TransferInscription> {
         let inscription = new_ordinals_inscription(
             BRC20Payload::<TransferPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
 
-        Ok(BRC20Transfer(inscription))
+        Ok(BRC20TransferInscription(inscription))
     }
 }
 
@@ -154,14 +154,14 @@ pub struct MintPayload {
     pub amt: usize,
 }
 
-pub struct BRC20Mint(OrdinalsInscription);
+pub struct BRC20MintInscription(OrdinalsInscription);
 
-impl BRC20Mint {
+impl BRC20MintInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: String,
         amount: usize,
-    ) -> Result<BRC20Mint> {
+    ) -> Result<BRC20MintInscription> {
         // Ticker must be a 4-letter identifier.
         if ticker.len() != 4 {
             return Err(Error::Todo);
@@ -173,13 +173,13 @@ impl BRC20Mint {
     pub fn from_payload(
         data: BRC20MintPayload,
         recipient: Recipient<PublicKey>,
-    ) -> Result<BRC20Mint> {
+    ) -> Result<BRC20MintInscription> {
         let inscription = new_ordinals_inscription(
             BRC20Payload::<MintPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
 
-        Ok(BRC20Mint(inscription))
+        Ok(BRC20MintInscription(inscription))
     }
 }
