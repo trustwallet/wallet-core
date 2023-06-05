@@ -6,7 +6,6 @@ use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
 use bitcoin::key::{KeyPair, TapTweak, TweakedPublicKey, UntweakedPublicKey};
-use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::sighash::TapSighashType;
 use bitcoin::sighash::{EcdsaSighashType, LegacySighash, SighashCache, TapSighash};
@@ -124,6 +123,9 @@ impl Recipient<PublicKey> {
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
         tweak_pubkey(self.t)
+    }
+    pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
+        XOnlyPublicKey::from(self.t.inner)
     }
     pub fn legacy_address(&self, network: Network) -> Address {
         Address::p2pkh(&self.t, network)
@@ -414,60 +416,6 @@ impl From<InputContext> for TxIn {
             witness: ctx.witness,
         }
     }
-}
-
-fn get_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
-    use bitcoin::opcodes::all::*;
-
-    let ret = match size {
-        // OP_PUSHBYTES[0|1|2|...|75]
-        0..=75 => (bitcoin::opcodes::All::from(size as u8), None),
-        76..=255 => (OP_PUSHDATA1, Some(size.to_le_bytes().to_vec())),
-        256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
-        65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
-        _ => return Err(Error::Todo),
-    };
-
-    Ok(ret)
-}
-
-fn create_envelope(mime: &str, data: &str) -> Result<ScriptBuf> {
-    use bitcoin::opcodes::all::*;
-    use bitcoin::opcodes::*;
-
-    // TODO: Check overflow
-    let (op_push, size_buf) = get_push(mime.len() as u32)?;
-
-    // Prepare content-type buffer.
-    let mut mime_buf = PushBytesBuf::new();
-
-    // For any sizes below 75, we use encode as `OP_PUSHBYTES[0|1|2|...|75]`.
-    // Fany any sized above 75, we use encode as `OP_PUSHDATA[1|2|3|4] <SIZE_BUF>`.
-    mime_buf.push(op_push.to_u8()).unwrap();
-    if let Some(size_buf) = size_buf {
-        mime_buf.extend_from_slice(size_buf.as_slice()).unwrap();
-    }
-
-    // Prepare data buffer.
-    let mut data_buf = PushBytesBuf::new();
-    data_buf
-        .extend_from_slice(data.as_bytes())
-        .map_err(|_| Error::Todo)?;
-
-    let x = ScriptBuf::builder()
-        .push_opcode(OP_FALSE)
-        .push_opcode(OP_IF)
-        // Push three bytes of "ord"
-        .push_opcode(OP_PUSHBYTES_3)
-        .push_slice(b"ord")
-        // OP_TRUE = OP_1
-        .push_opcode(OP_TRUE)
-        .push_slice(mime_buf)
-        .push_opcode(OP_0)
-        .push_slice(data_buf)
-        .push_opcode(OP_ENDIF);
-
-    todo!()
 }
 
 pub struct OrdInputs(Vec<Ordinals>);
