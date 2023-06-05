@@ -14,38 +14,50 @@ pub enum ClaimLocation {
 }
 
 pub trait TransactionSigner {
+    /// Claiming mechanism for (legacy) P2PKH outputs.
     fn claim_p2pkh(
         &self,
         input: &TxInputP2PKH,
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
     ) -> Result<ClaimP2PKH>;
-    fn claim_p2tr_key_path(
-        &self,
-        input: &TxInputP2TRKeyPath,
-        sighash: secp256k1::Message,
-        sighash_type: TapSighashType,
-    ) -> Result<ClaimP2TRKeyPath>;
-    fn claim_p2tr_script_path(
-        &self,
-        input: &TxInputP2TRScriptPath,
-        sighash: secp256k1::Message,
-        sighash_type: TapSighashType,
-    ) -> Result<ClaimP2TRScriptPath>;
+    /// Claiming mechanism for SegWit P2WPKH outputs.
     fn claim_p2wpkh(
         &self,
         input: &TxInputP2WPKH,
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
     ) -> Result<ClaimP2WPKH>;
+    /// Claiming mechanism for Taproot P2TR key-path outputs.
+    fn claim_p2tr_key_path(
+        &self,
+        input: &TxInputP2TRKeyPath,
+        sighash: secp256k1::Message,
+        sighash_type: TapSighashType,
+    ) -> Result<ClaimP2TRKeyPath>;
+    /// Claiming mechanism for Taproot P2TR script-path outputs.
+    fn claim_p2tr_script_path(
+        &self,
+        input: &TxInputP2TRScriptPath,
+        sighash: secp256k1::Message,
+        sighash_type: TapSighashType,
+    ) -> Result<ClaimP2TRScriptPath>;
 }
 
+// Contains the `scriptBuf` that must be included in the transaction when
+// spending the P2PKH input.
 pub struct ClaimP2PKH(pub ScriptBuf);
 
+// Contains the Witness that must be included in the transaction when spending
+// the SegWit P2WPKH input.
 pub struct ClaimP2WPKH(pub Witness);
 
+// Contains the Witness that must be included in the transaction when spending
+// the Taproot P2TR key-path input.
 pub struct ClaimP2TRKeyPath(pub Witness);
 
+// Contains the Witness that must be included in the transaction when spending
+// the Taproot P2TR script-path input.
 pub struct ClaimP2TRScriptPath(pub Witness);
 
 impl TransactionSigner for KeyPair {
