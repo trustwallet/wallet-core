@@ -4,6 +4,7 @@ use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
 use bitcoin::{PublicKey, Witness};
+use serde_json::json;
 
 /// Convenience function for retrieving the size prefix for a PUSH operation in
 /// a Script/Witness. For example, the size of `5` only returns
@@ -23,7 +24,38 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
     Ok(ret)
 }
 
-pub struct OrdinalsInscription(Recipient<TaprootScript>);
+pub struct BRC20Transfer(OrdinalsInscription);
+
+pub fn new_brc20_transfer(
+    recipient: Recipient<PublicKey>,
+    ticker: &str,
+    amount: usize,
+) -> Result<BRC20Transfer> {
+    // Ticker must be a 4-letter identifier.
+    if ticker.len() != 4 {
+        return Err(Error::Todo);
+    }
+
+    let data = json!({
+        "p": "brc-20",
+        "op": "transfer",
+        "tick": ticker,
+        "amt": amount,
+    });
+
+    let inscription = new_ordinals_inscription(
+        b"text/plain;charset=utf-8",
+        &serde_json::to_vec(&data).unwrap(),
+        recipient,
+    )?;
+
+    Ok(BRC20Transfer(inscription))
+}
+
+pub struct OrdinalsInscription {
+    spend_info: TaprootSpendInfo,
+    recipient: Recipient<TaprootScript>,
+}
 
 /// Creates a new Ordinals Inscription ("commit stage").
 pub fn new_ordinals_inscription(
@@ -35,9 +67,10 @@ pub fn new_ordinals_inscription(
     // TODO: In which cases is this `false`?
     let merkle_root = spend_info.merkle_root().unwrap();
 
-    Ok(OrdinalsInscription(
-        Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
-    ))
+    Ok(OrdinalsInscription {
+        spend_info,
+        recipient: Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
+    })
 }
 
 /// Creates an [Ordinals Inscription](https://docs.ordinals.com/inscriptions.html).
