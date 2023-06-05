@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate serde;
-use std::str::FromStr;
 
 use crate::claim::{ClaimLocation, TransactionSigner};
 use bitcoin::address::NetworkChecked;
