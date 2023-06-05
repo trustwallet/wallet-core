@@ -166,6 +166,17 @@ impl Recipient<TaprootScript> {
             },
         }
     }
+    pub fn from_pubkey_recipient(
+        recipient: Recipient<PublicKey>,
+        merkle_root: TapNodeHash,
+    ) -> Self {
+        Recipient {
+            t: TaprootScript {
+                pubkey: recipient.t,
+                merkle_root,
+            },
+        }
+    }
     pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
         XOnlyPublicKey::from(self.t.pubkey.inner)
     }
@@ -237,10 +248,10 @@ impl TransactionBuilder {
     {
         self.sign_inputs_fn(|input, sighash| match input {
             TxInput::P2PKH(p2pkh) => signer
-                .claim_p2pkh(p2pkh, sighash, None)
+                .claim_p2pkh(p2pkh, sighash, EcdsaSighashType::All)
                 .map(|claim| ClaimLocation::Script(claim.0)),
             TxInput::P2TRKeyPath(p2tr) => signer
-                .claim_p2tr_key_path(p2tr, sighash)
+                .claim_p2tr_key_path(p2tr, sighash, TapSighashType::All)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()

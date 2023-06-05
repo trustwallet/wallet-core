@@ -1,7 +1,7 @@
 use crate::{tweak_pubkey, InputContext, Recipient, TaprootScript};
 use bitcoin::key::{PublicKey, TweakedPublicKey as BTweakedPublicKey};
 use bitcoin::script::ScriptBuf;
-use bitcoin::taproot::TapNodeHash;
+use bitcoin::taproot::{ControlBlock, TapNodeHash, TaprootSpendInfo};
 use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, Witness};
 
 #[derive(Debug, Clone)]
@@ -114,6 +114,8 @@ impl TxInputP2TRKeyPath {
 pub struct TxInputP2TRScriptPath {
     pub(crate) ctx: InputContext,
     pub(crate) recipient: Recipient<TaprootScript>,
+    pub(crate) script: ScriptBuf,
+    pub(crate) spend_info: TaprootSpendInfo,
 }
 
 impl TxInputP2TRScriptPath {
@@ -122,6 +124,8 @@ impl TxInputP2TRScriptPath {
         vout: u32,
         recipient: impl Into<Recipient<TaprootScript>>,
         satoshis: u64,
+        script: ScriptBuf,
+        spend_info: TaprootSpendInfo,
     ) -> Self {
         let recipient: Recipient<TaprootScript> = recipient.into();
 
@@ -138,6 +142,8 @@ impl TxInputP2TRScriptPath {
                 witness: Witness::default(),
             },
             recipient,
+            script,
+            spend_info,
         }
     }
 }
