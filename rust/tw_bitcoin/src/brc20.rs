@@ -1,11 +1,7 @@
 use crate::ordinals::{new_ordinals_inscription, OrdinalsInscription};
-use crate::{Error, Recipient, Result, TaprootScript, TxInputP2TRScriptPath};
-use bitcoin::opcodes::All as AnyOpcode;
-use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::secp256k1::XOnlyPublicKey;
-use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
-use bitcoin::{PublicKey, Witness};
-use serde_json::json;
+use crate::{Error, Recipient, Result};
+use bitcoin::PublicKey;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct BRC20<T> {
@@ -175,7 +171,7 @@ impl BRC20Mint {
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20Mint> {
         let inscription = new_ordinals_inscription(
-            BRC20::<BRC20Mint>::MIME,
+            BRC20::<MintInfo>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
         )?;
