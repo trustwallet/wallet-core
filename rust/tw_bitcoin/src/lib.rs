@@ -8,8 +8,8 @@ use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
 use bitcoin::key::{KeyPair, TapTweak, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::sighash::TapSighashType;
 use bitcoin::sighash::{EcdsaSighashType, LegacySighash, SighashCache, TapSighash};
+use bitcoin::sighash::{SegwitV0Sighash, TapSighashType};
 use bitcoin::taproot::TapNodeHash;
 use bitcoin::transaction::Transaction;
 use bitcoin::{
@@ -41,6 +41,9 @@ impl TransactionHash {
         TransactionHash(hash.to_byte_array())
     }
     pub fn from_tapsig_hash(hash: TapSighash) -> Self {
+        TransactionHash(hash.to_byte_array())
+    }
+    pub fn from_segwit_hash(hash: SegwitV0Sighash) -> Self {
         TransactionHash(hash.to_byte_array())
     }
 }
@@ -92,10 +95,7 @@ impl Recipient<WPubkeyHash> {
     pub fn from_keypair(keypair: &KeyPair) -> Self {
         todo!()
     }
-    pub fn public_key(&self) -> PublicKey {
-        todo!()
-    }
-    pub fn pubkey_hash(&self) -> WPubkeyHash {
+    pub fn wpubkey_hash(&self) -> WPubkeyHash {
         todo!()
     }
 }
@@ -135,7 +135,7 @@ impl Recipient<PublicKey> {
     pub fn pubkey_hash(&self) -> PubkeyHash {
         PubkeyHash::from(self.t)
     }
-    pub fn w_pubkey_hash(&self) -> WPubkeyHash {
+    pub fn wpubkey_hash(&self) -> WPubkeyHash {
         todo!()
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
@@ -347,6 +347,23 @@ impl TransactionBuilder {
 
                     let message: secp256k1::Message =
                         TransactionHash::from_legacy_sig_hash(hash).into();
+                    let updated = signer(input, message)?;
+
+                    claims.push((index, updated));
+                },
+                TxInput::P2WPKH(p2wpkh) => {
+                    let hash = cache
+                        .segwit_signature_hash(
+                            index,
+                            p2wpkh.ctx.script_pubkey.as_script(),
+                            // TODO: Should not be an Option
+                            p2wpkh.ctx.value.unwrap(),
+                            EcdsaSighashType::All,
+                        )
+                        .map_err(|_| Error::Todo)?;
+
+                    let message: secp256k1::Message =
+                        TransactionHash::from_segwit_hash(hash).into();
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));

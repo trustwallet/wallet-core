@@ -170,7 +170,7 @@ impl TxInputP2WPKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_v0_p2wpkh(&recipient.pubkey_hash()),
+                script_pubkey: ScriptBuf::new_v0_p2wpkh(&recipient.wpubkey_hash()),
                 sequence: Sequence::default(),
                 witness: Witness::default(),
             },
