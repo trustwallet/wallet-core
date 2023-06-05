@@ -1,9 +1,9 @@
-use crate::{Error, Recipient, Result};
+use crate::{Error, Recipient, Result, TaprootScript, TxInputP2TRScriptPath};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
-use bitcoin::PublicKey;
+use bitcoin::{PublicKey, Witness};
 
 /// Convenience function for retrieving the size prefix for a PUSH operation in
 /// a Script/Witness. For example, the size of `5` only returns
@@ -18,13 +18,29 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
         76..=255 => (OP_PUSHDATA1, Some(size.to_le_bytes().to_vec())),
         256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
         65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
-        _ => return Err(Error::Todo),
     };
 
     Ok(ret)
 }
 
-/// Creates an [Ordinal Inscription](https://docs.ordinals.com/inscriptions.html).
+pub struct OrdinalsInscription(Recipient<TaprootScript>);
+
+/// Creates a new Ordinals Inscription ("commit stage").
+pub fn new_ordinals_inscription(
+    mime: &[u8],
+    data: &[u8],
+    recipient: Recipient<PublicKey>,
+) -> Result<OrdinalsInscription> {
+    let spend_info = create_envelope(mime, data, recipient.public_key())?;
+    // TODO: In which cases is this `false`?
+    let merkle_root = spend_info.merkle_root().unwrap();
+
+    Ok(OrdinalsInscription(
+        Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
+    ))
+}
+
+/// Creates an [Ordinals Inscription](https://docs.ordinals.com/inscriptions.html).
 /// This function is used for two purposes:
 ///
 /// 1. It creates the spending condition for the given `internal_key`. This
@@ -39,7 +55,7 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
 /// could also be the same entity. Stage one, the `internal_key` is the
 /// recipient. Stage two, the `internal_key` is the claimer of the transaction
 /// (where the Inscription script is available in the Witness).
-fn create_envelope(mime: &str, data: &str, internal_key: PublicKey) -> Result<TaprootSpendInfo> {
+fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<TaprootSpendInfo> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
@@ -58,11 +74,9 @@ fn create_envelope(mime: &str, data: &str, internal_key: PublicKey) -> Result<Ta
 
     // Prepare data buffer.
     let mut data_buf = PushBytesBuf::new();
-    data_buf
-        .extend_from_slice(data.as_bytes())
-        .map_err(|_| Error::Todo)?;
+    data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
 
-    // Create an Ordinal Inscription.
+    // Create an Ordinals Inscription.
     let script = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
