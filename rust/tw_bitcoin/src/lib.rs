@@ -20,6 +20,7 @@ use bitcoin::{
 };
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, Witness};
 
+pub mod brc20;
 pub mod claim;
 pub mod input;
 pub mod ordinals;
