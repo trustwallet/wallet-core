@@ -86,7 +86,7 @@ impl TxOutputP2WPKH {
 
         TxOutputP2WPKH {
             satoshis,
-            script_pubkey: ScriptBuf::new_v0_p2wpkh(&recipient.pubkey_hash()),
+            script_pubkey: ScriptBuf::new_v0_p2wpkh(&recipient.wpubkey_hash()),
         }
     }
 }
