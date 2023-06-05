@@ -264,14 +264,14 @@ impl TransactionBuilder {
         S: TransactionSigner,
     {
         self.sign_inputs_fn(|input, sighash| match input {
-            TxInput::P2PKH(p2pkh) => signer
-                .claim_p2pkh(p2pkh, sighash, EcdsaSighashType::All)
+            TxInput::P2PKH(p) => signer
+                .claim_p2pkh(p, sighash, EcdsaSighashType::All)
                 .map(|claim| ClaimLocation::Script(claim.0)),
-            TxInput::P2WPKH(p2wpkh) => signer
-                .claim_p2wpkh(p2wpkh, sighash, EcdsaSighashType::All)
+            TxInput::P2WPKH(p) => signer
+                .claim_p2wpkh(p, sighash, EcdsaSighashType::All)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
-            TxInput::P2TRKeyPath(p2tr) => signer
-                .claim_p2tr_key_path(p2tr, sighash, TapSighashType::All)
+            TxInput::P2TRKeyPath(p) => signer
+                .claim_p2tr_key_path(p, sighash, TapSighashType::All)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
