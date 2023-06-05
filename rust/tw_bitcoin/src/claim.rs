@@ -1,12 +1,12 @@
 use crate::{
     tweak_pubkey, Error, PubkeyHash, Recipient, Result, TaprootScript, TxInputP2PKH,
-    TxInputP2TRKeyPath, TxInputP2TRScriptPath,
+    TxInputP2TRKeyPath, TxInputP2TRScriptPath, TxInputP2WPKH,
 };
 use bitcoin::key::{KeyPair, PublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::taproot::{ControlBlock, LeafVersion, Signature};
-use bitcoin::{ScriptBuf, Witness};
+use bitcoin::{ScriptBuf, WPubkeyHash, Witness};
 
 pub enum ClaimLocation {
     Script(ScriptBuf),
@@ -32,9 +32,17 @@ pub trait TransactionSigner {
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
     ) -> Result<ClaimP2TRScriptPath>;
+    fn claim_p2wpkh(
+        &self,
+        input: &TxInputP2WPKH,
+        sighash: secp256k1::Message,
+        sighash_type: EcdsaSighashType,
+    ) -> Result<ClaimP2WPKH>;
 }
 
 pub struct ClaimP2PKH(pub ScriptBuf);
+
+pub struct ClaimP2WPKH(pub ScriptBuf);
 
 pub struct ClaimP2TRKeyPath(pub Witness);
 
@@ -51,7 +59,7 @@ impl TransactionSigner for KeyPair {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
-        if input.recipient != Recipient::<PubkeyHash>::from(me.clone()) {
+        if input.recipient.pubkey_hash() != &me.pubkey_hash() {
             return Err(Error::Todo);
         }
 
@@ -68,6 +76,32 @@ impl TransactionSigner for KeyPair {
             .into_script();
 
         Ok(ClaimP2PKH(script))
+    }
+    fn claim_p2wpkh(
+        &self,
+        input: &TxInputP2WPKH,
+        sighash: secp256k1::Message,
+        sighash_type: EcdsaSighashType,
+    ) -> Result<ClaimP2WPKH> {
+        let me = Recipient::<PublicKey>::from_keypair(self);
+
+        if input.recipient.pubkey_hash() != me.w_pubkey_hash() {
+            return Err(Error::Todo);
+        }
+
+        // Construct the signature ECDSA signature.
+        let sig = bitcoin::ecdsa::Signature {
+            sig: self.secret_key().sign_ecdsa(sighash),
+            hash_ty: sighash_type,
+        };
+
+        // Construct the Script for claiming.
+        let script = ScriptBuf::builder()
+            .push_slice(sig.serialize())
+            .push_key(&me.public_key())
+            .into_script();
+
+        Ok(ClaimP2WPKH(script))
     }
     fn claim_p2tr_key_path(
         &self,
