@@ -5,12 +5,16 @@ use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
 use bitcoin::PublicKey;
 
+/// Convenience function for retrieving the size prefix for a PUSH operation in
+/// a Script/Witness. For example, the size of `5` only returns
+/// `OP_PUSHBYTES_5`, while the size of value `300` returns `OP_PUSHDATA2 + LE(300)`
 fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
     use bitcoin::opcodes::all::*;
 
     let ret = match size {
         // OP_PUSHBYTES[0|1|2|...|75]
         0..=75 => (bitcoin::opcodes::All::from(size as u8), None),
+        // OP_PUSHDATA[1|2|4]
         76..=255 => (OP_PUSHDATA1, Some(size.to_le_bytes().to_vec())),
         256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
         65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
@@ -34,7 +38,7 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
 /// Do note that the `internal_key` can be different for each stage, but it
 /// could also be the same entity. Stage one, the `internal_key` is the
 /// recipient. Stage two, the `internal_key` is the claimer of the transaction
-/// (where the Inscription script is available in the witness).
+/// (where the Inscription script is available in the Witness).
 fn create_envelope(mime: &str, data: &str, internal_key: PublicKey) -> Result<TaprootSpendInfo> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
