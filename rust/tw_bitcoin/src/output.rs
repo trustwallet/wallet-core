@@ -1,6 +1,7 @@
 use crate::{tweak_pubkey, Error, Recipient, Result};
 use bitcoin::address::Payload;
 use bitcoin::script::ScriptBuf;
+use bitcoin::taproot::TaprootSpendInfo;
 use bitcoin::{Address, PubkeyHash, PublicKey, TxOut};
 
 #[derive(Debug, Clone)]
@@ -86,4 +87,10 @@ impl TxOutputP2TKeyPath {
             script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
         }
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct TXOutputP2TRScriptPath {
+    script: ScriptBuf,
+    spend_info: TaprootSpendInfo,
 }
