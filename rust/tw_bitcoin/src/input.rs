@@ -111,8 +111,7 @@ impl TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: Some(satoshis),
-                // TODO: Use `new_v1_p2tr` instead?
-                script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
+                script_pubkey: ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), recipient.untweaked_pubkey(), None),
                 sequence: Sequence::default(),
                 witness: Witness::new(),
             },

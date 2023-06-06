@@ -130,7 +130,7 @@ impl TransactionSigner for KeyPair {
         }
 
         // Construct the Schnorr signature.
-        let sig = Signature {
+        let sig = bitcoin::taproot::Signature {
             sig: Secp256k1::new().sign_schnorr(&sighash, self),
             hash_ty: sighash_type,
         };
