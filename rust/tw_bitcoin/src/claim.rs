@@ -1,8 +1,8 @@
 use crate::{
-    Error, Recipient, Result, TaprootScript, TxInputP2PKH,
-    TxInputP2TRKeyPath, TxInputP2TRScriptPath, TxInputP2WPKH,
+    Error, Recipient, Result, TaprootScript, TxInputP2PKH, TxInputP2TRKeyPath,
+    TxInputP2TRScriptPath, TxInputP2WPKH,
 };
-use bitcoin::key::{KeyPair, PublicKey};
+use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::taproot::{LeafVersion, Signature};
@@ -122,7 +122,7 @@ impl TransactionSigner for KeyPair {
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
     ) -> Result<ClaimP2TRKeyPath> {
-        let me = Recipient::<PublicKey>::from_keypair(self);
+        let me = Recipient::<TweakedPublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
         if input.recipient != me {
@@ -136,10 +136,10 @@ impl TransactionSigner for KeyPair {
         };
 
         // Construct the witness for claiming.
-        Ok(ClaimP2TRKeyPath(Witness::from_slice(&[
-            // Serialize signature.
-            &sig.to_vec(),
-        ])))
+        let mut witness = Witness::new();
+        witness.push(sig.to_vec());
+
+        Ok(ClaimP2TRKeyPath(witness))
     }
     fn claim_p2tr_script_path(
         &self,

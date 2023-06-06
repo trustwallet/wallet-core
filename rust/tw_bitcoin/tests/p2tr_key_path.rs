@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
-use bitcoin::{PubkeyHash, PublicKey, Txid, WPubkeyHash};
+use bitcoin::{key::TweakedPublicKey, PubkeyHash, PublicKey, Txid, WPubkeyHash};
 use tw_bitcoin::{
-    keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2WPKH, TxOutputP2WPKH,
-	TxInputP2TRKeyPath, TxOutputP2PKH, TxOutputP2TRKeyPath
+    keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath,
+    TxInputP2WPKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
 use tw_encoding::hex;
 
@@ -39,7 +39,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<PublicKey>::from_keypair(&bob);
+    let recipient = Recipient::<TweakedPublicKey>::from_keypair(&bob);
     let satoshis = SEND_TO_BOB;
 
     let output = TxOutputP2TRKeyPath::new(satoshis, recipient);
@@ -69,13 +69,13 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     let txid = Txid::from_str(LATEST_TXID).unwrap();
     let vout = 0;
-    let recipient = Recipient::<PublicKey>::from_keypair(&bob);
+    let recipient = Recipient::<TweakedPublicKey>::from_keypair(&bob);
     let satoshis = SEND_TO_BOB;
 
-    let input= TxInputP2TRKeyPath::new(txid, vout, recipient, satoshis);
+    let input = TxInputP2TRKeyPath::new(txid, vout, recipient, satoshis);
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<PublicKey>::from_keypair(&alice);
+    let recipient = Recipient::<TweakedPublicKey>::from_keypair(&alice);
     let satoshis = SEND_TO_ALICE;
 
     let output = TxOutputP2TRKeyPath::new(satoshis, recipient);

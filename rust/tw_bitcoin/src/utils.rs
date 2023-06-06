@@ -25,14 +25,3 @@ pub(crate) fn tweak_pubkey(pubkey: PublicKey) -> TweakedPublicKey {
     let (tweaked, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
     tweaked
 }
-
-pub(crate) fn tweak_keypair(keypair: &KeyPair) -> TweakedKeyPair {
-    keypair.tap_tweak(&secp256k1::Secp256k1::new(), None)
-}
-
-pub(crate) fn pubkey_hash_from_script(script: &ScriptBuf) -> Result<PubkeyHash> {
-    match Payload::from_script(script).map_err(|_| Error::Todo)? {
-        Payload::PubkeyHash(hash) => Ok(hash),
-        _ => Err(Error::Todo),
-    }
-}
