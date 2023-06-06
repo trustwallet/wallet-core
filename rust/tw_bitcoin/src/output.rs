@@ -8,7 +8,7 @@ use bitcoin::{Address, PubkeyHash, PublicKey, TxOut, WPubkeyHash};
 pub enum TxOutput {
     P2PKH(TxOutputP2PKH),
     P2WPKH(TxOutputP2WPKH),
-    P2TRKeyPath(TxOutputP2TKeyPath),
+    P2TRKeyPath(TxOutputP2TRKeyPath),
 }
 
 impl TxOutput {
@@ -35,8 +35,8 @@ impl From<TxOutputP2PKH> for TxOutput {
     }
 }
 
-impl From<TxOutputP2TKeyPath> for TxOutput {
-    fn from(output: TxOutputP2TKeyPath) -> Self {
+impl From<TxOutputP2TRKeyPath> for TxOutput {
+    fn from(output: TxOutputP2TRKeyPath) -> Self {
         TxOutput::P2TRKeyPath(output)
     }
 }
@@ -101,18 +101,18 @@ impl TxOutputP2WPKH {
 }
 
 #[derive(Debug, Clone)]
-pub struct TxOutputP2TKeyPath {
+pub struct TxOutputP2TRKeyPath {
     satoshis: u64,
     script_pubkey: ScriptBuf,
 }
 
-impl TxOutputP2TKeyPath {
+impl TxOutputP2TRKeyPath {
     pub fn new(satoshis: u64, recipient: impl Into<Recipient<PublicKey>>) -> Self {
         let recipient: Recipient<PublicKey> = recipient.into();
 
-        TxOutputP2TKeyPath {
+        TxOutputP2TRKeyPath {
             satoshis,
-            script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
+            script_pubkey: ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), recipient.untweaked_pubkey(), None),
         }
     }
 }

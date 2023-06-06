@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use bitcoin::{Network, PubkeyHash, PublicKey, Txid};
 use tw_bitcoin::{
-    keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2TKeyPath,
+    keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2TRKeyPath,
 };
 use tw_encoding::hex;
 
@@ -38,7 +38,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     let recipient = Recipient::<PublicKey>::from_keypair(&bob);
     let satoshis = SEND_AMOUNT;
 
-    let output = TxOutputP2TKeyPath::new(satoshis, recipient);
+    let output = TxOutputP2TRKeyPath::new(satoshis, recipient);
 
     let signed_transaction = TransactionBuilder::new(Network::Regtest)
         // TODO: Set return address, decrease miner fee.
