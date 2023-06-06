@@ -81,7 +81,7 @@ uint64_t RLP::parseVarInt(size_t size, const Data& data, size_t index) {
         throw std::invalid_argument("multi-byte length must have no leading zero");
     }
     uint64_t val = 0;
-    for (auto i = 0ul; i < size; ++i) {
+    for (auto i = 0U; i < size; ++i) {
         val = val << 8;
         val += data[index + i];
     }
@@ -133,7 +133,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
             throw std::invalid_argument("single byte below 128 must be encoded as itself");
         }
 
-        if (inputLen < (1ul + strLen)) {
+        if (inputLen < (1U + strLen)) {
             throw std::invalid_argument(std::string("invalid short string, length ") + std::to_string(strLen));
         }
         item.decoded.push_back(subData(input, 1, strLen));
@@ -146,8 +146,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         auto lenOfStrLen = size_t(prefix - 0xb7);
         auto strLen = static_cast<size_t>(parseVarInt(lenOfStrLen, input, 1));
         bool isStrLenInvalid = inputLen < lenOfStrLen
-            || checkAddUnsignedOverflow(1UL + lenOfStrLen, strLen)
-            || inputLen < (1UL + lenOfStrLen + strLen);
+            || checkAddUnsignedOverflow(1U + lenOfStrLen, strLen)
+            || inputLen < (1U + lenOfStrLen + strLen);
         if (isStrLenInvalid) {
             throw std::invalid_argument(std::string("Invalid rlp encoding length, length ") + std::to_string(strLen));
         }
@@ -183,8 +183,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         throw std::invalid_argument("length below 56 must be encoded in one byte");
     }
     auto isListLenInvalid = inputLen < lenOfListLen
-        || checkAddUnsignedOverflow(1UL + lenOfListLen, listLen)
-        || inputLen < (1UL + lenOfListLen + listLen);
+        || checkAddUnsignedOverflow(1U + lenOfListLen, listLen)
+        || inputLen < (1U + lenOfListLen + listLen);
     if (isListLenInvalid) {
         throw std::invalid_argument(std::string("Invalid rlp list length, length ") + std::to_string(listLen));
     }
