@@ -18,6 +18,12 @@ impl From<TxInputP2PKH> for TxInput {
     }
 }
 
+impl From<TxInputP2WPKH> for TxInput {
+    fn from(input: TxInputP2WPKH) -> Self {
+        TxInput::P2WPKH(input)
+    }
+}
+
 impl From<TxInputP2TRKeyPath> for TxInput {
     fn from(input: TxInputP2TRKeyPath) -> Self {
         TxInput::P2TRKeyPath(input)
@@ -30,8 +36,9 @@ impl From<TxInput> for TxIn {
 
         TxIn {
             previous_output: ctx.previous_output,
-            script_sig: ScriptBuf::default(),
+            script_sig: ScriptBuf::new(),
             sequence: ctx.sequence,
+            // TODO: Should not be here.
             witness: ctx.witness.clone(),
         }
     }
@@ -76,9 +83,9 @@ impl TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_p2pkh(&recipient.pubkey_hash()),
+                script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
                 sequence: Sequence::default(),
-                witness: Witness::default(),
+                witness: Witness::new(),
             },
             recipient,
         }
@@ -107,7 +114,7 @@ impl TxInputP2TRKeyPath {
                 // TODO: Use `new_v1_p2tr` instead?
                 script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
                 sequence: Sequence::default(),
-                witness: Witness::default(),
+                witness: Witness::new(),
             },
             recipient,
         }
@@ -142,7 +149,7 @@ impl TxInputP2TRScriptPath {
                     Some(recipient.merkle_root()),
                 ),
                 sequence: Sequence::default(),
-                witness: Witness::default(),
+                witness: Witness::new(),
             },
             recipient,
             script,
@@ -170,9 +177,9 @@ impl TxInputP2WPKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_v0_p2wpkh(&recipient.wpubkey_hash()),
+                script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
                 sequence: Sequence::default(),
-                witness: Witness::default(),
+                witness: Witness::new(),
             },
             recipient,
         }

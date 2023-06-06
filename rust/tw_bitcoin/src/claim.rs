@@ -1,13 +1,14 @@
 use crate::{
-    tweak_pubkey, Error, PubkeyHash, Recipient, Result, TaprootScript, TxInputP2PKH,
+    Error, Recipient, Result, TaprootScript, TxInputP2PKH,
     TxInputP2TRKeyPath, TxInputP2TRScriptPath, TxInputP2WPKH,
 };
 use bitcoin::key::{KeyPair, PublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
-use bitcoin::taproot::{ControlBlock, LeafVersion, Signature};
-use bitcoin::{ScriptBuf, WPubkeyHash, Witness};
+use bitcoin::taproot::{LeafVersion, Signature};
+use bitcoin::{ScriptBuf, Witness};
 
+#[derive(Debug, Clone)]
 pub enum ClaimLocation {
     Script(ScriptBuf),
     Witness(Witness),
@@ -97,7 +98,7 @@ impl TransactionSigner for KeyPair {
     ) -> Result<ClaimP2WPKH> {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
-        if input.recipient.wpubkey_hash() != me.wpubkey_hash() {
+        if input.recipient.wpubkey_hash() != &me.wpubkey_hash() {
             return Err(Error::Todo);
         }
 
@@ -108,8 +109,9 @@ impl TransactionSigner for KeyPair {
         };
 
         // Construct the Witness for claiming.
-        let mut witness = Witness::default();
+        let mut witness = Witness::new();
         witness.push(sig.serialize());
+        // Serialize public key.
         witness.push(me.public_key().to_bytes());
 
         Ok(ClaimP2WPKH(witness))
@@ -167,7 +169,7 @@ impl TransactionSigner for KeyPair {
         };
 
         // Construct the Witness for claiming.
-        let mut witness = Witness::default();
+        let mut witness = Witness::new();
         // Serialize signature.
         witness.push(&sig.to_vec());
         witness.push(&input.script);
