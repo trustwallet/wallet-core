@@ -123,7 +123,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
 
         // empty string
         if (prefix == 0x80) {
-            item.decoded.emplace_back(Data());
+            item.decoded.emplace_back();
             item.remainder = subData(input, 1);
             return item;
         }
