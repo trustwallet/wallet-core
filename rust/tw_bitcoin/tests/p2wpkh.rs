@@ -15,7 +15,7 @@ pub const GENESIS_BLOCK: &str = "6fed131159018b4caea7af1ffe1c747d6405cf55cccfe69
 pub const GENESIS_TXID: &str = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
 
 #[test]
-fn sign_input_p2pkh_output_p2wpkh() {
+fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     // This passed the `bitcoin-cli -retest testmempoolaccept` command.
     const EXPECTED_RAW_SIGNED: &str = "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000";
 
