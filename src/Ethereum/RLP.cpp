@@ -7,6 +7,7 @@
 #include "RLP.h"
 
 #include "../BinaryCoding.h"
+#include "../Numeric.h"
 
 #include <tuple>
 
@@ -144,7 +145,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         // b8--bf: long string
         auto lenOfStrLen = size_t(prefix - 0xb7);
         auto strLen = static_cast<size_t>(parseVarInt(lenOfStrLen, input, 1));
-        if (inputLen < lenOfStrLen || inputLen < (1 + lenOfStrLen + strLen)) {
+        bool isStrLenInvalid = inputLen < lenOfStrLen
+            || checkAddUnsignedOverflow(1UL + lenOfStrLen, strLen)
+            || inputLen < (1UL + lenOfStrLen + strLen);
+        if (isStrLenInvalid) {
             throw std::invalid_argument(std::string("Invalid rlp encoding length, length ") + std::to_string(strLen));
         }
         auto data = subData(input, 1 + lenOfStrLen, strLen);
@@ -178,7 +182,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     if (listLen < 56) {
         throw std::invalid_argument("length below 56 must be encoded in one byte");
     }
-    if (inputLen < lenOfListLen || inputLen < (1 + lenOfListLen + listLen)) {
+    auto isListLenInvalid = inputLen < lenOfListLen
+        || checkAddUnsignedOverflow(1UL + lenOfListLen, listLen)
+        || inputLen < (1UL + lenOfListLen + listLen);
+    if (isListLenInvalid) {
         throw std::invalid_argument(std::string("Invalid rlp list length, length ") + std::to_string(listLen));
     }
 
