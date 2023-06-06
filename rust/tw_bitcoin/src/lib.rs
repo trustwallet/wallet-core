@@ -93,10 +93,13 @@ pub struct Recipient<T> {
 
 impl Recipient<WPubkeyHash> {
     pub fn from_keypair(keypair: &KeyPair) -> Self {
-        todo!()
+        Recipient {
+            // TODO: Check unwrap
+            t: PublicKey::new(keypair.public_key()).wpubkey_hash().unwrap(),
+        }
     }
-    pub fn wpubkey_hash(&self) -> WPubkeyHash {
-        todo!()
+    pub fn wpubkey_hash(&self) -> &WPubkeyHash {
+        &self.t
     }
 }
 
@@ -136,7 +139,9 @@ impl Recipient<PublicKey> {
         PubkeyHash::from(self.t)
     }
     pub fn wpubkey_hash(&self) -> WPubkeyHash {
-        todo!()
+        // The key is always compressed.
+        debug_assert!(self.t.compressed);
+        self.t.wpubkey_hash().unwrap()
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
         tweak_pubkey(self.t)
@@ -355,7 +360,13 @@ impl TransactionBuilder {
                     let hash = cache
                         .segwit_signature_hash(
                             index,
-                            p2wpkh.ctx.script_pubkey.as_script(),
+                            // TODO: Handle unwrap?
+                            p2wpkh
+                                .ctx
+                                .script_pubkey
+                                .p2wpkh_script_code()
+                                .as_ref()
+                                .unwrap(),
                             // TODO: Should not be an Option
                             p2wpkh.ctx.value.unwrap(),
                             EcdsaSighashType::All,
@@ -451,17 +462,6 @@ impl InputContext {
             sequence: Sequence::default(),
             // Empty witness.
             witness: Witness::new(),
-        }
-    }
-}
-
-impl From<InputContext> for TxIn {
-    fn from(ctx: InputContext) -> Self {
-        TxIn {
-            previous_output: ctx.previous_output,
-            script_sig: ScriptBuf::default(),
-            sequence: ctx.sequence,
-            witness: ctx.witness,
         }
     }
 }

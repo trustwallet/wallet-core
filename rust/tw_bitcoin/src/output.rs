@@ -41,6 +41,12 @@ impl From<TxOutputP2TKeyPath> for TxOutput {
     }
 }
 
+impl From<TxOutputP2WPKH> for TxOutput {
+    fn from(output: TxOutputP2WPKH) -> Self {
+        TxOutput::P2WPKH(output)
+    }
+}
+
 impl From<TxOutput> for TxOut {
     fn from(out: TxOutput) -> Self {
         match out {
@@ -89,7 +95,7 @@ impl TxOutputP2WPKH {
 
         TxOutputP2WPKH {
             satoshis,
-            script_pubkey: ScriptBuf::new_v0_p2wpkh(&recipient.wpubkey_hash()),
+            script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
         }
     }
 }

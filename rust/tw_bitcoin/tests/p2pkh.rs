@@ -7,6 +7,10 @@ use tw_encoding::hex;
 mod common;
 use common::*;
 
+pub const GENESIS_BLOCK: &str = "0b3b41749c70214385724a4064d87fb445f5aef57ff047cd4ac5b167ced513c7";
+// Mined block, value 50 BTC, vout: 0
+pub const GENESIS_TXID: &str = "1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b";
+
 #[test]
 fn sign_input_p2pkh_output_p2pkh() {
     // This passed the `bitcoin-cli -retest testmempoolaccept` command.
@@ -22,7 +26,6 @@ fn sign_input_p2pkh_output_p2pkh() {
     // Prepare inputs for Alice.
     let txid = Txid::from_str(GENESIS_TXID).unwrap();
     let vout = 0;
-    // TODO: this can be done nicer
     let recipient = Recipient::<PublicKey>::from_keypair(&alice);
     let satoshis = FULL_AMOUNT;
 
