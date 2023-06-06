@@ -91,6 +91,15 @@ pub struct Recipient<T> {
     t: T,
 }
 
+impl Recipient<TweakedPublicKey> {
+    pub fn from_keypair(keypair: &KeyPair) -> Self {
+        let pubkey = PublicKey::new(keypair.public_key());
+        let tweaked = tweak_pubkey(pubkey);
+
+        Recipient { t: tweaked }
+    }
+}
+
 impl Recipient<WPubkeyHash> {
     pub fn from_keypair(keypair: &KeyPair) -> Self {
         Recipient {
@@ -276,7 +285,7 @@ impl TransactionBuilder {
                 .claim_p2wpkh(p, sighash, EcdsaSighashType::All)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::P2TRKeyPath(p) => signer
-                .claim_p2tr_key_path(p, sighash, TapSighashType::All)
+                .claim_p2tr_key_path(p, sighash, TapSighashType::Default)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
@@ -386,8 +395,8 @@ impl TransactionBuilder {
                     let hash = cache
                         .taproot_key_spend_signature_hash(
                             index,
-                            &bitcoin::psbt::Prevouts::All(&prevouts),
-                            TapSighashType::All,
+                            &bitcoin::sighash::Prevouts::All(&prevouts),
+                            TapSighashType::Default,
                         )
                         .map_err(|_| Error::Todo)?;
 
@@ -401,6 +410,9 @@ impl TransactionBuilder {
                 TxInput::NonStandard { ctx: _ } => continue,
             };
         }
+
+        dbg!(&self.inputs);
+        dbg!(&self.outputs);
 
         let mut tx = cache.into_transaction();
 

@@ -1,5 +1,5 @@
 use crate::{tweak_pubkey, InputContext, Recipient, TaprootScript};
-use bitcoin::key::{PublicKey, TweakedPublicKey as BTweakedPublicKey};
+use bitcoin::key::{PublicKey, TweakedPublicKey};
 use bitcoin::script::ScriptBuf;
 use bitcoin::taproot::{ControlBlock, TapNodeHash, TaprootSpendInfo};
 use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, WPubkeyHash, Witness};
@@ -38,8 +38,8 @@ impl From<TxInput> for TxIn {
             previous_output: ctx.previous_output,
             script_sig: ScriptBuf::new(),
             sequence: ctx.sequence,
-            // TODO: Should not be here.
-            witness: ctx.witness.clone(),
+            // TODO: Comment on this:
+            witness: Witness::default(),
         }
     }
 }
@@ -95,23 +95,23 @@ impl TxInputP2PKH {
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeyPath {
     pub(crate) ctx: InputContext,
-    pub(crate) recipient: Recipient<PublicKey>,
+    pub(crate) recipient: Recipient<TweakedPublicKey>,
 }
 
 impl TxInputP2TRKeyPath {
     pub fn new(
         txid: Txid,
         vout: u32,
-        recipient: impl Into<Recipient<PublicKey>>,
+        recipient: impl Into<Recipient<TweakedPublicKey>>,
         satoshis: u64,
     ) -> Self {
-        let recipient: Recipient<PublicKey> = recipient.into();
+        let recipient: Recipient<TweakedPublicKey> = recipient.into();
 
         TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: Some(satoshis),
-                script_pubkey: ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), recipient.untweaked_pubkey(), None),
+                script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
                 sequence: Sequence::default(),
                 witness: Witness::new(),
             },
