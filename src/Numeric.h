@@ -10,7 +10,10 @@
 
 namespace TW {
 
-template <std::unsigned_integral T>
+template <
+    typename T,
+    typename = std::enable_if_t<std::is_unsigned_v<T>>
+>
 bool checkAddUnsignedOverflow(T x, T y) {
     return x > std::numeric_limits<T>::max() - y;
 }
