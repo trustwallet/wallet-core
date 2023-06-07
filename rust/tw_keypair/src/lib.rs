@@ -4,10 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub extern crate tw_encoding;
-pub extern crate tw_hash;
-pub extern crate tw_keypair;
-pub extern crate tw_memory;
-pub extern crate tw_move_parser;
-pub extern crate tw_proto;
-pub extern crate tw_starknet;
+pub mod ecdsa;
+pub mod ffi;
+
+pub type KeyPairResult<T> = Result<T, KeyPairError>;
+
+#[derive(Debug)]
+pub enum KeyPairError {
+    InvalidSignature,
+}
