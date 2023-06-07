@@ -6,5 +6,4 @@ edition = "2021"
 [dependencies]
 tw_encoding = { path = "../tw_encoding" }
 tw_memory = { path = "../tw_memory" }
-# ECDSA specific:
-k256 = { version = "0.13.0", features = ["ecdsa", "std"], default-features = false }
+der = "0.7.3"

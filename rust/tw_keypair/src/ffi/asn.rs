@@ -38,7 +38,7 @@ pub unsafe extern "C" fn ecdsa_signature_from_asn_der(
         return CByteArrayResult::error(CKeyPairError::InvalidSignature);
     };
 
-    der::parse_ecdsa_signature(encoded.as_slice())
+    der::Signature::from_bytes(encoded.as_slice())
         .map(|sign| CByteArray::from(sign.to_vec()))
         .map_err(|_| CKeyPairError::InvalidSignature)
         .into()
