@@ -255,6 +255,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23d8666cb01533c39dde32bcbab8e227b4ed6679b2c925eba05feabea39508fb"
 
 [[package]]
+name = "der"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56acb310e15652100da43d130af8d97b509e95af61aab1c5a7939ef24337ee17"
+
+[[package]]
 name = "derivative"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -870,6 +876,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_keypair"
+version = "0.1.0"
+dependencies = [
+ "der",
+ "tw_encoding",
+ "tw_memory",
+]
+
+[[package]]
 name = "tw_memory"
 version = "0.1.0"
 
@@ -946,6 +961,7 @@ version = "0.1.0"
 dependencies = [
  "tw_encoding",
  "tw_hash",
+ "tw_keypair",
  "tw_memory",
  "tw_move_parser",
  "tw_proto",
