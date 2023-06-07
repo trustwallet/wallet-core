@@ -393,6 +393,9 @@ impl TransactionBuilder {
             TxInput::P2TRKeyPath(p) => signer
                 .claim_p2tr_key_path(p, sighash, TapSighashType::Default)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
+            TxInput::P2TRScriptPath(p) => signer
+                .claim_p2tr_script_path(p, sighash, TapSighashType::Default)
+                .map(|claim| ClaimLocation::Witness(claim.0)),
             TxInput::NonStandard { ctx: _ } => {
                 panic!()
             },
@@ -508,6 +511,9 @@ impl TransactionBuilder {
 
                     claims.push((index, updated));
                 },
+                TxInput::P2TRScriptPath(p) => {
+                    // ... TODO
+                }
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
             };

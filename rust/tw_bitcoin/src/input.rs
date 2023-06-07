@@ -9,6 +9,7 @@ pub enum TxInput {
     P2PKH(TxInputP2PKH),
     P2WPKH(TxInputP2WPKH),
     P2TRKeyPath(TxInputP2TRKeyPath),
+    P2TRScriptPath(TxInputP2TRScriptPath),
     NonStandard { ctx: InputContext },
 }
 
@@ -27,6 +28,12 @@ impl From<TxInputP2WPKH> for TxInput {
 impl From<TxInputP2TRKeyPath> for TxInput {
     fn from(input: TxInputP2TRKeyPath) -> Self {
         TxInput::P2TRKeyPath(input)
+    }
+}
+
+impl From<TxInputP2TRScriptPath> for TxInput {
+    fn from(input: TxInputP2TRScriptPath) -> Self {
+        TxInput::P2TRScriptPath(input)
     }
 }
 
@@ -50,6 +57,7 @@ impl TxInput {
             TxInput::P2PKH(t) => &t.ctx,
             TxInput::P2WPKH(t) => &t.ctx,
             TxInput::P2TRKeyPath(t) => &t.ctx,
+            TxInput::P2TRScriptPath(t) => &t.ctx,
             TxInput::NonStandard { ctx } => ctx,
         }
     }
@@ -58,6 +66,7 @@ impl TxInput {
             TxInput::P2PKH(t) => t.ctx.value,
             TxInput::P2WPKH(t) => t.ctx.value,
             TxInput::P2TRKeyPath(t) => t.ctx.value,
+            TxInput::P2TRScriptPath(t) => t.ctx.value,
             TxInput::NonStandard { ctx } => ctx.value,
         }
     }
@@ -120,6 +129,7 @@ impl TxInputP2TRKeyPath {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct TxInputP2TRScriptPath {
     pub(crate) ctx: InputContext,
     pub(crate) recipient: Recipient<TaprootScript>,
