@@ -11,11 +11,11 @@ use tw_encoding::hex;
 
 #[test]
 fn mainnet_brc20_deploy() {
-    const EXPECTED_RAW_DEPLOY: &str = "020000000121a9074b8d5c9f0c57528bbe503e96a06bb5530253afcde740357a0aac11a5c4000000006a473044022038fe1288c5b3c1fc4e276c80eb130ac81507a1d16a93de61f1065f6fc2878bde02203f513414f6a480e1b4c7a95c762725b9ebc9a83355344e4194f2f8c06b09a31c012103c934b8fa66a55b0a1517e8b443140c844b43682d75a4260a040cd8d301d11019ffffffff022602000000000000225120971bffe440f17f394e728dfd499d0d35fbab4fd17d0ca307eb4bc6909eaed6a60a730000000000001976a9147542c8ab655580ef2a3d1d93153030c73467f8ba88ac00000000";
+    const EXPECTED_RAW_DEPLOY: &str = "020000000121a9074b8d5c9f0c57528bbe503e96a06bb5530253afcde740357a0aac11a5c4000000006b48304502210094f38d41dd28f1916d06b49747276cf418ba002efa4ff151a4167ed070a7e90b022020c6edc13f4a9e1222ee9e09b99ca205139ccf5439a65abb34d62ce694bafdc4012103c934b8fa66a55b0a1517e8b443140c844b43682d75a4260a040cd8d301d11019ffffffff022602000000000000225120971bffe440f17f394e728dfd499d0d35fbab4fd17d0ca307eb4bc6909eaed6a6825f0000000000001976a9147542c8ab655580ef2a3d1d93153030c73467f8ba88ac00000000";
 
-    let ALICE_WIF: &str = env!("DEPLOY_ALICE_WIF");
-    let SEND_AMOUNT: u64 = env!("DEPLOY_SEND_AMOUNT").parse().unwrap();
-    let MINER_FEE: u64 = env!("DEPLOY_MINER_FEE").parse().unwrap();
+    let ALICE_WIF: &str = env!("ALICE_WIF");
+    let SEND_AMOUNT: u64 = env!("SEND_AMOUNT").parse().unwrap();
+    let MINER_FEE: u64 = env!("MINER_FEE").parse().unwrap();
 
     let DEPLOY_INPUT_TXID: &str = env!("DEPLOY_INPUT_TXID");
     let DEPLOY_INPUT_AMOUNT: u64 = env!("DEPLOY_INPUT_AMOUNT").parse().unwrap();
@@ -68,7 +68,7 @@ fn mainnet_brc20_deploy() {
     println!("{hex}");
 
     // ## SECOND TRANSACTION: Deploy the BRC20 token.
-    let outputs = {
+    let (input, output_mint, output_return) = {
         let MINT_INPUT_TXID: &str = env!("MINT_INPUT_TXID");
         let MINT_INPUT_AMOUNT: u64 = env!("MINT_INPUT_AMOUNT").parse().unwrap();
         let MINT_RETURN_AMOUNT: u64 = MINT_INPUT_AMOUNT - SEND_AMOUNT - MINER_FEE;
@@ -94,7 +94,6 @@ fn mainnet_brc20_deploy() {
 
         let brc20_mint =
             BRC20MintInscription::new(recipient.clone(), ticker.clone(), amount).unwrap();
-        //dbg!(&brc20_deploy);
 
         let output_mint = TXOutputP2TRScriptPath::new(SEND_AMOUNT, brc20_mint.0.recipient());
 
@@ -102,15 +101,15 @@ fn mainnet_brc20_deploy() {
         let satoshis = MINT_RETURN_AMOUNT;
         let output_return = TxOutputP2PKH::new(satoshis, recipient.clone());
 
-        [TxOutput::from(output_mint), TxOutput::from(output_return)]
+        (input, output_mint, output_return)
     };
 
     // Alice signs the transaction.
-    /*
     let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
         .miner_fee(MINER_FEE)
-        //.add_input(input.into())
-        .add_output(output.into())
+        .add_input(input.into())
+        .add_output(output_mint.into())
+        .add_output(output_return.into())
         .add_output(return_output.into())
         .sign_inputs(alice)
         .unwrap()
@@ -120,5 +119,4 @@ fn mainnet_brc20_deploy() {
     let hex = hex::encode(signed_transaction, false);
     //assert_eq!(&hex, EXPECTED_RAW_SIGNED);
     println!("{hex}");
-    */
 }
