@@ -3,7 +3,7 @@ use crate::{Error, Recipient, Result, TaprootProgram};
 use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BRC20Payload<T> {
     p: &'static str,
     op: &'static str,
@@ -15,7 +15,6 @@ impl<T: Serialize> BRC20Payload<T> {
     /// Serialize the BRC20 payload and place it into the Ordinals Inscription.
     pub fn to_inscription(&self, recipient: Recipient<PublicKey>) -> Result<OrdinalsInscription> {
         let data = serde_json::to_vec(self).unwrap();
-
         let inscription = OrdinalsInscription::new(Self::MIME, &data, recipient)?;
 
         Ok(inscription)
@@ -88,7 +87,8 @@ pub struct DeployPayload {
     pub dec: Option<usize>,
 }
 
-pub struct BRC20DeployInscription(OrdinalsInscription);
+#[derive(Debug, Clone)]
+pub struct BRC20DeployInscription(pub OrdinalsInscription);
 
 impl BRC20DeployInscription {
     pub fn new(
@@ -165,7 +165,7 @@ pub struct MintPayload {
     pub amt: usize,
 }
 
-pub struct BRC20MintInscription(OrdinalsInscription);
+pub struct BRC20MintInscription(pub OrdinalsInscription);
 
 impl BRC20MintInscription {
     pub fn new(

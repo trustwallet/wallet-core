@@ -37,6 +37,7 @@ pub use utils::*;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug, Clone)]
 pub struct TaprootProgram {
     script: ScriptBuf,
     spend_info: TaprootSpendInfo,

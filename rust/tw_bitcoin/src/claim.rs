@@ -178,6 +178,7 @@ impl TransactionSigner for KeyPair {
             .control_block(&(input.script.clone(), LeafVersion::TapScript))
             .ok_or(Error::Todo)?;
 
+
         // Construct the Schnorr signature. We leave the keypair untweaked,
         // unlike for key-path.
         let sig = Signature {
