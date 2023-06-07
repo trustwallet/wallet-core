@@ -24,8 +24,9 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
     Ok(ret)
 }
 
+#[derive(Debug, Clone)]
 pub struct OrdinalsInscription {
-    envelope: TaprootProgram,
+    pub envelope: TaprootProgram,
     recipient: Recipient<TaprootScript>,
 }
 
@@ -90,13 +91,11 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     let script = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
-        // Push three bytes of "ord"
         .push_opcode(OP_PUSHBYTES_3)
         .push_slice(b"ord")
-        // OP_TRUE = OP_1
-        .push_opcode(OP_TRUE)
+        .push_opcode(OP_PUSHNUM_1)
         .push_slice(mime_buf)
-        .push_opcode(OP_0)
+        .push_opcode(OP_PUSHBYTES_0)
         .push_slice(data_buf)
         .push_opcode(OP_ENDIF)
         .into_script();
@@ -106,13 +105,14 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     // setting the spending condition and actually claiming the spending
     // condition.
     let spend_info = TaprootBuilder::new()
-        .add_leaf(1, script.clone())
+        .add_leaf(0, script.clone())
         .map_err(|_| Error::Todo)?
         .finalize(
             &secp256k1::Secp256k1::new(),
             XOnlyPublicKey::from(internal_key.inner),
         )
-        .map_err(|_| Error::Todo)?;
+        //.map_err(|_| Error::Todo)?;
+        .unwrap();
 
     Ok(TaprootProgram { script, spend_info })
 }
