@@ -16,19 +16,23 @@
 
 namespace TW::NEO {
 
-class TransactionOutput : public Serializable {
+class TransactionOutput final: public Serializable {
   public:
     uint256_t assetId;
-    int64_t value = 0;
+    uint64_t value = 0;
     uint256_t scriptHash;
 
-    virtual ~TransactionOutput() {}
+    ~TransactionOutput() override = default;
 
-    int64_t size() const override {
-        return store(assetId, assetIdSize).size() + valueSize + store(scriptHash, scriptHashSize).size();
+    size_t size() const override {
+        return assetIdSize + valueSize + scriptHashSize;
     }
 
-    void deserialize(const Data& data, int initial_pos = 0) override {
+    void deserialize(const Data& data, size_t initial_pos = 0) override {
+        if (data.size() < initial_pos + size()) {
+            throw std::invalid_argument("Data::Cannot read enough bytes!");
+        }
+
         assetId = load(readBytes(data, assetIdSize, initial_pos));
         value = decode64LE(data.data() + initial_pos + assetIdSize);
         scriptHash = load(readBytes(data, scriptHashSize, initial_pos + assetIdSize + valueSize));

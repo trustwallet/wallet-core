@@ -12,21 +12,21 @@
 
 namespace TW::NEO {
 
-class Witness : public Serializable {
+class Witness final: public Serializable {
   public:
     Data invocationScript;
     Data verificationScript;
 
-    virtual ~Witness() {}
+    ~Witness() override = default;
 
-    int64_t size() const override {
+    size_t size() const override {
         return invocationScript.size() + verificationScript.size();
     }
 
-    void deserialize(const Data& data, int initial_pos = 0) override {
+    void deserialize(const Data& data, size_t initial_pos = 0) override {
         uint32_t size;
         invocationScript = readVarBytes(data, initial_pos, &size);
-        verificationScript = readVarBytes(data, initial_pos + size);
+        verificationScript = readVarBytes(data, initial_pos + static_cast<size_t>(size));
     }
 
     Data serialize() const override {

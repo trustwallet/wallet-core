@@ -64,6 +64,8 @@ TEST(CardanoAddress, Validation) {
     ASSERT_FALSE(AddressV3::isValidLegacy("PREFIX1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s"));
     // invalid checksum V2
     ASSERT_FALSE(AddressV3::isValidLegacy("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm"));
+    // invalid V2 address
+    ASSERT_FALSE(AddressV2::isValid("73Fig6QU8N"));
     // random
     ASSERT_FALSE(AddressV3::isValidLegacy("hasoiusaodiuhsaijnnsajnsaiussai"));
     // empty
