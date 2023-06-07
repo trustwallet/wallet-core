@@ -113,7 +113,7 @@ impl TxInputP2TRKeyPath {
                 value: Some(satoshis),
                 script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
                 sequence: Sequence::default(),
-                witness: Witness::new(),
+                witness: Witness::default(),
             },
             recipient,
         }
