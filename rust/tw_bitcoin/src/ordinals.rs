@@ -1,4 +1,4 @@
-use crate::{Error, Recipient, Result, TaprootScript, TxInputP2TRScriptPath};
+use crate::{Error, Recipient, Result, TaprootProgram, TaprootScript, TxInputP2TRScriptPath};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
@@ -25,7 +25,7 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
 }
 
 pub struct OrdinalsInscription {
-    spend_info: TaprootSpendInfo,
+    envelope: TaprootProgram,
     recipient: Recipient<TaprootScript>,
 }
 
@@ -35,12 +35,12 @@ pub fn new_ordinals_inscription(
     data: &[u8],
     recipient: Recipient<PublicKey>,
 ) -> Result<OrdinalsInscription> {
-    let spend_info = create_envelope(mime, data, recipient.public_key())?;
+    let envelope = create_envelope(mime, data, recipient.public_key())?;
     // TODO: In which cases is this `false`?
-    let merkle_root = spend_info.merkle_root().unwrap();
+    let merkle_root = envelope.spend_info.merkle_root().unwrap();
 
     Ok(OrdinalsInscription {
-        spend_info,
+        envelope,
         recipient: Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
     })
 }
@@ -60,7 +60,7 @@ pub fn new_ordinals_inscription(
 /// could also be the same entity. Stage one, the `internal_key` is the
 /// recipient. Stage two, the `internal_key` is the claimer of the transaction
 /// (where the Inscription script is available in the Witness).
-fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<TaprootSpendInfo> {
+fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<TaprootProgram> {
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
@@ -109,7 +109,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         )
         .map_err(|_| Error::Todo)?;
 
-    Ok(spend_info)
+    Ok(TaprootProgram { script, spend_info })
 }
 
 #[cfg(test)]
