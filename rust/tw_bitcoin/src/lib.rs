@@ -434,7 +434,6 @@ impl TransactionBuilder {
         // satoshis is actually part of the signature.
         let mut prevouts = vec![];
         if self.contains_taproot {
-            dbg!("CONTAINS TAPROOT!");
             for input in &self.inputs {
                 prevouts.push(TxOut {
                     value: input.ctx().value.ok_or(Error::Todo)?,
@@ -442,8 +441,6 @@ impl TransactionBuilder {
                 });
             }
         }
-
-        dbg!(&prevouts);
 
         let mut cache = SighashCache::new(tx);
 
@@ -508,9 +505,6 @@ impl TransactionBuilder {
                 TxInput::NonStandard { ctx: _ } => continue,
             };
         }
-
-        //dbg!(&self.inputs);
-        dbg!(&self.outputs);
 
         let mut tx = cache.into_transaction();
 

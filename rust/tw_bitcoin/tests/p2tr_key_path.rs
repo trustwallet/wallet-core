@@ -56,14 +56,13 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     let hex = hex::encode(signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED);
-    println!("{hex}");
 
     // # Second transaction: Bob spends the P2WPKH input and creates
     // # a P2WPKH output for Alice.
 
     // Transaction was submitted in regtest env via `sendrawtransaction` and
     // mined with `-generate 1`
-    const EXPECTED_RAW_SIGNED_SECOND: &str = "";
+    const EXPECTED_RAW_SIGNED_SECOND: &str = "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140b2d19a704c36ecd698accc374e6348cdc09db43bf8cbd65e874cabc0f963a1b1dbb30d1ee04f9472f6f61be87215ae212d248ccf306c5129c5dd84baa9e1cbeb00000000";
     const LATEST_TXID: &str = "9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac";
     const SEND_TO_ALICE: u64 = SEND_TO_BOB - MINER_FEE;
 
@@ -91,6 +90,8 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
         .unwrap();
 
     let hex = hex::encode(signed_transaction, false);
-    //assert_eq!(&hex, EXPECTED_RAW_SIGNED_SECOND);
-    println!("{hex}");
+
+    dbg!(hex.len());
+
+    assert_eq!(hex, EXPECTED_RAW_SIGNED_SECOND);
 }
