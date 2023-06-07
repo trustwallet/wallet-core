@@ -12,7 +12,7 @@ use bitcoin::key::{KeyPair, TapTweak, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::sighash::{EcdsaSighashType, LegacySighash, Prevouts, SighashCache, TapSighash};
 use bitcoin::sighash::{SegwitV0Sighash, TapSighashType};
-use bitcoin::taproot::TapNodeHash;
+use bitcoin::taproot::{TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
     network,
@@ -36,6 +36,11 @@ pub use output::*;
 pub use utils::*;
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+pub struct TaprootProgram {
+    script: ScriptBuf,
+    spend_info: TaprootSpendInfo,
+}
 
 // TODO: Deprecate this.
 pub struct TransactionHash([u8; 32]);
