@@ -2,7 +2,7 @@ use crate::{
     Error, Recipient, Result, TaprootScript, TxInputP2PKH, TxInputP2TRKeyPath,
     TxInputP2TRScriptPath, TxInputP2WPKH,
 };
-use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey};
+use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey, TweakedKeyPair, TapTweak};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::taproot::{LeafVersion, Signature};
@@ -129,11 +129,26 @@ impl TransactionSigner for KeyPair {
             return Err(Error::Todo);
         }
 
+        let secp = Secp256k1::new();
+
+        // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
+        let tapped: TweakedKeyPair = self.tap_tweak(&secp, None);
+        let tweaked = KeyPair::from(tapped);
+
         // Construct the Schnorr signature.
+        //#[cfg(test)]
         let sig = bitcoin::taproot::Signature {
-            sig: Secp256k1::new().sign_schnorr(&sighash, self),
+            sig: secp.sign_schnorr_no_aux_rand(&sighash, &tweaked),
             hash_ty: sighash_type,
         };
+
+        /*
+        #[cfg(not(test))]
+        let sig = bitcoin::taproot::Signature {
+            sig: secp.sign_schnorr(&sighash, &tweaked),
+            hash_ty: sighash_type,
+        };
+        */
 
         // Construct the witness for claiming.
         let mut witness = Witness::new();
