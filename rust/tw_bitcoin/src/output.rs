@@ -1,4 +1,4 @@
-use crate::{tweak_pubkey, Error, Recipient, Result};
+use crate::{tweak_pubkey, Error, Recipient, Result, TaprootScript};
 use bitcoin::address::Payload;
 use bitcoin::key::TweakedPublicKey;
 use bitcoin::script::ScriptBuf;
@@ -120,6 +120,23 @@ impl TxOutputP2TRKeyPath {
 
 #[derive(Debug, Clone)]
 pub struct TXOutputP2TRScriptPath {
-    script: ScriptBuf,
-    spend_info: TaprootSpendInfo,
+    satoshis: u64,
+    script_pubkey: ScriptBuf,
+}
+
+impl TXOutputP2TRScriptPath {
+    pub fn new(satoshis: u64, recipient: impl Into<Recipient<TaprootScript>>) -> Self {
+        let recipient: Recipient<TaprootScript> = recipient.into();
+
+        let script_pubkey = ScriptBuf::new_v1_p2tr(
+            &secp256k1::Secp256k1::new(),
+            recipient.untweaked_pubkey(),
+            Some(recipient.merkle_root()),
+        );
+
+        TXOutputP2TRScriptPath {
+            satoshis,
+            script_pubkey,
+        }
+    }
 }
