@@ -1,13 +1,10 @@
-use std::str::FromStr;
-
-use bitcoin::{PubkeyHash, PublicKey, Txid, WPubkeyHash};
-use tw_bitcoin::{
+use super::*;
+use crate::{
     keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2WPKH, TxOutputP2WPKH,
 };
+use bitcoin::{PubkeyHash, PublicKey, Txid, WPubkeyHash};
+use std::str::FromStr;
 use tw_encoding::hex;
-
-mod common;
-use common::*;
 
 pub const ALICE_WIF: &str = "cQX5ePcXjTx7C5p6xV8zkp2NN9unhZx4a8RQVPiHd52WxoApV6yK";
 pub const BOB_WIF: &str = "cMn7SSCtE5yt2PS97P4NCMvxpCVvT4cBuHiCzKFW5XMvio4fQbD1";

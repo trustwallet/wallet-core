@@ -1,14 +1,11 @@
-use std::str::FromStr;
-
-use bitcoin::{key::TweakedPublicKey, PubkeyHash, PublicKey, Txid, WPubkeyHash};
-use tw_bitcoin::{
+use super::*;
+use crate::{
     keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath,
     TxInputP2WPKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
+use bitcoin::{key::TweakedPublicKey, PubkeyHash, PublicKey, Txid, WPubkeyHash};
+use std::str::FromStr;
 use tw_encoding::hex;
-
-mod common;
-use common::*;
 
 pub const ALICE_WIF: &str = "cNDFvH3TXCjxgWeVc7vbu4Jw5m2Lu8FkQ69Z2XvFUD9D9rGjofN1";
 pub const BOB_WIF: &str = "cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB";
@@ -62,7 +59,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     // Transaction was submitted in regtest env via `sendrawtransaction` and
     // mined with `-generate 1`
-    const EXPECTED_RAW_SIGNED_SECOND: &str = "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140b2d19a704c36ecd698accc374e6348cdc09db43bf8cbd65e874cabc0f963a1b1dbb30d1ee04f9472f6f61be87215ae212d248ccf306c5129c5dd84baa9e1cbeb00000000";
+    const EXPECTED_RAW_SIGNED_SECOND: &str = "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000";
     const LATEST_TXID: &str = "9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac";
     const SEND_TO_ALICE: u64 = SEND_TO_BOB - MINER_FEE;
 

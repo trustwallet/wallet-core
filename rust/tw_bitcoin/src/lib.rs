@@ -27,6 +27,8 @@ pub mod input;
 pub mod ordinals;
 pub mod output;
 pub mod temp;
+#[cfg(test)]
+mod tests;
 pub mod utils;
 
 // Reexports

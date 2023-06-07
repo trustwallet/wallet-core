@@ -1,11 +1,8 @@
-use std::str::FromStr;
-
+use super::*;
+use crate::{keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
 use bitcoin::{PubkeyHash, PublicKey, Txid};
-use tw_bitcoin::{keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
+use std::str::FromStr;
 use tw_encoding::hex;
-
-mod common;
-use common::*;
 
 pub const GENESIS_BLOCK: &str = "0b3b41749c70214385724a4064d87fb445f5aef57ff047cd4ac5b167ced513c7";
 // Mined block, value 50 BTC, vout: 0
