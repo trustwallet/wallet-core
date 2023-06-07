@@ -29,20 +29,25 @@ pub struct OrdinalsInscription {
     recipient: Recipient<TaprootScript>,
 }
 
-/// Creates a new Ordinals Inscription ("commit stage").
-pub fn new_ordinals_inscription(
-    mime: &[u8],
-    data: &[u8],
-    recipient: Recipient<PublicKey>,
-) -> Result<OrdinalsInscription> {
-    let envelope = create_envelope(mime, data, recipient.public_key())?;
-    // TODO: In which cases is this `false`?
-    let merkle_root = envelope.spend_info.merkle_root().unwrap();
+impl OrdinalsInscription {
+    /// Creates a new Ordinals Inscription ("commit stage").
+    pub fn new(
+        mime: &[u8],
+        data: &[u8],
+        recipient: Recipient<PublicKey>,
+    ) -> Result<OrdinalsInscription> {
+        let envelope = create_envelope(mime, data, recipient.public_key())?;
+        // TODO: In which cases is this `false`?
+        let merkle_root = envelope.spend_info.merkle_root().unwrap();
 
-    Ok(OrdinalsInscription {
-        envelope,
-        recipient: Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
-    })
+        Ok(OrdinalsInscription {
+            envelope,
+            recipient: Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
+        })
+    }
+    pub fn recipient(&self) -> &Recipient<TaprootScript> {
+        &self.recipient
+    }
 }
 
 /// Creates an [Ordinals Inscription](https://docs.ordinals.com/inscriptions.html).
@@ -101,7 +106,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     // setting the spending condition and actually claiming the spending
     // condition.
     let spend_info = TaprootBuilder::new()
-        .add_leaf(1, script)
+        .add_leaf(1, script.clone())
         .map_err(|_| Error::Todo)?
         .finalize(
             &secp256k1::Secp256k1::new(),
