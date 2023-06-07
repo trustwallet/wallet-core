@@ -162,6 +162,7 @@ impl TransactionSigner for KeyPair {
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
     ) -> Result<ClaimP2TRScriptPath> {
+        // Tweak our public key with the Merkle root of the Script to be claimed.
         let me = Recipient::<TaprootScript>::from_keypair(self, input.recipient.merkle_root());
 
         // Check whether we can actually claim the input.
@@ -177,7 +178,8 @@ impl TransactionSigner for KeyPair {
             .control_block(&(input.script.clone(), LeafVersion::TapScript))
             .ok_or(Error::Todo)?;
 
-        // Construct the Schnorr signature.
+        // Construct the Schnorr signature. We leave the keypair untweaked,
+        // unlike for key-path.
         let sig = Signature {
             sig: Secp256k1::new().sign_schnorr(&sighash, self),
             hash_ty: sighash_type,
