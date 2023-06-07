@@ -10,6 +10,7 @@ pub enum TxOutput {
     P2PKH(TxOutputP2PKH),
     P2WPKH(TxOutputP2WPKH),
     P2TRKeyPath(TxOutputP2TRKeyPath),
+    P2TRScriptPath(TXOutputP2TRScriptPath),
 }
 
 impl TxOutput {
@@ -26,6 +27,7 @@ impl TxOutput {
             TxOutput::P2PKH(p) => p.satoshis,
             TxOutput::P2WPKH(p) => p.satoshis,
             TxOutput::P2TRKeyPath(p) => p.satoshis,
+            TxOutput::P2TRScriptPath(p) => p.satoshis,
         }
     }
 }
@@ -48,6 +50,12 @@ impl From<TxOutputP2WPKH> for TxOutput {
     }
 }
 
+impl From<TXOutputP2TRScriptPath> for TxOutput {
+    fn from(output: TXOutputP2TRScriptPath) -> Self {
+        TxOutput::P2TRScriptPath(output)
+    }
+}
+
 impl From<TxOutput> for TxOut {
     fn from(out: TxOutput) -> Self {
         match out {
@@ -60,6 +68,10 @@ impl From<TxOutput> for TxOut {
                 script_pubkey: p.script_pubkey,
             },
             TxOutput::P2TRKeyPath(p) => TxOut {
+                value: p.satoshis,
+                script_pubkey: p.script_pubkey,
+            },
+            TxOutput::P2TRScriptPath(p) => TxOut {
                 value: p.satoshis,
                 script_pubkey: p.script_pubkey,
             },
@@ -125,9 +137,7 @@ pub struct TXOutputP2TRScriptPath {
 }
 
 impl TXOutputP2TRScriptPath {
-    pub fn new(satoshis: u64, recipient: impl Into<Recipient<TaprootScript>>) -> Self {
-        let recipient: Recipient<TaprootScript> = recipient.into();
-
+    pub fn new(satoshis: u64, recipient: &Recipient<TaprootScript>) -> Self {
         let script_pubkey = ScriptBuf::new_v1_p2tr(
             &secp256k1::Secp256k1::new(),
             recipient.untweaked_pubkey(),

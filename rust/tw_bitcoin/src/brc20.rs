@@ -1,5 +1,5 @@
-use crate::ordinals::{new_ordinals_inscription, OrdinalsInscription};
-use crate::{Error, Recipient, Result};
+use crate::ordinals::OrdinalsInscription;
+use crate::{Error, Recipient, Result, TaprootProgram};
 use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
 
@@ -11,9 +11,20 @@ pub struct BRC20Payload<T> {
     inner: T,
 }
 
-type BRC20DeployPayload = BRC20Payload<DeployPayload>;
-type BRC20MintPayload = BRC20Payload<MintPayload>;
-type BRC20TransferPayload = BRC20Payload<TransferPayload>;
+impl<T: Serialize> BRC20Payload<T> {
+    /// Serialize the BRC20 payload and place it into the Ordinals Inscription.
+    pub fn to_inscription(&self, recipient: Recipient<PublicKey>) -> Result<OrdinalsInscription> {
+        let data = serde_json::to_vec(self).unwrap();
+
+        let inscription = OrdinalsInscription::new(Self::MIME, &data, recipient)?;
+
+        Ok(inscription)
+    }
+}
+
+pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
+pub type BRC20MintPayload = BRC20Payload<MintPayload>;
+pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
 impl<T> BRC20Payload<T> {
     const PROTOCOL_ID: &str = "brc-20";
@@ -100,7 +111,7 @@ impl BRC20DeployInscription {
         data: BRC20DeployPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20DeployInscription> {
-        let inscription = new_ordinals_inscription(
+        let inscription = OrdinalsInscription::new(
             BRC20Payload::<DeployPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
@@ -136,7 +147,7 @@ impl BRC20TransferInscription {
         data: BRC20TransferPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20TransferInscription> {
-        let inscription = new_ordinals_inscription(
+        let inscription = OrdinalsInscription::new(
             BRC20Payload::<TransferPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
@@ -174,7 +185,7 @@ impl BRC20MintInscription {
         data: BRC20MintPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20MintInscription> {
-        let inscription = new_ordinals_inscription(
+        let inscription = OrdinalsInscription::new(
             BRC20Payload::<MintPayload>::MIME,
             &serde_json::to_vec(&data).unwrap(),
             recipient,
