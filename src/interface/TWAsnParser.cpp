@@ -10,7 +10,7 @@
 
 using namespace TW;
 
-TWData *_Nullable TWAsnParserECDSASignatureFromDer(TWData *_Nonnull encoded) {
+TWData *_Nullable TWAsnParserEcdsaSignatureFromDer(TWData *_Nonnull encoded) {
     const Data& encodedData = *reinterpret_cast<const Data*>(encoded);
     try {
         auto decoded = ASN::AsnParser::ecdsa_signature_from_der(encodedData);
