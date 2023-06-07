@@ -2,7 +2,7 @@ use crate::{
     Error, Recipient, Result, TaprootScript, TxInputP2PKH, TxInputP2TRKeyPath,
     TxInputP2TRScriptPath, TxInputP2WPKH,
 };
-use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey, TweakedKeyPair, TapTweak};
+use bitcoin::key::{KeyPair, PublicKey, TapTweak, TweakedKeyPair, TweakedPublicKey};
 use bitcoin::secp256k1::Secp256k1;
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use bitcoin::taproot::{LeafVersion, Signature};
@@ -136,19 +136,19 @@ impl TransactionSigner for KeyPair {
         let tweaked = KeyPair::from(tapped);
 
         // Construct the Schnorr signature.
-        //#[cfg(test)]
-        let sig = bitcoin::taproot::Signature {
-            sig: secp.sign_schnorr_no_aux_rand(&sighash, &tweaked),
-            hash_ty: sighash_type,
-        };
-
-        /*
+        // TODO: Make sure to explicity test this in a non-`test` context:
         #[cfg(not(test))]
+        let schnorr = secp.sign_schnorr(&sighash, &tweaked);
+        #[cfg(test)]
+        // For tests, we disable the included randomness in order to create
+        // reproducible signatures. Randomness should ALWAYS be used in
+        // production.
+        let schnorr = secp.sign_schnorr_no_aux_rand(&sighash, &tweaked);
+
         let sig = bitcoin::taproot::Signature {
-            sig: secp.sign_schnorr(&sighash, &tweaked),
+            sig: schnorr,
             hash_ty: sighash_type,
         };
-        */
 
         // Construct the witness for claiming.
         let mut witness = Witness::new();
