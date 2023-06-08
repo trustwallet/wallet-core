@@ -24,6 +24,7 @@ pub mod output;
 mod recipient_impl;
 #[cfg(test)]
 mod tests;
+mod ffi;
 pub mod utils;
 
 // Reexports

@@ -74,7 +74,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     // Prepare outputs for Bob.
     let output = TxOutputP2TRKeyPath::builder()
-        .recipient(Recipient::<TweakedPublicKey>::from(&alice))
+        .recipient(&alice)
         .satoshis(SEND_TO_ALICE)
         .build()
         .unwrap();
