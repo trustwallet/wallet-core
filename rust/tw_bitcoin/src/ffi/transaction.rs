@@ -1,14 +1,13 @@
+#![allow(clippy::missing_safety_doc)]
+
 use super::p2tr_key_path::{TWTxInputP2TRKeyPath, TWTxOutputP2TRKeyPath};
 use super::p2wpkh::{TWTxInputP2WPKH, TWTxOutputP2WPKH};
-use crate::{output::TxOutputP2TRKeyPath, Recipient, TransactionBuilder};
-use bitcoin::PublicKey;
-use bitcoin::ScriptBuf;
+use super::RawPtrTrait;
+use crate::{try_or_else, TransactionBuilder};
 use secp256k1::KeyPair;
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
-use tw_memory::ffi::RawPtrTrait;
-use tw_misc::{try_or_else, try_or_false};
 
 pub struct TWTransactionBuilder(TransactionBuilder);
 

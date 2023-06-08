@@ -1,11 +1,12 @@
+#![allow(clippy::missing_safety_doc)]
+
+use super::RawPtrTrait;
 use crate::input::TxInputP2TRKeyPath;
+use crate::try_or_else;
 use crate::{output::TxOutputP2TRKeyPath, Recipient};
-use bitcoin::{PublicKey, ScriptBuf, Txid};
+use bitcoin::{PublicKey, Txid};
 use secp256k1::hashes::Hash;
-use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::RawPtrTrait;
-use tw_misc::{try_or_else, try_or_false};
 
 pub struct TWTxInputP2TRKeyPath(pub(crate) TxInputP2TRKeyPath);
 

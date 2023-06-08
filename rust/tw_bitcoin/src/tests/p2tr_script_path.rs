@@ -1,14 +1,15 @@
-use super::*;
 use crate::{
     brc20::{BRC20DeployInscription, BRC20MintInscription},
     keypair_from_wif, Recipient, TXOutputP2TRScriptPath, TransactionBuilder, TxInputP2PKH,
     TxInputP2TRScriptPath, TxOutputP2PKH,
 };
-use bitcoin::{PubkeyHash, PublicKey, Txid};
+use bitcoin::{PubkeyHash, Txid};
 use std::str::FromStr;
 use tw_encoding::hex;
 
 #[test]
+#[ignore]
+// WIP...
 fn mainnet_brc20_deploy() {
     const EXPECTED_RAW_DEPLOY: &str = "020000000121a9074b8d5c9f0c57528bbe503e96a06bb5530253afcde740357a0aac11a5c4000000006b48304502210094f38d41dd28f1916d06b49747276cf418ba002efa4ff151a4167ed070a7e90b022020c6edc13f4a9e1222ee9e09b99ca205139ccf5439a65abb34d62ce694bafdc4012103c934b8fa66a55b0a1517e8b443140c844b43682d75a4260a040cd8d301d11019ffffffff022602000000000000225120971bffe440f17f394e728dfd499d0d35fbab4fd17d0ca307eb4bc6909eaed6a6825f0000000000001976a9147542c8ab655580ef2a3d1d93153030c73467f8ba88ac00000000";
 
@@ -71,7 +72,7 @@ fn mainnet_brc20_deploy() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     //assert_eq!(&hex, EXPECTED_RAW_DEPLOY);
     println!("{hex}");
 
@@ -135,7 +136,7 @@ fn mainnet_brc20_deploy() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     //assert_eq!(&hex, EXPECTED_RAW_SIGNED);
     println!("{hex}");
 

@@ -47,6 +47,6 @@ fn sign_input_p2pkh_output_p2pkh() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED);
 }

@@ -18,7 +18,7 @@ use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, WPubkeyHash,
 
 pub mod brc20;
 pub mod claim;
-mod ffi;
+pub mod ffi;
 pub mod input;
 pub mod ordinals;
 pub mod output;

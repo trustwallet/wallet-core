@@ -1,14 +1,13 @@
+#![allow(clippy::missing_safety_doc)]
+
+use super::RawPtrTrait;
 use crate::input::TxInputP2WPKH;
 use crate::output::TxOutputP2WPKH;
-use crate::Recipient;
+use crate::{try_or_else, Recipient};
 use bitcoin::PublicKey;
-use bitcoin::{ScriptBuf, Txid};
+use bitcoin::Txid;
 use secp256k1::hashes::Hash;
-use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::c_result::ErrorCode;
-use tw_memory::ffi::RawPtrTrait;
-use tw_misc::{try_or_else, try_or_false};
 
 pub struct TWTxInputP2WPKH(pub(crate) TxInputP2WPKH);
 
