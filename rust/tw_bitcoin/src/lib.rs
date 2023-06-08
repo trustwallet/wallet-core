@@ -18,13 +18,13 @@ use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, WPubkeyHash,
 
 pub mod brc20;
 pub mod claim;
+mod ffi;
 pub mod input;
 pub mod ordinals;
 pub mod output;
 mod recipient_impl;
 #[cfg(test)]
 mod tests;
-mod ffi;
 pub mod utils;
 
 // Reexports
