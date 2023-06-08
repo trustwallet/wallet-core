@@ -192,6 +192,6 @@ impl TransactionSigner for KeyPair {
         witness.push(&input.script);
         witness.push(control_block.serialize());
 
-        todo!()
+        Ok(ClaimP2TRScriptPath(witness))
     }
 }
