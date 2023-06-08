@@ -1,12 +1,12 @@
 use super::*;
 use crate::{
-    brc20::{self, BRC20DeployInscription, BRC20DeployPayload, BRC20MintInscription},
-    keypair_from_wif, Recipient, TXOutputP2TRScriptPath, TaprootScript, TransactionBuilder,
-    TxInputP2PKH, TxInputP2TRKeyPath, TxInputP2TRScriptPath, TxInputP2WPKH, TxOutput,
-    TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
+    brc20::{BRC20DeployInscription, BRC20MintInscription},
+    keypair_from_wif, Recipient, TXOutputP2TRScriptPath, TransactionBuilder,
+    TxInputP2PKH, TxInputP2TRScriptPath,
+    TxOutputP2PKH,
 };
-use bitcoin::{key::TweakedPublicKey, PubkeyHash, PublicKey, Txid, WPubkeyHash};
-use std::{i128::MIN, str::FromStr};
+use bitcoin::{PubkeyHash, PublicKey, Txid};
+use std::str::FromStr;
 use tw_encoding::hex;
 
 #[test]
