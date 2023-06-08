@@ -28,18 +28,20 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     // # a P2WPKH output for Bob.
 
     // Prepare inputs for Alice.
-    let txid = Txid::from_str(GENESIS_TXID).unwrap();
-    let vout = 0;
-    let recipient = Recipient::<PubkeyHash>::from_keypair(&alice);
-    let satoshis = COINBASE_AMOUNT;
-
-    let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
+    let input = TxInputP2PKH::builder()
+        .txid(Txid::from_str(GENESIS_TXID).unwrap())
+        .vout(0)
+        .recipient(Recipient::<PubkeyHash>::from_keypair(&alice))
+        .satoshis(COINBASE_AMOUNT)
+        .build()
+        .unwrap();
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<TweakedPublicKey>::from_keypair(&bob);
-    let satoshis = SEND_TO_BOB;
-
-    let output = TxOutputP2TRKeyPath::new(satoshis, recipient);
+    let output = TxOutputP2TRKeyPath::builder()
+        .recipient(Recipient::<TweakedPublicKey>::from_keypair(&bob))
+        .satoshis(SEND_TO_BOB)
+        .build()
+        .unwrap();
 
     // Alice signs the transaction.
     let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
