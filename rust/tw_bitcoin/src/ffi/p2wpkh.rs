@@ -14,6 +14,10 @@ pub struct TWTxInputP2WPKH(TxInputP2WPKH);
 
 impl RawPtrTrait for TWTxInputP2WPKH {}
 
+pub struct TWTxOutputP2WPKH(TxOutputP2WPKH);
+
+impl RawPtrTrait for TWTxOutputP2WPKH {}
+
 #[no_mangle]
 pub unsafe extern "C" fn tw_tx_input_p2wpkh_create(
     txid: *const u8,
@@ -44,4 +48,28 @@ pub unsafe extern "C" fn tw_tx_input_p2wpkh_create(
         .unwrap();
 
     TWTxInputP2WPKH(input).into_ptr()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_tx_output_p2wpkh_create(
+    pubkey: *const u8,
+    pubkey_len: usize,
+    satoshis: u64,
+) -> *const TWTxOutputP2WPKH {
+    // Convert Recipient
+    let slice = try_or_else!(
+        CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
+        std::ptr::null
+    );
+    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
+
+    // Build P2WPKH scriptPubKey.
+    let output = TxOutputP2WPKH::builder()
+        .recipient(recipient)
+        .satoshis(satoshis)
+        .build()
+        // Never fails if all build methods are being called.
+        .unwrap();
+
+    TWTxOutputP2WPKH(output).into_ptr()
 }
