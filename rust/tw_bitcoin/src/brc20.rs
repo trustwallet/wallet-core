@@ -1,5 +1,5 @@
 use crate::ordinals::OrdinalsInscription;
-use crate::{Error, Recipient, Result, TaprootProgram};
+use crate::{Error, Recipient, Result};
 use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
 

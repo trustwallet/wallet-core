@@ -53,7 +53,7 @@ fn mainnet_brc20_deploy() {
     let return_output = TxOutputP2PKH::new(satoshis, recipient.clone());
 
     // Alice signs the transaction.
-    let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
+    let signed_transaction = TransactionBuilder::new()
         .miner_fee(MINER_FEE)
         .add_input(input.into())
         .add_output(output.into())
@@ -115,7 +115,7 @@ fn mainnet_brc20_deploy() {
     };
 
     // Alice signs the transaction.
-    let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
+    let signed_transaction = TransactionBuilder::new()
         .miner_fee(MINER_FEE)
         .add_input(input_deploy.into())
         .add_input(input_fee_payer.into())

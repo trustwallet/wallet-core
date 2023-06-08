@@ -1,10 +1,9 @@
-use crate::{Error, Recipient, Result, TaprootProgram, TaprootScript, TxInputP2TRScriptPath};
+use crate::{Error, Recipient, Result, TaprootProgram, TaprootScript};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
-use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
-use bitcoin::{PublicKey, Witness};
-use serde_json::json;
+use bitcoin::taproot::TaprootBuilder;
+use bitcoin::PublicKey;
 
 /// Convenience function for retrieving the size prefix for a PUSH operation in
 /// a Script/Witness. For example, the size of `5` only returns

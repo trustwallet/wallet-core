@@ -1,6 +1,6 @@
 use super::*;
 use crate::{keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
-use bitcoin::{PubkeyHash, PublicKey, Txid};
+use bitcoin::{PublicKey, Txid};
 use std::str::FromStr;
 use tw_encoding::hex;
 
@@ -38,7 +38,7 @@ fn sign_input_p2pkh_output_p2pkh() {
         .unwrap();
 
     // Alice signs the transaction.
-    let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
+    let signed_transaction = TransactionBuilder::new()
         .miner_fee(MINER_FEE)
         .add_input(input.into())
         .add_output(output.into())

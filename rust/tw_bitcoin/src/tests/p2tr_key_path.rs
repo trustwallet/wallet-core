@@ -1,9 +1,9 @@
 use super::*;
 use crate::{
     keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath,
-    TxInputP2WPKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
+    TxOutputP2TRKeyPath,
 };
-use bitcoin::{key::TweakedPublicKey, PubkeyHash, PublicKey, Txid, WPubkeyHash};
+use bitcoin::{key::TweakedPublicKey, PubkeyHash, Txid};
 use std::str::FromStr;
 use tw_encoding::hex;
 
@@ -44,7 +44,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
         .unwrap();
 
     // Alice signs the transaction.
-    let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
+    let signed_transaction = TransactionBuilder::new()
         .miner_fee(MINER_FEE)
         .add_input(input.into())
         .add_output(output.into())
@@ -81,7 +81,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
         .unwrap();
 
     // Alice signs the transaction.
-    let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
+    let signed_transaction = TransactionBuilder::new()
         .miner_fee(MINER_FEE)
         .add_input(input.into())
         .add_output(output.into())
