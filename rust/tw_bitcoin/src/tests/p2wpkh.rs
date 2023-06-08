@@ -8,7 +8,6 @@ use tw_encoding::hex;
 
 pub const ALICE_WIF: &str = "cQX5ePcXjTx7C5p6xV8zkp2NN9unhZx4a8RQVPiHd52WxoApV6yK";
 pub const BOB_WIF: &str = "cMn7SSCtE5yt2PS97P4NCMvxpCVvT4cBuHiCzKFW5XMvio4fQbD1";
-pub const GENESIS_BLOCK: &str = "6fed131159018b4caea7af1ffe1c747d6405cf55cccfe69d1909a79f672200e5";
 pub const GENESIS_TXID: &str = "181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911";
 
 #[test]
@@ -27,18 +26,20 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     // # a P2WPKH output for Bob.
 
     // Prepare inputs for Alice.
-    let txid = Txid::from_str(GENESIS_TXID).unwrap();
-    let vout = 0;
-    let recipient = Recipient::<PubkeyHash>::from_keypair(&alice);
-    let satoshis = COINBASE_AMOUNT;
-
-    let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
+    let input = TxInputP2PKH::builder()
+        .txid(Txid::from_str(GENESIS_TXID).unwrap())
+        .vout(0)
+        .recipient(Recipient::<PubkeyHash>::from_keypair(&alice))
+        .satoshis(COINBASE_AMOUNT)
+        .build()
+        .unwrap();
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<WPubkeyHash>::from_keypair(&bob);
-    let satoshis = SEND_TO_BOB;
-
-    let output = TxOutputP2WPKH::new(satoshis, recipient);
+    let output = TxOutputP2WPKH::builder()
+        .recipient(Recipient::<WPubkeyHash>::from_keypair(&bob))
+        .satoshis(SEND_TO_BOB)
+        .build()
+        .unwrap();
 
     // Alice signs the transaction.
     let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
@@ -62,18 +63,20 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     const LATEST_TXID: &str = "858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e";
     const SEND_TO_ALICE: u64 = SEND_TO_BOB - MINER_FEE;
 
-    let txid = Txid::from_str(LATEST_TXID).unwrap();
-    let vout = 0;
-    let recipient = Recipient::<WPubkeyHash>::from_keypair(&bob);
-    let satoshis = SEND_TO_BOB;
-
-    let input = TxInputP2WPKH::new(txid, vout, recipient, Some(satoshis));
+    let input = TxInputP2WPKH::builder()
+        .txid(Txid::from_str(LATEST_TXID).unwrap())
+        .vout(0)
+        .recipient(Recipient::<WPubkeyHash>::from_keypair(&bob))
+        .satoshis(SEND_TO_BOB)
+        .build()
+        .unwrap();
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<WPubkeyHash>::from_keypair(&alice);
-    let satoshis = SEND_TO_ALICE;
-
-    let output = TxOutputP2WPKH::new(satoshis, recipient);
+    let output = TxOutputP2WPKH::builder()
+        .recipient(Recipient::<WPubkeyHash>::from_keypair(&alice))
+        .satoshis(SEND_TO_ALICE)
+        .build()
+        .unwrap();
 
     // Alice signs the transaction.
     let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)

@@ -65,18 +65,20 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     const LATEST_TXID: &str = "9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac";
     const SEND_TO_ALICE: u64 = SEND_TO_BOB - MINER_FEE;
 
-    let txid = Txid::from_str(LATEST_TXID).unwrap();
-    let vout = 0;
-    let recipient = Recipient::<TweakedPublicKey>::from_keypair(&bob);
-    let satoshis = SEND_TO_BOB;
-
-    let input = TxInputP2TRKeyPath::new(txid, vout, recipient, satoshis);
+    let input = TxInputP2TRKeyPath::builder()
+        .txid(Txid::from_str(LATEST_TXID).unwrap())
+        .vout(0)
+        .recipient(Recipient::<TweakedPublicKey>::from_keypair(&bob))
+        .satoshis(SEND_TO_BOB)
+        .build()
+        .unwrap();
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<TweakedPublicKey>::from_keypair(&alice);
-    let satoshis = SEND_TO_ALICE;
-
-    let output = TxOutputP2TRKeyPath::new(satoshis, recipient);
+    let output = TxOutputP2TRKeyPath::builder()
+        .recipient(Recipient::<TweakedPublicKey>::from_keypair(&alice))
+        .satoshis(SEND_TO_ALICE)
+        .build()
+        .unwrap();
 
     // Alice signs the transaction.
     let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
@@ -89,8 +91,5 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
         .unwrap();
 
     let hex = hex::encode(signed_transaction, false);
-
-    dbg!(hex.len());
-
     assert_eq!(hex, EXPECTED_RAW_SIGNED_SECOND);
 }
