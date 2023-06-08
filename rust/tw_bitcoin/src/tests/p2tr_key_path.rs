@@ -3,13 +3,12 @@ use crate::{
     keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath,
     TxOutputP2TRKeyPath,
 };
-use bitcoin::{key::TweakedPublicKey, PubkeyHash, Txid};
-use std::str::FromStr;
+use bitcoin::{key::TweakedPublicKey, Txid};
 use tw_encoding::hex;
+use std::str::FromStr;
 
 pub const ALICE_WIF: &str = "cNDFvH3TXCjxgWeVc7vbu4Jw5m2Lu8FkQ69Z2XvFUD9D9rGjofN1";
 pub const BOB_WIF: &str = "cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB";
-pub const GENESIS_BLOCK: &str = "253ca41953c2dc36fd627ac4d1bfdfbaeaa09a4eb018a366e39f9187f0f4b520";
 pub const GENESIS_TXID: &str = "c50563913e5a838f937c94232f5a8fc74e58b629fae41dfdffcc9a70f833b53a";
 
 #[test]
