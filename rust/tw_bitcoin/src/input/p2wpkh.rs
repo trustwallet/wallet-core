@@ -11,11 +11,9 @@ impl TxInputP2WPKH {
     pub fn new(
         txid: Txid,
         vout: u32,
-        recipient: impl Into<Recipient<WPubkeyHash>>,
+        recipient: Recipient<WPubkeyHash>,
         satoshis: Option<u64>,
     ) -> Self {
-        let recipient: Recipient<WPubkeyHash> = recipient.into();
-
         TxInputP2WPKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
@@ -52,11 +50,8 @@ impl TxInputP2WPKHBuilder {
         self.vout = Some(vout);
         self
     }
-    pub fn recipient(
-        mut self,
-        recipient: impl Into<Recipient<WPubkeyHash>>,
-    ) -> TxInputP2WPKHBuilder {
-        self.recipient = Some(recipient.into());
+    pub fn recipient(mut self, recipient: Recipient<WPubkeyHash>) -> TxInputP2WPKHBuilder {
+        self.recipient = Some(recipient);
         self
     }
     pub fn satoshis(mut self, satoshis: u64) -> TxInputP2WPKHBuilder {

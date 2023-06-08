@@ -34,7 +34,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone)]
 pub struct TaprootProgram {
-    _script: ScriptBuf,
+    script: ScriptBuf,
     spend_info: TaprootSpendInfo,
 }
 

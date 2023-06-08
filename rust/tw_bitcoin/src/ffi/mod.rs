@@ -1,3 +1,5 @@
+#![allow(clippy::missing_safety_doc)]
+
 pub mod p2tr_key_path;
 pub mod p2wpkh;
 pub mod transaction;

@@ -11,6 +11,14 @@ impl Recipient<PubkeyHash> {
 }
 
 impl Recipient<WPubkeyHash> {
+    pub fn from_pubkey_slice(slice: &[u8]) -> Result<Self> {
+        Ok(Recipient {
+            t: PublicKey::from_slice(slice)
+                .map_err(|_| Error::Todo)?
+                .wpubkey_hash()
+                .ok_or(Error::Todo)?,
+        })
+    }
     pub fn wpubkey_hash(&self) -> &WPubkeyHash {
         &self.t
     }
@@ -82,33 +90,41 @@ impl From<&KeyPair> for Recipient<TweakedPublicKey> {
     }
 }
 
-impl From<PublicKey> for Recipient<WPubkeyHash> {
-    fn from(pubkey: PublicKey) -> Self {
-        Recipient {
+impl TryFrom<PublicKey> for Recipient<WPubkeyHash> {
+    type Error = Error;
+
+    fn try_from(pubkey: PublicKey) -> Result<Self> {
+        Ok(Recipient {
             // TODO: When does this fail?
             t: pubkey.wpubkey_hash().unwrap(),
-        }
+        })
     }
 }
 
-impl From<Recipient<PublicKey>> for Recipient<WPubkeyHash> {
-    fn from(recipient: Recipient<PublicKey>) -> Self {
-        Recipient {
-            t: Self::from(recipient.t).t,
-        }
+impl TryFrom<Recipient<PublicKey>> for Recipient<WPubkeyHash> {
+    type Error = Error;
+
+    fn try_from(recipient: Recipient<PublicKey>) -> Result<Self> {
+        Ok(Recipient {
+            t: Self::try_from(recipient.t)?.t,
+        })
     }
 }
 
-impl From<&KeyPair> for Recipient<WPubkeyHash> {
-    fn from(keypair: &KeyPair) -> Self {
+impl TryFrom<&KeyPair> for Recipient<WPubkeyHash> {
+    type Error = Error;
+
+    fn try_from(keypair: &KeyPair) -> Result<Self> {
         let pubkey = Recipient::<PublicKey>::from(keypair);
-        Self::from(pubkey.t)
+        Self::try_from(pubkey.t)
     }
 }
 
-impl From<KeyPair> for Recipient<WPubkeyHash> {
-    fn from(keypair: KeyPair) -> Self {
-        Self::from(&keypair)
+impl TryFrom<KeyPair> for Recipient<WPubkeyHash> {
+    type Error = Error;
+
+    fn try_from(keypair: KeyPair) -> Result<Self> {
+        Self::try_from(&keypair)
     }
 }
 

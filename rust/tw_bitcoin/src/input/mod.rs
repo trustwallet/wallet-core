@@ -52,7 +52,6 @@ impl From<TxInput> for TxIn {
             previous_output: ctx.previous_output,
             script_sig: ScriptBuf::new(),
             sequence: ctx.sequence,
-            // TODO: Comment on this:
             witness: Witness::default(),
         }
     }

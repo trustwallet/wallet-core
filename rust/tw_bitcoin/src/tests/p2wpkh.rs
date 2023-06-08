@@ -34,7 +34,7 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
 
     // Prepare outputs for Bob.
     let output = TxOutputP2WPKH::builder()
-        .recipient(&bob)
+        .recipient(bob.try_into().unwrap())
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
@@ -64,14 +64,14 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let input = TxInputP2WPKH::builder()
         .txid(Txid::from_str(LATEST_TXID).unwrap())
         .vout(0)
-        .recipient(&bob)
+        .recipient(bob.try_into().unwrap())
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
 
     // Prepare outputs for Bob.
     let output = TxOutputP2WPKH::builder()
-        .recipient(&alice)
+        .recipient(alice.try_into().unwrap())
         .satoshis(SEND_TO_ALICE)
         .build()
         .unwrap();

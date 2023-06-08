@@ -8,9 +8,7 @@ pub struct TxOutputP2WPKH {
 }
 
 impl TxOutputP2WPKH {
-    pub fn new(satoshis: u64, recipient: impl Into<Recipient<WPubkeyHash>>) -> Self {
-        let recipient: Recipient<WPubkeyHash> = recipient.into();
-
+    pub fn new(satoshis: u64, recipient: Recipient<WPubkeyHash>) -> Self {
         TxOutputP2WPKH {
             satoshis,
             script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
@@ -35,11 +33,8 @@ impl TxOutputP2WPKHBuilder {
         self.satoshis = Some(satoshis);
         self
     }
-    pub fn recipient(
-        mut self,
-        recipient: impl Into<Recipient<WPubkeyHash>>,
-    ) -> TxOutputP2WPKHBuilder {
-        self.recipient = Some(recipient.into());
+    pub fn recipient(mut self, recipient: Recipient<WPubkeyHash>) -> TxOutputP2WPKHBuilder {
+        self.recipient = Some(recipient);
         self
     }
     pub fn build(self) -> Result<TxOutputP2WPKH> {
