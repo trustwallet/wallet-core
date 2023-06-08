@@ -12,7 +12,7 @@ use bitcoin::key::{KeyPair, TapTweak, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::sighash::{EcdsaSighashType, LegacySighash, Prevouts, SighashCache, TapSighash};
 use bitcoin::sighash::{SegwitV0Sighash, TapSighashType};
-use bitcoin::taproot::{TapNodeHash, TaprootSpendInfo};
+use bitcoin::taproot::{LeafVersion, TapLeafHash, TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
     network,
@@ -368,7 +368,7 @@ impl TransactionBuilder {
     }
     pub fn add_input(mut self, input: TxInput) -> Self {
         match input {
-            TxInput::P2TRKeyPath(_) => self.contains_taproot = true,
+            TxInput::P2TRKeyPath(_) | TxInput::P2TRScriptPath(_) => self.contains_taproot = true,
             _ => {},
         }
 
@@ -512,8 +512,21 @@ impl TransactionBuilder {
                     claims.push((index, updated));
                 },
                 TxInput::P2TRScriptPath(p) => {
-                    // ... TODO
-                }
+                    let leaf_hash = TapLeafHash::from_script(&p.script, LeafVersion::TapScript);
+
+                    let hash = cache.taproot_script_spend_signature_hash(
+                        index,
+                        &bitcoin::sighash::Prevouts::All(&prevouts),
+                        leaf_hash,
+                        TapSighashType::Default,
+                    )
+                    .map_err(|_| Error::Todo)?;
+
+                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
+                    let updated = signer(input, message)?;
+
+                    claims.push((index, updated));
+                },
                 // Skip.
                 TxInput::NonStandard { ctx: _ } => continue,
             };
