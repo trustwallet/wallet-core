@@ -163,8 +163,7 @@ impl TransactionBuilder {
         self.version = version;
         self
     }
-    // TODO: handle locktime seconds?.
-    pub fn lock_time(mut self, height: u32) -> Self {
+    pub fn lock_time_height(mut self, height: u32) -> Self {
         self.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
         self
     }
@@ -234,11 +233,10 @@ impl TransactionBuilder {
 
         // Prepare the outputs for `bitcoin` crate.
         let mut total_satoshis_outputs = 0;
-        for output in &self.outputs {
+        for output in self.outputs.iter().cloned() {
             total_satoshis_outputs += output.satoshis();
 
-            // TODO: Doable without clone?
-            let btc_txout = TxOut::from(output.clone());
+            let btc_txout = TxOut::from(output);
             tx.output.push(btc_txout);
         }
 
@@ -287,14 +285,13 @@ impl TransactionBuilder {
                     let hash = cache
                         .segwit_signature_hash(
                             index,
-                            // TODO: Handle unwrap?
                             p2wpkh
                                 .ctx
                                 .script_pubkey
                                 .p2wpkh_script_code()
                                 .as_ref()
-                                .unwrap(),
-                            // TODO: Should not be an Option
+                                .ok_or(Error::Todo)?,
+                            // P2WPKH builder requires the `value` field.
                             p2wpkh.ctx.value.unwrap(),
                             EcdsaSighashType::All,
                         )
@@ -396,9 +393,7 @@ impl InputContext {
     pub fn new(utxo: TxOut, point: OutPoint) -> Self {
         InputContext {
             previous_output: point,
-            // TODO: Track `TxOut` directly?
             value: Some(utxo.value),
-            // TODO: Document this.
             script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF = 4294967295`.
             sequence: Sequence::default(),
