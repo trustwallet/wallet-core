@@ -3,11 +3,9 @@ extern crate serde;
 use crate::claim::{ClaimLocation, TransactionSigner};
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
-use bitcoin::hashes::Hash;
 use bitcoin::key::{KeyPair, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::script::ScriptBuf;
-use bitcoin::sighash::{EcdsaSighashType, LegacySighash, SighashCache, TapSighash};
-use bitcoin::sighash::{SegwitV0Sighash, TapSighashType};
+use bitcoin::sighash::{TapSighashType, EcdsaSighashType, SighashCache};
 use bitcoin::taproot::{LeafVersion, TapLeafHash, TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
@@ -36,30 +34,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone)]
 pub struct TaprootProgram {
-    script: ScriptBuf,
+    _script: ScriptBuf,
     spend_info: TaprootSpendInfo,
-}
-
-// TODO: Deprecate this.
-pub struct TransactionHash([u8; 32]);
-
-impl TransactionHash {
-    pub fn from_legacy_sig_hash(hash: LegacySighash) -> Self {
-        TransactionHash(hash.to_byte_array())
-    }
-    pub fn from_tapsig_hash(hash: TapSighash) -> Self {
-        TransactionHash(hash.to_byte_array())
-    }
-    pub fn from_segwit_hash(hash: SegwitV0Sighash) -> Self {
-        TransactionHash(hash.to_byte_array())
-    }
-}
-
-impl From<TransactionHash> for secp256k1::Message {
-    fn from(hash: TransactionHash) -> Self {
-        // Never fails since the byte array is always 32 bytes.
-        secp256k1::Message::from_slice(&hash.0).unwrap()
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -302,8 +278,7 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message: secp256k1::Message =
-                        TransactionHash::from_legacy_sig_hash(hash).into();
+                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -325,8 +300,7 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message: secp256k1::Message =
-                        TransactionHash::from_segwit_hash(hash).into();
+                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));

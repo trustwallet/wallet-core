@@ -68,7 +68,6 @@ impl TransactionSigner for KeyPair {
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
     ) -> Result<ClaimP2PKH> {
-        // TODO: Pass network as param.
         let me = Recipient::<PublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
@@ -174,7 +173,6 @@ impl TransactionSigner for KeyPair {
         // script-path is being executed.
         let control_block = input
             .spend_info
-            // TODO: Can cloning be avoided here?
             .control_block(&(input.script.clone(), LeafVersion::TapScript))
             .ok_or(Error::Todo)?;
 

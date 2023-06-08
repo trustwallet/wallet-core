@@ -121,7 +121,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         //.map_err(|_| Error::Todo)?;
         .unwrap();
 
-    Ok(TaprootProgram { script, spend_info })
+    Ok(TaprootProgram { _script: script, spend_info })
 }
 
 #[cfg(test)]
