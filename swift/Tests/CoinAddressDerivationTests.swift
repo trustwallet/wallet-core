@@ -104,6 +104,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ethereumClassic:
                     let expectedResult = "0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .rootstock:
+                    let expectedResult = "0xA2D7065F94F838a3aB9C04D67B312056846424Df"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)       
                 case .filecoin:
                     let expectedResult = "f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)

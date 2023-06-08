@@ -152,6 +152,7 @@ enum TWCoinType {
     TWCoinTypeAkash = 17000118,
     TWCoinTypeNoble = 18000118,
     TWCoinTypeScroll = 534353,
+    TWCoinTypeRootstock = 137,
 };
 
 /// Returns the blockchain for a coin type.
