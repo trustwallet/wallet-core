@@ -10,11 +10,11 @@ use tw_memory::ffi::c_result::ErrorCode;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::{try_or_else, try_or_false};
 
-pub struct TWTxInputP2WPKH(TxInputP2WPKH);
+pub struct TWTxInputP2WPKH(pub(crate) TxInputP2WPKH);
 
 impl RawPtrTrait for TWTxInputP2WPKH {}
 
-pub struct TWTxOutputP2WPKH(TxOutputP2WPKH);
+pub struct TWTxOutputP2WPKH(pub(crate) TxOutputP2WPKH);
 
 impl RawPtrTrait for TWTxOutputP2WPKH {}
 
