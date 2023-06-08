@@ -249,4 +249,3 @@ TEST(Barz, SignR1TransferAccountNotDeployed) {
     }
 }
 }
-
