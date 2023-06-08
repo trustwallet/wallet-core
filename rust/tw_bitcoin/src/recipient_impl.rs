@@ -4,7 +4,6 @@ use crate::{tweak_pubkey, Error, Recipient, Result};
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey};
 use bitcoin::{PubkeyHash, WPubkeyHash};
 
-// TODO: Needed?
 impl Recipient<PubkeyHash> {
     pub fn pubkey_hash(&self) -> &PubkeyHash {
         &self.t
