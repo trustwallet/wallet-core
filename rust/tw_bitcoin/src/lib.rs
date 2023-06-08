@@ -21,10 +21,10 @@ pub mod claim;
 pub mod input;
 pub mod ordinals;
 pub mod output;
+mod recipient_impl;
 #[cfg(test)]
 mod tests;
 pub mod utils;
-mod recipient_impl;
 
 // Reexports
 pub use input::*;

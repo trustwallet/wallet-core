@@ -4,8 +4,8 @@ use crate::{
     TxOutputP2TRKeyPath,
 };
 use bitcoin::{key::TweakedPublicKey, Txid};
-use tw_encoding::hex;
 use std::str::FromStr;
+use tw_encoding::hex;
 
 pub const ALICE_WIF: &str = "cNDFvH3TXCjxgWeVc7vbu4Jw5m2Lu8FkQ69Z2XvFUD9D9rGjofN1";
 pub const BOB_WIF: &str = "cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB";
