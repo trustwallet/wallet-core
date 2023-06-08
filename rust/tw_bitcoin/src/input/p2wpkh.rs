@@ -1,5 +1,5 @@
-use crate::{Result, Error, InputContext, Recipient};
-use bitcoin::{OutPoint, Sequence, Txid, WPubkeyHash, Witness, ScriptBuf};
+use crate::{Error, InputContext, Recipient, Result};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, WPubkeyHash, Witness};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2WPKH {

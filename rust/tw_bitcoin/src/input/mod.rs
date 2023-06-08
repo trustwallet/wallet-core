@@ -1,15 +1,15 @@
 use crate::InputContext;
-use bitcoin::{TxIn, Witness, ScriptBuf};
+use bitcoin::{ScriptBuf, TxIn, Witness};
 
 mod p2pkh;
-mod p2wpkh;
 mod p2tr_key_path;
 mod p2tr_script_path;
+mod p2wpkh;
 
 pub use p2pkh::*;
-pub use p2wpkh::*;
 pub use p2tr_key_path::*;
 pub use p2tr_script_path::*;
+pub use p2wpkh::*;
 
 #[derive(Debug, Clone)]
 pub enum TxInput {
