@@ -12,7 +12,7 @@ use bitcoin::taproot::{LeafVersion, TapLeafHash, TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
     secp256k1::{self, XOnlyPublicKey},
-    Network, PublicKey,
+    Network, PrivateKey, PublicKey,
 };
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, WPubkeyHash, Witness};
 
@@ -65,29 +65,134 @@ pub enum Error {
     Todo,
 }
 
+impl TryFrom<&str> for Recipient<PublicKey> {
+    type Error = Error;
+
+    fn try_from(string: &str) -> Result<Self> {
+        Ok(Recipient {
+            t: PublicKey::from_slice(string.as_bytes()).map_err(|_| Error::Todo)?,
+        })
+    }
+}
+
+impl From<PublicKey> for Recipient<PublicKey> {
+    fn from(t: PublicKey) -> Self {
+        Recipient { t }
+    }
+}
+
+impl From<KeyPair> for Recipient<PublicKey> {
+    fn from(keypair: KeyPair) -> Self {
+        Self::from(&keypair)
+    }
+}
+
+impl From<&KeyPair> for Recipient<PublicKey> {
+    fn from(keypair: &KeyPair) -> Self {
+        Recipient {
+            t: PublicKey::new(keypair.public_key()),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Recipient<T> {
     t: T,
 }
 
-impl Recipient<TweakedPublicKey> {
-    pub fn from_keypair(keypair: &KeyPair) -> Self {
-        let pubkey = PublicKey::new(keypair.public_key());
+impl From<PublicKey> for Recipient<TweakedPublicKey> {
+    fn from(pubkey: PublicKey) -> Self {
         let tweaked = tweak_pubkey(pubkey);
+        Recipient {
+            t: tweaked
+        }
+    }
+}
 
-        Recipient { t: tweaked }
+impl From<Recipient<PublicKey>> for Recipient<TweakedPublicKey> {
+    fn from(recipient: Recipient<PublicKey>) -> Self {
+        Recipient {
+            t: Self::from(recipient.t).t
+        }
+    }
+}
+
+impl From<KeyPair> for Recipient<TweakedPublicKey> {
+    fn from(keypair: KeyPair) -> Self {
+        Self::from(&keypair)
+    }
+}
+
+impl From<&KeyPair> for Recipient<TweakedPublicKey> {
+    fn from(keypair: &KeyPair) -> Self {
+        let pk = Recipient::<PublicKey>::from(keypair);
+        let tweaked = Recipient::<TweakedPublicKey>::from(pk);
+
+        Recipient { t: tweaked.t }
     }
 }
 
 impl Recipient<WPubkeyHash> {
-    pub fn from_keypair(keypair: &KeyPair) -> Self {
-        Recipient {
-            // TODO: Check unwrap
-            t: PublicKey::new(keypair.public_key()).wpubkey_hash().unwrap(),
-        }
-    }
     pub fn wpubkey_hash(&self) -> &WPubkeyHash {
         &self.t
+    }
+}
+
+impl From<PublicKey> for Recipient<WPubkeyHash> {
+    fn from(pubkey: PublicKey) -> Self {
+        Recipient {
+            // TODO: When does this fail?
+            t: pubkey.wpubkey_hash().unwrap()
+        }
+    }
+}
+
+impl From<Recipient<PublicKey>> for Recipient<WPubkeyHash> {
+    fn from(recipient: Recipient<PublicKey>) -> Self {
+        Recipient {
+            t: Self::from(recipient.t).t
+        }
+    }
+}
+
+impl From<&KeyPair> for Recipient<WPubkeyHash> {
+    fn from(keypair: &KeyPair) -> Self {
+        let pubkey = Recipient::<PublicKey>::from(keypair);
+        Self::from(pubkey.t)
+    }
+}
+
+impl From<KeyPair> for Recipient<WPubkeyHash> {
+    fn from(keypair: KeyPair) -> Self {
+        Self::from(&keypair)
+    }
+}
+
+impl From<PublicKey> for Recipient<PubkeyHash> {
+    fn from(pubkey: PublicKey) -> Self {
+        Recipient { t: pubkey.into() }
+    }
+}
+
+impl From<Recipient<PublicKey>> for Recipient<PubkeyHash> {
+    fn from(recipient: Recipient<PublicKey>) -> Self {
+        Recipient {
+            t: Self::from(recipient.t).t
+        }
+    }
+}
+
+impl From<KeyPair> for Recipient<PubkeyHash> {
+    fn from(keypair: KeyPair) -> Self {
+        Self::from(&keypair)
+    }
+}
+
+impl From<&KeyPair> for Recipient<PubkeyHash> {
+    fn from(keypair: &KeyPair) -> Self {
+        let pk = Recipient::<PublicKey>::from(keypair);
+
+        Recipient { t: pk.t.into() }
     }
 }
 
@@ -99,14 +204,6 @@ impl Recipient<PubkeyHash> {
     }
     pub fn pubkey_hash(&self) -> &PubkeyHash {
         &self.t
-    }
-}
-
-impl From<Recipient<PublicKey>> for Recipient<PubkeyHash> {
-    fn from(val: Recipient<PublicKey>) -> Self {
-        Recipient {
-            t: PubkeyHash::from(val.t),
-        }
     }
 }
 
