@@ -28,7 +28,7 @@ fn mainnet_brc20_deploy() {
     // Claim input.
     let txid = Txid::from_str(ORIGIN_TXID).unwrap();
     let vout = 0;
-    let recipient = Recipient::<PubkeyHash>::from_keypair(&alice);
+    let recipient = Recipient::<PubkeyHash>::from(&alice);
     let satoshis = DEPLOY_INPUT_AMOUNT;
 
     let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));

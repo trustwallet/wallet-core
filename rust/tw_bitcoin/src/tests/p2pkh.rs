@@ -1,6 +1,6 @@
 use super::*;
-use crate::{keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
-use bitcoin::{PublicKey, Txid};
+use crate::{keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxOutputP2PKH};
+use bitcoin::Txid;
 use std::str::FromStr;
 use tw_encoding::hex;
 
@@ -25,7 +25,7 @@ fn sign_input_p2pkh_output_p2pkh() {
     let input = TxInputP2PKH::builder()
         .txid(Txid::from_str(GENESIS_TXID).unwrap())
         .vout(0)
-        .recipient(Recipient::<PublicKey>::from_keypair(&alice).into())
+        .recipient(&alice)
         .satoshis(FULL_AMOUNT)
         .build()
         .unwrap();
@@ -33,7 +33,7 @@ fn sign_input_p2pkh_output_p2pkh() {
     // Prepare outputs for Bob.
     let output = TxOutputP2PKH::builder()
         .satoshis(SEND_AMOUNT)
-        .recipient(Recipient::<PublicKey>::from_keypair(&bob).into())
+        .recipient(&bob)
         .build()
         .unwrap();
 

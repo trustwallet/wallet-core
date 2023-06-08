@@ -38,9 +38,9 @@ impl TxOutputP2TRKeyPathBuilder {
     }
     pub fn recipient(
         mut self,
-        recipient: Recipient<TweakedPublicKey>,
+        recipient: impl Into<Recipient<TweakedPublicKey>>,
     ) -> TxOutputP2TRKeyPathBuilder {
-        self.recipient = Some(recipient);
+        self.recipient = Some(recipient.into());
         self
     }
     pub fn build(self) -> Result<TxOutputP2TRKeyPath> {

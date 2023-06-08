@@ -1,8 +1,6 @@
 use super::*;
-use crate::{
-    keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2WPKH, TxOutputP2WPKH,
-};
-use bitcoin::{PubkeyHash, Txid, WPubkeyHash};
+use crate::{keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxInputP2WPKH, TxOutputP2WPKH};
+use bitcoin::Txid;
 use std::str::FromStr;
 use tw_encoding::hex;
 
@@ -29,14 +27,14 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let input = TxInputP2PKH::builder()
         .txid(Txid::from_str(GENESIS_TXID).unwrap())
         .vout(0)
-        .recipient(Recipient::<PubkeyHash>::from_keypair(&alice))
+        .recipient(&alice)
         .satoshis(COINBASE_AMOUNT)
         .build()
         .unwrap();
 
     // Prepare outputs for Bob.
     let output = TxOutputP2WPKH::builder()
-        .recipient(Recipient::<WPubkeyHash>::from_keypair(&bob))
+        .recipient(&bob)
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
@@ -66,14 +64,14 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let input = TxInputP2WPKH::builder()
         .txid(Txid::from_str(LATEST_TXID).unwrap())
         .vout(0)
-        .recipient(Recipient::<WPubkeyHash>::from_keypair(&bob))
+        .recipient(&bob)
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
 
     // Prepare outputs for Bob.
     let output = TxOutputP2WPKH::builder()
-        .recipient(Recipient::<WPubkeyHash>::from_keypair(&alice))
+        .recipient(&alice)
         .satoshis(SEND_TO_ALICE)
         .build()
         .unwrap();
