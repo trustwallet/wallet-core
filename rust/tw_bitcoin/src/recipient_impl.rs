@@ -95,7 +95,6 @@ impl TryFrom<PublicKey> for Recipient<WPubkeyHash> {
 
     fn try_from(pubkey: PublicKey) -> Result<Self> {
         Ok(Recipient {
-            // TODO: When does this fail?
             t: pubkey.wpubkey_hash().unwrap(),
         })
     }

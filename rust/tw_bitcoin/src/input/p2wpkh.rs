@@ -8,16 +8,11 @@ pub struct TxInputP2WPKH {
 }
 
 impl TxInputP2WPKH {
-    pub fn new(
-        txid: Txid,
-        vout: u32,
-        recipient: Recipient<WPubkeyHash>,
-        satoshis: Option<u64>,
-    ) -> Self {
+    pub fn new(txid: Txid, vout: u32, recipient: Recipient<WPubkeyHash>, satoshis: u64) -> Self {
         TxInputP2WPKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
-                value: satoshis,
+                value: Some(satoshis),
                 script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
                 sequence: Sequence::default(),
                 witness: Witness::new(),
@@ -63,7 +58,7 @@ impl TxInputP2WPKHBuilder {
             self.txid.ok_or(Error::Todo)?,
             self.vout.ok_or(Error::Todo)?,
             self.recipient.ok_or(Error::Todo)?,
-            self.satoshis,
+            self.satoshis.ok_or(Error::Todo)?,
         ))
     }
 }
