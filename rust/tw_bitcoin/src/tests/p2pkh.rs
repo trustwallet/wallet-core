@@ -23,12 +23,12 @@ fn sign_input_p2pkh_output_p2pkh() {
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
     // Prepare inputs for Alice.
-    let txid = Txid::from_str(GENESIS_TXID).unwrap();
-    let vout = 0;
-    let recipient = Recipient::<PublicKey>::from_keypair(&alice);
-    let satoshis = FULL_AMOUNT;
-
-    let input = TxInputP2PKH::new(txid, vout, recipient, Some(satoshis));
+    let input = TxInputP2PKH::builder()
+        .txid(Txid::from_str(GENESIS_TXID).unwrap())
+        .vout(0)
+        .recipient(Recipient::<PublicKey>::from_keypair(&alice).into())
+        .satoshis(FULL_AMOUNT)
+        .build().unwrap();
 
     // Prepare outputs for Bob.
     let recipient = Recipient::<PublicKey>::from_keypair(&bob);
