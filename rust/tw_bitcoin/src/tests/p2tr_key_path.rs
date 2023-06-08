@@ -1,9 +1,8 @@
 use super::*;
 use crate::{
-    keypair_from_wif, Recipient, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath,
-    TxOutputP2TRKeyPath,
+    keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath, TxOutputP2TRKeyPath,
 };
-use bitcoin::{key::TweakedPublicKey, Txid};
+use bitcoin::Txid;
 use std::str::FromStr;
 use tw_encoding::hex;
 
@@ -52,7 +51,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED);
 
     // # Second transaction: Bob spends the P2WPKH input and creates
@@ -89,6 +88,6 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     assert_eq!(hex, EXPECTED_RAW_SIGNED_SECOND);
 }

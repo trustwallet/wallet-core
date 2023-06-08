@@ -49,7 +49,7 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED);
 
     // # Second transaction: Bob spends the P2WPKH input and creates
@@ -86,6 +86,6 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         .serialize()
         .unwrap();
 
-    let hex = hex::encode(signed_transaction, false);
+    let hex = hex::encode(&signed_transaction, false);
     assert_eq!(&hex, EXPECTED_RAW_SIGNED_SECOND);
 }
