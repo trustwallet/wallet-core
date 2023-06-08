@@ -11,6 +11,10 @@ pub struct TWTxInputP2TRKeyPath(TxInputP2TRKeyPath);
 
 impl RawPtrTrait for TWTxInputP2TRKeyPath {}
 
+pub struct TWTxOutputP2TRKeyPath(TxOutputP2TRKeyPath);
+
+impl RawPtrTrait for TWTxOutputP2TRKeyPath {}
+
 #[no_mangle]
 pub unsafe extern "C" fn tw_tx_input_p2tr_key_path_create(
     txid: *const u8,
@@ -40,4 +44,27 @@ pub unsafe extern "C" fn tw_tx_input_p2tr_key_path_create(
         .unwrap();
 
     TWTxInputP2TRKeyPath(input).into_ptr()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_tx_output_p2tr_key_path_create(
+    pubkey: *const u8,
+    pubkey_len: usize,
+    satoshis: u64,
+) -> *const TWTxOutputP2TRKeyPath {
+    // Convert Recipient
+    let slice = try_or_else!(
+        CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
+        std::ptr::null
+    );
+    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
+
+    let output = TxOutputP2TRKeyPath::builder()
+        .recipient(recipient)
+        .satoshis(satoshis)
+        .build()
+        // Never fails if all build methods are being called.
+        .unwrap();
+
+    TWTxOutputP2TRKeyPath(output).into_ptr()
 }
