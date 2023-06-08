@@ -38,7 +38,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     // Prepare outputs for Bob.
     let output = TxOutputP2TRKeyPath::builder()
-        .recipient(Recipient::<TweakedPublicKey>::from_keypair(&bob))
+        .recipient(Recipient::<TweakedPublicKey>::from(&bob))
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
@@ -68,14 +68,14 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     let input = TxInputP2TRKeyPath::builder()
         .txid(Txid::from_str(LATEST_TXID).unwrap())
         .vout(0)
-        .recipient(Recipient::<TweakedPublicKey>::from_keypair(&bob))
+        .recipient(Recipient::<TweakedPublicKey>::from(&bob))
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
 
     // Prepare outputs for Bob.
     let output = TxOutputP2TRKeyPath::builder()
-        .recipient(Recipient::<TweakedPublicKey>::from_keypair(&alice))
+        .recipient(Recipient::<TweakedPublicKey>::from(&alice))
         .satoshis(SEND_TO_ALICE)
         .build()
         .unwrap();

@@ -74,7 +74,6 @@ fn mainnet_brc20_deploy() {
     let output_return;
     {
         let DEPLOY_TXID: &str = env!("DEPLOY_TXID");
-        //let MINT_INPUT_AMOUNT: u64 = env!("MINT_INPUT_AMOUNT").parse().unwrap();
         let DEPLOY_RETURN_AMOUNT: u64 = env!("DEPLOY_RETURN_AMOUNT").parse().unwrap();
         let MINT_RETURN_AMOUNT: u64 = DEPLOY_RETURN_AMOUNT - MINER_FEE;
         dbg!(DEPLOY_RETURN_AMOUNT, MINER_FEE, MINT_RETURN_AMOUNT);

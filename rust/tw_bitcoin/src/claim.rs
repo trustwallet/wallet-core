@@ -122,7 +122,7 @@ impl TransactionSigner for KeyPair {
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
     ) -> Result<ClaimP2TRKeyPath> {
-        let me = Recipient::<TweakedPublicKey>::from_keypair(self);
+        let me = Recipient::<TweakedPublicKey>::from(self);
 
         // Check whether we can actually claim the input.
         if input.recipient != me {
