@@ -3,8 +3,8 @@ use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, WPubkeyHash, Witness};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2WPKH {
-    pub(crate) ctx: InputContext,
-    pub(crate) recipient: Recipient<WPubkeyHash>,
+    ctx: InputContext,
+    recipient: Recipient<WPubkeyHash>,
 }
 
 impl TxInputP2WPKH {
@@ -22,6 +22,14 @@ impl TxInputP2WPKH {
     }
     pub fn builder() -> TxInputP2WPKHBuilder {
         TxInputP2WPKHBuilder::new()
+    }
+    /// Read-only exposure to the context.
+    pub fn ctx(&self) -> &InputContext {
+        &self.ctx
+    }
+    /// Read-only exposure to the recipient.
+    pub fn recipient(&self) -> &Recipient<WPubkeyHash> {
+        &self.recipient
     }
 }
 
