@@ -71,7 +71,7 @@ impl TransactionSigner for KeyPair {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
-        if input.recipient.pubkey_hash() != &me.pubkey_hash() {
+        if input.recipient().pubkey_hash() != &me.pubkey_hash() {
             return Err(Error::Todo);
         }
 
@@ -97,7 +97,7 @@ impl TransactionSigner for KeyPair {
     ) -> Result<ClaimP2WPKH> {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
-        if input.recipient.wpubkey_hash() != &me.wpubkey_hash() {
+        if input.recipient().t != me.wpubkey_hash() {
             return Err(Error::Todo);
         }
 
@@ -124,7 +124,7 @@ impl TransactionSigner for KeyPair {
         let me = Recipient::<TweakedPublicKey>::from(self);
 
         // Check whether we can actually claim the input.
-        if input.recipient != me {
+        if input.recipient() != &me {
             return Err(Error::Todo);
         }
 

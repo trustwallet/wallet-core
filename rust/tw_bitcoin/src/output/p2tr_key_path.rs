@@ -4,8 +4,8 @@ use bitcoin::script::ScriptBuf;
 
 #[derive(Debug, Clone)]
 pub struct TxOutputP2TRKeyPath {
-    pub(crate) satoshis: u64,
-    pub(crate) script_pubkey: ScriptBuf,
+    pub(super) satoshis: u64,
+    pub(super) script_pubkey: ScriptBuf,
 }
 
 impl TxOutputP2TRKeyPath {

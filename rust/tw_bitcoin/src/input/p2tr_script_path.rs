@@ -5,6 +5,7 @@ use bitcoin::{OutPoint, Sequence, Txid, Witness};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRScriptPath {
+    // TODO: make fields private.
     pub(crate) ctx: InputContext,
     pub(crate) recipient: Recipient<TaprootScript>,
     pub(crate) script: ScriptBuf,
@@ -41,6 +42,14 @@ impl TxInputP2TRScriptPath {
     }
     pub fn builder() -> TxInputP2TRScriptPathBuilder {
         TxInputP2TRScriptPathBuilder::new()
+    }
+    /// Read-only exposure to the context.
+    pub fn ctx(&self) -> &InputContext {
+        &self.ctx
+    }
+    /// Read-only exposure to the recipient.
+    pub fn recipient(&self) -> &Recipient<TaprootScript> {
+        &self.recipient
     }
 }
 

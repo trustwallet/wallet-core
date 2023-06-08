@@ -60,19 +60,19 @@ impl From<TxInput> for TxIn {
 impl TxInput {
     pub fn ctx(&self) -> &InputContext {
         match self {
-            TxInput::P2PKH(t) => &t.ctx,
-            TxInput::P2WPKH(t) => &t.ctx,
-            TxInput::P2TRKeyPath(t) => &t.ctx,
-            TxInput::P2TRScriptPath(t) => &t.ctx,
+            TxInput::P2PKH(t) => t.ctx(),
+            TxInput::P2WPKH(t) => t.ctx(),
+            TxInput::P2TRKeyPath(t) => t.ctx(),
+            TxInput::P2TRScriptPath(t) => t.ctx(),
             TxInput::NonStandard { ctx } => ctx,
         }
     }
     pub fn satoshis(&self) -> Option<u64> {
         match self {
-            TxInput::P2PKH(t) => t.ctx.value,
-            TxInput::P2WPKH(t) => t.ctx.value,
-            TxInput::P2TRKeyPath(t) => t.ctx.value,
-            TxInput::P2TRScriptPath(t) => t.ctx.value,
+            TxInput::P2PKH(t) => t.ctx().value,
+            TxInput::P2WPKH(t) => t.ctx().value,
+            TxInput::P2TRKeyPath(t) => t.ctx().value,
+            TxInput::P2TRScriptPath(t) => t.ctx().value,
             TxInput::NonStandard { ctx } => ctx.value,
         }
     }

@@ -34,6 +34,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone)]
 pub struct TaprootProgram {
+    // TODO:
+    #[allow(dead_code)]
     script: ScriptBuf,
     spend_info: TaprootSpendInfo,
 }
@@ -271,7 +273,7 @@ impl TransactionBuilder {
                     let hash = cache
                         .legacy_signature_hash(
                             index,
-                            &p2pkh.ctx.script_pubkey,
+                            &p2pkh.ctx().script_pubkey,
                             EcdsaSighashType::All.to_u32(),
                         )
                         .map_err(|_| Error::Todo)?;
@@ -286,13 +288,14 @@ impl TransactionBuilder {
                         .segwit_signature_hash(
                             index,
                             p2wpkh
-                                .ctx
+                                .ctx()
                                 .script_pubkey
                                 .p2wpkh_script_code()
                                 .as_ref()
-                                .ok_or(Error::Todo)?,
+                                // P2WPKH builder sets the script code correctly.
+                                .unwrap(),
                             // P2WPKH builder requires the `value` field.
-                            p2wpkh.ctx.value.unwrap(),
+                            p2wpkh.ctx().value.unwrap(),
                             EcdsaSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;

@@ -4,8 +4,8 @@ use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, Witness};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeyPath {
-    pub(crate) ctx: InputContext,
-    pub(crate) recipient: Recipient<TweakedPublicKey>,
+    ctx: InputContext,
+    recipient: Recipient<TweakedPublicKey>,
 }
 
 impl TxInputP2TRKeyPath {
@@ -30,6 +30,14 @@ impl TxInputP2TRKeyPath {
     }
     pub fn builder() -> TxInputP2TRKeyPathBuilder {
         TxInputP2TRKeyPathBuilder::new()
+    }
+    /// Read-only exposure to the context.
+    pub fn ctx(&self) -> &InputContext {
+        &self.ctx
+    }
+    /// Read-only exposure to the recipient.
+    pub fn recipient(&self) -> &Recipient<TweakedPublicKey> {
+        &self.recipient
     }
 }
 
