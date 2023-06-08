@@ -1,7 +1,3 @@
-use crate::{Error, Result};
-use bitcoin::address::Payload;
-use bitcoin::{Address, TxOut};
-
 mod p2pkh;
 mod p2tr_key_path;
 mod p2tr_script_path;
@@ -21,14 +17,6 @@ pub enum TxOutput {
 }
 
 impl TxOutput {
-    pub fn from_address(address: Address) -> Result<Self> {
-        match address.payload {
-            Payload::PubkeyHash(hash) => todo!(),
-            Payload::ScriptHash(hash) => todo!(),
-            Payload::WitnessProgram(program) => todo!(),
-            _ => Err(Error::Todo),
-        }
-    }
     pub fn satoshis(&self) -> u64 {
         match self {
             TxOutput::P2PKH(p) => p.satoshis,
@@ -63,22 +51,22 @@ impl From<TXOutputP2TRScriptPath> for TxOutput {
     }
 }
 
-impl From<TxOutput> for TxOut {
+impl From<TxOutput> for bitcoin::TxOut {
     fn from(out: TxOutput) -> Self {
         match out {
-            TxOutput::P2PKH(p) => TxOut {
+            TxOutput::P2PKH(p) => Self {
                 value: p.satoshis,
                 script_pubkey: p.script_pubkey,
             },
-            TxOutput::P2WPKH(p) => TxOut {
+            TxOutput::P2WPKH(p) => Self {
                 value: p.satoshis,
                 script_pubkey: p.script_pubkey,
             },
-            TxOutput::P2TRKeyPath(p) => TxOut {
+            TxOutput::P2TRKeyPath(p) => Self {
                 value: p.satoshis,
                 script_pubkey: p.script_pubkey,
             },
-            TxOutput::P2TRScriptPath(p) => TxOut {
+            TxOutput::P2TRScriptPath(p) => Self {
                 value: p.satoshis,
                 script_pubkey: p.script_pubkey,
             },
