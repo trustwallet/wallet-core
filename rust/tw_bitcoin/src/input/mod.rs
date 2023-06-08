@@ -1,8 +1,5 @@
-use crate::{tweak_pubkey, Error, InputContext, Recipient, Result, TaprootScript};
-use bitcoin::key::{PublicKey, TweakedPublicKey};
-use bitcoin::script::ScriptBuf;
-use bitcoin::taproot::{ControlBlock, TapNodeHash, TaprootSpendInfo};
-use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, WPubkeyHash, Witness};
+use crate::InputContext;
+use bitcoin::{TxIn, Witness, ScriptBuf};
 
 mod p2pkh;
 mod p2wpkh;
