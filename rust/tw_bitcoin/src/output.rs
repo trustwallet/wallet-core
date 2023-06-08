@@ -121,12 +121,10 @@ impl TxOutputP2PKHBuilder {
         self
     }
     pub fn build(self) -> Result<TxOutputP2PKH> {
-        Ok(
-            TxOutputP2PKH::new(
-                self.satoshis.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-            )
-        )
+        Ok(TxOutputP2PKH::new(
+            self.satoshis.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+        ))
     }
 }
 
@@ -169,12 +167,10 @@ impl TxOutputP2WPKHBuilder {
         self
     }
     pub fn build(self) -> Result<TxOutputP2WPKH> {
-        Ok(
-            TxOutputP2WPKH::new(
-                self.satoshis.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-            )
-        )
+        Ok(TxOutputP2WPKH::new(
+            self.satoshis.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+        ))
     }
 }
 
@@ -212,17 +208,18 @@ impl TxOutputP2TRKeyPathBuilder {
         self.satoshis = Some(satoshis);
         self
     }
-    pub fn recipient(mut self, recipient: Recipient<TweakedPublicKey>) -> TxOutputP2TRKeyPathBuilder {
+    pub fn recipient(
+        mut self,
+        recipient: Recipient<TweakedPublicKey>,
+    ) -> TxOutputP2TRKeyPathBuilder {
         self.recipient = Some(recipient);
         self
     }
     pub fn build(self) -> Result<TxOutputP2TRKeyPath> {
-        Ok(
-            TxOutputP2TRKeyPath::new(
-                self.satoshis.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-            )
-        )
+        Ok(TxOutputP2TRKeyPath::new(
+            self.satoshis.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+        ))
     }
 }
 
@@ -264,17 +261,18 @@ impl TxOutputP2TRScriptPathBuilder {
         self.satoshis = Some(satoshis);
         self
     }
-    pub fn recipient(mut self, recipient: Recipient<TaprootScript>) -> TxOutputP2TRScriptPathBuilder {
+    pub fn recipient(
+        mut self,
+        recipient: Recipient<TaprootScript>,
+    ) -> TxOutputP2TRScriptPathBuilder {
         self.recipient = Some(recipient);
         self
     }
     pub fn build(self) -> Result<TXOutputP2TRScriptPath> {
         let recipient = self.recipient.ok_or(Error::Todo)?;
-        Ok(
-            TXOutputP2TRScriptPath::new(
-                self.satoshis.ok_or(Error::Todo)?,
-                &recipient,
-            )
-        )
+        Ok(TXOutputP2TRScriptPath::new(
+            self.satoshis.ok_or(Error::Todo)?,
+            &recipient,
+        ))
     }
 }

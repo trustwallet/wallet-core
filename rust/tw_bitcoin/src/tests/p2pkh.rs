@@ -28,13 +28,15 @@ fn sign_input_p2pkh_output_p2pkh() {
         .vout(0)
         .recipient(Recipient::<PublicKey>::from_keypair(&alice).into())
         .satoshis(FULL_AMOUNT)
-        .build().unwrap();
+        .build()
+        .unwrap();
 
     // Prepare outputs for Bob.
-    let recipient = Recipient::<PublicKey>::from_keypair(&bob);
-    let satoshis = SEND_AMOUNT;
-
-    let output = TxOutputP2PKH::new(satoshis, recipient);
+    let output = TxOutputP2PKH::builder()
+        .satoshis(SEND_AMOUNT)
+        .recipient(Recipient::<PublicKey>::from_keypair(&bob).into())
+        .build()
+        .unwrap();
 
     // Alice signs the transaction.
     let signed_transaction = TransactionBuilder::new(bitcoin::Network::Regtest)
