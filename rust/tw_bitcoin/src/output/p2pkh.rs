@@ -38,8 +38,11 @@ impl TxOutputP2PKHBuilder {
         self.satoshis = Some(satoshis);
         self
     }
-    pub fn recipient(mut self, recipient: Recipient<PubkeyHash>) -> TxOutputP2PKHBuilder {
-        self.recipient = Some(recipient);
+    pub fn recipient(
+        mut self,
+        recipient: impl Into<Recipient<PubkeyHash>>,
+    ) -> TxOutputP2PKHBuilder {
+        self.recipient = Some(recipient.into());
         self
     }
     pub fn build(self) -> Result<TxOutputP2PKH> {

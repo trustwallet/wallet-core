@@ -12,7 +12,7 @@ use bitcoin::taproot::{LeafVersion, TapLeafHash, TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
     secp256k1::{self, XOnlyPublicKey},
-    Network, PrivateKey, PublicKey,
+    Network, PublicKey,
 };
 use bitcoin::{Address, OutPoint, PubkeyHash, Sequence, TxIn, TxOut, WPubkeyHash, Witness};
 
@@ -103,16 +103,14 @@ pub struct Recipient<T> {
 impl From<PublicKey> for Recipient<TweakedPublicKey> {
     fn from(pubkey: PublicKey) -> Self {
         let tweaked = tweak_pubkey(pubkey);
-        Recipient {
-            t: tweaked
-        }
+        Recipient { t: tweaked }
     }
 }
 
 impl From<Recipient<PublicKey>> for Recipient<TweakedPublicKey> {
     fn from(recipient: Recipient<PublicKey>) -> Self {
         Recipient {
-            t: Self::from(recipient.t).t
+            t: Self::from(recipient.t).t,
         }
     }
 }
@@ -142,7 +140,7 @@ impl From<PublicKey> for Recipient<WPubkeyHash> {
     fn from(pubkey: PublicKey) -> Self {
         Recipient {
             // TODO: When does this fail?
-            t: pubkey.wpubkey_hash().unwrap()
+            t: pubkey.wpubkey_hash().unwrap(),
         }
     }
 }
@@ -150,7 +148,7 @@ impl From<PublicKey> for Recipient<WPubkeyHash> {
 impl From<Recipient<PublicKey>> for Recipient<WPubkeyHash> {
     fn from(recipient: Recipient<PublicKey>) -> Self {
         Recipient {
-            t: Self::from(recipient.t).t
+            t: Self::from(recipient.t).t,
         }
     }
 }
@@ -177,7 +175,7 @@ impl From<PublicKey> for Recipient<PubkeyHash> {
 impl From<Recipient<PublicKey>> for Recipient<PubkeyHash> {
     fn from(recipient: Recipient<PublicKey>) -> Self {
         Recipient {
-            t: Self::from(recipient.t).t
+            t: Self::from(recipient.t).t,
         }
     }
 }
@@ -196,22 +194,14 @@ impl From<&KeyPair> for Recipient<PubkeyHash> {
     }
 }
 
+// TODO: Needed?
 impl Recipient<PubkeyHash> {
-    pub fn from_keypair(keypair: &KeyPair) -> Self {
-        Recipient {
-            t: PublicKey::new(keypair.public_key()).into(),
-        }
-    }
     pub fn pubkey_hash(&self) -> &PubkeyHash {
         &self.t
     }
 }
 
 impl Recipient<PublicKey> {
-    pub fn from_wif(wif: &str) -> Result<Self> {
-        let keypair = keypair_from_wif(wif)?;
-        Ok(Self::from_keypair(&keypair))
-    }
     pub fn from_keypair(keypair: &KeyPair) -> Self {
         Recipient {
             t: PublicKey::new(keypair.public_key()),

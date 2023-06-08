@@ -57,8 +57,8 @@ impl TxInputP2PKHBuilder {
         self.vout = Some(vout);
         self
     }
-    pub fn recipient(mut self, recipient: Recipient<PubkeyHash>) -> TxInputP2PKHBuilder {
-        self.recipient = Some(recipient);
+    pub fn recipient(mut self, recipient: impl Into<Recipient<PubkeyHash>>) -> TxInputP2PKHBuilder {
+        self.recipient = Some(recipient.into());
         self
     }
     pub fn satoshis(mut self, satoshis: u64) -> TxInputP2PKHBuilder {

@@ -55,9 +55,9 @@ impl TxInputP2TRKeyPathBuilder {
     }
     pub fn recipient(
         mut self,
-        recipient: Recipient<TweakedPublicKey>,
+        recipient: impl Into<Recipient<TweakedPublicKey>>,
     ) -> TxInputP2TRKeyPathBuilder {
-        self.recipient = Some(recipient);
+        self.recipient = Some(recipient.into());
         self
     }
     pub fn satoshis(mut self, satoshis: u64) -> TxInputP2TRKeyPathBuilder {
