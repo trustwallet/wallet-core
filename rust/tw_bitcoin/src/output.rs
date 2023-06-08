@@ -94,6 +94,40 @@ impl TxOutputP2PKH {
             script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
         }
     }
+    pub fn builder() -> TxOutputP2PKHBuilder {
+        TxOutputP2PKHBuilder::new()
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TxOutputP2PKHBuilder {
+    satoshis: Option<u64>,
+    recipient: Option<Recipient<PubkeyHash>>,
+}
+
+impl TxOutputP2PKHBuilder {
+    pub fn new() -> TxOutputP2PKHBuilder {
+        TxOutputP2PKHBuilder {
+            satoshis: None,
+            recipient: None,
+        }
+    }
+    pub fn satoshis(mut self, satoshis: u64) -> TxOutputP2PKHBuilder {
+        self.satoshis = Some(satoshis);
+        self
+    }
+    pub fn recipient(mut self, recipient: Recipient<PubkeyHash>) -> TxOutputP2PKHBuilder {
+        self.recipient = Some(recipient);
+        self
+    }
+    pub fn build(self) -> Result<TxOutputP2PKH> {
+        Ok(
+            TxOutputP2PKH::new(
+                self.satoshis.ok_or(Error::Todo)?,
+                self.recipient.ok_or(Error::Todo)?,
+            )
+        )
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -111,6 +145,37 @@ impl TxOutputP2WPKH {
             script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
         }
     }
+    pub fn builder() -> TxOutputP2WPKHBuilder {
+        TxOutputP2WPKHBuilder::new()
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TxOutputP2WPKHBuilder {
+    satoshis: Option<u64>,
+    recipient: Option<Recipient<WPubkeyHash>>,
+}
+
+impl TxOutputP2WPKHBuilder {
+    pub fn new() -> TxOutputP2WPKHBuilder {
+        Self::default()
+    }
+    pub fn satoshis(mut self, satoshis: u64) -> TxOutputP2WPKHBuilder {
+        self.satoshis = Some(satoshis);
+        self
+    }
+    pub fn recipient(mut self, recipient: Recipient<WPubkeyHash>) -> TxOutputP2WPKHBuilder {
+        self.recipient = Some(recipient);
+        self
+    }
+    pub fn build(self) -> Result<TxOutputP2WPKH> {
+        Ok(
+            TxOutputP2WPKH::new(
+                self.satoshis.ok_or(Error::Todo)?,
+                self.recipient.ok_or(Error::Todo)?,
+            )
+        )
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -127,6 +192,37 @@ impl TxOutputP2TRKeyPath {
             satoshis,
             script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
         }
+    }
+    pub fn builder() -> TxOutputP2TRKeyPathBuilder {
+        TxOutputP2TRKeyPathBuilder::new()
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TxOutputP2TRKeyPathBuilder {
+    satoshis: Option<u64>,
+    recipient: Option<Recipient<TweakedPublicKey>>,
+}
+
+impl TxOutputP2TRKeyPathBuilder {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn satoshis(mut self, satoshis: u64) -> TxOutputP2TRKeyPathBuilder {
+        self.satoshis = Some(satoshis);
+        self
+    }
+    pub fn recipient(mut self, recipient: Recipient<TweakedPublicKey>) -> TxOutputP2TRKeyPathBuilder {
+        self.recipient = Some(recipient);
+        self
+    }
+    pub fn build(self) -> Result<TxOutputP2TRKeyPath> {
+        Ok(
+            TxOutputP2TRKeyPath::new(
+                self.satoshis.ok_or(Error::Todo)?,
+                self.recipient.ok_or(Error::Todo)?,
+            )
+        )
     }
 }
 
@@ -148,5 +244,37 @@ impl TXOutputP2TRScriptPath {
             satoshis,
             script_pubkey,
         }
+    }
+    pub fn builder() -> TxOutputP2TRScriptPathBuilder {
+        TxOutputP2TRScriptPathBuilder::new()
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TxOutputP2TRScriptPathBuilder {
+    satoshis: Option<u64>,
+    recipient: Option<Recipient<TaprootScript>>,
+}
+
+impl TxOutputP2TRScriptPathBuilder {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn satoshis(mut self, satoshis: u64) -> TxOutputP2TRScriptPathBuilder {
+        self.satoshis = Some(satoshis);
+        self
+    }
+    pub fn recipient(mut self, recipient: Recipient<TaprootScript>) -> TxOutputP2TRScriptPathBuilder {
+        self.recipient = Some(recipient);
+        self
+    }
+    pub fn build(self) -> Result<TXOutputP2TRScriptPath> {
+        let recipient = self.recipient.ok_or(Error::Todo)?;
+        Ok(
+            TXOutputP2TRScriptPath::new(
+                self.satoshis.ok_or(Error::Todo)?,
+                &recipient,
+            )
+        )
     }
 }

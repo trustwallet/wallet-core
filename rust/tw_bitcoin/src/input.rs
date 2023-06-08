@@ -98,6 +98,9 @@ impl TxInputP2PKH {
             recipient,
         }
     }
+    pub fn builder() -> TxInputP2PKHBuilder {
+        TxInputP2PKHBuilder::new()
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -170,6 +173,9 @@ impl TxInputP2TRKeyPath {
             },
             recipient,
         }
+    }
+    pub fn builder() -> TxInputP2TRKeyPathBuilder {
+        TxInputP2TRKeyPathBuilder::new()
     }
 }
 
@@ -249,6 +255,9 @@ impl TxInputP2TRScriptPath {
             script,
             spend_info,
         }
+    }
+    pub fn builder() -> TxInputP2TRScriptPathBuilder {
+        TxInputP2TRScriptPathBuilder::new()
     }
 }
 
@@ -336,6 +345,9 @@ impl TxInputP2WPKH {
             },
             recipient,
         }
+    }
+    pub fn builder() -> TxInputP2WPKHBuilder {
+        TxInputP2WPKHBuilder::new()
     }
 }
 
