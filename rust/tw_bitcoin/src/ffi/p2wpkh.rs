@@ -4,8 +4,7 @@ use super::RawPtrTrait;
 use crate::input::TxInputP2WPKH;
 use crate::output::TxOutputP2WPKH;
 use crate::{try_or_else, Recipient};
-use bitcoin::PublicKey;
-use bitcoin::Txid;
+use bitcoin::{Txid, WPubkeyHash};
 use secp256k1::hashes::Hash;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 
@@ -34,7 +33,10 @@ pub unsafe extern "C" fn tw_tx_input_p2wpkh_create(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         std::ptr::null
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
+    let recipient = try_or_else!(
+        Recipient::<WPubkeyHash>::from_pubkey_slice(slice),
+        std::ptr::null
+    );
 
     // Build P2WPKH scriptPubKey.
     let input = TxInputP2WPKH::builder()
@@ -60,7 +62,10 @@ pub unsafe extern "C" fn tw_tx_output_p2wpkh_create(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         std::ptr::null
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
+    let recipient = try_or_else!(
+        Recipient::<WPubkeyHash>::from_pubkey_slice(slice),
+        std::ptr::null
+    );
 
     // Build P2WPKH scriptPubKey.
     let output = TxOutputP2WPKH::builder()
