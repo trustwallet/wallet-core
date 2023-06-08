@@ -514,13 +514,14 @@ impl TransactionBuilder {
                 TxInput::P2TRScriptPath(p) => {
                     let leaf_hash = TapLeafHash::from_script(&p.script, LeafVersion::TapScript);
 
-                    let hash = cache.taproot_script_spend_signature_hash(
-                        index,
-                        &bitcoin::sighash::Prevouts::All(&prevouts),
-                        leaf_hash,
-                        TapSighashType::Default,
-                    )
-                    .map_err(|_| Error::Todo)?;
+                    let hash = cache
+                        .taproot_script_spend_signature_hash(
+                            index,
+                            &bitcoin::sighash::Prevouts::All(&prevouts),
+                            leaf_hash,
+                            TapSighashType::Default,
+                        )
+                        .map_err(|_| Error::Todo)?;
 
                     let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
                     let updated = signer(input, message)?;

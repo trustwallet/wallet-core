@@ -1,4 +1,4 @@
-use crate::{Result, Error, tweak_pubkey, InputContext, Recipient, TaprootScript};
+use crate::{tweak_pubkey, Error, InputContext, Recipient, Result, TaprootScript};
 use bitcoin::key::{PublicKey, TweakedPublicKey};
 use bitcoin::script::ScriptBuf;
 use bitcoin::taproot::{ControlBlock, TapNodeHash, TaprootSpendInfo};
@@ -137,14 +137,12 @@ impl TxInputP2PKHBuilder {
         self
     }
     pub fn build(self) -> Result<TxInputP2PKH> {
-        Ok(
-            TxInputP2PKH::new(
-                self.txid.ok_or(Error::Todo)?,
-                self.vout.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-                self.satoshis,
-            )
-        )
+        Ok(TxInputP2PKH::new(
+            self.txid.ok_or(Error::Todo)?,
+            self.vout.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+            self.satoshis,
+        ))
     }
 }
 
@@ -199,7 +197,10 @@ impl TxInputP2TRKeyPathBuilder {
         self.vout = Some(vout);
         self
     }
-    pub fn recipient(mut self, recipient: Recipient<TweakedPublicKey>) -> TxInputP2TRKeyPathBuilder {
+    pub fn recipient(
+        mut self,
+        recipient: Recipient<TweakedPublicKey>,
+    ) -> TxInputP2TRKeyPathBuilder {
         self.recipient = Some(recipient);
         self
     }
@@ -208,17 +209,14 @@ impl TxInputP2TRKeyPathBuilder {
         self
     }
     pub fn build(self) -> Result<TxInputP2TRKeyPath> {
-        Ok(
-            TxInputP2TRKeyPath::new(
-                self.txid.ok_or(Error::Todo)?,
-                self.vout.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-                self.satoshis.ok_or(Error::Todo)?,
-            )
-        )
+        Ok(TxInputP2TRKeyPath::new(
+            self.txid.ok_or(Error::Todo)?,
+            self.vout.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+            self.satoshis.ok_or(Error::Todo)?,
+        ))
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRScriptPath {
@@ -290,7 +288,10 @@ impl TxInputP2TRScriptPathBuilder {
         self.vout = Some(vout);
         self
     }
-    pub fn recipient(mut self, recipient: Recipient<TaprootScript>) -> TxInputP2TRScriptPathBuilder {
+    pub fn recipient(
+        mut self,
+        recipient: Recipient<TaprootScript>,
+    ) -> TxInputP2TRScriptPathBuilder {
         self.recipient = Some(recipient);
         self
     }
@@ -307,16 +308,14 @@ impl TxInputP2TRScriptPathBuilder {
         self
     }
     pub fn build(self) -> Result<TxInputP2TRScriptPath> {
-        Ok(
-            TxInputP2TRScriptPath::new(
-                self.txid.ok_or(Error::Todo)?,
-                self.vout.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-                self.satoshis.ok_or(Error::Todo)?,
-                self.script.ok_or(Error::Todo)?,
-                self.spend_info.ok_or(Error::Todo)?,
-            )
-        )
+        Ok(TxInputP2TRScriptPath::new(
+            self.txid.ok_or(Error::Todo)?,
+            self.vout.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+            self.satoshis.ok_or(Error::Todo)?,
+            self.script.ok_or(Error::Todo)?,
+            self.spend_info.ok_or(Error::Todo)?,
+        ))
     }
 }
 
@@ -380,15 +379,11 @@ impl TxInputP2WPKHBuilder {
         self
     }
     pub fn build(self) -> Result<TxInputP2WPKH> {
-        Ok(
-            TxInputP2WPKH::new(
-                self.txid.ok_or(Error::Todo)?,
-                self.vout.ok_or(Error::Todo)?,
-                self.recipient.ok_or(Error::Todo)?,
-                self.satoshis,
-            )
-        )
+        Ok(TxInputP2WPKH::new(
+            self.txid.ok_or(Error::Todo)?,
+            self.vout.ok_or(Error::Todo)?,
+            self.recipient.ok_or(Error::Todo)?,
+            self.satoshis,
+        ))
     }
 }
-
-
