@@ -32,7 +32,10 @@ pub unsafe extern "C" fn tw_tx_input_p2tr_key_path_create(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         std::ptr::null_mut
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null_mut);
+    let recipient = try_or_else!(
+        Recipient::<PublicKey>::from_slice(slice),
+        std::ptr::null_mut
+    );
 
     let input = TxInputP2TRKeyPath::builder()
         .txid(txid)
@@ -57,7 +60,10 @@ pub unsafe extern "C" fn tw_tx_output_p2tr_key_path_create(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         std::ptr::null_mut
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null_mut);
+    let recipient = try_or_else!(
+        Recipient::<PublicKey>::from_slice(slice),
+        std::ptr::null_mut
+    );
 
     let output = TxOutputP2TRKeyPath::builder()
         .recipient(recipient)
