@@ -5,7 +5,7 @@ use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::key::{KeyPair, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::script::ScriptBuf;
-use bitcoin::sighash::{TapSighashType, EcdsaSighashType, SighashCache};
+use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash, TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
