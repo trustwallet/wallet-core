@@ -79,7 +79,6 @@ pub struct TxInputP2PKH {
 }
 
 impl TxInputP2PKH {
-    // TODO: `satoshis` should be mandatory.
     pub fn new(
         txid: Txid,
         vout: u32,
@@ -98,6 +97,51 @@ impl TxInputP2PKH {
             },
             recipient,
         }
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TxInputP2PKHBuilder {
+    txid: Option<Txid>,
+    vout: Option<u32>,
+    recipient: Option<Recipient<PubkeyHash>>,
+    satoshis: Option<u64>,
+}
+
+impl TxInputP2PKHBuilder {
+    pub fn new() -> TxInputP2PKHBuilder {
+        TxInputP2PKHBuilder {
+            txid: None,
+            vout: None,
+            recipient: None,
+            satoshis: None,
+        }
+    }
+    pub fn txid(mut self, txid: Txid) -> TxInputP2PKHBuilder {
+        self.txid = Some(txid);
+        self
+    }
+    pub fn vout(mut self, vout: u32) -> TxInputP2PKHBuilder {
+        self.vout = Some(vout);
+        self
+    }
+    pub fn recipient(mut self, recipient: Recipient<PubkeyHash>) -> TxInputP2PKHBuilder {
+        self.recipient = Some(recipient);
+        self
+    }
+    pub fn satoshis(mut self, satoshis: u64) -> TxInputP2PKHBuilder {
+        self.satoshis = Some(satoshis);
+        self
+    }
+    pub fn build(self) -> Result<TxInputP2PKH> {
+        Ok(
+            TxInputP2PKH::new(
+                self.txid.ok_or(Error::Todo)?,
+                self.vout.ok_or(Error::Todo)?,
+                self.recipient.ok_or(Error::Todo)?,
+                self.satoshis,
+            )
+        )
     }
 }
 
