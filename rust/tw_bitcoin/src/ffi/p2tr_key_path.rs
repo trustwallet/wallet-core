@@ -7,11 +7,11 @@ use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::{try_or_else, try_or_false};
 
-pub struct TWTxInputP2TRKeyPath(TxInputP2TRKeyPath);
+pub struct TWTxInputP2TRKeyPath(pub(crate) TxInputP2TRKeyPath);
 
 impl RawPtrTrait for TWTxInputP2TRKeyPath {}
 
-pub struct TWTxOutputP2TRKeyPath(TxOutputP2TRKeyPath);
+pub struct TWTxOutputP2TRKeyPath(pub(crate) TxOutputP2TRKeyPath);
 
 impl RawPtrTrait for TWTxOutputP2TRKeyPath {}
 
