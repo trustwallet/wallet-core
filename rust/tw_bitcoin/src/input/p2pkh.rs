@@ -1,8 +1,5 @@
-use crate::{tweak_pubkey, Error, InputContext, Recipient, Result, TaprootScript};
-use bitcoin::key::{PublicKey, TweakedPublicKey};
-use bitcoin::script::ScriptBuf;
-use bitcoin::taproot::{ControlBlock, TapNodeHash, TaprootSpendInfo};
-use bitcoin::{OutPoint, PubkeyHash, Sequence, TxIn, Txid, WPubkeyHash, Witness};
+use crate::{Result, Error, InputContext, Recipient};
+use bitcoin::{OutPoint, PubkeyHash, Sequence, Txid, Witness, ScriptBuf};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
