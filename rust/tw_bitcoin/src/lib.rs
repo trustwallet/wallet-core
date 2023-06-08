@@ -1,21 +1,16 @@
-#[macro_use]
 extern crate serde;
 
-use std::str::FromStr;
-
 use crate::claim::{ClaimLocation, TransactionSigner};
-use bitcoin::address::NetworkChecked;
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
-use bitcoin::key::{KeyPair, TapTweak, TweakedPublicKey, UntweakedPublicKey};
-use bitcoin::script::{PushBytesBuf, ScriptBuf};
-use bitcoin::sighash::{EcdsaSighashType, LegacySighash, Prevouts, SighashCache, TapSighash};
+use bitcoin::key::{KeyPair, TweakedPublicKey, UntweakedPublicKey};
+use bitcoin::script::ScriptBuf;
+use bitcoin::sighash::{EcdsaSighashType, LegacySighash, SighashCache, TapSighash};
 use bitcoin::sighash::{SegwitV0Sighash, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash, TapNodeHash, TaprootSpendInfo};
 use bitcoin::transaction::Transaction;
 use bitcoin::{
-    network,
     secp256k1::{self, XOnlyPublicKey},
     Network, PublicKey,
 };
@@ -96,11 +91,13 @@ fn poc() {
 }
 */
 
-use tw_encoding::hex;
-
 #[test]
 fn some() {
+    use bitcoin::key::TapTweak;
+    use bitcoin::sighash::Prevouts;
     use bitcoin::*;
+    use std::str::FromStr;
+    use tw_encoding::hex;
 
     let secp = secp256k1::Secp256k1::new();
 
@@ -324,7 +321,6 @@ impl Recipient<TaprootScript> {
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
-    network: Network,
     version: i32,
     lock_time: LockTime,
     inputs: Vec<TxInput>,
@@ -334,11 +330,9 @@ pub struct TransactionBuilder {
     contains_taproot: bool,
 }
 
-impl TransactionBuilder {
-    pub fn new(network: Network) -> Self {
+impl Default for TransactionBuilder {
+    fn default() -> Self {
         TransactionBuilder {
-            network,
-            // TODO: Check this.
             version: 2,
             // No lock time, transaction is immediately spendable.
             lock_time: LockTime::Blocks(Height::ZERO),
@@ -348,6 +342,12 @@ impl TransactionBuilder {
             return_address: None,
             contains_taproot: false,
         }
+    }
+}
+
+impl TransactionBuilder {
+    pub fn new() -> Self {
+        Self::default()
     }
     pub fn version(mut self, version: i32) -> Self {
         self.version = version;
@@ -401,7 +401,7 @@ impl TransactionBuilder {
             },
         })
     }
-    pub fn sign_inputs_fn<F>(mut self, signer: F) -> Result<TransactionSigned>
+    pub fn sign_inputs_fn<F>(self, signer: F) -> Result<TransactionSigned>
     where
         F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
     {
@@ -497,7 +497,7 @@ impl TransactionBuilder {
 
                     claims.push((index, updated));
                 },
-                TxInput::P2TRKeyPath(p) => {
+                TxInput::P2TRKeyPath(_) => {
                     let hash = cache
                         .taproot_key_spend_signature_hash(
                             index,

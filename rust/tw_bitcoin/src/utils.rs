@@ -1,18 +1,6 @@
 use crate::{Error, Result};
-use bitcoin::address::Payload;
-use bitcoin::key::{KeyPair, PrivateKey, PublicKey, TapTweak, TweakedKeyPair, TweakedPublicKey};
-use bitcoin::script::ScriptBuf;
+use bitcoin::key::{KeyPair, PrivateKey, PublicKey, TapTweak, TweakedPublicKey};
 use bitcoin::secp256k1::{self, XOnlyPublicKey};
-use bitcoin::{Address, PubkeyHash};
-use std::str::FromStr;
-
-pub fn pubkey_hash_from_address(string: &str) -> Result<PubkeyHash> {
-    let addr = Address::from_str(string).map_err(|_| Error::Todo)?;
-    match addr.payload {
-        Payload::PubkeyHash(hash) => Ok(hash),
-        _ => Err(Error::Todo),
-    }
-}
 
 pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
     let pk = PrivateKey::from_wif(string).map_err(|_| Error::Todo)?;
