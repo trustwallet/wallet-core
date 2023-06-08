@@ -129,6 +129,47 @@ impl TxInputP2TRKeyPath {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TxInputP2TRKeyPathBuilder {
+    txid: Option<Txid>,
+    vout: Option<u32>,
+    recipient: Option<Recipient<TweakedPublicKey>>,
+    satoshis: Option<u64>,
+}
+
+impl TxInputP2TRKeyPathBuilder {
+    pub fn new() -> TxInputP2TRKeyPathBuilder {
+        Self::default()
+    }
+    pub fn txid(mut self, txid: Txid) -> TxInputP2TRKeyPathBuilder {
+        self.txid = Some(txid);
+        self
+    }
+    pub fn vout(mut self, vout: u32) -> TxInputP2TRKeyPathBuilder {
+        self.vout = Some(vout);
+        self
+    }
+    pub fn recipient(mut self, recipient: Recipient<TweakedPublicKey>) -> TxInputP2TRKeyPathBuilder {
+        self.recipient = Some(recipient);
+        self
+    }
+    pub fn satoshis(mut self, satoshis: u64) -> TxInputP2TRKeyPathBuilder {
+        self.satoshis = Some(satoshis);
+        self
+    }
+    pub fn build(self) -> Result<TxInputP2TRKeyPath> {
+        Ok(
+            TxInputP2TRKeyPath::new(
+                self.txid.ok_or(Error::Todo)?,
+                self.vout.ok_or(Error::Todo)?,
+                self.recipient.ok_or(Error::Todo)?,
+                self.satoshis.ok_or(Error::Todo)?,
+            )
+        )
+    }
+}
+
+
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRScriptPath {
     pub(crate) ctx: InputContext,
