@@ -80,12 +80,18 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     // Fany any sized above 75, we use encode as `OP_PUSHDATA[1|2|3|4] <SIZE_BUF>`.
     mime_buf.push(op_push.to_u8()).unwrap();
     if let Some(size_buf) = size_buf {
-        mime_buf.extend_from_slice(size_buf.as_slice()).unwrap();
+        mime_buf.extend_from_slice(&size_buf).unwrap();
     }
+    mime_buf.extend_from_slice(mime).unwrap();
 
     // Prepare data buffer.
     let mut data_buf = PushBytesBuf::new();
-    data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
+    let (op_push, size_buf) = get_op_push(data.len() as u32)?;
+    data_buf.push(op_push.to_u8()).unwrap();
+    if let Some(size_buf) = size_buf {
+        data_buf.extend_from_slice(&size_buf).unwrap();
+    }
+    data_buf.extend_from_slice(data).unwrap();
 
     // Create an Ordinals Inscription.
     let script = ScriptBuf::builder()
@@ -99,6 +105,8 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         .push_slice(data_buf)
         .push_opcode(OP_ENDIF)
         .into_script();
+
+    dbg!(&script);
 
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
