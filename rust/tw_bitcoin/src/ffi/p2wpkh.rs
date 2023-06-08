@@ -33,7 +33,7 @@ pub unsafe extern "C" fn tw_tx_input_p2wpkh_create(
     );
     let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
 
-	// Build P2WPKH scriptPubKey.
+    // Build P2WPKH scriptPubKey.
     let input = TxInputP2WPKH::builder()
         .txid(txid)
         .vout(vout)
