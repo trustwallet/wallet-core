@@ -11,6 +11,7 @@ use ecdsa::hazmat::DigestPrimitive;
 use ecdsa::PrimeCurve;
 
 mod canonical;
+pub mod der;
 pub mod nist256p1;
 pub mod secp256k1;
 mod signature;
