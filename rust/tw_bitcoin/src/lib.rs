@@ -62,10 +62,10 @@ impl Recipient<PublicKey> {
     pub fn pubkey_hash(&self) -> PubkeyHash {
         PubkeyHash::from(self.t)
     }
-    pub fn wpubkey_hash(&self) -> WPubkeyHash {
+    pub fn wpubkey_hash(&self) -> Result<WPubkeyHash> {
         // The key is always compressed.
         debug_assert!(self.t.compressed);
-        self.t.wpubkey_hash().unwrap()
+        self.t.wpubkey_hash().ok_or(Error::Todo)
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
         tweak_pubkey(self.t)
@@ -76,11 +76,8 @@ impl Recipient<PublicKey> {
     pub fn legacy_address(&self, network: Network) -> Address {
         Address::p2pkh(&self.t, network)
     }
-    pub fn segwit_address(&self, network: Network) -> Address {
-        // The key is always compressed.
-        debug_assert!(self.t.compressed);
-        // "Will only return an Error if an uncompressed public key is provided."
-        Address::p2wpkh(&self.t, network).unwrap()
+    pub fn segwit_address(&self, network: Network) -> Result<Address> {
+        Address::p2wpkh(&self.t, network).map_err(|_| Error::Todo)
     }
     pub fn taproot_address(&self, network: Network) -> Address {
         let untweaked = UntweakedPublicKey::from(self.t.inner);
@@ -89,8 +86,8 @@ impl Recipient<PublicKey> {
     pub fn legacy_address_string(&self, network: Network) -> String {
         self.legacy_address(network).to_string()
     }
-    pub fn segwit_address_string(&self, network: Network) -> String {
-        self.segwit_address(network).to_string()
+    pub fn segwit_address_string(&self, network: Network) -> Result<String> {
+        self.segwit_address(network).map(|addr| addr.to_string())
     }
     pub fn taproot_address_string(&self, network: Network) -> String {
         self.taproot_address(network).to_string()
@@ -165,8 +162,8 @@ impl TransactionBuilder {
         self.version = version;
         self
     }
-    pub fn lock_time_height(mut self, height: u32) -> Self {
-        self.lock_time = LockTime::Blocks(Height::from_consensus(height).unwrap());
+    pub fn lock_time_height(mut self, height: u32) -> Result<Self> {
+        self.lock_time = LockTime::Blocks(Height::from_consensus(height).map_err(|_| Error::Todo)?);
         self
     }
     pub fn return_address(mut self, address: Address) -> Self {
