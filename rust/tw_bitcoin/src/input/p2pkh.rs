@@ -12,14 +12,14 @@ impl TxInputP2PKH {
         txid: Txid,
         vout: u32,
         recipient: impl Into<Recipient<PubkeyHash>>,
-        satoshis: Option<u64>,
+        satoshis: u64,
     ) -> Self {
         let recipient: Recipient<PubkeyHash> = recipient.into();
 
         TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
-                value: satoshis,
+                value: Some(satoshis),
                 script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
                 sequence: Sequence::default(),
                 witness: Witness::new(),
@@ -78,7 +78,7 @@ impl TxInputP2PKHBuilder {
             self.txid.ok_or(Error::Todo)?,
             self.vout.ok_or(Error::Todo)?,
             self.recipient.ok_or(Error::Todo)?,
-            self.satoshis,
+            self.satoshis.ok_or(Error::Todo)?,
         ))
     }
 }
