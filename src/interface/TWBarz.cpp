@@ -37,3 +37,12 @@ TWData *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull facto
     const auto initCode = TW::Barz::getInitCodeFromAttestationObject(factoryStr, attestationObjectStr, verificationFacetStr);
     return TWDataCreateWithData(&initCode);
 }
+
+TWData *_Nonnull TWBarzGetFormattedSignature(TWData* _Nonnull signature, TWData* _Nonnull authenticatorData, TWString* _Nonnull origin) {
+    const auto& signatureData = *reinterpret_cast<const TW::Data*>(signature);
+    const auto& authenticatorDataConverted = *reinterpret_cast<const TW::Data*>(authenticatorData);
+    const auto& originStr = *reinterpret_cast<const std::string*>(origin);
+
+    const auto initCode = TW::Barz::getFormattedSignature(signatureData, authenticatorDataConverted, originStr);
+    return TWDataCreateWithData(&initCode);
+}
