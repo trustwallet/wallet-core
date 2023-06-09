@@ -2600,6 +2600,36 @@
     }
   },
   {
+    "id": "rootstock",
+    "name": "Rootstock",
+    "coinId": 137,
+    "symbol": "RBTC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/137'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "30",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.rsk.co",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xeb8fa0488a655f8dc975153bffd066800bcaae5f21cf372356365b2a1d6d2288",
+      "sampleAccount": "0x4e5dabc28e4a0f5e5b19fcb56b28c5a1989352c1"
+    },
+    "info": {
+      "url": "https://rootstock.io",
+      "source": "https://github.com/rsksmart/rskj",
+      "rpc": "https://public-node.rsk.co",
+      "documentation": "https://dev.rootstock.io"
+    }
+  },
+  {
     "id": "thorchain",
     "name": "THORChain",
     "coinId": 931,

@@ -127,4 +127,38 @@ TEST(TWAnySignerNEAR, SignUnstakeMainnetReplication) {
     ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAAGI4ZDVkZjI1MDQ3ODQxMzY1MDA4ZjMwZmI2YjMwZGQ4MjBlOWE4NGQ4NjlmMDU2MjNkMTE0ZTk2ODMxZjJmYmYAzgCT6NK76nb1mB7pToefgkGUHfUe5BKvvr3gW/nq+MgGuu1Mq0YAABEAAABhdmFkby5wb29sdjEubmVhcq0YnhRlt+TTtagkoy0qKn56zAfGhE+jkTJW6PR5k5r8AQAAAAILAAAAdW5zdGFrZV9hbGwCAAAAe30A0JjUr3EAAAAAAAAAAAAAAAAAAAAAAAAABaFP0EkfJU3VQZ4QAiTwq9ebWDJ7jx7TxbA+VGH4hwKX3gWnmDHVve+LK7/UbbffjF/y8vn0KrPxdh3ONAG0Ag==");
 }
 
+/// Implements NEP-141:
+/// https://nomicon.io/Standards/Tokens/FungibleToken/Core
+///
+/// Successfully broadcasted tx:
+/// https://explorer.near.org/transactions/ABQY6nfLdNrRVynHYNjYkfUM6Up5pDHHpuhRJe6FCMRu
+TEST(TWAnySignerNEAR, SignTokenTransfer) {
+    auto privateKey = parse_hex("77006e227658c18da47546413926a26b839204b1b19e807c4a13d994d661c72e");
+
+    auto blockHash = Base58::decode("2dQBYs8XjprLLgtH7eVsJ3e58A5QuRcbuqFisSk9fFWQ");
+
+    // Deposit should be 1 yocto NEAR for security purposes.
+    auto deposit = parse_hex("01000000000000000000000000000000");
+
+    Proto::SigningInput input;
+    input.set_signer_id("105396228ac2e0ef144b93bcc5322fca1167d524422bb73d17440d35c714a58f");
+    input.set_nonce(93062928000003);
+    input.set_receiver_id("token.paras.near");
+    input.set_private_key(privateKey.data(), 32);
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    auto& action = *input.add_actions();
+    auto& tokenTransfer = *action.mutable_token_transfer();
+    tokenTransfer.set_token_amount("100000000000000000");
+    tokenTransfer.set_receiver_id("c6d5e3e8f328436f595856a598239b691d3d136b24c05a4614f9e9716edc14fe");
+    tokenTransfer.set_gas(15000000000000);
+    tokenTransfer.set_deposit(deposit.data(), deposit.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeNEAR);
+
+    ASSERT_EQ(Base58::encode(data(output.hash())), "ABQY6nfLdNrRVynHYNjYkfUM6Up5pDHHpuhRJe6FCMRu");
+    ASSERT_EQ(Base64::encode(data(output.signed_transaction())), "QAAAADEwNTM5NjIyOGFjMmUwZWYxNDRiOTNiY2M1MzIyZmNhMTE2N2Q1MjQ0MjJiYjczZDE3NDQwZDM1YzcxNGE1OGYAEFOWIorC4O8US5O8xTIvyhFn1SRCK7c9F0QNNccUpY8D5MPmo1QAABAAAAB0b2tlbi5wYXJhcy5uZWFyGC7O0jXN2b4SH1XfMtNISEnU8XATKOhZwxx0pLLZqTEBAAAAAgsAAABmdF90cmFuc2ZlcnAAAAB7ImFtb3VudCI6IjEwMDAwMDAwMDAwMDAwMDAwMCIsInJlY2VpdmVyX2lkIjoiYzZkNWUzZThmMzI4NDM2ZjU5NTg1NmE1OTgyMzliNjkxZDNkMTM2YjI0YzA1YTQ2MTRmOWU5NzE2ZWRjMTRmZSJ9APCrdaQNAAABAAAAAAAAAAAAAAAAAAAAANUjO7fmnTebSNW9EcHHwYwPNlQJcReGWJfJUuxWzPDAGEeo4JTcLB8pLCkqxKKsI0NE1Szv2+GAt5mCBum5mQY=");
+}
+
 } // namespace TW::NEAR

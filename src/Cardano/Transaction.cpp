@@ -9,6 +9,7 @@
 #include "Cbor.h"
 #include "Hash.h"
 #include "HexCoding.h"
+#include "Numeric.h"
 
 namespace TW::Cardano {
 
@@ -314,23 +315,30 @@ Data Transaction::getId() const {
 }
 
 /// https://github.com/Emurgo/cardano-serialization-lib/blob/78184e0a2c207c2f8bba57b0d3c437f4c808c125/rust/src/utils.rs#L1415
-uint64_t minAdaAmountHelper(const TxOutput& output, uint64_t coinsPerUtxoByte) noexcept {
+std::optional<uint64_t> minAdaAmountHelper(const TxOutput& output, uint64_t coinsPerUtxoByte) noexcept {
     const size_t outputSize = cborizeOutput(output).encoded().size();
-    return static_cast<uint64_t>(outputSize + 160) * coinsPerUtxoByte;
+    const auto outputSizeExtended = static_cast<uint64_t>(outputSize + 160);
+    if (checkMulUnsignedOverflow(outputSizeExtended, coinsPerUtxoByte)) {
+        return std::nullopt;
+    }
+    return outputSizeExtended * coinsPerUtxoByte;
 }
 
 /// https://github.com/Emurgo/cardano-serialization-lib/blob/78184e0a2c207c2f8bba57b0d3c437f4c808c125/rust/src/utils.rs#L1388
-uint64_t TxOutput::minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept {
+std::optional<uint64_t> TxOutput::minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept {
     // A copy of `this`.
     TxOutput output(address, amount, tokenBundle);
 
     while (true) {
         const auto minAmount = minAdaAmountHelper(output, coinsPerUtxoByte);
-        if (output.amount >= minAmount) {
+        if (!minAmount) {
+            return std::nullopt;
+        }
+        if (output.amount >= *minAmount) {
             return minAmount;
         }
         // Set the amount to `minAmount` and re-try again.
-        output.amount = minAmount;
+        output.amount = *minAmount;
     }
 }
 

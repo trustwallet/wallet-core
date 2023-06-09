@@ -1192,6 +1192,7 @@ dependencies = [
  "arbitrary",
  "blake2",
  "curve25519-dalek",
+ "der",
  "digest 0.9.0",
  "ecdsa",
  "k256",

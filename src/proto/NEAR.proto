@@ -93,6 +93,21 @@ message DeleteAccount {
     string beneficiary_id = 1;
 }
 
+// Fungible token transfer
+message TokenTransfer {
+    // Token amount. Base-10 decimal string.
+    string token_amount = 1;
+
+    // ID of the receiver.
+    string receiver_id = 2;
+
+    // Gas.
+    uint64 gas = 3;
+
+    // NEAR deposit amount; uint128 / big endian byte order.
+    bytes deposit = 4;
+}
+
 // Represents an action
 message Action {
     oneof payload {
@@ -104,6 +119,8 @@ message Action {
         AddKey add_key = 6;
         DeleteKey delete_key = 7;
         DeleteAccount delete_account = 8;
+        // Gap in field numbering is intentional as it's not a standard NEAR action.
+        TokenTransfer token_transfer = 13;
     }
 }
 

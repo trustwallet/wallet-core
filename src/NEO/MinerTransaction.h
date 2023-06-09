@@ -11,16 +11,16 @@
 
 namespace TW::NEO {
 
-class MinerTransaction : public Transaction {
+class MinerTransaction final: public Transaction {
   public:
     uint32_t nonce;
 
-     virtual int deserializeExclusiveData(const Data& data, int initial_pos = 0) {
+     size_t deserializeExclusiveData(const Data& data, size_t initial_pos) override {
         nonce = decode32LE(data.data() + initial_pos);
         return initial_pos + 4;
     }
 
-    virtual Data serializeExclusiveData() const {
+    Data serializeExclusiveData() const override {
         auto resp = Data();
         encode32LE(nonce, resp);
         return resp;

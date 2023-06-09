@@ -101,25 +101,19 @@ message UserOperation {
     string entry_point = 1;
 
     // Account factory contract address
-    string account_factory = 2;
+    bytes init_code = 2;
 
     // Account logic contract address
-    string account_logic = 3;
-
-    // Public address of the account signer
-    string owner = 4;
-
-    // Whether the smart contract for this address has already been deployed
-    bool is_account_deployed = 5;
+    string sender = 3;
 
     // The amount of gas to pay for to compensate the bundler for pre-verification execution and calldata
-    bytes pre_verification_gas = 6;
+    bytes pre_verification_gas = 4;
 
     // The amount of gas to allocate for the verification step
-    bytes verification_gas_limit = 7;
+    bytes verification_gas_limit = 5;
 
     // Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster (empty for self-sponsored transaction)
-    bytes paymaster_and_data = 8;
+    bytes paymaster_and_data = 6;
 }
 
 // Input data necessary to create a signed transaction.
@@ -165,6 +159,7 @@ message SigningInput {
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
+
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
@@ -181,4 +176,7 @@ message SigningOutput {
 
     // error code description
     string error_message = 7;
+
+    // Encoded transaction bytes.
+    bytes pre_hash = 8;
 }
