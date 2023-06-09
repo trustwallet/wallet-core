@@ -63,8 +63,6 @@ impl Recipient<PublicKey> {
         PubkeyHash::from(self.t)
     }
     pub fn wpubkey_hash(&self) -> Result<WPubkeyHash> {
-        // The key is always compressed.
-        debug_assert!(self.t.compressed);
         self.t.wpubkey_hash().ok_or(Error::Todo)
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
