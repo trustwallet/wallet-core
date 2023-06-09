@@ -18,30 +18,25 @@
 namespace TW::Stellar {
 
 bool Address::isValid(const std::string& string) {
-    bool valid = false;
-
     if (string.length() != size) {
         return false;
     }
 
     // Check that it decodes correctly
     Data decoded;
-    valid = Base32::decode(string, decoded);
+    if (!Base32::decode(string, decoded) || decoded.size() != rawSize) {
+        return false;
+    }
 
     // ... and that version byte is 0x30
-    if (valid && TWStellarVersionByte(decoded[0]) != TWStellarVersionByte::TWStellarVersionByteAccountID) {
-        valid = false;
+    if (TWStellarVersionByte(decoded[0]) != TWStellarVersionByte::TWStellarVersionByteAccountID) {
+        return false;
     }
 
     // ... and that checksums match
     auto checksum_expected = Crc::crc16(decoded.data(), 33);
     auto checksum_actual = static_cast<uint16_t>((decoded[34] << 8) | decoded[33]); // unsigned short (little endian)
-    if (valid && checksum_expected != checksum_actual) {
-        valid = false;
-    }
-
-    memzero(decoded.data(), decoded.size());
-    return valid;
+    return checksum_expected == checksum_actual;
 }
 
 Address::Address(const std::string& string) {

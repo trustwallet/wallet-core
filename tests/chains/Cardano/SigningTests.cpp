@@ -165,14 +165,14 @@ TEST(CardanoSigning, SendNft) {
         // The byte cost at the moment when the transaction was constructed.
         // See `ProtocolParams::coinsPerUtxoByte`:
         // https://input-output-hk.github.io/cardano-graphql/
-        const uint64_t coinsPerUtxoByte = 4310;
+        const auto coinsPerUtxoByte = STRING("4310");
 
         const auto bundleProtoData = data(input.transfer_message().token_amount().SerializeAsString());
         const auto toAddressPtr = STRING(toAddress);
 
-        const auto minAdaAmount = TWCardanoOutputMinAdaAmount(toAddressPtr.get(), &bundleProtoData, coinsPerUtxoByte);
-        EXPECT_EQ(minAdaAmount, nftInputAmount);
-        EXPECT_EQ(input.transfer_message().amount(), minAdaAmount);
+        const auto minAdaAmount = WRAPS(TWCardanoOutputMinAdaAmount(toAddressPtr.get(), &bundleProtoData, coinsPerUtxoByte.get()));
+        assertStringsEqual(minAdaAmount, std::to_string(nftInputAmount).c_str());
+        EXPECT_EQ(input.transfer_message().amount(), nftInputAmount);
     }
 
     // run plan and check result

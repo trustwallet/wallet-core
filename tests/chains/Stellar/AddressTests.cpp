@@ -35,6 +35,7 @@ TEST(StellarAddress, isValid) {
 
     ASSERT_TRUE(Address::isValid(stellarAddress));
     ASSERT_FALSE(Address::isValid(bitcoinAddress));
+    ASSERT_FALSE(Address::isValid("qc64537q3cvjmc2cgkz10y58waj4294967296r10ccchmrmrdzq03783"));
 }
 
 } // namespace TW::Stellar::tests

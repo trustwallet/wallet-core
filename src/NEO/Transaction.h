@@ -26,20 +26,20 @@ public:
     std::vector<TransactionOutput> outputs;
     std::vector<Witness> witnesses;
 
-    virtual ~Transaction() {}
-    int64_t size() const override;
-    void deserialize(const Data& data, int initial_pos = 0) override;
+    ~Transaction() override = default;
+    size_t size() const override;
+    void deserialize(const Data& data, size_t initial_pos = 0) override;
     Data serialize() const override;
 
     bool operator==(const Transaction &other) const;
 
-    virtual int deserializeExclusiveData([[maybe_unused]] const Data& data, int initial_pos = 0) { return initial_pos; }
-    virtual Data serializeExclusiveData() const { return Data(); }
+    virtual size_t deserializeExclusiveData([[maybe_unused]] const Data& data, size_t initial_pos) { return initial_pos; }
+    virtual Data serializeExclusiveData() const { return {}; }
 
     Data getHash() const;
     uint256_t getHashUInt256() const;
 
-    static Transaction * deserializeFrom(const Data& data, int initial_pos = 0);
+    static Transaction * deserializeFrom(const Data& data, size_t initial_pos = 0);
 };
 
 } // namespace TW::NEO

@@ -25,12 +25,4 @@ struct TWEthereum;
 TW_EXPORT_STATIC_METHOD
 TWString* _Nonnull TWEthereumEip2645GetPath(TWString* _Nonnull ethAddress, TWString* _Nonnull layer,  TWString* _Nonnull application,  TWString* _Nonnull index);
 
-/// Generates a deployment address for a ERC-4337 compatible smart contract wallet
-///
-/// \param factoryAddress non-null address of the account factory
-/// \param logicAddress non-null address of the wallet's logic smart contract
-/// \param ownerAddress  non-null address of the signing key that controls the smart contract wallet
-/// \return Ethereum resulting address
-TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWEthereumEip4337GetDeploymentAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull logicAddress, TWString* _Nonnull ownerAddress);
 TW_EXTERN_C_END

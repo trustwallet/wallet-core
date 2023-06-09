@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "RLP.h"
 #include "Signer.h"
-#include <Ethereum/EIP4337.h>
+#include <Ethereum/ERC4337.h>
 #include <Ethereum/MessageSigner.h>
 #include <nlohmann/json.hpp>
 
@@ -238,19 +238,18 @@ Data UserOperation::serialize([[maybe_unused]] const uint256_t chainID) const {
     auto params = ABI::ParamTuple(ParamCollection{
         std::make_shared<ABI::ParamAddress>(sender),
         std::make_shared<ABI::ParamUInt256>(nonce),
-        std::make_shared<ABI::ParamByteArray>(initCode),
-        std::make_shared<ABI::ParamByteArray>(payload),
+        std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(initCode)),
+        std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(payload)),
         std::make_shared<ABI::ParamUInt256>(gasLimit),
         std::make_shared<ABI::ParamUInt256>(verificationGasLimit),
         std::make_shared<ABI::ParamUInt256>(preVerificationGas),
         std::make_shared<ABI::ParamUInt256>(maxFeePerGas),
         std::make_shared<ABI::ParamUInt256>(maxInclusionFeePerGas),
-        std::make_shared<ABI::ParamByteArray>(paymasterAndData),
-        std::make_shared<ABI::ParamByteArray>(parse_hex("0x"))});
+        std::make_shared<ABI::ParamByteArrayFix>(32, Hash::keccak256(paymasterAndData))});
     Data serialized;
     params.encode(serialized);
 
-    return Data(serialized.begin(), serialized.end() - 32); // remove trailing word (zero-length signature)
+    return serialized;
 }
 
 Data UserOperation::encoded(const Signature& signature, [[maybe_unused]] const uint256_t chainID) const {
@@ -274,17 +273,13 @@ Data UserOperation::encoded(const Signature& signature, [[maybe_unused]] const u
 }
 
 UserOperationPtr
-UserOperation::buildNativeTransfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                        const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
-                                        const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                        const Data& paymasterAndData, const Data& payload) {
-    Data initCode = {};
-    if (!isAccountDeployed) {
-        initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
-    }
+UserOperation::buildNativeTransfer(const Data& entryPointAddress, const Data& senderAddress,
+                                   const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
+                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                   const Data& paymasterAndData, const Data& initCode, const Data& payload) {
     return std::make_shared<UserOperation>(
         entryPointAddress,
-        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
+        senderAddress,
         nonce,
         initCode,
         gasLimit,
@@ -292,22 +287,18 @@ UserOperation::buildNativeTransfer(const Data& entryPointAddress, const Data& fa
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(toAddress, amount, payload),
+        Ethereum::getERC4337ExecuteBytecode(toAddress, amount, payload),
         paymasterAndData);
 }
 
 UserOperationPtr
-UserOperation::buildERC20Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                       const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
-                                       const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                       const Data& paymasterAndData) {
-    Data initCode = {};
-    if (!isAccountDeployed) {
-        initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
-    }
+UserOperation::buildERC20Transfer(const Data& entryPointAddress, const Data& senderAddress,
+                                  const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
+                                  const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                  const Data& paymasterAndData, const Data& initCode) {
     return std::make_shared<UserOperation>(
         entryPointAddress,
-        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
+        senderAddress,
         nonce,
         initCode,
         gasLimit,
@@ -315,22 +306,18 @@ UserOperation::buildERC20Transfer(const Data& entryPointAddress, const Data& fac
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20TransferCall(toAddress, amount)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20TransferCall(toAddress, amount)),
         paymasterAndData);
 }
 
 UserOperationPtr
-UserOperation::buildERC20Approve(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                      const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce, const bool& isAccountDeployed,
-                                      const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                      const Data& paymasterAndData) {
-    Data initCode = {};
-    if (!isAccountDeployed) {
-        initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
-    }
+UserOperation::buildERC20Approve(const Data& entryPointAddress, const Data& senderAddress,
+                                 const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount, const uint256_t& nonce,
+                                 const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                 const Data& paymasterAndData, const Data& initCode) {
     return std::make_shared<UserOperation>(
         entryPointAddress,
-        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
+        senderAddress,
         nonce,
         initCode,
         gasLimit,
@@ -338,22 +325,18 @@ UserOperation::buildERC20Approve(const Data& entryPointAddress, const Data& fact
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20ApproveCall(spenderAddress, amount)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC20ApproveCall(spenderAddress, amount)),
         paymasterAndData);
 }
 
 UserOperationPtr
-UserOperation::buildERC721Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce, const bool& isAccountDeployed,
-                                        const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                        const Data& paymasterAndData) {
-    Data initCode = {};
-    if (!isAccountDeployed) {
-        initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
-    }
+UserOperation::buildERC721Transfer(const Data& entryPointAddress, const Data& senderAddress,
+                                   const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& nonce,
+                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                   const Data& paymasterAndData, const Data& initCode) {
     return std::make_shared<UserOperation>(
         entryPointAddress,
-        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
+        senderAddress,
         nonce,
         initCode,
         gasLimit,
@@ -361,22 +344,18 @@ UserOperation::buildERC721Transfer(const Data& entryPointAddress, const Data& fa
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC721TransferFromCall(from, to, tokenId)),
         paymasterAndData);
 }
 
 UserOperationPtr
-UserOperation::buildERC1155Transfer(const Data& entryPointAddress, const Data& factoryAddress, const Data& logicAddress, const Data& ownerAddress,
-                                         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data, const uint256_t& nonce, const bool& isAccountDeployed,
-                                         const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
-                                         const Data& paymasterAndData) {
-    Data initCode = {};
-    if (!isAccountDeployed) {
-        initCode = Ethereum::getEIP4337AccountInitializeBytecode(hex(ownerAddress), hex(factoryAddress));
-    }
+UserOperation::buildERC1155Transfer(const Data& entryPointAddress, const Data& senderAddress,
+                                    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data, const uint256_t& nonce,
+                                    const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                    const Data& paymasterAndData, const Data& initCode) {
     return std::make_shared<UserOperation>(
         entryPointAddress,
-        parse_hex(Ethereum::getEIP4337DeploymentAddress(hex(factoryAddress), hex(logicAddress), hex(ownerAddress))),
+        senderAddress,
         nonce,
         initCode,
         gasLimit,
@@ -384,7 +363,7 @@ UserOperation::buildERC1155Transfer(const Data& entryPointAddress, const Data& f
         maxFeePerGas,
         maxInclusionFeePerGas,
         preVerificationGas,
-        Ethereum::getEIP4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC1155TransferFromCall(from, to, tokenId, value, data)),
+        Ethereum::getERC4337ExecuteBytecode(tokenContract, 0, TransactionNonTyped::buildERC1155TransferFromCall(from, to, tokenId, value, data)),
         paymasterAndData);
 }
 

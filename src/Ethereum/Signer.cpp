@@ -22,6 +22,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
         auto output = Proto::SigningOutput();
 
+        auto pre_hash = transaction->preHash(chainID);
+        output.set_pre_hash(pre_hash.data(), pre_hash.size());
+
         auto encoded = transaction->encoded(signature, chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
@@ -57,6 +60,9 @@ Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Dat
         const Signature sigStruct = signatureDataToStruct(signature, transaction->usesReplayProtection(), chainID);
 
         auto output = Proto::SigningOutput();
+
+        auto pre_hash = transaction->preHash(chainID);
+        output.set_pre_hash(pre_hash.data(), pre_hash.size());
 
         auto encoded = transaction->encoded(sigStruct, chainID);
         output.set_encoded(encoded.data(), encoded.size());
@@ -141,10 +147,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
 
     // EIP4337
     Data entryPointAddress = addressStringToData(input.user_operation().entry_point());
-    Data accountFactoryAddress = addressStringToData(input.user_operation().account_factory());
-    Data accountLogicAddress = addressStringToData(input.user_operation().account_logic());
-    Data ownerAddress = addressStringToData(input.user_operation().owner());
-    bool isAccountDeployed = input.user_operation().is_account_deployed();
+    Data senderAddress = addressStringToData(input.user_operation().sender());
+    Data initCode = Data(input.user_operation().init_code().begin(), input.user_operation().init_code().end());
     uint256_t preVerificationGas = load(input.user_operation().pre_verification_gas());
     uint256_t verificationGasLimit = load(input.user_operation().verification_gas_limit());
     Data paymasterAndData = Data(input.user_operation().paymaster_and_data().begin(), input.user_operation().paymaster_and_data().end());
@@ -170,19 +174,17 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::TransactionMode::UserOp:
             return UserOperation::buildNativeTransfer(
                 entryPointAddress,
-                accountFactoryAddress,
-                accountLogicAddress,
-                ownerAddress,
+                senderAddress,
                 toAddress,
                 load(input.transaction().transfer().amount()),
                 nonce,
-                isAccountDeployed,
                 gasLimit,
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
                 paymasterAndData,
+                initCode,
                 Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end())
                 );
         }
@@ -209,20 +211,18 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::TransactionMode::UserOp:
             return UserOperation::buildERC20Transfer(
                 entryPointAddress,
-                accountFactoryAddress,
-                accountLogicAddress,
-                ownerAddress,
+                senderAddress,
                 toAddress,
                 tokenToAddress,
                 load(input.transaction().erc20_transfer().amount()),
                 nonce,
-                isAccountDeployed,
                 gasLimit,
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
-                paymasterAndData);
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -247,20 +247,18 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::TransactionMode::UserOp:
             return UserOperation::buildERC20Approve(
                 entryPointAddress,
-                accountFactoryAddress,
-                accountLogicAddress,
-                ownerAddress,
+                senderAddress,
                 toAddress,
                 spenderAddress,
                 load(input.transaction().erc20_approve().amount()),
                 nonce,
-                isAccountDeployed,
                 gasLimit,
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
-                paymasterAndData);
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -288,21 +286,19 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::TransactionMode::UserOp:
             return UserOperation::buildERC721Transfer(
                 entryPointAddress,
-                accountFactoryAddress,
-                accountLogicAddress,
-                ownerAddress,
+                senderAddress,
                 toAddress,
                 tokenFromAddress,
                 tokenToAddress,
                 load(input.transaction().erc721_transfer().token_id()),
                 nonce,
-                isAccountDeployed,
                 gasLimit,
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
-                paymasterAndData);
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -334,9 +330,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::TransactionMode::UserOp:
             return UserOperation::buildERC1155Transfer(
                 entryPointAddress,
-                accountFactoryAddress,
-                accountLogicAddress,
-                ownerAddress,
+                senderAddress,
                 toAddress,
                 tokenFromAddress,
                 tokenToAddress,
@@ -344,13 +338,13 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 load(input.transaction().erc1155_transfer().value()),
                 Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()),
                 nonce,
-                isAccountDeployed,
                 gasLimit,
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
-                paymasterAndData);
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -375,19 +369,17 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::TransactionMode::UserOp:
             return UserOperation::buildNativeTransfer(
                 entryPointAddress,
-                accountFactoryAddress,
-                accountLogicAddress,
-                ownerAddress,
+                senderAddress,
                 toAddress,
                 load(input.transaction().contract_generic().amount()),
                 nonce,
-                isAccountDeployed,
                 gasLimit,
                 verificationGasLimit,
                 maxFeePerGas,
                 maxInclusionFeePerGas,
                 preVerificationGas,
                 paymasterAndData,
+                initCode,
                 Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
         }
     }
