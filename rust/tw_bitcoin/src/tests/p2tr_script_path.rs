@@ -26,11 +26,6 @@ fn mainnet_brc20_deploy() {
     // ## FIRST TRANSACTION: Deploy the BRC20 token.
 
     // Claim input.
-    let txid = Txid::from_str(ORIGIN_TXID).unwrap();
-    let vout = 0;
-    let recipient = Recipient::<PubkeyHash>::from(&alice);
-    let satoshis = DEPLOY_INPUT_AMOUNT;
-
     let input = TxInputP2PKH::builder()
         .txid(Txid::from_str(ORIGIN_TXID).unwrap())
         .vout(0)
@@ -108,7 +103,6 @@ fn mainnet_brc20_deploy() {
 
     // Mint 50 tokens of "qqqq".
     let amount = 50;
-
     let brc20_mint = BRC20MintInscription::new((&alice).into(), ticker.clone(), amount).unwrap();
 
     let output_mint = TXOutputP2TRScriptPath::builder()
