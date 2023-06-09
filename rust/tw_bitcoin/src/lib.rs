@@ -162,7 +162,7 @@ impl TransactionBuilder {
     }
     pub fn lock_time_height(mut self, height: u32) -> Result<Self> {
         self.lock_time = LockTime::Blocks(Height::from_consensus(height).map_err(|_| Error::Todo)?);
-        self
+        Ok(self)
     }
     pub fn return_address(mut self, address: Address) -> Self {
         self.return_address = Some(address);

@@ -1,19 +1,19 @@
 use bitcoin::{Network, PublicKey};
-use tw_bitcoin::Recipient;
+use crate::{Recipient, keypair_from_wif};
 
-mod common;
-use common::*;
+pub const ALICE_WIF: &str = "cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1";
 
 #[test]
-fn account_manager() {
-    let recipient = Recipient::<PublicKey>::from_wif(ALICE_WIF).unwrap();
+fn addresses() {
+    let alice = keypair_from_wif(ALICE_WIF).unwrap();
+    let recipient = Recipient::<PublicKey>::from(&alice);
 
     assert_eq!(
         recipient.legacy_address_string(Network::Bitcoin),
         "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx"
     );
     assert_eq!(
-        recipient.segwit_address_string(Network::Bitcoin),
+        recipient.segwit_address_string(Network::Bitcoin).unwrap(),
         "bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff"
     );
     assert_eq!(
