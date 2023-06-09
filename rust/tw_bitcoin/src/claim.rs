@@ -75,7 +75,7 @@ impl TransactionSigner for KeyPair {
             return Err(Error::Todo);
         }
 
-        // Construct the signature ECDSA signature.
+        // Construct the ECDSA signature.
         let sig = bitcoin::ecdsa::Signature {
             sig: self.secret_key().sign_ecdsa(sighash),
             hash_ty: sighash_type,
@@ -101,7 +101,7 @@ impl TransactionSigner for KeyPair {
             return Err(Error::Todo);
         }
 
-        // Construct the signature ECDSA signature.
+        // Construct the ECDSA signature.
         let sig = bitcoin::ecdsa::Signature {
             sig: self.secret_key().sign_ecdsa(sighash),
             hash_ty: sighash_type,
