@@ -378,7 +378,7 @@ pub struct TxInputsOuputs {
 pub struct InputContext {
     pub previous_output: OutPoint,
     pub value: Option<u64>,
-    // The condition for claiming the outputr
+    // The condition for claiming the output.
     pub script_pubkey: ScriptBuf,
     // TODO: Document this.
     pub sequence: Sequence,
