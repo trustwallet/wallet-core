@@ -1908,6 +1908,36 @@
     }
   },
   {
+    "id": "tfuelevm",
+    "name": "Theta Fuel",
+    "coinId": 361,
+    "symbol": "TFUEL",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/500'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "361",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.thetatoken.org",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "0xdb1c1c4e06289a4fc71b98ced218242d4f4a54a09987791a6a53a5260c053555",
+      "sampleAccount": "0xa144e6a98b967e585b214bfa7f6692af81987e5b"
+    },
+    "info": {
+      "url": "https://www.thetatoken.org",
+      "source": "https://github.com/thetatoken/theta-protocol-ledger",
+      "rpc": "https://eth-rpc-api.thetatoken.org/rpc",
+      "documentation": "https://github.com/thetatoken/theta-mainnet-integration-guide/blob/master/docs/api.md#api-reference"
+    }
+  },
+  {
     "id": "solana",
     "name": "Solana",
     "coinId": 501,
