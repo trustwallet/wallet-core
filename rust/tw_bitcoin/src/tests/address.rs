@@ -1,5 +1,5 @@
+use crate::{keypair_from_wif, Recipient};
 use bitcoin::{Network, PublicKey};
-use crate::{Recipient, keypair_from_wif};
 
 pub const ALICE_WIF: &str = "cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1";
 

@@ -21,6 +21,7 @@ pub unsafe extern "C" fn tw_transaction_builder_create() -> *mut TWTransactionBu
     TWTransactionBuilder(builder).into_ptr()
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn tw_transaction_add_p2wpkh_input(
     builder: *mut TWTransactionBuilder,
     input: *mut TWTxInputP2WPKH,
@@ -33,6 +34,7 @@ pub unsafe extern "C" fn tw_transaction_add_p2wpkh_input(
     TWTransactionBuilder(builder).into_ptr()
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn tw_transaction_add_p2tr_key_path_input(
     builder: *mut TWTransactionBuilder,
     input: *mut TWTxInputP2TRKeyPath,
@@ -45,6 +47,7 @@ pub unsafe extern "C" fn tw_transaction_add_p2tr_key_path_input(
     TWTransactionBuilder(builder).into_ptr()
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn tw_transaction_add_p2wpkh_output(
     builder: *mut TWTransactionBuilder,
     output: *mut TWTxOutputP2WPKH,
@@ -57,6 +60,7 @@ pub unsafe extern "C" fn tw_transaction_add_p2wpkh_output(
     TWTransactionBuilder(builder).into_ptr()
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn tw_transaction_add_p2tr_key_path_output(
     builder: *mut TWTransactionBuilder,
     output: *mut TWTxOutputP2TRKeyPath,

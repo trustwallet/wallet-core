@@ -2,8 +2,8 @@
 
 use super::RawPtrTrait;
 use crate::input::TxInputP2TRKeyPath;
-use crate::try_or_else;
-use crate::{output::TxOutputP2TRKeyPath, Recipient};
+use crate::output::TxOutputP2TRKeyPath;
+use crate::{try_or_else, Recipient};
 use bitcoin::{PublicKey, Txid};
 use secp256k1::hashes::Hash;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
