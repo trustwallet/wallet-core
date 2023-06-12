@@ -37,6 +37,11 @@ void TransactionBuilder::AddP2TRKeyPathOutput(const uint8_t *pubkey, size_t pubk
     TW::Rust::tw_transaction_add_p2tr_key_path_output(builder, output);
 }
 
-TW::Rust::CByteArrayResult TransactionBuilder::Sign(const uint8_t *secret_key, size_t secret_key_len) {
-    return TW::Rust::tw_transaction_sign(builder, secret_key, secret_key_len);
+Data TransactionBuilder::Sign(const uint8_t *secret_key, size_t secret_key_len) {
+    Rust::CByteArrayResultWrapper res = TW::Rust::tw_transaction_sign(builder, secret_key, secret_key_len);
+	if (res.isErr()) {
+		throw std::runtime_error("Error signing taproot transaction");
+	}
+
+	return res.unwrap().data;
 }
