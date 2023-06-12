@@ -1,5 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
+use super::p2pkh::{TWTxInputP2PKH, TWTxOutputP2PKH};
 use super::p2tr_key_path::{TWTxInputP2TRKeyPath, TWTxOutputP2TRKeyPath};
 use super::p2wpkh::{TWTxInputP2WPKH, TWTxOutputP2WPKH};
 use super::RawPtrTrait;
@@ -17,6 +18,19 @@ impl RawPtrTrait for TWTransactionBuilder {}
 //pub unsafe extern "C" fn tw_build_pay_to_taproot_key_spend_script(
 pub unsafe extern "C" fn tw_transaction_builder_create() -> *mut TWTransactionBuilder {
     let builder = TransactionBuilder::new();
+
+    TWTransactionBuilder(builder).into_ptr()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_transaction_add_p2pkh_input(
+    builder: *mut TWTransactionBuilder,
+    input: *mut TWTxInputP2PKH,
+) -> *mut TWTransactionBuilder {
+    let builder = try_or_else!(TWTransactionBuilder::from_ptr(builder), std::ptr::null_mut);
+    let input = try_or_else!(TWTxInputP2PKH::from_ptr(input), std::ptr::null_mut);
+
+    let builder = builder.0.add_input(input.0.into());
 
     TWTransactionBuilder(builder).into_ptr()
 }
@@ -43,6 +57,19 @@ pub unsafe extern "C" fn tw_transaction_add_p2tr_key_path_input(
     let input = try_or_else!(TWTxInputP2TRKeyPath::from_ptr(input), std::ptr::null_mut);
 
     let builder = builder.0.add_input(input.0.into());
+
+    TWTransactionBuilder(builder).into_ptr()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_transaction_add_p2pkh_output(
+    builder: *mut TWTransactionBuilder,
+    output: *mut TWTxOutputP2PKH,
+) -> *mut TWTransactionBuilder {
+    let builder = try_or_else!(TWTransactionBuilder::from_ptr(builder), std::ptr::null_mut);
+    let output = try_or_else!(TWTxOutputP2PKH::from_ptr(output), std::ptr::null_mut);
+
+    let builder = builder.0.add_output(output.0.into());
 
     TWTransactionBuilder(builder).into_ptr()
 }

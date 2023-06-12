@@ -21,17 +21,17 @@ pub unsafe extern "C" fn tw_tx_input_p2pkh_create(
     pubkey: *const u8,
     pubkey_len: usize,
     satoshis: u64,
-) -> *const TWTxInputP2PKH {
+) -> *mut TWTxInputP2PKH {
     // Convert Txid.
-    let slice = try_or_else!(CByteArrayRef::new(txid, 32).as_slice(), std::ptr::null);
-    let txid = try_or_else!(Txid::from_slice(slice), std::ptr::null);
+    let slice = try_or_else!(CByteArrayRef::new(txid, 32).as_slice(), std::ptr::null_mut);
+    let txid = try_or_else!(Txid::from_slice(slice), std::ptr::null_mut);
 
     // Convert Recipient
     let slice = try_or_else!(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
-        std::ptr::null
+        std::ptr::null_mut
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
+    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null_mut);
 
     // Build P2WPKH scriptPubKey.
     let input = TxInputP2PKH::builder()
@@ -51,13 +51,13 @@ pub unsafe extern "C" fn tw_tx_output_p2pkh_create(
     pubkey: *const u8,
     pubkey_len: usize,
     satoshis: u64,
-) -> *const TWTxOutputP2PKH {
+) -> *mut TWTxOutputP2PKH {
     // Convert Recipient
     let slice = try_or_else!(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
-        std::ptr::null
+        std::ptr::null_mut
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null);
+    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null_mut);
 
     // Build P2WPKH scriptPubKey.
     let output = TxOutputP2PKH::builder()
