@@ -5,19 +5,19 @@
 
 using namespace TW;
 
-enum TransactionBuilderError {
+enum TaprootBuilderError {
 	InvalidInput,
 	InvalidOutput,
 	FailedToSign,
 };
 
-using Error = TransactionBuilderError;
+using Error = TaprootBuilderError;
 
-class TransactionBuilder {
+class TaprootBuilder {
 public:
-    Rust::TWTransactionBuilder* builder;
+	Rust::TWTransactionBuilder* builder;
 
-    TransactionBuilder();
+    TaprootBuilder();
     Result<void, Error> AddP2PKHInput(const uint8_t *txid, uint32_t vout, const uint8_t *pubkey, size_t pubkey_len, uint64_t satoshis);
     Result<void, Error> AddP2WPKHInput(const uint8_t *txid, uint32_t vout, const uint8_t *pubkey, size_t pubkey_len, uint64_t satoshis);
     Result<void, Error> AddP2TRKeyPathInput(const uint8_t *txid, uint32_t vout, const uint8_t *pubkey, size_t pubkey_len, uint64_t satoshis);
