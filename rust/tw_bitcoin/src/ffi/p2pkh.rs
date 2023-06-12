@@ -75,3 +75,13 @@ pub unsafe extern "C" fn tw_tx_output_p2pkh_create(
 
     TWTxOutputP2PKH(output).into_ptr()
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_tx_input_p2pkh_delete(input: *mut TWTxInputP2PKH) {
+    let _ = TWTxInputP2PKH::from_ptr(input);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_tx_output_p2pkh_delete(output: *mut TWTxOutputP2PKH) {
+    let _ = TWTxOutputP2PKH::from_ptr(output);
+}

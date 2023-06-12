@@ -75,3 +75,13 @@ pub unsafe extern "C" fn tw_tx_output_p2tr_key_path_create(
 
     TWTxOutputP2TRKeyPath(output).into_ptr()
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_tx_input_p2tr_key_path_delete(input: *mut TWTxInputP2TRKeyPath) {
+    let _ = TWTxInputP2TRKeyPath::from_ptr(input);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_tx_output_p2tr_key_path_delete(output: *mut TWTxOutputP2TRKeyPath) {
+    let _ = TWTxOutputP2TRKeyPath::from_ptr(output);
+}
