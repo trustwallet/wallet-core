@@ -1,4 +1,5 @@
 #include "Data.h"
+#include "rust/Wrapper.h"
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 
 using namespace TW;
@@ -14,5 +15,5 @@ public:
     void AddP2PKHOutput(const uint8_t *pubkey, size_t pubkey_len, uint64_t satoshis);
     void AddP2WPKHOutput(const uint8_t *pubkey, size_t pubkey_len, uint64_t satoshis);
     void AddP2TRKeyPathOutput(const uint8_t *pubkey, size_t pubkey_len, uint64_t satoshis);
-    Rust::CByteArrayResult Sign(const uint8_t *secret_key, size_t secret_key_len);
+    Data Sign(const uint8_t *secret_key, size_t secret_key_len);
 };
