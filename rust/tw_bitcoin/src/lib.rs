@@ -202,9 +202,6 @@ impl TransactionBuilder {
             TxInput::P2TRScriptPath(p) => signer
                 .claim_p2tr_script_path(p, sighash, TapSighashType::Default)
                 .map(|claim| ClaimLocation::Witness(claim.0)),
-            TxInput::NonStandard { ctx: _ } => {
-                panic!()
-            },
         })
     }
     pub fn sign_inputs_fn<F>(self, signer: F) -> Result<TransactionSigned>
@@ -331,8 +328,6 @@ impl TransactionBuilder {
 
                     claims.push((index, updated));
                 },
-                // Skip.
-                TxInput::NonStandard { ctx: _ } => continue,
             };
         }
 

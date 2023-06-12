@@ -17,7 +17,6 @@ pub enum TxInput {
     P2WPKH(TxInputP2WPKH),
     P2TRKeyPath(TxInputP2TRKeyPath),
     P2TRScriptPath(TxInputP2TRScriptPath),
-    NonStandard { ctx: InputContext },
 }
 
 impl From<TxInputP2PKH> for TxInput {
@@ -64,16 +63,9 @@ impl TxInput {
             TxInput::P2WPKH(t) => t.ctx(),
             TxInput::P2TRKeyPath(t) => t.ctx(),
             TxInput::P2TRScriptPath(t) => t.ctx(),
-            TxInput::NonStandard { ctx } => ctx,
         }
     }
     pub fn satoshis(&self) -> Option<u64> {
-        match self {
-            TxInput::P2PKH(t) => t.ctx().value,
-            TxInput::P2WPKH(t) => t.ctx().value,
-            TxInput::P2TRKeyPath(t) => t.ctx().value,
-            TxInput::P2TRScriptPath(t) => t.ctx().value,
-            TxInput::NonStandard { ctx } => ctx.value,
-        }
+        self.ctx().value
     }
 }
