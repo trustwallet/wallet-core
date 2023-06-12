@@ -270,7 +270,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
+                    let message = secp256k1::Message::from_slice(hash.as_ref())
+                        .expect("Failed to convert hash to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -291,7 +292,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
+                    let message = secp256k1::Message::from_slice(hash.as_ref())
+                        .expect("Failed to convert hash to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -305,7 +307,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
+                    let message = secp256k1::Message::from_slice(hash.as_ref())
+                        .expect("Failed to convert hash to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -322,7 +325,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    let message = secp256k1::Message::from_slice(hash.as_ref()).unwrap();
+                    let message = secp256k1::Message::from_slice(hash.as_ref())
+                        .expect("Failed to convert hash to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
