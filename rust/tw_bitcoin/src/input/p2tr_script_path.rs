@@ -26,7 +26,7 @@ impl TxInputP2TRScriptPath {
         TxInputP2TRScriptPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
-                value: Some(satoshis),
+                value: satoshis,
                 script_pubkey: ScriptBuf::new_v1_p2tr(
                     &secp256k1::Secp256k1::new(),
                     recipient.untweaked_pubkey(),

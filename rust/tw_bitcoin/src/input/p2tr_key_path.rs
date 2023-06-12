@@ -20,7 +20,7 @@ impl TxInputP2TRKeyPath {
         TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
-                value: Some(satoshis),
+                value: satoshis,
                 script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
                 sequence: Sequence::default(),
                 witness: Witness::default(),

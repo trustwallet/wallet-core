@@ -19,7 +19,7 @@ impl TxInputP2PKH {
         TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
-                value: Some(satoshis),
+                value: satoshis,
                 script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
                 sequence: Sequence::default(),
                 witness: Witness::new(),

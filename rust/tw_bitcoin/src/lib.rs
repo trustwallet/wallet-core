@@ -219,7 +219,7 @@ impl TransactionBuilder {
         // Prepare the inputs for `bitcoin` crate.
         let mut total_satoshi_inputs = 0;
         for input in self.inputs.iter().cloned() {
-            total_satoshi_inputs += input.satoshis().unwrap();
+            total_satoshi_inputs += input.satoshis();
 
             let btxin = TxIn::from(input);
             tx.input.push(btxin);
@@ -248,7 +248,7 @@ impl TransactionBuilder {
         if self.contains_taproot {
             for input in &self.inputs {
                 prevouts.push(TxOut {
-                    value: input.ctx().value.ok_or(Error::Todo)?,
+                    value: input.ctx().value,
                     script_pubkey: input.ctx().script_pubkey.clone(),
                 });
             }
@@ -286,8 +286,7 @@ impl TransactionBuilder {
                                 .as_ref()
                                 // P2WPKH builder sets the script code correctly.
                                 .unwrap(),
-                            // P2WPKH builder requires the `value` field.
-                            p2wpkh.ctx().value.unwrap(),
+                            p2wpkh.ctx().value,
                             EcdsaSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
@@ -372,7 +371,7 @@ pub struct TxInputsOuputs {
 #[derive(Debug, Clone)]
 pub struct InputContext {
     pub previous_output: OutPoint,
-    pub value: Option<u64>,
+    pub value: u64,
     // The condition for claiming the output.
     pub script_pubkey: ScriptBuf,
     // TODO: Document this.
@@ -386,7 +385,7 @@ impl InputContext {
     pub fn new(utxo: TxOut, point: OutPoint) -> Self {
         InputContext {
             previous_output: point,
-            value: Some(utxo.value),
+            value: utxo.value,
             script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF = 4294967295`.
             sequence: Sequence::default(),

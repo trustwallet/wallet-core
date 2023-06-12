@@ -65,7 +65,7 @@ impl TxInput {
             TxInput::P2TRScriptPath(t) => t.ctx(),
         }
     }
-    pub fn satoshis(&self) -> Option<u64> {
+    pub fn satoshis(&self) -> u64 {
         self.ctx().value
     }
 }
