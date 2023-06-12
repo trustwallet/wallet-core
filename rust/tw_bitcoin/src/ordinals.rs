@@ -105,8 +105,6 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         .push_opcode(OP_ENDIF)
         .into_script();
 
-    dbg!(&script);
-
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
     // setting the spending condition and actually claiming the spending
@@ -131,8 +129,6 @@ mod tests {
     #[test]
     fn test_get_op_push() {
         fn eq(size: u32, expected: AnyOpcode, has_size_le: bool) {
-            dbg!(size, expected, has_size_le);
-
             let (op, size_le) = get_op_push(size).unwrap();
             assert_eq!(op, expected);
             if has_size_le {
