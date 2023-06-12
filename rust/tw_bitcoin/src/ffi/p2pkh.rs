@@ -31,7 +31,10 @@ pub unsafe extern "C" fn tw_tx_input_p2pkh_create(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         std::ptr::null_mut
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null_mut);
+    let recipient = try_or_else!(
+        Recipient::<PublicKey>::from_slice(slice),
+        std::ptr::null_mut
+    );
 
     // Build P2WPKH scriptPubKey.
     let input = TxInputP2PKH::builder()
@@ -57,7 +60,10 @@ pub unsafe extern "C" fn tw_tx_output_p2pkh_create(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         std::ptr::null_mut
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), std::ptr::null_mut);
+    let recipient = try_or_else!(
+        Recipient::<PublicKey>::from_slice(slice),
+        std::ptr::null_mut
+    );
 
     // Build P2WPKH scriptPubKey.
     let output = TxOutputP2PKH::builder()

@@ -5,8 +5,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BRC20Payload<T> {
-    p: &'static str,
-    op: &'static str,
+    #[serde(rename = "p")]
+    protocol: &'static str,
+    #[serde(rename = "op")]
+    operation: &'static str,
     #[serde(flatten)]
     inner: T,
 }
@@ -14,10 +16,32 @@ pub struct BRC20Payload<T> {
 impl<T: Serialize> BRC20Payload<T> {
     /// Serialize the BRC20 payload and place it into the Ordinals Inscription.
     pub fn to_inscription(&self, recipient: Recipient<PublicKey>) -> Result<OrdinalsInscription> {
-        let data = serde_json::to_vec(self).unwrap();
+        let data = serde_json::to_vec(self).map_err(|_| Error::Todo)?;
         let inscription = OrdinalsInscription::new(Self::MIME, &data, recipient)?;
 
         Ok(inscription)
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Ticker(String);
+
+impl Ticker {
+    pub fn new(string: String) -> Result<Self> {
+        // Ticker must be a 4-letter identifier.
+        if string.len() != 4 {
+            return Err(Error::Todo);
+        }
+
+        Ok(Ticker(string))
+    }
+}
+
+impl TryFrom<String> for Ticker {
+    type Error = Error;
+
+    fn try_from(string: String) -> Result<Self> {
+        Self::new(string)
     }
 }
 
@@ -33,10 +57,10 @@ impl<T> BRC20Payload<T> {
 impl BRC20DeployPayload {
     const OPERATION: &str = "deploy";
 
-    pub fn new(ticker: String, max: usize, limit: Option<usize>, decimals: Option<usize>) -> Self {
+    pub fn new(ticker: Ticker, max: usize, limit: Option<usize>, decimals: Option<usize>) -> Self {
         BRC20Payload {
-            p: Self::PROTOCOL_ID,
-            op: Self::OPERATION,
+            protocol: Self::PROTOCOL_ID,
+            operation: Self::OPERATION,
             inner: DeployPayload {
                 tick: ticker,
                 max,
@@ -50,10 +74,10 @@ impl BRC20DeployPayload {
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
-    pub fn new(ticker: String, amount: usize) -> Self {
+    pub fn new(ticker: Ticker, amount: usize) -> Self {
         BRC20Payload {
-            p: Self::PROTOCOL_ID,
-            op: Self::OPERATION,
+            protocol: Self::PROTOCOL_ID,
+            operation: Self::OPERATION,
             inner: TransferPayload {
                 tick: ticker,
                 amt: amount,
@@ -65,10 +89,10 @@ impl BRC20TransferPayload {
 impl BRC20MintPayload {
     const OPERATION: &str = "mint";
 
-    pub fn new(ticker: String, amount: usize) -> Self {
+    pub fn new(ticker: Ticker, amount: usize) -> Self {
         BRC20Payload {
-            p: Self::PROTOCOL_ID,
-            op: Self::OPERATION,
+            protocol: Self::PROTOCOL_ID,
+            operation: Self::OPERATION,
             inner: MintPayload {
                 tick: ticker,
                 amt: amount,
@@ -79,7 +103,7 @@ impl BRC20MintPayload {
 
 #[derive(Serialize, Deserialize)]
 pub struct DeployPayload {
-    pub tick: String,
+    pub tick: Ticker,
     pub max: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lim: Option<usize>,
@@ -93,17 +117,12 @@ pub struct BRC20DeployInscription(pub OrdinalsInscription);
 impl BRC20DeployInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
-        ticker: String,
+        ticker: Ticker,
         max: usize,
         limit: Option<usize>,
         decimals: Option<usize>,
     ) -> Result<BRC20DeployInscription> {
-        // Ticker must be a 4-letter identifier.
-        if ticker.len() != 4 {
-            return Err(Error::Todo);
-        }
-
-        let data = BRC20Payload::<DeployPayload>::new(ticker, max, limit, decimals);
+        let data = BRC20DeployPayload::new(ticker, max, limit, decimals);
 
         Self::from_payload(data, recipient)
     }
@@ -123,7 +142,7 @@ impl BRC20DeployInscription {
 
 #[derive(Serialize, Deserialize)]
 pub struct TransferPayload {
-    pub tick: String,
+    pub tick: Ticker,
     pub amt: usize,
 }
 
@@ -132,15 +151,10 @@ pub struct BRC20TransferInscription(OrdinalsInscription);
 impl BRC20TransferInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
-        ticker: String,
+        ticker: Ticker,
         amount: usize,
     ) -> Result<BRC20TransferInscription> {
-        // Ticker must be a 4-letter identifier.
-        if ticker.len() != 4 {
-            return Err(Error::Todo);
-        }
-
-        let data = BRC20Payload::<TransferPayload>::new(ticker, amount);
+        let data = BRC20TransferPayload::new(ticker, amount);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
@@ -161,7 +175,7 @@ impl BRC20TransferInscription {
 /// clarity.
 #[derive(Serialize, Deserialize)]
 pub struct MintPayload {
-    pub tick: String,
+    pub tick: Ticker,
     pub amt: usize,
 }
 
@@ -170,15 +184,10 @@ pub struct BRC20MintInscription(pub OrdinalsInscription);
 impl BRC20MintInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
-        ticker: String,
+        ticker: Ticker,
         amount: usize,
     ) -> Result<BRC20MintInscription> {
-        // Ticker must be a 4-letter identifier.
-        if ticker.len() != 4 {
-            return Err(Error::Todo);
-        }
-
-        let data = BRC20Payload::<MintPayload>::new(ticker, amount);
+        let data = BRC20MintPayload::new(ticker, amount);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
