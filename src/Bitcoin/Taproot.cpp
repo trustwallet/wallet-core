@@ -1,5 +1,5 @@
-#include <Data.h>
-#include <Taproot.h>
+#include "Data.h"
+#include "Taproot.h"
 
 using namespace TW;
 
@@ -14,7 +14,7 @@ Result<void, Error> TaprootBuilder::AddP2PKHInput(const uint8_t *txid, uint32_t 
 	}
 
     auto updatedBuilder = TW::Rust::tw_transaction_add_p2pkh_input(builder, input);
-	if (updatedBuilder == false) {
+	if (updatedBuilder == nullptr) {
 		return Result<void, TaprootBuilderError>::failure(TaprootBuilderError::InvalidOutput);
 	}
 
@@ -29,7 +29,7 @@ Result<void, Error> TaprootBuilder::AddP2WPKHInput(const uint8_t *txid, uint32_t
 	}
 
     auto updatedBuilder = TW::Rust::tw_transaction_add_p2wpkh_input(builder, input);
-	if (updatedBuilder == false) {
+	if (updatedBuilder == nullptr) {
 		return Result<void, TaprootBuilderError>::failure(TaprootBuilderError::InvalidOutput);
 	}
 
@@ -44,7 +44,7 @@ Result<void, Error> TaprootBuilder::AddP2TRKeyPathInput(const uint8_t *txid, uin
 	}
 
     auto updatedBuilder = TW::Rust::tw_transaction_add_p2tr_key_path_input(builder, input);
-	if (updatedBuilder == false) {
+	if (updatedBuilder == nullptr) {
 		return Result<void, TaprootBuilderError>::failure(TaprootBuilderError::InvalidInput);
 	}
 
@@ -59,7 +59,7 @@ Result<void, Error> TaprootBuilder::AddP2PKHOutput(const uint8_t *pubkey, size_t
 	}
 
     auto updatedBuilder = TW::Rust::tw_transaction_add_p2pkh_output(builder, output);
-	if (updatedBuilder == false) {
+	if (updatedBuilder == nullptr) {
 		return Result<void, TaprootBuilderError>::failure(TaprootBuilderError::InvalidOutput);
 	}
 
@@ -74,7 +74,7 @@ Result<void, Error> TaprootBuilder::AddP2WPKHOutput(const uint8_t *pubkey, size_
 	}
 
     auto updatedBuilder = TW::Rust::tw_transaction_add_p2wpkh_output(builder, output);
-	if (updatedBuilder == false) {
+	if (updatedBuilder == nullptr) {
 		return Result<void, TaprootBuilderError>::failure(TaprootBuilderError::InvalidOutput);
 	}
 
@@ -89,7 +89,7 @@ Result<void, Error> TaprootBuilder::AddP2TRKeyPathOutput(const uint8_t *pubkey, 
 	}
 
     auto updatedBuilder = TW::Rust::tw_transaction_add_p2tr_key_path_output(builder, output);
-	if (updatedBuilder == false) {
+	if (updatedBuilder == nullptr) {
 		return Result<void, TaprootBuilderError>::failure(TaprootBuilderError::InvalidOutput);
 	}
 
