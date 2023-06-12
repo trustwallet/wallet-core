@@ -271,7 +271,7 @@ impl TransactionBuilder {
                         .map_err(|_| Error::Todo)?;
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Failed to convert hash to secp256k1::Message");
+                        .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -285,15 +285,14 @@ impl TransactionBuilder {
                                 .script_pubkey
                                 .p2wpkh_script_code()
                                 .as_ref()
-                                // P2WPKH builder sets the script code correctly.
-                                .unwrap(),
+                                .expect("P2WPKH builder must set the script code correctly"),
                             p2wpkh.ctx().value,
                             EcdsaSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Failed to convert hash to secp256k1::Message");
+                        .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -308,7 +307,7 @@ impl TransactionBuilder {
                         .map_err(|_| Error::Todo)?;
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Failed to convert hash to secp256k1::Message");
+                        .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));
@@ -326,7 +325,7 @@ impl TransactionBuilder {
                         .map_err(|_| Error::Todo)?;
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Failed to convert hash to secp256k1::Message");
+                        .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
 
                     claims.push((index, updated));

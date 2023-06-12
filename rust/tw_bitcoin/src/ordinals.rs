@@ -1,4 +1,4 @@
-use crate::{Error, Recipient, Result, TaprootProgram, TaprootScript};
+use crate::{Recipient, Result, TaprootProgram, TaprootScript};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
@@ -113,13 +113,12 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     // condition.
     let spend_info = TaprootBuilder::new()
         .add_leaf(0, script.clone())
-        .map_err(|_| Error::Todo)?
+        .expect("Ordinals Inscription spending info must always build")
         .finalize(
             &secp256k1::Secp256k1::new(),
             XOnlyPublicKey::from(internal_key.inner),
         )
-        //.map_err(|_| Error::Todo)?;
-        .unwrap();
+        .expect("Ordinals Inscription spending info must always build");
 
     Ok(TaprootProgram { script, spend_info })
 }
