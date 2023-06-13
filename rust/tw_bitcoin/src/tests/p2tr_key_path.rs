@@ -29,14 +29,14 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     let input = TxInputP2PKH::builder()
         .txid(Txid::from_str(GENESIS_TXID).unwrap())
         .vout(0)
-        .recipient(&alice)
+        .recipient(alice)
         .satoshis(COINBASE_AMOUNT)
         .build()
         .unwrap();
 
     // Prepare outputs for Bob.
     let output = TxOutputP2TRKeyPath::builder()
-        .recipient(&bob)
+        .recipient(bob)
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
@@ -66,14 +66,14 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     let input = TxInputP2TRKeyPath::builder()
         .txid(Txid::from_str(LATEST_TXID).unwrap())
         .vout(0)
-        .recipient(&bob)
+        .recipient(bob)
         .satoshis(SEND_TO_BOB)
         .build()
         .unwrap();
 
     // Prepare outputs for Bob.
     let output = TxOutputP2TRKeyPath::builder()
-        .recipient(&alice)
+        .recipient(alice)
         .satoshis(SEND_TO_ALICE)
         .build()
         .unwrap();

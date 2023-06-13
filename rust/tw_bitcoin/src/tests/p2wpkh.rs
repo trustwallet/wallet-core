@@ -27,7 +27,7 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let input = TxInputP2PKH::builder()
         .txid(Txid::from_str(GENESIS_TXID).unwrap())
         .vout(0)
-        .recipient(&alice)
+        .recipient(alice)
         .satoshis(COINBASE_AMOUNT)
         .build()
         .unwrap();
