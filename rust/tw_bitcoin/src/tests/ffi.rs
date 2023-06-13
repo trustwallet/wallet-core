@@ -1,6 +1,9 @@
 use super::*;
+use crate::ffi::{
+    tw_transaction_add_p2pkh_input, tw_transaction_add_p2pkh_output, tw_transaction_builder_create,
+    tw_transaction_sign, TWTxInputP2PKH, TWTxOutputP2PKH,
+};
 use crate::{keypair_from_wif, TxInputP2PKH, TxOutputP2PKH};
-use crate::ffi::{tw_transaction_builder_create, tw_transaction_add_p2pkh_input, tw_transaction_add_p2pkh_output, tw_transaction_sign, TWTxOutputP2PKH, TWTxInputP2PKH};
 use bitcoin::Txid;
 use std::str::FromStr;
 
@@ -26,7 +29,7 @@ fn build_ffi_p2pkh() {
         .build()
         .unwrap();
 
-	let input= Box::new(TWTxInputP2PKH(input));
+    let input = Box::new(TWTxInputP2PKH(input));
 
     // Prepare outputs for Bob.
     let output = TxOutputP2PKH::builder()
@@ -35,17 +38,17 @@ fn build_ffi_p2pkh() {
         .build()
         .unwrap();
 
-	let output = Box::new(TWTxOutputP2PKH(output));
+    let output = Box::new(TWTxOutputP2PKH(output));
 
-	let privkey = alice.secret_bytes();
+    let privkey = alice.secret_bytes();
 
-	unsafe {
-		let builder = tw_transaction_builder_create();
-		let builder = tw_transaction_add_p2pkh_input(builder, Box::into_raw(input));
-		let builder = tw_transaction_add_p2pkh_output(builder, Box::into_raw(output));
-		let sig = tw_transaction_sign(builder, privkey.as_ptr(), privkey.len()).unwrap();
+    unsafe {
+        let builder = tw_transaction_builder_create();
+        let builder = tw_transaction_add_p2pkh_input(builder, Box::into_raw(input));
+        let builder = tw_transaction_add_p2pkh_output(builder, Box::into_raw(output));
+        let sig = tw_transaction_sign(builder, privkey.as_ptr(), privkey.len()).unwrap();
 
-		let sig_bytes = sig.into_vec();
-		dbg!(sig_bytes);
-	}
+        let sig_bytes = sig.into_vec();
+        dbg!(sig_bytes);
+    }
 }
