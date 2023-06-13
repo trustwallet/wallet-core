@@ -25,7 +25,7 @@ fn sign_input_p2pkh_output_p2pkh() {
     let input = TxInputP2PKH::builder()
         .txid(Txid::from_str(GENESIS_TXID).unwrap())
         .vout(0)
-        .recipient(&alice)
+        .recipient(alice)
         .satoshis(FULL_AMOUNT)
         .build()
         .unwrap();
@@ -33,7 +33,7 @@ fn sign_input_p2pkh_output_p2pkh() {
     // Prepare outputs for Bob.
     let output = TxOutputP2PKH::builder()
         .satoshis(SEND_AMOUNT)
-        .recipient(&bob)
+        .recipient(bob)
         .build()
         .unwrap();
 
