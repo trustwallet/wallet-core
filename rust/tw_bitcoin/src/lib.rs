@@ -235,10 +235,13 @@ impl TransactionBuilder {
         }
 
         // Satoshi output check
+        /*
+        // TODO: This should be enabled, eventually.
         let miner_fee = self.miner_fee.ok_or(Error::Todo)?;
         if total_satoshis_outputs + miner_fee > total_satoshi_inputs {
             return Err(Error::Todo);
         }
+        */
 
         // If Taproot is enabled, we prepare the full `TxOuts` (value and
         // scriptPubKey) for hashing, which will then be signed. What
