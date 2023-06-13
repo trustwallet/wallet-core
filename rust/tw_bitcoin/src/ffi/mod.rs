@@ -7,6 +7,13 @@ pub mod p2tr_key_path;
 pub mod p2wpkh;
 pub mod transaction;
 
+// Re-exports
+pub use address::*;
+pub use p2pkh::*;
+pub use p2tr_key_path::*;
+pub use p2wpkh::*;
+pub use transaction::*;
+
 #[repr(C)]
 pub enum CTaprootError {
     Ok = 0,
