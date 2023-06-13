@@ -1,9 +1,24 @@
 #![allow(clippy::missing_safety_doc)]
+use tw_memory::ffi::c_result::ErrorCode;
 
+pub mod address;
 pub mod p2pkh;
 pub mod p2tr_key_path;
 pub mod p2wpkh;
 pub mod transaction;
+
+#[repr(C)]
+pub enum CTaprootError {
+    Ok = 0,
+    InvalidSlice = 1,
+    InvalidPubkey = 2,
+}
+
+impl From<CTaprootError> for ErrorCode {
+    fn from(error: CTaprootError) -> Self {
+        error as ErrorCode
+    }
+}
 
 // The code below is reimplemented from the `dev` branch.
 
