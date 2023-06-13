@@ -20,7 +20,7 @@ class Actor {
     static bool validate(const std::string& addr);
 
     /// Used internally, derive shortened uint64 key from adddr bytes
-    static uint64_t shortenKey(const std::array<byte, Address::size>& addrKey);
+    static uint64_t shortenKey(const std::array<TW::byte, Address::size>& addrKey);
     /// Used internally, derive name from uint64 shortened key
     static std::string name(uint64_t shortKey);
 };

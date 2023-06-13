@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "../proto/Common.pb.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "Transaction.h"

@@ -54,6 +54,9 @@ message SigningInput {
 
     // Type of the private key
     KeyType private_key_type = 10;
+
+    // Expiration of the transaction, if not set, default is reference_block_time + 3600 seconds
+    sfixed32 expiration = 11;
 }
 
 // Result containing the signed and encoded transaction.
@@ -63,4 +66,7 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

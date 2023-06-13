@@ -154,6 +154,13 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_
     return new TWBitcoinScript{ .impl = script };
 }
 
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddressReplay(TWString *_Nonnull address, enum TWCoinType coin, TWData *blockHash, int64_t blockHeight) {
+    auto* s = reinterpret_cast<const std::string*>(address);
+    auto* v = reinterpret_cast<const std::vector<uint8_t>*>(blockHash);
+    auto script = TW::Bitcoin::Script::lockScriptForAddress(*s, coin, *v, blockHeight);
+    return new TWBitcoinScript{ .impl = script };
+}
+
 uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
     return TW::Bitcoin::hashTypeForCoin(coinType);
 }

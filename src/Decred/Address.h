@@ -17,7 +17,7 @@ namespace TW::Decred {
 class Address {
   public:
     /// Public key hash with prefixes.
-    std::array<byte, 22> bytes;
+    std::array<TW::byte, 22> bytes;
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string) noexcept;

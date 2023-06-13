@@ -26,7 +26,7 @@ TW::Data TW::readVarBytes(const Data& from, size_t initial_pos, uint32_t* dataRe
 }
 
 template<> uint64_t TW::readVar(const TW::Data& from, size_t initial_pos, const uint64_t &max) {
-    byte fb = from[initial_pos];
+    TW::byte fb = from[initial_pos];
     uint64_t value;
     if (fb == 0xFD) {
         value = decode16LE(from.data() + initial_pos + 1);

@@ -52,7 +52,7 @@ TEST(TWAnySignerNeutron, SignAirdropNeutron) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(hex(output.signature()), "c2045c2f33caeb975ae21e5fb759041cf13239a178e3f538d8ad06b5597709ae414802966c2139d5b427045ef022793542aab436198ca1403ca184590daf783b");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(TWAnySignerNeutron, SignWithdrawAirdropNeutron) {
@@ -93,7 +93,7 @@ TEST(TWAnySignerNeutron, SignWithdrawAirdropNeutron) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(hex(output.signature()), "dff3cc5c830b68bf96f414349f58db8b16943b00c76a5afa9eca3c0222c9af9336bb15ae05bd8eaf37822f0e3e14bffbfe3b84f1fc2d8391e354e28d69cb8030");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 } // namespace TW::Cosmos::tests

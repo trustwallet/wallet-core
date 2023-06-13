@@ -13,9 +13,10 @@
 
 using namespace std;
 using namespace boost::algorithm;
-using json = nlohmann::json;
 
 namespace TW::Ethereum::ABI {
+
+using json = nlohmann::json;
 
 static int parseBitSize(const std::string& type) {
     int size = stoi(type);

@@ -47,16 +47,16 @@ TEST(EOSAddress, FromPrivateKey) {
                             "e6b783120a21cb234d8e15077ce186c47261d1043781ab8b16b84f2acd377668",
                             "bb96c0a4a6ec9c93ccc0b2cbad6b0e8110b9ca4731aef9c6937b99552a319b03"};
 
-    Type privTypes[]{Type::Legacy, Type::Legacy, Type::ModernR1, Type::ModernR1};
+    Type privTypes[]{Type::Legacy, Type::Legacy, Type::ModernR1, Type::ModernK1};
 
     std::string pubArray[]{"EOS6TFKUKVvtvjRq9T4fV9pdxNUuJke92nyb4rzSFtZfdR5ssmVuY",
                            "EOS5YtaCcbPJ3BknNBTDezE9eJoGNnAVuUwT8bnxhSRS5dqRvyfxr",
                            "PUB_R1_67itCyDj42CRgtpyP4fLbAccBYnVHGeZQujQAeK3fyNbvfvZM6",
-                           "PUB_R1_5DpVkbrMBDnY4JRhiEdHLmdLDKGQLNfL7X7it2pqT7Uk83ccDL"};
+                           "PUB_K1_6enPVMggisfqVVRZ1tj47d9UeHK46CBssoCmAz6sLDMBdtZk78"};
 
     for (int i = 0; i < 4; i++) {
         const auto privateKey = PrivateKey(parse_hex(privArray[i]));
-        const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Type::Legacy ? TWPublicKeyTypeSECP256k1 : TWPublicKeyTypeNIST256p1));
+        const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Type::ModernR1 ? TWPublicKeyTypeNIST256p1 : TWPublicKeyTypeSECP256k1));
         const auto address = Address(publicKey, privTypes[i]);
 
         ASSERT_EQ(address.string(), pubArray[i]);
@@ -68,6 +68,7 @@ TEST(EOSAddress, IsValid) {
     ASSERT_TRUE(Address::isValid("PUB_R1_6pQRUVU5vdneRnmjSiZPsvu3zBqcptvg6iK2Vz4vKo4ugnzow3"));
     ASSERT_TRUE(Address::isValid("EOS5mGcPvsqFDe8YRrA3yMMjQgjrCa6yiCho79KViDhvxh4ajQjgS"));
     ASSERT_TRUE(Address::isValid("PUB_R1_82dMu3zSSfyHYc4cvWJ6SPsHZWB5mBNAyhL53xiM5xpqmfqetN"));
+    ASSERT_TRUE(Address::isValid("PUB_K1_6enPVMggisfqVVRZ1tj47d9UeHK46CBssoCmAz6sLDMBdtZk78"));
 
     ASSERT_NO_THROW(Address(parse_hex("039d91164ea04f4e751762643ef4ae520690af361b8e677cf341fd213419956b356cb721b7"), Type::ModernR1));
     ASSERT_NO_THROW(Address(parse_hex("02d3c8e736a9a50889766caf3c37bd16e2fecc7340b3130e25d4c01b153f996a10a78afc0e"), Type::Legacy));

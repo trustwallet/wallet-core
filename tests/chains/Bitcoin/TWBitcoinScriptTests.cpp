@@ -24,6 +24,10 @@ const auto PayToPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithD
 TEST(TWBitcoinScript, Create) {
     auto data = DATA("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");
     {
+        auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreate());
+        ASSERT_TRUE(script.get() != nullptr);
+    }
+    {
         auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(data.get()));
         ASSERT_TRUE(script.get() != nullptr);
         ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23ul);

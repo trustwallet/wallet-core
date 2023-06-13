@@ -59,7 +59,11 @@ Data LegacyMessage::serialize() const {
     return buffer;
 }
 
-void LegacyMessage::compileAccounts() {
+void LegacyMessage::compileAccounts(const std::string& feePayerStr) {
+    if (Address::isValid(feePayerStr)) {
+        addAccount(AccountMeta(Address(feePayerStr), true, false));
+    }
+
     for (auto& instr : instructions) {
         for (auto& address : instr.accounts) {
             addAccount(address);

@@ -6,12 +6,10 @@
 
 #include "TestUtilities.h"
 
-#include "Stellar/Signer.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
+#include "Stellar/Signer.h"
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWStellarPassphrase.h>
-#include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
 
@@ -42,12 +40,12 @@ TEST(StellarTransaction, sign) {
 
 TEST(StellarTransaction, signWithMemoText) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
-    auto input = Proto::SigningInput();
+    auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
     input.set_sequence(2);
-    auto memoText = Proto::MemoText();
+    auto memoText = TW::Stellar::Proto::MemoText();
     memoText.set_text("Hello, world!");
     *input.mutable_memo_text() = memoText;
     input.mutable_op_payment()->set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
@@ -62,12 +60,12 @@ TEST(StellarTransaction, signWithMemoText) {
 
 TEST(StellarTransaction, signWithMemoHash) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
-    auto input = Proto::SigningInput();
+    auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
     input.set_sequence(2);
-    auto memoHash = Proto::MemoHash();
+    auto memoHash = TW::Stellar::Proto::MemoHash();
     auto fromHex = parse_hex("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3");
     memoHash.set_hash(fromHex.data(), fromHex.size());
     *input.mutable_memo_hash() = memoHash;
@@ -83,12 +81,12 @@ TEST(StellarTransaction, signWithMemoHash) {
 
 TEST(StellarTransaction, signWithMemoReturn) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
-    auto input = Proto::SigningInput();
+    auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
     input.set_sequence(2);
-    auto memoHash = Proto::MemoHash();
+    auto memoHash = TW::Stellar::Proto::MemoHash();
     auto fromHex = parse_hex("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3");
     memoHash.set_hash(fromHex.data(), fromHex.size());
     *input.mutable_memo_return_hash() = memoHash;
@@ -104,12 +102,12 @@ TEST(StellarTransaction, signWithMemoReturn) {
 
 TEST(StellarTransaction, signWithMemoID) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
-    auto input = Proto::SigningInput();
+    auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
     input.set_sequence(2);
-    auto memoId = Proto::MemoId();
+    auto memoId = TW::Stellar::Proto::MemoId();
     memoId.set_id(1234567890);
     *input.mutable_memo_id() = memoId;
     input.mutable_op_payment()->set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
@@ -124,12 +122,12 @@ TEST(StellarTransaction, signWithMemoID) {
 
 TEST(StellarTransaction, signAcreateAccount) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
-    auto input = Proto::SigningInput();
+    auto input = TW::Stellar::Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
     input.set_sequence(2);
-    auto memoId = Proto::MemoId();
+    auto memoId = TW::Stellar::Proto::MemoId();
     memoId.set_id(1234567890);
     *input.mutable_memo_id() = memoId;
     input.mutable_op_create_account()->set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");

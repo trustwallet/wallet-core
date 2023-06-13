@@ -6,19 +6,27 @@
 
 #pragma once
 
+#include "Protobuf/TronInternal.pb.h"
 #include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Tron.pb.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace TW::Tron {
 
 /// Helper class that performs Tron transaction signing.
 class Signer {
   public:
+    Proto::SigningInput input;
     Signer() = delete;
-
+    /// Initializes a transaction signer.
+    explicit Signer(const Proto::SigningInput& input) : input(input) {}
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    Proto::SigningOutput compile(const Data& signature) const;
+    Data signaturePreimage() const;
 };
 
 } // namespace TW::Tron

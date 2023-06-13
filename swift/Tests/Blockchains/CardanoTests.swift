@@ -66,7 +66,7 @@ class CardanoTests: XCTestCase {
     func testSignTransferToken1() throws {
         let toToken = CardanoTokenAmount.with {
             $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-            $0.assetName = "SUNDAE"
+            $0.assetName = "53554e444145"
             $0.amount = Data(hexString: "01312d00")! // 20000000
         }
         var toTokenBundle = CardanoTokenBundle();
@@ -95,7 +95,7 @@ class CardanoTests: XCTestCase {
         }
         let token3 = CardanoTokenAmount.with {
             $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-            $0.assetName = "CUBY"
+            $0.assetName = "43554259"
             $0.amount = Data(hexString: "2dc6c0")! // 3000000
         }
         utxo1.tokenAmount.append(token3)
@@ -109,13 +109,13 @@ class CardanoTests: XCTestCase {
         }
         let token1 = CardanoTokenAmount.with {
             $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-            $0.assetName = "SUNDAE"
+            $0.assetName = "53554e444145"
             $0.amount = Data(hexString: "04d3e8d9")! // 80996569
         }
         utxo2.tokenAmount.append(token1)
         let token2 = CardanoTokenAmount.with {
             $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-            $0.assetName = "CUBY"
+            $0.assetName = "43554259"
             $0.amount = Data(hexString: "1e8480")! // 2000000
         }
         utxo2.tokenAmount.append(token2)
@@ -231,7 +231,7 @@ class CardanoTests: XCTestCase {
 
         let tokenAmount = CardanoTokenAmount.with {
             $0.policyID = "219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e"
-            $0.assetName = "coolcatssociety4567"
+            $0.assetName = "636f6f6c63617473736f636965747934353637"
             $0.amount = Data(hexString: "01")! // 1
         };
         var input = CardanoSigningInput.with {

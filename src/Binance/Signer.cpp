@@ -8,6 +8,7 @@
 #include "Serialization.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
+#include "../PublicKey.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -41,19 +42,19 @@ static const auto timeLockOrderPrefix = Data{0x07, 0x92, 0x15, 0x31};
 static const auto timeRelockOrderPrefix = Data{0x50, 0x47, 0x11, 0xDA};
 static const auto timeUnlockOrderPrefix = Data{0xC4, 0x05, 0x0C, 0x6C};
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto signer = Signer(input);
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, bool testnet) noexcept {
+    auto signer = Signer(input, testnet);
     auto encoded = signer.build();
     auto output = Proto::SigningOutput();
     output.set_encoded(encoded.data(), encoded.size());
     return output;
 }
 
-std::string Signer::signJSON(const std::string& json, const Data& key) {
+std::string Signer::signJSON(const std::string& json, const Data& key, bool testnet) {
     auto input = Proto::SigningInput();
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, testnet);
     return hex(output.encoded());
 }
 
@@ -92,7 +93,7 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
 }
 
 std::string Signer::signaturePreimage() const {
-    auto json = signatureJSON(input);
+    auto json = signatureJSON(input, this->testnet);
     return json.dump();
 }
 

@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "boost/format.hpp"
 #include <gtest/gtest.h>
 #include <vector>
 

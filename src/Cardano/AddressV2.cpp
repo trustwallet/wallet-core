@@ -13,7 +13,7 @@
 
 namespace TW::Cardano {
 
-bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
+bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, TW::byte& type_out) {
     // Decode Bas58, decode payload + crc, decode root, attr
     Data base58decoded = Base58::decode(addr);
     if (base58decoded.empty()) {

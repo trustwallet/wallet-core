@@ -9,6 +9,7 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "../proto/Binance.pb.h"
+#include "../PublicKey.h"
 
 #include <cstdint>
 #include <utility>
@@ -19,14 +20,15 @@ namespace TW::Binance {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, bool testnet = false) noexcept;
     /// Signs a json Proto::SigningInput with private key
-    static std::string signJSON(const std::string& json, const Data& key);
+    static std::string signJSON(const std::string& json, const Data& key, bool testnet = false);
   public:
     Proto::SigningInput input;
+    bool testnet;
 
     /// Initializes a transaction signer.
-    explicit Signer(Proto::SigningInput input) : input(std::move(input)) {}
+    explicit Signer(Proto::SigningInput input, bool test = false) : input(std::move(input)), testnet(test) {}
 
     /// Builds a signed transaction.
     ///

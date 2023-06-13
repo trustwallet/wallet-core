@@ -10,6 +10,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <google/protobuf/util/json_util.h>
+#include <TrustWalletCore/TWCoinType.h>
 
 using namespace TW;
 

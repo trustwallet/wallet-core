@@ -70,7 +70,7 @@ class Transaction {
     Data cid() const;
 
     // serialize returns json ready for MpoolPush rpc
-    std::string serialize(SignatureType signatureType, Data& signature) const;
+    std::string serialize(SignatureType signatureType, const Data& signature) const;
 };
 
 } // namespace TW::Filecoin

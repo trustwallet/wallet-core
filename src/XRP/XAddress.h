@@ -13,7 +13,7 @@
 
 namespace TW::Ripple {
 
-enum class TagFlag: byte { none = 0x00, classic = 0x01};
+enum class TagFlag: TW::byte { none = 0x00, classic = 0x01};
 
 class XAddress {
   public:
@@ -24,7 +24,7 @@ class XAddress {
     static const size_t keyHashSize = 20;
 
     /// Address data consisting of public key hash
-    std::array<byte, keyHashSize> bytes;
+    std::array<TW::byte, keyHashSize> bytes;
 
     /// destination tag
     uint32_t tag;

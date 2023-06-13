@@ -8,7 +8,6 @@
 #include "../Base58.h"
 #include "Data.h"
 #include "../Hash.h"
-#include "../Ontology/ParamsBuilder.h"
 
 #include "Address.h"
 
@@ -37,7 +36,7 @@ Address::Address(const PublicKey& publicKey) {
     pkdata.push_back(CHECKSIG);
 
     auto keyHash = Hash::ripemd(Hash::sha256(pkdata));
-    keyHash.insert(keyHash.begin(), (byte)Address::version);
+    keyHash.insert(keyHash.begin(), (TW::byte)Address::version);
 
     if (keyHash.size() != Address::size) {
         throw std::invalid_argument("Invalid address key data");
@@ -46,17 +45,12 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
 }
 
-Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
-    auto builderData = toScriptHash(Ontology::ParamsBuilder::fromMultiPubkey(m, publicKeys));
-    std::copy(builderData.begin(), builderData.end(), bytes.begin());
-}
-
 Data Address::toScriptHash(const Data& data) const {
     return Hash::ripemd(Hash::sha256(data));
 }
 
 Data Address::toScriptHash() const {
-    byte buf[Hash::ripemdSize];
+    TW::byte buf[Hash::ripemdSize];
     Data data(buf, buf + Hash::ripemdSize);
     std::copy(bytes.begin() + 1, bytes.begin() + Hash::ripemdSize + 1, data.begin());
     return data;

@@ -86,6 +86,7 @@ TEST(TWZelcashTransaction, Signing) {
     const int64_t fee = 2260;
 
     auto input = Bitcoin::Proto::SigningInput();
+    input.set_coin_type(TWCoinTypeZelcash);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);

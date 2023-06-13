@@ -97,6 +97,10 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "t1b9xfAk3kZp5Qk3rinDPq7zzLkJGHTChDS");
             break;
 
+        case TWCoinTypeKomodo:
+            EXPECT_EQ(address, "RSZYjMDCP4q3t7NAFXPPnqEGrMZn971pdB");
+            break;
+
         case TWCoinTypeAeternity:
             EXPECT_EQ(address, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
             break;
@@ -112,11 +116,17 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeBinance:
             EXPECT_EQ(address, "bnb1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0mlq0d0");
             break;
+        case TWCoinTypeTBinance:
+            EXPECT_EQ(address, "tbnb1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z042ftd7");
+            break;
         case TWCoinTypeBitcoin:
             EXPECT_EQ(address, "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv");
             break;
         case TWCoinTypeBitcoinCash:
             EXPECT_EQ(address, "bitcoincash:qz7eyzytkl5z6cg6nw20hd62pyyp22mcfuardfd2vn");
+            break;
+        case TWCoinTypeBitcoinDiamond:
+            EXPECT_EQ(address, "1JHMeqKunF2Up6zxnMQGhJu5667BXz98YQ");
             break;
         case TWCoinTypeBitcoinGold:
             EXPECT_EQ(address, "btg1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0eg8day");
@@ -179,6 +189,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeICON:
             EXPECT_EQ(address, "hx4728fc65c31728f0d3538b8783b5394b31a136b9");
             break;
+        case TWCoinTypeIOST:
+            EXPECT_EQ(address, "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
+            break;
         case TWCoinTypeIoTeX:
             EXPECT_EQ(address, "io1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0zgdt6h");
             break;
@@ -218,6 +231,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeOsmosis:
             EXPECT_EQ(address, "osmo1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z03qvn6n");
             break;
+        case TWCoinTypePivx:
+            EXPECT_EQ(address, "DNRTC6GZ5evmM7BZWwPqF54fyDqUqULMyu");
+            break;
         case TWCoinTypePolkadot:
             EXPECT_EQ(address, "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
             break;
@@ -233,6 +249,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeSolana:
             EXPECT_EQ(address, "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
             break;
+        case TWCoinTypeSyscoin:
+            EXPECT_EQ(address, "sys1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z083sjh7");
+            break;
         case TWCoinTypeTHORChain:
             EXPECT_EQ(address, "thor1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0luxce7");
             break;
@@ -241,6 +260,9 @@ TEST(Coin, DeriveAddress) {
             break;
         case TWCoinTypeTron:
             EXPECT_EQ(address, "TQLCsShbQNXMTVCjprY64qZmEA4rBarpQp");
+            break;
+        case TWCoinTypeVerge:
+            EXPECT_EQ(address, "DNRTC6GZ5evmM7BZWwPqF54fyDqUqULMyu");
             break;
         case TWCoinTypeViacoin:
             EXPECT_EQ(address, "via1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z09y9mn2");
@@ -251,14 +273,23 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeXRP:
             EXPECT_EQ(address, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQ");
             break;
+        case TWCoinTypeZen:
+            EXPECT_EQ(address, "zniNGeFxXRpY6RDGVdfdmbcvcFb1rrLdnFz");
+            break;
         case TWCoinTypeZilliqa:
             EXPECT_EQ(address, "zil1j2cvtd7j9n7fnxfv2r3neucjw8tp4xz9sp07v4");
+            break;
+        case TWCoinTypeStratis:
+            EXPECT_EQ(address, "strax1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0rvt20n");
             break;
         case TWCoinTypeNervos:
             EXPECT_EQ(address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtsqfsf77ae0wn5a7795hs2ydv83g6hl4qleywxw");
             break;
         case TWCoinTypeAptos:
             EXPECT_EQ(address, "0xce2fd04ac9efa74f17595e5785e847a2399d7e637f5e8179244f76191f653276");
+            break;
+        case TWCoinTypeNebl:
+            EXPECT_EQ(address, "NdCKqb8BQoavA5PZ5b4APxKmSpmBA6yMSi");
             break;
         case TWCoinTypeSui:
             EXPECT_EQ(address, "0x870deb25d5c0a4d7250d52d5cd58dacca2d51eb2a120a979b13384cd52e21e1b");

@@ -34,6 +34,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature) noexcept {
+    FIO::Proto::SigningOutput output;
+    output = TransactionBuilder::buildSigningOutput(input, signature);
+    return output;
+}
+
 Data Signer::signData(const PrivateKey& privKey, const Data& data) {
     Data hash = Hash::sha256(data);
     Data signature = privKey.sign(hash, TWCurveSECP256k1, isCanonical);

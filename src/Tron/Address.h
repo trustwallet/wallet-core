@@ -18,7 +18,7 @@ namespace TW::Tron {
 class Address : public TW::Base58Address<21> {
   public:
     /// Address prefix.
-    static const byte prefix = 0x41;
+    static const TW::byte prefix = 0x41;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);

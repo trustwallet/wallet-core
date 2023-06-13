@@ -20,6 +20,9 @@ public:
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
     bool supportsJSONSigning() const final { return true; }
     std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const override;
+
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
 };
 
 } // namespace TW::Cosmos

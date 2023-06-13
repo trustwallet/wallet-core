@@ -17,8 +17,8 @@
 
 namespace TW::Zcash {
 
-extern const std::array<byte, 4> SaplingBranchID;
-extern const std::array<byte, 4> BlossomBranchID;
+extern const std::array<TW::byte, 4> SaplingBranchID;
+extern const std::array<TW::byte, 4> BlossomBranchID;
 
 /// Only supports transparent transaction right now
 /// See also https://github.com/zcash/zips/blob/master/zip-0243.rst
@@ -31,7 +31,7 @@ struct Transaction {
 
     Bitcoin::TransactionInputs<Bitcoin::TransactionInput> inputs;
     Bitcoin::TransactionOutputs<Bitcoin::TransactionOutput> outputs;
-    std::array<byte, 4> branchId;
+    std::array<TW::byte, 4> branchId;
 
     /// Used for diagnostics; store previously estimated virtual size (if any; size in bytes)
     int previousEstimatedVirtualSize = 0;
@@ -39,7 +39,7 @@ struct Transaction {
     Transaction() = default;
 
     Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight,
-                uint64_t valueBalance, std::array<byte, 4> branchId)
+                uint64_t valueBalance, std::array<TW::byte, 4> branchId)
         : _version(version)
         , versionGroupId(versionGroupId)
         , lockTime(lockTime)

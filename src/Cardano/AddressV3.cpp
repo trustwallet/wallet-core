@@ -163,7 +163,7 @@ AddressV3::AddressV3(const Data& data) {
 AddressV3::AddressV3(const AddressV3& other) = default;
 
 uint8_t AddressV3::firstByte(NetworkId networkId, Kind kind) {
-    byte first = (byte)(((byte)kind << 4) + networkId);
+    auto first = (TW::byte)(((TW::byte)kind << 4) + networkId);
     return first;
 }
 
@@ -210,7 +210,7 @@ Data AddressV3::data() const noexcept {
         return legacyAddressV2->getCborData();
     }
 
-    const byte first = firstByte(networkId, kind);
+    const TW::byte first = firstByte(networkId, kind);
     Data raw;
     TW::append(raw, first);
     TW::append(raw, bytes);

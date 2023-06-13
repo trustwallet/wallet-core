@@ -17,7 +17,7 @@ class Address {
   public:
     /// Address data consisting of a prefix byte followed by the public key
     /// bytes.
-    std::array<byte, 32> bytes;
+    std::array<TW::byte, 32> bytes;
 
     /// Determines whether a string makes a valid Nano address.
     static bool isValid(const std::string& address);

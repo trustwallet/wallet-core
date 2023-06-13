@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Algorand.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Simple transfer message, transfer an amount to an address
 message Transfer {
     // Destination address (string)
@@ -52,6 +54,8 @@ message SigningInput {
 
     // fee amount
     uint64 fee = 7;
+    // public key
+    bytes public_key = 8;
 
     // message payload
     oneof message_oneof {
@@ -66,6 +70,12 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error description
+    string error_message = 3;
+    
     // Signature in base64.
-    string signature = 2;
+    string signature = 4;
 }

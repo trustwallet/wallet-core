@@ -61,21 +61,22 @@ TEST(CardanoTransaction, minAdaAmount) {
         const auto tb = TokenBundle();
         EXPECT_EQ(tb.minAdaAmount(), 1000000ul);
     }
-    { // 1 policyId, 1 6-char asset name
-        const auto tb = TokenBundle({TokenAmount(policyId, "TOKEN1", 0)});
+
+    {   // 1 policyId, 1 6-char asset name
+        const auto tb = TokenBundle({TokenAmount(policyId, "544f4b454e31", 0)});
         EXPECT_EQ(tb.minAdaAmount(), 1444443ul);
     }
     { // 2 policyId, 2 4-char asset names
         auto tb = TokenBundle();
-        tb.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
-        tb.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
+        tb.add(TokenAmount("012345678901234567890POLICY1", "544f4b31", 20));
+        tb.add(TokenAmount("012345678901234567890POLICY2", "544f4b32", 20));
         EXPECT_EQ(tb.minAdaAmount(), 1629628ul);
     }
     { // 10 policyId, 10 6-char asset names
         auto tb = TokenBundle();
         for (auto i = 0; i < 10; ++i) {
-            std::string policyId1 = +"012345678901234567890123456" + std::to_string(i);
-            std::string name = "ASSET" + std::to_string(i);
+            std::string policyId1 =  + "012345678901234567890123456" + std::to_string(i);
+            std::string name = hex("ASSET" + std::to_string(i));
             tb.add(TokenAmount(policyId1, name, 0));
         }
         EXPECT_EQ(tb.minAdaAmount(), 3370367ul);
@@ -97,9 +98,9 @@ TEST(CardanoTransaction, getPolicyIDs) {
     const auto policyId1 = "012345678901234567890POLICY1";
     const auto policyId2 = "012345678901234567890POLICY2";
     const auto tb = TokenBundle({
-        TokenAmount(policyId1, "TOK1", 10),
-        TokenAmount(policyId2, "TOK2", 20),
-        TokenAmount(policyId2, "TOK3", 30), // duplicate policyId
+        TokenAmount(policyId1, "544f4b31", 10),
+        TokenAmount(policyId2, "544f4b32", 20),
+        TokenAmount(policyId2, "544f4b33", 30), // duplicate policyId
     });
     ASSERT_EQ(tb.getPolicyIds().size(), 2ul);
     EXPECT_TRUE(tb.getPolicyIds().contains(policyId1));
@@ -117,8 +118,8 @@ TEST(TWCardanoTransaction, minAdaAmount) {
     }
     { // 2 policyId, 2 4-char asset names
         auto bundle = TokenBundle();
-        bundle.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
-        bundle.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
+        bundle.add(TokenAmount("012345678901234567890POLICY1", "544f4b31", 20));
+        bundle.add(TokenAmount("012345678901234567890POLICY2", "544f4b32", 20));
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1629628ul);
@@ -146,7 +147,7 @@ TEST(TWCardanoTransaction, outputMinAdaAmount) {
     }
     { // 1 NFT
         auto bundle = TokenBundle();
-        bundle.add(TokenAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e", "coolcatssociety4567", 1));
+        bundle.add(TokenAmount("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e", "636f6f6c63617473736f636965747934353637", 1));
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         const auto actual = WRAPS(TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte.get()));
@@ -154,8 +155,8 @@ TEST(TWCardanoTransaction, outputMinAdaAmount) {
     }
     { // 2 policyId, 2 4-char asset names
         auto bundle = TokenBundle();
-        bundle.add(TokenAmount("8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587", "AADA", 20));
-        bundle.add(TokenAmount("6ac8ef33b510ec004fe11585f7c5a9f0c07f0c23428ab4f29c1d7d10", "MELD", 20));
+        bundle.add(TokenAmount("8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587", "41414441", 20));
+        bundle.add(TokenAmount("6ac8ef33b510ec004fe11585f7c5a9f0c07f0c23428ab4f29c1d7d10", "4d454c44", 20));
         const auto bundleProto = bundle.toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         const auto actual = WRAPS(TWCardanoOutputMinAdaAmount(toAddress.get(), &bundleProtoData, coinsPerUtxoByte.get()));

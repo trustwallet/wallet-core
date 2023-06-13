@@ -37,7 +37,6 @@ class Signer {
     /// Compiles a Proto::SigningInput transaction, with external signature
     static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature) noexcept;
 
-  public:
     /// build Transaction from signing input
     static std::shared_ptr<TransactionBase> build(const Proto::SigningInput& input);
 

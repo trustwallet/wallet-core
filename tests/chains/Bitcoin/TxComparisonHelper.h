@@ -45,14 +45,14 @@ struct EncodedTxSize {
 bool operator==(const EncodedTxSize& s1, const EncodedTxSize& s2);
 
 /// Return the encoded size of the transaction, virtual and non-segwit, etc.
-EncodedTxSize getEncodedTxSize(const Transaction& tx);
+EncodedTxSize getEncodedTxSize(const TW::Bitcoin::Transaction& tx);
 
 /// Validate the previously estimated transaction size (if available) with the actual transaction size.
 /// Uses segwit byte size (virtual size).  Tolerance is estiamte-smaller and estimate-larger, like -1 and 20.
 /// Returns false on mismatch, and error is printed (stderr).
-bool validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);
+bool validateEstimatedSize(const TW::Bitcoin::Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);
 
 /// Print out a transaction in a nice format, as structured hex strings.
-void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat = true);
+void prettyPrintTransaction(const TW::Bitcoin::Transaction& tx, bool useWitnessFormat = true);
 
 } // namespace TW::Bitcoin

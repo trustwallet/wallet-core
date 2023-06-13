@@ -222,6 +222,24 @@ TEST(NEOTransaction, SerializeDeserializeMiner) {
         std::invalid_argument);
 }
 
+TEST(NEOTransaction, SerializeDeserializeInvocation) {
+    string data = "d1014f04e0aebb00148b720fabfe9cf041f9a27df4f7f1daaabf73c66414f88235a26e55cce0747ee827f39fd8167849672b53c1087472616e7366657267e345419e7377286ee5b0a39b56e30f6213ab9e4d00000000000000000220f88235a26e55cce0747ee827f39fd8167849672bf0084d65822107fcfd5200000141407d9089f957dbaf526a425f7dc494c62511989124f357364c750a3c3bff94e9f677c9cd497d9dcea3c7a1abbfa59411608736c86ef23297d0813699cd279fe27923210339fbbe7bdce6be3101fd8a1fb45df6782cd8ab76c80c884bfee14d5daafac392ac";
+    std::unique_ptr<Transaction> deserializedTransaction(Transaction::deserializeFrom(parse_hex(data)));
+    auto serialized = deserializedTransaction->serialize();
+    std::unique_ptr<Transaction> serializedTransaction(Transaction::deserializeFrom(serialized));
+
+    EXPECT_EQ(*deserializedTransaction, *serializedTransaction);
+}
+
+TEST(NEOTransaction, SerializeDeserializeContract) {
+    string data = "80000001820e56309f4c26b32cc00025d0e35e7faa25641fa03138877478a155794f54490000019b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000f88235a26e55cce0747ee827f39fd8167849672b0141401ca0aa69bccbcb97ca9423573a2c3c696422055c02e8d4ce37e2460ae88753c66144f4fbf392de6619c73ff27346f1d0a9f3d23967327d4d4f4b3b151dbb05942321025c01e1650f6bf488c318a0105ed7214c1b6a9a14cfebd9ec5da53a29723f8101ac";
+    std::unique_ptr<Transaction> deserializedTransaction(Transaction::deserializeFrom(parse_hex(data)));
+    auto serialized = deserializedTransaction->serialize();
+    std::unique_ptr<Transaction> serializedTransaction(Transaction::deserializeFrom(serialized));
+
+    EXPECT_EQ(*deserializedTransaction, *serializedTransaction);
+}
+
 TEST(NEOTransaction, GetHash) {
     string block2tn = "0000d11f7a2800000000";
     std::unique_ptr<Transaction> deserializedTransaction(Transaction::deserializeFrom(parse_hex(block2tn)));

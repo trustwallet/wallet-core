@@ -13,15 +13,21 @@ This list is generated from [./registry.json](../registry.json)
 | 20      | DigiByte         | DGB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/digibyte/info/logo.png" width="32" />     | <https://www.digibyte.io>     |
 | 22      | Monacoin         | MONA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/monacoin/info/logo.png" width="32" />     | <https://monacoin.org>        |
 | 42      | Decred           | DCR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/decred/info/logo.png" width="32" />       | <https://decred.org>          |
+| 57      | Syscoin          | SYS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/syscoin/info/logo.png" width="32" />      | <https://syscoin.org>         |
 | 60      | Ethereum         | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png" width="32" />     | <https://ethereum.org>        |
 | 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/classic/info/logo.png" width="32" />      | <https://ethereumclassic.org> |
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/icon/info/logo.png" width="32" />         | <https://icon.foundation>     |
+| 77      | Verge            | XVG    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/verge/info/logo.png" width="32" />        | <https://vergecurrency.com>   |
 | 118     | Cosmos Hub       | ATOM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cosmos/info/logo.png" width="32" />       | <https://cosmos.network>      |
+| 119     | Pivx             | PIVX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/pivx/info/logo.png" width="32" />         | <https://pivx.org>            |
+| 121     | Zen              | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zen/info/logo.png" width="32" />          | <https://www.horizen.io>      |
 | 133     | Zcash            | ZEC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zcash/info/logo.png" width="32" />        | <https://z.cash>              |
 | 136     | Firo             | FIRO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/firo/info/logo.png" width="32" />         | <https://firo.org/>           |
 | 137     | Rootstock        | RBTC   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/rootstock/info/logo.png" width="32" />    | <https://rootstock.io>        |
+| 141     | Komodo           | KMD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/komodo/info/logo.png" width="32" />       | <https://komodoplatform.com>  |
 | 144     | XRP              | XRP    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ripple/info/logo.png" width="32" />       | <https://ripple.com/xrp>      |
 | 145     | Bitcoin Cash     | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png" width="32" />  | <https://bitcoincash.org>     |
+| 146     | Nebl             | NEBL   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/Nebl/info/logo.png" width="32" />         | <https://nebl.io>             |
 | 148     | Stellar          | XLM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stellar/info/logo.png" width="32" />      | <https://stellar.org>         |
 | 156     | Bitcoin Gold     | BTG    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoingold/info/logo.png" width="32" />  | <https://bitcoingold.org>     |
 | 165     | Nano             | XNO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nano/info/logo.png" width="32" />         | <https://nano.org>            |
@@ -32,6 +38,7 @@ This list is generated from [./registry.json](../registry.json)
 | 235     | FIO              | FIO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fio/info/logo.png" width="32" />          | <https://fioprotocol.io>      |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
 | 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
+| 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iost/info/logo.png" width="32" />         | <https://iost.io>             |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
 | 309     | Nervos           | CKB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nervos/info/logo.png" width="32" />       | <https://nervos.org>          |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
@@ -56,7 +63,7 @@ This list is generated from [./registry.json](../registry.json)
 | 564     | Agoric           | BLD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/agoric/info/logo.png" width="32" />       | <https://agoric.com>          |
 | 607     | TON              | TON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ton/info/logo.png" width="32" />          | <https://ton.org>             |
 | 637     | Aptos            | APT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png" width="32" />        | <https://aptoslabs.com/>      |
-| 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
+| 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://www.bnbchain.org>    |
 | 784     | Sui              | SUI    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sui/info/logo.png" width="32" />          | <https://sui.io/>             |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/callisto/info/logo.png" width="32" />     | <https://callisto.network>    |
@@ -66,6 +73,7 @@ This list is generated from [./registry.json](../registry.json)
 | 931     | THORChain        | RUNE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/thorchain/info/logo.png" width="32" />    | <https://thorchain.org>       |
 | 966     | Polygon          | MATIC  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png" width="32" />      | <https://polygon.technology>  |
 | 996     | OKX Chain        | OKT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/okc/info/logo.png" width="32" />          | <https://www.okx.com/okc>     |
+| 999     | Bitcoin Diamond  | BCD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoindiamond/info/logo.png" width="32" /> | <https://www.bitcoindiamond.org> |
 | 1001    | ThunderCore      | TT     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/thundertoken/info/logo.png" width="32" /> | <https://thundercore.com>     |
 | 1023    | Harmony          | ONE    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/harmony/info/logo.png" width="32" />      | <https://harmony.one>         |
 | 1024    | Ontology         | ONT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ontology/info/logo.png" width="32" />     | <https://ont.io>              |
@@ -80,6 +88,7 @@ This list is generated from [./registry.json](../registry.json)
 | 18000   | Meter            | MTR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/meter/info/logo.png" width="32" />        | <https://meter.io/>           |
 | 19167   | Flux             | FLUX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://runonflux.io>        |
 | 52752   | Celo             | CELO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/celo/info/logo.png" width="32" />         | <https://celo.org>            |
+| 105105  | Stratis          | STRAX  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stratis/info/logo.png" width="32" />      | <https://www.stratisplatform.com/> |
 | 534353  | Scroll           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/scroll/info/logo.png" width="32" />       | <https://scroll.io>           |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
@@ -120,6 +129,7 @@ This list is generated from [./registry.json](../registry.json)
 | 20000714 | BNB Smart Chain  | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
 | 20009001 | Native Evmos     | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nativeevmos/info/logo.png" width="32" />  | <https://evmos.org/>          |
 | 30000118 | Juno             | JUNO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/juno/info/logo.png" width="32" />         | <https://www.junonetwork.io/> |
+| 30000714 | TBNB             | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tbinance/info/logo.png" width="32" />     | <https://www.bnbchain.org>    |
 | 40000118 | Stride           | STRD   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stride/info/logo.png" width="32" />       | <https://stride.zone/>        |
 | 50000118 | Axelar           | AXL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/axelar/info/logo.png" width="32" />       | <https://axelar.network/>     |
 | 60000118 | Crescent         | CRE    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/crescent/info/logo.png" width="32" />     | <https://crescent.network/>   |

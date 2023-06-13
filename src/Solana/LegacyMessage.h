@@ -37,10 +37,10 @@ public:
     LegacyMessage()
         : mRecentBlockHash(Base58::decode(NULL_ID_ADDRESS)){};
 
-    LegacyMessage(Data recentBlockHash, const std::vector<Instruction>& instructions)
+    LegacyMessage(Data recentBlockHash, const std::vector<Instruction>& instructions, const std::string& feePayerStr = "")
         : mRecentBlockHash(recentBlockHash)
         , instructions(instructions) {
-        compileAccounts();
+        compileAccounts(feePayerStr);
     }
 
     // add an acount, to the corresponding bucket
@@ -48,7 +48,7 @@ public:
     // add an account to accountKeys if not yet present
     void addAccountKeys(const Address& account);
     // compile the single accounts lists from the buckets
-    void compileAccounts();
+    void compileAccounts(const std::string& feePayerStr = "");
     // compile the instructions; replace instruction accounts with indices
     void compileInstructions();
 
@@ -63,8 +63,12 @@ public:
 
     // This constructor creates a default single-signer Transfer message
     static LegacyMessage createTransfer(const Address& from, const Address& to, uint64_t value, Data mRecentBlockHash,
-                                  std::string memo = "", std::vector<Address> references = {}) {
+                                  std::string memo = "", std::vector<Address> references = {}, const std::string& nonceAccountStr = "") {
         std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(from, Address(nonceAccountStr)));
+        }
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));
@@ -179,10 +183,15 @@ public:
 
     // This constructor creates a createAccount token message
     // see create_associated_token_account() solana-program-library/associated-token-account/program/src/lib.rs
-    static LegacyMessage createTokenCreateAccount(const Address& signer, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Data mRecentBlockHash) {
+    static LegacyMessage createTokenCreateAccount(const Address& signer, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Data mRecentBlockHash, const std::string& nonceAccountStr = "") {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+        std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
+        }
         auto instruction = Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
             AccountMeta(signer, true, false), // fundingAddress,
             AccountMeta(tokenAddress, false, false),
@@ -192,15 +201,21 @@ public:
             AccountMeta(tokenProgramId, false, true),
             AccountMeta(sysvarRentId, false, true),
         });
-        return LegacyMessage(mRecentBlockHash, {instruction});
+        instructions.push_back(instruction);
+        return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a transfer token message.
     // see transfer_checked() solana-program-library/token/program/src/instruction.rs
     static LegacyMessage createTokenTransfer(const Address& signer, const Address& tokenMintAddress,
                                        const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Data mRecentBlockHash,
-                                       std::string memo = "", std::vector<Address> references = {}) {
+                                       std::string memo = "", std::vector<Address> references = {},
+                                       const std::string& nonceAccountStr = "", const std::string& feePayerStr = "") {
         std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
+        }
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));
@@ -213,27 +228,41 @@ public:
         };
         appendReferences(accountMetas, references);
         instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
+
+        if (Address::isValid(feePayerStr)) {
+            return LegacyMessage(mRecentBlockHash, instructions, feePayerStr);
+        }
+
         return LegacyMessage(mRecentBlockHash, instructions);
     }
 
     // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
     static LegacyMessage createTokenCreateAndTransfer(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
                                                 const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Data mRecentBlockHash,
-                                                std::string memo = "", std::vector<Address> references = {}) {
+                                                std::string memo = "", std::vector<Address> references = {},
+                                                const std::string& nonceAccountStr = "", const std::string& feePayerStr = "") {
         const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         const auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
         std::vector<Instruction> instructions;
         instructions.reserve(3);
-        instructions.emplace_back(Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
-            AccountMeta(signer, true, false), // fundingAddress,
-            AccountMeta(recipientTokenAddress, false, false),
-            AccountMeta(recipientMainAddress, false, true),
-            AccountMeta(tokenMintAddress, false, true),
-            AccountMeta(systemProgramId, false, true),
-            AccountMeta(tokenProgramId, false, true),
-            AccountMeta(sysvarRentId, false, true),
-        }));
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
+        }
+        std::vector<AccountMeta> createTokenAccountAccountMetas;
+        if (Address::isValid(feePayerStr)) {
+            createTokenAccountAccountMetas.emplace_back(AccountMeta(Address(feePayerStr), true, false));
+        } else {
+            createTokenAccountAccountMetas.emplace_back(AccountMeta(signer, true, false));
+        }
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(recipientTokenAddress, false, false));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(recipientMainAddress, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(tokenMintAddress, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(systemProgramId, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(tokenProgramId, false, true));
+        createTokenAccountAccountMetas.emplace_back(AccountMeta(sysvarRentId, false, true));
+        instructions.emplace_back(Instruction::createTokenCreateAccount(createTokenAccountAccountMetas));
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.emplace_back(Instruction::createMemo(memo));
@@ -246,6 +275,63 @@ public:
         };
         appendReferences(accountMetas, references);
         instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
+        if (Address::isValid(feePayerStr)) {
+            return LegacyMessage(mRecentBlockHash, instructions, feePayerStr);
+        }
+        return LegacyMessage(mRecentBlockHash, instructions);
+    }
+
+    static LegacyMessage createNonceAccount(const Address& sender, const Address& newNonceAccountAddress,
+                                      uint64_t rent, Data mRecentBlockHash,
+                                      std::string nonceAccountStr = "") {
+        auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+        auto sysvarRecentBlockhashsId = Address(SYSVAR_RECENT_BLOCKHASHS_ADDRESS);
+        auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
+        std::vector<AccountMeta> createAccountAccountMetas = {
+            AccountMeta(sender, true, false), AccountMeta(newNonceAccountAddress, true, false)};
+        std::vector<AccountMeta> initializeNonceAccountAccountMetas = {
+            AccountMeta(newNonceAccountAddress, false, false),
+            AccountMeta(sysvarRecentBlockhashsId, false, true),
+            AccountMeta(sysvarRentId, false, true)};
+        std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(sender, Address(nonceAccountStr)));
+        }
+        instructions.push_back(
+            Instruction::createAccount(createAccountAccountMetas, rent, 80, systemProgramId));
+        instructions.push_back(
+            Instruction::createInitializeNonce(initializeNonceAccountAccountMetas, sender));
+        return LegacyMessage(mRecentBlockHash, instructions);
+    }
+
+    static LegacyMessage createWithdrawNonceAccount(const Address& authorizer,
+                                              const Address& nonceAccountAddress, const Address& to,
+                                              uint64_t value, Data mRecentBlockHash,
+                                              std::string nonceAccountStr = "") {
+        auto sysvarRecentBlockhashsId = Address(SYSVAR_RECENT_BLOCKHASHS_ADDRESS);
+        auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+        std::vector<AccountMeta> accountMetas = {
+            AccountMeta(nonceAccountAddress, false, false), AccountMeta(to, false, false),
+            AccountMeta(sysvarRecentBlockhashsId, false, true),
+            AccountMeta(sysvarRentId, false, true), AccountMeta(authorizer, true, true)};
+        std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(authorizer, Address(nonceAccountStr)));
+        }
+        instructions.push_back(Instruction::withdrawNonceAccount(accountMetas, value));
+        return LegacyMessage(mRecentBlockHash, instructions);
+    }
+
+    static LegacyMessage advanceNonceAccount(const Address& authorizer,
+                                       const Address& nonceAccountAddress, Data mRecentBlockHash) {
+        auto sysvarRecentBlockhashsId = Address(SYSVAR_RECENT_BLOCKHASHS_ADDRESS);
+        std::vector<AccountMeta> accountMetas = {AccountMeta(nonceAccountAddress, false, false),
+                                                 AccountMeta(sysvarRecentBlockhashsId, false, true),
+                                                 AccountMeta(authorizer, true, true)};
+        std::vector<Instruction> instructions;
+        instructions.push_back(Instruction::advanceNonceAccount(authorizer, nonceAccountAddress));
         return LegacyMessage(mRecentBlockHash, instructions);
     }
 };

@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Solana.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Transfer transaction
 message Transfer {
     // destination address
@@ -130,6 +132,22 @@ message CreateAndTransferToken {
     repeated string references = 8;
 }
 
+message CreateNonceAccount {
+    string nonce_account = 1; // required for building pre-signing hash of a transaction
+    uint64 rent = 2;
+    bytes nonce_account_private_key = 3;       // optional for building pre-signing hash of a transaction
+}
+
+message WithdrawNonceAccount {
+    string nonce_account = 1;
+    string recipient = 2;
+    uint64 value = 3;
+}
+
+message AdvanceNonceAccount {
+    string nonce_account = 1;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key used for signing (32 bytes).
@@ -151,14 +169,42 @@ message SigningInput {
         CreateTokenAccount create_token_account_transaction = 10;
         TokenTransfer token_transfer_transaction = 11;
         CreateAndTransferToken create_and_transfer_token_transaction = 12;
+        CreateNonceAccount create_nonce_account = 13;
+        WithdrawNonceAccount withdraw_nonce_account = 16;
+        AdvanceNonceAccount advance_nonce_account = 19;
     }
+    string sender = 14;        // required for building pre-signing hash of a transaction
+    string nonce_account = 15; // required for using durable transaction nonce
+    bytes fee_payer_private_key = 17; // optional external fee payer private key. support: TokenTransfer, CreateAndTransferToken
+    string fee_payer = 18; // optional external fee payer. support: TokenTransfer, CreateAndTransferToken
 }
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
     // The encoded transaction
     string encoded = 1;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 
     // The unsigned transaction
-    string unsigned_tx = 2;
+    string unsigned_tx = 4;
+}
+
+/// Transaction pre-signing output
+message PreSigningOutput {
+    /// signer list
+    repeated bytes signers = 1;
+
+    /// Pre-image data. There is no hashing for Solana presign image
+    bytes data = 2;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }
