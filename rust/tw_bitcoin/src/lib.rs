@@ -217,19 +217,13 @@ impl TransactionBuilder {
         };
 
         // Prepare the inputs for `bitcoin` crate.
-        let mut total_satoshi_inputs = 0;
         for input in self.inputs.iter().cloned() {
-            total_satoshi_inputs += input.satoshis();
-
             let btxin = TxIn::from(input);
             tx.input.push(btxin);
         }
 
         // Prepare the outputs for `bitcoin` crate.
-        let mut total_satoshis_outputs = 0;
         for output in self.outputs.iter().cloned() {
-            total_satoshis_outputs += output.satoshis();
-
             let btc_txout = TxOut::from(output);
             tx.output.push(btc_txout);
         }

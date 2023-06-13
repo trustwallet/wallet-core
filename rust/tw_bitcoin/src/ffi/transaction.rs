@@ -27,7 +27,10 @@ pub unsafe extern "C" fn tw_transaction_add_p2pkh_input(
     builder: *mut TWTransactionBuilder,
     input: *mut TWTxInputP2PKH,
 ) -> *mut TWTransactionBuilder {
-    let mut builder = try_or_else!(TWTransactionBuilder::from_ptr_as_box(builder), std::ptr::null_mut);
+    let mut builder = try_or_else!(
+        TWTransactionBuilder::from_ptr_as_box(builder),
+        std::ptr::null_mut
+    );
     let input = try_or_else!(TWTxInputP2PKH::from_ptr(input), std::ptr::null_mut);
 
     let updated = builder.0.add_input(input.0.into());
@@ -41,7 +44,10 @@ pub unsafe extern "C" fn tw_transaction_add_p2wpkh_input(
     builder: *mut TWTransactionBuilder,
     input: *mut TWTxInputP2WPKH,
 ) -> *mut TWTransactionBuilder {
-    let mut builder = try_or_else!(TWTransactionBuilder::from_ptr_as_box(builder), std::ptr::null_mut);
+    let mut builder = try_or_else!(
+        TWTransactionBuilder::from_ptr_as_box(builder),
+        std::ptr::null_mut
+    );
     let input = try_or_else!(TWTxInputP2WPKH::from_ptr(input), std::ptr::null_mut);
 
     let updated = builder.0.add_input(input.0.into());
@@ -55,7 +61,10 @@ pub unsafe extern "C" fn tw_transaction_add_p2tr_key_path_input(
     builder: *mut TWTransactionBuilder,
     input: *mut TWTxInputP2TRKeyPath,
 ) -> *mut TWTransactionBuilder {
-    let mut builder = try_or_else!(TWTransactionBuilder::from_ptr_as_box(builder), std::ptr::null_mut);
+    let mut builder = try_or_else!(
+        TWTransactionBuilder::from_ptr_as_box(builder),
+        std::ptr::null_mut
+    );
     let input = try_or_else!(TWTxInputP2TRKeyPath::from_ptr(input), std::ptr::null_mut);
 
     let updated = builder.0.add_input(input.0.into());
@@ -69,7 +78,10 @@ pub unsafe extern "C" fn tw_transaction_add_p2pkh_output(
     builder: *mut TWTransactionBuilder,
     output: *mut TWTxOutputP2PKH,
 ) -> *mut TWTransactionBuilder {
-    let mut builder = try_or_else!(TWTransactionBuilder::from_ptr_as_box(builder), std::ptr::null_mut);
+    let mut builder = try_or_else!(
+        TWTransactionBuilder::from_ptr_as_box(builder),
+        std::ptr::null_mut
+    );
     let output = try_or_else!(TWTxOutputP2PKH::from_ptr(output), std::ptr::null_mut);
 
     let updated = builder.0.add_output(output.0.into());
@@ -83,7 +95,10 @@ pub unsafe extern "C" fn tw_transaction_add_p2wpkh_output(
     builder: *mut TWTransactionBuilder,
     output: *mut TWTxOutputP2WPKH,
 ) -> *mut TWTransactionBuilder {
-    let mut builder = try_or_else!(TWTransactionBuilder::from_ptr_as_box(builder), std::ptr::null_mut);
+    let mut builder = try_or_else!(
+        TWTransactionBuilder::from_ptr_as_box(builder),
+        std::ptr::null_mut
+    );
     let output = try_or_else!(TWTxOutputP2WPKH::from_ptr(output), std::ptr::null_mut);
 
     let updated = builder.0.add_output(output.0.into());
@@ -97,7 +112,10 @@ pub unsafe extern "C" fn tw_transaction_add_p2tr_key_path_output(
     builder: *mut TWTransactionBuilder,
     output: *mut TWTxOutputP2TRKeyPath,
 ) -> *mut TWTransactionBuilder {
-    let mut builder = try_or_else!(TWTransactionBuilder::from_ptr_as_box(builder), std::ptr::null_mut);
+    let mut builder = try_or_else!(
+        TWTransactionBuilder::from_ptr_as_box(builder),
+        std::ptr::null_mut
+    );
     let output = try_or_else!(TWTxOutputP2TRKeyPath::from_ptr(output), std::ptr::null_mut);
 
     let updated = builder.0.add_output(output.0.into());
