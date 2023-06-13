@@ -12,6 +12,7 @@ pub enum CTaprootError {
     Ok = 0,
     InvalidSlice = 1,
     InvalidPubkey = 2,
+    InvalidSegwitPukey = 3,
 }
 
 impl From<CTaprootError> for ErrorCode {
