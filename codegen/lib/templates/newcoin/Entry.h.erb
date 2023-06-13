@@ -20,8 +20,8 @@ public:
     // normalizeAddress(): implement this if needed, e.g. Ethereum address is EIP55 checksummed
     // plan(): implement this if the blockchain is UTXO based
 
-    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
-    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
 };
 
 } // namespace TW::<%= format_name(coin) %>
