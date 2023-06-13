@@ -1,9 +1,9 @@
 use super::CTaprootError;
-use crate::{try_or_else, Recipient};
+use crate::Recipient;
 use bitcoin::PublicKey;
 use std::ffi::CString;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
+use tw_memory::ffi::c_result::CStrMutResult;
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_legacy_address_string(
