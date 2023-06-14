@@ -16,6 +16,14 @@ impl TxOutputP2PKH {
             script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
         }
     }
+    pub fn from_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
+        let script_pubkey = ScriptBuf::from_bytes(bytes);
+
+        TxOutputP2PKH {
+            satoshis,
+            script_pubkey,
+        }
+    }
     pub fn builder() -> TxOutputP2PKHBuilder {
         TxOutputP2PKHBuilder::new()
     }

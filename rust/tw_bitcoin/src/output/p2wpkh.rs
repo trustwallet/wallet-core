@@ -14,6 +14,14 @@ impl TxOutputP2WPKH {
             script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
         }
     }
+    pub fn from_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
+        let script_pubkey = ScriptBuf::from_bytes(bytes);
+
+        TxOutputP2WPKH {
+            satoshis,
+            script_pubkey,
+        }
+    }
     pub fn builder() -> TxOutputP2WPKHBuilder {
         TxOutputP2WPKHBuilder::new()
     }
