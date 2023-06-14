@@ -1,9 +1,8 @@
 use std::str::FromStr;
 
 use crate::{tweak_pubkey, Error, Recipient, Result};
-use bitcoin::address::Payload;
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey};
-use bitcoin::{PubkeyHash, Script, WPubkeyHash};
+use bitcoin::{PubkeyHash, WPubkeyHash};
 
 impl Recipient<PubkeyHash> {
     pub fn pubkey_hash(&self) -> &PubkeyHash {

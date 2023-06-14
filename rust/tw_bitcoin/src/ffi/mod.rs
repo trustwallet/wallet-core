@@ -1,13 +1,14 @@
 #![allow(clippy::missing_safety_doc)]
+
 use super::try_or_else;
-use crate::Result;
+use crate::{Error, Result};
 use bitcoin::{PublicKey, Txid};
 use secp256k1::hashes::Hash;
 use secp256k1::KeyPair;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
-use tw_proto::Bitcoin::Proto::{TaprootPayload, TransactionVariant as TrVariant};
+use tw_proto::Bitcoin::Proto::{SigningInput, TransactionVariant as TrVariant};
 
 pub mod address;
 
@@ -20,7 +21,7 @@ use crate::{
 };
 
 #[no_mangle]
-pub unsafe extern "C" fn tw_taproot_build_and_sing_transaction(
+pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     input: *const u8,
     input_len: usize,
 ) -> CByteArray {
@@ -28,33 +29,36 @@ pub unsafe extern "C" fn tw_taproot_build_and_sing_transaction(
         .to_vec()
         .unwrap_or_default();
 
-    let proto: TaprootPayload = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
-    let bytes = try_or_else!(taproot_build_and_sing_transaction(proto), CByteArray::null);
+    let proto: SigningInput = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
+    let bytes = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
     CByteArray::from(bytes)
 }
 
-fn taproot_build_and_sing_transaction(proto: TaprootPayload) -> Result<Vec<u8>> {
+pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<Vec<u8>> {
+    let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
+
     // Prepare keypair and correspodning public key.
-    let keypair =
-        KeyPair::from_seckey_slice(&secp256k1::Secp256k1::new(), proto.private_key.as_ref())
-            .map_err(|_| crate::Error::Todo)?;
+    let keypair = KeyPair::from_seckey_slice(&secp256k1::Secp256k1::new(), privkey.as_ref())
+        .map_err(|_| crate::Error::Todo)?;
 
     let my_pubkey = Recipient::<PublicKey>::from(keypair);
 
     let mut builder = TransactionBuilder::new();
 
     // Process inputs.
-    for (index, input) in proto.inputs.iter().enumerate() {
+    for input in proto.utxo {
         let my_pubkey = my_pubkey.clone();
-        let txid = Txid::from_slice(&input.txid).map_err(|_| crate::Error::Todo)?;
-        let vout = index as u32;
-        let satoshis = input.satoshis as u64;
+
+        let out_point = input.out_point.ok_or(Error::Todo)?;
+        let txid = Txid::from_slice(&out_point.hash).map_err(|_| crate::Error::Todo)?;
+        let vout = out_point.index as u32;
+        let satoshis = input.amount as u64;
 
         let tx: TxInput = match input.variant {
             TrVariant::P2PKH => TxInputP2PKH::new(txid, vout, my_pubkey.into(), satoshis).into(),
             TrVariant::P2WPKH => {
-                TxInputP2WPKH::new(txid, vout, my_pubkey.try_into()?, input.satoshis as u64).into()
+                TxInputP2WPKH::new(txid, vout, my_pubkey.try_into()?, satoshis).into()
             },
             TrVariant::P2TRKEYSPEND => {
                 TxInputP2TRKeyPath::new(txid, vout, my_pubkey, satoshis).into()
@@ -65,14 +69,17 @@ fn taproot_build_and_sing_transaction(proto: TaprootPayload) -> Result<Vec<u8>> 
     }
 
     // Process outputs.
-    for output in proto.outputs {
-        let recipient = Recipient::<PublicKey>::from_slice(output.recipient.as_ref())?;
-        let satoshis = output.satoshis as u64;
-
+    for output in proto.plan.ok_or(Error::Todo)?.utxos {
         let tx: TxOutput = match output.variant {
-            TrVariant::P2PKH => TxOutputP2PKH::new(satoshis, recipient).into(),
-            TrVariant::P2WPKH => TxOutputP2WPKH::new(satoshis, recipient.try_into()?).into(),
-            TrVariant::P2TRKEYSPEND => TxOutputP2TRKeyPath::new(satoshis, recipient).into(),
+            TrVariant::P2PKH => {
+                TxOutputP2PKH::from_bytes(output.script.to_vec(), output.amount as u64).into()
+            },
+            TrVariant::P2WPKH => {
+                TxOutputP2WPKH::from_bytes(output.script.to_vec(), output.amount as u64).into()
+            },
+            TrVariant::P2TRKEYSPEND => {
+                TxOutputP2TRKeyPath::from_bytes(output.script.to_vec(), output.amount as u64).into()
+            },
         };
 
         builder = builder.add_output(tx);

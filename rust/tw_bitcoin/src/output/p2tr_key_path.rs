@@ -17,6 +17,14 @@ impl TxOutputP2TRKeyPath {
             script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
         }
     }
+    pub fn from_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
+        let script_pubkey = ScriptBuf::from_bytes(bytes);
+
+        TxOutputP2TRKeyPath {
+            satoshis,
+            script_pubkey,
+        }
+    }
     pub fn builder() -> TxOutputP2TRKeyPathBuilder {
         TxOutputP2TRKeyPathBuilder::new()
     }
