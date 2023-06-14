@@ -41,13 +41,14 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
 /// can later easily replicate the funcationlity and behavior of the C++
 /// implemenation.
 ///
-/// Additionally, the `SigningInput` supports two ways of operating: one way
-/// where the `TransactionPlan` is skipped (and hence automatically constructed)
-/// and the other way where the `TransactionPlan` is created manually. As of
-/// now, it's expected that the `TransactionPlan` is created manually, meaning
-/// that the caller must careful construct the outputs, which must include the
-/// return/change transaction and how much goes to the miner as fee
-/// (<total-satoshi-inputs> minus <total-satoshi-outputs>).
+/// Additionally, the `SigningInput` supports two ways of operating (which
+/// should probably be separated anyway): one way where the `TransactionPlan` is
+/// skipped (and hence automatically constructed) and the other way where the
+/// `TransactionPlan` is created manually. As of now, it's expected that the
+/// `TransactionPlan` is created manually, meaning that the caller must careful
+/// construct the outputs, which must include the return/change transaction and
+/// how much goes to the miner as fee (<total-satoshi-inputs> minus
+/// <total-satoshi-outputs>).
 pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<Vec<u8>> {
     let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
 
