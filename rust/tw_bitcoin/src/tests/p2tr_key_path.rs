@@ -8,17 +8,17 @@ use tw_encoding::hex;
 
 pub const ALICE_WIF: &str = "cNDFvH3TXCjxgWeVc7vbu4Jw5m2Lu8FkQ69Z2XvFUD9D9rGjofN1";
 pub const BOB_WIF: &str = "cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB";
-pub const GENESIS_TXID: &str = "c50563913e5a838f937c94232f5a8fc74e58b629fae41dfdffcc9a70f833b53a";
+pub const TXID: &str = "c50563913e5a838f937c94232f5a8fc74e58b629fae41dfdffcc9a70f833b53a";
+
+pub const FULL_AMOUNT: u64 = ONE_BTC * 50;
+pub const MINER_FEE: u64 = ONE_BTC / 100;
+pub const SEND_TO_BOB: u64 = FULL_AMOUNT - MINER_FEE;
+
+// This passed the `bitcoin-cli -retest testmempoolaccept` command.
+pub const EXPECTED_RAW_SIGNED: &str = "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000";
 
 #[test]
 fn sign_input_p2pkh_output_p2tr_key_path() {
-    // This passed the `bitcoin-cli -retest testmempoolaccept` command.
-    const EXPECTED_RAW_SIGNED: &str = "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000";
-
-    const COINBASE_AMOUNT: u64 = ONE_BTC * 50;
-    const MINER_FEE: u64 = ONE_BTC / 100;
-    const SEND_TO_BOB: u64 = COINBASE_AMOUNT - MINER_FEE;
-
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
@@ -27,10 +27,10 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     // Prepare inputs for Alice.
     let input = TxInputP2PKH::builder()
-        .txid(Txid::from_str(GENESIS_TXID).unwrap())
+        .txid(Txid::from_str(TXID).unwrap())
         .vout(0)
         .recipient(alice)
-        .satoshis(COINBASE_AMOUNT)
+        .satoshis(FULL_AMOUNT)
         .build()
         .unwrap();
 
