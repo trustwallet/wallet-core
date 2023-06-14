@@ -7,7 +7,6 @@
 #include "Signer.h"
 #include "Extrinsic.h"
 
-using namespace TW;
 namespace TW::Substrate {
 
 static constexpr size_t hashTreshold = 256;

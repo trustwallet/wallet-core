@@ -21,7 +21,6 @@ namespace TW::Tezos {
 const std::array<TW::byte, 3> tz1Prefix{6, 161, 159};
 const std::array<TW::byte, 3> tz2Prefix{6, 161, 161};
 const std::array<TW::byte, 3> tz3Prefix{6, 161, 164};
-const std::array<TW::byte, 3> ktPrefix{2, 90, 121};
 const std::array<TW::byte, 3> kt1Prefix{2, 90, 121};
 
 bool Address::isValid(const std::string& string) {
@@ -38,8 +37,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     // contract prefix
-    if (std::equal(ktPrefix.begin(), ktPrefix.end(), decoded.begin()) ||
-        std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
+    if (std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
         return true;
     }
 
@@ -98,8 +96,7 @@ Data Address::forge() const {
 
     // contract address
     // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L183
-    if (std::equal(ktPrefix.begin(), ktPrefix.end(), bytes.begin()) ||
-        std::equal(kt1Prefix.begin(), kt1Prefix.end(), bytes.begin())) {
+    if (std::equal(kt1Prefix.begin(), kt1Prefix.end(), bytes.begin())) {
         std::string s = string();
         Data forgedPrefix = forgePrefix(kt1Prefix, s);
         Data forged = Data();

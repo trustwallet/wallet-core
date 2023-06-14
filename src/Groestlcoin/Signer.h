@@ -14,8 +14,6 @@
 
 namespace TW::Groestlcoin {
 
-typedef std::vector<std::pair<Data, Data>> SignaturePubkeyList;
-
 using SigningInput = Bitcoin::Proto::SigningInput;
 using SigningOutput = Bitcoin::Proto::SigningOutput;
 using TransactionPlan = Bitcoin::Proto::TransactionPlan;

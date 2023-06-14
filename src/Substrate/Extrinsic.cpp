@@ -8,7 +8,6 @@
 #include "Extrinsic.h"
 #include <map>
 
-using namespace TW;
 namespace TW::Substrate {
 
 static constexpr uint8_t signedBit = 0x80;
@@ -81,7 +80,7 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     // version header
     append(data, Data{extrinsicFormat | signedBit});
     // signer public key
-    append(data, encodeAccountId(signer.bytes, encodeRawAccount(multiAddress)));
+    append(data, Polkadot::encodeAccountId(signer.bytes, encodeRawAccount(multiAddress)));
     // signature type
     append(data, sigTypeEd25519);
     // signature
@@ -95,7 +94,7 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     // call
     append(data, call);
     // append length
-    encodeLengthPrefix(data);
+    Polkadot::encodeLengthPrefix(data);
     return data;
 }
 
@@ -110,9 +109,9 @@ Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t
     // call index
     append(data, encodeCallIndex(transfer.module_index(), transfer.method_index()));
     // destination
-    append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
+    append(data, Polkadot::encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
     // value
-    append(data, encodeCompact(value));
+    append(data, Polkadot::encodeCompact(value));
     // memo
     if (transfer.memo().length() > 0) {
         append(data, 0x01);
@@ -136,12 +135,12 @@ Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfe
     // asset id
     if (transfer.asset_id() > 0) {
         // For native token transfer, should ignore asset id
-        append(data, encodeCompact(transfer.asset_id()));
+        append(data, Polkadot::encodeCompact(transfer.asset_id()));
     }
     // destination
-    append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
+    append(data, Polkadot::encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
     // value
-    append(data, encodeCompact(value));
+    append(data, Polkadot::encodeCompact(value));
     return data;
 }
 
@@ -204,7 +203,7 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) {
 Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex) const {
     Data data;
     append(data, encodeCallIndex(moduleIndex, methodIndex));
-    append(data, encodeVector(calls));
+    append(data, Polkadot::encodeVector(calls));
     return data;
 }
 
@@ -213,9 +212,9 @@ Data Extrinsic::encodeEraNonceTip() const {
     // era
     append(data, era);
     // nonce
-    append(data, encodeCompact(nonce));
+    append(data, Polkadot::encodeCompact(nonce));
     // tip
-    append(data, encodeCompact(tip));
+    append(data, Polkadot::encodeCompact(tip));
     return data;
 }
 
@@ -231,7 +230,7 @@ Data Extrinsic::encodeAuthorizationCall(const Proto::Authorization& authorizatio
         append(data, 0x01);
 
         auto address = FullSS58Address(identity.target(), _network);
-        append(data, encodeAccountId(address.keyBytes(), true));
+        append(data, Polkadot::encodeAccountId(address.keyBytes(), true));
 
         // join identity
         append(data, 0x05);
@@ -268,7 +267,7 @@ Data Extrinsic::encodeAuthorizationCall(const Proto::Authorization& authorizatio
             append(data, {0x01, 0x00}); // extrinsic
             append(data, {0x01, 0x00}); // portfolio
         }
-        append(data, encodeCompact(identity.expiry()));
+        append(data, Polkadot::encodeCompact(identity.expiry()));
     } else {
         throw std::invalid_argument("Invalid authorization message");
     }

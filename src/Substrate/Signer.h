@@ -12,7 +12,7 @@
 namespace TW::Substrate {
 class Signer {
   public:
-    explicit Signer();
+    Signer() = delete;
 
     static Data signaturePreImage(const Proto::SigningInput &input);
     static Data encodeTransaction(const Proto::SigningInput &input, const Data &publicKey, const Data &signature);

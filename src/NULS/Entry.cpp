@@ -7,8 +7,6 @@
 #include "Entry.h"
 #include "Address.h"
 #include "Signer.h"
-#include "../proto/Common.pb.h"
-#include <boost/exception/diagnostic_information.hpp>
 
 using namespace std;
 

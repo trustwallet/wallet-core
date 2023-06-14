@@ -28,7 +28,7 @@ class Signer {
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
-    
+
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;

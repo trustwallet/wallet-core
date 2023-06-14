@@ -22,7 +22,7 @@ public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
     static Data encodeTransaction(const Proto::SigningInput& input, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeyss);
-  private:
+private:
     Data publicKey; 
     TW::PrivateKey privKey;
     std::string address;

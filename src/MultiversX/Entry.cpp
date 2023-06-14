@@ -55,7 +55,7 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
                 output.set_error(Common::Proto::Error_invalid_params);
                 output.set_error_message("empty signatures or publickeys");
                 return;
-            } 
+            }
 
             if (signatures.size() != 1) {
                 output.set_error(Common::Proto::Error_signatures_count);
@@ -67,4 +67,4 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
             output = Signer::buildSigningOutput(input, signatures[0]); });
 }
 
-} // namespace TW::Elrond
+} // namespace TW::MultiversX

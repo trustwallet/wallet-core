@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Address.h"
-#include "ScaleCodec.h"
 #include "../Data.h"
+#include "../Polkadot/ScaleCodec.h"
 #include "../proto/Substrate.pb.h"
 #include "../uint256.h"
 
@@ -52,10 +52,10 @@ public:
         , _network(input.network())
         , multiAddress(input.multi_address()) {
         if (input.has_era()) {
-            era = encodeEra(input.era().block_number(), input.era().period());
+            era = Polkadot::encodeEra(input.era().block_number(), input.era().period());
         } else {
             // immortal era
-            era = encodeCompact(0);
+            era = Polkadot::encodeCompact(0);
         }
         call = encodeCall();
     }

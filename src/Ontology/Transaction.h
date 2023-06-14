@@ -40,7 +40,7 @@ class Transaction {
 
     std::vector<SigData> sigVec;
 
-    Transaction() {};
+    Transaction() = default;
     
     Transaction(uint8_t ver, uint8_t type, uint32_t nonce, uint64_t gasPrice, uint64_t gasLimit,
                 std::string payer, std::vector<uint8_t> payload)
