@@ -1,8 +1,9 @@
 use std::str::FromStr;
 
 use crate::{tweak_pubkey, Error, Recipient, Result};
+use bitcoin::address::Payload;
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey};
-use bitcoin::{PubkeyHash, WPubkeyHash};
+use bitcoin::{PubkeyHash, Script, WPubkeyHash};
 
 impl Recipient<PubkeyHash> {
     pub fn pubkey_hash(&self) -> &PubkeyHash {
@@ -11,7 +12,7 @@ impl Recipient<PubkeyHash> {
 }
 
 impl Recipient<WPubkeyHash> {
-    pub fn from_pubkey_slice(slice: &[u8]) -> Result<Self> {
+    pub fn from_slice(slice: &[u8]) -> Result<Self> {
         Ok(Recipient {
             t: PublicKey::from_slice(slice)
                 .map_err(|_| Error::Todo)?

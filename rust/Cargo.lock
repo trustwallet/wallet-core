@@ -946,6 +946,7 @@ dependencies = [
  "serde_json",
  "tw_encoding",
  "tw_memory",
+ "tw_proto",
 ]
 
 [[package]]

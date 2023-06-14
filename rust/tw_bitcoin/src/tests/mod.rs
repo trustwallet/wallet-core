@@ -1,5 +1,4 @@
 mod address;
-mod ffi;
 mod p2pkh;
 mod p2tr_key_path;
 //mod p2tr_script_path;

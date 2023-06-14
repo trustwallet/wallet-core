@@ -68,6 +68,40 @@ message UnspentTransaction {
     int64 amount = 3;
 }
 
+message TaprootPayload {
+    bytes private_key = 1;
+    repeated TaprootInput inputs = 2;
+    repeated TaprootOutput outputs = 3;
+}
+
+message TaprootInput {
+    // The referenced transaction identifier (*not* in reversed order).
+    bytes txid = 1;
+
+    // The satoshis that were spent in that transaction.
+    int64 satoshis = 2;
+
+    // The transaction type.
+    TransactionVariant variant = 3;
+}
+
+message TaprootOutput {
+    // The public key of the recipient.
+    bytes recipient = 1;
+
+    // The satoshis to spend.
+    int64 satoshis = 2;
+
+    // The transaction type.
+    TransactionVariant variant = 3;
+}
+
+enum TransactionVariant {
+    P2PKH = 1;
+    P2WPKH = 2;
+    P2TRKEYSPEND = 3;
+}
+
 // Pair of destination address and amount, used for extra outputs
 message OutputAddress {
     // Destination address
@@ -123,7 +157,7 @@ message SigningInput {
 
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 13;
-    
+
     // Optional additional destination addresses, additional to first to_address output
     repeated OutputAddress extra_outputs = 14;
 
