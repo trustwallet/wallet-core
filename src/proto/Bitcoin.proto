@@ -67,7 +67,7 @@ message UnspentTransaction {
     // Amount of the UTXO
     int64 amount = 3;
 
-    // The transaction variant.
+    // The transaction variant
     TransactionVariant variant = 4;
 }
 
