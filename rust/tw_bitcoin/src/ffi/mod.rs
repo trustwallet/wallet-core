@@ -14,6 +14,7 @@ pub mod address;
 pub mod scripts;
 
 // Re-exports
+pub use scripts::*;
 pub use address::*;
 
 use crate::{

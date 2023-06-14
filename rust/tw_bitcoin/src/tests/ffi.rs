@@ -67,6 +67,9 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
     let out_script = TxOutputP2PKH::only_script(bob.into());
 
     // Construct Protobuf payload.
+	// Note: many of the fields used in the SigningInput are currently unused.
+	// We can later easily replicate the funcationlity and behavior of the C++
+	// implemenation.
     let input = SigningInput {
         // Ignored
         hash_type: 0,
