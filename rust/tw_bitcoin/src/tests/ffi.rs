@@ -1,10 +1,53 @@
-use crate::{ffi::taproot_build_and_sign_transaction, keypair_from_wif};
-use crate::{TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
+use crate::ffi::scripts::{
+    tw_build_p2pkh_script, tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
+};
+use crate::ffi::taproot_build_and_sign_transaction;
+use crate::{keypair_from_wif, TxInputP2TRKeyPath, TxInputP2WPKH};
+use crate::{Recipient, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
+use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto::{
     SigningInput, TransactionPlan, TransactionVariant, UnspentTransaction,
 };
+
+#[test]
+/// Test whether the exposed FFI interfaces return the correct script.
+fn build_scripts() {
+    use crate::tests::p2pkh::ALICE_WIF;
+
+    let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
+    let recipient = Recipient::<PublicKey>::from(keypair);
+
+    // Test P2PKH
+    unsafe {
+        // Input
+        let buffer = recipient.public_key().to_bytes();
+        let array = tw_build_p2pkh_script(buffer.as_ptr(), buffer.len());
+        dbg!(&array);
+
+        let script = TxInputP2PKH::only_script(recipient.clone().into());
+        assert_eq!(array.into_vec(), script.to_bytes());
+    }
+
+    // Test P2WPKH
+    unsafe {
+        let buffer = recipient.public_key().to_bytes();
+        let array = tw_build_p2wpkh_script(buffer.as_ptr(), buffer.len());
+
+        let script = TxInputP2WPKH::only_script(recipient.clone().try_into().unwrap());
+        assert_eq!(array.into_vec(), script.to_bytes());
+    }
+
+    // Test P2TR key-path
+    unsafe {
+        let buffer = recipient.public_key().to_bytes();
+        let array = tw_build_p2tr_key_path_script(buffer.as_ptr(), buffer.len());
+
+        let script = TxInputP2TRKeyPath::only_script(recipient.try_into().unwrap());
+        assert_eq!(array.into_vec(), script.to_bytes());
+    }
+}
 
 #[test]
 fn proto_sign_input_p2pkh_output_p2pkh() {
@@ -107,15 +150,10 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
 
     // Construct Protobuf payload.
     let input = SigningInput {
-        // Ignored
         hash_type: 0,
-        // Ignored
         amount: 0,
-        // Ignored
         byte_fee: 0,
-        // Ignored
         to_address: Cow::from(""),
-        // Ignored
         change_address: Cow::from(""),
         private_key: vec![Cow::from(alice_privkey.as_slice())],
         scripts: Default::default(),
@@ -123,25 +161,18 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
             out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
                 hash: Cow::from(txid.as_slice()),
                 index: 0,
-                // Ignored
                 sequence: 0,
             }),
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
             variant: TransactionVariant::P2PKH,
         }],
-        // Ignored
         use_max_amount: false,
-        // Ignored
         coin_type: 0,
         plan: Some(TransactionPlan {
-            // Ignored
             amount: 0,
-            // Ignored
             available_amount: 0,
-            // Ignored
             fee: 0,
-            // Ignored
             change: 0,
             utxos: vec![UnspentTransaction {
                 out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
@@ -153,16 +184,11 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
                 amount: SEND_TO_BOB as i64,
                 variant: TransactionVariant::P2WPKH,
             }],
-            // Ignored
             branch_id: Cow::from([].as_slice()),
-            // Ignored
             error: tw_proto::Common::Proto::SigningError::OK,
-            // Ignored
             output_op_return: Cow::from([].as_slice()),
         }),
-        // Ignored
         lock_time: 0,
-        // Ignored
         output_op_return: Cow::from([].as_slice()),
     };
 
@@ -189,15 +215,10 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     // Construct Protobuf payload.
     let input = SigningInput {
-        // Ignored
         hash_type: 0,
-        // Ignored
         amount: 0,
-        // Ignored
         byte_fee: 0,
-        // Ignored
         to_address: Cow::from(""),
-        // Ignored
         change_address: Cow::from(""),
         private_key: vec![Cow::from(alice_privkey.as_slice())],
         scripts: Default::default(),
@@ -205,25 +226,18 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
             out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
                 hash: Cow::from(txid.as_slice()),
                 index: 0,
-                // Ignored
                 sequence: 0,
             }),
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
             variant: TransactionVariant::P2PKH,
         }],
-        // Ignored
         use_max_amount: false,
-        // Ignored
         coin_type: 0,
         plan: Some(TransactionPlan {
-            // Ignored
             amount: 0,
-            // Ignored
             available_amount: 0,
-            // Ignored
             fee: 0,
-            // Ignored
             change: 0,
             utxos: vec![UnspentTransaction {
                 out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
@@ -235,16 +249,11 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
                 amount: SEND_TO_BOB as i64,
                 variant: TransactionVariant::P2TRKEYPATH,
             }],
-            // Ignored
             branch_id: Cow::from([].as_slice()),
-            // Ignored
             error: tw_proto::Common::Proto::SigningError::OK,
-            // Ignored
             output_op_return: Cow::from([].as_slice()),
         }),
-        // Ignored
         lock_time: 0,
-        // Ignored
         output_op_return: Cow::from([].as_slice()),
     };
 
