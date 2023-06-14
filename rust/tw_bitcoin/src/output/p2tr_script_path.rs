@@ -20,6 +20,12 @@ impl TXOutputP2TRScriptPath {
             script_pubkey,
         }
     }
+    pub fn new_with_script(satoshis: u64, script_pubkey: ScriptBuf) -> Self {
+        TXOutputP2TRScriptPath {
+            satoshis,
+            script_pubkey,
+        }
+    }
     pub fn builder() -> TxOutputP2TRScriptPathBuilder {
         TxOutputP2TRScriptPathBuilder::new()
     }

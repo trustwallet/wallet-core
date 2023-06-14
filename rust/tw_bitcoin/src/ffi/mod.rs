@@ -11,6 +11,7 @@ use tw_memory::ffi::c_result::ErrorCode;
 use tw_proto::Bitcoin::Proto::{SigningInput, TransactionVariant as TrVariant};
 
 pub mod address;
+pub mod scripts;
 
 // Re-exports
 pub use address::*;
@@ -58,15 +59,11 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         let script_buf = ScriptBuf::from_bytes(input.script.to_vec());
 
         let tx: TxInput = match input.variant {
-            TrVariant::P2PKH => TxInputP2PKH::new_with_script_unchecked(
-                txid,
-                vout,
-                my_pubkey.into(),
-                satoshis,
-                script_buf,
-            )
-            .into(),
-            TrVariant::P2WPKH => TxInputP2WPKH::new_with_script_unchecked(
+            TrVariant::P2PKH => {
+                TxInputP2PKH::new_with_script(txid, vout, my_pubkey.into(), satoshis, script_buf)
+                    .into()
+            },
+            TrVariant::P2WPKH => TxInputP2WPKH::new_with_script(
                 txid,
                 vout,
                 my_pubkey.try_into()?,
@@ -74,7 +71,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
                 script_buf,
             )
             .into(),
-            TrVariant::P2TRKEYSPEND => TxInputP2TRKeyPath::new_with_script_unchecked(
+            TrVariant::P2TRKEYPATH => TxInputP2TRKeyPath::new_with_script(
                 txid,
                 vout,
                 my_pubkey.into(),
@@ -89,19 +86,14 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
 
     // Process outputs.
     for output in proto.plan.ok_or(Error::Todo)?.utxos {
-        dbg!(&output.script);
+        let script_buf = ScriptBuf::from_bytes(output.script.to_vec());
+        let satoshis = output.amount as u64;
+
         let tx: TxOutput = match output.variant {
-            TrVariant::P2PKH => {
-                TxOutputP2PKH::from_script_bytes(output.script.to_vec(), output.amount as u64)
-                    .into()
-            },
-            TrVariant::P2WPKH => {
-                TxOutputP2WPKH::from_script_bytes(output.script.to_vec(), output.amount as u64)
-                    .into()
-            },
-            TrVariant::P2TRKEYSPEND => {
-                TxOutputP2TRKeyPath::from_script_bytes(output.script.to_vec(), output.amount as u64)
-                    .into()
+            TrVariant::P2PKH => TxOutputP2PKH::new_with_script(satoshis, script_buf).into(),
+            TrVariant::P2WPKH => TxOutputP2WPKH::new_with_script(satoshis, script_buf).into(),
+            TrVariant::P2TRKEYPATH => {
+                TxOutputP2TRKeyPath::new_with_script(satoshis, script_buf).into()
             },
         };
 
