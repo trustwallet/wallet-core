@@ -3,8 +3,8 @@ use bitcoin::script::ScriptBuf;
 
 #[derive(Debug, Clone)]
 pub struct TXOutputP2TRScriptPath {
-    pub(super) satoshis: u64,
-    pub(super) script_pubkey: ScriptBuf,
+    pub(crate) satoshis: u64,
+    pub(crate) script_pubkey: ScriptBuf,
 }
 
 impl TXOutputP2TRScriptPath {

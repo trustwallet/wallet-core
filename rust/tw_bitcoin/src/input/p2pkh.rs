@@ -9,16 +9,29 @@ pub struct TxInputP2PKH {
 
 impl TxInputP2PKH {
     pub fn new(txid: Txid, vout: u32, recipient: Recipient<PubkeyHash>, satoshis: u64) -> Self {
+        let script = ScriptBuf::new_p2pkh(recipient.pubkey_hash());
+        Self::new_with_script_unchecked(txid, vout, recipient, satoshis, script)
+    }
+    pub fn new_with_script_unchecked(
+        txid: Txid,
+        vout: u32,
+        recipient: Recipient<PubkeyHash>,
+        satoshis: u64,
+        script: ScriptBuf,
+    ) -> Self {
         TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
+                script_pubkey: script,
                 sequence: Sequence::default(),
                 witness: Witness::new(),
             },
             recipient,
         }
+    }
+    pub fn only_script(recipient: Recipient<PubkeyHash>) -> ScriptBuf {
+        ScriptBuf::new_p2pkh(recipient.pubkey_hash())
     }
     pub fn builder() -> TxInputP2PKHBuilder {
         TxInputP2PKHBuilder::new()

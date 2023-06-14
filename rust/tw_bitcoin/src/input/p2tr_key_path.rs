@@ -12,16 +12,24 @@ impl TxInputP2TRKeyPath {
     pub fn new(
         txid: Txid,
         vout: u32,
-        recipient: impl Into<Recipient<TweakedPublicKey>>,
+        recipient: Recipient<TweakedPublicKey>,
         satoshis: u64,
     ) -> Self {
-        let recipient: Recipient<TweakedPublicKey> = recipient.into();
-
+        let script = ScriptBuf::new_v1_p2tr_tweaked(recipient.t);
+        Self::new_with_script_unchecked(txid, vout, recipient, satoshis, script)
+    }
+    pub fn new_with_script_unchecked(
+        txid: Txid,
+        vout: u32,
+        recipient: Recipient<TweakedPublicKey>,
+        satoshis: u64,
+        script: ScriptBuf,
+    ) -> Self {
         TxInputP2TRKeyPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
+                script_pubkey: script,
                 sequence: Sequence::default(),
                 witness: Witness::default(),
             },
