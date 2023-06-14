@@ -29,7 +29,6 @@ pub unsafe extern "C" fn tw_taproot_build_and_sing_transaction(
         .unwrap_or_default();
 
     let proto: TaprootPayload = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
-
     let bytes = try_or_else!(taproot_build_and_sing_transaction(proto), CByteArray::null);
 
     CByteArray::from(bytes)
@@ -40,6 +39,7 @@ fn taproot_build_and_sing_transaction(proto: TaprootPayload) -> Result<Vec<u8>> 
     let keypair =
         KeyPair::from_seckey_slice(&secp256k1::Secp256k1::new(), proto.private_key.as_ref())
             .map_err(|_| crate::Error::Todo)?;
+
     let my_pubkey = Recipient::<PublicKey>::from(keypair);
 
     let mut builder = TransactionBuilder::new();
