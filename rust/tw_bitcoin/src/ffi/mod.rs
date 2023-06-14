@@ -14,8 +14,8 @@ pub mod address;
 pub mod scripts;
 
 // Re-exports
-pub use scripts::*;
 pub use address::*;
+pub use scripts::*;
 
 use crate::{
     Recipient, TransactionBuilder, TxInput, TxInputP2PKH, TxInputP2TRKeyPath, TxInputP2WPKH,
@@ -37,6 +37,17 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     CByteArray::from(bytes)
 }
 
+/// Note: many of the fields used in the `SigningInput` are currently unused. We
+/// can later easily replicate the funcationlity and behavior of the C++
+/// implemenation.
+///
+/// Additionally, the `SigningInput` supports two ways of operating: one way
+/// where the `TransactionPlan` is skipped (and hence automatically constructed)
+/// and the other way where the `TransactionPlan` is created manually. As of
+/// now, it's expected that the `TransactionPlan` is created manually, meaning
+/// that the caller must careful construct the outputs, which must include the
+/// return/change transaction and how much goes to the miner as fee
+/// (<total-satoshi-inputs> minus <total-satoshi-outputs>).
 pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<Vec<u8>> {
     let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
 
