@@ -8,14 +8,7 @@ pub struct TxInputP2PKH {
 }
 
 impl TxInputP2PKH {
-    pub fn new(
-        txid: Txid,
-        vout: u32,
-        recipient: impl Into<Recipient<PubkeyHash>>,
-        satoshis: u64,
-    ) -> Self {
-        let recipient: Recipient<PubkeyHash> = recipient.into();
-
+    pub fn new(txid: Txid, vout: u32, recipient: Recipient<PubkeyHash>, satoshis: u64) -> Self {
         TxInputP2PKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
