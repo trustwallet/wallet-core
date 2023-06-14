@@ -25,7 +25,6 @@ const size_t TransactionBuilder::MaxUtxosHardLimit = 3000;
 std::optional<TransactionOutput> TransactionBuilder::prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin) {
     auto lockingScript = Script::lockScriptForAddress(address, coin);
     if (lockingScript.empty()) {
-        std::cerr << "build locking script: " << coin << ", invalid output address:" << address << std::endl;
         return {};
     }
     return TransactionOutput(amount, lockingScript);

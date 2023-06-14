@@ -9,7 +9,6 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "../proto/Binance.pb.h"
-#include "../PublicKey.h"
 
 #include <cstdint>
 #include <utility>

@@ -28,7 +28,7 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, [[maybe
     }
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
     switch (coin) {
     case TWCoinTypeTBinance:
         return TAddress(publicKey).string();
@@ -61,7 +61,7 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
-std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
+std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key, coin == TWCoinTypeTBinance);
 }
 
@@ -94,7 +94,7 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
         });
 }
 
-Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
+Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
     auto input = Proto::SigningInput();
     input.set_chain_id(chainId);
     input.set_account_number(0);

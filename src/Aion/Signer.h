@@ -34,7 +34,7 @@ class Signer {
     static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
 
   private:
-    /// Signs the given transaction.
+    /// Builds an Aion transaction from the given `Proto::SigningInput`.
     static Transaction buildTransaction(const Proto::SigningInput& input) noexcept;
 };
 

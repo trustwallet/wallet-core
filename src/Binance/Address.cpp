@@ -40,10 +40,8 @@ const std::string TAddress::hrpValidator = "bva";
 
 bool TAddress::isValid(const std::string& addr) {
     std::vector<std::string> hrps = {_hrp, hrpValidator, "bnbp", "bvap", "bca", "bcap"};
-    bool result = false;
-    for (auto& hrp : hrps) {
-        result = Bech32Address::isValid(addr, hrp);
-        if (result) {
+    for (const auto& hrp : hrps) {
+        if (Bech32Address::isValid(addr, hrp)) {
             return true;
         }
     }

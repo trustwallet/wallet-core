@@ -16,7 +16,6 @@
 
 #include <optional>
 #include <algorithm>
-#include <iostream>
 
 namespace TW::Bitcoin {
 

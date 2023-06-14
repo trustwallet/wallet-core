@@ -13,8 +13,6 @@ using namespace TW;
 namespace TW::Aion {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    using boost::multiprecision::uint128_t;
-
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Signer::buildTransaction(input);
     Signer::sign(key, transaction);
@@ -40,8 +38,6 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexce
 }
 
 TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
-    using boost::multiprecision::uint128_t;
-
     auto transaction = Signer::buildTransaction(input);
     auto encoded = transaction.encode();
     return transaction.encode();
