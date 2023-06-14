@@ -229,9 +229,7 @@ Data UserOperation::preHash(const uint256_t chainID) const {
         std::make_shared<ABI::ParamUInt256>(chainID)});
     Data encoded;
     params.encode(encoded);
-    const auto hash = Hash::keccak256(encoded);
-    const auto hashStr = std::string(hash.begin(), hash.end());
-    return MessageSigner::generateMessage(hashStr);
+    return Hash::keccak256(encoded);
 }
 
 Data UserOperation::serialize([[maybe_unused]] const uint256_t chainID) const {
