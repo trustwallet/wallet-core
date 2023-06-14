@@ -16,6 +16,12 @@ impl TxOutputP2PKH {
             script_pubkey: ScriptBuf::new_p2pkh(recipient.pubkey_hash()),
         }
     }
+    pub fn new_with_script(satoshis: u64, script_pubkey: ScriptBuf) -> Self {
+        TxOutputP2PKH {
+            satoshis,
+            script_pubkey,
+        }
+    }
     pub fn only_script(recipient: Recipient<PubkeyHash>) -> ScriptBuf {
         ScriptBuf::new_p2pkh(recipient.pubkey_hash())
     }

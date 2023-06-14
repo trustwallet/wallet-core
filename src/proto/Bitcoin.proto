@@ -71,7 +71,7 @@ message UnspentTransaction {
 enum TransactionVariant {
     P2PKH = 1;
     P2WPKH = 2;
-    P2TRKEYSPEND = 3;
+    P2TRKEYPATH = 3;
 }
 
 // Input data necessary to create a signed transaction.

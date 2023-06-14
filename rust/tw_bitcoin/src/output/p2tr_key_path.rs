@@ -9,21 +9,20 @@ pub struct TxOutputP2TRKeyPath {
 }
 
 impl TxOutputP2TRKeyPath {
-    pub fn new(satoshis: u64, recipient: impl Into<Recipient<TweakedPublicKey>>) -> Self {
-        let recipient: Recipient<TweakedPublicKey> = recipient.into();
-
+    pub fn new(satoshis: u64, recipient: Recipient<TweakedPublicKey>) -> Self {
         TxOutputP2TRKeyPath {
             satoshis,
             script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
         }
     }
-    pub fn from_script_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
-        let script_pubkey = ScriptBuf::from_bytes(bytes);
-
+    pub fn new_with_script(satoshis: u64, script_pubkey: ScriptBuf) -> Self {
         TxOutputP2TRKeyPath {
             satoshis,
             script_pubkey,
         }
+    }
+    pub fn only_script(recipient: Recipient<TweakedPublicKey>) -> ScriptBuf {
+        ScriptBuf::new_v1_p2tr_tweaked(recipient.t)
     }
     pub fn builder() -> TxOutputP2TRKeyPathBuilder {
         TxOutputP2TRKeyPathBuilder::new()
