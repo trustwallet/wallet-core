@@ -2,7 +2,7 @@ use crate::ffi::scripts::{
     tw_build_p2pkh_script, tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
 };
 use crate::ffi::taproot_build_and_sign_transaction;
-use crate::{keypair_from_wif, TxInputP2TRKeyPath, TxInputP2WPKH};
+use crate::keypair_from_wif;
 use crate::{Recipient, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
 use bitcoin::PublicKey;
 use std::borrow::Cow;
@@ -26,7 +26,7 @@ fn build_scripts() {
         let array = tw_build_p2pkh_script(buffer.as_ptr(), buffer.len());
         dbg!(&array);
 
-        let script = TxInputP2PKH::only_script(recipient.clone().into());
+        let script = TxOutputP2PKH::only_script(recipient.clone().into());
         assert_eq!(array.into_vec(), script.to_bytes());
     }
 
@@ -35,7 +35,7 @@ fn build_scripts() {
         let buffer = recipient.public_key().to_bytes();
         let array = tw_build_p2wpkh_script(buffer.as_ptr(), buffer.len());
 
-        let script = TxInputP2WPKH::only_script(recipient.clone().try_into().unwrap());
+        let script = TxOutputP2WPKH::only_script(recipient.clone().try_into().unwrap());
         assert_eq!(array.into_vec(), script.to_bytes());
     }
 
@@ -44,7 +44,7 @@ fn build_scripts() {
         let buffer = recipient.public_key().to_bytes();
         let array = tw_build_p2tr_key_path_script(buffer.as_ptr(), buffer.len());
 
-        let script = TxInputP2TRKeyPath::only_script(recipient.try_into().unwrap());
+        let script = TxOutputP2TRKeyPath::only_script(recipient.try_into().unwrap());
         assert_eq!(array.into_vec(), script.to_bytes());
     }
 }
@@ -67,9 +67,6 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
     let out_script = TxOutputP2PKH::only_script(bob.into());
 
     // Construct Protobuf payload.
-	// Note: many of the fields used in the SigningInput are currently unused.
-	// We can later easily replicate the funcationlity and behavior of the C++
-	// implemenation.
     let input = SigningInput {
         // Ignored
         hash_type: 0,
