@@ -2,7 +2,7 @@
 
 use super::try_or_else;
 use crate::{Error, Result};
-use bitcoin::{PublicKey, Txid};
+use bitcoin::{PublicKey, ScriptBuf, Txid};
 use secp256k1::hashes::Hash;
 use secp256k1::KeyPair;
 use tw_memory::ffi::c_byte_array::CByteArray;
@@ -38,7 +38,7 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
 pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<Vec<u8>> {
     let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
 
-    // Prepare keypair and correspodning public key.
+    // Prepare keypair and derive corresponding public key.
     let keypair = KeyPair::from_seckey_slice(&secp256k1::Secp256k1::new(), privkey.as_ref())
         .map_err(|_| crate::Error::Todo)?;
 
@@ -55,14 +55,33 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         let vout = out_point.index as u32;
         let satoshis = input.amount as u64;
 
+        let script_buf = ScriptBuf::from_bytes(input.script.to_vec());
+
         let tx: TxInput = match input.variant {
-            TrVariant::P2PKH => TxInputP2PKH::new(txid, vout, my_pubkey.into(), satoshis).into(),
-            TrVariant::P2WPKH => {
-                TxInputP2WPKH::new(txid, vout, my_pubkey.try_into()?, satoshis).into()
-            },
-            TrVariant::P2TRKEYSPEND => {
-                TxInputP2TRKeyPath::new(txid, vout, my_pubkey, satoshis).into()
-            },
+            TrVariant::P2PKH => TxInputP2PKH::new_with_script_unchecked(
+                txid,
+                vout,
+                my_pubkey.into(),
+                satoshis,
+                script_buf,
+            )
+            .into(),
+            TrVariant::P2WPKH => TxInputP2WPKH::new_with_script_unchecked(
+                txid,
+                vout,
+                my_pubkey.try_into()?,
+                satoshis,
+                script_buf,
+            )
+            .into(),
+            TrVariant::P2TRKEYSPEND => TxInputP2TRKeyPath::new_with_script_unchecked(
+                txid,
+                vout,
+                my_pubkey.into(),
+                satoshis,
+                script_buf,
+            )
+            .into(),
         };
 
         builder = builder.add_input(tx);
@@ -70,15 +89,19 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
 
     // Process outputs.
     for output in proto.plan.ok_or(Error::Todo)?.utxos {
+        dbg!(&output.script);
         let tx: TxOutput = match output.variant {
             TrVariant::P2PKH => {
-                TxOutputP2PKH::from_bytes(output.script.to_vec(), output.amount as u64).into()
+                TxOutputP2PKH::from_script_bytes(output.script.to_vec(), output.amount as u64)
+                    .into()
             },
             TrVariant::P2WPKH => {
-                TxOutputP2WPKH::from_bytes(output.script.to_vec(), output.amount as u64).into()
+                TxOutputP2WPKH::from_script_bytes(output.script.to_vec(), output.amount as u64)
+                    .into()
             },
             TrVariant::P2TRKEYSPEND => {
-                TxOutputP2TRKeyPath::from_bytes(output.script.to_vec(), output.amount as u64).into()
+                TxOutputP2TRKeyPath::from_script_bytes(output.script.to_vec(), output.amount as u64)
+                    .into()
             },
         };
 

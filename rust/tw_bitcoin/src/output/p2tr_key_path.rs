@@ -4,8 +4,8 @@ use bitcoin::script::ScriptBuf;
 
 #[derive(Debug, Clone)]
 pub struct TxOutputP2TRKeyPath {
-    pub(super) satoshis: u64,
-    pub(super) script_pubkey: ScriptBuf,
+    pub(crate) satoshis: u64,
+    pub(crate) script_pubkey: ScriptBuf,
 }
 
 impl TxOutputP2TRKeyPath {
@@ -17,7 +17,7 @@ impl TxOutputP2TRKeyPath {
             script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
         }
     }
-    pub fn from_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
+    pub fn from_script_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
         let script_pubkey = ScriptBuf::from_bytes(bytes);
 
         TxOutputP2TRKeyPath {

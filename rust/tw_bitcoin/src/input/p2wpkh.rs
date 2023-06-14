@@ -9,11 +9,21 @@ pub struct TxInputP2WPKH {
 
 impl TxInputP2WPKH {
     pub fn new(txid: Txid, vout: u32, recipient: Recipient<WPubkeyHash>, satoshis: u64) -> Self {
+        let script = ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash());
+        Self::new_with_script_unchecked(txid, vout, recipient, satoshis, script)
+    }
+    pub fn new_with_script_unchecked(
+        txid: Txid,
+        vout: u32,
+        recipient: Recipient<WPubkeyHash>,
+        satoshis: u64,
+        script: ScriptBuf,
+    ) -> Self {
         TxInputP2WPKH {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
+                script_pubkey: script,
                 sequence: Sequence::default(),
                 witness: Witness::new(),
             },

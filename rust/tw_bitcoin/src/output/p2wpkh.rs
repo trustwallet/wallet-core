@@ -3,8 +3,8 @@ use bitcoin::{ScriptBuf, WPubkeyHash};
 
 #[derive(Debug, Clone)]
 pub struct TxOutputP2WPKH {
-    pub(super) satoshis: u64,
-    pub(super) script_pubkey: ScriptBuf,
+    pub(crate) satoshis: u64,
+    pub(crate) script_pubkey: ScriptBuf,
 }
 
 impl TxOutputP2WPKH {
@@ -14,7 +14,7 @@ impl TxOutputP2WPKH {
             script_pubkey: ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash()),
         }
     }
-    pub fn from_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
+    pub fn from_script_bytes(bytes: Vec<u8>, satoshis: u64) -> Self {
         let script_pubkey = ScriptBuf::from_bytes(bytes);
 
         TxOutputP2WPKH {
