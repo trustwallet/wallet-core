@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BRC20Payload<T> {
     #[serde(rename = "p")]
-    protocol: &'static str,
+    protocol: String,
     #[serde(rename = "op")]
-    operation: &'static str,
+    operation: String,
     #[serde(flatten)]
     inner: T,
 }
@@ -59,13 +59,13 @@ impl BRC20DeployPayload {
 
     pub fn new(ticker: Ticker, max: usize, limit: Option<usize>, decimals: Option<usize>) -> Self {
         BRC20Payload {
-            protocol: Self::PROTOCOL_ID,
-            operation: Self::OPERATION,
+            protocol: Self::PROTOCOL_ID.to_string(),
+            operation: Self::OPERATION.to_string(),
             inner: DeployPayload {
                 tick: ticker,
-                max,
-                lim: limit,
-                dec: decimals,
+                max: max.to_string(),
+                lim: limit.map(|l| l.to_string()),
+                dec: decimals.map(|d| d.to_string()),
             },
         }
     }
@@ -76,11 +76,11 @@ impl BRC20TransferPayload {
 
     pub fn new(ticker: Ticker, amount: usize) -> Self {
         BRC20Payload {
-            protocol: Self::PROTOCOL_ID,
-            operation: Self::OPERATION,
+            protocol: Self::PROTOCOL_ID.to_string(),
+            operation: Self::OPERATION.to_string(),
             inner: TransferPayload {
                 tick: ticker,
-                amt: amount,
+                amt: amount.to_string(),
             },
         }
     }
@@ -91,24 +91,24 @@ impl BRC20MintPayload {
 
     pub fn new(ticker: Ticker, amount: usize) -> Self {
         BRC20Payload {
-            protocol: Self::PROTOCOL_ID,
-            operation: Self::OPERATION,
+            protocol: Self::PROTOCOL_ID.to_string(),
+            operation: Self::OPERATION.to_string(),
             inner: MintPayload {
                 tick: ticker,
-                amt: amount,
+                amt: amount.to_string(),
             },
         }
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DeployPayload {
     pub tick: Ticker,
-    pub max: usize,
+    pub max: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub lim: Option<usize>,
+    pub lim: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub dec: Option<usize>,
+    pub dec: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -143,7 +143,7 @@ impl BRC20DeployInscription {
 #[derive(Serialize, Deserialize)]
 pub struct TransferPayload {
     pub tick: Ticker,
-    pub amt: usize,
+    pub amt: String,
 }
 
 pub struct BRC20TransferInscription(pub OrdinalsInscription);
@@ -176,7 +176,7 @@ impl BRC20TransferInscription {
 #[derive(Serialize, Deserialize)]
 pub struct MintPayload {
     pub tick: Ticker,
-    pub amt: usize,
+    pub amt: String,
 }
 
 pub struct BRC20MintInscription(pub OrdinalsInscription);
