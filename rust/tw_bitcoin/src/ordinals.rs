@@ -1,6 +1,6 @@
-use crate::{Recipient, Result, TaprootProgram, TaprootScript};
+use crate::{Recipient, Result, Error, TaprootProgram, TaprootScript};
 use bitcoin::opcodes::All as AnyOpcode;
-use bitcoin::script::{PushBytesBuf, ScriptBuf};
+use bitcoin::script::{PushBytesBuf, ScriptBuf, PushBytes};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::TaprootBuilder;
 use bitcoin::PublicKey;
@@ -13,11 +13,12 @@ fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
 
     let ret = match size {
         // OP_PUSHBYTES[0|1|2|...|75]
-        0..=75 => (bitcoin::opcodes::All::from(size as u8), None),
+        //0..=75 => (, bitcoin::opcodes::All::from(size as u8)),
         // OP_PUSHDATA[1|2|4]
-        76..=255 => (OP_PUSHDATA1, Some(size.to_le_bytes().to_vec())),
-        256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
-        65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
+        0..=255 => (OP_PUSHBYTES_1, Some((size as u8).to_le_bytes().to_vec())),
+        //256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
+        //65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
+        _ => panic!(),
     };
 
     Ok(ret)
@@ -71,17 +72,13 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
 
     // TODO: Check overflow
     let (op_push, size_buf) = get_op_push(mime.len() as u32)?;
+    dbg!(&op_push, &size_buf);
 
     // Prepare content-type buffer.
     let mut mime_buf = PushBytesBuf::new();
 
-    // For any sizes below 75, we use encode as `OP_PUSHBYTES[0|1|2|...|75]`.
-    // Fany any sized above 75, we use encode as `OP_PUSHDATA[1|2|3|4] <SIZE_BUF>`.
-    mime_buf.push(op_push.to_u8()).unwrap();
-    if let Some(size_buf) = size_buf {
-        mime_buf.extend_from_slice(&size_buf).unwrap();
-    }
-    mime_buf.extend_from_slice(mime).unwrap();
+    println!("MIME CONTENT: {}", tw_encoding::hex::encode(mime, false));
+    println!("MIME FULL: {}", tw_encoding::hex::encode(mime_buf.as_bytes(), false));
 
     // Prepare data buffer.
     let mut data_buf = PushBytesBuf::new();
@@ -92,17 +89,26 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     }
     data_buf.extend_from_slice(data).unwrap();
 
+    println!("ORD: {}", tw_encoding::hex::encode(b"ord", false));
+
+    let mut mime_buf = PushBytesBuf::new();
+    mime_buf.extend_from_slice(mime).map_err(|_| Error::Todo)?;
+
     // Create an Ordinals Inscription.
     let script = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
-        .push_opcode(OP_PUSHBYTES_3)
         .push_slice(b"ord")
-        .push_opcode(OP_PUSHNUM_1)
-        .push_slice(mime_buf)
-        .push_opcode(OP_PUSHBYTES_0)
-        .push_slice(data_buf)
-        .push_opcode(OP_ENDIF)
+        .push_opcode(OP_PUSHBYTES_1)
+        // TODO: This seems to be necessary for now and indicates the size of
+        // the length indicator. The method `push_slice` prefixes the data with
+        // the length, but does not specify how many bytes that prefix requires.
+        .push_opcode(OP_PUSHBYTES_1)
+        .push_slice(mime_buf.as_push_bytes())
+        // <--
+        //.push_opcode(OP_PUSHBYTES_0)
+        //.push_slice(data_buf)
+        //.push_opcode(OP_ENDIF)
         .into_script();
 
     // Generate the necessary spending information. As mentioned in the

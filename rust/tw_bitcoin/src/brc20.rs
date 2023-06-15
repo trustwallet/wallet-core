@@ -23,7 +23,7 @@ impl<T: Serialize> BRC20Payload<T> {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ticker(String);
 
 impl Ticker {
@@ -146,7 +146,7 @@ pub struct TransferPayload {
     pub amt: usize,
 }
 
-pub struct BRC20TransferInscription(OrdinalsInscription);
+pub struct BRC20TransferInscription(pub OrdinalsInscription);
 
 impl BRC20TransferInscription {
     pub fn new(
