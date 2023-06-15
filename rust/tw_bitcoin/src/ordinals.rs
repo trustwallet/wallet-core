@@ -1,3 +1,4 @@
+use crate::brc20::BRC20DeployPayload;
 use crate::{Recipient, Result, Error, TaprootProgram, TaprootScript};
 use bitcoin::opcodes::All as AnyOpcode;
 use bitcoin::script::{PushBytesBuf, ScriptBuf, PushBytes};
@@ -74,25 +75,24 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     let (op_push, size_buf) = get_op_push(mime.len() as u32)?;
     dbg!(&op_push, &size_buf);
 
-    // Prepare content-type buffer.
-    let mut mime_buf = PushBytesBuf::new();
-
-    println!("MIME CONTENT: {}", tw_encoding::hex::encode(mime, false));
-    println!("MIME FULL: {}", tw_encoding::hex::encode(mime_buf.as_bytes(), false));
-
     // Prepare data buffer.
-    let mut data_buf = PushBytesBuf::new();
-    let (op_push, size_buf) = get_op_push(data.len() as u32)?;
-    data_buf.push(op_push.to_u8()).unwrap();
-    if let Some(size_buf) = size_buf {
-        data_buf.extend_from_slice(&size_buf).unwrap();
-    }
-    data_buf.extend_from_slice(data).unwrap();
-
     println!("ORD: {}", tw_encoding::hex::encode(b"ord", false));
+    println!("DATA: {}", tw_encoding::hex::encode(data, false));
+
+    {
+        //let data = data.to_vec();
+        let data = tw_encoding::hex::decode("7b2270223a226272632d3230222c226f70223a226465706c6f79222c227469636b223a226f616466222c226d6178223a223231303030303030222c226c696d223a22313030227d").unwrap();
+        let x: BRC20DeployPayload = serde_json::from_slice(data.as_slice()).unwrap();
+        println!("DATA JSON: {:?}", x);
+    }
 
     let mut mime_buf = PushBytesBuf::new();
     mime_buf.extend_from_slice(mime).map_err(|_| Error::Todo)?;
+
+    println!("DATA LEN: {}", data.len());
+
+    let mut data_buf = PushBytesBuf::new();
+    data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
 
     // Create an Ordinals Inscription.
     let script = ScriptBuf::builder()
@@ -100,16 +100,17 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         .push_opcode(OP_IF)
         .push_slice(b"ord")
         .push_opcode(OP_PUSHBYTES_1)
-        // TODO: This seems to be necessary for now and indicates the size of
+        // This seems to be necessary for now and indicates the size of
         // the length indicator. The method `push_slice` prefixes the data with
         // the length, but does not specify how many bytes that prefix requires.
         .push_opcode(OP_PUSHBYTES_1)
         .push_slice(mime_buf.as_push_bytes())
-        // <--
-        //.push_opcode(OP_PUSHBYTES_0)
-        //.push_slice(data_buf)
-        //.push_opcode(OP_ENDIF)
+        .push_opcode(OP_PUSHBYTES_0)
+        .push_slice(data_buf)
+        .push_opcode(OP_ENDIF)
         .into_script();
+
+    println!("SCRIPT: {}", tw_encoding::hex::encode(script.as_bytes(), false));
 
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
