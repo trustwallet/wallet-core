@@ -1,29 +1,8 @@
-use crate::brc20::BRC20DeployPayload;
-use crate::{Recipient, Result, Error, TaprootProgram, TaprootScript};
-use bitcoin::opcodes::All as AnyOpcode;
-use bitcoin::script::{PushBytesBuf, ScriptBuf, PushBytes};
+use crate::{Error, Recipient, Result, TaprootProgram, TaprootScript};
+use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::TaprootBuilder;
 use bitcoin::PublicKey;
-
-/// Convenience function for retrieving the size prefix for a PUSH operation in
-/// a Script/Witness. For example, the size of `5` only returns
-/// `OP_PUSHBYTES_5`, while the size of value `300` returns `OP_PUSHDATA2 + LE(300)`
-fn get_op_push(size: u32) -> Result<(AnyOpcode, Option<Vec<u8>>)> {
-    use bitcoin::opcodes::all::*;
-
-    let ret = match size {
-        // OP_PUSHBYTES[0|1|2|...|75]
-        //0..=75 => (, bitcoin::opcodes::All::from(size as u8)),
-        // OP_PUSHDATA[1|2|4]
-        0..=255 => (OP_PUSHBYTES_1, Some((size as u8).to_le_bytes().to_vec())),
-        //256..=65535 => (OP_PUSHDATA2, Some(size.to_le_bytes().to_vec())),
-        //65536..=u32::MAX => (OP_PUSHDATA4, Some(size.to_le_bytes().to_vec())),
-        _ => panic!(),
-    };
-
-    Ok(ret)
-}
 
 #[derive(Debug, Clone)]
 pub struct OrdinalsInscription {
@@ -38,9 +17,14 @@ impl OrdinalsInscription {
         data: &[u8],
         recipient: Recipient<PublicKey>,
     ) -> Result<OrdinalsInscription> {
+        // Create the envelope, containing the inscription content.
         let envelope = create_envelope(mime, data, recipient.public_key())?;
-        // TODO: In which cases is this `false`?
-        let merkle_root = envelope.spend_info.merkle_root().unwrap();
+
+        // Compute the merkle root of the inscription.
+        let merkle_root = envelope
+            .spend_info
+            .merkle_root()
+            .expect("Ordinals envelope not constructed correctly");
 
         Ok(OrdinalsInscription {
             envelope,
@@ -71,26 +55,11 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     use bitcoin::opcodes::all::*;
     use bitcoin::opcodes::*;
 
-    // TODO: Check overflow
-    let (op_push, size_buf) = get_op_push(mime.len() as u32)?;
-    dbg!(&op_push, &size_buf);
-
-    // Prepare data buffer.
-    println!("ORD: {}", tw_encoding::hex::encode(b"ord", false));
-    println!("DATA: {}", tw_encoding::hex::encode(data, false));
-
-    {
-        //let data = data.to_vec();
-        let data = tw_encoding::hex::decode("7b2270223a226272632d3230222c226f70223a226465706c6f79222c227469636b223a226f616466222c226d6178223a223231303030303030222c226c696d223a22313030227d").unwrap();
-        let x: BRC20DeployPayload = serde_json::from_slice(data.as_slice()).unwrap();
-        println!("DATA JSON: {:?}", x);
-    }
-
+    // Create MIME buffer.
     let mut mime_buf = PushBytesBuf::new();
     mime_buf.extend_from_slice(mime).map_err(|_| Error::Todo)?;
 
-    println!("DATA LEN: {}", data.len());
-
+    // Create data buffer.
     let mut data_buf = PushBytesBuf::new();
     data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
 
@@ -99,18 +68,22 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         .push_slice(b"ord")
+        // Separator.
         .push_opcode(OP_PUSHBYTES_1)
-        // This seems to be necessary for now and indicates the size of
-        // the length indicator. The method `push_slice` prefixes the data with
-        // the length, but does not specify how many bytes that prefix requires.
+        // This seems to be necessary for now and indicates the size of the
+        // length indicator. The method `push_slice` prefixes the data with the
+        // length, but does not specify how many bytes that prefix requires.
+        //
+        // TODO: Look up if this could be somehow improved or if the `bitcoin`
+        // crate can/should handle that.
         .push_opcode(OP_PUSHBYTES_1)
         .push_slice(mime_buf.as_push_bytes())
+        // Separator.
         .push_opcode(OP_PUSHBYTES_0)
+        // The payload itself.
         .push_slice(data_buf)
         .push_opcode(OP_ENDIF)
         .into_script();
-
-    println!("SCRIPT: {}", tw_encoding::hex::encode(script.as_bytes(), false));
 
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
@@ -126,39 +99,4 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         .expect("Ordinals Inscription spending info must always build");
 
     Ok(TaprootProgram { script, spend_info })
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use bitcoin::opcodes::all::*;
-
-    #[test]
-    fn test_get_op_push() {
-        fn eq(size: u32, expected: AnyOpcode, has_size_le: bool) {
-            let (op, size_le) = get_op_push(size).unwrap();
-            assert_eq!(op, expected);
-            if has_size_le {
-                assert_eq!(size_le.unwrap().as_slice(), size.to_le_bytes());
-            }
-        }
-
-        // Up to 75, only the OP_PUSHBYTES_* opcode is returned.
-        eq(0, OP_PUSHBYTES_0, false);
-        eq(1, OP_PUSHBYTES_1, false);
-        eq(2, OP_PUSHBYTES_2, false);
-        eq(75, OP_PUSHBYTES_75, false);
-
-        // From 76 to 255, it returns a OP_PUSHDATA_1 + SIZE (LE).
-        eq(76, OP_PUSHDATA1, true);
-        eq(255, OP_PUSHDATA1, true);
-
-        // From 256 to 65535, it returns a OP_PUSHDATA_2 + SIZE (LE).
-        eq(256, OP_PUSHDATA2, true);
-        eq(65535, OP_PUSHDATA2, true);
-
-        // From 65536 to 2^32-1, it returns a OP_PUSHDATA_4 + SIZE (LE).
-        eq(65536, OP_PUSHDATA4, true);
-        eq(u32::MAX, OP_PUSHDATA4, true);
-    }
 }
