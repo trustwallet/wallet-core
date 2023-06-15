@@ -70,12 +70,12 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
-    // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 2;
-
-    // error description
-    string error_message = 3;
-    
     // Signature in base64.
-    string signature = 4;
+    string signature = 2;
+
+    // Error code, 0 is ok, other codes will be treated as errors.
+    Common.Proto.SigningError error = 3;
+
+    // Error description.
+    string error_message = 4;
 }

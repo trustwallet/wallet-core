@@ -6,13 +6,9 @@
 
 #pragma once
 
-#include "Protobuf/TronInternal.pb.h"
 #include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Tron.pb.h"
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
 
 namespace TW::Tron {
 

@@ -5,12 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
 #include "../proto/Bitcoin.pb.h"
 #include "Data.h"
 
-#include <vector>
-#include <optional>
-#include <utility>
 namespace TW::Zcash {
 
 using SigningInput = Bitcoin::Proto::SigningInput;

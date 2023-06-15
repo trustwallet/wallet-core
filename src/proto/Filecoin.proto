@@ -37,14 +37,14 @@ message SigningInput {
     // Gas premium (uint256, serialized little endian)
     bytes gas_premium = 7;
 
-    // Public key secp256k1 extended
-    bytes public_key = 8;
-
     // Message params.
-    bytes params = 9;
+    bytes params = 8;
 
     // Sender address derivation type.
-    DerivationType derivation = 10;
+    DerivationType derivation = 9;
+
+    // Public key secp256k1 extended
+    bytes public_key = 10;
 }
 
 // Result containing the signed and encoded transaction.

@@ -145,6 +145,8 @@ message SigningInput {
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
+
+    // The public key used for compiling a transaction with a signature.
     bytes public_key = 7;
 }
 

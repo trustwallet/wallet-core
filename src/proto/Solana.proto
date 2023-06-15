@@ -133,9 +133,11 @@ message CreateAndTransferToken {
 }
 
 message CreateNonceAccount {
-    string nonce_account = 1; // required for building pre-signing hash of a transaction
+    // Required for building pre-signing hash of a transaction
+    string nonce_account = 1;
     uint64 rent = 2;
-    bytes nonce_account_private_key = 3;       // optional for building pre-signing hash of a transaction
+    // Optional for building pre-signing hash of a transaction
+    bytes nonce_account_private_key = 3;
 }
 
 message WithdrawNonceAccount {
@@ -173,10 +175,14 @@ message SigningInput {
         WithdrawNonceAccount withdraw_nonce_account = 16;
         AdvanceNonceAccount advance_nonce_account = 19;
     }
-    string sender = 14;        // required for building pre-signing hash of a transaction
-    string nonce_account = 15; // required for using durable transaction nonce
-    bytes fee_payer_private_key = 17; // optional external fee payer private key. support: TokenTransfer, CreateAndTransferToken
-    string fee_payer = 18; // optional external fee payer. support: TokenTransfer, CreateAndTransferToken
+    // Required for building pre-signing hash of a transaction
+    string sender = 14;
+    // Required for using durable transaction nonce
+    string nonce_account = 15;
+    // Optional external fee payer private key. support: TokenTransfer, CreateAndTransferToken
+    bytes fee_payer_private_key = 17;
+    // Optional external fee payer. support: TokenTransfer, CreateAndTransferToken
+    string fee_payer = 18;
 }
 
 // Result containing the signed and encoded transaction.
@@ -196,15 +202,15 @@ message SigningOutput {
 
 /// Transaction pre-signing output
 message PreSigningOutput {
-    /// signer list
+    /// Signer list
     repeated bytes signers = 1;
 
     /// Pre-image data. There is no hashing for Solana presign image
     bytes data = 2;
     
-    // error code, 0 is ok, other codes will be treated as errors
+    // Error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 3;
 
-    // error code description
+    // Error code description
     string error_message = 4;
 }

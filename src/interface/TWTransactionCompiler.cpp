@@ -66,9 +66,7 @@ TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coin
         const auto publicKeysVec = createFromTWDataVector(publicKeys);
 
         result  = TransactionCompiler::compileWithSignatures(coinType, inputData, signaturesVec, publicKeysVec);
-    } catch (const std::exception& e) {
-        std::cerr << "TWTransactionCompilerCompileWithSignatures Exception: " << e.what() << std::endl;
-    } // return empty
+    } catch (...) {} // return empty
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
@@ -83,8 +81,6 @@ TWData *_Nonnull TWTransactionCompilerCompileWithSignaturesAndPubKeyType(enum TW
         const auto publicKeysVec = createFromTWDataVector(publicKeys);
 
         result  = TransactionCompiler::compileWithSignaturesAndPubKeyType(coinType, inputData, signaturesVec, publicKeysVec, pubKeyType);
-    } catch (const std::exception& e) {
-        std::cerr << "TWTransactionCompilerCompileWithSignaturesAndPubKeyType Exception: " << e.what() << std::endl;
-    } // return empty
+    } catch (...) {} // return empty
     return TWDataCreateWithBytes(result.data(), result.size());
 }

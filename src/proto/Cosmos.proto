@@ -398,17 +398,11 @@ message SigningOutput {
     // wrapped in a ready-to-broadcast json.
     string serialized = 3;
 
-    // error description
-    string error_message = 4;
-
-    Common.Proto.SigningError error = 5;
-
     // signatures array json string
-    string signature_json = 6;
-}
+    string signature_json = 4;
 
-// Signature
-message Signature {
-    bytes public_key = 1;
-    bytes signature = 2;
+    // error description
+    string error_message = 5;
+
+    Common.Proto.SigningError error = 6;
 }

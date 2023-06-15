@@ -10,7 +10,6 @@
 #include "Bitcoin/Transaction.h"
 #include "TransactionBuilder.h"
 
-using namespace TW;
 namespace TW::Zen {
 
 TransactionPlan Signer::plan(const SigningInput& input) noexcept {
@@ -50,7 +49,7 @@ PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
 
     auto hashList = result.payload();
     auto* hashPubKeys = output.mutable_hash_public_keys();
-    for (auto& h : hashList) {
+    for (const auto& h : hashList) {
         auto* hpk = hashPubKeys->Add();
         hpk->set_data_hash(h.first.data(), h.first.size());
         hpk->set_public_key_hash(h.second.data(), h.second.size());

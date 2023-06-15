@@ -1,6 +1,8 @@
+// Copyright © 2017-2023 Trust Wallet.
 //
-// Created by Fitz on 2021/7/9.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #include "../Polkadot/Address.h"
 
@@ -8,7 +10,6 @@
 #include <TrustWalletCore/TWPolkadotAddress.h>
 
 using namespace TW;
-using namespace TW::Polkadot;
 
 bool TWPolkadotAddressEqual(struct TWPolkadotAddress *_Nonnull lhs, struct TWPolkadotAddress *_Nonnull rhs) {
     return lhs->impl == rhs->impl;

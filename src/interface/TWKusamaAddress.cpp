@@ -1,6 +1,8 @@
+// Copyright © 2017-2023 Trust.
 //
-// Created by Fitz on 2021/7/9.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #include "../Kusama/Address.h"
 
@@ -8,7 +10,6 @@
 #include <TrustWalletCore/TWKusamaAddress.h>
 
 using namespace TW;
-using namespace TW::Kusama;
 
 bool TWKusamaAddressEqual(struct TWKusamaAddress *_Nonnull lhs, struct TWKusamaAddress *_Nonnull rhs) {
     return lhs->impl == rhs->impl;

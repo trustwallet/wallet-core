@@ -184,7 +184,7 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 4;
-    
+
     // error description
     string error_message = 5;
 }

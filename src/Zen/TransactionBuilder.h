@@ -85,7 +85,6 @@ struct TransactionBuilder {
     static std::optional<Bitcoin::TransactionOutput> prepareOutputWithScript(const std::string& addr, Bitcoin::Amount amount, enum TWCoinType coin, const Data& blockHash, int64_t blockHeight) {
         auto lockingScript = Bitcoin::Script::lockScriptForAddress(addr, coin, blockHash, blockHeight);
         if (lockingScript.empty()) {
-            std::cerr << "build locking script: " << coin << ", invalid output address:" << addr << std::endl;
             return {};
         }
         return Bitcoin::TransactionOutput(amount, lockingScript);

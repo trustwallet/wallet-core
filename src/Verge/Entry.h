@@ -12,16 +12,16 @@ namespace TW::Verge {
 
 /// Entry point for implementation of Verge coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry: public CoinEntry {
+class Entry final: public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const;
-    virtual Data addressToData(TWCoinType coin, const std::string& address) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    bool validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const override;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const override;
+    Data addressToData(TWCoinType coin, const std::string& address) const override;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
 
-    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
-    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
 };
 
 } // namespace TW::Verge

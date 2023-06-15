@@ -10,7 +10,6 @@
 #include <TrustWalletCore/TWNEOAddress.h>
 
 using namespace TW;
-using namespace TW::NEO;
 
 // TODO: Adjust implementations below
 

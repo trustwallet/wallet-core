@@ -38,10 +38,10 @@ message SigningInput {
     uint32 nonce = 10;
 
     // base58 encode address string (160-bit number)
-    string owner_address =11;
+    string owner_address = 11;
 
     // base58 encode address string (160-bit number)
-    string payer_address =12;
+    string payer_address = 12;
 }
 
 // Result containing the signed and encoded transaction.
