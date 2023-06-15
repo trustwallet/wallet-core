@@ -3711,5 +3711,34 @@
       "rpc": "https://toncenter.com/api/v2/jsonRPC",
       "documentation": "https://ton.org/docs"
     }
+  },
+  {
+    "id": "gate",
+    "name": "Gate Chain",
+    "displayName": "Gate Chain",
+    "coinId": 10000086,
+    "symbol": "GT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "86",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://gatescan.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://gatechain.io/",
+      "source": "https://github.com/gatechain/gatechain-docs",
+      "rpc": "https://evm.gatenode.cc",
+      "documentation": "https://www.gatechain.io/docs/en/home/"
+    }
   }
 ]
