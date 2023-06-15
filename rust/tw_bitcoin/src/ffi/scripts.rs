@@ -5,6 +5,7 @@ use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 
 #[no_mangle]
+// Builds the P2PKH scriptPubkey.
 pub unsafe extern "C" fn tw_build_p2pkh_script(pubkey: *const u8, pubkey_len: usize) -> CByteArray {
     // Convert Recipient
     let slice = try_or_else!(
@@ -18,6 +19,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(pubkey: *const u8, pubkey_len: us
 }
 
 #[no_mangle]
+// Builds the P2WPKH scriptPubkey.
 pub unsafe extern "C" fn tw_build_p2wpkh_script(
     pubkey: *const u8,
     pubkey_len: usize,
@@ -37,6 +39,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
 }
 
 #[no_mangle]
+// Builds the P2TR key-path scriptPubkey.
 pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
     pubkey: *const u8,
     pubkey_len: usize,
