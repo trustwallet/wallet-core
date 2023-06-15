@@ -63,6 +63,9 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
     let txid: Vec<u8> = hex::decode(TXID).unwrap().into_iter().rev().collect();
 
     // Prepare the scripts.
+    // Note that here the input and outputs script are identical (in_script =
+    // out_script), the scriptSig/Witness for claiming a transaction is created
+    // and set by the signer.
     let in_script = TxInputP2PKH::only_script(alice.into());
     let out_script = TxOutputP2PKH::only_script(bob.into());
 
