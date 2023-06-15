@@ -24,6 +24,9 @@ message TokenAmount {
 
     // The amount (uint256, serialized little endian)
     bytes amount = 3;
+
+    // The name of the asset (hex encoded). Ignored if `asset_name` is set
+    string asset_name_hex = 4;
 }
 
 // One input for a transaction

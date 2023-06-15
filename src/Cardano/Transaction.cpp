@@ -15,13 +15,24 @@
 namespace TW::Cardano {
 
 TokenAmount TokenAmount::fromProto(const Proto::TokenAmount& proto) {
-    return {proto.policy_id(), proto.asset_name(), load(proto.amount())};
+    std::string assetName;
+    if (!proto.asset_name().empty()) {
+        assetName = proto.asset_name();
+    } else if (!proto.asset_name_hex().empty()) {
+        auto assetNameData = parse_hex(proto.asset_name_hex());
+        assetName.assign(assetNameData.data(), assetNameData.data() + assetNameData.size());
+    }
+
+    return {proto.policy_id(), std::move(assetName), load(proto.amount())};
 }
 
 Proto::TokenAmount TokenAmount::toProto() const {
+    auto assetNameHex = hex(assetName);
+
     Proto::TokenAmount tokenAmount;
     tokenAmount.set_policy_id(policyId.data(), policyId.size());
     tokenAmount.set_asset_name(assetName.data(), assetName.size());
+    tokenAmount.set_asset_name_hex(assetNameHex.data(), assetNameHex.size());
     const auto amountData = store(amount);
     tokenAmount.set_amount(amountData.data(), amountData.size());
     return tokenAmount;
@@ -110,7 +121,7 @@ uint64_t TokenBundle::minAdaAmount() const {
 
     auto numPids = uint64_t(policyIdRegistry.size());
     auto numAssets = uint64_t(assetNameRegistry.size());
-    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](auto&& a){ sumAssetNameLengths += a.length()/2; });
+    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](auto&& a){ sumAssetNameLengths += a.length(); });
     
     return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
 }
@@ -247,7 +258,7 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         std::map<Cbor::Encode, Cbor::Encode> subTokensMap;
         for (const auto& token : subTokens) {
             subTokensMap.emplace(
-                Cbor::Encode::bytes(parse_hex(token.assetName)),
+                Cbor::Encode::bytes(data(token.assetName)),
                 Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
             );
         }
