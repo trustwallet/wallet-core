@@ -28,6 +28,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
     let proto = TransactionOutput {
         value: satoshis,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        merkleRoot: Cow::default(),
     };
 
     let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
@@ -57,6 +58,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        merkleRoot: Cow::default(),
     };
 
     let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
@@ -83,6 +85,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        merkleRoot: Cow::default(),
     };
 
     let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
@@ -123,10 +126,12 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
         .expect("transfer inscription implemented wrongly");
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, transfer.0.recipient());
+    let merkle_root = transfer.0.recipient().merkle_root();
 
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        merkleRoot: Cow::from(AsRef::<[u8]>::as_ref(&merkle_root)),
     };
 
     let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
