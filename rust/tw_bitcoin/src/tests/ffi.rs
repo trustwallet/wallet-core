@@ -1,15 +1,18 @@
-use crate::ffi::scripts::{
-    tw_build_p2pkh_script, tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
+use crate::brc20::{BRC20TransferInscription, Ticker};
+use crate::ffi::{
+    taproot_build_and_sign_transaction, tw_build_brc20_inscribe_transfer, tw_build_p2pkh_script,
+    tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
 };
-use crate::ffi::taproot_build_and_sign_transaction;
-use crate::keypair_from_wif;
-use crate::{Recipient, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
 use crate::tests::p2pkh::ALICE_WIF;
+use crate::{
+    keypair_from_wif, Recipient, TXOutputP2TRScriptPath, TxInputP2PKH, TxOutputP2PKH,
+    TxOutputP2TRKeyPath, TxOutputP2WPKH,
+};
 use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto::{
-    SigningInput, TransactionPlan, TransactionVariant, UnspentTransaction,TransactionOutput
+    SigningInput, TransactionOutput, TransactionPlan, TransactionVariant, UnspentTransaction,
 };
 
 #[test]
@@ -20,10 +23,9 @@ fn build_ffi_p2pkh_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let buffer = recipient.public_key().to_bytes();
-    let array = unsafe {
-        tw_build_p2pkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec()
-    };
+    let pubkey = recipient.public_key().to_bytes();
+    let array =
+        unsafe { tw_build_p2pkh_script(satoshis as i64, pubkey.as_ptr(), pubkey.len()).into_vec() };
 
     let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
@@ -45,9 +47,9 @@ fn build_ffi_p2wpkh_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let buffer = recipient.public_key().to_bytes();
+    let pubkey = recipient.public_key().to_bytes();
     let array = unsafe {
-        tw_build_p2wpkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec()
+        tw_build_p2wpkh_script(satoshis as i64, pubkey.as_ptr(), pubkey.len()).into_vec()
     };
 
     let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
@@ -69,15 +71,59 @@ fn build_ffi_p2tr_key_path_script() {
 
     let satoshis: u64 = 1_000;
 
-    // Test P2TR key-path
-    let buffer = recipient.public_key().to_bytes();
+    // Call FFI function.
+    let pubkey = recipient.public_key().to_bytes();
     let array = unsafe {
-        tw_build_p2tr_key_path_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec()
+        tw_build_p2tr_key_path_script(satoshis as i64, pubkey.as_ptr(), pubkey.len()).into_vec()
     };
 
     let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
+    // Compare with native call.
     let tx_out = TxOutputP2TRKeyPath::new(satoshis, recipient.try_into().unwrap());
+    let proto = TransactionOutput {
+        value: satoshis as i64,
+        script: Cow::from(tx_out.script_pubkey.as_bytes()),
+    };
+
+    assert_eq!(ffi_der, proto);
+}
+
+#[test]
+fn build_ffi_brc20_transfer_script() {
+    let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
+    let recipient = Recipient::<PublicKey>::from(keypair);
+
+    let satoshis: u64 = 1_000;
+    let brc20_amount = 20;
+    let ticker = "oadf";
+
+    // Call FFI function.
+    let tick_buf = ticker.as_bytes();
+    let pubkey = recipient.public_key().to_bytes();
+    let array = unsafe {
+        tw_build_brc20_inscribe_transfer(
+            tick_buf.as_ptr(),
+            brc20_amount,
+            satoshis as i64,
+            pubkey.as_ptr(),
+            pubkey.len(),
+        )
+        .into_vec()
+    };
+
+    let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
+
+    // Compare with native call.
+    let transfer = BRC20TransferInscription::new(
+        recipient,
+        Ticker::new(ticker.to_string()).unwrap(),
+        brc20_amount,
+    )
+    .unwrap();
+
+    //let tx_out = TxOutputP2TRKeyPath::new(satoshis, recipient.try_into().unwrap());
+    let tx_out = TXOutputP2TRScriptPath::new(satoshis, transfer.0.recipient());
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
