@@ -72,6 +72,7 @@ enum TransactionVariant {
     P2PKH = 1;
     P2WPKH = 2;
     P2TRKEYPATH = 3;
+    BRC20TRANSFER = 4;
 }
 
 // Input data necessary to create a signed transaction.

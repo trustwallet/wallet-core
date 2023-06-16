@@ -63,15 +63,23 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
     // The 4-byte ticker.
-    ticker: [u8; 4],
+    ticker: *const u8,
     amount: u64,
     pubkey: *const u8,
     pubkey_len: usize,
 ) -> CByteArray {
     // Convert ticket.
-    let ticker = try_or_else!(String::from_utf8(ticker.to_vec()), CByteArray::null);
+    let slice = try_or_else!(
+        CByteArrayRef::new(ticker, 4).as_slice(),
+        CByteArray::null
+    );
 
-    let ticker = Ticker::new(ticker).expect("ticker must be 4 bytes");
+    if slice.len() != 4 {
+        return CByteArray::null();
+    }
+
+    let string = try_or_else!(String::from_utf8(slice.to_vec()), CByteArray::null);
+    let ticker = Ticker::new(string).expect("ticker must be 4 bytes");
 
     // Convert Recipient
     let slice = try_or_else!(
@@ -81,6 +89,7 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
 
     let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
 
+    // Build transfer inscription.
     let transfer = BRC20TransferInscription::new(recipient, ticker, amount)
         .expect("transfer inscription implemented wrongly");
 

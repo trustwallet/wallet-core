@@ -92,6 +92,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
                 script_buf,
             )
             .into(),
+            TrVariant::BRC20TRANSFER => todo!(),
         };
 
         builder = builder.add_input(tx);
@@ -108,6 +109,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             TrVariant::P2TRKEYPATH => {
                 TxOutputP2TRKeyPath::new_with_script(satoshis, script_buf).into()
             },
+            TrVariant::BRC20TRANSFER => todo!(),
         };
 
         builder = builder.add_output(tx);
