@@ -3,7 +3,7 @@
 use super::try_or_else;
 use crate::{Error, Result, TXOutputP2TRScriptPath, TaprootScript, TxInputP2TRScriptPath};
 use bitcoin::{
-    taproot::{TapNodeHash, TaprootSpendInfo},
+    taproot::{NodeInfo, TapNodeHash, TaprootSpendInfo},
     PublicKey, ScriptBuf, Txid,
 };
 use secp256k1::hashes::Hash;
@@ -97,6 +97,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             .into(),
             TrVariant::BRC20TRANSFER => {
                 let spending_script = ScriptBuf::from_bytes(input.spendingScript.to_vec());
+                dbg!(&spending_script);
                 let merkle_root = TapNodeHash::from_script(
                     spending_script.as_script(),
                     bitcoin::taproot::LeafVersion::TapScript,
@@ -106,10 +107,13 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
                 let recipient =
                     Recipient::<TaprootScript>::from_pubkey_recipient(my_pubkey, merkle_root);
 
-                let spend_info = TaprootSpendInfo::new_key_spend(
+                let spend_info = TaprootSpendInfo::from_node_info(
                     &secp256k1::Secp256k1::new(),
                     recipient.untweaked_pubkey(),
-                    Some(merkle_root),
+                    NodeInfo::new_leaf_with_ver(
+                        spending_script.clone(),
+                        bitcoin::taproot::LeafVersion::TapScript,
+                    ),
                 );
 
                 TxInputP2TRScriptPath::new_with_script(
