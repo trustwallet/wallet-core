@@ -173,7 +173,7 @@ impl TransactionSigner for KeyPair {
         // script-path is being executed.
         let control_block = input
             .spend_info
-            .control_block(&(input.script.clone(), LeafVersion::TapScript))
+            .control_block(&(input.witness.clone(), LeafVersion::TapScript))
             .ok_or(Error::Todo)?;
 
         // Construct the Schnorr signature. We leave the keypair untweaked,
@@ -187,7 +187,7 @@ impl TransactionSigner for KeyPair {
         let mut witness = Witness::new();
         // Serialize signature.
         witness.push(&sig.to_vec());
-        witness.push(&input.script);
+        witness.push(&input.witness);
         witness.push(control_block.serialize());
 
         Ok(ClaimP2TRScriptPath(witness))
