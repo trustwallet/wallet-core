@@ -751,9 +751,9 @@ dependencies = [
 
 [[package]]
 name = "starknet-ff"
-version = "0.3.2"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f5e4d14a7e5a93027baa42f514459acd1e07799f886604d8bf5d30a0d28111f"
+checksum = "bcdf692e13247ec111718e219caaa44ea1a687e9c36bf6083e1cd1b98374a2ad"
 dependencies = [
  "ark-ff",
  "bigdecimal",
