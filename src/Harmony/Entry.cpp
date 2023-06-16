@@ -52,23 +52,11 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data &txInput
 
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data &txInputData, const std::vector<Data> &signatures,
                     const std::vector<PublicKey> &publicKeys, Data &dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto &input, auto &output) {
-            if (signatures.size() == 0 || publicKeys.size() == 0) {
-                output.set_error(Common::Proto::Error_invalid_params);
-                output.set_error_message("empty signatures or publickeys");
-                return;
-            } 
-
-            if (signatures.size() != 1) {
-                output.set_error(Common::Proto::Error_signatures_count);
-                output.set_error_message(
-                    Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
-                return;
-            }
-
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [](const auto &input, auto &output, const auto& signature, [[maybe_unused]] const auto& publicKey) {
             Signer signer(uint256_t(load(input.chain_id())));
-            output = signer.buildSigningOutput(input, signatures[0]); });
+            output = signer.buildSigningOutput(input, signature); });
 }
 
 } // namespace TW::Harmony

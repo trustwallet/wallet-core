@@ -62,15 +62,10 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto& input, auto& output) {
-            if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
-                return;
-            }
-
-            auto signedTx = Signer().encodeTransaction(input, signatures[0], publicKeys[0], coin);
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [coin](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            auto signedTx = Signer().encodeTransaction(input, signature, publicKey, coin);
             output.set_serialized(signedTx.data(), signedTx.size());
         });
 }

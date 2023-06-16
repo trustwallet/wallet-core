@@ -53,22 +53,10 @@ TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txI
 }
 
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto& input, auto& output) {
-            if (signatures.size() == 0 || publicKeys.size() == 0) {
-                output.set_error(Common::Proto::Error_invalid_params);
-                output.set_error_message("empty signatures or publickeys");
-                return;
-            }
-
-            // We only support one-to-one transfer now.
-            if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message("signatures and publickeys size can only be one");
-                return;
-            }
-
-            auto encoded = Signer::encodeTransactionWithSig(input, publicKeys[0], signatures[0]);
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            auto encoded = Signer::encodeTransactionWithSig(input, publicKey, signature);
             output.set_encoded(encoded.data(), encoded.size());
             return;
         });

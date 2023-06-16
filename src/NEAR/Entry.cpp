@@ -52,16 +52,11 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
 
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto& input, auto& output) {
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
             const auto signer = Signer(input);
-            if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(
-                    Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
-                return;
-            }
-            output = signer.compile(signatures[0], publicKeys[0]);
+            output = signer.compile(signature, publicKey);
         });
 }
 } // namespace TW::NEAR
