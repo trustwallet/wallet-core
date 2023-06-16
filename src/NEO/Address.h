@@ -47,8 +47,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::NEO
-
-/// Wrapper for C interface.
-struct TWNEOAddress {
-    TW::NEO::Address impl;
-};

@@ -55,7 +55,7 @@ TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, st
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
-TWString *_Nonnull TWCoinTypeDeriveAddressFromDerivation(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey, enum TWDerivation derivation) {
+TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKeyAndDerivation(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey, enum TWDerivation derivation) {
     const auto string = TW::deriveAddress(coin, publicKey->impl, derivation);
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }

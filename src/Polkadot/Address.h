@@ -30,8 +30,3 @@ class Address: public SS58Address {
     explicit Address(const PublicKey& publicKey, std::uint32_t ss58Prefix): SS58Address(publicKey, ss58Prefix) {}
 };
 } // namespace TW::Polkadot
-
-/// Wrapper for C interface.
-struct TWPolkadotAddress {
-    TW::Polkadot::Address impl;
-};

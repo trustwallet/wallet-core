@@ -245,9 +245,9 @@ TWString* _Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
 
 /// Derives the address for a particular coin from the public key with the derivation.
 TW_EXPORT_METHOD
-TWString* _Nonnull TWCoinTypeDeriveAddressFromDerivation(enum TWCoinType coin,
-                                                        struct TWPublicKey* _Nonnull publicKey,
-                                                        enum TWDerivation derivation);
+TWString* _Nonnull TWCoinTypeDeriveAddressFromPublicKeyAndDerivation(enum TWCoinType coin,
+                                                                     struct TWPublicKey* _Nonnull publicKey,
+                                                                     enum TWDerivation derivation);
 
 /// HRP for this coin type
 ///
