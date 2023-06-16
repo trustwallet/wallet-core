@@ -125,9 +125,10 @@ fn build_ffi_brc20_transfer_script() {
     )
     .unwrap();
 
+    let tapscript = transfer.0.recipient().clone();
     let spending_script = transfer.0.envelope.script;
 
-    let tx_out = TXOutputP2TRScriptPath::new(satoshis, transfer.0.recipient());
+    let tx_out = TXOutputP2TRScriptPath::new(satoshis, &tapscript);
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
@@ -356,4 +357,117 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     let sig = taproot_build_and_sign_transaction(input).unwrap();
     assert_eq!(hex::encode(&sig, false), EXPECTED_RAW_SIGNED);
+}
+
+#[test]
+fn proto_sign_brc20_transfer_inscription_commit() {
+    use crate::tests::brc20_transfer::{
+        ALICE_WIF, BOB_WIF, BRC20_AMOUNT, BRC20_INSCRIBE_AMOUNT, BRC20_TICKER, COMMIT_TXID,
+        COMMIT_TX_RAW, FOR_FEE_AMOUNT, FULL_AMOUNT,
+    };
+
+    let alice = keypair_from_wif(ALICE_WIF).unwrap();
+    let alice_privkey = alice.secret_bytes();
+    let alice_recipient = Recipient::<PublicKey>::from(&alice);
+    let bob = keypair_from_wif(BOB_WIF).unwrap();
+
+    let ticker = Ticker::new(BRC20_TICKER.to_string())
+        .unwrap()
+        .to_byte_array();
+
+    // Note that the Txid must be reversed.
+    let txid: Vec<u8> = hex::decode(COMMIT_TXID)
+        .unwrap()
+        .into_iter()
+        .rev()
+        .collect();
+
+    // Build input script.
+    let pubkey = alice_recipient.public_key().to_bytes();
+    let input_p2wpkh = unsafe {
+        tw_build_p2wpkh_script(FULL_AMOUNT as i64, pubkey.as_ptr(), pubkey.len()).into_vec()
+    };
+    let input_p2wpkh: TransactionOutput = tw_proto::deserialize(&input_p2wpkh).unwrap();
+
+    // Build inscription output.
+    let output_inscribe = unsafe {
+        tw_build_brc20_inscribe_transfer(
+            ticker.as_ptr(),
+            BRC20_AMOUNT,
+            BRC20_INSCRIBE_AMOUNT as i64,
+            pubkey.as_ptr(),
+            pubkey.len(),
+        )
+        .into_vec()
+    };
+    let output_inscribe: TransactionOutput = tw_proto::deserialize(&output_inscribe).unwrap();
+
+    // Build change output.
+    let output_change = unsafe {
+        tw_build_p2wpkh_script(FOR_FEE_AMOUNT as i64, pubkey.as_ptr(), pubkey.len()).into_vec()
+    };
+    let output_change: TransactionOutput = tw_proto::deserialize(&output_change).unwrap();
+
+    // Construct Protobuf payload.
+    let input = SigningInput {
+        hash_type: 0,
+        amount: 0,
+        byte_fee: 0,
+        to_address: Cow::from(""),
+        change_address: Cow::from(""),
+        private_key: vec![Cow::from(alice_privkey.as_slice())],
+        scripts: Default::default(),
+        utxo: vec![UnspentTransaction {
+            out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
+                hash: Cow::from(txid.as_slice()),
+                index: 1,
+                sequence: 0,
+            }),
+            script: input_p2wpkh.script,
+            amount: FULL_AMOUNT as i64,
+            variant: TransactionVariant::P2WPKH,
+            spendingScript: Cow::default(),
+        }],
+        use_max_amount: false,
+        coin_type: 0,
+        plan: Some(TransactionPlan {
+            amount: 0,
+            available_amount: 0,
+            fee: 0,
+            change: 0,
+            utxos: vec![
+                UnspentTransaction {
+                    out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
+                        hash: Cow::from([].as_slice()),
+                        index: 0,
+                        sequence: 0,
+                    }),
+                    script: output_inscribe.script,
+                    amount: BRC20_INSCRIBE_AMOUNT as i64,
+                    variant: TransactionVariant::BRC20TRANSFER,
+                    // Not relevant in the "commit" stage.
+                    spendingScript: Cow::default(),
+                },
+                UnspentTransaction {
+                    out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
+                        hash: Cow::from([].as_slice()),
+                        index: 0,
+                        sequence: 0,
+                    }),
+                    script: output_change.script,
+                    amount: FOR_FEE_AMOUNT as i64,
+                    variant: TransactionVariant::P2WPKH,
+                    spendingScript: Cow::default(),
+                },
+            ],
+            branch_id: Cow::from([].as_slice()),
+            error: tw_proto::Common::Proto::SigningError::OK,
+            output_op_return: Cow::from([].as_slice()),
+        }),
+        lock_time: 0,
+        output_op_return: Cow::from([].as_slice()),
+    };
+
+    let sig = taproot_build_and_sign_transaction(input).unwrap();
+    assert_eq!(hex::encode(&sig, false), COMMIT_TX_RAW);
 }
