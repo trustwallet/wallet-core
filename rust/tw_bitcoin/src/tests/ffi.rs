@@ -8,9 +8,8 @@ use crate::tests::p2pkh::ALICE_WIF;
 use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_encoding::hex;
-use tw_proto::Bitcoin::Proto::TransactionOutput;
 use tw_proto::Bitcoin::Proto::{
-    SigningInput, TransactionPlan, TransactionVariant, UnspentTransaction,
+    SigningInput, TransactionPlan, TransactionVariant, UnspentTransaction,TransactionOutput
 };
 
 #[test]
@@ -20,22 +19,22 @@ fn build_ffi_p2pkh_script() {
 
     let satoshis: u64 = 1_000;
 
-    // Test P2PKH
-    unsafe {
-        // Input
-        let buffer = recipient.public_key().to_bytes();
-        let array =
-            tw_build_p2pkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec();
-        let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
+    // Call FFI function.
+    let buffer = recipient.public_key().to_bytes();
+    let array = unsafe {
+        tw_build_p2pkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec()
+    };
 
-        let tx_out = TxOutputP2PKH::new(satoshis, recipient.clone());
-        let proto = TransactionOutput {
-            value: satoshis as i64,
-            script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        };
+    let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
-        assert_eq!(ffi_der, proto);
-    }
+    // Compare with native call.
+    let tx_out = TxOutputP2PKH::new(satoshis, recipient.clone());
+    let proto = TransactionOutput {
+        value: satoshis as i64,
+        script: Cow::from(tx_out.script_pubkey.as_bytes()),
+    };
+
+    assert_eq!(ffi_der, proto);
 }
 
 #[test]
@@ -45,21 +44,22 @@ fn build_ffi_p2wpkh_script() {
 
     let satoshis: u64 = 1_000;
 
-    // Test P2WPKH
-    unsafe {
-        let buffer = recipient.public_key().to_bytes();
-        let array =
-            tw_build_p2wpkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec();
-        let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
+    // Call FFI function.
+    let buffer = recipient.public_key().to_bytes();
+    let array = unsafe {
+        tw_build_p2wpkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec()
+    };
 
-        let tx_out = TxOutputP2WPKH::new(satoshis, recipient.clone().try_into().unwrap());
-        let proto = TransactionOutput {
-            value: satoshis as i64,
-            script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        };
+    let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
-        assert_eq!(ffi_der, proto);
-    }
+    // Compare with native call.
+    let tx_out = TxOutputP2WPKH::new(satoshis, recipient.clone().try_into().unwrap());
+    let proto = TransactionOutput {
+        value: satoshis as i64,
+        script: Cow::from(tx_out.script_pubkey.as_bytes()),
+    };
+
+    assert_eq!(ffi_der, proto);
 }
 
 #[test]
@@ -70,20 +70,20 @@ fn build_ffi_p2tr_key_path_script() {
     let satoshis: u64 = 1_000;
 
     // Test P2TR key-path
-    unsafe {
-        let buffer = recipient.public_key().to_bytes();
-        let array = tw_build_p2tr_key_path_script(satoshis as i64, buffer.as_ptr(), buffer.len())
-            .into_vec();
-        let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
+    let buffer = recipient.public_key().to_bytes();
+    let array = unsafe {
+        tw_build_p2tr_key_path_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec()
+    };
 
-        let tx_out = TxOutputP2TRKeyPath::new(satoshis, recipient.try_into().unwrap());
-        let proto = TransactionOutput {
-            value: satoshis as i64,
-            script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        };
+    let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
-        assert_eq!(ffi_der, proto);
-    }
+    let tx_out = TxOutputP2TRKeyPath::new(satoshis, recipient.try_into().unwrap());
+    let proto = TransactionOutput {
+        value: satoshis as i64,
+        script: Cow::from(tx_out.script_pubkey.as_bytes()),
+    };
+
+    assert_eq!(ffi_der, proto);
 }
 
 #[test]
