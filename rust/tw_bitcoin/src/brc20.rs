@@ -35,6 +35,12 @@ impl Ticker {
 
         Ok(Ticker(string))
     }
+    pub fn to_byte_array(&self) -> [u8; 4] {
+        self.0
+            .as_bytes()
+            .try_into()
+            .expect("ticker must be four bytes")
+    }
 }
 
 impl TryFrom<String> for Ticker {

@@ -9,27 +9,32 @@ use tw_encoding::hex;
 
 // Those private keys were used for Bitcoin mainnet tests and have a transaction
 // history. BTC holdings have been emptied.
-const ALICE_WIF: &str = "L4of5AJ6aKmvChg7gQ7m2RzHFgpWe5Uirmuey1fXJ1FtfmXj59LW";
-const BOB_WIF: &str = "L59WHi2hj1HnMAYaFyMqR4Z36HrUDTZQCixzTHachAxbUU9VUCjp";
+pub const ALICE_WIF: &str = "L4of5AJ6aKmvChg7gQ7m2RzHFgpWe5Uirmuey1fXJ1FtfmXj59LW";
+pub const BOB_WIF: &str = "L59WHi2hj1HnMAYaFyMqR4Z36HrUDTZQCixzTHachAxbUU9VUCjp";
+
+pub const FULL_AMOUNT: u64 = 26_400;
+pub const MINER_FEE: u64 = 3_000;
+
+pub const BRC20_TICKER: &str = "oadf";
+pub const BRC20_AMOUNT: u64 = 20;
+pub const BRC20_INSCRIBE_AMOUNT: u64 = 7_000;
+pub const BRC20_DUST_AMOUNT: u64 = 546;
+
+pub const FOR_FEE_AMOUNT: u64 = FULL_AMOUNT - BRC20_INSCRIBE_AMOUNT - MINER_FEE;
+
+pub const COMMIT_TXID: &str = "8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008";
+pub const COMMIT_TX_RAW: &str = "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
 
 #[test]
 fn brc20_transfer() {
     // TODO: Document those values.
-    pub const FULL_AMOUNT: u64 = 26_400;
-    pub const MINER_FEE: u64 = 3_000;
-
-    const BRC20_TICKER: &str = "oadf";
-    const BRC20_AMOUNT: u64 = 20;
-    pub const BRC20_INSCRIBE_AMOUNT: u64 = 7_000;
-    pub const BRC20_DUST_AMOUNT: u64 = 546;
 
     let ticker = Ticker::new(BRC20_TICKER.to_string()).unwrap();
 
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
-    let txid =
-        Txid::from_str("8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008").unwrap();
+    let txid = Txid::from_str(COMMIT_TXID).unwrap();
 
     // # Make "available" tokens "transferable".
 
@@ -52,7 +57,7 @@ fn brc20_transfer() {
 
     let output_change = TxOutputP2WPKH::builder()
         .recipient(alice.try_into().unwrap())
-        .satoshis(FULL_AMOUNT - BRC20_INSCRIBE_AMOUNT - MINER_FEE)
+        .satoshis(FOR_FEE_AMOUNT)
         .build()
         .unwrap();
 
@@ -69,8 +74,7 @@ fn brc20_transfer() {
     let hex = hex::encode(&transaction, false);
     dbg!(&hex);
 
-    const RAW_COMMIT: &str = "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
-    assert_eq!(hex, RAW_COMMIT);
+    assert_eq!(hex, COMMIT_TX_RAW);
 
     // Reveal transfer.
     let txid =
@@ -126,8 +130,6 @@ fn brc20_transfer() {
         Txid::from_str("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").unwrap();
     let txid_for_brc20_transfer =
         Txid::from_str("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca").unwrap();
-
-    const FOR_FEE_AMOUNT: u64 = FULL_AMOUNT - BRC20_INSCRIBE_AMOUNT - MINER_FEE;
 
     // We use a normal P2WPKH output for this.
     let input_for_brc20_transfer = TxInputP2WPKH::builder()
