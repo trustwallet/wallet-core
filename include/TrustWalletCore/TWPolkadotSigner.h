@@ -8,7 +8,6 @@
 
 #include "TWBase.h"
 #include "TWData.h"
-#include "TWPolkadotProto.h"
 #include "TWPolkadotSigner.h"
 
 TW_EXTERN_C_BEGIN
@@ -18,10 +17,10 @@ struct TWPolkadotSigner;
 
 /// Builds a message to be signed
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWPolkadotSignerMessage(TW_Polkadot_Proto_SigningInput data);
+TWData *_Nonnull TWPolkadotSignerMessage(TWData *_Nonnull data);
 
 /// Builds a transaction to be broadcasted
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWPolkadotSignerTransaction(TW_Polkadot_Proto_SigningInput data, TWData *_Nonnull publicKey, TWData *_Nonnull signature);
+TWData *_Nonnull TWPolkadotSignerTransaction(TWData *_Nonnull data, TWData *_Nonnull publicKey, TWData *_Nonnull signature);
 
 TW_EXTERN_C_END

@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cardano/AddressV3.h"
-//#include "Cardano/Entry.h"
 
 #include "Coin.h"
 #include "HDWallet.h"

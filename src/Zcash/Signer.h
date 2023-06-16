@@ -9,6 +9,8 @@
 #include "../proto/Bitcoin.pb.h"
 #include "Data.h"
 
+#include <optional>
+
 namespace TW::Zcash {
 
 using SigningInput = Bitcoin::Proto::SigningInput;

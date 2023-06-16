@@ -10,14 +10,14 @@
 using namespace TW;
 using namespace TW::Substrate;
 
-TWData *_Nonnull TWSubstrateSignerMessage(TW_Substrate_Proto_SigningInput data) {
+TWData *_Nonnull TWSubstrateSignerMessage(TWData *_Nonnull data) {
     TW::Substrate::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     auto encoded = Signer::signaturePreImage(input);
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());;
 }
 
-TWData *_Nonnull TWSubstrateSignerTransaction(TW_Substrate_Proto_SigningInput data, TWData *_Nonnull publicKey, TWData *_Nonnull signature) {
+TWData *_Nonnull TWSubstrateSignerTransaction(TWData *_Nonnull data, TWData *_Nonnull publicKey, TWData *_Nonnull signature) {
     TW::Substrate::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 

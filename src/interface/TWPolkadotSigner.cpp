@@ -10,14 +10,14 @@
 using namespace TW;
 using namespace TW::Polkadot;
 
-TWData *_Nonnull TWPolkadotSignerMessage(TW_Polkadot_Proto_SigningInput data) {
+TWData *_Nonnull TWPolkadotSignerMessage(TWData *_Nonnull data) {
     TW::Polkadot::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     auto encoded = Signer::signaturePreImage(input);
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
 
-TWData *_Nonnull TWPolkadotSignerTransaction(TW_Polkadot_Proto_SigningInput data, TWData *_Nonnull publicKey, TWData *_Nonnull signature) {
+TWData *_Nonnull TWPolkadotSignerTransaction(TWData *_Nonnull data, TWData *_Nonnull publicKey, TWData *_Nonnull signature) {
     TW::Polkadot::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 

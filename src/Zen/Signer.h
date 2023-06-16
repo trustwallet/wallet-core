@@ -9,6 +9,8 @@
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
+#include <optional>
+
 namespace TW::Zen {
 
 using SigningInput = Bitcoin::Proto::SigningInput;
