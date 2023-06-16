@@ -133,7 +133,7 @@ Data txCompilerSingleTemplate(const Data& dataIn, const std::vector<Data>& signa
     }
     if (signatures.size() != 1 || publicKeys.size() != 1) {
         output.set_error(Common::Proto::Error_no_support_n2n);
-        output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+        output.set_error_message("signatures and publickeys size can only be one");
         return TW::data(output.SerializeAsString());
     }
 

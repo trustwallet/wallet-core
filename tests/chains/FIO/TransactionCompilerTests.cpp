@@ -129,6 +129,6 @@ TEST(FIOCompiler, CompileWithSignatures) {
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.json().size(), 0ul);
         EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
-        EXPECT_EQ(output.error_message(), "Error_no_support_n2n");
+        EXPECT_EQ(output.error_message(), "signatures and publickeys size can only be one");
     }
 }

@@ -86,7 +86,7 @@ TEST(MultiversXCompiler, CompileGenericActionWithSignatures) {
         MultiversX::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 
     { // Negative: empty signatures
@@ -158,7 +158,7 @@ TEST(MultiversXCompiler, CompileEGLDTransferWithSignatures) {
         MultiversX::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 
     { // Negative: empty signatures
@@ -231,7 +231,7 @@ TEST(MultiversXCompiler, CompileESDTTransferWithSignatures) {
         MultiversX::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0ul);
-        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 
     { // Negative: empty signatures

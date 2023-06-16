@@ -92,7 +92,7 @@ TEST(NanoCompiler, CompileWithSignatures) {
         TW::Nano::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(0ul, output.json().size());
-        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 
     { // Negative: empty signatures

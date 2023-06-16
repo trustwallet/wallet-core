@@ -49,7 +49,7 @@ TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txI
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
-            if (signatures.size() == 0 || publicKeys.size() == 0) {
+            if (signatures.empty() || publicKeys.empty() || signatures.size() != publicKeys.size()) {
                 output.set_error(Common::Proto::Error_invalid_params);
                 output.set_error_message("empty signatures or publickeys");
                 return;
