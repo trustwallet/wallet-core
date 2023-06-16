@@ -8,7 +8,7 @@ use std::str::FromStr;
 use tw_encoding::hex;
 
 #[test]
-// WIP...
+#[ignore]
 fn mainnet_brc20_transfer() {
     const TXID: &str = "";
 
