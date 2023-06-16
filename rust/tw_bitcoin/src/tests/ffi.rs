@@ -4,6 +4,7 @@ use crate::ffi::scripts::{
 use crate::ffi::taproot_build_and_sign_transaction;
 use crate::keypair_from_wif;
 use crate::{Recipient, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
+use crate::tests::p2pkh::ALICE_WIF;
 use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_encoding::hex;
@@ -13,10 +14,7 @@ use tw_proto::Bitcoin::Proto::{
 };
 
 #[test]
-/// Test whether the exposed FFI interfaces return the correct script.
-fn build_scripts() {
-    use crate::tests::p2pkh::ALICE_WIF;
-
+fn build_ffi_p2pkh_script() {
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
 
@@ -38,6 +36,14 @@ fn build_scripts() {
 
         assert_eq!(ffi_der, proto);
     }
+}
+
+#[test]
+fn build_ffi_p2wpkh_script() {
+    let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
+    let recipient = Recipient::<PublicKey>::from(keypair);
+
+    let satoshis: u64 = 1_000;
 
     // Test P2WPKH
     unsafe {
@@ -54,6 +60,14 @@ fn build_scripts() {
 
         assert_eq!(ffi_der, proto);
     }
+}
+
+#[test]
+fn build_ffi_p2tr_key_path_script() {
+    let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
+    let recipient = Recipient::<PublicKey>::from(keypair);
+
+    let satoshis: u64 = 1_000;
 
     // Test P2TR key-path
     unsafe {
