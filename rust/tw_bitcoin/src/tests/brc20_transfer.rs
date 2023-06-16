@@ -12,6 +12,7 @@ use tw_encoding::hex;
 fn mainnet_brc20_transfer() {
     const TXID: &str = "";
 
+	// TODO: Document those values.
     pub const FULL_AMOUNT: u64 = 26_400;
     pub const MINER_FEE: u64 = 3_000;
 

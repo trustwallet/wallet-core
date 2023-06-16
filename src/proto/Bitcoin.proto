@@ -75,6 +75,7 @@ enum TransactionVariant {
     P2PKH = 1;
     P2WPKH = 2;
     P2TRKEYPATH = 3;
+    BRC20TRANSFER = 4;
 }
 
 // Pair of destination address and amount, used for extra outputs
