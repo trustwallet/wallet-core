@@ -52,8 +52,8 @@ message TransactionOutput {
     // Usually contains the public key as a Bitcoin script setting up conditions to claim this output.
     bytes script = 2;
 
-    // Optional merkle root for P2TR script-path transactions.
-    bytes merkleRoot = 5;
+    // Optional spending script for P2TR script-path transactions.
+    bytes spendingScript = 5;
 }
 
 // An unspent transaction output, that can serve as input to a transaction
@@ -70,8 +70,8 @@ message UnspentTransaction {
     // The transaction variant
     TransactionVariant variant = 4;
 
-    // Optional merkle root for P2TR script-path transactions.
-    bytes merkleRoot = 5;
+    // Optional spending script for P2TR script-path transactions.
+    bytes spendingScript = 5;
 }
 
 enum TransactionVariant {

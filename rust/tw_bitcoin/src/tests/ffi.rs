@@ -34,7 +34,7 @@ fn build_ffi_p2pkh_script() {
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        merkleRoot: Cow::default(),
+        spendingScript: Cow::default(),
     };
 
     assert_eq!(ffi_der, proto);
@@ -60,7 +60,7 @@ fn build_ffi_p2wpkh_script() {
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        merkleRoot: Cow::default(),
+        spendingScript: Cow::default(),
     };
 
     assert_eq!(ffi_der, proto);
@@ -86,7 +86,7 @@ fn build_ffi_p2tr_key_path_script() {
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        merkleRoot: Cow::default(),
+        spendingScript: Cow::default(),
     };
 
     assert_eq!(ffi_der, proto);
@@ -125,13 +125,13 @@ fn build_ffi_brc20_transfer_script() {
     )
     .unwrap();
 
-    let merkle_root = transfer.0.recipient().merkle_root();
+    let spending_script = transfer.0.envelope.script;
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis, transfer.0.recipient());
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        merkleRoot: Cow::from(AsRef::<[u8]>::as_ref(&merkle_root)),
+        spendingScript: Cow::from(spending_script.as_bytes()),
     };
 
     assert_eq!(ffi_der, proto);
@@ -181,7 +181,7 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
             variant: TransactionVariant::P2PKH,
-            merkleRoot: Cow::default(),
+            spendingScript: Cow::default(),
         }],
         // Ignored
         use_max_amount: false,
@@ -205,7 +205,7 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
                 script: Cow::from(out_script.as_bytes()),
                 amount: SEND_AMOUNT as i64,
                 variant: TransactionVariant::P2PKH,
-                merkleRoot: Cow::default(),
+                spendingScript: Cow::default(),
             }],
             // Ignored
             branch_id: Cow::from([].as_slice()),
@@ -259,7 +259,7 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
             variant: TransactionVariant::P2PKH,
-            merkleRoot: Cow::default(),
+            spendingScript: Cow::default(),
         }],
         use_max_amount: false,
         coin_type: 0,
@@ -277,7 +277,7 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
                 script: Cow::from(out_script.as_bytes()),
                 amount: SEND_TO_BOB as i64,
                 variant: TransactionVariant::P2WPKH,
-                merkleRoot: Cow::default(),
+                spendingScript: Cow::default(),
             }],
             branch_id: Cow::from([].as_slice()),
             error: tw_proto::Common::Proto::SigningError::OK,
@@ -326,7 +326,7 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
             variant: TransactionVariant::P2PKH,
-            merkleRoot: Cow::default(),
+            spendingScript: Cow::default(),
         }],
         use_max_amount: false,
         coin_type: 0,
@@ -344,7 +344,7 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
                 script: Cow::from(out_script.as_bytes()),
                 amount: SEND_TO_BOB as i64,
                 variant: TransactionVariant::P2TRKEYPATH,
-                merkleRoot: Cow::default(),
+                spendingScript: Cow::default(),
             }],
             branch_id: Cow::from([].as_slice()),
             error: tw_proto::Common::Proto::SigningError::OK,
