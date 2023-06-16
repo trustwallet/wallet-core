@@ -42,8 +42,7 @@ fn brc20_transfer() {
         .build()
         .unwrap();
 
-    let transfer =
-        BRC20TransferInscription::new(alice.into(), ticker.clone(), BRC20_AMOUNT).unwrap();
+    let transfer = BRC20TransferInscription::new(alice.into(), ticker, BRC20_AMOUNT).unwrap();
 
     let output = TXOutputP2TRScriptPath::builder()
         .recipient(transfer.0.recipient().clone())
@@ -109,6 +108,11 @@ fn brc20_transfer() {
     const RAW_REVEAL_P1: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340";
     const RAW_REVEAL_SCHNORR: &str = "de6fd13e43700f59876d305e5a4a5c41ad7ada10bc5a4e4bdd779eb0060c0a78ebae9c33daf77bb3725172edb5bd12e26f00c08f9263e480d53b93818138ad0b";
     const RAW_REVEAL_P2: &str = "5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
+
+    assert_eq!(
+        RAW_REVEAL,
+        [RAW_REVEAL_P1, RAW_REVEAL_SCHNORR, RAW_REVEAL_P2].concat()
+    );
 
     assert_eq!(&hex[..164], RAW_REVEAL_P1);
     // We ignore the 64-byte Schnorr signature, since it uses random data for

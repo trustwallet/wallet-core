@@ -30,7 +30,7 @@ fn build_ffi_p2pkh_script() {
     let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
     // Compare with native call.
-    let tx_out = TxOutputP2PKH::new(satoshis, recipient.clone());
+    let tx_out = TxOutputP2PKH::new(satoshis, recipient);
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
@@ -55,7 +55,7 @@ fn build_ffi_p2wpkh_script() {
     let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
     // Compare with native call.
-    let tx_out = TxOutputP2WPKH::new(satoshis, recipient.clone().try_into().unwrap());
+    let tx_out = TxOutputP2WPKH::new(satoshis, recipient.try_into().unwrap());
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),

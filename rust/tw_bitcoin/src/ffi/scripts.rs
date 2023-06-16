@@ -1,8 +1,7 @@
 use super::try_or_else;
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::{
-    Recipient, TXOutputP2TRScriptPath, TaprootScript, TxOutputP2PKH, TxOutputP2TRKeyPath,
-    TxOutputP2WPKH,
+    Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
 use bitcoin::{PublicKey, WPubkeyHash};
 use std::borrow::Cow;
