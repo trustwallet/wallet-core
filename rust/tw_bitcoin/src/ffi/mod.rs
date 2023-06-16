@@ -1,8 +1,11 @@
 #![allow(clippy::missing_safety_doc)]
 
 use super::try_or_else;
-use crate::{Error, Result};
-use bitcoin::{PublicKey, ScriptBuf, Txid};
+use crate::{Error, Result, TXOutputP2TRScriptPath, TaprootScript, TxInputP2TRScriptPath};
+use bitcoin::{
+    taproot::{TapNodeHash, TaprootSpendInfo},
+    PublicKey, ScriptBuf, Txid,
+};
 use secp256k1::hashes::Hash;
 use secp256k1::KeyPair;
 use tw_memory::ffi::c_byte_array::CByteArray;
@@ -92,7 +95,34 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
                 script_buf,
             )
             .into(),
-            TrVariant::BRC20TRANSFER => todo!(),
+            TrVariant::BRC20TRANSFER => {
+                let spending_script = ScriptBuf::from_bytes(input.spendingScript.to_vec());
+                let merkle_root = TapNodeHash::from_script(
+                    spending_script.as_script(),
+                    bitcoin::taproot::LeafVersion::TapScript,
+                );
+
+                // Convert to tapscript recipient.
+                let recipient =
+                    Recipient::<TaprootScript>::from_pubkey_recipient(my_pubkey, merkle_root);
+
+                let spend_info = TaprootSpendInfo::new_key_spend(
+                    &secp256k1::Secp256k1::new(),
+                    recipient.untweaked_pubkey(),
+                    Some(merkle_root),
+                );
+
+                TxInputP2TRScriptPath::new_with_script(
+                    txid,
+                    vout,
+                    recipient,
+                    satoshis,
+                    script_buf,
+                    spending_script,
+                    spend_info,
+                )
+                .into()
+            },
         };
 
         builder = builder.add_input(tx);
@@ -109,7 +139,9 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             TrVariant::P2TRKEYPATH => {
                 TxOutputP2TRKeyPath::new_with_script(satoshis, script_buf).into()
             },
-            TrVariant::BRC20TRANSFER => todo!(),
+            TrVariant::BRC20TRANSFER => {
+                TXOutputP2TRScriptPath::new_with_script(satoshis, script_buf).into()
+            },
         };
 
         builder = builder.add_output(tx);
