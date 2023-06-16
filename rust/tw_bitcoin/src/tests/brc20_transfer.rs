@@ -1,17 +1,19 @@
 use crate::{
-    brc20::{BRC20DeployInscription, BRC20MintInscription, BRC20TransferInscription, Ticker},
-    keypair_from_wif, Recipient, TXOutputP2TRScriptPath, TransactionBuilder, TxInputP2PKH,
-    TxInputP2TRScriptPath, TxInputP2WPKH, TxOutputP2PKH, TxOutputP2WPKH,
+    brc20::{BRC20TransferInscription, Ticker},
+    keypair_from_wif, TXOutputP2TRScriptPath, TransactionBuilder, TxInputP2TRScriptPath,
+    TxInputP2WPKH, TxOutputP2WPKH,
 };
-use bitcoin::{Network, PubkeyHash, PublicKey, Txid};
+use bitcoin::Txid;
 use std::str::FromStr;
 use tw_encoding::hex;
 
-#[test]
-#[ignore]
-fn mainnet_brc20_transfer() {
-    const TXID: &str = "";
+// Those private keys were used for Bitcoin mainnet tests and have a transaction
+// history. BTC holdings have been emptied.
+const ALICE_WIF: &str = "L4of5AJ6aKmvChg7gQ7m2RzHFgpWe5Uirmuey1fXJ1FtfmXj59LW";
+const BOB_WIF: &str = "L59WHi2hj1HnMAYaFyMqR4Z36HrUDTZQCixzTHachAxbUU9VUCjp";
 
+#[test]
+fn brc20_transfer() {
     // TODO: Document those values.
     pub const FULL_AMOUNT: u64 = 26_400;
     pub const MINER_FEE: u64 = 3_000;
@@ -22,9 +24,6 @@ fn mainnet_brc20_transfer() {
     pub const BRC20_DUST_AMOUNT: u64 = 546;
 
     let ticker = Ticker::new(BRC20_TICKER.to_string()).unwrap();
-
-    let ALICE_WIF: &str = env!("ALICE_WIF");
-    let BOB_WIF: &str = env!("BOB_WIF");
 
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
