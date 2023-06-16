@@ -8,7 +8,7 @@ pub struct TxInputP2TRScriptPath {
     // TODO: make fields private.
     pub(crate) ctx: InputContext,
     pub(crate) recipient: Recipient<TaprootScript>,
-    pub(crate) script: ScriptBuf,
+    pub(crate) witness: ScriptBuf,
     pub(crate) spend_info: TaprootSpendInfo,
 }
 
@@ -18,7 +18,7 @@ impl TxInputP2TRScriptPath {
         vout: u32,
         recipient: impl Into<Recipient<TaprootScript>>,
         satoshis: u64,
-        script: ScriptBuf,
+        witness: ScriptBuf,
         spend_info: TaprootSpendInfo,
     ) -> Self {
         let recipient: Recipient<TaprootScript> = recipient.into();
@@ -36,7 +36,29 @@ impl TxInputP2TRScriptPath {
                 witness: Witness::new(),
             },
             recipient,
-            script,
+            witness,
+            spend_info,
+        }
+    }
+    pub fn new_with_script(
+        txid: Txid,
+        vout: u32,
+        recipient: Recipient<TaprootScript>,
+        satoshis: u64,
+        script: ScriptBuf,
+        witness: ScriptBuf,
+        spend_info: TaprootSpendInfo,
+    ) -> Self {
+        TxInputP2TRScriptPath {
+            ctx: InputContext {
+                previous_output: OutPoint { txid, vout },
+                value: satoshis,
+                script_pubkey: script,
+                sequence: Sequence::default(),
+                witness: Witness::new(),
+            },
+            recipient,
+            witness,
             spend_info,
         }
     }

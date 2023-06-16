@@ -23,7 +23,7 @@ fn build_scripts() {
     unsafe {
         // Input
         let buffer = recipient.public_key().to_bytes();
-        let array = tw_build_p2pkh_script(buffer.as_ptr(), buffer.len());
+        let array = tw_build_p2pkh_script(0, buffer.as_ptr(), buffer.len());
         dbg!(&array);
 
         let script = TxOutputP2PKH::only_script(recipient.clone().into());
