@@ -69,10 +69,7 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
     pubkey_len: usize,
 ) -> CByteArray {
     // Convert ticket.
-    let slice = try_or_else!(
-        CByteArrayRef::new(ticker, 4).as_slice(),
-        CByteArray::null
-    );
+    let slice = try_or_else!(CByteArrayRef::new(ticker, 4).as_slice(), CByteArray::null);
 
     if slice.len() != 4 {
         return CByteArray::null();
