@@ -74,7 +74,7 @@ impl BRC20DeployPayload {
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
-    pub fn new(ticker: Ticker, amount: usize) -> Self {
+    pub fn new(ticker: Ticker, amount: u64) -> Self {
         BRC20Payload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),
@@ -89,7 +89,7 @@ impl BRC20TransferPayload {
 impl BRC20MintPayload {
     const OPERATION: &str = "mint";
 
-    pub fn new(ticker: Ticker, amount: usize) -> Self {
+    pub fn new(ticker: Ticker, amount: u64) -> Self {
         BRC20Payload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),
@@ -152,7 +152,7 @@ impl BRC20TransferInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: Ticker,
-        amount: usize,
+        amount: u64,
     ) -> Result<BRC20TransferInscription> {
         let data = BRC20TransferPayload::new(ticker, amount);
         Self::from_payload(data, recipient)
@@ -185,7 +185,7 @@ impl BRC20MintInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: Ticker,
-        amount: usize,
+        amount: u64,
     ) -> Result<BRC20MintInscription> {
         let data = BRC20MintPayload::new(ticker, amount);
         Self::from_payload(data, recipient)
