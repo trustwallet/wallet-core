@@ -93,7 +93,7 @@ std::string Address::string() const {
     return prefix + Base58::encode(bytes);
 }
 
-uint8_t Address::checksum(std::array<TW::byte, size>& byteArray) const {
+uint8_t Address::checksum(std::array<byte, size>& byteArray) const {
     uint8_t checkSum = 0x00;
     for (int i = 0; i < 23; ++i) {
         checkSum ^= byteArray[i];

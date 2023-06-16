@@ -36,7 +36,7 @@ Address::Address(const PublicKey& publicKey) {
     pkdata.push_back(CHECKSIG);
 
     auto keyHash = Hash::ripemd(Hash::sha256(pkdata));
-    keyHash.insert(keyHash.begin(), (TW::byte)Address::version);
+    keyHash.insert(keyHash.begin(), (byte)Address::version);
 
     if (keyHash.size() != Address::size) {
         throw std::invalid_argument("Invalid address key data");
@@ -50,7 +50,7 @@ Data Address::toScriptHash(const Data& data) const {
 }
 
 Data Address::toScriptHash() const {
-    TW::byte buf[Hash::ripemdSize];
+    byte buf[Hash::ripemdSize];
     Data data(buf, buf + Hash::ripemdSize);
     std::copy(bytes.begin() + 1, bytes.begin() + Hash::ripemdSize + 1, data.begin());
     return data;

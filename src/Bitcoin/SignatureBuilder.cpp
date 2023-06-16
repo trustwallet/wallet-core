@@ -275,7 +275,7 @@ Data SignatureBuilder<Transaction>::createSignature(
             // Error: Signature does not match publickey+hash
             return {};
         }
-        externalSignature.push_back(static_cast<TW::byte>(input.hashType));
+        externalSignature.push_back(static_cast<byte>(input.hashType));
 
         return externalSignature;
     }
@@ -285,7 +285,7 @@ Data SignatureBuilder<Transaction>::createSignature(
 
     auto sig = pk.signAsDER(sighash);
     if (!sig.empty()) {
-        sig.push_back(static_cast<TW::byte>(input.hashType));
+        sig.push_back(static_cast<byte>(input.hashType));
     }
     return sig;
 }

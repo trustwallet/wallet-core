@@ -22,7 +22,7 @@ bool XAddress::isValid(const std::string& string) {
     if (!std::equal(decoded.begin(), decoded.begin() + 2, prefixMainnet.begin())) {
         return false;
     }
-    if (!(decoded[22] == TW::byte(TagFlag::none) || decoded[22] == TW::byte(TagFlag::classic))) {
+    if (!(decoded[22] == byte(TagFlag::none) || decoded[22] == byte(TagFlag::classic))) {
         return false;
     }
     return true;
@@ -34,9 +34,9 @@ XAddress::XAddress(const std::string& string) {
     }
     const auto decoded = Base58::decodeCheck(string, Rust::Base58Alphabet::Ripple);
     std::copy(decoded.begin() + prefixMainnet.size(), decoded.begin() + prefixMainnet.size() + XAddress::keyHashSize, bytes.begin());
-    if (decoded[22] == TW::byte(TagFlag::classic)) {
+    if (decoded[22] == byte(TagFlag::classic)) {
         tag = decode32LE(Data(decoded.end() - 8, decoded.end() - 4).data());
-    } else if (decoded[22] == TW::byte(TagFlag::none)) {
+    } else if (decoded[22] == byte(TagFlag::none)) {
         flag = TagFlag::none;
     } else {
         throw std::invalid_argument("Invalid flag");
@@ -54,7 +54,7 @@ std::string XAddress::string() const {
     Data result;
     append(result, prefixMainnet);
     append(result, Data{bytes.begin(), bytes.end()});
-    append(result, TW::byte(flag));
+    append(result, byte(flag));
     encode32LE(tag, result);
     append(result, Data{0x00, 0x00, 0x00, 0x00});
     return Base58::encodeCheck(result, Rust::Base58Alphabet::Ripple);

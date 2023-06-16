@@ -15,7 +15,7 @@ static constexpr uint8_t sigTypeEd25519 = 0x00;
 static constexpr uint8_t extrinsicFormat = 4;
 
 // max uint8
-static constexpr TW::byte maxByte = 255;
+static constexpr byte maxByte = 255;
 
 static Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
     if (moduleIndex > maxByte) {
@@ -25,7 +25,7 @@ static Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
         throw std::invalid_argument("method index too large");
     }
 
-    return Data{TW::byte(moduleIndex), TW::byte(methodIndex)};
+    return Data{byte(moduleIndex), byte(methodIndex)};
 }
 
 Data Extrinsic::encodeCall() {

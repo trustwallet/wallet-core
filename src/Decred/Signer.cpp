@@ -245,7 +245,7 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
             // Error: Signature does not match publickey+hash
             return Data();
         }
-        externalSignature.push_back(static_cast<TW::byte>(input.hash_type()));
+        externalSignature.push_back(static_cast<byte>(input.hash_type()));
 
         return externalSignature;
     }

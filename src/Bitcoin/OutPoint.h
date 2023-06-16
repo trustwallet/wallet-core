@@ -19,7 +19,7 @@ namespace TW::Bitcoin {
 /// Bitcoin transaction out-point reference.
 struct OutPoint {
     /// The hash of the referenced transaction.
-    std::array<TW::byte, 32> hash;
+    std::array<byte, 32> hash;
 
     /// The index of the specific output in the transaction.
     uint32_t index;

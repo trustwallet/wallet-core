@@ -20,13 +20,13 @@ namespace TW::NEO {
 class Transaction : public Serializable {
 public:
     TransactionType type;
-    TW::byte version;
+    byte version;
     std::vector<TransactionAttribute> attributes;
     std::vector<CoinReference> inInputs;
     std::vector<TransactionOutput> outputs;
     std::vector<Witness> witnesses;
 
-    Transaction(TransactionType t = TransactionType::TT_ContractTransaction, TW::byte ver = 0) : type(t), version(ver) {}
+    Transaction(TransactionType t = TransactionType::TT_ContractTransaction, byte ver = 0) : type(t), version(ver) {}
     ~Transaction() override = default;
 
     size_t size() const override;

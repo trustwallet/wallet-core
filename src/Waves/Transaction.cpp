@@ -27,8 +27,8 @@ Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::stri
         fee_asset = Transaction::WAVES;
     }
     data.resize(2);
-    data[0] = static_cast<TW::byte>(TransactionType::transfer);
-    data[1] = static_cast<TW::byte>(TransactionVersion::V2);
+    data[0] = static_cast<byte>(TransactionType::transfer);
+    data[1] = static_cast<byte>(TransactionVersion::V2);
     append(data, pub_key);
     if (asset == Transaction::WAVES) {
         data.push_back(static_cast<uint8_t>(0));
@@ -54,8 +54,8 @@ Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::stri
 Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     data.resize(2);
-    data[0] = static_cast<TW::byte>(TransactionType::lease);
-    data[1] = static_cast<TW::byte>(TransactionVersion::V2);
+    data[0] = static_cast<byte>(TransactionType::lease);
+    data[1] = static_cast<byte>(TransactionVersion::V2);
     data.push_back(static_cast<uint8_t>(0));
     append(data, pub_key);
     append(data, Data(std::begin(to.bytes), std::end(to.bytes)));
@@ -69,8 +69,8 @@ Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, 
 Data serializeCancelLease(const Data& leaseId, int64_t fee, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     data.resize(2);
-    data[0] = static_cast<TW::byte>(TransactionType::cancelLease);
-    data[1] = static_cast<TW::byte>(TransactionVersion::V2);
+    data[0] = static_cast<byte>(TransactionType::cancelLease);
+    data[1] = static_cast<byte>(TransactionVersion::V2);
     data.push_back(static_cast<uint8_t>(87));
     append(data, pub_key);
     encode64BE(fee, data);

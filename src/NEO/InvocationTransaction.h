@@ -16,8 +16,7 @@ public:
     Data script;
     uint64_t gas = 0;
 
-    explicit InvocationTransaction(TransactionType t = TransactionType::TT_InvocationTransaction,
-                          TW::byte ver = 1)
+    explicit InvocationTransaction(TransactionType t = TransactionType::TT_InvocationTransaction, byte ver = 1)
         : Transaction(t, ver) {}
 
     size_t deserializeExclusiveData(const Data& data, size_t initial_pos) override {

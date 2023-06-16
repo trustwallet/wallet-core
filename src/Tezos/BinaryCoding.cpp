@@ -27,10 +27,10 @@ std::string base58ToHex(const std::string& string, size_t prefixLength) {
 PublicKey parsePublicKey(const std::string& publicKey) {
     const auto decoded = Base58::decodeCheck(publicKey);
 
-    std::array<TW::byte, 4> prefix;
+    std::array<byte, 4> prefix;
     enum TWPublicKeyType type;
-    std::array<TW::byte, 4> ed25519Prefix = {13, 15, 37, 217};
-    std::array<TW::byte, 4> secp256k1Prefix = {3, 254, 226, 86};
+    std::array<byte, 4> ed25519Prefix = {13, 15, 37, 217};
+    std::array<byte, 4> secp256k1Prefix = {3, 254, 226, 86};
 
     if (std::equal(std::begin(ed25519Prefix), std::end(ed25519Prefix), std::begin(decoded))) {
         prefix = ed25519Prefix;

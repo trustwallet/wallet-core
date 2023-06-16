@@ -136,9 +136,9 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
     Data data;
     switch (staking.message_oneof_case()) {
     case Proto::Staking::kBond: {
-        auto address = SS58Address(staking.bond().controller(), TW::byte(network));
+        auto address = SS58Address(staking.bond().controller(), byte(network));
         auto value = load(staking.bond().value());
-        auto reward = TW::byte(staking.bond().reward_destination());
+        auto reward = byte(staking.bond().reward_destination());
         // call index
         append(data, getCallIndex(network, stakingBond));
         // controller
