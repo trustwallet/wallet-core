@@ -7,6 +7,7 @@ use crate::{Recipient, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutpu
 use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_encoding::hex;
+use tw_proto::Bitcoin::Proto::TransactionOutput;
 use tw_proto::Bitcoin::Proto::{
     SigningInput, TransactionPlan, TransactionVariant, UnspentTransaction,
 };
@@ -19,33 +20,55 @@ fn build_scripts() {
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
 
+    let satoshis: u64 = 1_000;
+
     // Test P2PKH
     unsafe {
         // Input
         let buffer = recipient.public_key().to_bytes();
-        let array = tw_build_p2pkh_script(0, buffer.as_ptr(), buffer.len());
-        dbg!(&array);
+        let array =
+            tw_build_p2pkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec();
+        let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
-        let script = TxOutputP2PKH::only_script(recipient.clone().into());
-        assert_eq!(array.into_vec(), script.to_bytes());
+        let tx_out = TxOutputP2PKH::new(satoshis, recipient.clone());
+        let proto = TransactionOutput {
+            value: satoshis as i64,
+            script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        };
+
+        assert_eq!(ffi_der, proto);
     }
 
     // Test P2WPKH
     unsafe {
         let buffer = recipient.public_key().to_bytes();
-        let array = tw_build_p2wpkh_script(buffer.as_ptr(), buffer.len());
+        let array =
+            tw_build_p2wpkh_script(satoshis as i64, buffer.as_ptr(), buffer.len()).into_vec();
+        let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
-        let script = TxOutputP2WPKH::only_script(recipient.clone().try_into().unwrap());
-        assert_eq!(array.into_vec(), script.to_bytes());
+        let tx_out = TxOutputP2WPKH::new(satoshis, recipient.clone().try_into().unwrap());
+        let proto = TransactionOutput {
+            value: satoshis as i64,
+            script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        };
+
+        assert_eq!(ffi_der, proto);
     }
 
     // Test P2TR key-path
     unsafe {
         let buffer = recipient.public_key().to_bytes();
-        let array = tw_build_p2tr_key_path_script(buffer.as_ptr(), buffer.len());
+        let array = tw_build_p2tr_key_path_script(satoshis as i64, buffer.as_ptr(), buffer.len())
+            .into_vec();
+        let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
 
-        let script = TxOutputP2TRKeyPath::only_script(recipient.try_into().unwrap());
-        assert_eq!(array.into_vec(), script.to_bytes());
+        let tx_out = TxOutputP2TRKeyPath::new(satoshis, recipient.try_into().unwrap());
+        let proto = TransactionOutput {
+            value: satoshis as i64,
+            script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        };
+
+        assert_eq!(ffi_der, proto);
     }
 }
 
