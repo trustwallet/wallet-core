@@ -62,13 +62,6 @@ impl TxInputP2TRScriptPath {
             spend_info,
         }
     }
-    pub fn only_script(recipient: &Recipient<TaprootScript>) -> ScriptBuf {
-        ScriptBuf::new_v1_p2tr(
-            &secp256k1::Secp256k1::new(),
-            recipient.untweaked_pubkey(),
-            Some(recipient.merkle_root()),
-        )
-    }
     pub fn builder() -> TxInputP2TRScriptPathBuilder {
         TxInputP2TRScriptPathBuilder::new()
     }

@@ -21,9 +21,6 @@ impl TxOutputP2TRKeyPath {
             script_pubkey,
         }
     }
-    pub fn only_script(recipient: Recipient<TweakedPublicKey>) -> ScriptBuf {
-        ScriptBuf::new_v1_p2tr_tweaked(recipient.t)
-    }
     pub fn builder() -> TxOutputP2TRKeyPathBuilder {
         TxOutputP2TRKeyPathBuilder::new()
     }

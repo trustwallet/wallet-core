@@ -30,9 +30,6 @@ impl TxInputP2PKH {
             recipient,
         }
     }
-    pub fn only_script(recipient: Recipient<PubkeyHash>) -> ScriptBuf {
-        ScriptBuf::new_p2pkh(recipient.pubkey_hash())
-    }
     pub fn builder() -> TxInputP2PKHBuilder {
         TxInputP2PKHBuilder::new()
     }
