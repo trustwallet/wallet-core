@@ -18,8 +18,6 @@ pub struct InputContext {
     pub script_pubkey: ScriptBuf,
     pub sequence: Sequence,
     // Witness data for Segwit/Taproot transactions.
-    // TODO: Remove this?
-    pub witness: Witness,
 }
 
 impl InputContext {
@@ -30,8 +28,6 @@ impl InputContext {
             script_pubkey: utxo.script_pubkey,
             // Default value of `0xFFFFFFFF = 4294967295`.
             sequence: Sequence::default(),
-            // Empty witness.
-            witness: Witness::new(),
         }
     }
 }

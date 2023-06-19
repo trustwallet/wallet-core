@@ -1,7 +1,7 @@
 use crate::{Error, InputContext, Recipient, Result, TaprootScript};
 use bitcoin::script::ScriptBuf;
 use bitcoin::taproot::TaprootSpendInfo;
-use bitcoin::{OutPoint, Sequence, Txid, Witness};
+use bitcoin::{OutPoint, Sequence, Txid};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRScriptPath {
@@ -15,29 +15,18 @@ impl TxInputP2TRScriptPath {
     pub fn new(
         txid: Txid,
         vout: u32,
-        recipient: impl Into<Recipient<TaprootScript>>,
+        recipient: Recipient<TaprootScript>,
         satoshis: u64,
         witness: ScriptBuf,
         spend_info: TaprootSpendInfo,
     ) -> Self {
-        let recipient: Recipient<TaprootScript> = recipient.into();
+        let script = ScriptBuf::new_v1_p2tr(
+            &secp256k1::Secp256k1::new(),
+            recipient.untweaked_pubkey(),
+            Some(recipient.merkle_root()),
+        );
 
-        TxInputP2TRScriptPath {
-            ctx: InputContext {
-                previous_output: OutPoint { txid, vout },
-                value: satoshis,
-                script_pubkey: ScriptBuf::new_v1_p2tr(
-                    &secp256k1::Secp256k1::new(),
-                    recipient.untweaked_pubkey(),
-                    Some(recipient.merkle_root()),
-                ),
-                sequence: Sequence::default(),
-                witness: Witness::new(),
-            },
-            recipient,
-            witness,
-            spend_info,
-        }
+        Self::new_with_script(txid, vout, recipient, satoshis, script, witness, spend_info)
     }
     pub fn new_with_script(
         txid: Txid,
@@ -54,7 +43,6 @@ impl TxInputP2TRScriptPath {
                 value: satoshis,
                 script_pubkey: script,
                 sequence: Sequence::default(),
-                witness: Witness::new(),
             },
             recipient,
             witness,
