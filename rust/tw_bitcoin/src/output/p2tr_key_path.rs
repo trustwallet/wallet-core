@@ -12,7 +12,7 @@ impl TxOutputP2TRKeyPath {
     pub fn new(satoshis: u64, recipient: Recipient<TweakedPublicKey>) -> Self {
         TxOutputP2TRKeyPath {
             satoshis,
-            script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.t),
+            script_pubkey: ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey()),
         }
     }
     pub fn new_with_script(satoshis: u64, script_pubkey: ScriptBuf) -> Self {
@@ -20,9 +20,6 @@ impl TxOutputP2TRKeyPath {
             satoshis,
             script_pubkey,
         }
-    }
-    pub fn only_script(recipient: Recipient<TweakedPublicKey>) -> ScriptBuf {
-        ScriptBuf::new_v1_p2tr_tweaked(recipient.t)
     }
     pub fn builder() -> TxOutputP2TRKeyPathBuilder {
         TxOutputP2TRKeyPathBuilder::new()

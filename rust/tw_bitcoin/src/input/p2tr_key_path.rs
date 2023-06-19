@@ -15,7 +15,7 @@ impl TxInputP2TRKeyPath {
         recipient: Recipient<TweakedPublicKey>,
         satoshis: u64,
     ) -> Self {
-        let script = ScriptBuf::new_v1_p2tr_tweaked(recipient.t);
+        let script = ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey());
         Self::new_with_script(txid, vout, recipient, satoshis, script)
     }
     pub fn new_with_script(
@@ -35,9 +35,6 @@ impl TxInputP2TRKeyPath {
             },
             recipient,
         }
-    }
-    pub fn only_script(recipient: Recipient<TweakedPublicKey>) -> ScriptBuf {
-        ScriptBuf::new_v1_p2tr_tweaked(recipient.t)
     }
     pub fn builder() -> TxInputP2TRKeyPathBuilder {
         TxInputP2TRKeyPathBuilder::new()

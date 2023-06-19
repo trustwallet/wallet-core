@@ -13,15 +13,15 @@ pub struct BRC20Payload<T> {
     inner: T,
 }
 
-impl<T: Serialize> BRC20Payload<T> {
-    /// Serialize the BRC20 payload and place it into the Ordinals Inscription.
-    pub fn to_inscription(&self, recipient: Recipient<PublicKey>) -> Result<OrdinalsInscription> {
-        let data = serde_json::to_vec(self).map_err(|_| Error::Todo)?;
-        let inscription = OrdinalsInscription::new(Self::MIME, &data, recipient)?;
-
-        Ok(inscription)
-    }
+impl<T> BRC20Payload<T> {
+    const PROTOCOL_ID: &str = "brc-20";
+    const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
+
+// Convenience aliases.
+pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
+pub type BRC20MintPayload = BRC20Payload<MintPayload>;
+pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ticker(String);
@@ -49,15 +49,6 @@ impl TryFrom<String> for Ticker {
     fn try_from(string: String) -> Result<Self> {
         Self::new(string)
     }
-}
-
-pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
-pub type BRC20MintPayload = BRC20Payload<MintPayload>;
-pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
-
-impl<T> BRC20Payload<T> {
-    const PROTOCOL_ID: &str = "brc-20";
-    const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
 
 impl BRC20DeployPayload {
@@ -118,7 +109,7 @@ pub struct DeployPayload {
 }
 
 #[derive(Debug, Clone)]
-pub struct BRC20DeployInscription(pub OrdinalsInscription);
+pub struct BRC20DeployInscription(OrdinalsInscription);
 
 impl BRC20DeployInscription {
     pub fn new(
@@ -144,6 +135,9 @@ impl BRC20DeployInscription {
 
         Ok(BRC20DeployInscription(inscription))
     }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -152,7 +146,7 @@ pub struct TransferPayload {
     pub amt: String,
 }
 
-pub struct BRC20TransferInscription(pub OrdinalsInscription);
+pub struct BRC20TransferInscription(OrdinalsInscription);
 
 impl BRC20TransferInscription {
     pub fn new(
@@ -175,17 +169,20 @@ impl BRC20TransferInscription {
 
         Ok(BRC20TransferInscription(inscription))
     }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
+    }
 }
 
-/// The structure is the same as `TransferPayload`, we'll keep it separate for
-/// clarity.
+/// The structure is the same as `TransferPayload`, but we'll keep it separate
+/// for clarity.
 #[derive(Serialize, Deserialize)]
 pub struct MintPayload {
     pub tick: Ticker,
     pub amt: String,
 }
 
-pub struct BRC20MintInscription(pub OrdinalsInscription);
+pub struct BRC20MintInscription(OrdinalsInscription);
 
 impl BRC20MintInscription {
     pub fn new(
@@ -207,5 +204,8 @@ impl BRC20MintInscription {
         )?;
 
         Ok(BRC20MintInscription(inscription))
+    }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
     }
 }

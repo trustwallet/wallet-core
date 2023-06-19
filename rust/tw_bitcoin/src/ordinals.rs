@@ -1,12 +1,12 @@
 use crate::{Error, Recipient, Result, TaprootProgram, TaprootScript};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
-use bitcoin::taproot::TaprootBuilder;
-use bitcoin::PublicKey;
+use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
+use bitcoin::{PublicKey, Script};
 
 #[derive(Debug, Clone)]
 pub struct OrdinalsInscription {
-    pub envelope: TaprootProgram,
+    envelope: TaprootProgram,
     recipient: Recipient<TaprootScript>,
 }
 
@@ -30,6 +30,12 @@ impl OrdinalsInscription {
             envelope,
             recipient: Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
         })
+    }
+    pub fn taproot_program(&self) -> &Script {
+        self.envelope.script.as_script()
+    }
+    pub fn spend_info(&self) -> &TaprootSpendInfo {
+        &self.envelope.spend_info
     }
     pub fn recipient(&self) -> &Recipient<TaprootScript> {
         &self.recipient
