@@ -24,8 +24,9 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_cut_facet())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.account_facet())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.verification_facet())));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.entry_point())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.token_receiver_facet())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_loupe_facet())));
+    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.entry_point())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_init())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.facet_registry())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamByteArray>(parse_hex(input.public_key())));
