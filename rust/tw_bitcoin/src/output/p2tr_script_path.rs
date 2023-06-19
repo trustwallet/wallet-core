@@ -1,5 +1,20 @@
-use crate::{Error, Recipient, Result, TaprootScript};
+use crate::{Error, Recipient, Result};
+use bitcoin::key::PublicKey;
 use bitcoin::script::ScriptBuf;
+use bitcoin::secp256k1;
+use bitcoin::taproot::{TapNodeHash, TaprootSpendInfo};
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct TaprootScript {
+    pub pubkey: PublicKey,
+    pub merkle_root: TapNodeHash,
+}
+
+#[derive(Debug, Clone)]
+pub struct TaprootProgram {
+    pub script: ScriptBuf,
+    pub spend_info: TaprootSpendInfo,
+}
 
 #[derive(Debug, Clone)]
 pub struct TXOutputP2TRScriptPath {
