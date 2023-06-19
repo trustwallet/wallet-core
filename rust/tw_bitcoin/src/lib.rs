@@ -344,18 +344,18 @@ impl TransactionBuilder {
             }
         }
 
-        Ok(TransactionSigned { tx })
+        Ok(TransactionSigned { inner: tx })
     }
 }
 
 pub struct TransactionSigned {
-    tx: Transaction,
+    inner: Transaction,
 }
 
 impl TransactionSigned {
     pub fn serialize(&self) -> Result<Vec<u8>> {
         let mut buffer = vec![];
-        self.tx
+        self.inner
             .consensus_encode(&mut buffer)
             .map_err(|_| Error::Todo)?;
 

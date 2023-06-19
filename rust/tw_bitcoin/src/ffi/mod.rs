@@ -8,10 +8,14 @@ use bitcoin::{
 };
 use secp256k1::hashes::Hash;
 use secp256k1::KeyPair;
+use std::borrow::Cow;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
-use tw_proto::Bitcoin::Proto::{SigningInput, TransactionVariant as TrVariant};
+use tw_proto::Bitcoin::Proto::{
+    OutPoint, SigningInput, SigningOutput, Transaction, TransactionInput, TransactionOutput,
+    TransactionVariant as TrVariant,
+};
 
 pub mod address;
 pub mod scripts;
@@ -35,9 +39,12 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
         .unwrap_or_default();
 
     let proto: SigningInput = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
-    let bytes = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
+    let transaction = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
-    CByteArray::from(bytes)
+    let serialized =
+        tw_proto::serialize(&transaction).expect("failed to serialize signed transaction");
+
+    CByteArray::from(serialized)
 }
 
 /// Note: many of the fields used in the `SigningInput` are currently unused. We
@@ -52,7 +59,7 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
 /// construct the outputs, which must include the return/change transaction and
 /// how much goes to the miner as fee (<total-satoshi-inputs> minus
 /// <total-satoshi-outputs>).
-pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<Vec<u8>> {
+pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<SigningOutput> {
     let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
 
     // Prepare keypair and derive corresponding public key.
@@ -97,7 +104,6 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             .into(),
             TrVariant::BRC20TRANSFER => {
                 let spending_script = ScriptBuf::from_bytes(input.spendingScript.to_vec());
-                dbg!(&spending_script);
                 let merkle_root = TapNodeHash::from_script(
                     spending_script.as_script(),
                     bitcoin::taproot::LeafVersion::TapScript,
@@ -151,8 +157,74 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         builder = builder.add_output(tx);
     }
 
+    // Copy those values before `builder` gets consumed.
+    let version = builder.version;
+    let lock_time = builder.lock_time.to_consensus_u32();
+
+    // Sign transaction and create protobuf structures.
+    let tx = builder.sign_inputs(keypair)?;
+
+    let mut proto_inputs = vec![];
+    for input in &tx.inner.input {
+        let txid: Vec<u8> = input
+            .previous_output
+            .txid
+            .as_byte_array()
+            .iter()
+            .cloned()
+            .rev()
+            .collect();
+
+        proto_inputs.push(TransactionInput {
+            previousOutput: Some(OutPoint {
+                hash: Cow::from(txid),
+                index: input.previous_output.vout,
+                sequence: input.sequence.to_consensus_u32(),
+                tree: 0,
+            }),
+            sequence: input.sequence.to_consensus_u32(),
+            script: {
+                // If `scriptSig` is empty, then the Witness is being used.
+                if input.script_sig.is_empty() {
+                    // TODO: `to_vec` returns a `Vec<Vec<u8>>` representing
+                    // individual items. Is it appropriate to simply merge
+                    // everything here?
+                    let witness: Vec<u8> = input.witness.to_vec().into_iter().flatten().collect();
+                    Cow::from(witness)
+                } else {
+                    Cow::from(input.script_sig.to_bytes())
+                }
+            },
+        });
+    }
+
+    let mut proto_outputs = vec![];
+    for output in &tx.inner.output {
+        proto_outputs.push(TransactionOutput {
+            value: output.value as i64,
+            script: Cow::from(output.script_pubkey.to_bytes()),
+            spendingScript: Cow::default(),
+        })
+    }
+
+    let mut transaction = SigningOutput {
+        transaction: Some(Transaction {
+            version,
+            lockTime: lock_time,
+            inputs: proto_inputs,
+            outputs: proto_outputs,
+        }),
+        encoded: Cow::default(),
+        transaction_id: Cow::from(tx.inner.txid().to_string()),
+        error: tw_proto::Common::Proto::SigningError::OK,
+        error_message: Cow::default(),
+    };
+
     // Sign transaction and return array.
-    builder.sign_inputs(keypair)?.serialize()
+    let signed = tx.serialize()?;
+    transaction.encoded = Cow::from(signed);
+
+    Ok(transaction)
 }
 
 #[repr(C)]
