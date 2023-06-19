@@ -178,6 +178,8 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
                 index: 0,
                 // Ignored
                 sequence: 0,
+                // Ignored
+                tree: 0,
             }),
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
@@ -202,6 +204,7 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
                     hash: Cow::from([].as_slice()),
                     index: 0,
                     sequence: 0,
+                    tree: 0,
                 }),
                 script: Cow::from(out_script.as_bytes()),
                 amount: SEND_AMOUNT as i64,
@@ -214,11 +217,23 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
             error: tw_proto::Common::Proto::SigningError::OK,
             // Ignored
             output_op_return: Cow::from([].as_slice()),
+            // Ignored
+            preblockhash: Cow::default(),
+            // Ignored
+            preblockheight: 0,
         }),
         // Ignored
         lock_time: 0,
         // Ignored
         output_op_return: Cow::from([].as_slice()),
+        // Ignored
+        extra_outputs: vec![],
+        // Ignored
+        use_max_utxo: false,
+        // Ignored
+        disable_dust_filter: false,
+        // Ignored
+        time: 0,
     };
 
     let sig = taproot_build_and_sign_transaction(input).unwrap();
@@ -256,6 +271,7 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
                 hash: Cow::from(txid.as_slice()),
                 index: 0,
                 sequence: 0,
+                tree: 0,
             }),
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
@@ -274,6 +290,7 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
                     hash: Cow::from([].as_slice()),
                     index: 0,
                     sequence: 0,
+                    tree: 0,
                 }),
                 script: Cow::from(out_script.as_bytes()),
                 amount: SEND_TO_BOB as i64,
@@ -283,9 +300,15 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
             branch_id: Cow::from([].as_slice()),
             error: tw_proto::Common::Proto::SigningError::OK,
             output_op_return: Cow::from([].as_slice()),
+            preblockhash: Cow::default(),
+            preblockheight: 0,
         }),
         lock_time: 0,
         output_op_return: Cow::from([].as_slice()),
+        extra_outputs: vec![],
+        use_max_utxo: false,
+        disable_dust_filter: false,
+        time: 0,
     };
 
     let sig = taproot_build_and_sign_transaction(input).unwrap();
@@ -323,6 +346,7 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
                 hash: Cow::from(txid.as_slice()),
                 index: 0,
                 sequence: 0,
+                tree: 0,
             }),
             script: Cow::from(in_script.as_bytes()),
             amount: FULL_AMOUNT as i64,
@@ -341,6 +365,7 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
                     hash: Cow::from([].as_slice()),
                     index: 0,
                     sequence: 0,
+                    tree: 0,
                 }),
                 script: Cow::from(out_script.as_bytes()),
                 amount: SEND_TO_BOB as i64,
@@ -350,9 +375,15 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
             branch_id: Cow::from([].as_slice()),
             error: tw_proto::Common::Proto::SigningError::OK,
             output_op_return: Cow::from([].as_slice()),
+            preblockhash: Cow::default(),
+            preblockheight: 0,
         }),
         lock_time: 0,
         output_op_return: Cow::from([].as_slice()),
+        extra_outputs: vec![],
+        use_max_utxo: false,
+        disable_dust_filter: false,
+        time: 0,
     };
 
     let sig = taproot_build_and_sign_transaction(input).unwrap();
@@ -361,15 +392,11 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
 
 #[test]
 fn proto_sign_brc20_transfer_inscription_commit() {
-    use crate::tests::brc20_transfer::{
-        ALICE_WIF, BOB_WIF, BRC20_AMOUNT, BRC20_INSCRIBE_AMOUNT, BRC20_TICKER, COMMIT_TXID,
-        COMMIT_TX_RAW, FOR_FEE_AMOUNT, FULL_AMOUNT,
-    };
+    use crate::tests::brc20_transfer::*;
 
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
-    let bob = keypair_from_wif(BOB_WIF).unwrap();
 
     let ticker = Ticker::new(BRC20_TICKER.to_string())
         .unwrap()
@@ -422,6 +449,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
                 hash: Cow::from(txid.as_slice()),
                 index: 1,
                 sequence: 0,
+                tree: 0,
             }),
             script: input_p2wpkh.script,
             amount: FULL_AMOUNT as i64,
@@ -441,6 +469,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
                         hash: Cow::from([].as_slice()),
                         index: 0,
                         sequence: 0,
+                        tree: 0,
                     }),
                     script: output_inscribe.script,
                     amount: BRC20_INSCRIBE_AMOUNT as i64,
@@ -453,6 +482,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
                         hash: Cow::from([].as_slice()),
                         index: 0,
                         sequence: 0,
+                        tree: 0,
                     }),
                     script: output_change.script,
                     amount: FOR_FEE_AMOUNT as i64,
@@ -463,9 +493,15 @@ fn proto_sign_brc20_transfer_inscription_commit() {
             branch_id: Cow::from([].as_slice()),
             error: tw_proto::Common::Proto::SigningError::OK,
             output_op_return: Cow::from([].as_slice()),
+            preblockhash: Cow::default(),
+            preblockheight: 0,
         }),
         lock_time: 0,
         output_op_return: Cow::from([].as_slice()),
+        extra_outputs: vec![],
+        use_max_utxo: false,
+        disable_dust_filter: false,
+        time: 0,
     };
 
     // TODO: Should return Protobuf structure.
@@ -480,7 +516,6 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
-    let bob = keypair_from_wif(BOB_WIF).unwrap();
 
     let ticker = Ticker::new(BRC20_TICKER.to_string())
         .unwrap()
@@ -527,6 +562,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
                 hash: Cow::from(txid.as_slice()),
                 index: 0,
                 sequence: 0,
+                tree: 0,
             }),
             script: input_inscription.script,
             amount: BRC20_INSCRIBE_AMOUNT as i64,
@@ -546,6 +582,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
                     hash: Cow::from([].as_slice()),
                     index: 0,
                     sequence: 0,
+                    tree: 0,
                 }),
                 script: output_p2wpkh.script,
                 amount: BRC20_DUST_AMOUNT as i64,
@@ -555,9 +592,15 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
             branch_id: Cow::from([].as_slice()),
             error: tw_proto::Common::Proto::SigningError::OK,
             output_op_return: Cow::from([].as_slice()),
+            preblockhash: Cow::default(),
+            preblockheight: 0,
         }),
         lock_time: 0,
         output_op_return: Cow::from([].as_slice()),
+        extra_outputs: vec![],
+        use_max_utxo: false,
+        disable_dust_filter: false,
+        time: 0,
     };
 
     // TODO: Should return Protobuf structure.
