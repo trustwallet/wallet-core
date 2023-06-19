@@ -1,5 +1,6 @@
-use crate::ffi::tw_build_p2pkh_script;
-use crate::tests::ffi::utils::{ffi_build_p2tr_key_path_script, ffi_build_p2wpkh_script, ffi_build_p2pkh_script};
+use crate::tests::ffi::utils::{
+    call_ffi_build_p2pkh_script, call_ffi_build_p2tr_key_path_script, call_ffi_build_p2wpkh_script,
+};
 use crate::tests::p2pkh::ALICE_WIF;
 use crate::{keypair_from_wif, Recipient, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
 use bitcoin::PublicKey;
@@ -7,7 +8,7 @@ use std::borrow::Cow;
 use tw_proto::Bitcoin::Proto::TransactionOutput;
 
 #[test]
-fn build_ffi_p2pkh_script() {
+fn proto_build_p2pkh_script() {
     // Prepare keys.
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
@@ -15,7 +16,7 @@ fn build_ffi_p2pkh_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let ffi_out = ffi_build_p2pkh_script(satoshis, &recipient);
+    let ffi_out = call_ffi_build_p2pkh_script(satoshis, &recipient);
 
     // Compare with native call.
     let tx_out = TxOutputP2PKH::new(satoshis, recipient);
@@ -30,7 +31,7 @@ fn build_ffi_p2pkh_script() {
 }
 
 #[test]
-fn build_ffi_p2wpkh_script() {
+fn proto_build_p2wpkh_script() {
     // Prepare keys.
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
@@ -38,7 +39,7 @@ fn build_ffi_p2wpkh_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let ffi_out = ffi_build_p2wpkh_script(satoshis, &recipient);
+    let ffi_out = call_ffi_build_p2wpkh_script(satoshis, &recipient);
 
     // Compare with native call.
     let tx_out = TxOutputP2WPKH::new(satoshis, recipient.try_into().unwrap());
@@ -53,7 +54,7 @@ fn build_ffi_p2wpkh_script() {
 }
 
 #[test]
-fn build_ffi_p2tr_key_path_script() {
+fn proto_build_p2tr_key_path_script() {
     // Prepare keys.
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
@@ -61,7 +62,7 @@ fn build_ffi_p2tr_key_path_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let ffi_out = ffi_build_p2tr_key_path_script(satoshis, &recipient);
+    let ffi_out = call_ffi_build_p2tr_key_path_script(satoshis, &recipient);
 
     // Compare with native call.
     let tx_out = TxOutputP2TRKeyPath::new(satoshis, recipient.try_into().unwrap());

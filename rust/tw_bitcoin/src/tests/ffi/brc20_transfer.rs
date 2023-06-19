@@ -1,7 +1,8 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
-use crate::ffi::{taproot_build_and_sign_transaction, tw_build_brc20_inscribe_transfer};
+use crate::ffi::taproot_build_and_sign_transaction;
 use crate::tests::ffi::utils::{
-    ffi_build_p2wpkh_script, reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder, ffi_build_brc20_transfer_script,
+    call_ffi_build_brc20_transfer_script, call_ffi_build_p2wpkh_script, reverse_txid,
+    ProtoSigningInputBuilder, ProtoTransactionBuilder,
 };
 use crate::tests::p2pkh::ALICE_WIF;
 use crate::{keypair_from_wif, Recipient, TXOutputP2TRScriptPath};
@@ -11,7 +12,7 @@ use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto::{TransactionOutput, TransactionVariant};
 
 #[test]
-fn build_ffi_brc20_transfer_script() {
+fn proto_brc20_transfer_script() {
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
 
@@ -20,7 +21,7 @@ fn build_ffi_brc20_transfer_script() {
     let ticker = "oadf";
 
     // Call FFI function.
-    let ffi_out = ffi_build_brc20_transfer_script(ticker, brc20_amount, satoshis, &recipient);
+    let ffi_out = call_ffi_build_brc20_transfer_script(ticker, brc20_amount, satoshis, &recipient);
 
     // Compare with native call.
     let transfer = BRC20TransferInscription::new(
@@ -54,31 +55,22 @@ fn proto_sign_brc20_transfer_inscription_commit() {
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
     let alice_pubkey = alice_recipient.public_key().to_bytes();
 
-    let ticker = Ticker::new(BRC20_TICKER.to_string())
-        .unwrap()
-        .to_byte_array();
-
     // Note that the Txid must be reversed.
     let txid = reverse_txid(COMMIT_TXID);
 
     // Build input script.
-    let input_p2wpkh = ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
+    let input_p2wpkh = call_ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
 
     // Build inscription output.
-    let output_inscribe = unsafe {
-        tw_build_brc20_inscribe_transfer(
-            ticker.as_ptr(),
-            BRC20_AMOUNT,
-            BRC20_INSCRIBE_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let output_inscribe: TransactionOutput = tw_proto::deserialize(&output_inscribe).unwrap();
+    let output_inscribe = call_ffi_build_brc20_transfer_script(
+        BRC20_TICKER,
+        BRC20_AMOUNT,
+        BRC20_INSCRIBE_AMOUNT,
+        &alice_recipient,
+    );
 
     // Build change output.
-    let output_change = ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
+    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -121,29 +113,19 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
 
-    let ticker = Ticker::new(BRC20_TICKER.to_string())
-        .unwrap()
-        .to_byte_array();
-
     // Note that the Txid must be reversed.
     let txid = reverse_txid(REVEAL_TXID);
 
     // Build input script.
-    let alice_pubkey = alice_recipient.public_key().to_bytes();
-    let input_inscription = unsafe {
-        tw_build_brc20_inscribe_transfer(
-            ticker.as_ptr(),
-            BRC20_AMOUNT,
-            BRC20_INSCRIBE_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let input_inscription: TransactionOutput = tw_proto::deserialize(&input_inscription).unwrap();
+    let input_inscription = call_ffi_build_brc20_transfer_script(
+        BRC20_TICKER,
+        BRC20_AMOUNT,
+        BRC20_INSCRIBE_AMOUNT,
+        &alice_recipient,
+    );
 
     // Build inscription output.
-    let output_p2wpkh = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
+    let output_p2wpkh = call_ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -198,16 +180,16 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
     let txid_for_fees = reverse_txid(TRANSFER_TXID_FOR_FEES);
 
     // Build input script for Inscription transfer.
-    let input_transfer = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
+    let input_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
 
     // Build input for paying fees.
-    let input_fees = ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
+    let input_fees = call_ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
 
     // Build Inscription transfer output with Bob as recipient.
-    let output_transfer = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &bob_recipient);
+    let output_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &bob_recipient);
 
     // Build change output.
-    let output_change = ffi_build_p2wpkh_script(FOR_FEE_AMOUNT - MINER_FEE, &alice_recipient);
+    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_AMOUNT - MINER_FEE, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
