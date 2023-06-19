@@ -128,8 +128,8 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
     let transfer = BRC20TransferInscription::new(recipient, ticker, amount)
         .expect("transfer inscription implemented wrongly");
 
-    let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, transfer.0.recipient());
-    let spending_script = transfer.0.envelope.script;
+    let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, transfer.inscription().recipient());
+    let spending_script = transfer.inscription().taproot_program();
 
     // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {

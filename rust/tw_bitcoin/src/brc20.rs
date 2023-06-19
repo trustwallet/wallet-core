@@ -118,7 +118,7 @@ pub struct DeployPayload {
 }
 
 #[derive(Debug, Clone)]
-pub struct BRC20DeployInscription(pub OrdinalsInscription);
+pub struct BRC20DeployInscription(OrdinalsInscription);
 
 impl BRC20DeployInscription {
     pub fn new(
@@ -144,6 +144,9 @@ impl BRC20DeployInscription {
 
         Ok(BRC20DeployInscription(inscription))
     }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -152,7 +155,7 @@ pub struct TransferPayload {
     pub amt: String,
 }
 
-pub struct BRC20TransferInscription(pub OrdinalsInscription);
+pub struct BRC20TransferInscription(OrdinalsInscription);
 
 impl BRC20TransferInscription {
     pub fn new(
@@ -175,6 +178,9 @@ impl BRC20TransferInscription {
 
         Ok(BRC20TransferInscription(inscription))
     }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
+    }
 }
 
 /// The structure is the same as `TransferPayload`, we'll keep it separate for
@@ -185,7 +191,7 @@ pub struct MintPayload {
     pub amt: String,
 }
 
-pub struct BRC20MintInscription(pub OrdinalsInscription);
+pub struct BRC20MintInscription(OrdinalsInscription);
 
 impl BRC20MintInscription {
     pub fn new(
@@ -207,5 +213,8 @@ impl BRC20MintInscription {
         )?;
 
         Ok(BRC20MintInscription(inscription))
+    }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
     }
 }
