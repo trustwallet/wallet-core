@@ -72,7 +72,7 @@ fn brc20_transfer() {
     let transfer = BRC20TransferInscription::new(alice.into(), ticker, BRC20_AMOUNT).unwrap();
 
     let output = TXOutputP2TRScriptPath::builder()
-        .recipient(transfer.0.recipient().clone())
+        .recipient(transfer.inscription().recipient().clone())
         .satoshis(BRC20_INSCRIBE_SATOSHIS)
         .build()
         .unwrap();
@@ -106,10 +106,10 @@ fn brc20_transfer() {
     let input = TxInputP2TRScriptPath::builder()
         .txid(txid)
         .vout(0)
-        .recipient(transfer.0.recipient().clone())
+        .recipient(transfer.inscription().recipient().clone())
         .satoshis(BRC20_INSCRIBE_SATOSHIS)
-        .script(transfer.0.envelope.script)
-        .spend_info(transfer.0.envelope.spend_info)
+        .script(transfer.inscription().taproot_program().to_owned())
+        .spend_info(transfer.inscription().spend_info().clone())
         .build()
         .unwrap();
 

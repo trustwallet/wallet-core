@@ -31,8 +31,8 @@ fn proto_brc20_transfer_script() {
     )
     .unwrap();
 
-    let tapscript = transfer.0.recipient().clone();
-    let spending_script = transfer.0.envelope.script;
+    let tapscript = transfer.inscription().recipient().clone();
+    let spending_script = transfer.inscription().taproot_program();
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis, &tapscript);
     // Wrap in Protobuf structure.
