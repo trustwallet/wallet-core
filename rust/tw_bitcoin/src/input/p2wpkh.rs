@@ -30,9 +30,6 @@ impl TxInputP2WPKH {
             recipient,
         }
     }
-    pub fn only_script(recipient: Recipient<WPubkeyHash>) -> ScriptBuf {
-        ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash())
-    }
     pub fn builder() -> TxInputP2WPKHBuilder {
         TxInputP2WPKHBuilder::new()
     }

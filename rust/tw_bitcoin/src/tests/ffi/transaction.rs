@@ -23,10 +23,6 @@ pub fn proto_sign_input_p2pkh_output_p2pkh() {
     let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
-
-    // Note that here the input and outputs script are identical (in_script =
-    // out_script), the scriptSig/Witness for claiming a transaction is created
-    // and set by the signer.
     let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
     let output = call_ffi_build_p2pkh_script(SEND_AMOUNT, &bob_recipient);
 

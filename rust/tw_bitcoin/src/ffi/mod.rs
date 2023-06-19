@@ -102,16 +102,18 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             )
             .into(),
             TrVariant::BRC20TRANSFER => {
+                // We construct the merkle root for the given spending script.
                 let spending_script = ScriptBuf::from_bytes(input.spendingScript.to_vec());
                 let merkle_root = TapNodeHash::from_script(
                     spending_script.as_script(),
                     bitcoin::taproot::LeafVersion::TapScript,
                 );
 
-                // Convert to tapscript recipient.
+                // Convert to tapscript recipient with the given merkle root.
                 let recipient =
                     Recipient::<TaprootScript>::from_pubkey_recipient(my_pubkey, merkle_root);
 
+                // Derive the spending information for the taproot recipient.
                 let spend_info = TaprootSpendInfo::from_node_info(
                     &secp256k1::Secp256k1::new(),
                     recipient.untweaked_pubkey(),
@@ -142,9 +144,14 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         let script_buf = ScriptBuf::from_bytes(output.script.to_vec());
         let satoshis = output.amount as u64;
 
+        #[rustfmt::skip]
         let tx: TxOutput = match output.variant {
-            TrVariant::P2PKH => TxOutputP2PKH::new_with_script(satoshis, script_buf).into(),
-            TrVariant::P2WPKH => TxOutputP2WPKH::new_with_script(satoshis, script_buf).into(),
+            TrVariant::P2PKH => {
+                TxOutputP2PKH::new_with_script(satoshis, script_buf).into()
+            },
+            TrVariant::P2WPKH => {
+                TxOutputP2WPKH::new_with_script(satoshis, script_buf).into()
+            },
             TrVariant::P2TRKEYPATH => {
                 TxOutputP2TRKeyPath::new_with_script(satoshis, script_buf).into()
             },
@@ -163,6 +170,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
     // Sign transaction and create protobuf structures.
     let tx = builder.sign_inputs(keypair)?;
 
+    // Create Protobuf structures of inputs.
     let mut proto_inputs = vec![];
     for input in &tx.inner.input {
         let txid: Vec<u8> = input
@@ -179,6 +187,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
                 hash: Cow::from(txid),
                 index: input.previous_output.vout,
                 sequence: input.sequence.to_consensus_u32(),
+                // Unused.
                 tree: 0,
             }),
             sequence: input.sequence.to_consensus_u32(),
@@ -197,6 +206,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         });
     }
 
+    // Create Protobuf structures of outputs.
     let mut proto_outputs = vec![];
     for output in &tx.inner.output {
         proto_outputs.push(TransactionOutput {
@@ -206,6 +216,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         })
     }
 
+    // Create Protobuf structure of the full transaction.
     let mut signing = SigningOutput {
         transaction: Some(Transaction {
             version,
@@ -219,7 +230,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         error_message: Cow::default(),
     };
 
-    // Sign transaction and return array.
+    // Sign transaction and update Protobuf structure.
     let signed = tx.serialize()?;
     signing.encoded = Cow::from(signed);
 
