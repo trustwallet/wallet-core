@@ -169,61 +169,29 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let output_p2wpkh = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
 
     // Construct Protobuf payload.
-    let input = SigningInput {
-        hash_type: 0,
-        amount: 0,
-        byte_fee: 0,
-        to_address: Cow::from(""),
-        change_address: Cow::from(""),
-        private_key: vec![Cow::from(alice_privkey.as_slice())],
-        scripts: Default::default(),
-        utxo: vec![UnspentTransaction {
-            out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
-                hash: Cow::from(txid.as_slice()),
-                index: 0,
-                sequence: 0,
-                tree: 0,
-            }),
-            script: input_inscription.script,
-            amount: BRC20_INSCRIBE_AMOUNT as i64,
-            variant: TransactionVariant::BRC20TRANSFER,
-            // IMPORANT: include the witness containing the actual inscription.
-            spendingScript: input_inscription.spendingScript,
-        }],
-        use_max_amount: false,
-        coin_type: 0,
-        plan: Some(TransactionPlan {
-            amount: 0,
-            available_amount: 0,
-            fee: 0,
-            change: 0,
-            utxos: vec![UnspentTransaction {
-                out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
-                    hash: Cow::from([].as_slice()),
-                    index: 0,
-                    sequence: 0,
-                    tree: 0,
-                }),
-                script: output_p2wpkh.script,
-                amount: BRC20_DUST_AMOUNT as i64,
-                variant: TransactionVariant::P2WPKH,
-                spendingScript: Cow::default(),
-            }],
-            branch_id: Cow::from([].as_slice()),
-            error: tw_proto::Common::Proto::SigningError::OK,
-            output_op_return: Cow::from([].as_slice()),
-            preblockhash: Cow::default(),
-            preblockheight: 0,
-        }),
-        lock_time: 0,
-        output_op_return: Cow::from([].as_slice()),
-        extra_outputs: vec![],
-        use_max_utxo: false,
-        disable_dust_filter: false,
-        time: 0,
-    };
+    let signing = ProtoSigningInputBuilder::new()
+        .private_key(&alice_privkey)
+        .input(
+            ProtoTransactionBuilder::new()
+                .txid(&txid)
+                .vout(0)
+                .script_pubkey(&input_inscription.script)
+                .satoshis(BRC20_INSCRIBE_AMOUNT)
+                .variant(TransactionVariant::BRC20TRANSFER)
+				// IMPORANT: include the witness containing the actual inscription.
+				.spending_script(&input_inscription.spendingScript)
+                .build(),
+        )
+        .output(
+            ProtoTransactionBuilder::new()
+                .script_pubkey(&output_p2wpkh.script)
+                .satoshis(BRC20_DUST_AMOUNT)
+                .variant(TransactionVariant::P2WPKH)
+                .build(),
+        )
+        .build();
 
-    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    let signed = taproot_build_and_sign_transaction(signing).unwrap();
     let hex = hex::encode(&signed.encoded, false);
 
     assert_eq!(&hex[..164], REVEAL_RAW_P1);
