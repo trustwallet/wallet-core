@@ -192,8 +192,9 @@ impl TransactionBuilder {
 
                     claims.push((index, updated));
                 },
-                TxInput::P2TRScriptPath(p) => {
-                    let leaf_hash = TapLeafHash::from_script(&p.witness, LeafVersion::TapScript);
+                TxInput::P2TRScriptPath(p2trsp) => {
+                    let leaf_hash =
+                        TapLeafHash::from_script(p2trsp.witness(), LeafVersion::TapScript);
 
                     let hash = cache
                         .taproot_script_spend_signature_hash(
