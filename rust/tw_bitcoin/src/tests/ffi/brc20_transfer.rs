@@ -1,7 +1,7 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::ffi::{taproot_build_and_sign_transaction, tw_build_brc20_inscribe_transfer};
 use crate::tests::ffi::utils::{
-    ffi_build_p2wpkh_script, reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder,
+    ffi_build_p2wpkh_script, reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder, ffi_build_brc20_transfer_script,
 };
 use crate::tests::p2pkh::ALICE_WIF;
 use crate::{keypair_from_wif, Recipient, TXOutputP2TRScriptPath};
@@ -20,20 +20,7 @@ fn build_ffi_brc20_transfer_script() {
     let ticker = "oadf";
 
     // Call FFI function.
-    let tick_buf = ticker.as_bytes();
-    let alice_pubkey = recipient.public_key().to_bytes();
-    let array = unsafe {
-        tw_build_brc20_inscribe_transfer(
-            tick_buf.as_ptr(),
-            brc20_amount,
-            satoshis as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-
-    let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
+    let ffi_out = ffi_build_brc20_transfer_script(ticker, brc20_amount, satoshis, &recipient);
 
     // Compare with native call.
     let transfer = BRC20TransferInscription::new(
@@ -47,13 +34,14 @@ fn build_ffi_brc20_transfer_script() {
     let spending_script = transfer.0.envelope.script;
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis, &tapscript);
+    // Wrap in Protobuf structure.
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
         spendingScript: Cow::from(spending_script.as_bytes()),
     };
 
-    assert_eq!(ffi_der, proto);
+    assert_eq!(ffi_out, proto);
 }
 
 /// Commit the Inscription.

@@ -1,4 +1,7 @@
-use crate::ffi::{tw_build_p2pkh_script, tw_build_p2tr_key_path_script, tw_build_p2wpkh_script};
+use crate::ffi::{
+    tw_build_brc20_inscribe_transfer, tw_build_p2pkh_script, tw_build_p2tr_key_path_script,
+    tw_build_p2wpkh_script,
+};
 use crate::Recipient;
 use bitcoin::PublicKey;
 use std::borrow::Cow;
@@ -15,6 +18,29 @@ pub fn reverse_txid(txid: &str) -> Vec<u8> {
         .into_iter()
         .rev()
         .collect()
+}
+
+/// Convenience wrapper over `tw_build_p2pkh_script` with Protobuf
+/// deserialization support.
+pub fn ffi_build_p2pkh_script<'a, 'b>(
+    satoshis: u64,
+    // We use 'b to clarify that `recipient` is not tied to the return value.
+    recipient: &'b Recipient<PublicKey>,
+) -> TransactionOutput<'a> {
+    let pubkey = recipient.public_key().to_bytes();
+
+    let raw =
+        unsafe { tw_build_p2pkh_script(satoshis as i64, pubkey.as_ptr(), pubkey.len()).into_vec() };
+
+    let des: TransactionOutput = tw_proto::deserialize(&raw).unwrap();
+
+    // We convert the referenced data into owned data since `raw` goes out of
+    // scope at the end of the function.
+    TransactionOutput {
+        value: des.value,
+        script: des.script.into_owned().into(),
+        spendingScript: des.spendingScript.into_owned().into(),
+    }
 }
 
 /// Convenience wrapper over `tw_build_p2wpkh_script` with Protobuf
@@ -41,30 +67,7 @@ pub fn ffi_build_p2wpkh_script<'a, 'b>(
     }
 }
 
-/// Convenience wrapper over `tw_build_p2pkh_script` with Protobuf
-/// deserialization support.
-pub fn ffi_build_p2pkh_script<'a, 'b>(
-    satoshis: u64,
-    // We use 'b to clarify that `recipient` is not tied to the return value.
-    recipient: &'b Recipient<PublicKey>,
-) -> TransactionOutput<'a> {
-    let pubkey = recipient.public_key().to_bytes();
-
-    let raw =
-        unsafe { tw_build_p2pkh_script(satoshis as i64, pubkey.as_ptr(), pubkey.len()).into_vec() };
-
-    let des: TransactionOutput = tw_proto::deserialize(&raw).unwrap();
-
-    // We convert the referenced data into owned data since `raw` goes out of
-    // scope at the end of the function.
-    TransactionOutput {
-        value: des.value,
-        script: des.script.into_owned().into(),
-        spendingScript: des.spendingScript.into_owned().into(),
-    }
-}
-
-/// Convenience wrapper over `tw_build_p2pkh_script` with Protobuf
+/// Convenience wrapper over `tw_build_p2tr_key_path_script` with Protobuf
 /// deserialization support.
 pub fn ffi_build_p2tr_key_path_script<'a, 'b>(
     satoshis: u64,
@@ -88,6 +91,40 @@ pub fn ffi_build_p2tr_key_path_script<'a, 'b>(
     }
 }
 
+/// Convenience wrapper over `tw_build_brc20_inscribe_transfer` with Protobuf
+/// deserialization support.
+pub fn ffi_build_brc20_transfer_script<'a, 'b>(
+    ticker: &str,
+    brc20_amount: u64,
+    satoshis: u64,
+    // We use 'b to clarify that `recipient` is not tied to the return value.
+    recipient: &'b Recipient<PublicKey>,
+) -> TransactionOutput<'a> {
+    let pubkey = recipient.public_key().to_bytes();
+
+    let raw = unsafe {
+        tw_build_brc20_inscribe_transfer(
+            ticker.as_bytes().as_ptr(),
+            brc20_amount,
+            satoshis as i64,
+            pubkey.as_ptr(),
+            pubkey.len(),
+        )
+        .into_vec()
+    };
+
+    let des: TransactionOutput = tw_proto::deserialize(&raw).unwrap();
+
+    // We convert the referenced data into owned data since `raw` goes out of
+    // scope at the end of the function.
+    TransactionOutput {
+        value: des.value,
+        script: des.script.into_owned().into(),
+        spendingScript: des.spendingScript.into_owned().into(),
+    }
+}
+
+/// Builder for creating the `SigningInput` Protobuf structure.
 pub struct ProtoSigningInputBuilder<'a> {
     inner: SigningInput<'a>,
 }
@@ -118,6 +155,7 @@ impl<'a> ProtoSigningInputBuilder<'a> {
     }
 }
 
+/// Builder for creating the `UnspentTransaction` Protobuf structure.
 pub struct ProtoTransactionBuilder<'a> {
     inner: UnspentTransaction<'a>,
 }
