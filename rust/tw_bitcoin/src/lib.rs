@@ -34,8 +34,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone)]
 pub struct TaprootProgram {
-    // TODO:
-    #[allow(dead_code)]
     script: ScriptBuf,
     spend_info: TaprootSpendInfo,
 }
@@ -374,7 +372,6 @@ pub struct InputContext {
     pub value: u64,
     // The condition for claiming the output.
     pub script_pubkey: ScriptBuf,
-    // TODO: Document this.
     pub sequence: Sequence,
     // Witness data for Segwit/Taproot transactions.
     // TODO: Remove this?
