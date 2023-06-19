@@ -12,6 +12,7 @@ use tw_proto::Bitcoin::Proto::TransactionVariant;
 fn proto_sign_input_p2pkh_output_p2pkh() {
     use crate::tests::p2pkh::*;
 
+    // Prepare keys.
     let alice: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from_keypair(&alice);
@@ -58,6 +59,7 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
 fn proto_sign_input_p2pkh_output_p2wpkh() {
     use crate::tests::p2wpkh::*;
 
+    // Prepare keys.
     let alice: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from_keypair(&alice);
@@ -100,6 +102,7 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
 fn proto_sign_input_p2pkh_output_p2tr_key_path() {
     use crate::tests::p2tr_key_path::*;
 
+    // Prepare keys.
     let alice: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from_keypair(&alice);

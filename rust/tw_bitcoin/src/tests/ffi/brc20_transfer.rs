@@ -1,7 +1,8 @@
-use super::ffi_build_p2wpkh_script;
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::ffi::{taproot_build_and_sign_transaction, tw_build_brc20_inscribe_transfer};
-use crate::tests::ffi::{reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder};
+use crate::tests::ffi::{
+    ffi_build_p2wpkh_script, reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder,
+};
 use crate::tests::p2pkh::ALICE_WIF;
 use crate::{keypair_from_wif, Recipient, TXOutputP2TRScriptPath};
 use bitcoin::PublicKey;
