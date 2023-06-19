@@ -6,6 +6,7 @@ use bitcoin::Txid;
 use std::str::FromStr;
 use tw_encoding::hex;
 
+// Those private keys were used in a Bitcoin regtest environment.
 pub const ALICE_WIF: &str = "cNDFvH3TXCjxgWeVc7vbu4Jw5m2Lu8FkQ69Z2XvFUD9D9rGjofN1";
 pub const BOB_WIF: &str = "cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB";
 pub const TXID: &str = "c50563913e5a838f937c94232f5a8fc74e58b629fae41dfdffcc9a70f833b53a";
