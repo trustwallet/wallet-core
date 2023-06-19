@@ -50,16 +50,16 @@ fn proto_brc20_transfer_script() {
 fn proto_sign_brc20_transfer_inscription_commit() {
     use crate::tests::brc20_transfer::*;
 
+    // Prepare keys.
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
-    let alice_pubkey = alice_recipient.public_key().to_bytes();
 
     // Note that the Txid must be reversed.
     let txid = reverse_txid(COMMIT_TXID);
 
     // Build input script.
-    let input_p2wpkh = call_ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
+    let input = call_ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
 
     // Build inscription output.
     let output_inscribe = call_ffi_build_brc20_transfer_script(
@@ -79,7 +79,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
             ProtoTransactionBuilder::new()
                 .txid(&txid)
                 .vout(1)
-                .script_pubkey(&input_p2wpkh.script)
+                .script_pubkey(&input.script)
                 .satoshis(FULL_AMOUNT)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
@@ -109,6 +109,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
 fn proto_sign_brc20_transfer_inscription_reveal() {
     use crate::tests::brc20_transfer::*;
 
+    // Prepare keys.
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
@@ -117,7 +118,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let txid = reverse_txid(REVEAL_TXID);
 
     // Build input script.
-    let input_inscription = call_ffi_build_brc20_transfer_script(
+    let input = call_ffi_build_brc20_transfer_script(
         BRC20_TICKER,
         BRC20_AMOUNT,
         BRC20_INSCRIBE_AMOUNT,
@@ -134,11 +135,11 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
             ProtoTransactionBuilder::new()
                 .txid(&txid)
                 .vout(0)
-                .script_pubkey(&input_inscription.script)
+                .script_pubkey(&input.script)
                 .satoshis(BRC20_INSCRIBE_AMOUNT)
                 .variant(TransactionVariant::BRC20TRANSFER)
                 // IMPORANT: include the witness containing the actual inscription.
-                .spending_script(&input_inscription.spendingScript)
+                .spending_script(&input.spendingScript)
                 .build(),
         )
         .output(
@@ -165,6 +166,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
 fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
     use crate::tests::brc20_transfer::*;
 
+    // Prepare keys.
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
@@ -173,7 +175,6 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
     let bob_recipient = Recipient::<PublicKey>::from(&bob);
 
     // The Txid to reference the Inscription.
-    // Note that the Txid must be reversed.
     let txid_inscription = reverse_txid(TRANSFER_TXID_INSCRIPTION);
 
     // The Txid for paying fees.
