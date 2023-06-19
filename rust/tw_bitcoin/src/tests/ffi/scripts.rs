@@ -1,5 +1,5 @@
 use crate::ffi::tw_build_p2pkh_script;
-use crate::tests::ffi::{ffi_build_p2tr_key_path_script, ffi_build_p2wpkh_script};
+use crate::tests::ffi::utils::{ffi_build_p2tr_key_path_script, ffi_build_p2wpkh_script};
 use crate::tests::p2pkh::ALICE_WIF;
 use crate::{keypair_from_wif, Recipient, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
 use bitcoin::PublicKey;

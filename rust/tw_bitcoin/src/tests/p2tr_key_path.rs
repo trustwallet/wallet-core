@@ -1,4 +1,4 @@
-use super::*;
+use super::ONE_BTC;
 use crate::{
     keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath, TxOutputP2TRKeyPath,
 };

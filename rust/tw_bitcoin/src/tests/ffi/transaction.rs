@@ -1,5 +1,5 @@
 use crate::ffi::taproot_build_and_sign_transaction;
-use crate::tests::ffi::{
+use crate::tests::ffi::utils::{
     ffi_build_p2pkh_script, ffi_build_p2tr_key_path_script, ffi_build_p2wpkh_script, reverse_txid,
     ProtoSigningInputBuilder, ProtoTransactionBuilder,
 };
@@ -9,7 +9,7 @@ use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto::TransactionVariant;
 
 #[test]
-fn proto_sign_input_p2pkh_output_p2pkh() {
+pub fn proto_sign_input_p2pkh_output_p2pkh() {
     use crate::tests::p2pkh::*;
 
     // Prepare keys.
@@ -56,7 +56,7 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
 }
 
 #[test]
-fn proto_sign_input_p2pkh_output_p2wpkh() {
+pub fn proto_sign_input_p2pkh_output_p2wpkh() {
     use crate::tests::p2wpkh::*;
 
     // Prepare keys.
@@ -99,7 +99,7 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
 }
 
 #[test]
-fn proto_sign_input_p2pkh_output_p2tr_key_path() {
+pub fn proto_sign_input_p2pkh_output_p2tr_key_path() {
     use crate::tests::p2tr_key_path::*;
 
     // Prepare keys.
