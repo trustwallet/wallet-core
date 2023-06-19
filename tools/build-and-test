@@ -24,4 +24,7 @@ build/trezor-crypto/crypto/tests/TrezorCryptoTests
 
 echo "#### Running unit tests... ####"
 FILTER="*"
+if [ -n "$1" ]; then
+    FILTER="*$1*"
+fi
 build/tests/tests --gtest_filter="$FILTER"

@@ -9,23 +9,23 @@
 #include <stdexcept>
 
 
-TW::Data TW::readBytes(const TW::Data& from, int max, int initial_pos) {
-    if (from.size() - static_cast<std::size_t>(initial_pos) < static_cast<std::size_t>(max)) {
+TW::Data TW::readBytes(const TW::Data& from, size_t max, size_t initial_pos) {
+    if (from.size() < initial_pos + max) {
         throw std::invalid_argument("Data::Cannot read enough bytes!");
     }
-    return TW::Data(from.begin() + initial_pos, from.begin() + initial_pos + max);
+    return TW::subData(from, initial_pos, max);
 }
 
-TW::Data TW::readVarBytes(const Data& from, int initial_pos, uint32_t* dataRead) {
+TW::Data TW::readVarBytes(const Data& from, size_t initial_pos, uint32_t* dataRead) {
     uint64_t size = readVar<uint64_t>(from, initial_pos);
     auto shift = varIntSize(size);
     if (dataRead) {
         *dataRead = uint32_t(shift + size);
     }
-    return readBytes(from, int(size), initial_pos + int(shift));
+    return readBytes(from, int(size), initial_pos + static_cast<size_t>(shift));
 }
 
-template<> uint64_t TW::readVar(const TW::Data& from, int initial_pos, const uint64_t &max) {
+template<> uint64_t TW::readVar(const TW::Data& from, size_t initial_pos, const uint64_t &max) {
     byte fb = from[initial_pos];
     uint64_t value;
     if (fb == 0xFD) {
@@ -44,11 +44,11 @@ template<> uint64_t TW::readVar(const TW::Data& from, int initial_pos, const uin
     return value;
 }
 
-template<> int64_t TW::readVar(const TW::Data& from, int initial_pos, const int64_t &max) {
+template<> int64_t TW::readVar(const TW::Data& from, size_t initial_pos, const int64_t &max) {
     return (int64_t) readVar<uint64_t>(from, initial_pos, uint64_t(max));
 }
 
-TW::Data TW::writeVarBytes(const Data& from, int initial_pos) {
+TW::Data TW::writeVarBytes(const Data& from, size_t initial_pos) {
     Data resp;
     encodeVarInt(uint64_t(from.size() - initial_pos), resp);
     resp.insert(resp.end(), from.begin() + initial_pos, from.end());

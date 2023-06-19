@@ -29,7 +29,16 @@ class Signer {
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 
-private:
+    /// Get transaction data to be signed
+    static TW::Data signaturePreimage(const Proto::SigningInput& input) noexcept;
+
+    /// build transaction with signature
+    static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+  
+  private:
+    /// Get transaction data for secp256k1 to be signed
+    static Transaction buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+
     /// Signs a Proto::SigningInput transaction.
     static Proto::SigningOutput signSecp256k1(const Proto::SigningInput& input);
 

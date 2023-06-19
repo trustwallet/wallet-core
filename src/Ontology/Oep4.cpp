@@ -66,4 +66,18 @@ Transaction Oep4::transfer(const Signer& from, const Address& to, uint64_t amoun
     return tx;
 }
 
+Transaction Oep4::unsignedTransfer(const Address& from, const Address& to, uint64_t amount,
+                                   const Address& payer, uint64_t gasPrice, uint64_t gasLimit, 
+                                   uint32_t nonce) {
+    Address contract(oep4Contract);
+
+    NeoVmParamValue::ParamArray args{from._data, to._data, amount};
+    // yes, invoke neovm is not like ont transfer
+    std::reverse(args.begin(), args.end());
+    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(contract, "transfer", {args});
+
+    auto tx = Transaction(0, 0xD1, nonce, gasPrice, gasLimit, payer.string(), invokeCode);
+    return tx;
+}
+
 } // namespace TW::Ontology

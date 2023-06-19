@@ -13,6 +13,7 @@
 #include "TWDerivation.h"
 #include "TWDerivationPath.h"
 #include "TWHDVersion.h"
+#include "TWDerivation.h"
 #include "TWPrivateKey.h"
 #include "TWPublicKey.h"
 #include "TWPurpose.h"

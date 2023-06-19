@@ -49,4 +49,14 @@ Data Tezos::OperationList::forge(const PrivateKey& privateKey) const {
     return forged;
 }
 
+Data TW::Tezos::OperationList::forge() const {
+    auto forged = forgeBranch();
+
+    for (auto operation : operation_list) {
+        append(forged, forgeOperation(operation));
+    }
+
+    return forged;
+}
+
 } // namespace TW::Tezos

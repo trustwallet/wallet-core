@@ -601,7 +601,7 @@ namespace TW::LiquidStaking::tests {
             assertJSONEqual(tx.serialized(), expectedJson);
             EXPECT_EQ(hex(tx.signature()), "836991d5e7f677080402e435e4687985e8e294892e57283b25dd99c169a56e263952595daf03b30fc066c2d7b3fa8db549b79f192dcc48585b7be943b7cb58b1");
             EXPECT_EQ(tx.json(), "");
-            EXPECT_EQ(tx.error(), "");
+            EXPECT_EQ(tx.error_message(), "");
         };
 
         {
@@ -676,7 +676,7 @@ namespace TW::LiquidStaking::tests {
             assertJSONEqual(tx.serialized(), expectedJson);
             EXPECT_EQ(TW::Base64::encode(data(tx.signature())), "p/zhNig+rCdfDbavR2iTZ9imVQW7TTdOUh+mhP7CpNkXWUc8L5FMCgmhvrHnQKd+8aWAkUERBg8P4Jy/rn1VUA==");
             EXPECT_EQ(tx.json(), "");
-            EXPECT_EQ(tx.error(), "");
+            EXPECT_EQ(tx.error_message(), "");
         };
 
         {

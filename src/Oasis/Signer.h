@@ -18,6 +18,11 @@ namespace TW::Oasis {
 
 /// Helper class that performs Oasis transaction signing.
 class Signer {
+private:
+    Transaction buildTransfer() const;
+    Escrow buildEscrow() const;
+    ReclaimEscrow buildReclaimEscrow() const;
+
 public:
     Proto::SigningInput input;
 
@@ -34,13 +39,16 @@ public:
     ///
     /// \returns the transaction signature or an empty vector if there is an
     /// error.
-    Data sign(Transaction& tx) const;
+    template <typename T>
+    Data signTransaction(T& tx) const;
 
     /// Builds a signed transaction.
     ///
     /// \returns the signed transaction data or an empty vector if there is an
     /// error.
     Data build() const;
+    Data signaturePreimage() const;
+    Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
 };
 
 } // namespace TW::Oasis

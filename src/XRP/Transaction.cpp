@@ -82,7 +82,6 @@ Data Transaction::serialize() const {
         encodeType(FieldType::vl, 3, data);
         encodeBytes(pub_key, data);
     }
-
     /// "txnSignature"
     if (!signature.empty()) {
         encodeType(FieldType::vl, 4, data);

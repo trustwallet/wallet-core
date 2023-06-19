@@ -8,6 +8,7 @@
 
 #include "Address.h"
 #include "Signer.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 namespace TW::Polkadot {
 
@@ -36,4 +37,23 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
+Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+
+            auto preImage = Signer::signaturePreImage(input);
+            auto preImageHash = Signer::hash(preImage);
+            output.set_data_hash(preImageHash.data(), preImageHash.size());
+            output.set_data(preImage.data(), preImage.size());
+        });
+}
+
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            auto signedTx = Signer::encodeTransaction(input,  publicKey.bytes, signature);
+            output.set_encoded(signedTx.data(), signedTx.size());
+    });
+}
 } // namespace TW::Polkadot

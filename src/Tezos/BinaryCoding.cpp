@@ -27,15 +27,30 @@ std::string base58ToHex(const std::string& string, size_t prefixLength) {
 PublicKey parsePublicKey(const std::string& publicKey) {
     const auto decoded = Base58::decodeCheck(publicKey);
 
-    std::array<byte, 4> prefix = {13, 15, 37, 217};
-    auto pk = Data();
+    std::array<byte, 4> prefix;
+    enum TWPublicKeyType type;
+    std::array<byte, 4> ed25519Prefix = {13, 15, 37, 217};
+    std::array<byte, 4> secp256k1Prefix = {3, 254, 226, 86};
 
-    if (decoded.size() != 32 + prefix.size()) {
+    if (std::equal(std::begin(ed25519Prefix), std::end(ed25519Prefix), std::begin(decoded))) {
+        prefix = ed25519Prefix;
+        type = TWPublicKeyTypeED25519;
+    } else if (std::equal(std::begin(secp256k1Prefix), std::end(secp256k1Prefix), std::begin(decoded))) {
+        prefix = secp256k1Prefix;
+        type = TWPublicKeyTypeSECP256k1;
+    } else {
+        throw std::invalid_argument("Unsupported Public Key Type");
+    }
+    auto pk = Data();
+    if (type == TWPublicKeyTypeED25519 && decoded.size() != 32 + prefix.size()) {
+        throw std::invalid_argument("Invalid Public Key");
+    }
+    if (type == TWPublicKeyTypeSECP256k1 && decoded.size() != 33 + prefix.size()) {
         throw std::invalid_argument("Invalid Public Key");
     }
     append(pk, Data(decoded.begin() + prefix.size(), decoded.end()));
 
-    return PublicKey(pk, TWPublicKeyTypeED25519);
+    return PublicKey(pk, type);
 }
 
 PrivateKey parsePrivateKey(const std::string& privateKey) {

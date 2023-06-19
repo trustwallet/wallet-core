@@ -6,7 +6,6 @@
 
 #include "JsonSerialization.h"
 #include "ProtobufSerialization.h"
-
 #include "../Cosmos/Address.h"
 #include "../proto/Cosmos.pb.h"
 #include "Base64.h"
@@ -23,6 +22,7 @@ const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
 const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
 const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
 const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
+const string TYPE_PREFIX_MSG_SET_WITHDRAW_ADDRESS = "cosmos-sdk/MsgSetWithdrawAddress";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const string TYPE_EVMOS_PREFIX_PUBLIC_KEY = "ethermint/PubKeyEthSecp256k1";
@@ -145,6 +145,35 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
+static json messageSetWithdrawAddress(const Proto::Message_SetWithdrawAddress& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_SET_WITHDRAW_ADDRESS : message.type_prefix();
+
+    return {
+        {"type", typePrefix},
+        {"value", {
+            {"delegator_address", message.delegator_address()},
+            {"withdraw_address", message.withdraw_address()}
+        }}
+    };
+}
+
+
+// This method not only support token transfer, but also support all other types of contract call.
+// https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
+static json messageExecuteContract(const Proto::Message_ExecuteContract& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_WASM_MSG_EXECUTE : message.type_prefix();
+
+    return {
+        {"type", typePrefix},
+        {"value", {
+            {"sender", message.sender()},
+            {"contract", message.contract()},
+            {"execute_msg", message.execute_msg()},
+            {"coins", amountsJSON(message.coins())}
+        }}
+    };
+}
+
 json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
     return {
         {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
@@ -177,10 +206,17 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageUndelegate(msg.unstake_message()));
         } else if (msg.has_withdraw_stake_reward_message()) {
             j.push_back(messageWithdrawReward(msg.withdraw_stake_reward_message()));
+        } else if (msg.has_set_withdraw_address_message()) {
+            j.push_back(messageSetWithdrawAddress(msg.set_withdraw_address_message()));
         } else if (msg.has_restake_message()) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
+        } else if (msg.has_execute_contract_message()) {
+            j.push_back(messageExecuteContract(msg.execute_contract_message()));
+        } else if (msg.has_transfer_tokens_message()) {
+            assert(false); // not suppored, use protobuf serialization
+            return json::array();
         } else if ((msg.has_wasm_terra_execute_contract_transfer_message())) {
             j.push_back(messageWasmTerraTransfer(msg.wasm_terra_execute_contract_transfer_message()));
         } else if (msg.has_transfer_tokens_message() || msg.has_wasm_terra_execute_contract_generic()) {
@@ -212,9 +248,8 @@ json signaturePreimageJSON(const Proto::SigningInput& input) {
     };
 }
 
-json transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin) {
-    auto privateKey = PrivateKey(input.private_key());
-    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature, TWCoinType coin) {
     json tx = {
         {"fee", feeJSON(input.fee())},
         {"memo", input.memo()},
@@ -226,4 +261,15 @@ json transactionJSON(const Proto::SigningInput& input, const Data& signature, TW
     return broadcastJSON(tx, input.mode());
 }
 
-} // namespace TW::Cosmos
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin) {
+    auto privateKey = PrivateKey(input.private_key());
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    return transactionJSON(input, publicKey, signature, coin);
+}
+
+std::string buildJsonTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature, TWCoinType coin) {
+    return transactionJSON(input, publicKey, signature, coin).dump();
+}
+
+} // namespace  TW::Cosmos

@@ -9,8 +9,6 @@ syntax = "proto3";
 package TW.Barz.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Common.proto";
-
 // Represents the access control to the wallet
 message ContractOwner {
   oneof kind {
@@ -32,15 +30,18 @@ message ContractAddressInput {
   // ERC-4337 entry point
   string entry_point = 5;
 
-  // Address of the contract that defines security constraints
-  string security_manager = 6;
+  // Diamond Loupe from ERC-2535: Diamonds, Multi-Facet Proxy
+  string diamond_loupe_facet = 6;
+
+  // Diamond init from ERC-2535: Diamonds, Multi-Facet Proxy
+  string diamond_init = 7;
 
   // Address of the contract that defines if a facet is secure
-  string facet_registry = 7;
+  string facet_registry = 8;
 
   // Bytecode of the smart contract to deploy
-  string bytecode = 8;
+  string bytecode = 9;
 
   // Owner of the wallet
-  ContractOwner owner = 9;
+  ContractOwner owner = 10;
 }

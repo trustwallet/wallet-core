@@ -4,21 +4,25 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../uint256.h"
-#include "../Hash.h"
-#include "Transaction.h"
+#include <ctype.h>
+
+#include "InvocationTransaction.h"
 #include "MinerTransaction.h"
+#include "Transaction.h"
+#include "Data.h"
+#include "../Hash.h"
+#include "../uint256.h"
 
 using namespace std;
 using namespace TW;
 
 namespace TW::NEO {
 
-int64_t Transaction::size() const {
+size_t Transaction::size() const {
     return serialize().size();
 }
 
-void Transaction::deserialize(const Data& data, int initial_pos) {
+void Transaction::deserialize(const Data& data, size_t initial_pos) {
     type = (TransactionType)data[initial_pos++];
     version = data[initial_pos++];
     initial_pos = deserializeExclusiveData(data, initial_pos);
@@ -30,11 +34,17 @@ void Transaction::deserialize(const Data& data, int initial_pos) {
     Serializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
 }
 
-Transaction* Transaction::deserializeFrom(const Data& data, int initial_pos) {
+Transaction* Transaction::deserializeFrom(const Data& data, size_t initial_pos) {
     Transaction* resp = nullptr;
     switch ((TransactionType)data[initial_pos]) {
     case TransactionType::TT_MinerTransaction:
         resp = new MinerTransaction();
+        break;
+    case TransactionType::TT_ContractTransaction:
+        resp = new Transaction();
+        break;
+    case TransactionType::TT_InvocationTransaction:
+        resp = new InvocationTransaction();
         break;
     default:
         throw std::invalid_argument("Transaction::deserializeFrom Invalid transaction type");

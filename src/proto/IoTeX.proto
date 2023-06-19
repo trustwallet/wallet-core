@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.IoTeX.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // A transfer
 message Transfer {
     // Amount (as string)
@@ -152,8 +154,11 @@ message SigningInput {
     // Gas price
     string gasPrice = 4;
 
+    // The chain id of blockchain
+    uint32 chainID = 5;
+
     // The secret private key used for signing (32 bytes).
-    bytes privateKey = 5;
+    bytes privateKey = 6;
 
     // Payload transfer
     oneof action {
@@ -179,6 +184,12 @@ message SigningOutput {
 
     // Signed Action hash
     bytes hash = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }
 
 // An Action structure
@@ -195,6 +206,9 @@ message ActionCore {
 
     // Gas price
     string gasPrice = 4;
+
+    // Chain ID
+    uint32 chainID = 5;
 
     // action payload
     oneof action {

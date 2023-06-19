@@ -303,4 +303,10 @@ TEST(RLP, parseVarInt) {
     EXPECT_THROW(RLP::parseVarInt(2, parse_hex("0002"), 0), std::invalid_argument);               // starts with 0
 }
 
+TEST(RLP, decodeLenOverflow) {
+    EXPECT_THROW(RLP::decode(parse_hex("c9bffffffffffffffff7")), std::invalid_argument); // String length overflow (64 bit)
+    EXPECT_THROW(RLP::decode(parse_hex("c7fbfffffffbc17f")), std::invalid_argument); // List length overflow (32 bit)
+    EXPECT_THROW(RLP::decode(parse_hex("cbfffffffffffffffff7c17f")), std::invalid_argument); // List length overflow (64 bit)
+}
+
 } // namespace TW::Ethereum::tests

@@ -27,11 +27,14 @@ bool Address::isValid(const std::string& string) {
 std::optional<Data> Address::decodeLegacyAddress(const std::string& string) {
     const auto prefix = std::string("NEAR");
     if (string.substr(0, prefix.size()) != prefix) {
-        return {};
+        return std::nullopt;
     }
 
     const Data& decoded = Base58::decode(string.substr(prefix.size()));
-    return Data(decoded.begin(), decoded.end() - 4);
+    if (decoded.size() != size + legacyChecksumSize) {
+        return std::nullopt;
+    }
+    return Data(decoded.begin(), decoded.end() - legacyChecksumSize);
 }
 
 /// Initializes a NEAR address from a string representation.
@@ -40,10 +43,10 @@ Address::Address(const std::string& string) {
     if (data.has_value()) {
         std::copy(std::begin(*data), std::end(*data), std::begin(bytes));
     } else {
-        if (!Address::isValid(string)) {
+        const auto parsed = parse_hex(string);
+        if (parsed.size() != PublicKey::ed25519Size) {
             throw std::invalid_argument("Invalid address string!");
         }
-        const auto parsed = parse_hex(string);
         std::copy(std::begin(parsed), std::end(parsed), std::begin(bytes));
     }
 }

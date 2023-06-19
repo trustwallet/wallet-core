@@ -23,10 +23,10 @@ class Serializable : public ISerializable {
     }
 
     template<class T>
-    static inline Data serialize(const T *data, int size) {
+    static inline Data serialize(const T *data, size_t size) {
         Data resp;
         encodeVarInt(uint64_t(size), resp);
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             append(resp, data[i].serialize());
         }
         return resp;
@@ -44,10 +44,10 @@ class Serializable : public ISerializable {
     }
 
     template<class T>
-    static inline int deserialize(std::vector <T> &resp, const Data& data, int initial_pos = 0) {
+    static inline size_t deserialize(std::vector <T> &resp, const Data& data, size_t initial_pos = 0) {
         uint64_t size = readVar<uint64_t>(data, initial_pos, INT_MAX);
         // assert(size >= 0);
-        initial_pos += varIntSize(size);
+        initial_pos += static_cast<size_t>(varIntSize(size));
         for (uint64_t i = 0; i < size; ++i) {
             T value;
             value.deserialize(data, initial_pos);

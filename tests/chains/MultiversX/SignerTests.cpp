@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "boost/format.hpp"
 #include "HexCoding.h"
 #include "MultiversX/Address.h"
 #include "MultiversX/Codec.h"
@@ -607,6 +608,46 @@ TEST(MultiversXSigner, SignEGLDTransferWithGuardian) {
 
     ASSERT_EQ(expectedSignature, signature);
     assertJSONEqual(expected, nlohmann::json::parse(encoded));
+}
+
+TEST(ElrondSigner, buildUnsignedTxBytes) {
+    auto input = Proto::SigningInput();
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("foo");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(50000);
+    input.set_chain_id("1");
+    auto unsignedTxBytes = Signer::buildUnsignedTxBytes(input);
+    auto expectedData = TW::data((boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1})") % BOB_BECH32 % ALICE_BECH32).str());
+    ASSERT_EQ(expectedData, unsignedTxBytes);
+}
+
+TEST(ElrondSigner, buildSigningOutput) {
+    auto input = Proto::SigningInput();
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("foo");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(50000);
+    input.set_chain_id("1");
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto unsignedTxBytes = Signer::buildUnsignedTxBytes(input);
+    auto signature = privateKey.sign(unsignedTxBytes, TWCurveED25519);
+
+    auto output = Signer::buildSigningOutput(input, signature);
+    std::string expectedSignatureHex = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";
+    ASSERT_EQ(expectedSignatureHex, hex(signature));
+    auto expectedEncoded = (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignatureHex).str();
+    ASSERT_EQ(output.signature(), expectedSignatureHex);
+    ASSERT_EQ(output.encoded(), expectedEncoded);
 }
 
 } // namespace TW::MultiversX::tests

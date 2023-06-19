@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.NEAR.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Public key with type
 message PublicKey {
     // Key type
@@ -93,6 +95,21 @@ message DeleteAccount {
     string beneficiary_id = 1;
 }
 
+// Fungible token transfer
+message TokenTransfer {
+    // Token amount. Base-10 decimal string.
+    string token_amount = 1;
+
+    // ID of the receiver.
+    string receiver_id = 2;
+
+    // Gas.
+    uint64 gas = 3;
+
+    // NEAR deposit amount; uint128 / big endian byte order.
+    bytes deposit = 4;
+}
+
 // Represents an action
 message Action {
     oneof payload {
@@ -104,6 +121,8 @@ message Action {
         AddKey add_key = 6;
         DeleteKey delete_key = 7;
         DeleteAccount delete_account = 8;
+        // Gap in field numbering is intentional as it's not a standard NEAR action.
+        TokenTransfer token_transfer = 13;
     }
 }
 
@@ -126,6 +145,9 @@ message SigningInput {
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
+
+    // The public key used for compiling a transaction with a signature.
+    bytes public_key = 7;
 }
 
 // Result containing the signed and encoded transaction.
@@ -133,6 +155,12 @@ message SigningOutput {
     // Signed transaction blob
     bytes signed_transaction = 1;
 
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+    
     // Hash of the transaction
-    bytes hash = 2;
+    bytes hash = 4;
 }

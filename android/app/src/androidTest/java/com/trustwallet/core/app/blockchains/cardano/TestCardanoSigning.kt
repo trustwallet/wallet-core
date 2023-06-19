@@ -114,7 +114,7 @@ class TestCardanoSigning {
             .setAmount(8_051_373)
         val token3 = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
-            .setAssetName("CUBY")
+            .setAssetNameHex("43554259")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("2dc6c0"))) // 3000000
             .build()
         utxo1.addTokenAmount(token3)
@@ -130,7 +130,7 @@ class TestCardanoSigning {
             .setAmount(2_000_000)
         val token1 = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
-            .setAssetName("SUNDAE")
+            .setAssetNameHex("53554e444145")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("04d3e8d9"))) // 80996569
             .build()
         utxo2.addTokenAmount(token1)
@@ -267,7 +267,7 @@ class TestCardanoSigning {
     fun testSignNftTransfer() {
         val fromAddress = "addr1qy5eme9r6frr0m6q2qpncg282jtrhq5lg09uxy2j0545hj8rv7v2ntdxuv6p4s3eq4lqzg39lewgvt6fk5kmpa0zppesufzjud"
         val toAddress = "addr1qy9wjfn6nd8kak6dd8z53u7t5wt9f4lx0umll40px5hnq05avwcsq5r3ytdp36wttzv4558jaq8lvhgqhe3y8nuf5xrquju7z4"
-        val coinsPerUtxoByte = 4310
+        val coinsPerUtxoByte = "4310"
 
         val tokenAmount = Cardano.TokenAmount.newBuilder()
             .setPolicyId("219820e6cb04316f41a337fea356480f412e7acc147d28f175f21b5e")
@@ -313,7 +313,7 @@ class TestCardanoSigning {
             .build()
 
         // Check min ADA amount, set it
-        val minAmount = outputMinAdaAmount(toAddress, toTokenBundle.toByteArray(), coinsPerUtxoByte.toLong())
+        val minAmount = outputMinAdaAmount(toAddress, toTokenBundle.toByteArray(), coinsPerUtxoByte).toLong()
         assertEquals(minAmount, 1_202_490)
 
         val transfer = Cardano.Transfer.newBuilder()

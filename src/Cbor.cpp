@@ -6,6 +6,7 @@
 
 #include "Cbor.h"
 #include "HexCoding.h"
+#include "Numeric.h"
 
 #include <sstream>
 #include <cassert>
@@ -311,8 +312,11 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
             break;
         }
         uint32_t elemLen = nextElem.getTotalLen();
+        if (elemLen == 0 || checkAddUnsignedOverflow(idx, elemLen)) {
+            throw std::invalid_argument("CBOR invalid element length");
+        }
         if (idx + elemLen > length()) {
-            throw std::invalid_argument("CBOR array data too short");
+            throw std::invalid_argument("CBOR invalid array data");
         }
         elems.emplace_back(Decode(data, subStart + idx, elemLen));
         idx += elemLen;

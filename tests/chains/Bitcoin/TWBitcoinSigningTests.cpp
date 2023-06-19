@@ -37,6 +37,7 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
     SigningInput input;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.amount = 335'790'000;
+    input.totalAmount = 335'790'000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
@@ -168,6 +169,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.hashType = TWBitcoinSigHashTypeAll;
     const auto amount = 112340000; // 0x06B22C20
     input.amount = amount;
+    input.totalAmount = amount;
     input.byteFee = 20; // not relevant
     input.toAddress = "1Cu32FVupVCgHkMMRJdYJugxwo2Aprgk7H";
     input.changeAddress = "16TZ8J6Q5iZKBWizWzFAYnrsaox5Z5aBRV";
@@ -254,6 +256,7 @@ SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int
     SigningInput input;
     input.hashType = hashType;
     input.amount = amount;
+    input.totalAmount = amount;
     input.useMaxAmount = useMaxAmount;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
@@ -418,7 +421,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
 TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     auto input = buildInputP2WPKH(1'000, TWBitcoinSigHashTypeAll, 625'000'000, 600'000'000, true);
-
+    input.totalAmount = 1224999773;
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
@@ -475,6 +478,7 @@ SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript
     SigningInput input;
     input.hashType = hashType;
     input.amount = 1000;
+    input.totalAmount = 1000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
@@ -742,6 +746,7 @@ SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = fals
     SigningInput input;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.amount = 200'000'000;
+    input.totalAmount = 200'000'000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
@@ -902,6 +907,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     // Setup signing input
     SigningInput input;
     input.amount = 900000000;
+    input.totalAmount = 900000000;
     input.hashType = (TWBitcoinSigHashType)0;
     input.toAddress = "16AQVuBMt818u2HBcbxztAZTT2VTDKupPS";
     input.changeAddress = "1Bd1VA2bnLjoBk4ook3H19tZWETk8s6Ym5";
@@ -944,7 +950,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     input.utxos.push_back(utxo);
 
     TransactionPlan plan;
-    plan.amount = input.amount;
+    plan.amount = input.totalAmount;
     plan.availableAmount = input.utxos[0].amount;
     plan.change = 87000000;
     plan.fee = plan.availableAmount - plan.amount - plan.change;
@@ -993,6 +999,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     SigningInput input;
     input.hashType = TWBitcoinSigHashTypeAll;
     input.amount = 335'790'000;
+    input.totalAmount = 335'790'000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
     input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
@@ -1028,6 +1035,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     SigningInput input;
     input.hashType = TWBitcoinSigHashTypeAll;
     input.amount = 335'790'000;
+    input.totalAmount = 335'790'000;
     input.byteFee = 1;
     input.toAddress = "THIS-IS-NOT-A-BITCOIN-ADDRESS";
     input.changeAddress = "THIS-IS-NOT-A-BITCOIN-ADDRESS-EITHER";
@@ -1102,6 +1110,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = true;
     input.amount = 2'000'000;
+    input.totalAmount = 2'000'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
     input.changeAddress = ownAddress;
@@ -1141,6 +1150,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     input.coinType = coin;
     input.hashType = hashTypeForCoin(coin);
     input.amount = 3'899'774;
+    input.totalAmount = 3'899'774;
     input.useMaxAmount = true;
     input.byteFee = 1;
     input.toAddress = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum";
@@ -1210,6 +1220,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     input.coinType = coin;
     input.hashType = hashTypeForCoin(coin);
     input.amount = 1'200'000;
+    input.totalAmount = 1'200'000;
     input.useMaxAmount = false;
     input.byteFee = 1;
     input.toAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00";
@@ -1301,6 +1312,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_400) {
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = false;
     input.amount = 300'000;
+    input.totalAmount = 300'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
     input.changeAddress = ownAddress;
@@ -1370,6 +1382,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_2000) {
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = false;
     input.amount = 2'000'000;
+    input.totalAmount = 2'000'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
     input.changeAddress = ownAddress;
@@ -1515,6 +1528,7 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.amount = 26972;
+    input.totalAmount = 26972;
     input.useMaxAmount = true;
     input.byteFee = 1;
     input.toAddress = addressString;
@@ -1560,6 +1574,7 @@ TEST(BitcoinSigning, SignP2TR_5df51e) {
     SigningInput input;
     input.hashType = hashTypeForCoin(coin);
     input.amount = 1100;
+    input.totalAmount = 1100;
     input.useMaxAmount = false;
     input.byteFee = 1;
     input.toAddress = toAddress;
@@ -1703,6 +1718,7 @@ TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.amount = toAmount;
+    input.totalAmount = toAmount;
     input.byteFee = byteFee;
     input.toAddress = toAddress;
     input.changeAddress = ownAddressString;

@@ -37,7 +37,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Data Signer::encode(const Transaction& transaction) noexcept {
+Data Signer::encode(const Transaction& transaction) const {
     const uint64_t nonce = 0;
     const uint256_t gasPrice = 0;
     const uint64_t gasLimit = 0;
@@ -67,4 +67,45 @@ Data Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) 
     return signature;
 }
 
+Transaction Signer::buildTransaction() const{
+    auto publicKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeSECP256k1Extended);
+    auto from = Ethereum::Address(publicKey);
+
+    auto transaction = Transaction(
+        /* from: */ from,
+        /* to: */ Ethereum::Address(input.to_address()),
+        /* thetaAmount: */ load(input.theta_amount()),
+        /* tfuelAmount: */ load(input.tfuel_amount()),
+        /* sequence: */ input.sequence(),
+        /* feeAmount: */ load(input.fee()));
+    return transaction;
+}
+
+Data Signer::signaturePreimage() const {
+    return encode(this->buildTransaction());
+}
+
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const{
+    // validate public key
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+        throw std::invalid_argument("Invalid public key");
+    }
+    {
+        // validate correctness of signature
+        auto preImage = signaturePreimage();
+        auto preImageHash = Hash::keccak256(preImage);
+        if (!publicKey.verify(signature, preImageHash)) {
+            throw std::invalid_argument("Invalid signature/hash/publickey combination");
+        }
+    }
+    auto from = Ethereum::Address(publicKey);
+    auto protoOutput = Proto::SigningOutput();
+    auto transaction = buildTransaction();
+    transaction.setSignature(from, signature);
+    auto encoded = transaction.encode();
+
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+    protoOutput.set_signature(signature.data(), signature.size());
+    return protoOutput;
+}
 } // namespace TW::Theta

@@ -43,4 +43,37 @@ Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexce
     return Data(signature.begin(), signature.end());
 }
 
+Data Signer::buildUnsignedTx(const Proto::SigningInput& input) noexcept {
+    auto transaction = Transaction();
+    transaction.chainTag = static_cast<uint8_t>(input.chain_tag());
+    transaction.blockRef = input.block_ref();
+    transaction.expiration = input.expiration();
+    for (auto& clause : input.clauses()) {
+        transaction.clauses.emplace_back(clause);
+    }
+    transaction.gasPriceCoef = static_cast<uint8_t>(input.gas_price_coef());
+    transaction.gas = input.gas();
+    transaction.dependsOn = Data(input.depends_on().begin(), input.depends_on().end());
+    transaction.nonce = input.nonce();
+
+    return transaction.encode();
+}
+
+Data Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept {
+    auto transaction = Transaction();
+    transaction.chainTag = static_cast<uint8_t>(input.chain_tag());
+    transaction.blockRef = input.block_ref();
+    transaction.expiration = input.expiration();
+    for (auto& clause : input.clauses()) {
+        transaction.clauses.emplace_back(clause);
+    }
+    transaction.gasPriceCoef = static_cast<uint8_t>(input.gas_price_coef());
+    transaction.gas = input.gas();
+    transaction.dependsOn = Data(input.depends_on().begin(), input.depends_on().end());
+    transaction.nonce = input.nonce();
+    transaction.signature = signature;
+
+    return transaction.encode();
+}
+
 } // namespace TW::VeChain

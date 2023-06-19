@@ -28,6 +28,8 @@ class Signer {
     std::string sign() const noexcept;
 
     Data encode(const Proto::SigningInput& input) const;
+    Data signaturePreimage() const;
+    Proto::SigningOutput compile(const Data& sig) const;
 
   private:
     static uint32_t operationType(const Proto::SigningInput& input);

@@ -51,11 +51,41 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.json();
 }
 
+TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
+    auto pubkey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeSECP256k1Extended);
+    auto tx = Signer::buildTx(pubkey, input);
+    return tx.cid();
+}
+
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+    auto tx = Signer::buildTx(publicKey, input);
+    const auto json = tx.serialize(Transaction::SignatureType::SECP256K1, signature);
+    
+    // Return Protobuf output.
+    Proto::SigningOutput output;
+    output.set_json(json.data(), json.size());
+    return output;
+}
+
 Proto::SigningOutput Signer::signSecp256k1(const Proto::SigningInput& input) {
     // Load private key and transaction from Protobuf input.
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
-    Address from_address = Address::secp256k1Address(pubkey);
+
+    auto transaction = Signer::buildTx(pubkey, input);
+
+    // Sign transaction.
+    auto signature = sign(key, transaction);
+    const auto json = transaction.serialize(Transaction::SignatureType::SECP256K1, signature);
+
+    // Return Protobuf output.
+    Proto::SigningOutput output;
+    output.set_json(json.data(), json.size());
+    return output;
+}
+
+Transaction Signer::buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+    Address from_address = Address::secp256k1Address(publicKey);
     Address to_address(input.to());
 
     // Load the transaction params.
@@ -67,26 +97,19 @@ Proto::SigningOutput Signer::signSecp256k1(const Proto::SigningInput& input) {
         method = Transaction::MethodType::INVOKE_EVM;
     }
 
-    Transaction transaction(
-        /* to */         to_address,
-        /* from */       from_address,
-        /* nonce */      input.nonce(),
-        /* value */      load(input.value()),
-        /* gasLimit */   input.gas_limit(),
-        /* gasFeeCap */  load(input.gas_fee_cap()),
-        /* gasPremium */ load(input.gas_premium()),
-        /* method */     method,
-        /* params */     params
-    );
-
-    // Sign transaction.
-    auto signature = sign(key, transaction);
-    const auto json = transaction.serialize(Transaction::SignatureType::SECP256K1, signature);
-
-    // Return Protobuf output.
-    Proto::SigningOutput output;
-    output.set_json(json.data(), json.size());
-    return output;
+    return {
+        Transaction(
+            /* to */         to_address,
+            /* from */       from_address,
+            /* nonce */      input.nonce(),
+            /* value */      load(input.value()),
+            /* gasLimit */   input.gas_limit(),
+            /* gasFeeCap */  load(input.gas_fee_cap()),
+            /* gasPremium */ load(input.gas_premium()),
+            /* method */     method,
+            /* params */     params
+        )
+    };
 }
 
 /// https://github.com/filecoin-project/lotus/blob/ce17546a762eef311069e13410d15465d832a45e/chain/messagesigner/messagesigner.go#L197-L211

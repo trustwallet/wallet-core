@@ -14,33 +14,33 @@
 
 namespace TW::NEO {
 
-class TransactionAttribute : public Serializable {
+class TransactionAttribute final: public Serializable {
 public:
     TransactionAttributeUsage usage = TAU_ContractHash;
     Data _data;
 
-    virtual ~TransactionAttribute() {}
+    ~TransactionAttribute() override = default;
 
-    int64_t size() const override {
+    size_t size() const override {
         switch (usage) {
         case TransactionAttributeUsage::TAU_ContractHash:
         case TransactionAttributeUsage::TAU_ECDH02:
         case TransactionAttributeUsage::TAU_ECDH03:
         case TransactionAttributeUsage::TAU_Vote:
-            return 1 + contractHashSize;
+            return 1UL + contractHashSize;
         case TransactionAttributeUsage::TAU_Script:
-            return 1 + scriptHashSize;
+            return 1UL + scriptHashSize;
         default:
             if (usage >= TransactionAttributeUsage::TAU_Hash1 &&
                 usage <= TransactionAttributeUsage::TAU_Hash15) {
                 return 1 + contractHashSize;
             }
-            return 1 + varIntSize(_data.size()) + _data.size();
+            return 1UL + static_cast<size_t>(varIntSize(_data.size())) + _data.size();
         }
     }
 
-    void deserialize(const Data& data, int initial_pos = 0) override {
-        if (static_cast<int>(data.size()) < initial_pos + 1) {
+    void deserialize(const Data& data, size_t initial_pos = 0) override {
+        if (data.size() < initial_pos + 1) {
             throw std::invalid_argument("Invalid data for deserialization");
         }
 

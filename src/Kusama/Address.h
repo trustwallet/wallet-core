@@ -27,4 +27,3 @@ class Address: public SS58Address {
     Address(const PublicKey& publicKey): SS58Address(publicKey, TWSS58AddressTypeKusama) {}
 };
 } // namespace TW::Kusama
-

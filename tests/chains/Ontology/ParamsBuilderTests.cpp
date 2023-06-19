@@ -11,7 +11,9 @@
 #include "Ontology/Ont.h"
 #include "Ontology/ParamsBuilder.h"
 
+#include <algorithm>
 #include <gtest/gtest.h>
+#include <iostream>
 
 namespace TW::Ontology::tests {
 
@@ -31,6 +33,7 @@ TEST(ParamsBuilder, pushInt) {
                                     4294967296,
                                     68719476735,
                                     68719476736,
+                                    281474976710655,
                                     72057594037927935,
                                     1152921504606846975};
     std::vector<std::string> codeVector{"00",
@@ -48,6 +51,7 @@ TEST(ParamsBuilder, pushInt) {
                                         "050000000001",
                                         "05ffffffff0f",
                                         "050000000010",
+                                        "07ffffffffffff00",
                                         "08ffffffffffffff00",
                                         "08ffffffffffffff0f"};
     for (auto index = 0ul; index < numVector.size(); index++) {

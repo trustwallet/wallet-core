@@ -18,7 +18,10 @@ enum SystemInstruction {
     CreateAccount,
     Assign,
     Transfer,
-    CreateAccountWithSeed
+    CreateAccountWithSeed,
+    AdvanceNonceAccount,
+    WithdrawNonceAccount,
+    InitializeNonceAccount
 };
 
 // Stake instruction types
@@ -128,6 +131,53 @@ struct Instruction {
         auto data = TW::data(memo);
         std::vector<AccountMeta> accounts; // empty
         return Instruction(Address(MEMO_PROGRAM_ID_ADDRESS), accounts, data);
+    }
+
+    // create a system advance nonce account instruction to update nonce
+    static Instruction advanceNonceAccount(const Address authorizer, const Address nonceAccount) {
+        std::vector<AccountMeta> accountMetas = {
+            AccountMeta(nonceAccount, false, false),
+            AccountMeta(Address(SYSVAR_RECENT_BLOCKHASHS_ADDRESS), false, true),
+            AccountMeta(authorizer, true, true),
+        };
+        const SystemInstruction type = AdvanceNonceAccount;
+        auto data = Data();
+        encode32LE(static_cast<uint32_t>(type), data);
+
+        return Instruction(Address(SYSTEM_PROGRAM_ID_ADDRESS), accountMetas, data);
+    }
+
+    // create a System initialize nonce instruction
+    static Instruction createInitializeNonce(const std::vector<AccountMeta>& accounts,
+                                             const Address authorizer) {
+        const SystemInstruction type = InitializeNonceAccount;
+        auto data = Data();
+        encode32LE(static_cast<uint32_t>(type), data);
+        append(data, authorizer.vector());
+
+        return Instruction(Address(SYSTEM_PROGRAM_ID_ADDRESS), accounts, data);
+    }
+
+    // create a system create account instruction
+    static Instruction createAccount(const std::vector<AccountMeta>& accounts, uint64_t value,
+                                     uint64_t space, const Address owner) {
+        const SystemInstruction type = CreateAccount;
+        auto data = Data();
+        encode32LE(static_cast<uint32_t>(type), data);
+        encode64LE(static_cast<uint64_t>(value), data);
+        encode64LE(static_cast<uint64_t>(space), data);
+        append(data, owner.vector());
+
+        return Instruction(Address(SYSTEM_PROGRAM_ID_ADDRESS), accounts, data);
+    }
+
+    static Instruction withdrawNonceAccount(const std::vector<AccountMeta>& accounts,
+                                            uint64_t value) {
+        const SystemInstruction type = WithdrawNonceAccount;
+        auto data = Data();
+        encode32LE(static_cast<uint32_t>(type), data);
+        encode64LE(static_cast<uint64_t>(value), data);
+        return Instruction(Address(SYSTEM_PROGRAM_ID_ADDRESS), accounts, data);
     }
 };
 
