@@ -39,7 +39,7 @@ pub const REVEAL_RAW_P2: &str = "5b0063036f7264010118746578742f706c61696e3b63686
 // Used for transfering the Inscription ("BRC20 transfer").
 // https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
 pub use skip::*;
-// We skip formatting for the `skip` module, re-exporting everything
+// We skip formatting for the `skip` module, re-exporting everything.
 #[rustfmt::skip]
 mod skip {
 pub const TRANSFER_TXID_INSCRIPTION: &str = "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca";
