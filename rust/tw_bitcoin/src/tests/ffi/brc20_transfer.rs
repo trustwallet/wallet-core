@@ -1,6 +1,6 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::ffi::{taproot_build_and_sign_transaction, tw_build_brc20_inscribe_transfer};
-use crate::tests::ffi::{
+use crate::tests::ffi::utils::{
     ffi_build_p2wpkh_script, reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder,
 };
 use crate::tests::p2pkh::ALICE_WIF;
