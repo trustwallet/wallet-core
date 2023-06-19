@@ -13,15 +13,15 @@ pub struct BRC20Payload<T> {
     inner: T,
 }
 
-impl<T: Serialize> BRC20Payload<T> {
-    /// Serialize the BRC20 payload and place it into the Ordinals Inscription.
-    pub fn to_inscription(&self, recipient: Recipient<PublicKey>) -> Result<OrdinalsInscription> {
-        let data = serde_json::to_vec(self).map_err(|_| Error::Todo)?;
-        let inscription = OrdinalsInscription::new(Self::MIME, &data, recipient)?;
-
-        Ok(inscription)
-    }
+impl<T> BRC20Payload<T> {
+    const PROTOCOL_ID: &str = "brc-20";
+    const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
+
+// Convenience aliases.
+pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
+pub type BRC20MintPayload = BRC20Payload<MintPayload>;
+pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ticker(String);
@@ -49,15 +49,6 @@ impl TryFrom<String> for Ticker {
     fn try_from(string: String) -> Result<Self> {
         Self::new(string)
     }
-}
-
-pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
-pub type BRC20MintPayload = BRC20Payload<MintPayload>;
-pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
-
-impl<T> BRC20Payload<T> {
-    const PROTOCOL_ID: &str = "brc-20";
-    const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
 
 impl BRC20DeployPayload {
@@ -183,8 +174,8 @@ impl BRC20TransferInscription {
     }
 }
 
-/// The structure is the same as `TransferPayload`, we'll keep it separate for
-/// clarity.
+/// The structure is the same as `TransferPayload`, but we'll keep it separate
+/// for clarity.
 #[derive(Serialize, Deserialize)]
 pub struct MintPayload {
     pub tick: Ticker,
