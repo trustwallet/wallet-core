@@ -15,10 +15,10 @@ use tw_proto::Bitcoin::Proto::{
     SigningInput, TransactionOutput, TransactionPlan, TransactionVariant, UnspentTransaction,
 };
 
-fn ffi_build_p2wpkh_script<'a>(
+fn ffi_build_p2wpkh_script(
     satoshis: u64,
     recipient: &Recipient<PublicKey>,
-) -> TransactionOutput<'a> {
+) -> TransactionOutput {
     let pubkey = recipient.public_key().to_bytes();
 
     let raw = unsafe {
