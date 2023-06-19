@@ -1,15 +1,13 @@
 use super::ffi_build_p2wpkh_script;
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::ffi::{taproot_build_and_sign_transaction, tw_build_brc20_inscribe_transfer};
-use crate::tests::ffi::{ProtoSigningInputBuilder, ProtoTransactionBuilder};
+use crate::tests::ffi::{reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder};
 use crate::tests::p2pkh::ALICE_WIF;
 use crate::{keypair_from_wif, Recipient, TXOutputP2TRScriptPath};
 use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_encoding::hex;
-use tw_proto::Bitcoin::Proto::{
-    SigningInput, TransactionOutput, TransactionPlan, TransactionVariant, UnspentTransaction,
-};
+use tw_proto::Bitcoin::Proto::{TransactionOutput, TransactionVariant};
 
 #[test]
 fn build_ffi_brc20_transfer_script() {
@@ -72,11 +70,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
         .to_byte_array();
 
     // Note that the Txid must be reversed.
-    let txid: Vec<u8> = hex::decode(COMMIT_TXID)
-        .unwrap()
-        .into_iter()
-        .rev()
-        .collect();
+    let txid = reverse_txid(COMMIT_TXID);
 
     // Build input script.
     let input_p2wpkh = ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
@@ -143,11 +137,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
         .to_byte_array();
 
     // Note that the Txid must be reversed.
-    let txid: Vec<u8> = hex::decode(REVEAL_TXID)
-        .unwrap()
-        .into_iter()
-        .rev()
-        .collect();
+    let txid = reverse_txid(REVEAL_TXID);
 
     // Build input script.
     let alice_pubkey = alice_recipient.public_key().to_bytes();
@@ -213,18 +203,10 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
 
     // The Txid to reference the Inscription.
     // Note that the Txid must be reversed.
-    let txid_inscription: Vec<u8> = hex::decode(TRANSFER_TXID_INSCRIPTION)
-        .unwrap()
-        .into_iter()
-        .rev()
-        .collect();
+    let txid_inscription = reverse_txid(TRANSFER_TXID_INSCRIPTION);
 
     // The Txid for paying fees.
-    let txid_for_fees: Vec<u8> = hex::decode(TRANSFER_TXID_FOR_FEES)
-        .unwrap()
-        .into_iter()
-        .rev()
-        .collect();
+    let txid_for_fees = reverse_txid(TRANSFER_TXID_FOR_FEES);
 
     // Build input script for Inscription transfer.
     let input_transfer = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
