@@ -39,10 +39,9 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
         .unwrap_or_default();
 
     let proto: SigningInput = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
-    let transaction = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
+    let signing = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
-    let serialized =
-        tw_proto::serialize(&transaction).expect("failed to serialize signed transaction");
+    let serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
 
     CByteArray::from(serialized)
 }
@@ -207,7 +206,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
         })
     }
 
-    let mut transaction = SigningOutput {
+    let mut signing = SigningOutput {
         transaction: Some(Transaction {
             version,
             lockTime: lock_time,
@@ -222,9 +221,9 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
 
     // Sign transaction and return array.
     let signed = tx.serialize()?;
-    transaction.encoded = Cow::from(signed);
+    signing.encoded = Cow::from(signed);
 
-    Ok(transaction)
+    Ok(signing)
 }
 
 #[repr(C)]
