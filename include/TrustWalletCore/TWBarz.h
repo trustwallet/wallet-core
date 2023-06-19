@@ -43,9 +43,10 @@ TWData *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull facto
 /// Converts the original ASN-encoded signature from webauthn to the format accepted by Barz
 ///
 /// \param signature Original signature
-/// \param authenticatorData Hex encoded authenticator data
-/// \param origin URL of the origin from clientDataJSON
+/// \param challenge The original challenge that was signed
+/// \param authenticatorData Returned from Webauthn API
+/// \param clientDataJSON Returned from Webauthn API
 /// \return Bytes of the formatted signature
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetFormattedSignature(TWData* _Nonnull signature, TWData* _Nonnull authenticatorData, TWString* _Nonnull origin);
+TWData *_Nonnull TWBarzGetFormattedSignature(TWData* _Nonnull signature, TWData* _Nonnull challenge, TWData* _Nonnull authenticatorData, TWString* _Nonnull clientDataJSON);
 TW_EXTERN_C_END
