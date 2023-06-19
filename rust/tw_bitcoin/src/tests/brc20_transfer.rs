@@ -94,8 +94,6 @@ fn brc20_transfer() {
 
     // Encode the signed transaction.
     let hex = hex::encode(&transaction, false);
-    dbg!(&hex);
-
     assert_eq!(hex, COMMIT_TX_RAW);
 
     // # Reveal transfer.
@@ -131,7 +129,6 @@ fn brc20_transfer() {
 
     // Encode the signed transaction.
     let hex = hex::encode(&transaction, false);
-    dbg!(&hex);
 
     assert_eq!(
         REVEAL_RAW,
@@ -191,7 +188,5 @@ fn brc20_transfer() {
 
     // Encode the signed transaction.
     let hex = hex::encode(&transaction, false);
-    dbg!(&hex);
-
     assert_eq!(hex, TRANSFER_RAW);
 }

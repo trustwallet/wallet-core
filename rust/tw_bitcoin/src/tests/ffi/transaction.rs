@@ -48,7 +48,7 @@ pub fn proto_sign_input_p2pkh_output_p2pkh() {
         .build();
 
     let signed = taproot_build_and_sign_transaction(signing).unwrap();
-    assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
+    assert_eq!(hex::encode(&signed.encoded, false), TX_RAW);
 }
 
 #[test]
@@ -91,7 +91,7 @@ pub fn proto_sign_input_p2pkh_output_p2wpkh() {
         .build();
 
     let signed = taproot_build_and_sign_transaction(signing).unwrap();
-    assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
+    assert_eq!(hex::encode(&signed.encoded, false), TX_RAW);
 }
 
 #[test]
@@ -106,11 +106,11 @@ pub fn proto_sign_input_p2pkh_output_p2tr_key_path() {
     let bob = keypair_from_wif(BOB_WIF).unwrap();
     let bob_recipient = Recipient::<PublicKey>::from_keypair(&bob);
 
-    let txid = reverse_txid(TXID);
+    let txid = reverse_txid(FIRST_TXID);
 
     // Prepare the scripts.
     let input = call_ffi_build_p2pkh_script(FULL_SATOSHIS, &alice_recipient);
-    let output = call_ffi_build_p2tr_key_path_script(SEND_SATOSHIS, &bob_recipient);
+    let output = call_ffi_build_p2tr_key_path_script(SEND_SATOSHIS_TO_BOB, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -127,12 +127,12 @@ pub fn proto_sign_input_p2pkh_output_p2tr_key_path() {
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output.script)
-                .satoshis(SEND_SATOSHIS)
+                .satoshis(SEND_SATOSHIS_TO_BOB)
                 .variant(TransactionVariant::P2TRKEYPATH)
                 .build(),
         )
         .build();
 
     let signed = taproot_build_and_sign_transaction(signing).unwrap();
-    assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
+    assert_eq!(hex::encode(&signed.encoded, false), FIRST_TX_RAW);
 }
