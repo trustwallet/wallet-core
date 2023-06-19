@@ -31,9 +31,9 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
         spendingScript: Cow::default(),
     };
 
-    let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
 
-    CByteArray::from(serialize)
+    CByteArray::from(serialized)
 }
 
 #[no_mangle]
@@ -61,9 +61,9 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
         spendingScript: Cow::default(),
     };
 
-    let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
 
-    CByteArray::from(serialize)
+    CByteArray::from(serialized)
 }
 
 #[no_mangle]
@@ -88,9 +88,9 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
         spendingScript: Cow::default(),
     };
 
-    let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
 
-    CByteArray::from(serialize)
+    CByteArray::from(serialized)
 }
 
 #[no_mangle]
@@ -134,7 +134,7 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
         spendingScript: Cow::from(spending_script.as_bytes()),
     };
 
-    let serialize = tw_proto::serialize(&proto).expect("failed to serialize transaction output");
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
 
-    CByteArray::from(serialize)
+    CByteArray::from(serialized)
 }
