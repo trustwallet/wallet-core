@@ -369,6 +369,34 @@ void Script::encode(Data& data) const {
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
+Data Script::encodeNumber(int64_t n) {
+    Data result;
+    // check bitcoin Script::push_int64
+    if (n == -1 || (n >= 1 && n <= 16)) {
+        result.push_back(OP_1 + uint8_t(n - 1));
+        return result;
+    }
+    if (n == 0) {
+        result.push_back(OP_0);
+        return result;
+    }
+
+    const bool neg = n < 0;
+    uint64_t absvalue = neg ? -n : n;
+
+    while (absvalue) {
+        result.push_back(absvalue & 0xff);
+        absvalue >>= 8;
+    }
+
+    if (result.back() & 0x80) {
+        result.push_back(neg ? 0x80 : 0);
+    } else if (neg) {
+        result.back() |= 0x80;
+    }
+    return result;
+}
+
 bool isLtcP2sh(enum TWCoinType coin, byte start) {
     // For ltc, we need to support legacy p2sh which starts with 5.
     // Here we check prefix 5 and 50 in case of wallet-core changing its config value.

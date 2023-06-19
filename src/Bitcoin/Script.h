@@ -138,33 +138,7 @@ class Script {
     }
 
     /// Encodes an integer
-    static inline Data encodeNumber(int64_t n) {
-        Data result;
-        // check bitcoin Script::push_int64
-        if (n == -1 || (n >= 1 && n <= 16)) {
-            result.push_back(OP_1 + uint8_t(n - 1));
-            return result;
-        }
-        if (n == 0) {
-            result.push_back(OP_0);
-            return result;
-        }
-
-        const bool neg = n < 0;
-        uint64_t absvalue = neg ? -n : n;
-
-        while (absvalue) {
-            result.push_back(absvalue & 0xff);
-            absvalue >>= 8;
-        }
-
-        if (result.back() & 0x80) {
-            result.push_back(neg ? 0x80 : 0);
-        } else if (neg) {
-            result.back() |= 0x80;
-        }
-        return result;
-    }
+    static Data encodeNumber(int64_t n);
 
     /// Decodes a small integer
     static inline int decodeNumber(uint8_t opcode) {
