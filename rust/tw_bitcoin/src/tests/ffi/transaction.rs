@@ -1,24 +1,18 @@
 use crate::ffi::taproot_build_and_sign_transaction;
-use crate::tests::ffi::{ProtoSigningInputBuilder, ProtoTransactionBuilder};
+use crate::tests::ffi::{reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder};
 use crate::{keypair_from_wif, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
-use std::borrow::Cow;
 use tw_encoding::hex;
-use tw_proto::Bitcoin::Proto::{
-    SigningInput, TransactionPlan, TransactionVariant, UnspentTransaction,
-};
+use tw_proto::Bitcoin::Proto::TransactionVariant;
 
 #[test]
 fn proto_sign_input_p2pkh_output_p2pkh() {
-    use crate::tests::p2pkh::{
-        ALICE_WIF, BOB_WIF, EXPECTED_RAW_SIGNED, FULL_AMOUNT, SEND_AMOUNT, TXID,
-    };
+    use crate::tests::p2pkh::*;
 
     let alice: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
-    // Note that the Txid must be reversed.
-    let txid: Vec<u8> = hex::decode(TXID).unwrap().into_iter().rev().collect();
+    let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
     // Note that here the input and outputs script are identical (in_script =
@@ -54,16 +48,13 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
 
 #[test]
 fn proto_sign_input_p2pkh_output_p2wpkh() {
-    use crate::tests::p2wpkh::{
-        ALICE_WIF, BOB_WIF, EXPECTED_RAW_SIGNED, FULL_AMOUNT, SEND_TO_BOB, TXID,
-    };
+    use crate::tests::p2wpkh::*;
 
     let alice: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
-    // Note that the Txid must be reversed.
-    let txid: Vec<u8> = hex::decode(TXID).unwrap().into_iter().rev().collect();
+    let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
     let in_script = TxInputP2PKH::only_script(alice.into());
@@ -96,16 +87,13 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
 
 #[test]
 fn proto_sign_input_p2pkh_output_p2tr_key_path() {
-    use crate::tests::p2tr_key_path::{
-        ALICE_WIF, BOB_WIF, EXPECTED_RAW_SIGNED, FULL_AMOUNT, SEND_TO_BOB, TXID,
-    };
+    use crate::tests::p2tr_key_path::*;
 
     let alice: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
-    // Note that the Txid must be reversed.
-    let txid: Vec<u8> = hex::decode(TXID).unwrap().into_iter().rev().collect();
+    let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
     let in_script = TxInputP2PKH::only_script(alice.into());

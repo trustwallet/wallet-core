@@ -1,7 +1,6 @@
 use crate::ffi::tw_build_p2wpkh_script;
 use crate::Recipient;
-use bitcoin::{PublicKey, Txid};
-use secp256k1::hashes::Hash;
+use bitcoin::PublicKey;
 use std::borrow::Cow;
 use tw_proto::Bitcoin::Proto::{
     OutPoint, SigningInput, TransactionOutput, TransactionPlan, TransactionVariant,
@@ -11,6 +10,16 @@ use tw_proto::Bitcoin::Proto::{
 mod brc20_transfer;
 mod scripts;
 mod transaction;
+
+/// Convenience function for reversing the Txid before it's being passed on to
+/// the FFI.
+fn reverse_txid(txid: &str) -> Vec<u8> {
+    tw_encoding::hex::decode(txid)
+        .unwrap()
+        .into_iter()
+        .rev()
+        .collect()
+}
 
 /// Convenience wrapper over `tw_build_p2wpkh_script` with Protobuf
 /// deserialization support.
@@ -42,8 +51,10 @@ struct ProtoSigningInputBuilder<'a> {
 
 impl<'a> ProtoSigningInputBuilder<'a> {
     fn new() -> Self {
-        let mut signing = SigningInput::default();
-        signing.plan = Some(TransactionPlan::default());
+        let signing = SigningInput {
+            plan: Some(TransactionPlan::default()),
+            ..Default::default()
+        };
 
         ProtoSigningInputBuilder { inner: signing }
     }
@@ -70,8 +81,10 @@ struct ProtoTransactionBuilder<'a> {
 
 impl<'a> ProtoTransactionBuilder<'a> {
     fn new() -> Self {
-        let mut unspent = UnspentTransaction::default();
-        unspent.out_point = Some(OutPoint::default());
+        let unspent = UnspentTransaction {
+            out_point: Some(OutPoint::default()),
+            ..Default::default()
+        };
 
         ProtoTransactionBuilder { inner: unspent }
     }
