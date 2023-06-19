@@ -15,6 +15,27 @@ use tw_proto::Bitcoin::Proto::{
     SigningInput, TransactionOutput, TransactionPlan, TransactionVariant, UnspentTransaction,
 };
 
+fn ffi_build_p2wpkh_script<'a>(
+    satoshis: u64,
+    recipient: &Recipient<PublicKey>,
+) -> TransactionOutput<'a> {
+    let pubkey = recipient.public_key().to_bytes();
+
+    let raw = unsafe {
+        tw_build_p2wpkh_script(satoshis as i64, pubkey.as_ptr(), pubkey.len()).into_vec()
+    };
+
+    let des: TransactionOutput = tw_proto::deserialize(&raw).unwrap();
+
+    // We convert the referenced data into owned data since `raw` goes out of
+    // scope at the end of the function.
+    TransactionOutput {
+        value: des.value,
+        script: des.script.into_owned().into(),
+        spendingScript: des.spendingScript.into_owned().into(),
+    }
+}
+
 #[test]
 fn build_ffi_p2pkh_script() {
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
@@ -49,13 +70,7 @@ fn build_ffi_p2wpkh_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let alice_pubkey = recipient.public_key().to_bytes();
-    let array = unsafe {
-        tw_build_p2wpkh_script(satoshis as i64, alice_pubkey.as_ptr(), alice_pubkey.len())
-            .into_vec()
-    };
-
-    let ffi_der: TransactionOutput = tw_proto::deserialize(&array).unwrap();
+    let transaction = ffi_build_p2wpkh_script(satoshis, &recipient);
 
     // Compare with native call.
     let tx_out = TxOutputP2WPKH::new(satoshis, recipient.try_into().unwrap());
@@ -65,7 +80,7 @@ fn build_ffi_p2wpkh_script() {
         spendingScript: Cow::default(),
     };
 
-    assert_eq!(ffi_der, proto);
+    assert_eq!(transaction, proto);
 }
 
 #[test]
@@ -401,6 +416,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let alice_privkey = alice.secret_bytes();
     let alice_recipient = Recipient::<PublicKey>::from(&alice);
+    let alice_pubkey = alice_recipient.public_key().to_bytes();
 
     let ticker = Ticker::new(BRC20_TICKER.to_string())
         .unwrap()
@@ -414,16 +430,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
         .collect();
 
     // Build input script.
-    let alice_pubkey = alice_recipient.public_key().to_bytes();
-    let input_p2wpkh = unsafe {
-        tw_build_p2wpkh_script(
-            FULL_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let input_p2wpkh: TransactionOutput = tw_proto::deserialize(&input_p2wpkh).unwrap();
+    let input_p2wpkh = ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
 
     // Build inscription output.
     let output_inscribe = unsafe {
@@ -439,15 +446,7 @@ fn proto_sign_brc20_transfer_inscription_commit() {
     let output_inscribe: TransactionOutput = tw_proto::deserialize(&output_inscribe).unwrap();
 
     // Build change output.
-    let output_change = unsafe {
-        tw_build_p2wpkh_script(
-            FOR_FEE_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let output_change: TransactionOutput = tw_proto::deserialize(&output_change).unwrap();
+    let output_change = ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
 
     // Construct Protobuf payload.
     let input = SigningInput {
