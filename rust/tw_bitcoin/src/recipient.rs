@@ -9,40 +9,52 @@ use bitcoin::{
     Address, Network, PubkeyHash, WPubkeyHash,
 };
 
+/// This type is used to specify the recipient of a Bitcoin transaction,
+/// depending on the required information that's required. For example, P2PKH
+/// only requires the public key hash (`Recipient<PubkeyHash>`), while P2TR
+/// key-path requires the actual (tweaked) public key (`Recipient<TweakedPublicKey>`).
+///
+/// The recipient can easily downgrade, such as
+/// ```rust,ignore
+/// let pubkey = Recipient::<PublicKey>::from_keypair(keypair);
+/// let hash: Recipient<PubkeyHash> = pubkey.into();
+/// ```
+///
+/// But it cannot, for example, derive a public key from just the hash.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Recipient<T> {
-    t: T,
+    inner: T,
 }
 
 impl Recipient<PublicKey> {
     pub fn from_keypair(keypair: &KeyPair) -> Self {
         Recipient {
-            t: PublicKey::new(keypair.public_key()),
+            inner: PublicKey::new(keypair.public_key()),
         }
     }
     pub fn public_key(&self) -> PublicKey {
-        self.t
+        self.inner
     }
     pub fn pubkey_hash(&self) -> PubkeyHash {
-        PubkeyHash::from(self.t)
+        PubkeyHash::from(self.inner)
     }
     pub fn wpubkey_hash(&self) -> Result<WPubkeyHash> {
-        self.t.wpubkey_hash().ok_or(Error::Todo)
+        self.inner.wpubkey_hash().ok_or(Error::Todo)
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
-        tweak_pubkey(self.t)
+        tweak_pubkey(self.inner)
     }
     pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
-        XOnlyPublicKey::from(self.t.inner)
+        XOnlyPublicKey::from(self.inner.inner)
     }
     pub fn legacy_address(&self, network: Network) -> Address {
-        Address::p2pkh(&self.t, network)
+        Address::p2pkh(&self.inner, network)
     }
     pub fn segwit_address(&self, network: Network) -> Result<Address> {
-        Address::p2wpkh(&self.t, network).map_err(|_| Error::Todo)
+        Address::p2wpkh(&self.inner, network).map_err(|_| Error::Todo)
     }
     pub fn taproot_address(&self, network: Network) -> Address {
-        let untweaked = UntweakedPublicKey::from(self.t.inner);
+        let untweaked = UntweakedPublicKey::from(self.inner.inner);
         Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, network)
     }
     pub fn legacy_address_string(&self, network: Network) -> String {
@@ -58,28 +70,28 @@ impl Recipient<PublicKey> {
 
 impl Recipient<PubkeyHash> {
     pub fn pubkey_hash(&self) -> &PubkeyHash {
-        &self.t
+        &self.inner
     }
 }
 
 impl Recipient<WPubkeyHash> {
     pub fn from_slice(slice: &[u8]) -> Result<Self> {
         Ok(Recipient {
-            t: PublicKey::from_slice(slice)
+            inner: PublicKey::from_slice(slice)
                 .map_err(|_| Error::Todo)?
                 .wpubkey_hash()
                 .ok_or(Error::Todo)?,
         })
     }
     pub fn wpubkey_hash(&self) -> &WPubkeyHash {
-        &self.t
+        &self.inner
     }
 }
 
 impl Recipient<PublicKey> {
     pub fn from_slice(slice: &[u8]) -> Result<Self> {
         Ok(Recipient {
-            t: PublicKey::from_slice(slice).map_err(|_| Error::Todo)?,
+            inner: PublicKey::from_slice(slice).map_err(|_| Error::Todo)?,
         })
     }
 }
@@ -93,8 +105,8 @@ impl FromStr for Recipient<PublicKey> {
 }
 
 impl From<PublicKey> for Recipient<PublicKey> {
-    fn from(t: PublicKey) -> Self {
-        Recipient { t }
+    fn from(inner: PublicKey) -> Self {
+        Recipient { inner }
     }
 }
 
@@ -107,7 +119,7 @@ impl From<KeyPair> for Recipient<PublicKey> {
 impl From<&KeyPair> for Recipient<PublicKey> {
     fn from(keypair: &KeyPair) -> Self {
         Recipient {
-            t: PublicKey::new(keypair.public_key()),
+            inner: PublicKey::new(keypair.public_key()),
         }
     }
 }
@@ -115,14 +127,14 @@ impl From<&KeyPair> for Recipient<PublicKey> {
 impl From<PublicKey> for Recipient<TweakedPublicKey> {
     fn from(pubkey: PublicKey) -> Self {
         let tweaked = tweak_pubkey(pubkey);
-        Recipient { t: tweaked }
+        Recipient { inner: tweaked }
     }
 }
 
 impl From<Recipient<PublicKey>> for Recipient<TweakedPublicKey> {
     fn from(recipient: Recipient<PublicKey>) -> Self {
         Recipient {
-            t: Self::from(recipient.t).t,
+            inner: Self::from(recipient.inner).inner,
         }
     }
 }
@@ -138,7 +150,9 @@ impl From<&KeyPair> for Recipient<TweakedPublicKey> {
         let pk = Recipient::<PublicKey>::from(keypair);
         let tweaked = Recipient::<TweakedPublicKey>::from(pk);
 
-        Recipient { t: tweaked.t }
+        Recipient {
+            inner: tweaked.inner,
+        }
     }
 }
 
@@ -147,7 +161,7 @@ impl TryFrom<PublicKey> for Recipient<WPubkeyHash> {
 
     fn try_from(pubkey: PublicKey) -> Result<Self> {
         Ok(Recipient {
-            t: pubkey.wpubkey_hash().unwrap(),
+            inner: pubkey.wpubkey_hash().unwrap(),
         })
     }
 }
@@ -157,7 +171,7 @@ impl TryFrom<Recipient<PublicKey>> for Recipient<WPubkeyHash> {
 
     fn try_from(recipient: Recipient<PublicKey>) -> Result<Self> {
         Ok(Recipient {
-            t: Self::try_from(recipient.t)?.t,
+            inner: Self::try_from(recipient.inner)?.inner,
         })
     }
 }
@@ -167,7 +181,7 @@ impl TryFrom<&KeyPair> for Recipient<WPubkeyHash> {
 
     fn try_from(keypair: &KeyPair) -> Result<Self> {
         let pubkey = Recipient::<PublicKey>::from(keypair);
-        Self::try_from(pubkey.t)
+        Self::try_from(pubkey.inner)
     }
 }
 
@@ -181,14 +195,16 @@ impl TryFrom<KeyPair> for Recipient<WPubkeyHash> {
 
 impl From<PublicKey> for Recipient<PubkeyHash> {
     fn from(pubkey: PublicKey) -> Self {
-        Recipient { t: pubkey.into() }
+        Recipient {
+            inner: pubkey.into(),
+        }
     }
 }
 
 impl From<Recipient<PublicKey>> for Recipient<PubkeyHash> {
     fn from(recipient: Recipient<PublicKey>) -> Self {
         Recipient {
-            t: Self::from(recipient.t).t,
+            inner: Self::from(recipient.inner).inner,
         }
     }
 }
@@ -203,20 +219,22 @@ impl From<&KeyPair> for Recipient<PubkeyHash> {
     fn from(keypair: &KeyPair) -> Self {
         let pk = Recipient::<PublicKey>::from(keypair);
 
-        Recipient { t: pk.t.into() }
+        Recipient {
+            inner: pk.inner.into(),
+        }
     }
 }
 
 impl Recipient<TweakedPublicKey> {
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
-        self.t
+        self.inner
     }
 }
 
 impl Recipient<TaprootScript> {
     pub fn from_keypair(keypair: &KeyPair, merkle_root: TapNodeHash) -> Self {
         Recipient {
-            t: TaprootScript {
+            inner: TaprootScript {
                 pubkey: PublicKey::new(keypair.public_key()),
                 merkle_root,
             },
@@ -227,16 +245,16 @@ impl Recipient<TaprootScript> {
         merkle_root: TapNodeHash,
     ) -> Self {
         Recipient {
-            t: TaprootScript {
-                pubkey: recipient.t,
+            inner: TaprootScript {
+                pubkey: recipient.inner,
                 merkle_root,
             },
         }
     }
     pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
-        XOnlyPublicKey::from(self.t.pubkey.inner)
+        XOnlyPublicKey::from(self.inner.pubkey.inner)
     }
     pub fn merkle_root(&self) -> TapNodeHash {
-        self.t.merkle_root
+        self.inner.merkle_root
     }
 }
