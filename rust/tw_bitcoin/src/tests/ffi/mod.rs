@@ -1,7 +1,12 @@
 use crate::ffi::tw_build_p2wpkh_script;
 use crate::Recipient;
-use bitcoin::PublicKey;
-use tw_proto::Bitcoin::Proto::TransactionOutput;
+use bitcoin::{PublicKey, Txid};
+use secp256k1::hashes::Hash;
+use std::borrow::Cow;
+use tw_proto::Bitcoin::Proto::{
+    OutPoint, SigningInput, TransactionOutput, TransactionPlan, TransactionVariant,
+    UnspentTransaction,
+};
 
 mod brc20_transfer;
 mod scripts;
@@ -28,5 +33,73 @@ fn ffi_build_p2wpkh_script<'a, 'b>(
         value: des.value,
         script: des.script.into_owned().into(),
         spendingScript: des.spendingScript.into_owned().into(),
+    }
+}
+
+struct ProtoSigningInputBuilder<'a> {
+    inner: SigningInput<'a>,
+}
+
+impl<'a> ProtoSigningInputBuilder<'a> {
+    fn new() -> Self {
+        let mut signing = SigningInput::default();
+        signing.plan = Some(TransactionPlan::default());
+
+        ProtoSigningInputBuilder { inner: signing }
+    }
+    fn private_key(mut self, privkey: &'a [u8]) -> Self {
+        self.inner.private_key = vec![Cow::from(privkey)];
+        self
+    }
+    fn input(mut self, tx: UnspentTransaction<'a>) -> Self {
+        self.inner.utxo.push(tx);
+        self
+    }
+    fn output(mut self, tx: UnspentTransaction<'a>) -> Self {
+        self.inner.plan.as_mut().unwrap().utxos.push(tx);
+        self
+    }
+    fn build(self) -> SigningInput<'a> {
+        self.inner
+    }
+}
+
+struct ProtoTransactionBuilder<'a> {
+    inner: UnspentTransaction<'a>,
+}
+
+impl<'a> ProtoTransactionBuilder<'a> {
+    fn new() -> Self {
+        let mut unspent = UnspentTransaction::default();
+        unspent.out_point = Some(OutPoint::default());
+
+        ProtoTransactionBuilder { inner: unspent }
+    }
+    fn txid(mut self, slice: &'a [u8]) -> Self {
+        self.inner.out_point.as_mut().unwrap().hash = slice.into();
+        self
+    }
+    fn vout(mut self, vout: u32) -> Self {
+        self.inner.out_point.as_mut().unwrap().index = vout;
+        self
+    }
+    fn variant(mut self, variant: TransactionVariant) -> Self {
+        self.inner.variant = variant;
+        self
+    }
+    fn satoshis(mut self, satoshis: u64) -> Self {
+        self.inner.amount = satoshis as i64;
+        self
+    }
+    fn script_pubkey(mut self, script: &'a [u8]) -> Self {
+        self.inner.script = script.into();
+        self
+    }
+    fn spending_script(mut self, script: &'a [u8]) -> Self {
+        self.inner.spendingScript = script.into();
+        self
+    }
+    fn build(self) -> UnspentTransaction<'a> {
+        self.inner
     }
 }
