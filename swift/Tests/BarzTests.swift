@@ -28,6 +28,7 @@ class BarzTests: XCTestCase {
             $0.accountFacet = accountFacet
             $0.verificationFacet = verificationFacet
             $0.tokenReceiverFacet = tokenReceiverFacet
+            $0.diamondLoupeFacet = diamondLoupeFacet
             $0.entryPoint = entryPoint
             $0.diamondInit = diamondInit
             $0.facetRegistry = facetRegistry
