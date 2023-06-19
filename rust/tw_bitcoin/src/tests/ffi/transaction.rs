@@ -23,8 +23,8 @@ pub fn proto_sign_input_p2pkh_output_p2pkh() {
     let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
-    let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
-    let output = call_ffi_build_p2pkh_script(SEND_AMOUNT, &bob_recipient);
+    let input = call_ffi_build_p2pkh_script(FULL_SATOSHIS, &alice_recipient);
+    let output = call_ffi_build_p2pkh_script(SEND_SATOSHIS, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -34,14 +34,14 @@ pub fn proto_sign_input_p2pkh_output_p2pkh() {
                 .txid(&txid)
                 .vout(0)
                 .script_pubkey(&input.script)
-                .satoshis(FULL_AMOUNT)
+                .satoshis(FULL_SATOSHIS)
                 .variant(TransactionVariant::P2PKH)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output.script)
-                .satoshis(SEND_AMOUNT)
+                .satoshis(SEND_SATOSHIS)
                 .variant(TransactionVariant::P2PKH)
                 .build(),
         )
@@ -66,8 +66,8 @@ pub fn proto_sign_input_p2pkh_output_p2wpkh() {
     let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
-    let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
-    let output = call_ffi_build_p2wpkh_script(SEND_TO_BOB, &bob_recipient);
+    let input = call_ffi_build_p2pkh_script(FULL_SATOSHIS, &alice_recipient);
+    let output = call_ffi_build_p2wpkh_script(SEND_SATOSHIS, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -77,14 +77,14 @@ pub fn proto_sign_input_p2pkh_output_p2wpkh() {
                 .txid(&txid)
                 .vout(0)
                 .script_pubkey(&input.script)
-                .satoshis(FULL_AMOUNT)
+                .satoshis(FULL_SATOSHIS)
                 .variant(TransactionVariant::P2PKH)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output.script)
-                .satoshis(SEND_TO_BOB)
+                .satoshis(SEND_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
@@ -109,8 +109,8 @@ pub fn proto_sign_input_p2pkh_output_p2tr_key_path() {
     let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
-    let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
-    let output = call_ffi_build_p2tr_key_path_script(SEND_TO_BOB, &bob_recipient);
+    let input = call_ffi_build_p2pkh_script(FULL_SATOSHIS, &alice_recipient);
+    let output = call_ffi_build_p2tr_key_path_script(SEND_SATOSHIS, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -120,14 +120,14 @@ pub fn proto_sign_input_p2pkh_output_p2tr_key_path() {
                 .txid(&txid)
                 .vout(0)
                 .script_pubkey(&input.script)
-                .satoshis(FULL_AMOUNT)
+                .satoshis(FULL_SATOSHIS)
                 .variant(TransactionVariant::P2PKH)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output.script)
-                .satoshis(SEND_TO_BOB)
+                .satoshis(SEND_SATOSHIS)
                 .variant(TransactionVariant::P2TRKEYPATH)
                 .build(),
         )
