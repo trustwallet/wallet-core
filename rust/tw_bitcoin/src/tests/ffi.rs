@@ -15,10 +15,12 @@ use tw_proto::Bitcoin::Proto::{
     SigningInput, TransactionOutput, TransactionPlan, TransactionVariant, UnspentTransaction,
 };
 
-fn ffi_build_p2wpkh_script(
+// Convenience wrapper over `tw_build_p2wpkh_script` with Protobuf
+// deserialization support.
+fn ffi_build_p2wpkh_script<'a, 'b>(
     satoshis: u64,
-    recipient: &Recipient<PublicKey>,
-) -> TransactionOutput {
+    recipient: &'b Recipient<PublicKey>,
+) -> TransactionOutput<'a> {
     let pubkey = recipient.public_key().to_bytes();
 
     let raw = unsafe {
@@ -556,15 +558,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let input_inscription: TransactionOutput = tw_proto::deserialize(&input_inscription).unwrap();
 
     // Build inscription output.
-    let output_p2wpkh = unsafe {
-        tw_build_p2wpkh_script(
-            BRC20_DUST_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let output_p2wpkh: TransactionOutput = tw_proto::deserialize(&output_p2wpkh).unwrap();
+    let output_p2wpkh = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
 
     // Construct Protobuf payload.
     let input = SigningInput {
@@ -663,48 +657,16 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
         .collect();
 
     // Build input script for Inscription transfer.
-    let input_transfer = unsafe {
-        tw_build_p2wpkh_script(
-            BRC20_DUST_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let input_transfer: TransactionOutput = tw_proto::deserialize(&input_transfer).unwrap();
+    let input_transfer = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
 
     // Build input for paying fees.
-    let input_fees = unsafe {
-        tw_build_p2wpkh_script(
-            FOR_FEE_AMOUNT as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let input_fees: TransactionOutput = tw_proto::deserialize(&input_fees).unwrap();
+    let input_fees = ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
 
     // Build Inscription transfer output with Bob as recipient.
-    let output_transfer = unsafe {
-        tw_build_p2wpkh_script(
-            BRC20_DUST_AMOUNT as i64,
-            bob_pubkey.as_ptr(),
-            bob_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let output_transfer: TransactionOutput = tw_proto::deserialize(&output_transfer).unwrap();
+    let output_transfer = ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &bob_recipient);
 
     // Build change output.
-    let output_change = unsafe {
-        tw_build_p2wpkh_script(
-            (FOR_FEE_AMOUNT - MINER_FEE) as i64,
-            alice_pubkey.as_ptr(),
-            alice_pubkey.len(),
-        )
-        .into_vec()
-    };
-    let output_change: TransactionOutput = tw_proto::deserialize(&output_change).unwrap();
+    let output_change = ffi_build_p2wpkh_script(FOR_FEE_AMOUNT - MINER_FEE, &alice_recipient);
 
     // Construct Protobuf payload.
     let input = SigningInput {
