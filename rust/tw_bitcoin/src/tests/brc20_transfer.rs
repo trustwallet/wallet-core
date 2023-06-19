@@ -38,6 +38,10 @@ pub const REVEAL_RAW_P2: &str = "5b0063036f7264010118746578742f706c61696e3b63686
 
 // Used for transfering the Inscription ("BRC20 transfer").
 // https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
+pub const TRANSFER_TXID_INSCRIPTION: &str =
+    "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca";
+pub const TRANSFER_TXID_FOR_FEES: &str =
+    "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1";
 pub const TRANSFER_RAW: &str = "02000000000102ca3edda74a46877efa5364ab85947e148508713910ada23e147ea28926dc46700000000000ffffffffb11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790100000000ffffffff022202000000000000160014e891850afc55b64aa8247b2076f8894ebdf889015834000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d024830450221008798393eb0b7390217591a8c33abe18dd2f7ea7009766e0d833edeaec63f2ec302200cf876ff52e68dbaf108a3f6da250713a9b04949a8f1dcd1fb867b24052236950121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb0248304502210096bbb9d1f0596d69875646689e46f29485e8ceccacde9d0025db87fd96d3066902206d6de2dd69d965d28df3441b94c76e812384ab9297e69afe3480ee4031e1b2060121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
 
 #[test]
@@ -141,14 +145,9 @@ fn brc20_transfer() {
     // Based on Bitcoin transaction:
     // https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
 
-    let txid_for_fees =
-        Txid::from_str("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").unwrap();
-    let txid_for_brc20_transfer =
-        Txid::from_str("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca").unwrap();
-
     // We use a normal P2WPKH output for this.
     let input_for_brc20_transfer = TxInputP2WPKH::builder()
-        .txid(txid_for_brc20_transfer)
+        .txid(Txid::from_str(TRANSFER_TXID_INSCRIPTION).unwrap())
         .vout(0)
         .recipient(alice.try_into().unwrap())
         .satoshis(BRC20_DUST_AMOUNT)
@@ -156,7 +155,7 @@ fn brc20_transfer() {
         .unwrap();
 
     let input_for_fee = TxInputP2WPKH::builder()
-        .txid(txid_for_fees)
+        .txid(Txid::from_str(TRANSFER_TXID_FOR_FEES).unwrap())
         .vout(1)
         .recipient(alice.try_into().unwrap())
         .satoshis(FOR_FEE_AMOUNT)
