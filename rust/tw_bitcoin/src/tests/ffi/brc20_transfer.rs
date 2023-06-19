@@ -190,7 +190,8 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
     let output_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_SATOSHIS, &bob_recipient);
 
     // Build change output.
-    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_SATOSHIS - MINER_FEE, &alice_recipient);
+    let output_change =
+        call_ffi_build_p2wpkh_script(FOR_FEE_SATOSHIS - MINER_FEE, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
