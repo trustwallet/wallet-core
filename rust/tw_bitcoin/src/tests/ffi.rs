@@ -239,8 +239,8 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
         time: 0,
     };
 
-    let sig = taproot_build_and_sign_transaction(input).unwrap();
-    assert_eq!(hex::encode(&sig, false), EXPECTED_RAW_SIGNED);
+    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
 }
 
 #[test]
@@ -314,8 +314,8 @@ fn proto_sign_input_p2pkh_output_p2wpkh() {
         time: 0,
     };
 
-    let sig = taproot_build_and_sign_transaction(input).unwrap();
-    assert_eq!(hex::encode(&sig, false), EXPECTED_RAW_SIGNED);
+    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
 }
 
 #[test]
@@ -389,8 +389,8 @@ fn proto_sign_input_p2pkh_output_p2tr_key_path() {
         time: 0,
     };
 
-    let sig = taproot_build_and_sign_transaction(input).unwrap();
-    assert_eq!(hex::encode(&sig, false), EXPECTED_RAW_SIGNED);
+    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
 }
 
 /// Commit the Inscription.
@@ -518,8 +518,8 @@ fn proto_sign_brc20_transfer_inscription_commit() {
         time: 0,
     };
 
-    let sig = taproot_build_and_sign_transaction(input).unwrap();
-    assert_eq!(hex::encode(&sig, false), COMMIT_TX_RAW);
+    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    assert_eq!(hex::encode(&signed.encoded, false), COMMIT_TX_RAW);
 }
 
 /// Reveal the Inscription.
@@ -622,8 +622,8 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
         time: 0,
     };
 
-    let sig = taproot_build_and_sign_transaction(input).unwrap();
-    let hex = hex::encode(&sig, false);
+    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    let hex = hex::encode(&signed.encoded, false);
 
     assert_eq!(&hex[..164], REVEAL_RAW_P1);
     // We ignore the 64-byte Schnorr signature, since it uses random data for
@@ -790,6 +790,6 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
         time: 0,
     };
 
-    let sig = taproot_build_and_sign_transaction(input).unwrap();
-    assert_eq!(hex::encode(&sig, false), TRANSFER_RAW);
+    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    assert_eq!(hex::encode(&signed.encoded, false), TRANSFER_RAW);
 }
