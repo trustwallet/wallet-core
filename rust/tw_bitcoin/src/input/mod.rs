@@ -1,4 +1,4 @@
-use bitcoin::{ScriptBuf, TxIn, TxOut, OutPoint, Sequence, Witness};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, TxOut, Witness};
 
 mod p2pkh;
 mod p2tr_key_path;

@@ -97,7 +97,7 @@ impl TransactionSigner for KeyPair {
     ) -> Result<ClaimP2WPKH> {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
-        if input.recipient().t != me.wpubkey_hash()? {
+        if input.recipient().wpubkey_hash() != &me.wpubkey_hash()? {
             return Err(Error::Todo);
         }
 

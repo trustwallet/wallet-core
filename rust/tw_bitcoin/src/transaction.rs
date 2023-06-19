@@ -1,13 +1,13 @@
-use crate::{Result, Error};
 use crate::claim::{ClaimLocation, TransactionSigner};
 use crate::input::*;
 use crate::output::*;
-use bitcoin::{secp256k1, Address, TxIn, TxOut};
+use crate::{Error, Result};
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::transaction::Transaction;
+use bitcoin::{secp256k1, Address, TxIn, TxOut};
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
