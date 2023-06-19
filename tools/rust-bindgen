@@ -24,7 +24,7 @@ if [[ "$1" != "android" ]]; then
 fi
 if [[ `uname` == "Darwin" ]]; then
   echo "Generating Android targets"
-  cargo build --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release
+  #cargo build --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release
   if [[ "$1" != "android" ]]; then
     echo "Generating iOS targets"
     cargo build --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --release &

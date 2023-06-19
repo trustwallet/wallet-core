@@ -80,6 +80,15 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
     return input;
 }
 
+TEST(BitcoinSigning, SignBRC20TransferCommit) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+
+    PrivateKey key(privateKey);
+    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto inputP2wpkh = TW::Bitcoin::buildP2wpkhScript(26400, pubKey);
+    auto outputInscribe = TW::Bitcoin::buildBRC20InscribeTransfer("oadf", 20, 7000, pubKey);
+}
+
 TEST(BitcoinSigning, SignP2PKH) {
     auto input = buildInputP2PKH();
 

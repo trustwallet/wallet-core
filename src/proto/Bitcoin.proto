@@ -78,10 +78,10 @@ message UnspentTransaction {
 }
 
 enum TransactionVariant {
-    P2PKH = 1;
-    P2WPKH = 2;
-    P2TRKEYPATH = 3;
-    BRC20TRANSFER = 4;
+    P2PKH = 0;
+    P2WPKH = 1;
+    P2TRKEYPATH = 2;
+    BRC20TRANSFER = 3;
 }
 
 // Pair of destination address and amount, used for extra outputs
