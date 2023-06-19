@@ -22,7 +22,7 @@ pub fn reverse_txid(txid: &str) -> Vec<u8> {
 
 /// Convenience wrapper over `tw_build_p2pkh_script` with Protobuf
 /// deserialization support.
-pub fn ffi_build_p2pkh_script<'a, 'b>(
+pub fn call_ffi_build_p2pkh_script<'a, 'b>(
     satoshis: u64,
     // We use 'b to clarify that `recipient` is not tied to the return value.
     recipient: &'b Recipient<PublicKey>,
@@ -45,7 +45,7 @@ pub fn ffi_build_p2pkh_script<'a, 'b>(
 
 /// Convenience wrapper over `tw_build_p2wpkh_script` with Protobuf
 /// deserialization support.
-pub fn ffi_build_p2wpkh_script<'a, 'b>(
+pub fn call_ffi_build_p2wpkh_script<'a, 'b>(
     satoshis: u64,
     // We use 'b to clarify that `recipient` is not tied to the return value.
     recipient: &'b Recipient<PublicKey>,
@@ -69,7 +69,7 @@ pub fn ffi_build_p2wpkh_script<'a, 'b>(
 
 /// Convenience wrapper over `tw_build_p2tr_key_path_script` with Protobuf
 /// deserialization support.
-pub fn ffi_build_p2tr_key_path_script<'a, 'b>(
+pub fn call_ffi_build_p2tr_key_path_script<'a, 'b>(
     satoshis: u64,
     // We use 'b to clarify that `recipient` is not tied to the return value.
     recipient: &'b Recipient<PublicKey>,
@@ -93,7 +93,7 @@ pub fn ffi_build_p2tr_key_path_script<'a, 'b>(
 
 /// Convenience wrapper over `tw_build_brc20_inscribe_transfer` with Protobuf
 /// deserialization support.
-pub fn ffi_build_brc20_transfer_script<'a, 'b>(
+pub fn call_ffi_build_brc20_transfer_script<'a, 'b>(
     ticker: &str,
     brc20_amount: u64,
     satoshis: u64,

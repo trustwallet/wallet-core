@@ -1,7 +1,7 @@
 use crate::ffi::taproot_build_and_sign_transaction;
 use crate::tests::ffi::utils::{
-    ffi_build_p2pkh_script, ffi_build_p2tr_key_path_script, ffi_build_p2wpkh_script, reverse_txid,
-    ProtoSigningInputBuilder, ProtoTransactionBuilder,
+    call_ffi_build_p2pkh_script, call_ffi_build_p2tr_key_path_script, call_ffi_build_p2wpkh_script,
+    reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder,
 };
 use crate::{keypair_from_wif, Recipient};
 use bitcoin::PublicKey;
@@ -27,8 +27,8 @@ pub fn proto_sign_input_p2pkh_output_p2pkh() {
     // Note that here the input and outputs script are identical (in_script =
     // out_script), the scriptSig/Witness for claiming a transaction is created
     // and set by the signer.
-    let input = ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
-    let output = ffi_build_p2pkh_script(SEND_AMOUNT, &bob_recipient);
+    let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
+    let output = call_ffi_build_p2pkh_script(SEND_AMOUNT, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -70,8 +70,8 @@ pub fn proto_sign_input_p2pkh_output_p2wpkh() {
     let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
-    let input = ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
-    let output = ffi_build_p2wpkh_script(SEND_TO_BOB, &bob_recipient);
+    let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
+    let output = call_ffi_build_p2wpkh_script(SEND_TO_BOB, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -113,8 +113,8 @@ pub fn proto_sign_input_p2pkh_output_p2tr_key_path() {
     let txid = reverse_txid(TXID);
 
     // Prepare the scripts.
-    let input = ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
-    let output = ffi_build_p2tr_key_path_script(SEND_TO_BOB, &bob_recipient);
+    let input = call_ffi_build_p2pkh_script(FULL_AMOUNT, &alice_recipient);
+    let output = call_ffi_build_p2tr_key_path_script(SEND_TO_BOB, &bob_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
