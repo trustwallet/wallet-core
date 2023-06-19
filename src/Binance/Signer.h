@@ -10,6 +10,7 @@
 #include "PublicKey.h"
 #include "../proto/Binance.pb.h"
 
+#include <TrustWalletCore/TWCoinType.h>
 #include <cstdint>
 #include <utility>
 
@@ -19,15 +20,21 @@ namespace TW::Binance {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input, bool testnet = false) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, const std::string& chainHrp) noexcept;
     /// Signs a json Proto::SigningInput with private key
-    static std::string signJSON(const std::string& json, const Data& key, bool testnet = false);
+    static std::string signJSON(const std::string& json, const Data& key, const std::string& chainHrp);
   public:
     Proto::SigningInput input;
-    bool testnet;
+    std::string chainHrp;
 
     /// Initializes a transaction signer.
-    explicit Signer(Proto::SigningInput input, bool test = false) : input(std::move(input)), testnet(test) {}
+    explicit Signer(Proto::SigningInput input, std::string chainHrp):
+        input(std::move(input)),
+        chainHrp(std::move(chainHrp)) {
+    }
+
+    /// Initializes a transaction signer.
+    explicit Signer(Proto::SigningInput input, TWCoinType coin = TWCoinTypeBinance);
 
     /// Builds a signed transaction.
     ///

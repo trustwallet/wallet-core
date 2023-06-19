@@ -24,7 +24,7 @@ TEST(BinanceAddress, AddressToData) {
     data = TW::addressToData(TWCoinTypeTBinance, "tbnb1x4hxmtdf7pwea9dghq73dufh3qspm8gp5qht9c");
     EXPECT_EQ(hex(data), "356e6dada9f05d9e95a8b83d16f13788201d9d01");
 
-    EXPECT_EQ(TAddress(data).string(), "tbnb1x4hxmtdf7pwea9dghq73dufh3qspm8gp5qht9c");
+    EXPECT_EQ(Address(data, TWCoinTypeTBinance).string(), "tbnb1x4hxmtdf7pwea9dghq73dufh3qspm8gp5qht9c");
 
     // invalid address
     data = TW::addressToData(TWCoinTypeTBinance, "tbnb1x4hxmtdf7pwea9dghq73dufh3qspm8gp");

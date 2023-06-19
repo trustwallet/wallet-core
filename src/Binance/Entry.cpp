@@ -15,60 +15,46 @@ namespace TW::Binance {
 
 bool Entry::validateAddress(TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     if (std::holds_alternative<Bech32Prefix>(addressPrefix)) {
-        if (const auto hrp = std::get<Bech32Prefix>(addressPrefix); hrp) {
+        if (const auto* hrp = std::get<Bech32Prefix>(addressPrefix); hrp) {
             return Address::isValid(address, hrp);
         }
     }
-
-    switch (coin) {
-    case TWCoinTypeTBinance:
-        return TAddress::isValid(address);
-    default:
-        return Address::isValid(address);
-    }
+    return Address::isValid(coin, address);
 }
 
 std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
-    switch (coin) {
-    case TWCoinTypeTBinance:
-        return TAddress(publicKey).string();
-    default:
-        const std::string hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
-        return Address(publicKey, hrp).string();
-    }
+    const std::string hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
+    return Address(publicKey, hrp).string();
 }
 
 Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
-    if (coin == TWCoinTypeBinance) {
-        Address addr;
-        if (Address::decode(address, addr)) {
-            return addr.getKeyHash();
-        }
-        
-    } else if (coin == TWCoinTypeTBinance) {
-        TAddress addr;
-        if (TAddress::decode(address, addr)) {
-            return addr.getKeyHash();
-        }
+    const char* hrp = stringForHRP(TW::hrp(coin));
+    Address addr(hrp);
+    if (Address::decode(address, addr)) {
+        return addr.getKeyHash();
     }
-    return {Data()};
+    return {};
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     auto input = Proto::SigningInput();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::sign(input, coin == TWCoinTypeTBinance).SerializeAsString();
+    const char* hrp = stringForHRP(TW::hrp(coin));
+    auto serializedOut = Signer::sign(input, hrp).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
-    return Signer::signJSON(json, key, coin == TWCoinTypeTBinance);
+    const char* hrp = stringForHRP(TW::hrp(coin));
+    return Signer::signJSON(json, key, hrp);
 }
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
+    const char* hrp = stringForHRP(TW::hrp(coin));
+
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
-        txInputData, [=](const auto& input, auto& output) {
-            Signer signer(input, coin == TWCoinTypeTBinance);
+        txInputData, [hrp](const auto& input, auto& output) {
+            Signer signer(input, hrp);
 
             auto preImageHash = signer.preImageHash();
             auto preImage = signer.signaturePreimage();
@@ -78,19 +64,12 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
 }
 
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto& input, auto& output) {
-            if (signatures.size() == 0 || publicKeys.size() == 0) {
-                output.set_error(Common::Proto::Error_invalid_params);
-                output.set_error_message("empty signatures or publickeys");
-                return;
-            }
-            if (signatures.size() > 1 || publicKeys.size() > 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
-                return;
-            }
-            output = Signer(input, coin == TWCoinTypeTBinance).compile(signatures[0], publicKeys[0]);
+    const char* hrp = stringForHRP(TW::hrp(coin));
+
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [hrp](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            output = Signer(input, hrp).compile(signature, publicKey);
         });
 }
 
@@ -106,33 +85,22 @@ Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, 
 
     auto& order = *input.mutable_send_order();
 
+    const char* hrp = stringForHRP(TW::hrp(coinType));
+
     Data fromKeyhash;
     Data toKeyhash;
-    if (coinType == TWCoinTypeTBinance) {
-        TAddress fromAddress;
-        if (!TAddress::decode(from, fromAddress)) {
-            throw std::invalid_argument("Invalid from address");
-        }
-        fromKeyhash = fromAddress.getKeyHash();
 
-        TAddress toAddress;
-        if (!TAddress::decode(to, toAddress)) {
-            throw std::invalid_argument("Invalid to address");
-        }
-        toKeyhash = toAddress.getKeyHash();
-    } else {
-        Address fromAddress;
-        if (!Address::decode(from, fromAddress)) {
-            throw std::invalid_argument("Invalid from address");
-        }
-        fromKeyhash = fromAddress.getKeyHash();
-
-        Address toAddress;
-        if (!Address::decode(to, toAddress)) {
-            throw std::invalid_argument("Invalid to address");
-        }
-        toKeyhash = toAddress.getKeyHash();
+    Address fromAddress(hrp);
+    if (!Address::decode(from, fromAddress)) {
+        throw std::invalid_argument("Invalid from address");
     }
+    fromKeyhash = fromAddress.getKeyHash();
+
+    Address toAddress(hrp);
+    if (!Address::decode(to, toAddress)) {
+        throw std::invalid_argument("Invalid to address");
+    }
+    toKeyhash = toAddress.getKeyHash();
 
     {
         auto* sendOrderInputs = order.add_inputs();
