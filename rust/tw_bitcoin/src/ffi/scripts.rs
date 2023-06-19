@@ -25,6 +25,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
 
     let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
 
+    // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
         value: satoshis,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
@@ -55,6 +56,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
 
     let tx_out = TxOutputP2WPKH::new(satoshis as u64, recipient);
 
+    // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
@@ -82,6 +84,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 
     let tx_out = TxOutputP2TRKeyPath::new(satoshis as u64, recipient.into());
 
+    // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
@@ -128,6 +131,7 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
     let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, transfer.0.recipient());
     let spending_script = transfer.0.envelope.script;
 
+    // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
         value: satoshis as i64,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
