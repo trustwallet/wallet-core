@@ -59,18 +59,18 @@ fn proto_sign_brc20_transfer_inscription_commit() {
     let txid = reverse_txid(COMMIT_TXID);
 
     // Build input script.
-    let input = call_ffi_build_p2wpkh_script(FULL_AMOUNT, &alice_recipient);
+    let input = call_ffi_build_p2wpkh_script(FULL_SATOSHIS, &alice_recipient);
 
     // Build inscription output.
     let output_inscribe = call_ffi_build_brc20_transfer_script(
         BRC20_TICKER,
         BRC20_AMOUNT,
-        BRC20_INSCRIBE_AMOUNT,
+        BRC20_INSCRIBE_SATOSHIS,
         &alice_recipient,
     );
 
     // Build change output.
-    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
+    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_SATOSHIS, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -80,21 +80,21 @@ fn proto_sign_brc20_transfer_inscription_commit() {
                 .txid(&txid)
                 .vout(1)
                 .script_pubkey(&input.script)
-                .satoshis(FULL_AMOUNT)
+                .satoshis(FULL_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output_inscribe.script)
-                .satoshis(BRC20_INSCRIBE_AMOUNT)
+                .satoshis(BRC20_INSCRIBE_SATOSHIS)
                 .variant(TransactionVariant::BRC20TRANSFER)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output_change.script)
-                .satoshis(FOR_FEE_AMOUNT)
+                .satoshis(FOR_FEE_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
@@ -121,12 +121,12 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let input = call_ffi_build_brc20_transfer_script(
         BRC20_TICKER,
         BRC20_AMOUNT,
-        BRC20_INSCRIBE_AMOUNT,
+        BRC20_INSCRIBE_SATOSHIS,
         &alice_recipient,
     );
 
     // Build inscription output.
-    let output_p2wpkh = call_ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
+    let output_p2wpkh = call_ffi_build_p2wpkh_script(BRC20_DUST_SATOSHIS, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -136,7 +136,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
                 .txid(&txid)
                 .vout(0)
                 .script_pubkey(&input.script)
-                .satoshis(BRC20_INSCRIBE_AMOUNT)
+                .satoshis(BRC20_INSCRIBE_SATOSHIS)
                 .variant(TransactionVariant::BRC20TRANSFER)
                 // IMPORANT: include the witness containing the actual inscription.
                 .spending_script(&input.spendingScript)
@@ -145,7 +145,7 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output_p2wpkh.script)
-                .satoshis(BRC20_DUST_AMOUNT)
+                .satoshis(BRC20_DUST_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
@@ -181,16 +181,16 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
     let txid_for_fees = reverse_txid(TRANSFER_TXID_FOR_FEES);
 
     // Build input script for Inscription transfer.
-    let input_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &alice_recipient);
+    let input_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_SATOSHIS, &alice_recipient);
 
     // Build input for paying fees.
-    let input_fees = call_ffi_build_p2wpkh_script(FOR_FEE_AMOUNT, &alice_recipient);
+    let input_fees = call_ffi_build_p2wpkh_script(FOR_FEE_SATOSHIS, &alice_recipient);
 
     // Build Inscription transfer output with Bob as recipient.
-    let output_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_AMOUNT, &bob_recipient);
+    let output_transfer = call_ffi_build_p2wpkh_script(BRC20_DUST_SATOSHIS, &bob_recipient);
 
     // Build change output.
-    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_AMOUNT - MINER_FEE, &alice_recipient);
+    let output_change = call_ffi_build_p2wpkh_script(FOR_FEE_SATOSHIS - MINER_FEE, &alice_recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -200,7 +200,7 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
                 .txid(&txid_inscription)
                 .vout(0)
                 .script_pubkey(&input_transfer.script)
-                .satoshis(BRC20_DUST_AMOUNT)
+                .satoshis(BRC20_DUST_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
@@ -209,21 +209,21 @@ fn proto_sign_brc20_transfer_inscription_p2wpkh_transfer() {
                 .txid(&txid_for_fees)
                 .vout(1)
                 .script_pubkey(&input_fees.script)
-                .satoshis(FOR_FEE_AMOUNT)
+                .satoshis(FOR_FEE_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output_transfer.script)
-                .satoshis(BRC20_DUST_AMOUNT)
+                .satoshis(BRC20_DUST_SATOSHIS)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )
         .output(
             ProtoTransactionBuilder::new()
                 .script_pubkey(&output_change.script)
-                .satoshis(FOR_FEE_AMOUNT - MINER_FEE)
+                .satoshis(FOR_FEE_SATOSHIS - MINER_FEE)
                 .variant(TransactionVariant::P2WPKH)
                 .build(),
         )

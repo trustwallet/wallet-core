@@ -13,15 +13,15 @@ pub const ALICE_WIF: &str = "L4of5AJ6aKmvChg7gQ7m2RzHFgpWe5Uirmuey1fXJ1FtfmXj59L
 pub const BOB_WIF: &str = "L59WHi2hj1HnMAYaFyMqR4Z36HrUDTZQCixzTHachAxbUU9VUCjp";
 
 // TODO: Document those values.
-pub const FULL_AMOUNT: u64 = 26_400;
+pub const FULL_SATOSHIS: u64 = 26_400;
 pub const MINER_FEE: u64 = 3_000;
 
 pub const BRC20_TICKER: &str = "oadf";
 pub const BRC20_AMOUNT: u64 = 20;
-pub const BRC20_INSCRIBE_AMOUNT: u64 = 7_000;
-pub const BRC20_DUST_AMOUNT: u64 = 546;
+pub const BRC20_INSCRIBE_SATOSHIS: u64 = 7_000;
+pub const BRC20_DUST_SATOSHIS: u64 = 546;
 
-pub const FOR_FEE_AMOUNT: u64 = FULL_AMOUNT - BRC20_INSCRIBE_AMOUNT - MINER_FEE;
+pub const FOR_FEE_SATOSHIS: u64 = FULL_SATOSHIS - BRC20_INSCRIBE_SATOSHIS - MINER_FEE;
 
 // Used for the committing the Inscription.
 // https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
@@ -65,7 +65,7 @@ fn brc20_transfer() {
         .txid(txid)
         .vout(1)
         .recipient(alice.try_into().unwrap())
-        .satoshis(FULL_AMOUNT)
+        .satoshis(FULL_SATOSHIS)
         .build()
         .unwrap();
 
@@ -73,13 +73,13 @@ fn brc20_transfer() {
 
     let output = TXOutputP2TRScriptPath::builder()
         .recipient(transfer.0.recipient().clone())
-        .satoshis(BRC20_INSCRIBE_AMOUNT)
+        .satoshis(BRC20_INSCRIBE_SATOSHIS)
         .build()
         .unwrap();
 
     let output_change = TxOutputP2WPKH::builder()
         .recipient(alice.try_into().unwrap())
-        .satoshis(FOR_FEE_AMOUNT)
+        .satoshis(FOR_FEE_SATOSHIS)
         .build()
         .unwrap();
 
@@ -109,7 +109,7 @@ fn brc20_transfer() {
         .txid(txid)
         .vout(0)
         .recipient(transfer.0.recipient().clone())
-        .satoshis(BRC20_INSCRIBE_AMOUNT)
+        .satoshis(BRC20_INSCRIBE_SATOSHIS)
         .script(transfer.0.envelope.script)
         .spend_info(transfer.0.envelope.spend_info)
         .build()
@@ -117,7 +117,7 @@ fn brc20_transfer() {
 
     let output = TxOutputP2WPKH::builder()
         .recipient(alice.try_into().unwrap())
-        .satoshis(BRC20_DUST_AMOUNT)
+        .satoshis(BRC20_DUST_SATOSHIS)
         .build()
         .unwrap();
 
@@ -153,7 +153,7 @@ fn brc20_transfer() {
         .txid(Txid::from_str(TRANSFER_TXID_INSCRIPTION).unwrap())
         .vout(0)
         .recipient(alice.try_into().unwrap())
-        .satoshis(BRC20_DUST_AMOUNT)
+        .satoshis(BRC20_DUST_SATOSHIS)
         .build()
         .unwrap();
 
@@ -161,20 +161,20 @@ fn brc20_transfer() {
         .txid(Txid::from_str(TRANSFER_TXID_FOR_FEES).unwrap())
         .vout(1)
         .recipient(alice.try_into().unwrap())
-        .satoshis(FOR_FEE_AMOUNT)
+        .satoshis(FOR_FEE_SATOSHIS)
         .build()
         .unwrap();
 
     // We transfer the tokens to Bob.
     let output_brc20_transfer = TxOutputP2WPKH::builder()
         .recipient(bob.try_into().unwrap())
-        .satoshis(BRC20_DUST_AMOUNT)
+        .satoshis(BRC20_DUST_SATOSHIS)
         .build()
         .unwrap();
 
     let output_change = TxOutputP2WPKH::builder()
         .recipient(alice.try_into().unwrap())
-        .satoshis(FOR_FEE_AMOUNT - MINER_FEE)
+        .satoshis(FOR_FEE_SATOSHIS - MINER_FEE)
         .build()
         .unwrap();
 
