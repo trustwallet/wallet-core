@@ -1,4 +1,5 @@
 use crate::ffi::taproot_build_and_sign_transaction;
+use crate::tests::ffi::{ProtoSigningInputBuilder, ProtoTransactionBuilder};
 use crate::{keypair_from_wif, TxInputP2PKH, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH};
 use std::borrow::Cow;
 use tw_encoding::hex;
@@ -27,84 +28,27 @@ fn proto_sign_input_p2pkh_output_p2pkh() {
     let out_script = TxOutputP2PKH::only_script(bob.into());
 
     // Construct Protobuf payload.
-    let input = SigningInput {
-        // Ignored
-        hash_type: 0,
-        // Ignored
-        amount: 0,
-        // Ignored
-        byte_fee: 0,
-        // Ignored
-        to_address: Cow::from(""),
-        // Ignored
-        change_address: Cow::from(""),
-        private_key: vec![Cow::from(alice_privkey.as_slice())],
-        scripts: Default::default(),
-        utxo: vec![UnspentTransaction {
-            out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
-                hash: Cow::from(txid.as_slice()),
-                index: 0,
-                // Ignored
-                sequence: 0,
-                // Ignored
-                tree: 0,
-            }),
-            script: Cow::from(in_script.as_bytes()),
-            amount: FULL_AMOUNT as i64,
-            variant: TransactionVariant::P2PKH,
-            spendingScript: Cow::default(),
-        }],
-        // Ignored
-        use_max_amount: false,
-        // Ignored
-        coin_type: 0,
-        plan: Some(TransactionPlan {
-            // Ignored
-            amount: 0,
-            // Ignored
-            available_amount: 0,
-            // Ignored
-            fee: 0,
-            // Ignored
-            change: 0,
-            utxos: vec![UnspentTransaction {
-                out_point: Some(tw_proto::Bitcoin::Proto::OutPoint {
-                    hash: Cow::from([].as_slice()),
-                    index: 0,
-                    sequence: 0,
-                    tree: 0,
-                }),
-                script: Cow::from(out_script.as_bytes()),
-                amount: SEND_AMOUNT as i64,
-                variant: TransactionVariant::P2PKH,
-                spendingScript: Cow::default(),
-            }],
-            // Ignored
-            branch_id: Cow::from([].as_slice()),
-            // Ignored
-            error: tw_proto::Common::Proto::SigningError::OK,
-            // Ignored
-            output_op_return: Cow::from([].as_slice()),
-            // Ignored
-            preblockhash: Cow::default(),
-            // Ignored
-            preblockheight: 0,
-        }),
-        // Ignored
-        lock_time: 0,
-        // Ignored
-        output_op_return: Cow::from([].as_slice()),
-        // Ignored
-        extra_outputs: vec![],
-        // Ignored
-        use_max_utxo: false,
-        // Ignored
-        disable_dust_filter: false,
-        // Ignored
-        time: 0,
-    };
+    let signing = ProtoSigningInputBuilder::new()
+        .private_key(&alice_privkey)
+        .input(
+            ProtoTransactionBuilder::new()
+                .txid(&txid)
+                .vout(0)
+                .script_pubkey(in_script.as_bytes())
+                .satoshis(FULL_AMOUNT)
+                .variant(TransactionVariant::P2PKH)
+                .build(),
+        )
+        .output(
+            ProtoTransactionBuilder::new()
+                .script_pubkey(out_script.as_bytes())
+                .satoshis(SEND_AMOUNT)
+                .variant(TransactionVariant::P2PKH)
+                .build(),
+        )
+        .build();
 
-    let signed = taproot_build_and_sign_transaction(input).unwrap();
+    let signed = taproot_build_and_sign_transaction(signing).unwrap();
     assert_eq!(hex::encode(&signed.encoded, false), EXPECTED_RAW_SIGNED);
 }
 
