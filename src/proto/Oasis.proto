@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.Oasis.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Transfer
 message TransferMessage {
     // destination address
@@ -30,6 +32,28 @@ message TransferMessage {
     string context = 6;
 }
 
+message EscrowMessage {
+    uint64 gas_price = 1;
+    string gas_amount = 2;
+    uint64 nonce = 3;
+
+    string account = 4;
+    string amount = 5;
+
+    string context = 6;
+}
+
+message ReclaimEscrowMessage {
+    uint64 gas_price = 1;
+    string gas_amount = 2;
+    uint64 nonce = 3;
+
+    string account = 4;
+    string shares = 5;
+
+    string context = 6;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // The secret private key used for signing (32 bytes).
@@ -38,6 +62,8 @@ message SigningInput {
     // Transfer payload
     oneof message {
         TransferMessage transfer = 2;
+        EscrowMessage escrow = 3;
+        ReclaimEscrowMessage reclaimEscrow = 4;
     }
 }
 
@@ -45,4 +71,10 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

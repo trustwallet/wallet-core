@@ -52,7 +52,7 @@ TEST(TWAnySignerStargaze, SignNftTransferCW721) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(hex(output.signature()), "cc7e976b1d3390c03db0f2635a75ef730b9e31b235621c46668589536984bb93577b638703dbb17100d21c91c72592def374ff1505fc912c3bdc11b298f6689e");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(TWAnySignerStargaze, Sign) {
@@ -91,7 +91,7 @@ TEST(TWAnySignerStargaze, Sign) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(hex(output.signature()), "70249edc730b5a07ed875ee3e2849a707e2b75db248630d2ae8ca8c3c463ae5803004334339d693bbfae97a1bacff6d0cbc17db004662c3dfb08735cba644390");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 } // namespace TW::Cosmos::tests

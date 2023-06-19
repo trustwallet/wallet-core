@@ -42,6 +42,9 @@ message OutPoint {
 
     // Transaction version as defined by the sender.
     uint32 sequence = 3;
+
+    // The tree in utxo, only works for DCR
+    int32 tree = 4;
 }
 
 // Bitcoin transaction output.
@@ -63,6 +66,15 @@ message UnspentTransaction {
 
     // Amount of the UTXO
     int64 amount = 3;
+}
+
+// Pair of destination address and amount, used for extra outputs
+message OutputAddress {
+    // Destination address
+    string to_address = 1;
+
+    // Amount to be paid to this output
+    int64 amount = 2;
 }
 
 // Input data necessary to create a signed transaction.
@@ -111,6 +123,18 @@ message SigningInput {
 
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 13;
+    
+    // Optional additional destination addresses, additional to first to_address output
+    repeated OutputAddress extra_outputs = 14;
+
+    // If use max utxo.
+    bool use_max_utxo = 15;
+
+    // If disable dust filter.
+    bool disable_dust_filter = 16;
+
+    // transaction creation time that will be used for verge(xvg)
+    uint32 time = 17;
 }
 
 // Describes a preliminary transaction plan.
@@ -138,6 +162,12 @@ message TransactionPlan {
 
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 8;
+
+    // zen & bitcoin diamond preblockhash
+    bytes preblockhash = 9;
+
+    // zen preblockheight
+    int64 preblockheight = 10;
 };
 
 // Result containing the signed and encoded transaction.

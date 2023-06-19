@@ -245,6 +245,88 @@ TEST(CardanoSigning, Plan) {
     }
 }
 
+TEST(CardanoSigning, ExtraOutputPlan) {
+    auto input = createSampleInput(2000000, 10, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5", true);
+    // two output
+    Proto::TxOutput txOutput;
+    txOutput.set_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+    txOutput.set_amount(2000000);
+    *input.add_extra_outputs() = txOutput;
+    auto signer = Signer(input);
+    const auto plan = signer.doPlan();
+    EXPECT_EQ(plan.utxos.size(), 1ul);
+    EXPECT_EQ(plan.availableAmount, 6500000ul);
+    EXPECT_EQ(plan.amount, 2000000ul);
+    EXPECT_EQ(plan.fee, 171474ul);
+    uint64_t extraAmountSum = 0;
+    for (auto& output: plan.extraOutputs) {
+        extraAmountSum = extraAmountSum + output.amount;
+    }
+    EXPECT_EQ(plan.amount + plan.change + plan.fee + extraAmountSum, plan.availableAmount);
+
+    {
+        // also test proto fromProto / fromProto
+        Proto::TxOutput txOutputProto;
+        txOutputProto.set_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+        txOutputProto.set_amount(2000000);
+
+        auto* token = txOutputProto.add_token_amount();
+        token->set_policy_id(sundaeTokenPolicy);
+        token->set_asset_name_hex("43554259");
+        const auto tokenAmount = store(uint256_t(3000000));
+        token->set_amount(tokenAmount.data(), tokenAmount.size());
+
+        const auto txOutput1 = TxOutput::fromProto(txOutputProto);
+        EXPECT_EQ(txOutput1.amount, 2000000ul);
+        const auto toAddress = AddressV3(txOutput1.address);
+        EXPECT_EQ(toAddress.string(), "addr1v9jxgu33wyunycmdddnh5a3edq6x2dt3xakkuun6wd6hsar8v9uhvee5w9erw7fnvauhswfhw44k673nv3n8sdmj89n82denweckuv34xvmnw6m9xeerq7rt8ymh5aesxaj8zu3e0y6k67tcd3nkzervxfenqer8ddjn27jkkrj");
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].amount, 3000000);
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].assetName, "CUBY");
+        EXPECT_EQ(txOutput1.tokenBundle.getByPolicyId(sundaeTokenPolicy)[0].policyId, sundaeTokenPolicy);
+    }
+    {
+        // also test proto toProto / toProto
+        const auto toAddress = AddressV3("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+        std::vector<TokenAmount> tokenAmount;
+        tokenAmount.emplace_back(sundaeTokenPolicy, "CUBY", 3000000);
+        const Proto::TxOutput txOutputProto = TxOutput(toAddress.data(), 2000000, TokenBundle(tokenAmount)).toProto();
+        EXPECT_EQ(txOutputProto.amount(), 2000000ul);
+        EXPECT_EQ(txOutputProto.address(), "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+        const auto token = txOutputProto.token_amount(0);
+        EXPECT_EQ(token.policy_id(), sundaeTokenPolicy);
+        EXPECT_EQ(token.asset_name(), "CUBY");
+        EXPECT_EQ(token.asset_name_hex(), "43554259");
+        const auto amount = store(uint256_t(3000000));
+        EXPECT_EQ(data(token.amount()), amount);
+    }
+
+    {
+        // also test proto toProto / fromProto
+        const Proto::TransactionPlan planProto = Signer::plan(input);
+        const auto plan2 = TransactionPlan::fromProto(planProto);
+        EXPECT_EQ(plan2.amount, 2000000ul);
+        EXPECT_EQ(plan2.change, 2328526ul);
+    }
+}
+
+TEST(CardanoSigning, ErrorDoPlan) {
+    {
+        // Common::Proto::Error_missing_input_utxos
+        auto input = createSampleInput(2000000, 0, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5", true);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.error, Common::Proto::Error_missing_input_utxos);
+    }
+    {
+        // Common::Proto::Error_low_balance
+        auto input = createSampleInput(9000000, 1, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5", true);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.error, Common::Proto::Error_low_balance);
+
+    }
+}
+
 TEST(CardanoSigning, PlanForceFee) {
     auto requestedAmount = 6500000ul;
     auto availableAmount = 8000000ul;
@@ -601,13 +683,15 @@ TEST(CardanoSigning, SignTransferToken) {
     // some SUNDAE token, to be transferred
     auto* token1 = utxo2->add_token_amount();
     token1->set_policy_id(sundaeTokenPolicy);
-    token1->set_asset_name("SUNDAE");
+    token1->set_asset_name_hex("53554e444145");
     const auto tokenAmount1 = store(uint256_t(80996569));
     token1->set_amount(tokenAmount1.data(), tokenAmount1.size());
     // some other token, to be preserved
     auto* token2 = utxo2->add_token_amount();
     token2->set_policy_id(sundaeTokenPolicy);
     token2->set_asset_name("CUBY");
+    // This should be ignored!
+    token2->set_asset_name_hex("00");
     const auto tokenAmount2 = store(uint256_t(2000000));
     token2->set_amount(tokenAmount2.data(), tokenAmount2.size());
 
@@ -618,7 +702,7 @@ TEST(CardanoSigning, SignTransferToken) {
     input.mutable_transfer_message()->set_amount(1500000);
     auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
     toToken->set_policy_id(sundaeTokenPolicy);
-    toToken->set_asset_name("SUNDAE");
+    toToken->set_asset_name_hex("53554e444145");
     const auto toTokenAmount = store(uint256_t(20000000));
     toToken->set_amount(toTokenAmount.data(), toTokenAmount.size());
     input.mutable_transfer_message()->set_use_max_amount(false);
@@ -681,7 +765,7 @@ TEST(CardanoSigning, SignTransferToken_1dd248) {
     // some token
     auto* token3 = utxo1->add_token_amount();
     token3->set_policy_id(sundaeTokenPolicy);
-    token3->set_asset_name("SUNDAE");
+    token3->set_asset_name_hex("53554e444145");
     const auto tokenAmount3 = store(uint256_t(20000000));
     token3->set_amount(tokenAmount3.data(), tokenAmount3.size());
 
@@ -699,7 +783,7 @@ TEST(CardanoSigning, SignTransferToken_1dd248) {
     input.mutable_transfer_message()->set_amount(1600000);
     auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
     toToken->set_policy_id(sundaeTokenPolicy);
-    toToken->set_asset_name("SUNDAE");
+    toToken->set_asset_name_hex("53554e444145");
     const auto toTokenAmount = store(uint256_t(11000000));
     toToken->set_amount(toTokenAmount.data(), toTokenAmount.size());
     input.mutable_transfer_message()->set_use_max_amount(false);
@@ -767,7 +851,7 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
     // some token
     auto* token1 = utxo1->add_token_amount();
     token1->set_policy_id(sundaeTokenPolicy);
-    token1->set_asset_name("SUNDAE");
+    token1->set_asset_name_hex("53554e444145");
     const auto tokenAmount1 = store(uint256_t(20000000));
     token1->set_amount(tokenAmount1.data(), tokenAmount1.size());
 
@@ -778,7 +862,7 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
     input.mutable_transfer_message()->set_amount(666); // doesn't matter, max is used
     auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
     toToken->set_policy_id(sundaeTokenPolicy);
-    toToken->set_asset_name("SUNDAE");
+    toToken->set_asset_name_hex("53554e444145");
     const auto toTokenAmount = store(uint256_t(666)); // doesn't matter, max is used
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(61085916);
@@ -827,12 +911,12 @@ TEST(CardanoSigning, SignTransferTwoTokens) {
     input.mutable_transfer_message()->set_amount(1500000);
     auto* token1 = input.mutable_transfer_message()->mutable_token_amount()->add_token();
     token1->set_policy_id(sundaeTokenPolicy);
-    token1->set_asset_name("SUNDAE");
+    token1->set_asset_name_hex("53554e444145");
     const auto tokenAmount1 = store(uint256_t(40000000));
     token1->set_amount(tokenAmount1.data(), tokenAmount1.size());
     auto* token2 = input.mutable_transfer_message()->mutable_token_amount()->add_token();
     token2->set_policy_id(sundaeTokenPolicy);
-    token2->set_asset_name("CUBY");
+    token2->set_asset_name_hex("43554259");
     const auto tokenAmount2 = store(uint256_t(2000000));
     token2->set_amount(tokenAmount2.data(), tokenAmount2.size());
 

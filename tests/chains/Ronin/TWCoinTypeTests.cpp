@@ -4,6 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 //
+// This is a GENERATED FILE, changes made here MAY BE LOST.
+// Generated one-time (codegen/bin/cointests)
+//
 
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>

@@ -147,6 +147,32 @@ TEST(AlgorandSigner, SignAsset) {
     ASSERT_EQ(hex(result), "82a3736967c440412720eff99a17280a437bdb8eeba7404b855d6433fffd5dde7f7966c1f9ae531a1af39e18b8a58b4a6c6acb709cca92f8a18c36d8328be9520c915311027005a374786e8aa461616d74ce000f4240a461726376c420325164cafa253b116f4b54c63bd960d610209d44df635d65e095f3855a96b956a3666565cd0924a26676ce00f0b7c3a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76ce00f0bbaba3736e64c42082872d60c338cb928006070e02ec0942addcb79e7fbd01c76458aea526899bd3a474797065a56178666572a478616964ce00cc264a");
 }
 
+TEST(AlgorandSigner, SignAssetWithNote) {
+    auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
+    auto from = Address(publicKey);
+    auto to = Address("GJIWJSX2EU5RC32LKTDDXWLA2YICBHKE35RV2ZPASXZYKWUWXFLKNFSS4U");
+    Data note = data("note");
+    std::string genesisId = "testnet-v1.0";
+    auto genesisHash = Base64::decode("SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
+    auto transaction = AssetTransfer(
+        /* from */ from,
+        /* to */ to,
+        /* fee */ 2340,
+        /* amount */ 1000000,
+        /* asset id */ 13379146,
+        /* first round */ 15775683,
+        /* last round */ 15776683,
+        /* note */ note,
+        /* type */ "axfer",
+        /* genesis id*/ genesisId,
+        /* genesis hash*/ genesisHash);
+
+    auto serialized = transaction.serialize();
+
+    ASSERT_EQ(hex(serialized), "8ba461616d74ce000f4240a461726376c420325164cafa253b116f4b54c63bd960d610209d44df635d65e095f3855a96b956a3666565cd0924a26676ce00f0b7c3a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76ce00f0bbaba46e6f7465c4046e6f7465a3736e64c42082872d60c338cb928006070e02ec0942addcb79e7fbd01c76458aea526899bd3a474797065a56178666572a478616964ce00cc264a");
+}
+
 TEST(AlgorandSigner, SignAssetOptIn) {
     // https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
     auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));

@@ -31,6 +31,8 @@ class Transaction {
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
+    Transaction() = default;
+
     Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, uint256_t fromShardID,
                 uint256_t toShardID, Address to, uint256_t amount, const Data& payload)
         : nonce(std::move(nonce))

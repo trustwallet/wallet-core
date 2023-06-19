@@ -24,6 +24,7 @@ Data forgeOperation(const Proto::Operation& operation);
 Data forgeAddress(const std::string& address);
 Data forgeArray(const Data& data);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
+Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);
 Data forgeInt32(int value, int len = 4);

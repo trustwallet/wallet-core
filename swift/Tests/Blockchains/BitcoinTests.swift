@@ -106,6 +106,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         // redeem p2wpkh nested in p2sh
         let scriptHash = lockScript.matchPayToScriptHash()!
         let input = BitcoinSigningInput.with {
+            $0.amount = 43980
             $0.toAddress = "3NqULUrjZ7NL36YtBGsSVzqr5q1x9CJWwu"
             $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .bitcoin)
             $0.coinType = CoinType.bitcoin.rawValue

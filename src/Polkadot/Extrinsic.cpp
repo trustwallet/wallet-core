@@ -24,6 +24,7 @@ static const std::string stakingUnbond = "Staking.unbond";
 static const std::string stakingWithdrawUnbond = "Staking.withdraw_unbonded";
 static const std::string stakingNominate = "Staking.nominate";
 static const std::string stakingChill = "Staking.chill";
+static const std::string stakingReBond = "Staking.rebond";
 
 // Readable decoded call index can be found from https://polkascan.io
 static std::map<const std::string, Data> polkadotCallIndices = {
@@ -35,6 +36,7 @@ static std::map<const std::string, Data> polkadotCallIndices = {
     {stakingNominate, Data{0x07, 0x05}},
     {stakingChill, Data{0x07, 0x06}},
     {utilityBatch, Data{0x1a, 0x02}},
+    {stakingReBond, Data{0x07, 0x13}},
 };
 
 static std::map<const std::string, Data> kusamaCallIndices = {
@@ -46,6 +48,7 @@ static std::map<const std::string, Data> kusamaCallIndices = {
     {stakingNominate, Data{0x06, 0x05}},
     {stakingChill, Data{0x06, 0x06}},
     {utilityBatch, Data{0x18, 0x02}},
+    {stakingReBond, Data{0x06, 0x13}},
 };
 
 static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
@@ -89,15 +92,36 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
 
 Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network, uint32_t specVersion) {
     Data data;
-    auto transfer = balance.transfer();
-    auto address = SS58Address(transfer.to_address(), network);
-    auto value = load(transfer.value());
-    // call index
-    append(data, getCallIndex(network, balanceTransfer));
-    // destination
-    append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
-    // value
-    append(data, encodeCompact(value));
+    if (balance.has_transfer()) {
+        auto transfer = balance.transfer();
+        auto address = SS58Address(transfer.to_address(), network);
+        auto value = load(transfer.value());
+        // call index
+        append(data, getCallIndex(network, balanceTransfer));
+        // destination
+        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
+        // value
+        append(data, encodeCompact(value));
+    } else if (balance.has_batchtransfer()) {
+        //init call array
+        auto calls = std::vector<Data>();
+        auto batchTransfer = balance.batchtransfer().transfers();
+        for (auto transfer : batchTransfer) {
+            Data itemData;
+            auto address = SS58Address(transfer.to_address(), network);
+            auto value = load(transfer.value());
+            // index
+            append(itemData, getCallIndex(network, balanceTransfer));
+            // destination
+            append(itemData, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
+            // value
+            append(itemData, encodeCompact(value));
+            // put into calls array
+            calls.push_back(itemData);
+        }
+        data = encodeBatchCall(calls, network);
+    }
+
     return data;
 }
 
@@ -166,6 +190,14 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
         auto value = load(staking.unbond().value());
         // call index
         append(data, getCallIndex(network, stakingUnbond));
+        // value
+        append(data, encodeCompact(value));
+    } break;
+
+    case Proto::Staking::kRebond: {
+        auto value = load(staking.rebond().value());
+        // call index
+        append(data, getCallIndex(network, stakingReBond));
         // value
         append(data, encodeCompact(value));
     } break;

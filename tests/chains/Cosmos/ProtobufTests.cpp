@@ -9,6 +9,7 @@
 #include "Cosmos/Protobuf/authz_tx.pb.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
+#include "Cosmos/ProtobufSerialization.h"
 #include "Data.h"
 #include "HexCoding.h"
 
@@ -44,6 +45,31 @@ TEST(CosmosProtobuf, SendMsg) {
     std::string json;
     google::protobuf::util::MessageToJsonString(txBody, &json);
     assertJSONEqual(json, R"({"messages":[{"@type":"type.googleapis.com/cosmos.bank.v1beta1.MsgSend","amount":[{"amount":"1","denom":"muon"}],"fromAddress":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","toAddress":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}]})");
+}
+
+TEST(CosmosProtobuf, ExecuteContractMsg) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON); // obsolete
+    input.set_account_number(1037);
+    input.set_chain_id("gaia-13003");
+    input.set_memo("");
+    input.set_sequence(8);
+
+    auto fromAddress = Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
+    auto toAddress = Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_execute_contract_message();
+    message.set_sender(fromAddress.string());
+    message.set_contract(toAddress.string());
+    message.set_execute_msg("transfer");
+    auto* coin = message.add_coins();
+    coin->set_denom("muon");
+    coin->set_amount("1");
+
+    auto body = Protobuf::buildProtoTxBody(input);
+
+    EXPECT_EQ(hex(body), "0a9d010a262f74657272612e7761736d2e763162657461312e4d736745786563757465436f6e747261637412730a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b796778306570683664643032122d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537331a087472616e736665722a090a046d756f6e120131");
 }
 
 TEST(CosmosProtobuf, DeterministicSerialization_Article) {

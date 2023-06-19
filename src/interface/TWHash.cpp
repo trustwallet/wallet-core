@@ -83,6 +83,16 @@ TWData* _Nonnull TWHashSHA256SHA256(TWData* _Nonnull data) {
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
+TWData *_Nonnull TWHashBlake2bPersonal(TWData *_Nonnull data, TWData * _Nonnull personal, size_t outlen) {
+    auto resultBytes = TW::Data(outlen);
+    auto dataBytes = TWDataBytes(data);
+    auto personalBytes = TWDataBytes(personal);
+    auto personalSize = TWDataSize(personal);
+    blake2b_Personal(dataBytes, static_cast<uint32_t>(TWDataSize(data)), personalBytes, personalSize, resultBytes.data(), outlen);
+    auto result = TWDataCreateWithBytes(resultBytes.data(), outlen);
+    return result;
+}
+
 TWData* _Nonnull TWHashSHA256RIPEMD(TWData* _Nonnull data) {
     const auto result = Hash::sha256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());

@@ -16,6 +16,7 @@
 #include "../Decred/Address.h"
 #include "../Groestlcoin/Address.h"
 #include "../Zcash/TAddress.h"
+#include "../Zen/Address.h"
 
 #include <algorithm>
 #include <iterator>
@@ -31,6 +32,12 @@ bool Script::isPayToScriptHash() const {
     // Extra-fast test for pay-to-script-hash
     return bytes.size() == 23 && bytes[0] == OP_HASH160 && bytes[1] == 0x14 &&
            bytes[22] == OP_EQUAL;
+}
+
+bool Script::isPayToScriptHashReplay() const {
+    // Extra-fast test for pay-to-script-hash-replay
+    return bytes.size() == 61 && bytes[0] == OP_HASH160 && bytes[1] == 0x14 &&
+           bytes[22] == OP_EQUAL && bytes.back() == OP_CHECKBLOCKATHEIGHT;
 }
 
 bool Script::isPayToWitnessScriptHash() const {
@@ -81,6 +88,17 @@ bool Script::matchPayToPublicKeyHash(Data& result) const {
     return false;
 }
 
+bool Script::matchPayToPublicKeyHashReplay(Data& result) const {
+    if (bytes.size() == 63 && bytes[0] == OP_DUP && bytes[1] == OP_HASH160 && bytes[2] == 20 &&
+        bytes[23] == OP_EQUALVERIFY && bytes[24] == OP_CHECKSIG && bytes[25] == 32 &&
+        bytes.back() == OP_CHECKBLOCKATHEIGHT) {
+        result.clear();
+        std::copy(std::begin(bytes) + 3, std::begin(bytes) + 3 + 20, std::back_inserter(result));
+        return true;
+    }
+    return false;
+}
+
 bool Script::matchPayToScriptHash(Data& result) const {
     if (!isPayToScriptHash()) {
         return false;
@@ -89,6 +107,16 @@ bool Script::matchPayToScriptHash(Data& result) const {
     std::copy(std::begin(bytes) + 2, std::begin(bytes) + 22, std::back_inserter(result));
     return true;
 }
+
+bool Script::matchPayToScriptHashReplay(Data& result) const {
+    if (!isPayToScriptHashReplay()) {
+        return false;
+    }
+    result.clear();
+    std::copy(std::begin(bytes) + 2, std::begin(bytes) + 22, std::back_inserter(result));
+    return true;
+}
+
 
 bool Script::matchPayToWitnessPublicKeyHash(Data& result) const {
     if (!isPayToWitnessPublicKeyHash()) {
@@ -219,6 +247,32 @@ Script Script::buildPayToPublicKeyHash(const Data& hash) {
     return script;
 }
 
+Script Script::buildPayToPublicKeyHashReplay(const Data& hash, const Data& blockHash, int64_t blockHeight) {
+    assert(hash.size() == 20);
+    assert(blockHash.size() == 32);
+    Script script;
+    script.bytes.push_back(OP_DUP);
+    script.bytes.push_back(OP_HASH160);
+    script.bytes.push_back(20);
+    append(script.bytes, hash);
+    script.bytes.push_back(OP_EQUALVERIFY);
+    script.bytes.push_back(OP_CHECKSIG);
+
+    // blockhash
+    script.bytes.push_back(32);
+    append(script.bytes, blockHash);
+
+    // blockheight
+    auto blockHeightData = encodeNumber(blockHeight);
+    // blockHeight size will never beyond 1 byte size
+    script.bytes.push_back(static_cast<byte>(blockHeightData.size()));
+    append(script.bytes, blockHeightData);
+    script.bytes.push_back(OP_CHECKBLOCKATHEIGHT);
+
+    return script;
+}
+
+
 Script Script::buildPayToScriptHash(const Data& scriptHash) {
     assert(scriptHash.size() == 20);
     Script script;
@@ -228,6 +282,30 @@ Script Script::buildPayToScriptHash(const Data& scriptHash) {
     script.bytes.push_back(OP_EQUAL);
     return script;
 }
+
+Script Script::buildPayToScriptHashReplay(const Data& scriptHash, const Data& blockHash, int64_t blockHeight) {
+    assert(scriptHash.size() == 20);
+    assert(blockHash.size() == 32);
+    Script script;
+    script.bytes.push_back(OP_HASH160);
+    script.bytes.push_back(20);
+    append(script.bytes, scriptHash);
+    script.bytes.push_back(OP_EQUAL);
+
+    // blockhash
+    script.bytes.push_back(32);
+    append(script.bytes, blockHash);
+
+    // blockheight
+    auto blockHeightData = encodeNumber(blockHeight);
+    // blockHeight size will never beyond 1 byte size
+    script.bytes.push_back(static_cast<byte>(blockHeightData.size()));
+    append(script.bytes, blockHeightData);
+    script.bytes.push_back(OP_CHECKBLOCKATHEIGHT);
+
+    return script;
+}
+
 
 // Append to the buffer the length for the upcoming data (push). Supported length range: 0-75 bytes
 void pushDataLength(Data& buffer, size_t len) {
@@ -291,6 +369,44 @@ void Script::encode(Data& data) const {
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
+Data Script::encodeNumber(int64_t n) {
+    Data result;
+    // check bitcoin Script::push_int64
+    if (n == -1 || (n >= 1 && n <= 16)) {
+        result.push_back(OP_1 + uint8_t(n - 1));
+        return result;
+    }
+    if (n == 0) {
+        result.push_back(OP_0);
+        return result;
+    }
+
+    const bool neg = n < 0;
+    uint64_t absvalue = neg ? -n : n;
+
+    while (absvalue) {
+        result.push_back(absvalue & 0xff);
+        absvalue >>= 8;
+    }
+
+    if (result.back() & 0x80) {
+        result.push_back(neg ? 0x80 : 0);
+    } else if (neg) {
+        result.back() |= 0x80;
+    }
+    return result;
+}
+
+bool isLtcP2sh(enum TWCoinType coin, byte start) {
+    // For ltc, we need to support legacy p2sh which starts with 5.
+    // Here we check prefix 5 and 50 in case of wallet-core changing its config value.
+    // Ref: https://github.com/litecoin-project/litecoin/blob/0.21/src/chainparams.cpp#L128
+    if (TWCoinTypeLitecoin == coin && (5 == start || 50 == start)) {
+        return true;
+    }
+    return false;
+}
+
 Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType coin) {
     // First try legacy address, for all coins
     if (Address::isValid(string)) {
@@ -303,8 +419,8 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             data.reserve(Address::size - 1);
             std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToPublicKeyHash(data);
-        }
-        if (p2sh == address.bytes[0]) {
+        } else if (p2sh == address.bytes[0]
+            || isLtcP2sh(coin, address.bytes[0])) {
             // address starts with 3/M
             auto data = Data();
             data.reserve(Address::size - 1);
@@ -394,5 +510,22 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             return {};
     }
 }
+
+Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType coin, const Data& blockHash, int64_t blockHeight) {
+    if (Zen::Address::isValid(string)) {
+        auto address = Zen::Address(string);
+        auto data = Data();
+        data.reserve(Address::size - 2);
+        std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
+        if (address.bytes[1] == TW::p2pkhPrefix(TWCoinTypeZen)) {
+            return buildPayToPublicKeyHashReplay(data, blockHash, blockHeight);
+        } else if (address.bytes[1] == TW::p2shPrefix(TWCoinTypeZen)) {
+            return buildPayToScriptHashReplay(data, blockHash, blockHeight);
+        }
+    }
+
+    return lockScriptForAddress(string, coin);
+}
+
 
 } // namespace TW::Bitcoin

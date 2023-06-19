@@ -8,46 +8,53 @@
 
 #include "../proto/TransactionCompiler.pb.h"
 #include "Address.h"
+#include "Coin.h"
 #include "Signer.h"
 
 namespace TW::Binance {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
     if (std::holds_alternative<Bech32Prefix>(addressPrefix)) {
-        if (const auto hrp = std::get<Bech32Prefix>(addressPrefix); hrp) {
+        if (const auto* hrp = std::get<Bech32Prefix>(addressPrefix); hrp) {
             return Address::isValid(address, hrp);
         }
     }
-
-    // Use the default validation, which handles a specific set of valid HRPs.
-    return Address::isValid(address);
+    return Address::isValid(coin, address);
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
     const std::string hrp = getFromPrefixHrpOrDefault(addressPrefix, coin);
     return Address(publicKey, hrp).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    Address addr;
-    if (!Address::decode(address, addr)) {
-        return {};
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    const char* hrp = stringForHRP(TW::hrp(coin));
+    Address addr(hrp);
+    if (Address::decode(address, addr)) {
+        return addr.getKeyHash();
     }
-    return addr.getKeyHash();
+    return {};
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+    auto input = Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    const char* hrp = stringForHRP(TW::hrp(coin));
+    auto serializedOut = Signer::sign(input, hrp).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
-std::string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return Signer::signJSON(json, key);
+std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
+    const char* hrp = stringForHRP(TW::hrp(coin));
+    return Signer::signJSON(json, key, hrp);
 }
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
+    const char* hrp = stringForHRP(TW::hrp(coin));
+
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
-        txInputData, [](const auto& input, auto& output) {
-            Signer signer(input);
+        txInputData, [hrp](const auto& input, auto& output) {
+            Signer signer(input, hrp);
 
             auto preImageHash = signer.preImageHash();
             auto preImage = signer.signaturePreimage();
@@ -57,23 +64,16 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
 }
 
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto& input, auto& output) {
-            if (signatures.size() == 0 || publicKeys.size() == 0) {
-                output.set_error(Common::Proto::Error_invalid_params);
-                output.set_error_message("empty signatures or publickeys");
-                return;
-            }
-            if (signatures.size() > 1 || publicKeys.size() > 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
-                return;
-            }
-            output = Signer(input).compile(signatures[0], publicKeys[0]);
+    const char* hrp = stringForHRP(TW::hrp(coin));
+
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [hrp](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            output = Signer(input, hrp).compile(signature, publicKey);
         });
 }
 
-Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
+Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
     auto input = Proto::SigningInput();
     input.set_chain_id(chainId);
     input.set_account_number(0);
@@ -85,16 +85,22 @@ Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, const st
 
     auto& order = *input.mutable_send_order();
 
-    Address fromAddress;
+    const char* hrp = stringForHRP(TW::hrp(coinType));
+
+    Data fromKeyhash;
+    Data toKeyhash;
+
+    Address fromAddress(hrp);
     if (!Address::decode(from, fromAddress)) {
         throw std::invalid_argument("Invalid from address");
     }
-    const auto fromKeyhash = fromAddress.getKeyHash();
-    Address toAddress;
+    fromKeyhash = fromAddress.getKeyHash();
+
+    Address toAddress(hrp);
     if (!Address::decode(to, toAddress)) {
         throw std::invalid_argument("Invalid to address");
     }
-    const auto toKeyhash = toAddress.getKeyHash();
+    toKeyhash = toAddress.getKeyHash();
 
     {
         auto* sendOrderInputs = order.add_inputs();

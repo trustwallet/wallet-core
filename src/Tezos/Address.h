@@ -33,6 +33,9 @@ class Address : public TW::Base58Address<23> {
 
     /// Forge an address to hex bytes.
     Data forge() const;
+
+    // without type prefix
+    Data forgePKH() const;
 };
 
 } // namespace TW::Tezos

@@ -30,22 +30,26 @@ class Signer {
 
   private:
     static Proto::SigningOutput
-    signTransaction(const Proto::SigningInput &input) noexcept;
+    signTransaction(const Proto::SigningInput &input);
 
-    static Proto::SigningOutput
-    signCreateValidator(const Proto::SigningInput &input) noexcept;
+    template <typename T>
+    static Proto::SigningOutput signStaking(const Proto::SigningInput &input, function<T(const Proto::SigningInput &input)> func);
 
-    static Proto::SigningOutput
-    signEditValidator(const Proto::SigningInput &input) noexcept;
+    template <typename T>
+    static uint8_t getEnum() noexcept;
 
-    static Proto::SigningOutput
-    signDelegate(const Proto::SigningInput &input) noexcept;
+    template <typename T>
+    static Staking<T> buildUnsignedStakingTransaction(const Proto::SigningInput &input, function<T(const Proto::SigningInput &input)> func);
+    
+    template <typename T>
+    Proto::SigningOutput buildStakingSigningOutput(const Proto::SigningInput &input, const Data &signature, function<T(const Proto::SigningInput &input)> func);
 
-    static Proto::SigningOutput
-    signUndelegate(const Proto::SigningInput &input) noexcept;
-
-    static Proto::SigningOutput
-    signCollectRewards(const Proto::SigningInput &input) noexcept;
+    static Transaction buildUnsignedTransaction(const Proto::SigningInput &input);
+    static CreateValidator buildUnsignedCreateValidator(const Proto::SigningInput &input);
+    static EditValidator buildUnsignedEditValidator(const Proto::SigningInput &input);
+    static Delegate buildUnsignedDelegate(const Proto::SigningInput &input);
+    static Undelegate buildUnsignedUndelegate(const Proto::SigningInput &input);
+    static CollectRewards buildUnsignedCollectRewards(const Proto::SigningInput &input);
 
   public:
     uint256_t chainID;
@@ -54,28 +58,31 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     template <typename T>
-    static Proto::SigningOutput prepareOutput(const Data& encoded, const T &transaction) noexcept;
+    static Proto::SigningOutput prepareOutput(const Data &encoded, const T &transaction) noexcept;
 
     /// Signs the given transaction.
     template <typename T>
-    void sign(const PrivateKey &privateKey, const Data& hash, T &transaction) const noexcept;
+    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept;
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// \returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept;
+    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// \returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
-                                                              const Data& signature) noexcept;
+                                                              const Data &signature) noexcept;
 
     std::string txnAsRLPHex(Transaction &transaction) const noexcept;
 
     template <typename Directive>
     std::string txnAsRLPHex(Staking<Directive> &transaction) const noexcept;
+
+    Data buildUnsignedTxBytes(const Proto::SigningInput &input);
+    Proto::SigningOutput buildSigningOutput(const Proto::SigningInput &input, const Data &signature);
 
   protected:
     /// Computes the transaction hash.
