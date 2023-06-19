@@ -182,6 +182,23 @@ Data transactionData(const Proto::SigningInput& input) {
     return data;
 }
 
+Data transactionDataWithPublicKey(const Proto::SigningInput& input) {
+    Data data;
+    writeString(data, input.signer_id());
+    auto public_key_proto = Proto::PublicKey();
+    public_key_proto.set_data(input.public_key().data(), input.public_key().size());
+    writePublicKey(data, public_key_proto);
+    writeU64(data, input.nonce());
+    writeString(data, input.receiver_id());
+    const auto& block_hash = input.block_hash();
+    writeRawBuffer(data, block_hash);
+    writeU32(data, input.actions_size());
+    for (const auto& action : input.actions()) {
+        writeAction(data, action);
+    }
+    return data;
+}
+
 Data signedTransactionData(const Data& transactionData, const Data& signatureData) {
     Data data;
     writeRawBuffer(data, transactionData);

@@ -19,7 +19,10 @@ public:
     Signer() = delete;
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
+
+    /// Collect pre-image hashes to be signed
+    static PreSigningOutput preImageHashes(const SigningInput& input) noexcept;
 };
 
 } // namespace TW::<%= name %>

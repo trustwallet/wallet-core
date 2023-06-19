@@ -32,6 +32,8 @@ class Signer {
     /// Encodes a signed transaction as JSON.
     std::string encode(const Data& signature) const noexcept;
 
+    TW::Data hashImage(const Data& image) const;
+
   private:
     std::map<std::string, std::string> parameters() const noexcept;
 };

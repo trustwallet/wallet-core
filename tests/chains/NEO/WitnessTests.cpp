@@ -22,12 +22,14 @@ TEST(NEOWitness, Serialize) {
     witness.invocationScript = parse_hex(invocationScript);
     witness.verificationScript = parse_hex(verificationScript);
     EXPECT_EQ("20" + invocationScript + "14" + verificationScript, hex(witness.serialize()));
+    EXPECT_EQ((size_t)witness.size(), witness.invocationScript.size() + witness.verificationScript.size());
 
     invocationScript = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4aba";
     verificationScript = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b";
     witness.invocationScript = parse_hex(invocationScript);
     witness.verificationScript = parse_hex(verificationScript);
     EXPECT_EQ("21" + invocationScript + "13" + verificationScript, hex(witness.serialize()));
+    EXPECT_EQ((size_t)witness.size(), witness.invocationScript.size() + witness.verificationScript.size());
 }
 
 TEST(NEOWitness, Deserialize) {

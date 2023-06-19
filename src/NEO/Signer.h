@@ -15,12 +15,12 @@
 namespace TW::NEO {
 
 class Signer {
-  private:
+private:
     Data publicKey;
     TW::PrivateKey privateKey;
     Address address;
 
-  public:
+public:
     explicit Signer(const TW::PrivateKey& priKey);
     PrivateKey getPrivateKey() const;
     PublicKey getPublicKey() const;
@@ -31,10 +31,15 @@ class Signer {
     void sign(Transaction& tx) const;
     Data sign(const Data& data) const;
 
-  private:
-    static Transaction prepareUnsignedTransaction(const Proto::SigningInput& input,
-                                                  const Proto::TransactionPlan& plan,
-                                                  bool validate = true);
+    static Data signaturePreimage(const Proto::SigningInput& input);
+    static Data encodeTransaction(const Proto::SigningInput& input,
+                                  const std::vector<PublicKey>& publicKeys,
+                                  const std::vector<Data>& signatures);
+
+private:
+    static std::shared_ptr<Transaction>
+    prepareUnsignedTransaction(const Proto::SigningInput& input, const Proto::TransactionPlan& plan,
+                               bool validate = true);
 };
 
 } // namespace TW::NEO

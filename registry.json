@@ -316,6 +316,41 @@
     }
   },
   {
+    "id": "syscoin",
+    "name": "Syscoin",
+    "coinId": 57,
+    "symbol": "SYS",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/84'/57'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 63,
+    "p2shPrefix": 5,
+    "hrp": "sys",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://sys1.bcfn.ca",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "19e043f76f6ffc960f5fe93ecec37bc37a58ae7525d7e9cd6ed40f71f0da60eb",
+      "sampleAccount": "sys1qh3gvhnzq2ch7w8g04x8zksr2mz7r90x7ksmu40"
+    },
+    "info": {
+      "url": "https://syscoin.org",
+      "source": "https://github.com/syscoin",
+      "rpc": "https://sys1.bcfn.ca",
+      "documentation": "https://docs.syscoin.org"
+    }
+  },
+  {
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,
@@ -364,7 +399,9 @@
     "explorer": {
       "url": "https://blockscout.com/etc/mainnet",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "0x66004165d3901819dc22e568931591d2e4287bda54995f4ce2701a12016f5997",
+      "sampleAccount": "0x9eab4b0fc468a7f5d46228bf5a76cb52370d068d"
     },
     "info": {
       "url": "https://ethereumclassic.org",
@@ -397,6 +434,108 @@
       "source": "https://github.com/icon-project/icon-rpc-server",
       "rpc": "http://ctz.icxstation.com:9000/api/v3",
       "documentation": "https://www.icondev.io/docs/icon-json-rpc-v3"
+    }
+  },
+  {
+    "id": "verge",
+    "name": "Verge",
+    "coinId": 77,
+    "symbol": "XVG",
+    "decimals": 6,
+    "blockchain": "Verge",
+    "derivation": [
+      {
+        "path": "m/84'/77'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 30,
+    "p2shPrefix": 33,
+    "hrp": "vg",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://verge-blockchain.info",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "8c99979a2b25a46659bff35b238aab1c3158f736f215d99526429c7c96203581",
+      "sampleAccount": "DFre88gd87bAZQdnS7dbBLwT6GWiGFMQB6"
+    },
+    "info": {
+      "url": "https://vergecurrency.com",
+      "source": "https://github.com/vergecurrency/verge",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
+    "id": "pivx",
+    "name": "Pivx",
+    "coinId": 119,
+    "symbol": "PIVX",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/44'/119'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 30,
+    "p2shPrefix": 13,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://pivx.ccore.online",
+      "txPath": "/transaction/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://pivx.org",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
+    "id": "zen",
+    "name": "Zen",
+    "coinId": 121,
+    "symbol": "ZEN",
+    "decimals": 8,
+    "blockchain": "Zen",
+    "derivation": [
+      {
+        "path": "m/44'/121'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "staticPrefix": 32,
+    "p2pkhPrefix": 137,
+    "p2shPrefix": 150,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.horizen.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "b7f548640766fb024247accf4e01bec37d88d49c4900357edc84d49a09ff4430",
+      "sampleAccount": "znRchPtvEyJJUwGbCALqyjwHJb1Gx6z4H4j"
+    },
+    "info": {
+      "url": "https://www.horizen.io",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -478,7 +617,9 @@
     "explorer": {
       "url": "https://mintscan.io/cosmos",
       "txPath": "/txs/",
-      "accountPath": "/account/"
+      "accountPath": "/account/",
+      "sampleTx": "541FA06FB37AC1BF61922143783DD76FECA361830F9876D0342536EE8A87A790",
+      "sampleAccount": "cosmos1gu6y2a0ffteesyeyeesk23082c6998xyzmt9mz"
     },
     "info": {
       "url": "https://cosmos.network",
@@ -1019,7 +1160,9 @@
     "explorer": {
       "url": "https://blockchair.com/zcash",
       "txPath": "/transaction/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "f2438a93039faf08d39bd3df1f7b5f19a2c29ffe8753127e2956ab4461adab35",
+      "sampleAccount": "t1Yfrf1dssDLmaMBsq2LFKWPbS5vH3nGpa2"
     },
     "info": {
       "url": "https://z.cash",
@@ -1051,13 +1194,49 @@
     "explorer": {
       "url": "https://explorer.firo.org",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "09a60d58b3d17519a42a8eca60750c33b710ca8f3ca71994192e05c248a2a111",
+      "sampleAccount": "a8ULhhDgfdSiXJhSZVdhb8EuDc6R3ogsaM"
     },
     "info": {
       "url": "https://firo.org/",
       "source": "https://github.com/firoorg/firo",
       "rpc": "",
       "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
+    "id": "komodo",
+    "name": "Komodo",
+    "coinId": 141,
+    "symbol": "KMD",
+    "decimals": 8,
+    "blockchain": "Zcash",
+    "derivation": [
+      {
+        "path": "m/44'/141'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 60,
+    "p2shPrefix": 85,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://kmdexplorer.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "f53bd1a5c0f5dc4b60ba9a1882742ea96faa996e1b870795812a29604dd7829e",
+      "sampleAccount": "RWvfkt8UjbPWXgeZEcgYmKw2vA1bbAx5t2"
+    },
+    "info": {
+      "url": "https://komodoplatform.com",
+      "source": "https://github.com/KomodoPlatform/komodo",
+      "rpc": "",
+      "documentation": "https://developers.komodoplatform.com"
     }
   },
   {
@@ -1138,7 +1317,9 @@
     "explorer": {
       "url": "https://blockchair.com/stellar",
       "txPath": "/transaction/",
-      "accountPath": "/account/"
+      "accountPath": "/account/",
+      "sampleTx": "d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84",
+      "sampleAccount": "GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52"
     },
     "info": {
       "url": "https://stellar.org",
@@ -1171,7 +1352,9 @@
     "explorer": {
       "url": "https://explorer.bitcoingold.org/insight",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "2f807d7734de35d2236a1b3d8704eb12954f5f82ea66987949b10e94d9999b23",
+      "sampleAccount": "GJjz2Du9BoJQ3CPcoyVTHUJZSj62i1693U"
     },
     "info": {
       "url": "https://bitcoingold.org",
@@ -1365,7 +1548,9 @@
     "explorer": {
       "url": "https://explorer.fioprotocol.io",
       "txPath": "/transaction/",
-      "accountPath": "/account/"
+      "accountPath": "/account/",
+      "sampleTx": "930d1d3cf8988b39b5f64b64e9d61314a3e05a155d9e3505bdf863aab1adddf3",
+      "sampleAccount": "f5axfpgffiqz"
     },
     "info": {
       "url": "https://fioprotocol.io",
@@ -1616,7 +1801,9 @@
     "explorer": {
       "url": "https://polkadot.subscan.io",
       "txPath": "/extrinsic/",
-      "accountPath": "/account/"
+      "accountPath": "/account/",
+      "sampleTx": "0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4",
+      "sampleAccount": "13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2"
     },
     "info": {
       "url": "https://polkadot.network/",
@@ -1670,7 +1857,9 @@
     "explorer": {
       "url": "https://explorer.near.org",
       "txPath": "/transactions/",
-      "accountPath": "/accounts/"
+      "accountPath": "/accounts/",
+      "sampleTx": "FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL",
+      "sampleAccount": "test-trust.vlad.near"
     },
     "info": {
       "url": "https://nearprotocol.com",
@@ -1783,7 +1972,7 @@
       "txPath": "/txs/",
       "accountPath": "/account/",
       "sampleTx": "2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A",
-      "sampleAccount": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7"
+      "sampleAccount": "kava1xd39avn2f008jmvua0eupg39zsp2xn3wf802vn"
     },
     "info": {
       "url": "https://kava.io",
@@ -2021,10 +2210,41 @@
       "sampleAccount": "bnb1u7jm0cll5h3224y0tapwn6gf6pr49ytewx4gsz"
     },
     "info": {
-      "url": "https://binance.org",
-      "source": "https://github.com/binance-chain/node-binary",
+      "url": "https://www.bnbchain.org",
+      "source": "https://github.com/bnb-chain/node-binary",
       "rpc": "https://dex.binance.org",
       "documentation": "https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/paths"
+    }
+  },
+  {
+    "id": "tbinance",
+    "name": "TBinance",
+    "displayName": "TBNB",
+    "coinId": 30000714,
+    "slip44": 714,
+    "symbol": "BNB",
+    "decimals": 8,
+    "blockchain": "Binance",
+    "derivation": [
+      {
+        "path": "m/44'/714'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "tbnb",
+    "explorer": {
+      "url": "https://testnet-explorer.binance.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "92E9DA1B6D603667E2DE83C0AC0C1D9E6D65405AD642DA794421C64A82A078D0",
+      "sampleAccount": "tbnb1c2cxgv3cklswxlvqr9anm6mlp6536qnd36txgr"
+    },
+    "info": {
+      "url": "https://www.bnbchain.org",
+      "source": "https://github.com/bnb-chain/node-binary",
+      "rpc": "https://testnet-dex.binance.org",
+      "documentation": "https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/paths-testnet"
     }
   },
   {
@@ -2045,7 +2265,9 @@
     "explorer": {
       "url": "https://explore.vechain.org",
       "txPath": "/transactions/",
-      "accountPath": "/accounts/"
+      "accountPath": "/accounts/",
+      "sampleTx": "0xa424053be0063555aee73a595ca69968c2e4d90d36f280753e503b92b11a655d",
+      "sampleAccount": "0x8a0a035a33173601bfbec8b6ae7c4a6557a55103"
     },
     "info": {
       "url": "https://vechain.org",
@@ -2129,13 +2351,50 @@
     "explorer": {
       "url": "https://tomoscan.io",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "0x35a8d3ab06c94d5b7d27221b7c9a24ba3f1710dd0fcfd75c5d59b3a885fd709b",
+      "sampleAccount": "0x86cCbD9bfb371c355202086882bC644A7D0b024B"
     },
     "info": {
       "url": "https://tomochain.com",
       "source": "https://github.com/tomochain/tomochain",
       "rpc": "https://rpc.tomochain.com",
       "documentation": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "bitcoindiamond",
+    "name": "Bitcoin Diamond",
+    "coinId": 999,
+    "symbol": "BCD",
+    "decimals": 7,
+    "blockchain": "BitcoinDiamond",
+    "derivation": [
+      {
+        "path": "m/84'/999'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 0,
+    "p2shPrefix": 5,
+    "hrp": "bcd",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "http://explorer.btcd.io/#",
+      "txPath": "/tx?tx=",
+      "accountPath": "/address?address=",
+      "sampleTx": "ec564fe8993ba77f3f5c8b7f6ebb4cbc08e564a54612d6f4584cd1017cf723d4",
+      "sampleAccount": "1HNTyntGXNhy4WxNzWfffPqp7LHb8bGJ9R"
+    },
+    "info": {
+      "url": "https://www.bitcoindiamond.org",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -2265,7 +2524,9 @@
     "explorer": {
       "url": "https://tzstats.com",
       "txPath": "/",
-      "accountPath": "/"
+      "accountPath": "/",
+      "sampleTx": "onk3Z6V4StyfiXTPSHwZFvTKVAaws37cHmZacmULPr3VbVHpKrg",
+      "sampleAccount": "tz1SiPXX4MYGNJNDsRc7n8hkvUqFzg8xqF9m"
     },
     "info": {
       "url": "https://tezos.com",
@@ -2294,7 +2555,7 @@
       "txPath": "/transaction/",
       "accountPath": "/address/",
       "sampleTx": "b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3",
-      "sampleAccount": "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j"
+      "sampleAccount": "DdzFFzCqrhstpwKc8WMvPwwBb5oabcTW9zc5ykA37wJR4tYQucvsR9dXb2kEGNXkFJz2PtrpzfRiZkx8R1iNo8NYqdsukVmv7EAybFwC"
     },
     "info": {
       "url": "https://www.cardano.org",
@@ -2434,7 +2695,9 @@
     "explorer": {
       "url": "https://nulscan.io",
       "txPath": "/transaction/info?hash=",
-      "accountPath": "/address/info?address="
+      "accountPath": "/address/info?address=",
+      "sampleTx": "303e0e42c28acc37ba952a1effd43daa1caec79928054f7abefb21c32e6fdc02",
+      "sampleAccount": "NULSd6HgdSjUZy7jKMZfvQ5QU6Z97oufGTGcF"
     },
     "info": {
       "url": "https://nuls.io",
@@ -2498,7 +2761,7 @@
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856",
-      "sampleAccount": "0xc6D3DBf8dF90BA3f957A9634677805eee0e43bBe"
+      "sampleAccount": "0x69B492D57bb777e97aa7044D0575228434e2E8B1"
     },
     "info": {
       "url": "https://wanchain.org",
@@ -2710,7 +2973,9 @@
     "explorer": {
       "url": "https://optimistic.etherscan.io",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "0x6fd99288be9bf71eb002bb31da10a4fb0fbbb3c45ae73693b212f49c9db7df8f",
+      "sampleAccount": "0x1f932361e31d206b4f6b2478123a9d0f8c761031"
     },
     "info": {
       "url": "https://optimism.io/",
@@ -2831,7 +3096,9 @@
     "explorer": {
       "url": "https://arbiscan.io",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "0xa1e319be22c08155e5904aa211fb87df5f4ade48de79c6578b1cf3dfda9e498c",
+      "sampleAccount": "0xecf9ffa7f51e1194f89c25ad8c484f6bfd04e1ac"
     },
     "info": {
       "url": "https://arbitrum.io",
@@ -3144,13 +3411,49 @@
     "explorer": {
       "url": "https://explorer.bitcoinabc.org",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "6bc767e69cfacffd954c9e5acd178d3140bf00d094b92c6f6052b517500c553b",
+      "sampleAccount": "ecash:pqnqv9lt7e5vjyp0w88zf2af0l92l8rxdg2jj94l5j"
     },
     "info": {
       "url": "https://e.cash",
       "source": "https://github.com/trezor/blockbook",
       "rpc": "https://blockbook.fabien.cash:9197",
       "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
+    "id": "iost",
+    "name": "IOST",
+    "coinId": 291,
+    "symbol": "IOST",
+    "decimals": 2,
+    "blockchain": "IOST",
+    "derivation": [
+      {
+        "path": "m/44'/899'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "p2pkhPrefix": 0,
+    "p2shPrefix": 5,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.iost.io",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "7dKQzgTkPBNrZqrQ2Bqhqq132CHGPKANFDtzRsjHRCqx",
+      "sampleAccount": "4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu"
+    },
+    "info": {
+      "url": "https://iost.io",
+      "source": "https://github.com/iost-official/go-iost",
+      "rpc": "",
+      "documentation": "https://developers.iost.io/docs/en/6-reference/API.html"
     }
   },
   {
@@ -3564,6 +3867,75 @@
       "source": "https://github.com/okex/exchain",
       "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
+    }
+  },
+  {
+    "id": "stratis",
+    "name": "Stratis",
+    "coinId": 105105,
+    "symbol": "STRAX",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/44'/105105'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "strax",
+    "p2pkhPrefix": 75,
+    "p2shPrefix": 140,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.rutanio.com/strax/explorer",
+      "txPath": "/transaction/",
+      "accountPath": "/address/",
+      "sampleTx": "3923df87e83859dec8b87a414cbb1529113788c512a4d0c283e1394c274f0bfb",
+      "sampleAccount": "XWqnSWzQA5kDAS727UTYtXkdcbKc8mEvyN"
+    },
+    "info": {
+      "url": "https://www.stratisplatform.com/",
+      "source": "https://github.com/stratisproject",
+      "rpc": "",
+      "documentation": "https://academy.stratisplatform.com/index.html"
+    }
+  },
+  {
+    "id": "Nebl",
+    "name": "Nebl",
+    "coinId": 146,
+    "symbol": "NEBL",
+    "decimals": 8,
+    "blockchain": "Verge",
+    "derivation": [
+      {
+        "path": "m/44'/146'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 53,
+    "p2shPrefix": 112,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.nebl.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "1e56c745ab87d702c98eddc6bc2475b2eb292ed4af92d170b2362c8a089272a4",
+      "sampleAccount": "NboLGGKWtK5eXzaah5GVpXju9jCcoMi4cc"
+    },
+    "info": {
+      "url": "https://nebl.io",
+      "source": "https://github.com/NeblioTeam",
+      "rpc": "",
+      "documentation": "https://github.com/NeblioTeam"
     }
   },
   {

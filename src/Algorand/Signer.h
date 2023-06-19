@@ -7,6 +7,7 @@
 #pragma once
 
 #include "AssetTransfer.h"
+#include "proto/Common.pb.h"
 #include "OptInAssetTransaction.h"
 #include "Transfer.h"
 
@@ -28,6 +29,14 @@ class Signer {
 
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, const BaseTransaction& transaction) noexcept;
+
+    /// Get transaction data to be signed
+    static TW::Data signaturePreimage(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+
+  private:
+    static TW::Data preImage(const TW::PublicKey& pubKey, const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput encodeTransaction(const Data& signature, const TW::PublicKey& pubKey, const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Algorand

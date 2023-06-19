@@ -55,4 +55,13 @@ Data OngTxBuilder::build(const Ontology::Proto::SigningInput& input) {
     return Data();
 }
 
+Transaction OngTxBuilder::buildTransferTx(const Ontology::Proto::SigningInput &input) {
+    auto fromSigner = Address(input.owner_address());
+    auto toAddress = Address(input.to_address());
+    auto payerAddress = Address(input.payer_address());
+    auto transferTx = Ong().unsignedTransfer(fromSigner, toAddress, input.amount(), payerAddress,
+                                             input.gas_price(), input.gas_limit(), input.nonce());
+    return transferTx;
+}
+
 } // namespace TW::Ontology

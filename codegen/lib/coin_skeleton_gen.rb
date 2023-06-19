@@ -129,6 +129,7 @@ def generate_skeleton(coin_id, mode)
 
         generate_file("newcoin/AddressTests.cpp.erb", "tests/chains/#{name}", "AddressTests.cpp", coin)
         generate_file("newcoin/SignerTests.cpp.erb", "tests/chains/#{name}", "SignerTests.cpp", coin)
+        generate_file("newcoin/TransactionCompilerTests.cpp.erb", "tests/chains/#{name}", "TransactionCompilerTests.cpp", coin)
         generate_file("newcoin/TWAddressTests.cpp.erb", "tests/chains/#{name}", "TWAnyAddressTests.cpp", coin)
         generate_file("newcoin/TWSignerTests.cpp.erb", "tests/chains/#{name}", "TWAnySignerTests.cpp", coin)
         generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)

@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.NULS.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Transaction from address
 message TransactionCoinFrom {
     // Source address
@@ -72,10 +74,10 @@ message Transaction {
     bytes   tx_data = 4;
 
     // CoinFrom
-    TransactionCoinFrom input = 5;
+    repeated TransactionCoinFrom input = 5;
 
     // CoinTo
-    TransactionCoinTo output = 6;
+    repeated TransactionCoinTo output = 6;
 
     // Signature
     Signature tx_sigs = 7;
@@ -115,10 +117,24 @@ message SigningInput {
 
     // time, accurate to the second
     uint32 timestamp = 10;
+    // external address paying fee, required for token transfer, optional for NULS transfer, depending on if an external fee payer is provided. If provided, it will be the fee paying address.
+    string fee_payer = 11;
+    // fee payer address nonce, required for token transfer, optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_nonce = 12;
+    // fee payer address private key, required for token transfer, optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_private_key = 13;
+    // fee payer NULS balance, it is required for token transfer. optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_balance = 14;
 }
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
     // Encoded transaction
     bytes encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

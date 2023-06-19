@@ -15,18 +15,26 @@ using namespace TW;
 
 namespace TW::NULS {
 
-const std::string Address::prefix("NULSd");
-const std::array<byte, 2> Address::mainnetId = {0x01, 0x00};
+std::string mainnetPrefix = std::string("NULSd");
+std::string testnetPrefix = std::string("tNULSe");
 
-bool Address::isValid(const std::string& string) {
-    if (string.empty()) {
+bool Address::isValid(const std::string& addrStr) {
+    if (addrStr.empty()) {
         return false;
     }
-    if (string.length() <= prefix.length()) {
+    std::string addrPrefix;
+    if(addrStr.find(mainnetPrefix) == 0) {
+        addrPrefix = mainnetPrefix;
+    } else if (addrStr.find(testnetPrefix) == 0) {
+        addrPrefix = testnetPrefix;
+    } else {
+        return false;
+    }
+    if (addrStr.length() <= addrPrefix.length()) {
         return false;
     }
 
-    std::string address = string.substr(prefix.length(), string.length() - prefix.length());
+    std::string address = addrStr.substr(addrPrefix.length(), addrStr.length() - addrPrefix.length());
     Data decoded = Base58::decode(address);
     if (decoded.size() != size) {
         return false;
@@ -41,21 +49,34 @@ bool Address::isValid(const std::string& string) {
     return decoded[23] == checkSum;
 }
 
-Address::Address(const TW::PublicKey& publicKey) {
-    // Main-Net chainID
-    bytes[0] = mainnetId[0];
-    bytes[1] = mainnetId[1];
+Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
+    if (isMainnet) {
+        prefix = mainnetPrefix;
+        bytes[0] = 0x01;
+        bytes[1] = 0x00;
+    } else {
+        prefix = testnetPrefix;
+        bytes[0] = 0x02;
+        bytes[1] = 0x00;
+    }
     // Address Type
     bytes[2] = addressType;
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
     bytes[23] = checksum(bytes);
 }
 
-Address::Address(const std::string& string) {
-    if (false == isValid(string)) {
+Address::Address(const std::string& addrStr) {
+    if(addrStr.find(mainnetPrefix) == 0) {
+        prefix = mainnetPrefix;
+    } else if (addrStr.find(testnetPrefix) == 0) {
+        prefix = testnetPrefix;
+    } else {
+        throw std::invalid_argument("wrong address prefix");
+    }
+    if (!isValid(addrStr)) {
         throw std::invalid_argument("Invalid address string");
     }
-    std::string address = string.substr(prefix.length(), string.length() - prefix.length());
+    std::string address = addrStr.substr(prefix.length(), addrStr.length() - prefix.length());
     const auto decoded = Base58::decode(address);
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }

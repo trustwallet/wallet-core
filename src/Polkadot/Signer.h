@@ -16,10 +16,14 @@ namespace TW::Polkadot {
 class Signer {
 public:
     /// Hide default constructor
-    Signer() = delete;
+    explicit Signer();
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
+    static Data signaturePreImage(const Proto::SigningInput &input);
+    static Data encodeTransaction(const Proto::SigningInput &input, const Data &publicKey, const Data &signature);
+    static Data hash(const Data &payload);
 };
 
 } // namespace TW::Polkadot

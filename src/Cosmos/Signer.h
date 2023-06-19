@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "PublicKey.h"
 #include "../proto/Cosmos.pb.h"
 
 #include <TrustWalletCore/TWCoinType.h>
@@ -19,6 +20,9 @@ class Signer {
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input, TWCoinType coin) noexcept;
 
+    std::string encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey, TWCoinType coin) const;
+    std::string signaturePreimage(const Proto::SigningInput& input, const Data& publicKey, TWCoinType coin) const;
+    
     /// Signs a Proto::SigningInput transaction, using Json serialization
     static Proto::SigningOutput signJsonSerialized(const Proto::SigningInput& input, TWCoinType coin) noexcept;
 

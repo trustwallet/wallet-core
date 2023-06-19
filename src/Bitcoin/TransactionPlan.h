@@ -33,7 +33,16 @@ struct TransactionPlan {
     /// Zcash branch id
     Data branchId;
 
+    /// zen & bitcoin diamond preblockhash
+    Data preBlockHash;
+
+    /// zen preblockheight
+    int64_t preBlockHeight = 0;
+
     Data outputOpReturn;
+
+    /// Check if we use max amount for output address
+    bool useMaxAmount = false;
 
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 
@@ -46,6 +55,8 @@ struct TransactionPlan {
         , change(plan.change())
         , utxos(std::vector<UTXO>(plan.utxos().begin(), plan.utxos().end()))
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
+        , preBlockHash(plan.preblockhash().begin(), plan.preblockhash().end())
+        , preBlockHeight(plan.preblockheight())
         , outputOpReturn(plan.output_op_return().begin(), plan.output_op_return().end())
         , error(plan.error())
     {}
@@ -60,6 +71,8 @@ struct TransactionPlan {
             *plan.add_utxos() = utxo.proto();
         }
         plan.set_branch_id(branchId.data(), branchId.size());
+        plan.set_preblockhash(preBlockHash.data(), preBlockHash.size());
+        plan.set_preblockheight(preBlockHeight);
         plan.set_output_op_return(outputOpReturn.data(), outputOpReturn.size());
         plan.set_error(error);
         return plan;

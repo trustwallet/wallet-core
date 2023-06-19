@@ -48,4 +48,24 @@ Data Oep4TxBuilder::build(const Ontology::Proto::SigningInput& input) {
     return Data();
 }
 
+Transaction Oep4TxBuilder::buildTx(const Ontology::Proto::SigningInput &input) {
+    Transaction tx;
+    auto method = std::string(input.method().begin(), input.method().end());
+    auto oep4 = Oep4(parse_hex(input.contract()));
+
+    if (method == "transfer") {
+        auto fromAddress = Address(input.owner_address());
+        auto toAddress = Address(input.to_address());
+        auto payerAddress = Address(input.payer_address());
+        tx = oep4.unsignedTransfer(fromAddress, toAddress, input.amount(), payerAddress, input.gas_price(), input.gas_limit(), input.nonce());
+    } else if (method == "balanceOf") {
+        auto queryAddress = Address(input.query_address());
+        tx = oep4.balanceOf(queryAddress, input.nonce());
+    } else if (method == "decimals") {
+        tx = oep4.decimals(input.nonce());
+    }
+
+    return tx;
+}
+
 } // namespace TW::Ontology

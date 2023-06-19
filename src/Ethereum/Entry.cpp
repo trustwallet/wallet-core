@@ -7,6 +7,8 @@
 #include "Entry.h"
 
 #include "Address.h"
+#include "proto/Common.pb.h"
+#include "proto/TransactionCompiler.pb.h"
 #include "Signer.h"
 
 #include "proto/TransactionCompiler.pb.h"

@@ -309,7 +309,7 @@ TEST(PublicKeyTests, Recover) {
         const auto publicKey = PublicKey::recover(signature, message);
         EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
         EXPECT_EQ(hex(publicKey.bytes),
-            "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
+                  "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
     }
 
     const auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));

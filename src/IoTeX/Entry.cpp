@@ -8,6 +8,7 @@
 
 #include "Address.h"
 #include "Signer.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 using namespace std;
 
@@ -27,4 +28,23 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
+Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            Signer signer(input);
+            auto signHash = signer.hash();
+            auto preImage = signer.signaturePreimage();
+            output.set_data(preImage.data(), preImage.size());
+            output.set_data_hash(signHash.data(), signHash.size());
+        });
+}
+
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
+                    const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            output = Signer::compile(input, signature, publicKey);
+        });
+}
 } // namespace TW::IoTeX

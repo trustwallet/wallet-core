@@ -99,7 +99,7 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     {
         Bitcoin::Proto::SigningOutput output;
         ANY_SIGN(txInput, TWCoinTypeBitcoin);
-        EXPECT_EQ(output.error(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::OK);
         EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
             "01000000" // version
             "0001" // marker & flag
@@ -275,7 +275,7 @@ TEST(TWTHORChainSwap, SwapAtomBnb) {
     // sign and encode resulting input
     Cosmos::Proto::SigningOutput output;
     ANY_SIGN(txInput, TWCoinTypeCosmos);
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
     ASSERT_EQ(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"CtMBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczF2NGU2dnBlaHdyZmV6MmRxZXBudzlnNnQ0Zmw4M3h6ZWdkNWFjORItY29zbW9zMTU0dDV5Y2VqbHI3YXgzeW5tZWQ5ejA1eWc1YTI3eTl1NnBqNWhxGg8KBXVhdG9tEgYzMDAwMDASPz06Qk5CLkJOQjpibmIxczRrYWxseG5ncHlzcHptNm5yZXprbWw5cmd5dzZreHB3NGZocjI6ODE5MzkxOnQ6MBJmClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDmmNIYBvR9bnOloFEMOWdk9DHYIGe7naW0T19y+/k1SUSBAoCCAEYARISCgwKBXVhdG9tEgM1MDAQwJoMGkCFqUWtDu0pn1P/cnVQnIJIWF8HFJn/xkJh55Mc7ZLVPF60uXYUOg8nNkt0IQPuTFREw32/yff6lmA5w6KwPen/\"}");
 
     // https://viewblock.io/thorchain/tx/07F47D71A74245538E205F24ADB4BBB799B49C3A8A8875665D249EA51662AA50

@@ -9,6 +9,7 @@
 
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
+#include "Zcash/Signer.h"
 #include "Zcash/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
@@ -79,6 +80,24 @@ TEST(TWZcashTransaction, Encode) {
 
     auto sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080, Bitcoin::BASE);
     ASSERT_EQ(hex(sighash), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
+
+    // AnyoneCanPay|none
+    preImage = transaction.getPreImage(scriptCode, 0, TWBitcoinSigHashType(TWBitcoinSigHashTypeAnyoneCanPay | TWBitcoinSigHashTypeNone), 0x02faf080);
+    EXPECT_EQ(hex(preImage),
+        "0400008085202f8900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000029b0040048b00400000000000000000082000000a8c685478265f4c14dada651969c45a65e1aeb8cd6791f2f5bb6a1d9952104d9010000001976a914507173527b4c3318a2aecd793bf1cfed705950cf88ac80f0fa0200000000feffffff"
+    );
+
+    sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAnyoneCanPay, 0x02faf080, Bitcoin::BASE);
+    EXPECT_EQ(hex(sighash), "f0bde4facddbc11f5e9ed2f5d5038083bec4a61627a2715a5ee9be7fb3152e9b");
+
+    // AnyoneCanPay|Single
+    preImage = transaction.getPreImage(scriptCode, 0, TWBitcoinSigHashType(TWBitcoinSigHashTypeAnyoneCanPay | TWBitcoinSigHashTypeSingle), 0x02faf080);
+    EXPECT_EQ(hex(preImage),
+        "0400008085202f890000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000055986938e432f825904fe288aa4feca1fe7eafa24aecd1bd6a9a739536b50a5469be00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000029b0040048b00400000000000000000083000000a8c685478265f4c14dada651969c45a65e1aeb8cd6791f2f5bb6a1d9952104d9010000001976a914507173527b4c3318a2aecd793bf1cfed705950cf88ac80f0fa0200000000feffffff"
+    );
+
+    sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashType(TWBitcoinSigHashTypeAnyoneCanPay | TWBitcoinSigHashTypeSingle), 0x02faf080, Bitcoin::BASE);
+    EXPECT_EQ(hex(sighash), "1e747b6a4a96aa9e7c1d7968221ec916bd30b514f8bca14b6f74d7c11c0742c2");
 }
 
 TEST(TWZcashTransaction, SaplingSigning) {
@@ -88,6 +107,7 @@ TEST(TWZcashTransaction, SaplingSigning) {
     const int64_t fee = 6000;
 
     auto input = Bitcoin::Proto::SigningInput();
+    input.set_coin_type(TWCoinTypeZcash);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
@@ -185,4 +205,24 @@ TEST(TWZcashTransaction, BlossomSigning) {
     Data serialized;
     signedTx.encode(serialized);
     ASSERT_EQ(hex(serialized), "0400008085202f8901de8c02c79c01018bd91dbc6b293eba03945be25762994409209a06d95c828123000000006b483045022100e6e5071811c08d0c2e81cb8682ee36a8c6b645f5c08747acd3e828de2a4d8a9602200b13b36a838c7e8af81f2d6e7e694ede28833a480cfbaaa68a47187655298a7f0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ffffffff01cf440000000000001976a914c3bacb129d85288a3deb5890ca9b711f7f71392688ac00000000000000000000000000000000000000");
+}
+
+TEST(TWZcashTransaction, SigningWithError) {
+    const int64_t amount = 17615;
+    const std::string toAddress = "t1biXYN8wJahR76SqZTe1LBzTLf3JAsmT93";
+
+    auto input = Bitcoin::Proto::SigningInput();
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(amount);
+    input.set_byte_fee(1);
+    input.set_to_address(toAddress);
+    input.set_coin_type(TWCoinTypeZcash);
+
+    // Sign
+    auto result = Zcash::Signer::sign(input);
+    ASSERT_NE(result.error(), Common::Proto::OK);
+
+    // PreImageHashes
+    auto preResult = Zcash::Signer::preImageHashes(input);
+    ASSERT_NE(preResult.error(), Common::Proto::OK);
 }

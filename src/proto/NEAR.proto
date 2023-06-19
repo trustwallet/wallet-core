@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.NEAR.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Public key with type
 message PublicKey {
     // Key type
@@ -143,6 +145,9 @@ message SigningInput {
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
+
+    // The public key used for compiling a transaction with a signature.
+    bytes public_key = 7;
 }
 
 // Result containing the signed and encoded transaction.
@@ -150,6 +155,12 @@ message SigningOutput {
     // Signed transaction blob
     bytes signed_transaction = 1;
 
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
+    
     // Hash of the transaction
-    bytes hash = 2;
+    bytes hash = 4;
 }

@@ -8,6 +8,7 @@
 
 #include "../Base58.h"
 #include "../Coin.h"
+#include "../Hash.h"
 
 #include <stdexcept>
 

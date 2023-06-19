@@ -81,6 +81,11 @@ TEST(HDWallet, CreateFromMnemonicNoPassword) {
     assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
 }
 
+TEST(HDWallet, CreateFromMnemonicCheck) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonicCheck(gWords.get(), STRING("").get(), false));
+    assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
+}
+
 TEST(HDWallet, CreateFromStrengthInvalid) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(64, STRING("").get()));
     ASSERT_EQ(wallet.get(), nullptr);

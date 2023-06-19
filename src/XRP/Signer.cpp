@@ -65,7 +65,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     auto encoded = transaction.serialize();
     output.set_encoded(encoded.data(), encoded.size());
-
     return output;
 }
 
@@ -80,9 +79,131 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
     transaction.signature = privateKey.signAsDER(half);
 }
 
+TW::Data Signer::preImage() const {
+    auto output = Proto::SigningOutput();
+
+    auto transaction =
+        Transaction(
+            input.fee(),
+            input.flags(),
+            input.sequence(),
+            input.last_ledger_sequence(),
+            Address(input.account()));
+    switch (input.operation_oneof_case()) {
+        case Proto::SigningInput::kOpPayment:
+            signPayment(input, output, transaction);
+            break;
+
+        case Proto::SigningInput::kOpNftokenBurn:
+            transaction.createNFTokenBurn(input.op_nftoken_burn().nftoken_id());
+            break;
+
+        case Proto::SigningInput::kOpNftokenCreateOffer:
+            transaction.createNFTokenCreateOffer(
+                input.op_nftoken_create_offer().nftoken_id(),
+                input.op_nftoken_create_offer().destination());
+            break;
+
+        case Proto::SigningInput::kOpNftokenAcceptOffer:
+            transaction.createNFTokenAcceptOffer(input.op_nftoken_accept_offer().sell_offer());
+            break;
+
+        case Proto::SigningInput::kOpNftokenCancelOffer:
+            signNfTokenCancelOffer(input, transaction);
+            break;
+
+        case Proto::SigningInput::kOpTrustSet:
+            transaction.createTrustSet(
+                input.op_trust_set().limit_amount().currency(),
+                input.op_trust_set().limit_amount().value(),
+                input.op_trust_set().limit_amount().issuer());
+            break;
+
+        default:
+            break;
+    }
+
+    if (output.error()) {
+        return {};
+    }
+
+    auto publicKey = Data(input.public_key().begin(), input.public_key().end());
+    transaction.pub_key = publicKey;
+
+    auto unsignedTx = transaction.getPreImage();
+    return unsignedTx;
+}
+
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {
+    auto output = Proto::SigningOutput();
+
+    auto transaction =
+        Transaction(
+            input.fee(),
+            input.flags(),
+            input.sequence(),
+            input.last_ledger_sequence(),
+            Address(input.account()));
+    switch (input.operation_oneof_case()) {
+        case Proto::SigningInput::kOpPayment:
+            signPayment(input, output, transaction);
+            break;
+
+        case Proto::SigningInput::kOpNftokenBurn:
+            transaction.createNFTokenBurn(input.op_nftoken_burn().nftoken_id());
+            break;
+
+        case Proto::SigningInput::kOpNftokenCreateOffer:
+            transaction.createNFTokenCreateOffer(
+                input.op_nftoken_create_offer().nftoken_id(),
+                input.op_nftoken_create_offer().destination());
+            break;
+
+        case Proto::SigningInput::kOpNftokenAcceptOffer:
+            transaction.createNFTokenAcceptOffer(input.op_nftoken_accept_offer().sell_offer());
+            break;
+
+        case Proto::SigningInput::kOpNftokenCancelOffer:
+            signNfTokenCancelOffer(input, transaction);
+            break;
+
+        case Proto::SigningInput::kOpTrustSet:
+            transaction.createTrustSet(
+                input.op_trust_set().limit_amount().currency(),
+                input.op_trust_set().limit_amount().value(),
+                input.op_trust_set().limit_amount().issuer());
+            break;
+
+        default:
+            break;
+    }
+
+    if (output.error()) {
+        return output;
+    }
+
+    auto pubKey = Data(input.public_key().begin(), input.public_key().end());
+    transaction.pub_key = pubKey;
+
+    auto unsignedTx = transaction.getPreImage();
+    auto hash = Hash::sha512(unsignedTx);
+    auto half = Data(hash.begin(), hash.begin() + 32);
+    if (!publicKey.verifyAsDER(signature, half)) {
+        output.set_error(Common::Proto::SigningError::Error_signing);
+        output.set_error_message("Signature verification failed");
+        return output;
+    }
+
+    transaction.signature = signature;
+
+    auto encoded = transaction.serialize();
+    output.set_encoded(encoded.data(), encoded.size());
+    return output;
+}
+
 void Signer::signPayment(const Proto::SigningInput& input,
                          Proto::SigningOutput& output,
-                         Transaction& transaction) noexcept {
+                         Transaction& transaction) {
     const int64_t tag = input.op_payment().destination_tag();
     if (tag > std::numeric_limits<uint32_t>::max() || tag < 0) {
         output.set_error(Common::Proto::SigningError::Error_invalid_memo);

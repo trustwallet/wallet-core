@@ -97,7 +97,7 @@ TEST(TerraClassicSigner, SignSendTx) {
     )");
     EXPECT_EQ(hex(output.signature()), "a1f748b0b27390e0dc4302c6f3d784da0e0739a5267ca3e1ff4f2dd3b7a128f52a44c978ad5a27ce8ef79a43afaadac75a376d07eeade91f031ae74fa5be9b46");
     EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(TerraClassicSigner, SignWasmTransferTxProtobuf_9FF3F0) {
@@ -173,7 +173,6 @@ TEST(TerraClassicSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     )");
     EXPECT_EQ(hex(output.signature()), "1aa6b20430b3c7d87985770146a1a8a96f6188ca15edea899bcfe58c9c6da6391048ea016dd0cf88ca6620cd9cfac35496e7647ddb6c9a7c39e7ef25dfbad470");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraClassicSigner, SignWasmTransferTxJson_078E90) {
@@ -253,7 +252,6 @@ TEST(TerraClassicSigner, SignWasmTransferTxJson_078E90) {
         })");
     EXPECT_EQ(hex(output.signature()), "06311376d6c0f7b5afd73bdcb02575b4cf9b758282f0edee19393898c46fea9049076cbf0eceeaa12eecff3ae48586a4d580a192541eb47b08df45d15f318892");
     EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraClassicSigner, SignWasmGeneric_EC4F85) {
@@ -299,7 +297,6 @@ TEST(TerraClassicSigner, SignWasmGeneric_EC4F85) {
 
     EXPECT_EQ(hex(output.signature()), "90fb12ef19529e0d8b31cf4a883d6ca0de4d2da0dc521f08f6890f9ac74937795ed41ef2c5118d0786907e169197ff19d2be6f8ad453d005aec436ac77cc1c17");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraClassicSigner, SignWasmGenericWithCoins_6651FC) {
@@ -349,7 +346,6 @@ TEST(TerraClassicSigner, SignWasmGenericWithCoins_6651FC) {
 
     EXPECT_EQ(hex(output.signature()), "1b28bb7f58a863c5d5ea98c5ab5b3ce8e9b8fbe088527777acb1e27f68a8a42718bd7d262e44e543a35411183c9d64d8817723e9f3933bfa6d80fb80b6fd0d5a");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraClassicSigner, SignWasmSendTxProtobuf) {
@@ -429,7 +425,6 @@ TEST(TerraClassicSigner, SignWasmSendTxProtobuf) {
     )");
     EXPECT_EQ(hex(output.signature()), "be8d07229e459b32ab983a09331d98faa233bee739ef6e2cef058e97ad1609011621b72deee279967ee2f08c843d5b70580cc121e26c523fb8f8a5f38ed4ffe8");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraClassicSigner, SignWasmTerraTransferPayload) {

@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Polkadot/Signer.h"
-#include "Polkadot/Extrinsic.h"
-#include "Polkadot/Address.h"
-#include "Polkadot/SS58Address.h"
 #include "HexCoding.h"
+#include "Polkadot/Address.h"
+#include "Polkadot/Extrinsic.h"
+#include "Polkadot/SS58Address.h"
+#include "Polkadot/Signer.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "proto/Polkadot.pb.h"
@@ -156,7 +156,7 @@ TEST(PolkadotSigner, SignBond_8da66d) {
     auto stakingCall = input.mutable_staking_call();
     auto bond = stakingCall->mutable_bond();
     auto value = store(uint256_t(11000000000)); // 1.1
-    bond->set_controller(addressThrow2); // myself
+    bond->set_controller(addressThrow2);        // myself
     bond->set_value(value.data(), value.size());
     bond->set_reward_destination(Proto::RewardDestination::STASH);
 
@@ -258,7 +258,7 @@ TEST(PolkadotSigner, SignChill) {
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
-    auto __attribute__((unused)) &chill = *stakingCall->mutable_chill();
+    auto __attribute__((unused))& chill = *stakingCall->mutable_chill();
     auto output = Signer::sign(input);
 
     ASSERT_EQ(hex(output.encoded()), "9d018488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0088b5e1cd93ba74b82e329f95e1b22660385970182172b2ae280801fdd1ee5652cf7bf319e5e176ccc299dd8eb1e7fccb0ea7717efaf4aacd7640789dd09c1e070000000706");
@@ -337,4 +337,4 @@ TEST(PolkadotSigner, SignChillAndUnbond) {
     ASSERT_EQ(hex(output.encoded()), "d10184008361bd08ddca5fda28b5e2aa84dc2621de566e23e089e555a42194c3eaf2da7900c891ba102db672e378945d74cf7f399226a76b43cab502436971599255451597fc2599902e4b62c7ce85ecc3f653c693fef3232be620984b5bb5bcecbbd7b209d50318001a02080706070207004d446617");
 }
 
-} // namespace Polkadot::tests
+} // namespace TW::Polkadot::tests

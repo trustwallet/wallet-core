@@ -39,7 +39,7 @@ TEST(TWAnySignerEOS, Sign) {
         ANY_SIGN(input, TWCoinTypeEOS);
 
         EXPECT_EQ(output.error(), Common::Proto::OK);
-        EXPECT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"7c59a35cd6679a1f3d4800000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232330000000080a920cd0000000000ea3055e09304000000000004544b4e00000000126d79207365636f6e64207472616e7366657200","signatures":["SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj"]})");
+        EXPECT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"6e67a35cd6679a1f3d4800000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232330000000080a920cd0000000000ea3055e09304000000000004544b4e00000000126d79207365636f6e64207472616e7366657200","signatures":["SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7"]})");
     }
 
     input.set_private_key_type(Proto::KeyType::LEGACY);

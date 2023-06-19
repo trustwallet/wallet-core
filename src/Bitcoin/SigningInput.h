@@ -51,6 +51,12 @@ public:
     // If sending max amount
     bool useMaxAmount = false;
 
+    // If all input utxos
+    bool useMaxUtxo = false;
+
+    // If disable dust filter
+    bool disableDustFilter = false;
+
     // Coin type (forks)
     TWCoinType coinType = TWCoinTypeBitcoin;
 
@@ -60,6 +66,14 @@ public:
     Data outputOpReturn;
 
     uint32_t lockTime = 0;
+    uint32_t time = 0;
+
+    // Besides to_address and change_addres,
+    // we have other outputs that include address and value
+    std::vector<std::pair<std::string, int64_t>> extraOutputs;
+
+    // Total amount to send, including all outputs amount
+    Amount totalAmount = 0;
 
 public:
     SigningInput() = default;
