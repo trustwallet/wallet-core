@@ -1,6 +1,6 @@
 use crate::{Error, InputContext, Recipient, Result};
 use bitcoin::key::TweakedPublicKey;
-use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, Witness};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeyPath {
@@ -31,7 +31,6 @@ impl TxInputP2TRKeyPath {
                 value: satoshis,
                 script_pubkey: script,
                 sequence: Sequence::default(),
-                witness: Witness::default(),
             },
             recipient,
         }

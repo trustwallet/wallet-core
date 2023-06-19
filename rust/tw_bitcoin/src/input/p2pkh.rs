@@ -1,5 +1,5 @@
 use crate::{Error, InputContext, Recipient, Result};
-use bitcoin::{OutPoint, PubkeyHash, ScriptBuf, Sequence, Txid, Witness};
+use bitcoin::{OutPoint, PubkeyHash, ScriptBuf, Sequence, Txid};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2PKH {
@@ -25,7 +25,6 @@ impl TxInputP2PKH {
                 value: satoshis,
                 script_pubkey: script,
                 sequence: Sequence::default(),
-                witness: Witness::new(),
             },
             recipient,
         }

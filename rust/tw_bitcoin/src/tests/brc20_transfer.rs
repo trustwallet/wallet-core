@@ -12,7 +12,6 @@ use tw_encoding::hex;
 pub const ALICE_WIF: &str = "L4of5AJ6aKmvChg7gQ7m2RzHFgpWe5Uirmuey1fXJ1FtfmXj59LW";
 pub const BOB_WIF: &str = "L59WHi2hj1HnMAYaFyMqR4Z36HrUDTZQCixzTHachAxbUU9VUCjp";
 
-// TODO: Document those values.
 pub const FULL_SATOSHIS: u64 = 26_400;
 pub const MINER_FEE: u64 = 3_000;
 
