@@ -35,7 +35,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.trustwallet:wallet-core-kotlin:3.1.38")
+                implementation("com.trustwallet:wallet-core-kotlin:3.1.39")
             }
         }
         val commonTest by getting {
