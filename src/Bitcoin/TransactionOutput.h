@@ -10,7 +10,6 @@
 #include "Script.h"
 #include "Data.h"
 #include "PublicKey.h"
-#include "proto/Bitcoin.pb.h"
 
 #include <memory>
 
@@ -34,7 +33,5 @@ struct TransactionOutput {
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
 };
-
-TW::Bitcoin::Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t brcAmount, Amount brcInscribeAmount, const TW::PublicKey& publicKey);
 
 } // namespace TW::Bitcoin

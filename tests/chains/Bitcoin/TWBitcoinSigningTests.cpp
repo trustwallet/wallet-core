@@ -94,7 +94,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
     auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::buildBRC20InscribeTransfer("oadf", 20, brcInscribeAmount, pubKey);
+    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);
@@ -114,7 +114,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     Proto::TransactionPlan plan;
     auto& utxo1 = *plan.add_utxos();
     utxo1.set_amount(brcInscribeAmount);
-    utxo1.set_script(outputInscribe.script());
+    utxo1.set_script(outputInscribe.bytes.data(), outputInscribe.bytes.size());
     utxo1.set_variant(Proto::TransactionVariant::BRC20TRANSFER);
 
     auto& utxo2 = *plan.add_utxos();
