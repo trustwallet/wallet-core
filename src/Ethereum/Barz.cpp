@@ -12,6 +12,7 @@
 #include <WebAuthn.h>
 #include "../proto/Barz.pb.h"
 #include "AsnParser.h"
+#include "Base64.h"
 
 namespace TW::Barz {
 
@@ -72,9 +73,18 @@ Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const s
     return getInitCodeFromPublicKey(factoryAddress, hexEncoded(publicKey), verificationFacet);
 }
 
-Data getFormattedSignature(const Data& signature, const Data& authenticatorData, const std::string& origin) {
-    const std::string clientDataJSONPre = "{\"type\":\"webauthn.get\",\"challenge\":\"";
-    const std::string clientDataJSONPost = "\",\"origin\":\"" + origin + "\"}";
+Data getFormattedSignature(const Data& signature, const Data challenge, const Data& authenticatorData, const std::string& clientDataJSON) {
+    std::string challengeBase64 = TW::Base64::encodeBase64Url(challenge);
+    while (challengeBase64.back() == '=') {
+        challengeBase64.pop_back();
+    }
+    size_t challengePos = clientDataJSON.find(challengeBase64);
+    if (challengePos == std::string::npos) {
+        return Data();
+    }
+
+    const std::string clientDataJSONPre = clientDataJSON.substr(0, challengePos);
+    const std::string clientDataJSONPost = clientDataJSON.substr(challengePos + challengeBase64.size());
 
     const auto parsedSignatureOptional = ASN::AsnParser::ecdsa_signature_from_der(signature);
     if (!parsedSignatureOptional.has_value()) {

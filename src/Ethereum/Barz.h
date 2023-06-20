@@ -15,6 +15,6 @@ namespace TW::Barz {
 std::string getCounterfactualAddress(const Proto::ContractAddressInput input);
 Data getInitCodeFromPublicKey(const std::string& factoryAddress, const std::string& owner, const std::string& verificationFacet);
 Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const std::string& attestationObject, const std::string& verificationFacet);
-Data getFormattedSignature(const Data& signature, const Data& authenticatorData, const std::string& origin);
+Data getFormattedSignature(const Data& signature, const Data challenge, const Data& authenticatorData, const std::string& clientDataJSON);
 
 }
