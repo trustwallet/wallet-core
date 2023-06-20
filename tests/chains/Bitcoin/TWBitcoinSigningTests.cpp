@@ -92,9 +92,9 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
 
     PrivateKey key(privateKey);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto inputP2wpkh = TW::Bitcoin::buildP2wpkhScript(fullAmount, pubKey);
+    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
     auto outputInscribe = TW::Bitcoin::buildBRC20InscribeTransfer("oadf", 20, brcInscribeAmount, pubKey);
-    auto outputChange = TW::Bitcoin::buildP2wpkhScript(forFeeAmount, pubKey);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);
@@ -103,7 +103,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
 
     auto& utxo = *input.add_utxo();
     utxo.set_amount(fullAmount);
-    utxo.set_script(inputP2wpkh.script());
+    utxo.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
     utxo.set_variant(Proto::TransactionVariant::P2WPKH);
 
     Proto::OutPoint out;
@@ -119,7 +119,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
 
     auto& utxo2 = *plan.add_utxos();
     utxo2.set_amount(forFeeAmount);
-    utxo2.set_script(outputChange.script());
+    utxo2.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
     utxo2.set_variant(Proto::TransactionVariant::P2WPKH);
 
     *input.mutable_plan() = plan;
