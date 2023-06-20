@@ -6,6 +6,16 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType
+import wallet.core.jni.CoinType.ETHEREUM
+import wallet.core.jni.proto.Ethereum
+import wallet.core.jni.EthereumAbi
+import wallet.core.jni.EthereumAbiFunction
+import wallet.core.jni.proto.Ethereum.SigningOutput
+import wallet.core.jni.proto.Ethereum.TransactionMode
+import wallet.core.jni.PrivateKey
+import wallet.core.jni.PublicKey
+import wallet.core.jni.PublicKeyType
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertArrayEquals
 import wallet.core.jni.proto.Barz
