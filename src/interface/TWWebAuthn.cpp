@@ -8,8 +8,12 @@
 #include <string>
 #include "WebAuthn.h"
 
-struct TWPublicKey *_Nonnull TWWebAuthnGetPublicKey(TWData *_Nonnull attestationObject) {
+struct TWPublicKey *_Nullable TWWebAuthnGetPublicKey(TWData *_Nonnull attestationObject) {
     const auto& attestationObjectData = *reinterpret_cast<const TW::Data*>(attestationObject);
     const auto publicKey = TW::WebAuthn::getPublicKey(attestationObjectData);
-    return new TWPublicKey{ TW::PublicKey(*publicKey) };
+    if (publicKey.has_value()) {
+        return new TWPublicKey{ TW::PublicKey(publicKey.value()) };
+    } else {
+        return nullptr;
+    }
 }

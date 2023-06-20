@@ -19,5 +19,5 @@ struct TWWebAuthn;
 /// \param attestationObject Attestation object retrieved from webuthn.get method
 /// \return Public key.
 TW_EXPORT_STATIC_METHOD
-struct TWPublicKey *_Nonnull TWWebAuthnGetPublicKey(TWData *_Nonnull attestationObject);
+struct TWPublicKey *_Nullable TWWebAuthnGetPublicKey(TWData *_Nonnull attestationObject);
 TW_EXTERN_C_END

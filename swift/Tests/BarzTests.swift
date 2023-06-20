@@ -80,7 +80,7 @@ class BarzTests: XCTestCase {
     // https://testnet.bscscan.com/tx/0xea1f5cddc0653e116327cbcb3bc770360a642891176eff2ec69c227e46791c31
     func testSignR1TransferAccountNotDeployed() {
         let attestationObject = Data(hexString: "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d00000000000000000000000000000000000000000014c14f8a2dfd8f451581fad6e4e1c11821abcaacd6a5010203262001215820b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2225820116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f")!
-        let publicKey = WebAuthn.getPublicKey(attestationObject: attestationObject)
+        let publicKey = WebAuthn.getPublicKey(attestationObject: attestationObject)!
 
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "61")!
