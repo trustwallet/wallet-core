@@ -38,11 +38,12 @@ TWData *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull facto
     return TWDataCreateWithData(&initCode);
 }
 
-TWData *_Nonnull TWBarzGetFormattedSignature(TWData* _Nonnull signature, TWData* _Nonnull authenticatorData, TWString* _Nonnull origin) {
+TWData *_Nonnull TWBarzGetFormattedSignature(TWData* _Nonnull signature, TWData* _Nonnull challenge, TWData* _Nonnull authenticatorData, TWString* _Nonnull clientDataJSON) {
     const auto& signatureData = *reinterpret_cast<const TW::Data*>(signature);
+    const auto& challengeData = *reinterpret_cast<const TW::Data*>(challenge);
     const auto& authenticatorDataConverted = *reinterpret_cast<const TW::Data*>(authenticatorData);
-    const auto& originStr = *reinterpret_cast<const std::string*>(origin);
+    const auto& clientDataJSONStr = *reinterpret_cast<const std::string*>(clientDataJSON);
 
-    const auto initCode = TW::Barz::getFormattedSignature(signatureData, authenticatorDataConverted, originStr);
+    const auto initCode = TW::Barz::getFormattedSignature(signatureData, challengeData, authenticatorDataConverted, clientDataJSONStr);
     return TWDataCreateWithData(&initCode);
 }
