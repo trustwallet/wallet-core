@@ -75,7 +75,9 @@ Data getInitCodeFromAttestationObject(const std::string& factoryAddress, const s
 
 Data getFormattedSignature(const Data& signature, const Data challenge, const Data& authenticatorData, const std::string& clientDataJSON) {
     std::string challengeBase64 = TW::Base64::encodeBase64Url(challenge);
-    challengeBase64.pop_back();
+    while (challengeBase64.back() == '=') {
+        challengeBase64.pop_back();
+    }
     size_t challengePos = clientDataJSON.find(challengeBase64);
     if (challengePos == std::string::npos) {
         return Data();
