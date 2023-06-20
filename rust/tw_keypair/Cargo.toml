@@ -7,3 +7,4 @@ edition = "2021"
 tw_encoding = { path = "../tw_encoding" }
 tw_memory = { path = "../tw_memory" }
 der = "0.7.3"
+secp256k1 = "0.27.0"
