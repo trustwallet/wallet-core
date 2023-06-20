@@ -110,7 +110,7 @@ class TestBarz {
         val factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
         val attestationObject = "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d00000000000000000000000000000000000000000014c14f8a2dfd8f451581fad6e4e1c11821abcaacd6a5010203262001215820b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2225820116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f"
         val verificationFacet = "0x5034534Efe9902779eD6eA6983F435c00f3bc510"
-        val publicKey = WebAuthn.getPublicKey(attestationObject)
+        val publicKey = WebAuthn.getPublicKey(attestationObject.toHexByteArray())
 
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
