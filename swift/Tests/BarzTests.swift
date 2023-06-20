@@ -9,7 +9,7 @@ import WalletCore
 
 class BarzTests: XCTestCase {
 
-    // https://testnet.bscscan.com/tx/0x434f5861b7d14b3bf790b57e5eb1be98355d77f528defe732f2994fc9d6d3f2e
+    // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
     func testInitCode() {
         let factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
         let publicKeyData = Data(hexString: "0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")!
@@ -32,7 +32,7 @@ class BarzTests: XCTestCase {
             $0.diamondInit = diamondInit
             $0.facetRegistry = facetRegistry
             $0.bytecode = bytecode
-            $0.publicKey = Data(hexString: "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46")!
+            $0.publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
         }
 
         XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f");

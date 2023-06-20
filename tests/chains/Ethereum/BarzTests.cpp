@@ -16,8 +16,8 @@
 
 namespace TW::Barz::tests {
 
-// https://testnet.bscscan.com/tx/0x434f5861b7d14b3bf790b57e5eb1be98355d77f528defe732f2994fc9d6d3f2e
-TEST(Barz, GetInitCodeFromPublicKey) {
+// https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
+TEST(Barz, GetInitCode) {
     const PublicKey& publicKey = PublicKey(parse_hex("0x041dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58"), TWPublicKeyTypeNIST256p1Extended);
     // C++
     {

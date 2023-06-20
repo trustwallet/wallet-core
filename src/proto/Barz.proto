@@ -35,5 +35,5 @@ message ContractAddressInput {
   string bytecode = 9;
 
   // PublicKey of the wallet
-  bytes public_key = 10;
+  string public_key = 10;
 }
