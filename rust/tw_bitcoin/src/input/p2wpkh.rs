@@ -1,5 +1,5 @@
 use crate::{Error, InputContext, Recipient, Result};
-use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, WPubkeyHash, Witness};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, WPubkeyHash};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2WPKH {
@@ -25,13 +25,9 @@ impl TxInputP2WPKH {
                 value: satoshis,
                 script_pubkey: script,
                 sequence: Sequence::default(),
-                witness: Witness::new(),
             },
             recipient,
         }
-    }
-    pub fn only_script(recipient: Recipient<WPubkeyHash>) -> ScriptBuf {
-        ScriptBuf::new_v0_p2wpkh(recipient.wpubkey_hash())
     }
     pub fn builder() -> TxInputP2WPKHBuilder {
         TxInputP2WPKHBuilder::new()

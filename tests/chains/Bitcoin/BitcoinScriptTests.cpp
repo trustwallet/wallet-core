@@ -80,6 +80,22 @@ TEST(BitcoinScript, PayToScriptHash) {
     EXPECT_EQ(PayToPublicKeyHash.matchPayToScriptHash(res), false);
 }
 
+TEST(BitcoinScript, PayToScriptHashReplay) {
+    const Script script = Script::buildPayToScriptHashReplay(
+        parse_hex("2cda89c2f217517108d55ffdf3d90e111d450be9"),
+        parse_hex("f1bf729948789aef5801fd91a3bf4e014ffcf4fcbd4f685de2b6990100000000"), 1190791);
+    EXPECT_EQ(hex(script.bytes), "a9142cda89c2f217517108d55ffdf3d90e111d450be98720f1bf729948789aef5801fd91a3bf4e014ffcf4fcbd4f685de2b699010000000003872b12b4");
+
+    const Script script2 = Script::lockScriptForAddress(
+        "zsiZvKaCW9bSVt7Fy6C79CE5rFR6SEiJxAw", TWCoinTypeZen,
+        parse_hex("f1bf729948789aef5801fd91a3bf4e014ffcf4fcbd4f685de2b6990100000000"), 1190791);
+    EXPECT_EQ(script.bytes, script2.bytes);
+
+    Data res;
+    EXPECT_EQ(script.matchPayToScriptHashReplay(res), true);
+    EXPECT_EQ(hex(res), "2cda89c2f217517108d55ffdf3d90e111d450be9");
+}
+
 TEST(BitcoinScript, PayToWitnessScriptHash) {
     const Script script = Script::buildPayToWitnessScriptHash(parse_hex("ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
     EXPECT_EQ(hex(script.bytes), hex(PayToWitnessScriptHash.bytes));
@@ -143,6 +159,11 @@ TEST(BitcoinScript, EncodeNumber) {
     EXPECT_EQ(Script::encodeNumber(1), OP_1);
     EXPECT_EQ(Script::encodeNumber(3), OP_3);
     EXPECT_EQ(Script::encodeNumber(9), OP_9);
+
+    EXPECT_EQ(hex(Script::encodeNumber(int64_t(0))), "00");
+    EXPECT_EQ(hex(Script::encodeNumber(int64_t(1))), "51");
+    EXPECT_EQ(hex(Script::encodeNumber(int64_t(10000000))), "80969800");
+    EXPECT_EQ(hex(Script::encodeNumber(int64_t(-10000000))), "80969880");
 }
 
 TEST(BitcoinScript, DecodeNumber) {

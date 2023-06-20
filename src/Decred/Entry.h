@@ -19,6 +19,9 @@ public:
     Data addressToData(TWCoinType coin, const std::string& address) const;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
 };
 
 } // namespace TW::Decred

@@ -52,7 +52,7 @@ TEST(SecretSigner, Sign) {
 
     assertJSONEqual(output.serialized(), "{\"tx_bytes\":\"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLXNlY3JldDE4bWRyamE0MGdmdWZ0dDV5eDZ0Z2owZm41bHVycGxlenlwODk0eRItc2VjcmV0MXJucTZoamZuYWx4ZWVmODdybWRleWEzbnU5ZGhwYzdrOXB1anMzGg8KBXVzY3J0EgYxMDAwMDASZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAkZqxdKMtPq2w0kGDGwWGejTAed0H7azPMHtrCX0XYZGEgQKAggBGAESEwoNCgV1c2NydBIEMjUwMBCowwEaQOcHd2gHpa5WKZ/5RRerEtrHlyDlojIEzUGhC9xMFgs7UQMWy+kTTN+NRf7zQ8rx3cPkIKeZhv0u1KRc8uRCc4o=\",\"mode\":\"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "e707776807a5ae56299ff94517ab12dac79720e5a23204cd41a10bdc4c160b3b510316cbe9134cdf8d45fef343caf1ddc3e420a79986fd2ed4a45cf2e442738a");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
     EXPECT_EQ(output.json(), "");
 }
 

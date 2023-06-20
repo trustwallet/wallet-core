@@ -163,7 +163,7 @@ AddressV3::AddressV3(const Data& data) {
 AddressV3::AddressV3(const AddressV3& other) = default;
 
 uint8_t AddressV3::firstByte(NetworkId networkId, Kind kind) {
-    byte first = (byte)(((byte)kind << 4) + networkId);
+    auto first = (byte)(((byte)kind << 4) + networkId);
     return first;
 }
 

@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <optional>
 
 namespace TW::THORChainSwap {
 

@@ -14,7 +14,6 @@
 
 TEST(TWPolkadotCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePolkadot));
-
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePolkadot, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("13hJFqnkqQbmgnGQteGntjMjTdmTBRE8Z93JqxsrpgT7Yjd2"));

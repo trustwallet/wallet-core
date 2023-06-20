@@ -1,6 +1,7 @@
 use crate::{keypair_from_wif, Recipient};
 use bitcoin::{Network, PublicKey};
 
+// This private key was used in a Bitcoin regtest environment.
 pub const ALICE_WIF: &str = "cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1";
 
 #[test]

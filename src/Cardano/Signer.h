@@ -43,9 +43,11 @@ public:
     }
     // Build encoded transaction
     static Common::Proto::SigningError encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan, bool sizeEstimationOnly = false);
+    static Data encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature);
     // Build aux transaction object, using input and plan
     static Common::Proto::SigningError buildTransactionAux(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan);
-    static Amount estimateFee(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs);
+    static Common::Proto::SigningError buildTx(Transaction& tx, const Proto::SigningInput& input);
+    static Amount estimateFee(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, const std::vector<TxOutput>& extraOutputs);
     static std::vector<TxInput> selectInputsWithTokens(const std::vector<TxInput>& inputs, Amount amount, const TokenBundle& requestedTokens);
     // Build list of public keys + signature
     static Common::Proto::SigningError assembleSignatures(std::vector<std::pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId, bool sizeEstimationOnly = false);

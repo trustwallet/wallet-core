@@ -17,6 +17,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <string>
+#include <set>
 
 namespace TW::Cardano {
 
@@ -103,19 +105,23 @@ public:
     /// Token amounts (optional)
     TokenBundle tokenBundle;
 
-    /// Returns minimal amount of ADA for the output.
-    uint64_t minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept;
+    /// Returns minimal amount of ADA for the output or `std::nullopt` if there a problem happened.
+    std::optional<uint64_t> minAdaAmount(uint64_t coinsPerUtxoByte) const noexcept;
 
     TxOutput() = default;
     TxOutput(Data address, Amount amount)
         : address(std::move(address)), amount(amount) {}
     TxOutput(Data address, Amount amount, TokenBundle tokenBundle)
         : address(std::move(address)), amount(amount), tokenBundle(std::move(tokenBundle)) {}
+
+    static TxOutput fromProto(const Proto::TxOutput& proto);
+    Proto::TxOutput toProto() const;
 };
 
 class TransactionPlan {
 public:
     std::vector<TxInput> utxos;
+    std::vector<TxOutput> extraOutputs;
     Amount availableAmount = 0;  // total coins in the input utxos
     Amount amount = 0;           // coins in the output UTXO
     Amount fee = 0;              // coin amount deducted as fee

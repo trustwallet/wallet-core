@@ -26,6 +26,8 @@ class OngTxBuilder {
     static Data withdraw(const Ontology::Proto::SigningInput& input);
 
     static Data build(const Ontology::Proto::SigningInput& input);
+
+    static Transaction buildTransferTx(const Ontology::Proto::SigningInput &input);
 };
 
 } // namespace TW::Ontology

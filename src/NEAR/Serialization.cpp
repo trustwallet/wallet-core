@@ -9,7 +9,13 @@
 #include "../BinaryCoding.h"
 #include "../PrivateKey.h"
 
+#include <nlohmann/json.hpp>
+
 namespace TW::NEAR {
+
+using json = nlohmann::json;
+
+static constexpr auto tokenTransferMethodName = "ft_transfer";
 
 static void writeU8(Data& data, uint8_t number) {
     data.push_back(number);
@@ -105,8 +111,31 @@ static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAcc
     writeString(data, deleteAccount.beneficiary_id());
 }
 
+static void writeTokenTransfer(Data& data, const Proto::TokenTransfer& tokenTransfer) {
+    writeString(data, tokenTransferMethodName);
+
+    json functionCallArgs = {
+        {"amount", tokenTransfer.token_amount()},
+        {"receiver_id", tokenTransfer.receiver_id()},
+    };
+    auto functionCallArgsStr = functionCallArgs.dump();
+
+    writeU32(data, static_cast<uint32_t>(functionCallArgsStr.size()));
+    writeRawBuffer(data, functionCallArgsStr);
+
+    writeU64(data, tokenTransfer.gas());
+    writeU128(data, tokenTransfer.deposit());
+}
+
 static void writeAction(Data& data, const Proto::Action& action) {
-    writeU8(data, action.payload_case() - Proto::Action::kCreateAccount);
+    uint8_t actionByte = action.payload_case() - Proto::Action::kCreateAccount;
+    // `TokenTransfer` action is actually a `FunctionCall`,
+    // so we need to set the actionByte to the proper value.
+    if (action.payload_case() == Proto::Action::kTokenTransfer) {
+        actionByte = Proto::Action::kFunctionCall - Proto::Action::kCreateAccount;
+    }
+
+    writeU8(data, actionByte);
     switch (action.payload_case()) {
     case Proto::Action::kFunctionCall:
         writeFunctionCall(data, action.function_call());
@@ -126,6 +155,9 @@ static void writeAction(Data& data, const Proto::Action& action) {
     case Proto::Action::kDeleteAccount:
         writeDeleteAccount(data, action.delete_account());
         return;
+    case Proto::Action::kTokenTransfer:
+        writeTokenTransfer(data, action.token_transfer());
+        return;
     default:
         return;
     }
@@ -138,6 +170,23 @@ Data transactionData(const Proto::SigningInput& input) {
     auto public_key = key.getPublicKey(TWPublicKeyTypeED25519);
     auto public_key_proto = Proto::PublicKey();
     public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
+    writePublicKey(data, public_key_proto);
+    writeU64(data, input.nonce());
+    writeString(data, input.receiver_id());
+    const auto& block_hash = input.block_hash();
+    writeRawBuffer(data, block_hash);
+    writeU32(data, input.actions_size());
+    for (const auto& action : input.actions()) {
+        writeAction(data, action);
+    }
+    return data;
+}
+
+Data transactionDataWithPublicKey(const Proto::SigningInput& input) {
+    Data data;
+    writeString(data, input.signer_id());
+    auto public_key_proto = Proto::PublicKey();
+    public_key_proto.set_data(input.public_key().data(), input.public_key().size());
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());

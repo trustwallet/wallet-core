@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Polkadot.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Destination options for reward
 enum RewardDestination {
     STAKED = 0;
@@ -29,8 +31,12 @@ message Balance {
         // amount (uint256, serialized little endian)
         bytes value = 2;
     }
+    message BatchTransfer {
+        repeated Transfer transfers = 1;
+    }
     oneof message_oneof {
         Transfer transfer = 1;
+        BatchTransfer batchTransfer = 2;
     }
 }
 
@@ -75,6 +81,12 @@ message Staking {
         bytes value = 1;
     }
 
+    // Rebond
+    message Rebond {
+        // amount (uint256, serialized little endian)
+        bytes value = 1;
+    }
+
     // Withdraw unbonded amounts
     message WithdrawUnbonded {
         int32 slashing_spans = 1;
@@ -106,6 +118,7 @@ message Staking {
         Nominate nominate = 6;
         Chill chill = 7;
         ChillAndUnbond chill_and_unbond = 8;
+        Rebond rebond = 9;
     }
 }
 
@@ -149,4 +162,10 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

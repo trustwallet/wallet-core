@@ -8,15 +8,12 @@
 #include "HexCoding.h"
 #include "Nano/Signer.h"
 
+#include "TestAccounts.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
 
 namespace TW::Nano::tests {
-
-const std::string kPrivateKey{"173c40e97fe2afcd24187e74f6b603cb949a5365e72fbdd065a6b165e2189e34"};
-const std::string kRepOfficial1{"xrb_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4"};
-const std::string kRepNanode{"xrb_1nanode8ngaakzbck8smq6ru9bethqwyehomf79sae1k7xd47dkidjqzffeg"};
 
 TEST(NanoSigner, sign1) {
     const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
@@ -205,6 +202,49 @@ TEST(NanoSigner, signInvalid7) {
     input.set_balance("1.2.3");
 
     ASSERT_THROW(Signer signer(input), std::invalid_argument);
+}
+
+TEST(NanoSigner, buildUnsignedTxBytes) {
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
+    const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
+
+    auto input = Proto::SigningInput();
+    input.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+    input.set_link_block(linkBlock.data(), linkBlock.size());
+    input.set_representative(kRepOfficial1);
+    input.set_balance("96242336390000000000000000000");
+
+    const auto unsignedTxBytes = Signer::buildUnsignedTxBytes(input);
+    ASSERT_EQ(hex(unsignedTxBytes), "f9a323153daefe041efb94d69b9669c882c935530ed953bbe8a665dfedda9696");
+}
+
+TEST(NanoSigner, buildSigningOutput) {
+    const auto privateKey = PrivateKey(parse_hex(kPrivateKey));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
+    const auto linkBlock = parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507");
+
+    auto input = Proto::SigningInput();
+    input.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+    input.set_link_block(linkBlock.data(), linkBlock.size());
+    input.set_representative(kRepOfficial1);
+    input.set_balance("96242336390000000000000000000");
+
+    const auto signature = parse_hex("d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09");
+
+    const auto out = Signer::buildSigningOutput(input, signature);
+    EXPECT_EQ(hex(out.signature()), "d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09");
+    EXPECT_EQ(hex(out.block_hash()), "f9a323153daefe041efb94d69b9669c882c935530ed953bbe8a665dfedda9696");
+    EXPECT_EQ(
+        "{\"account\":\"nano_1bhbsc9yuh15anq3owu1izw1nk7bhhqefrkhfo954fyt8dk1q911buk1kk4c\","
+        "\"balance\":\"96242336390000000000000000000\","
+        "\"link\":\"491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507\","
+        "\"link_as_account\":\"nano_1kazsap8mc481zbqbcqjytpf9mmigj87qr5k5fhf97579t4k8fa94octjx6d\","
+        "\"previous\":\"0000000000000000000000000000000000000000000000000000000000000000\","
+        "\"representative\":\"nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4\","
+        "\"signature\":\"d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09\","
+        "\"type\":\"state\"}",
+        out.json());
 }
 
 } // namespace TW::Nano::tests

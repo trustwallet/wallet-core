@@ -1,62 +1,68 @@
 use crate::{Error, InputContext, Recipient, Result, TaprootScript};
 use bitcoin::script::ScriptBuf;
 use bitcoin::taproot::TaprootSpendInfo;
-use bitcoin::{OutPoint, Sequence, Txid, Witness};
+use bitcoin::{OutPoint, Sequence, Txid};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRScriptPath {
-    // TODO: make fields private.
-    pub(crate) ctx: InputContext,
-    pub(crate) recipient: Recipient<TaprootScript>,
-    pub(crate) script: ScriptBuf,
-    pub(crate) spend_info: TaprootSpendInfo,
+    ctx: InputContext,
+    recipient: Recipient<TaprootScript>,
+    witness: ScriptBuf,
+    spend_info: TaprootSpendInfo,
 }
 
 impl TxInputP2TRScriptPath {
     pub fn new(
         txid: Txid,
         vout: u32,
-        recipient: impl Into<Recipient<TaprootScript>>,
+        recipient: Recipient<TaprootScript>,
         satoshis: u64,
-        script: ScriptBuf,
+        witness: ScriptBuf,
         spend_info: TaprootSpendInfo,
     ) -> Self {
-        let recipient: Recipient<TaprootScript> = recipient.into();
+        let script = ScriptBuf::new_v1_p2tr(
+            &secp256k1::Secp256k1::new(),
+            recipient.untweaked_pubkey(),
+            Some(recipient.merkle_root()),
+        );
 
+        Self::new_with_script(txid, vout, recipient, satoshis, script, witness, spend_info)
+    }
+    pub fn new_with_script(
+        txid: Txid,
+        vout: u32,
+        recipient: Recipient<TaprootScript>,
+        satoshis: u64,
+        script: ScriptBuf,
+        witness: ScriptBuf,
+        spend_info: TaprootSpendInfo,
+    ) -> Self {
         TxInputP2TRScriptPath {
             ctx: InputContext {
                 previous_output: OutPoint { txid, vout },
                 value: satoshis,
-                script_pubkey: ScriptBuf::new_v1_p2tr(
-                    &secp256k1::Secp256k1::new(),
-                    recipient.untweaked_pubkey(),
-                    Some(recipient.merkle_root()),
-                ),
+                script_pubkey: script,
                 sequence: Sequence::default(),
-                witness: Witness::new(),
             },
             recipient,
-            script,
+            witness,
             spend_info,
         }
-    }
-    pub fn only_script(recipient: &Recipient<TaprootScript>) -> ScriptBuf {
-        ScriptBuf::new_v1_p2tr(
-            &secp256k1::Secp256k1::new(),
-            recipient.untweaked_pubkey(),
-            Some(recipient.merkle_root()),
-        )
     }
     pub fn builder() -> TxInputP2TRScriptPathBuilder {
         TxInputP2TRScriptPathBuilder::new()
     }
-    /// Read-only exposure to the context.
     pub fn ctx(&self) -> &InputContext {
         &self.ctx
     }
-    /// Read-only exposure to the recipient.
     pub fn recipient(&self) -> &Recipient<TaprootScript> {
         &self.recipient
+    }
+    pub fn witness(&self) -> &ScriptBuf {
+        &self.witness
+    }
+    pub fn spend_info(&self) -> &TaprootSpendInfo {
+        &self.spend_info
     }
 }
 

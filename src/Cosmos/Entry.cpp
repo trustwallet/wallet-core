@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Entry.h"
-
+#include <proto/TransactionCompiler.pb.h>
 #include "Address.h"
 #include "Signer.h"
 
@@ -48,6 +48,26 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key, coin);
+}
+
+Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [&coin](const auto& input, auto& output) {
+            auto pkVec = Data(input.public_key().begin(), input.public_key().end());
+            auto preimage = Signer().signaturePreimage(input, pkVec, coin);
+            auto imageHash = Hash::sha256(preimage);
+            output.set_data(preimage.data(), preimage.size());
+            output.set_data_hash(imageHash.data(), imageHash.size());
+        });
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, signatures, publicKeys,
+        [coin](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
+            auto signedTx = Signer().encodeTransaction(input, signature, publicKey, coin);
+            output.set_serialized(signedTx.data(), signedTx.size());
+        });
 }
 
 } // namespace TW::Cosmos

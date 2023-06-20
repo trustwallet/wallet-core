@@ -25,6 +25,18 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType c
     }
 }
 
+std::string Signer::signaturePreimage(const Proto::SigningInput& input, const Data& publicKey, TWCoinType coin) const {
+    switch (input.signing_mode()) {
+    case Proto::JSON:
+        return Json::signaturePreimageJSON(input).dump();
+
+    case Proto::Protobuf:
+    default:
+        auto pbk = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
+        return Protobuf::signaturePreimageProto(input, pbk, coin);
+    }
+}
+
 Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input, TWCoinType coin) noexcept {
     auto key = PrivateKey(input.private_key());
     auto preimage = Json::signaturePreimageJSON(input).dump();
@@ -37,7 +49,7 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
     output.set_serialized("");
-    output.set_error("");
+    output.set_error_message("");
     output.set_signature_json(txJson["tx"]["signatures"].dump());
     return output;
 }
@@ -52,18 +64,19 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCo
         auto serializedTxRaw = buildProtoTxRaw(serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
-        const std::string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);
+        const std::string jsonSerialized = Protobuf::buildProtoTxJson(input, serializedTxRaw);
         auto publicKey = PrivateKey(input.private_key()).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto signatures = nlohmann::json::array({signatureJSON(signature, publicKey.bytes, coin)});
         output.set_serialized(jsonSerialized);
         output.set_signature(signature.data(), signature.size());
         output.set_json("");
-        output.set_error("");
+        output.set_error_message("");
         output.set_signature_json(signatures.dump());
         return output;
     } catch (const std::exception& ex) {
         auto output = Proto::SigningOutput();
-        output.set_error(std::string("Error: ") + ex.what());
+        output.set_error(Common::Proto::Error_internal);
+        output.set_error_message(std::string("Error: ") + ex.what());
         return output;
     }
 }
@@ -76,4 +89,14 @@ std::string Signer::signJSON(const std::string& json, const Data& key, TWCoinTyp
     return output.json();
 }
 
+std::string Signer::encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey, TWCoinType coin) const {
+    switch (input.signing_mode()) {
+    case Proto::JSON:
+        return Json::buildJsonTxRaw(input, publicKey, signature, coin);
+
+    case Proto::Protobuf:
+    default:
+        return Protobuf::buildProtoTxRaw(input, publicKey, signature, coin);
+    }
+}
 } // namespace TW::Cosmos

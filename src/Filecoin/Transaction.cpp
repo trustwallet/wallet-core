@@ -61,7 +61,7 @@ Data Transaction::cid() const {
     return cid;
 }
 
-std::string Transaction::serialize(SignatureType signatureType, Data& signature) const {
+std::string Transaction::serialize(SignatureType signatureType, const Data& signature) const {
     // clang-format off
     json message = {
         {"To", to.string()},

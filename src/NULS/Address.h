@@ -14,23 +14,19 @@ namespace TW::NULS {
 
 class Address : public Base58Address<24> {
   public:
-    /// NULS Main Net Chain ID = 1
-    static const std::array<byte, 2> mainnetId;
-
     /// NULS address prefix
-    static const std::string prefix;
+    std::string prefix;
 
     /// NULS address type
     static const byte addressType = 0x01;
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
+    static bool isValid(const std::string& addrStr);
 
     /// Initializes an address from a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address from a public key.
-    explicit Address(const PublicKey& publicKey);
+    explicit Address(const TW::PublicKey& publicKey, bool isMainnet = true);
 
     /// Initializes an address with a collection of bytes.
     explicit Address(const Data& data) : TW::Base58Address<24>(data) {}

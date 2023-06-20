@@ -1,6 +1,6 @@
 use crate::{Error, InputContext, Recipient, Result};
 use bitcoin::key::TweakedPublicKey;
-use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid, Witness};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, Txid};
 
 #[derive(Debug, Clone)]
 pub struct TxInputP2TRKeyPath {
@@ -15,7 +15,7 @@ impl TxInputP2TRKeyPath {
         recipient: Recipient<TweakedPublicKey>,
         satoshis: u64,
     ) -> Self {
-        let script = ScriptBuf::new_v1_p2tr_tweaked(recipient.t);
+        let script = ScriptBuf::new_v1_p2tr_tweaked(recipient.tweaked_pubkey());
         Self::new_with_script(txid, vout, recipient, satoshis, script)
     }
     pub fn new_with_script(
@@ -31,13 +31,9 @@ impl TxInputP2TRKeyPath {
                 value: satoshis,
                 script_pubkey: script,
                 sequence: Sequence::default(),
-                witness: Witness::default(),
             },
             recipient,
         }
-    }
-    pub fn only_script(recipient: Recipient<TweakedPublicKey>) -> ScriptBuf {
-        ScriptBuf::new_v1_p2tr_tweaked(recipient.t)
     }
     pub fn builder() -> TxInputP2TRKeyPathBuilder {
         TxInputP2TRKeyPathBuilder::new()

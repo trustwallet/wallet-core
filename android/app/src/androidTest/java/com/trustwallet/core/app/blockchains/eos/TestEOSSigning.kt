@@ -82,7 +82,7 @@ class TestEOSSigning {
         val signatureValue: String = signatures.get(0) as String;
         assertNotNull("Error parsing JSON result", signatureValue)
         assertEquals(
-            "SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj",
+            "SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7",
             signatureValue
         )
 

@@ -8,6 +8,7 @@
 
 #include "../Bech32Address.h"
 
+#include <TrustWalletCore/TWCoinType.h>
 #include <string>
 
 namespace TW::Binance {
@@ -15,20 +16,28 @@ namespace TW::Binance {
 /// Binance address is a Bech32Address, with "bnb" prefix and sha256ripemd hash
 class Address: public Bech32Address {
 public:
-    static const std::string _hrp; // HRP_BINANCE
-    static const std::string hrpValidator; // HRP_BINANCE
+    static const std::string hrpValidator;
 
-    static bool isValid(const std::string& addr);
-    static bool isValid(const std::string& addr, const std::string& hrp);
+    /// Checks if the given `addr` is a valid Binance address and has a known hrp.
+    static bool isValid(TWCoinType coin, const std::string& addr);
+    /// Checks if the given `addr` is a valid Binance address and has the given `chainHrp`.
+    static bool isValid(const std::string& addr, const std::string& chainHrp);
 
-    Address() : Bech32Address(_hrp) {}
+    explicit Address(TWCoinType coin = TWCoinTypeBinance);
 
-    /// Initializes an address with a key hash.
-    Address(const Data& keyHash) : Bech32Address(_hrp, keyHash) {}
+    explicit Address(const std::string& chainHrp) : Bech32Address(chainHrp) {}
 
-    /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey) : Bech32Address(_hrp, Hash::HasherSha256ripemd, publicKey) {}
-    Address(const PublicKey& publicKey, const std::string hrp) : Bech32Address(hrp, Hash::HasherSha256ripemd, publicKey) {}
+    /// Initializes an address with a key hash and hrp.
+    explicit Address(const Data& keyHash, const std::string& chainHrp) : Bech32Address(chainHrp, keyHash) {}
+
+    /// Initializes an address with a key hash and coin type.
+    explicit Address(const Data& keyHash, TWCoinType coin = TWCoinTypeBinance);
+
+    /// Initializes an address with a public key and hrp.
+    explicit Address(const PublicKey& publicKey, const std::string& chainHrp) : Bech32Address(chainHrp, Hash::HasherSha256ripemd, publicKey) {}
+
+    /// Initializes an address with a public key and coin type.
+    explicit Address(const PublicKey& publicKey, TWCoinType coin = TWCoinTypeBinance);
 
     static bool decode(const std::string& addr, Address& obj_out);
 };

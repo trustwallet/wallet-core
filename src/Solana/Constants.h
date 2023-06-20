@@ -21,6 +21,7 @@ static const std::string STAKE_CONFIG_ID_ADDRESS = "StakeConfig11111111111111111
 static const std::string NULL_ID_ADDRESS = "11111111111111111111111111111111";
 static const std::string SYSVAR_STAKE_HISTORY_ID_ADDRESS = "SysvarStakeHistory1111111111111111111111111";
 static const std::string MEMO_PROGRAM_ID_ADDRESS = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+static const std::string SYSVAR_RECENT_BLOCKHASHS_ADDRESS = "SysvarRecentB1ockHashes11111111111111111111";
 // https://github.com/solana-labs/solana/blob/master/sdk/program/src/message/versions/mod.rs#L24
 static const std::uint8_t MESSAGE_VERSION_PREFIX{0x80};
 

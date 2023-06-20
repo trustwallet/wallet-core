@@ -6,28 +6,41 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "Coin.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <vector>
 
 namespace TW::Binance {
 
-const std::string Address::_hrp = HRP_BINANCE;
 const std::string Address::hrpValidator = "bva";
-const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap"};
 
-bool Address::isValid(const std::string& addr) {
-    Address addrNotUsed;
+Address::Address(TWCoinType coin):
+    Bech32Address(stringForHRP(TW::hrp(coin))) {
+}
+
+Address::Address(const Data& keyHash, TWCoinType coin):
+    Bech32Address(stringForHRP(TW::hrp(coin)), keyHash) {
+}
+
+Address::Address(const PublicKey& publicKey, TWCoinType coin):
+    Bech32Address(stringForHRP(TW::hrp(coin)), Hash::HasherSha256ripemd, publicKey) {
+}
+
+bool Address::isValid(TWCoinType coin, const std::string& addr) {
+    const auto* const hrp = stringForHRP(TW::hrp(coin));
+    Address addrNotUsed(hrp);
     return decode(addr, addrNotUsed);
 }
 
 bool Address::isValid(const std::string& addr, const std::string& hrp) {
-    Address addrNotUsed;
-    return Bech32Address::decode(addr, addrNotUsed, hrp);
+    Address addrNotUsed(hrp);
+    return decode(addr, addrNotUsed);
 }
 
 bool Address::decode(const std::string& addr, Address& obj_out) {
-    for (const auto& hrp : validHrps) {
+    std::vector<std::string> validHrps = {obj_out.getHrp(), Address::hrpValidator, "bnbp", "bvap", "bca", "bcap"};
+    for (const auto& hrp: validHrps) {
         if (Bech32Address::decode(addr, obj_out, hrp)) {
             return true;
         }

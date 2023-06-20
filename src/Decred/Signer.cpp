@@ -20,12 +20,14 @@ Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput&
     return signer.txPlan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noexcept {
-    auto signer = Signer(input);
+Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+    SigningMode signingMode = optionalExternalSigs.has_value() ? SigningMode_External : SigningMode_Normal;
+    auto signer = Signer(std::move(input), signingMode, optionalExternalSigs);
     auto result = signer.sign();
     auto output = Proto::SigningOutput();
     if (!result) {
         output.set_error(result.error());
+        output.set_error_message(Common::Proto::SigningError_Name(result.error()));
         return output;
     }
 
@@ -38,6 +40,33 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
 
     auto txHash = Hash::blake256(encoded);
     output.set_transaction_id(hex(txHash));
+    return output;
+}
+
+Bitcoin::Proto::PreSigningOutput Signer::preImageHashes(const Bitcoin::Proto::SigningInput& input) noexcept {
+    Bitcoin::Proto::PreSigningOutput output;
+
+    auto signer = Signer(std::move(input), SigningMode_HashOnly);
+    auto result = signer.sign();
+    if (!result) {
+        output.set_error(result.error());
+        output.set_error_message(Common::Proto::SigningError_Name(result.error()));
+        return output;
+    }
+
+    auto hashes = signer.getHashesForSigning();
+    if (hashes.size() == 0) {
+        output.set_error(Common::Proto::Error_signing);
+        output.set_error_message("got empty preImage hashes");
+        return output;
+    }
+
+    auto* hashPubKeys = output.mutable_hash_public_keys();
+    for (auto& h : hashes) {
+        auto* hpk = hashPubKeys->Add();
+        hpk->set_data_hash(h.first.data(), h.first.size());
+        hpk->set_public_key_hash(h.second.data(), h.second.size());
+    }
     return output;
 }
 
@@ -110,11 +139,11 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
     if (script.matchPayToPublicKey(data)) {
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(data));
         auto key = keyForPublicKeyHash(keyHash);
-        if (key.empty()) {
+        if (key.empty() && signingMode == SigningMode_Normal) {
             // Error: Missing key
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature = createSignature(transactionToSign, script, key, index);
+        auto signature = createSignature(transactionToSign, script, key, keyHash, index);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -122,18 +151,32 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     } else if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
+        Data pubkey;
         if (key.empty()) {
-            // Error: Missing keyxs
-            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
+            if (signingMode == SigningMode_HashOnly) {
+                // estimation mode, key is missing: use placeholder for public key
+                pubkey = Data(PublicKey::secp256k1Size);
+            } else if (signingMode == SigningMode_External) {
+                size_t hashSize = hashesForSigning.size();
+                if (!externalSignatures.has_value() || externalSignatures.value().size() <= hashSize) {
+                    // Error: no or not enough signatures provided
+                    return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
+                }
+                pubkey = std::get<1>(externalSignatures.value()[hashSize]);
+            } else {
+                // Error: Missing keyxs
+                return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
+            }
+        } else {
+            pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
         }
 
-        auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
-        auto signature = createSignature(transactionToSign, script, key, index);
+        auto signature = createSignature(transactionToSign, script, key, data, index);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
         }
-        return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, pubkey.bytes});
+        return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, pubkey});
     } else if (script.matchPayToScriptHash(data)) {
         auto redeemScript = scriptForScriptHash(data);
         if (redeemScript.empty()) {
@@ -149,11 +192,11 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
             }
             auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(pubKey));
             auto key = keyForPublicKeyHash(keyHash);
-            if (key.empty()) {
+            if (key.empty() && signingMode == SigningMode_Normal) {
                 // Error: missing key
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
-            auto signature = createSignature(transactionToSign, script, key, index);
+            auto signature = createSignature(transactionToSign, script, key, keyHash, index);
             if (signature.empty()) {
                 // Error: Failed to sign
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -169,8 +212,44 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
 }
 
 Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
-                             const Data& key, size_t index) {
+                             const Data& key, const Data& publicKeyHash, size_t index) {
     auto sighash = transaction.computeSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()));
+    
+    if (signingMode == SigningMode_HashOnly) {
+        // Don't sign, only store hash-to-be-signed + pubkeyhash.  Return placeholder.
+        hashesForSigning.push_back(std::make_pair(sighash, publicKeyHash));
+        return Data(72);
+    }
+
+    if (signingMode == SigningMode_External) {
+        // Use externally-provided signature
+        // Store hash, only for counting
+        size_t hashSize = hashesForSigning.size();
+        hashesForSigning.push_back(std::make_pair(sighash, publicKeyHash));
+
+        if (!externalSignatures.has_value() || externalSignatures.value().size() <= hashSize) {
+            // Error: no or not enough signatures provided
+            return Data();
+        }
+
+        Data externalSignature = std::get<0>(externalSignatures.value()[hashSize]);
+        const Data publicKey = std::get<1>(externalSignatures.value()[hashSize]);
+
+        // Verify provided signature
+        if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {
+            // Error: invalid public key
+            return Data();
+        }
+        const auto publicKeyObj = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
+        if (!publicKeyObj.verifyAsDER(externalSignature, sighash)) {
+            // Error: Signature does not match publickey+hash
+            return Data();
+        }
+        externalSignature.push_back(static_cast<byte>(input.hash_type()));
+
+        return externalSignature;
+    }
+
     auto pk = PrivateKey(key);
     auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)));
     if (script.empty()) {

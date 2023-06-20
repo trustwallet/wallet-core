@@ -97,7 +97,7 @@ impl TransactionSigner for KeyPair {
     ) -> Result<ClaimP2WPKH> {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
-        if input.recipient().t != me.wpubkey_hash()? {
+        if input.recipient().wpubkey_hash() != &me.wpubkey_hash()? {
             return Err(Error::Todo);
         }
 
@@ -135,7 +135,6 @@ impl TransactionSigner for KeyPair {
         let tweaked = KeyPair::from(tapped);
 
         // Construct the Schnorr signature.
-        // TODO: Make sure to explicity test this in a non-`test` context:
         #[cfg(not(test))]
         let schnorr = secp.sign_schnorr(&sighash, &tweaked);
         #[cfg(test)]
@@ -162,18 +161,18 @@ impl TransactionSigner for KeyPair {
         sighash_type: TapSighashType,
     ) -> Result<ClaimP2TRScriptPath> {
         // Tweak our public key with the Merkle root of the Script to be claimed.
-        let me = Recipient::<TaprootScript>::from_keypair(self, input.recipient.merkle_root());
+        let me = Recipient::<TaprootScript>::from_keypair(self, input.recipient().merkle_root());
 
         // Check whether we can actually claim the input.
-        if input.recipient != me {
+        if input.recipient() != &me {
             return Err(Error::Todo);
         }
 
         // The control block contains information on which script of the
         // script-path is being executed.
         let control_block = input
-            .spend_info
-            .control_block(&(input.script.clone(), LeafVersion::TapScript))
+            .spend_info()
+            .control_block(&(input.witness().clone(), LeafVersion::TapScript))
             .ok_or(Error::Todo)?;
 
         // Construct the Schnorr signature. We leave the keypair untweaked,
@@ -187,7 +186,7 @@ impl TransactionSigner for KeyPair {
         let mut witness = Witness::new();
         // Serialize signature.
         witness.push(&sig.to_vec());
-        witness.push(&input.script);
+        witness.push(input.witness());
         witness.push(control_block.serialize());
 
         Ok(ClaimP2TRScriptPath(witness))

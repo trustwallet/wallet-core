@@ -1,5 +1,4 @@
-use crate::InputContext;
-use bitcoin::{ScriptBuf, TxIn, Witness};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, TxOut, Witness};
 
 mod p2pkh;
 mod p2tr_key_path;
@@ -10,6 +9,28 @@ pub use p2pkh::*;
 pub use p2tr_key_path::*;
 pub use p2tr_script_path::*;
 pub use p2wpkh::*;
+
+#[derive(Debug, Clone)]
+pub struct InputContext {
+    pub previous_output: OutPoint,
+    pub value: u64,
+    // The condition for claiming the output.
+    pub script_pubkey: ScriptBuf,
+    pub sequence: Sequence,
+    // Witness data for Segwit/Taproot transactions.
+}
+
+impl InputContext {
+    pub fn new(utxo: TxOut, point: OutPoint) -> Self {
+        InputContext {
+            previous_output: point,
+            value: utxo.value,
+            script_pubkey: utxo.script_pubkey,
+            // Default value of `0xFFFFFFFF = 4294967295`.
+            sequence: Sequence::default(),
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 pub enum TxInput {

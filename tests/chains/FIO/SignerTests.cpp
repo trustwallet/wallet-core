@@ -6,6 +6,7 @@
 
 #include "FIO/Actor.h"
 #include "FIO/Signer.h"
+#include "FIO/TransactionBuilder.h"
 
 #include "Base58.h"
 #include "Hash.h"
@@ -31,14 +32,14 @@ TEST(FIOSigner, SignInternals) {
         append(pk2, pk.bytes);
         EXPECT_EQ("5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri", Base58::encodeCheck(pk2));
     }
-    Data rawData = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd774a26285e19fac10ac5390000000001003056372503a85b0000c6eaa6645232017016f2cc12266c6b00000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b397300000000000000007016f2cc12266c6b0e726577617264734077616c6c6574000000000000000000000000000000000000000000000000000000000000000000");
+    Data rawData = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c6574000000000000000000000000000000000000000000000000000000000000000000");
     Data hash = Hash::sha256(rawData);
-    EXPECT_EQ("0f3cca0f50da4200b2858f65de1ea4530a9afd9e4bfc0b6b7196e36c25cc7a8b", hex(hash));
+    EXPECT_EQ("6a82a57fb9bfc43918aa757d6094ba71fa2c7ece1691c4b8551a0607273771d7", hex(hash));
     Data sign2 = Signer::signData(pk, rawData);
-    EXPECT_EQ("1f4ae8d1b993f94d0de4b249d5185481770de0711863ad640b3aac21de598fcc02761c6e5395106bafb7b09aab1c7aa5ac0573dbd821c2d255725391a5105d30d1", hex(sign2));
+    EXPECT_EQ("1f6ccee1f4cd188cc8aefa63f8fda8c90c0493ca1504806d3a26a7300a9687bb701f188337bc9a32f01ee0c2ecf030aee197b050460d72f7272cc6ce36ef14c95b", hex(sign2));
 
     string sigStr = Signer::signatureToBase58(sign2);
-    EXPECT_EQ("SIG_K1_K54CA1jmhgWrSdvrNrkokPyvqh7dwsSoQHNU9xgD3Ezf6cJySzhKeUubVRqmpYdnjoP1DM6SorroVAgrCu3qqvJ9coAQ6u", sigStr);
+    EXPECT_EQ("SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9", sigStr);
     EXPECT_TRUE(Signer::verify(pk.getPublicKey(TWPublicKeyTypeSECP256k1), hash, sign2));
 }
 
@@ -73,6 +74,37 @@ TEST(FIOSigner, Actor) {
         string actor = Actor::actor(addr);
         EXPECT_EQ(actorArr[i], actor);
     }
+}
+
+TEST(FIOSigner, compile) {
+        const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
+        // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
+        const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
+        const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
+        const Address addr6M(pubKey6M);
+        Proto::SigningInput input;
+        input.set_expiry(1579790000);
+        input.set_tpid("rewards@wallet");
+        input.set_owner_public_key(addr6M.string());
+
+        input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+        input.mutable_chain_params()->set_head_block_number(50000);
+        input.mutable_chain_params()->set_ref_block_prefix(4000123456);
+
+        input.mutable_action()->mutable_transfer_message()->set_amount(1000000000);
+        input.mutable_action()->mutable_transfer_message()->set_fee(250000000);
+        input.mutable_action()->mutable_transfer_message()->set_payee_public_key("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE");
+
+        auto txBytes = TransactionBuilder::buildUnsignedTxBytes(input);
+        // create signature
+        Data sigBuf(chainId);
+        append(sigBuf, txBytes);
+        append(sigBuf, TW::Data(32)); // context_free
+        Data signature = Signer::signData(privKeyBA, sigBuf);
+    
+        Proto::SigningOutput result = Signer::compile(input, signature);
+        EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})"
+        , result.json());
 }
 
 } // namespace TW::FIO::tests

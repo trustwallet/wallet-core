@@ -24,6 +24,13 @@
 
 namespace TW::Decred {
 
+/// Normal and special signature modes
+enum SigningMode {
+    SigningMode_Normal = 0, // normal signing
+    SigningMode_HashOnly, // no signing, only collect hash to be signed
+    SigningMode_External, // no signing, signatures are provided
+};
+
 /// Helper class that performs Decred transaction signing.
 class Signer {
   public:
@@ -31,10 +38,23 @@ class Signer {
     static Bitcoin::Proto::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) noexcept;
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Bitcoin::Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Bitcoin::Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
+  
+    /// Collect pre-image hashes to be signed
+    static Bitcoin::Proto::PreSigningOutput preImageHashes(const Bitcoin::Proto::SigningInput& input) noexcept;
+
   private:
     /// Private key and redeem script provider for signing.
     Bitcoin::Proto::SigningInput input;
+
+    /// Determine sign strategy
+    SigningMode signingMode = SigningMode_Normal;
+
+    /// For SigningMode_HashOnly, collect hashes (plus corresponding publickey hashes) here
+    HashPubkeyList hashesForSigning;
+
+    /// For SigningMode_External, signatures are provided here
+    std::optional<SignaturePubkeyList> externalSignatures;
 
   public:
     /// Transaction plan.
@@ -52,14 +72,16 @@ class Signer {
     Signer() = default;
 
     /// Initializes a transaction signer with signing input.
-    explicit Signer(const Bitcoin::Proto::SigningInput& input) 
-      : input(input) {
+    explicit Signer(const Bitcoin::Proto::SigningInput& input,
+                    SigningMode mode = SigningMode_Normal,
+                    std::optional<SignaturePubkeyList> externalSignatures = {})
+        : input(input), signingMode(mode), externalSignatures(externalSignatures) {
         if (input.has_plan()) {
-          txPlan = Bitcoin::TransactionPlan(input.plan());
+            txPlan = Bitcoin::TransactionPlan(input.plan());
         } else {
-          txPlan = TransactionBuilder::plan(input);
+            txPlan = TransactionBuilder::plan(input);
         }
-        _transaction = TransactionBuilder::build(txPlan, input.to_address(), input.change_address());
+        _transaction = TransactionBuilder::build(txPlan, input);
     }
 
     /// Signs the transaction.
@@ -72,10 +94,12 @@ class Signer {
     /// \returns the signed transaction script.
     Result<Bitcoin::Script, Common::Proto::SigningError> sign(Bitcoin::Script script, size_t index);
 
+    HashPubkeyList getHashesForSigning() const { return hashesForSigning; }
+
   private:
     Result<std::vector<Data>, Common::Proto::SigningError> signStep(Bitcoin::Script script, size_t index);
     Data createSignature(const Transaction& transaction, const Bitcoin::Script& script,
-                         const Data& key, size_t index);
+                         const Data& key, const Data& publicKeyHash, size_t index);
 
     /// Returns the private key for the given public key hash.
     Data keyForPublicKeyHash(const Data& hash) const;

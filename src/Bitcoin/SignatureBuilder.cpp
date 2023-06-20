@@ -11,7 +11,10 @@
 
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
+
+#include "../BitcoinDiamond/Transaction.h"
 #include "../Groestlcoin/Transaction.h"
+#include "../Verge/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
 
@@ -130,7 +133,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
     std::vector<Data> keys;
     int required;
 
-    if (script.matchPayToScriptHash(data)) {
+    if (script.matchPayToScriptHash(data) || script.matchPayToScriptHashReplay(data)) {
         auto redeemScript = scriptForScriptHash(data);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
@@ -190,7 +193,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         }
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     }
-    if (script.matchPayToPublicKeyHash(data)) {
+    if (script.matchPayToPublicKeyHash(data) || script.matchPayToPublicKeyHashReplay(data)) {
         // obtain public key
         auto pair = keyPairForPubKeyHash(data);
         Data pubkey;
@@ -340,6 +343,8 @@ Data SignatureBuilder<Transaction>::scriptForScriptHash(const Data& hash) const 
 
 // Explicitly instantiate a Signers for compatible transactions.
 template class SignatureBuilder<Bitcoin::Transaction>;
+template class SignatureBuilder<BitcoinDiamond::Transaction>;
+template class SignatureBuilder<Verge::Transaction>;
 template class SignatureBuilder<Zcash::Transaction>;
 template class SignatureBuilder<Groestlcoin::Transaction>;
 

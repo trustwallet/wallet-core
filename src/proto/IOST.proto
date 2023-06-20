@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package TW.IOST.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// The message defines transaction action struct.
+message Action {
+    // contract name
+    string contract = 1;
+    // action name
+    string action_name = 2;
+    // data
+    string data = 3;
+}
+
+// The message defines transaction amount limit struct.
+message AmountLimit {
+    // token name
+    string token = 1;
+    // limit value
+    string value = 2;
+}
+
+// The enumeration defines the signature algorithm.
+enum Algorithm {
+    // unknown
+    UNKNOWN = 0;
+    // secp256k1
+    SECP256K1 = 1;
+    // ed25519
+    ED25519 = 2;
+}
+
+// The message defines signature struct.
+message Signature {
+    // signature algorithm
+    Algorithm algorithm = 1;
+    // signature bytes
+    bytes signature = 2;
+    // public key
+    bytes public_key = 3;
+}
+
+// The message defines the transaction request.
+message Transaction {
+    // transaction timestamp
+    int64 time = 1;
+    // expiration timestamp
+    int64 expiration = 2;
+    // gas price
+    double gas_ratio = 3;
+    // gas limit
+    double gas_limit = 4;
+    // delay nanoseconds
+    int64 delay = 5;
+    // chain id
+    uint32 chain_id = 6;
+    // action list
+    repeated Action actions = 7;
+    // amount limit
+    repeated AmountLimit amount_limit = 8;
+    // signer list
+    repeated string signers = 9;
+    // signatures of signers
+    repeated Signature signatures = 10;
+    // publisher
+    string publisher = 11;
+    // signatures of publisher
+    repeated Signature publisher_sigs = 12;
+}
+
+message AccountInfo {
+    string name = 1;
+    bytes active_key = 2;
+    bytes owner_key = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    AccountInfo account = 1;
+    Transaction transaction_template = 2;
+    string transfer_destination = 3;
+    string transfer_amount = 4;
+    string transfer_memo = 5;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed transaction
+    Transaction transaction = 1;
+    // Signed and encoded transaction bytes.
+    bytes encoded = 2;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
+}
