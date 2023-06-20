@@ -59,30 +59,6 @@ Data getInitCode(const std::string& factoryAddress, const PublicKey& publicKey, 
     return envelope;
 }
 
-Data getFormattedSignature(const Data& signature, const Data& authenticatorData, const std::string& origin) {
-    const std::string clientDataJSONPre = "{\"type\":\"webauthn.get\",\"challenge\":\"";
-    const std::string clientDataJSONPost = "\",\"origin\":\"" + origin + "\"}";
-
-    const auto parsedSignatureOptional = ASN::AsnParser::ecdsa_signature_from_der(signature);
-    if (!parsedSignatureOptional.has_value()) {
-        return Data();
-    }
-    const Data parsedSignature = parsedSignatureOptional.value();
-    const Data rValue = subData(parsedSignature, 0, 32);
-    const Data sValue = subData(parsedSignature, 32, 64);
-
-    auto params = Ethereum::ABI::ParamTuple();
-    params.addParam(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(hexEncoded(rValue))));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(hexEncoded(sValue))));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamByteArray>(authenticatorData));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamString>(clientDataJSONPre));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamString>(clientDataJSONPost));
-
-    Data encoded;
-    params.encode(encoded);
-    return encoded;
-}
-
 Data getFormattedSignature(const Data& signature, const Data challenge, const Data& authenticatorData, const std::string& clientDataJSON) {
     std::string challengeBase64 = TW::Base64::encodeBase64Url(challenge);
     while (challengeBase64.back() == '=') {
