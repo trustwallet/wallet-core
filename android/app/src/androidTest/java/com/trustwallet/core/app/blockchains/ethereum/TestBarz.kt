@@ -32,9 +32,9 @@ class TestBarz {
     fun testInitCode() {
         val factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
         val publicKeyData = Numeric.hexStringToByteArray("04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")
-        val publicKey = PublicKey(data, PublicKeyType.NIST256P1EXTENDED)
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.NIST256P1EXTENDED)
         val verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
-        val result = WCBarz.getInitCodeFromPublicKey(factoryAddress, publicKey, verificationFacet)
+        val result = WCBarz.getInitCode(factoryAddress, publicKey, verificationFacet)
         assertEquals(Numeric.toHexString(result), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")
     }
 
