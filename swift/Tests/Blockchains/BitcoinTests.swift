@@ -11,6 +11,58 @@ class BitcoinTransactionSignerTests: XCTestCase {
     override func setUp() {
         continueAfterFailure = false
     }
+    
+    func testSignBrc20Commit() {
+        // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
+        let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
+        let fullAmount = 26400 as Int64;
+        let minerFee = 3000 as Int64;
+        let brcInscribeAmount = 7000 as Int64;
+        let forFeeAmount = fullAmount - brcInscribeAmount - minerFee;
+        let txId = Data(hexString: "089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e")!;
+        
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let pubKeyHash = publicKey.bitcoinKeyHash
+        let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
+        let outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker: "oadf", amount: "20", pubkey: publicKey.data)
+        var input = BitcoinSigningInput.with {
+            $0.isItBrcOperation = true
+            $0.privateKey = [privateKeyData]
+        }
+        let utxo0 = BitcoinUnspentTransaction.with {
+            $0.script = p2wpkh.data
+            $0.amount = fullAmount
+            $0.variant = .p2Wpkh
+            $0.outPoint.hash = txId
+            $0.outPoint.index = 1
+        }
+        input.utxo.append(utxo0)
+        
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.script = outputInscribe.data
+                $0.amount = brcInscribeAmount
+                $0.variant = .brc20Transfer
+            },
+            BitcoinUnspentTransaction.with {
+                $0.script = p2wpkh.data
+                $0.amount = forFeeAmount
+                $0.variant = .p2Wpkh
+            }
+        ]
+
+        let plan = BitcoinTransactionPlan.with {
+            $0.utxos = utxos
+        }
+        input.plan = plan
+        
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+        let transactionId = output.transactionID
+        XCTAssertEqual(transactionId, "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    }
 
     func testSignP2WSH() throws {
         // set up input

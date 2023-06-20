@@ -8,6 +8,7 @@
 
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/SigHashType.h"
+#include "Data.h"
 
 #include <iterator>
 
@@ -163,4 +164,11 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddressReplay(TWStr
 
 uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
     return TW::Bitcoin::hashTypeForCoin(coinType);
+}
+struct TWBitcoinScript* TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TWString* amount, TWData* pubkey) {
+    auto* brcTicker = reinterpret_cast<const std::string*>(ticker);
+    auto* brcAmount = reinterpret_cast<const std::string*>(amount);
+    auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
+    auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, std::stoull(*brcAmount), *brcPubkey);
+    return new TWBitcoinScript{ .impl = script };
 }
