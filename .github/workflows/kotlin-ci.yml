@@ -48,7 +48,7 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Generate files
-      run: tools/generate-files
+      run: tools/generate-files android
 
     - name: Build Kotlin Multiplatform
       run: tools/kotlin-build
