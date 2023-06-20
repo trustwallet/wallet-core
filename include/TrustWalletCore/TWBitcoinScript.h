@@ -201,7 +201,7 @@ struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWDa
 /// \note Must be deleted with \TWBitcoinScriptDelete
 /// \return A pointer to the built script
 TW_EXPORT_STATIC_METHOD
-struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* _Nonnull ticker, TWString* _Nonnull amount, TWData* _Nonnull pubkey);
+TWData* _Nonnull TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* _Nonnull ticker, TWString* _Nonnull amount, TWData* _Nonnull pubkey);
 
 /// Builds a appropriate lock script for the given address..
 ///

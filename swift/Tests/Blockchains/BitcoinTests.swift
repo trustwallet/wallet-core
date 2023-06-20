@@ -12,7 +12,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         continueAfterFailure = false
     }
     
-    func testSignBrc20Commit() {
+    func testSignBrc20Commit() throws {
         // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
         let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
         let fullAmount = 26400 as Int64;
@@ -26,6 +26,8 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let pubKeyHash = publicKey.bitcoinKeyHash
         let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
         let outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker: "oadf", amount: "20", pubkey: publicKey.data)
+        let outputProto = try BitcoinTransactionOutput(serializedData: outputInscribe)
+        
         var input = BitcoinSigningInput.with {
             $0.isItBrcOperation = true
             $0.privateKey = [privateKeyData]
@@ -41,7 +43,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         
         let utxos = [
             BitcoinUnspentTransaction.with {
-                $0.script = outputInscribe.data
+                $0.script = outputProto.script
                 $0.amount = brcInscribeAmount
                 $0.variant = .brc20Transfer
             },
@@ -62,6 +64,56 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertEqual(transactionId, "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
         let encoded = output.encoded
         XCTAssertEqual(encoded.hexString, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    }
+    
+    func testSignBrc20Reveal() throws {
+        // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
+        let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
+        let dustSatoshis = 546 as Int64;
+        let brcInscribeAmount = 7000 as Int64;
+        let txId = Data(hexString: "b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d79")!;
+        
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let pubKeyHash = publicKey.bitcoinKeyHash
+        let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
+        let outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker: "oadf", amount: "20", pubkey: publicKey.data)
+        let outputProto = try BitcoinTransactionOutput(serializedData: outputInscribe)
+        
+        var input = BitcoinSigningInput.with {
+            $0.isItBrcOperation = true
+            $0.privateKey = [privateKeyData]
+        }
+        let utxo0 = BitcoinUnspentTransaction.with {
+            $0.script = outputProto.script
+            $0.amount = brcInscribeAmount
+            $0.variant = .brc20Transfer
+            $0.spendingScript = outputProto.spendingScript
+            $0.outPoint.hash = txId
+            $0.outPoint.index = 0
+        }
+        input.utxo.append(utxo0)
+        
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.script = p2wpkh.data
+                $0.amount = dustSatoshis
+                $0.variant = .p2Wpkh
+            }
+        ]
+
+        let plan = BitcoinTransactionPlan.with {
+            $0.utxos = utxos
+        }
+        input.plan = plan
+        
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+        let transactionId = output.transactionID
+        XCTAssertEqual(transactionId, "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca")
+        let encoded = output.encoded
+        XCTAssertTrue(encoded.hexString.hasPrefix("02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340"));
+        
+        XCTAssertTrue(encoded.hexString.hasSuffix("5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000"));
     }
 
     func testSignP2WSH() throws {
