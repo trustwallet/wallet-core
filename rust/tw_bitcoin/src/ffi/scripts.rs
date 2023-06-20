@@ -58,7 +58,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
 
     // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
-        value: satoshis as i64,
+        value: satoshis,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
         spendingScript: Cow::default(),
     };
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 
     // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
-        value: satoshis as i64,
+        value: satoshis,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
         spendingScript: Cow::default(),
     };
@@ -133,7 +133,7 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
 
     // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {
-        value: satoshis as i64,
+        value: satoshis,
         script: Cow::from(tx_out.script_pubkey.as_bytes()),
         spendingScript: Cow::from(spending_script.as_bytes()),
     };

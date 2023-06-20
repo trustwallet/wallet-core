@@ -75,7 +75,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
 
         let out_point = input.out_point.ok_or(Error::Todo)?;
         let txid = Txid::from_slice(&out_point.hash).map_err(|_| crate::Error::Todo)?;
-        let vout = out_point.index as u32;
+        let vout = out_point.index;
         let satoshis = input.amount as u64;
 
         let script_buf = ScriptBuf::from_bytes(input.script.to_vec());
