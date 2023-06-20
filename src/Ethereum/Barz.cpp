@@ -29,10 +29,7 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.diamond_init())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.facet_registry())));
     params.addParam(std::make_shared<Ethereum::ABI::ParamByteArray>(Data(input.public_key().begin(), input.public_key().end())));
-
-    const auto pk = Data(input.public_key().begin(), input.public_key().end());
-    std::cout << hexEncoded(pk);
-
+    
     Data encoded;
     params.encode(encoded);
 
