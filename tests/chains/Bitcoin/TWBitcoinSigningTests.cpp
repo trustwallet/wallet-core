@@ -114,7 +114,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     Proto::TransactionPlan plan;
     auto& utxo1 = *plan.add_utxos();
     utxo1.set_amount(brcInscribeAmount);
-    utxo1.set_script(outputInscribe.bytes.data(), outputInscribe.bytes.size());
+    utxo1.set_script(outputInscribe.script());
     utxo1.set_variant(Proto::TransactionVariant::BRC20TRANSFER);
 
     auto& utxo2 = *plan.add_utxos();
@@ -131,6 +131,53 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     ASSERT_EQ(output.error(), Common::Proto::OK);
 
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
+}
+
+TEST(BitcoinSigning, SignBRC20TransferReveal) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    auto dustSatoshi = 546;
+    auto brcInscribeAmount = 7000;
+    auto txId = parse_hex("b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d79");
+
+    PrivateKey key(privateKey);
+    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
+    auto outputInscribe = TW::Bitcoin::Script::buildBRC20InscribeTransfer("oadf", 20, pubKey.bytes);
+
+    Proto::SigningInput input;
+    input.set_is_it_brc_operation(true);
+    input.add_private_key(key.bytes.data(), key.bytes.size());
+    input.set_coin_type(TWCoinTypeBitcoin);
+
+    auto& utxo = *input.add_utxo();
+    utxo.set_amount(brcInscribeAmount);
+    utxo.set_script(outputInscribe.script());
+    utxo.set_variant(Proto::TransactionVariant::BRC20TRANSFER);
+    utxo.set_spendingscript(outputInscribe.spendingscript());
+
+    Proto::OutPoint out;
+    out.set_index(0);
+    out.set_hash(txId.data(), txId.size());
+    *utxo.mutable_out_point() = out;
+
+    Proto::TransactionPlan plan;
+    auto& utxo1 = *plan.add_utxos();
+    utxo1.set_amount(dustSatoshi);
+    utxo1.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
+    utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+
+    *input.mutable_plan() = plan;
+    Proto::SigningOutput output;
+
+    ANY_SIGN(input, TWCoinTypeBitcoin);
+    auto result = hex(output.encoded());
+    ASSERT_EQ(result.substr(0, 164), "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340");
+    ASSERT_EQ(result.substr(292, result.size() - 292), "5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    ASSERT_EQ(output.transaction_id(), "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca");
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
 }
 
 TEST(BitcoinSigning, SignP2PKH) {
