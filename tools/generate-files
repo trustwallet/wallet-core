@@ -56,7 +56,12 @@ tools/doxygen_convert_comments
 tools/rust-bindgen $1
 
 # Generate Java, C++ and Swift Protobuf files
-if [ -x "$(command -v protoc-gen-swift)" ] && [ $# -eq 0 ]; then
+IOS="false"
+if [[ "$1" == "ios" ]] || [[ "$1" == "" ]]; then
+  IOS="true"
+fi
+
+if [ -x "$(command -v protoc-gen-swift)" ] && [[ "$IOS" == "true" ]]; then
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
 else
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto src/proto/*.proto
@@ -74,7 +79,7 @@ fi
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
 
 # Generate Xcode project
-if [ -x "$(command -v xcodegen)" ] && [ $# -eq 0 ]; then
+if [ -x "$(command -v xcodegen)" ] && [[ "$IOS" == "true" ]]; then
     pushd swift
     xcodegen
     pod install

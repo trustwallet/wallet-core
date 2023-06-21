@@ -16,6 +16,33 @@ pub mod c_result;
 /// \param ptr *non-null* C-compatible, nul-terminated string.
 #[no_mangle]
 pub unsafe extern "C" fn free_string(ptr: *const c_char) {
-    // Take the ownership back to rust and drop the owner
+    // Take the ownership back to rust and drop the owner.
     let _ = CString::from_raw(ptr as *mut _);
+}
+
+pub trait RawPtrTrait: Sized {
+    fn into_ptr(self) -> *mut Self {
+        Box::into_raw(Box::new(self))
+    }
+
+    unsafe fn from_ptr(raw: *mut Self) -> Option<Self> {
+        if raw.is_null() {
+            return None;
+        }
+        Some(*Box::from_raw(raw))
+    }
+
+    unsafe fn from_ptr_as_ref(raw: *mut Self) -> Option<&'static Self> {
+        if raw.is_null() {
+            return None;
+        }
+        Some(&*raw)
+    }
+
+    unsafe fn from_ptr_as_box(raw: *mut Self) -> Option<Box<Self>> {
+        if raw.is_null() {
+            return None;
+        }
+        Some(Box::from_raw(raw))
+    }
 }
