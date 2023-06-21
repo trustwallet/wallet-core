@@ -18,8 +18,9 @@ namespace TW::Barz::tests {
 
 // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
 TEST(Barz, GetInitCode) {
-    const PublicKey& publicKey = PublicKey(parse_hex("0x041dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58"), TWPublicKeyTypeNIST256p1Extended);
     // C++
+    const PublicKey& publicKey = PublicKey(parse_hex("0x041dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58"), TWPublicKeyTypeNIST256p1Extended);
+
     {
         const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
         const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
@@ -33,7 +34,7 @@ TEST(Barz, GetInitCode) {
         const auto factoryAddress = STRING("0x3fC708630d85A3B5ec217E53100eC2b735d4f800");
         const auto verificationFacetAddress = STRING("0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf");
 
-        const auto& initCodeData = TWBarzGetInitCode(factoryAddress.get(), new TWPublicKey{ TW::PublicKey(publicKey) }, verificationFacetAddress.get());
+        const auto& initCodeData = TWBarzGetInitCode(factoryAddress.get(), WRAP(TWPublicKey, new TWPublicKey{ TW::PublicKey(publicKey) }).get(), verificationFacetAddress.get());
         const auto& initCode = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(initCodeData).get()));
         EXPECT_EQ(initCode, "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
     }
