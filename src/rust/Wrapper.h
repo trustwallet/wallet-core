@@ -88,6 +88,11 @@ public:
         return code == OK_CODE;
     }
 
+    /// Whether the result contains an error.
+    bool isErr() const {
+        return !isOk();
+    }
+
 private:
     ErrorCode code;
     std::optional<T> inner;

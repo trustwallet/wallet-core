@@ -1,9 +1,11 @@
 [workspace]
 members = [
+    "tw_bitcoin",
     "tw_encoding",
     "tw_hash",
     "tw_keypair",
     "tw_memory",
+    "tw_misc",
     "tw_move_parser",
     "tw_proto",
     "tw_starknet",
