@@ -12,6 +12,72 @@ class BitcoinTransactionSignerTests: XCTestCase {
         continueAfterFailure = false
     }
     
+    func testSignBrc20Transfer() throws {
+        // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
+        let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
+        let fullAmount = 26400 as Int64;
+        let minerFee = 3000 as Int64;
+        let brcInscribeAmount = 7000 as Int64;
+        let dustSatoshis = 546 as Int64
+        let forFeeAmount = fullAmount - brcInscribeAmount - minerFee;
+        let txIdInscription = Data.reverse(hexString: "7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca");
+        let txIDForFees = Data.reverse(hexString: "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1");
+        
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let pubKeyHash = publicKey.bitcoinKeyHash
+        let bobPubkeyHash = PublicKey(data: Data(hexString: "02f453bb46e7afc8796a9629e89e07b5cb0867e9ca340b571e7bcc63fc20c43f2e")!, type: .secp256k1)!.bitcoinKeyHash
+        let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
+        let outputP2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: bobPubkeyHash)
+        let outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker: "oadf", amount: "20", pubkey: publicKey.data)
+        let outputProto = try BitcoinTransactionOutput(serializedData: outputInscribe)
+        
+        var input = BitcoinSigningInput.with {
+            $0.isItBrcOperation = true
+            $0.privateKey = [privateKeyData]
+        }
+        let utxo0 = BitcoinUnspentTransaction.with {
+            $0.script = p2wpkh.data
+            $0.amount = dustSatoshis
+            $0.variant = .p2Wpkh
+            $0.outPoint.hash = txIdInscription
+            $0.outPoint.index = 0
+        }
+        let utxo1 = BitcoinUnspentTransaction.with {
+            $0.script = p2wpkh.data
+            $0.amount = forFeeAmount
+            $0.variant = .p2Wpkh
+            $0.outPoint.hash = txIDForFees
+            $0.outPoint.index = 1
+        }
+        input.utxo.append(utxo0)
+        input.utxo.append(utxo1)
+        
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.script = outputP2wpkh.data
+                $0.amount = dustSatoshis
+                $0.variant = .p2Wpkh
+            },
+            BitcoinUnspentTransaction.with {
+                $0.script = p2wpkh.data
+                $0.amount = forFeeAmount - minerFee
+                $0.variant = .p2Wpkh
+            }
+        ]
+
+        let plan = BitcoinTransactionPlan.with {
+            $0.utxos = utxos
+        }
+        input.plan = plan
+        
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+        let transactionId = output.transactionID
+        XCTAssertEqual(transactionId, "3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7")
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString, "02000000000102ca3edda74a46877efa5364ab85947e148508713910ada23e147ea28926dc46700000000000ffffffffb11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790100000000ffffffff022202000000000000160014e891850afc55b64aa8247b2076f8894ebdf889015834000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d024830450221008798393eb0b7390217591a8c33abe18dd2f7ea7009766e0d833edeaec63f2ec302200cf876ff52e68dbaf108a3f6da250713a9b04949a8f1dcd1fb867b24052236950121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb0248304502210096bbb9d1f0596d69875646689e46f29485e8ceccacde9d0025db87fd96d3066902206d6de2dd69d965d28df3441b94c76e812384ab9297e69afe3480ee4031e1b2060121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    }
+    
     func testSignBrc20Commit() throws {
         // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
         let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
