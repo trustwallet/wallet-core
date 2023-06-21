@@ -79,7 +79,7 @@ fi
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
 
 # Generate Xcode project
-if [ -x "$(command -v xcodegen)" ] && [ $# -eq 0 ]; then
+if [ -x "$(command -v xcodegen)" ] && [[ "$IOS" == "true" ]]; then
     pushd swift
     xcodegen
     pod install
