@@ -18,17 +18,22 @@ message ContractAddressInput {
   string diamond_cut_facet = 2;
   string account_facet = 3;
   string verification_facet = 4;
-  string token_receiver_facet= 5;
-  string diamond_loupe_facet = 6;
-  string diamond_init = 7;
-  string facet_registry = 8;
 
   // ERC-4337 entry point
-  string entry_point = 9;
+  string entry_point = 5;
+
+  // Diamond Loupe from ERC-2535: Diamonds, Multi-Facet Proxy
+  string diamond_loupe_facet = 6;
+
+  // Diamond init from ERC-2535: Diamonds, Multi-Facet Proxy
+  string diamond_init = 7;
+
+  // Address of the contract that defines if a facet is secure
+  string facet_registry = 8;
 
   // Bytecode of the smart contract to deploy
-  string bytecode = 10;
+  string bytecode = 9;
 
   // PublicKey of the wallet
-  string public_key = 11;
+  string public_key = 10;
 }
