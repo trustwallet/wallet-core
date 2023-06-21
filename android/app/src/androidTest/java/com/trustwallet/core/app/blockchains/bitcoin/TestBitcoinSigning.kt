@@ -10,6 +10,8 @@ import wallet.core.jni.BitcoinScript
 import wallet.core.jni.BitcoinSigHashType
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.BITCOIN
+import wallet.core.jni.Hash
+import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Bitcoin
 import wallet.core.jni.proto.Bitcoin.SigningOutput
 import wallet.core.jni.proto.Common.SigningError
@@ -154,5 +156,69 @@ class TestBitcoinSigning {
         val encoded = output.encoded
         assertEquals("0x01000000000102fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f00000000494830450221008d49c4d7cc5ab93c01a67ce3f4ed2c45c59d4da6c76c891a9b56e67eda2e8cb4022078849134c697b1c70c1a19b900d94d8cab00ad7bcc8afe7ad1f6b184c13effa601ffffffffef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a0100000000ffffffff02d8d60000000000001976a914a6d85a488bb777a540f24bf777d30d1486036f6188acee430000000000001976a9147d77e6cfb05a9cfc123824279f6caf8b66ac267688ac0002473044022074573d7f7828ae193fbea6d72c0fe2df6cee5c02bf455ea3d9312e16d6a9576502203861c5a3b3a83d4fe372034073f60201a8a944fb4536be0ea7544ab177b967600121025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee635700000000",
             Numeric.toHexString(encoded.toByteArray()));
+    }
+
+    @Test
+    fun testSignBrc20Commit() {
+        // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
+        val privateKeyData = (Numeric.hexStringToByteArray("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129"))
+        val fullAmount = 26400
+        val minerFee = 3000
+        val brcInscribeAmount = 7000
+        val forFeeAmount = fullAmount - brcInscribeAmount - minerFee
+        val txId = Numeric.hexStringToByteArray("089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e")
+        val ticker = "oadf"
+        val amount = "20"
+
+        val privateKey = PrivateKey(privateKeyData)
+        val publicKey = privateKey.getPublicKeySecp256k1(true)
+        val pubKeyHash = Hash.ripemd(Hash.sha256(publicKey.data()))
+
+        val p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(pubKeyHash)
+        val outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker, amount, publicKey.data())
+        val outputInscribeProto = Bitcoin.TransactionOutput.parseFrom(outputInscribe)
+
+        val input = Bitcoin.SigningInput.newBuilder()
+            .setIsItBrcOperation(true)
+            .addPrivateKey(ByteString.copyFrom(privateKeyData))
+
+        val unspentOutputPoint = Bitcoin.OutPoint.newBuilder()
+            .setHash(ByteString.copyFrom(txId))
+            .setIndex(1)
+            .build()
+
+        val utxo0 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(ByteString.copyFrom(p2wpkh.data()))
+            .setAmount(fullAmount.toLong())
+            .setVariant(Bitcoin.TransactionVariant.P2WPKH)
+            .setOutPoint(unspentOutputPoint)
+            .build()
+        input.addUtxo(utxo0)
+
+        val utxoPlan0 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(outputInscribeProto.script)
+            .setAmount(brcInscribeAmount.toLong())
+            .setVariant(Bitcoin.TransactionVariant.BRC20TRANSFER)
+            .build()
+        val utxoPlan1 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(ByteString.copyFrom(p2wpkh.data()))
+            .setAmount(forFeeAmount.toLong())
+            .setVariant(Bitcoin.TransactionVariant.P2WPKH)
+            .build()
+
+        val plan = Bitcoin.TransactionPlan.newBuilder()
+            .addUtxos(utxoPlan0)
+            .addUtxos(utxoPlan1)
+            .build()
+        input.plan = plan
+
+        val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
+
+        assertEquals(output.error, SigningError.OK)
+        assertEquals(output.transactionId, "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
+        assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "0x02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")
+
+        val signedTransaction = output.transaction
+        assert(signedTransaction.isInitialized)
     }
 }
