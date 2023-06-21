@@ -5,8 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TransactionOutput.h"
-#include "rust/bindgen/WalletCoreRSBindgen.h"
-#include "rust/Wrapper.h"
 
 #include "../BinaryCoding.h"
 
