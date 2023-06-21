@@ -47,6 +47,7 @@ class TestBarz {
             diamondCutFacet = "0x312382b3B302bDcC0711fe710314BE298426296f"
             accountFacet = "0x84E684272903737d807375197f9a581FEa094Bc3"
             verificationFacet = "0xDcfbDE24847FdF29E6d0311f4bAEb2b49ae8B5a3"
+            tokenReceiverFacet = "0x77E64E56966430a5B7A4F4A20C9fe039afb6ec21"
             entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"
             diamondLoupeFacet = "0x518834B7EE4461d703ED2de8bCdfC5eCf761bBCA"
             diamondInit = "0x02a3C76D089c50615139B904c4dbD62F20e74a1b"
@@ -55,7 +56,7 @@ class TestBarz {
             publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
         }
         val result = WCBarz.getCounterfactualAddress(input.build().toByteArray())
-        assertEquals(result, "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f")
+        assertEquals(result, "0x42138448be17503df67546CEE92470BF130e5611")
     }
 
     @Test
