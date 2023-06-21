@@ -1,6 +1,5 @@
 #![allow(clippy::missing_safety_doc)]
 
-use super::try_or_else;
 use crate::{Error, Result, TXOutputP2TRScriptPath, TaprootScript, TxInputP2TRScriptPath};
 use bitcoin::{
     taproot::{NodeInfo, TapNodeHash, TaprootSpendInfo},
@@ -12,6 +11,7 @@ use std::borrow::Cow;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
+use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto::{
     OutPoint, SigningInput, SigningOutput, Transaction, TransactionInput, TransactionOutput,
     TransactionVariant as TrVariant,
@@ -248,60 +248,5 @@ pub enum CTaprootError {
 impl From<CTaprootError> for ErrorCode {
     fn from(error: CTaprootError) -> Self {
         error as ErrorCode
-    }
-}
-
-// The code below is reimplemented from the `dev` branch.
-
-#[macro_export]
-macro_rules! try_or_else {
-    ($exp:expr, $or_else:expr) => {{
-        match $crate::ffi::IntoOption::into_option($exp) {
-            Some(res) => res,
-            None => return $or_else(),
-        }
-    }};
-}
-
-pub trait IntoOption<T> {
-    fn into_option(self) -> Option<T>;
-}
-
-impl<T, E> IntoOption<T> for std::result::Result<T, E> {
-    fn into_option(self) -> Option<T> {
-        self.ok()
-    }
-}
-
-impl<T> IntoOption<T> for Option<T> {
-    fn into_option(self) -> Option<T> {
-        self
-    }
-}
-
-pub trait RawPtrTrait: Sized {
-    fn into_ptr(self) -> *mut Self {
-        Box::into_raw(Box::new(self))
-    }
-
-    unsafe fn from_ptr(raw: *mut Self) -> Option<Self> {
-        if raw.is_null() {
-            return None;
-        }
-        Some(*Box::from_raw(raw))
-    }
-
-    unsafe fn from_ptr_as_ref(raw: *mut Self) -> Option<&'static Self> {
-        if raw.is_null() {
-            return None;
-        }
-        Some(&*raw)
-    }
-
-    unsafe fn from_ptr_as_box(raw: *mut Self) -> Option<Box<Self>> {
-        if raw.is_null() {
-            return None;
-        }
-        Some(Box::from_raw(raw))
     }
 }

@@ -1,4 +1,3 @@
-use super::try_or_else;
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::{
     Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
@@ -7,6 +6,7 @@ use bitcoin::{PublicKey, WPubkeyHash};
 use std::borrow::Cow;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
+use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto::TransactionOutput;
 
 #[no_mangle]

@@ -946,6 +946,7 @@ dependencies = [
  "serde_json",
  "tw_encoding",
  "tw_memory",
+ "tw_misc",
  "tw_proto",
 ]
 
@@ -989,6 +990,13 @@ dependencies = [
 [[package]]
 name = "tw_memory"
 version = "0.1.0"
+
+[[package]]
+name = "tw_misc"
+version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "tw_move_parser"
