@@ -9,26 +9,18 @@ import WalletCore
 
 class BarzTests: XCTestCase {
 
-    // https://testnet.bscscan.com/tx/0x434f5861b7d14b3bf790b57e5eb1be98355d77f528defe732f2994fc9d6d3f2e
-    func testInitCodeFromPublicKey() {
-        let factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
-        let publicKey = "0x1dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58"
-        let verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
-        let result = Barz.getInitCodeFromPublicKey(factory: factoryAddress, publicKey: publicKey, verificationFacet: verificationFacet)
-        XCTAssertEqual(result.hexString, "3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58")
-    }
-
     // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
-    func testInitCodeFromAttestationObject() {
+    func testInitCode() {
         let factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
-        let attestationObject = "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d0000000000000000000000000000000000000000001464193b58d01d4047694ba4634750047a5fcd637ea5010203262001215820e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79225820eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02"
+        let publicKeyData = Data(hexString: "0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")!
+        let publicKey = PublicKey(data: publicKeyData, type: .nist256p1Extended)!
         let verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
-        let result = Barz.getInitCodeFromAttestationObject(factory: factoryAddress, attestationObject: attestationObject, verificationFacet: verificationFacet)
+        let result = Barz.getInitCode(factory: factoryAddress, publicKey: publicKey, verificationFacet: verificationFacet)
         XCTAssertEqual(result.hexString, "3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")
     }
 
     // https://testnet.bscscan.com/address/0x5d51930e0ce5cc08a67a1763fadb66892c0994d1
-    func testCounterfactualAddressFromPublicKey() {
+    func testCounterfactualAddress() {
         let verificationFacet = "0xDcfbDE24847FdF29E6d0311f4bAEb2b49ae8B5a3"
         let input = BarzContractAddressInput.with {
             $0.factory = factory
@@ -40,32 +32,10 @@ class BarzTests: XCTestCase {
             $0.diamondInit = diamondInit
             $0.facetRegistry = facetRegistry
             $0.bytecode = bytecode
-            $0.owner = BarzContractOwner.with {
-                $0.publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
-            }
+            $0.publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
         }
 
         XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f");
-    }
-
-    func testCounterfactualAddressFromAttestationObject() {
-        let verificationFacet = "0x5034534Efe9902779eD6eA6983F435c00f3bc510"
-        let input = BarzContractAddressInput.with {
-            $0.factory = factory
-            $0.diamondCutFacet = diamondCutFacet
-            $0.accountFacet = accountFacet
-            $0.verificationFacet = verificationFacet
-            $0.entryPoint = entryPoint
-            $0.diamondLoupeFacet = diamondLoupeFacet
-            $0.diamondInit = diamondInit
-            $0.facetRegistry = facetRegistry
-            $0.bytecode = bytecode
-            $0.owner = BarzContractOwner.with {
-                $0.attestationObject = "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d000000000000000000000000000000000000000000147d0d9cf0634ebd79b5df0c91c7de42c567aac588a50102032620012158207868c62a834763bae747bd9db14d9d159ccd1052a8f81287e3f039c5c9c0f91e225820000e4fc74a22560d3bd22866c6b9fe88c10c170be073d2a838c8019586a7a4eb"
-            }
-        }
-
-        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0x85a6290917d1DC2C507Ff2D545Ba5aF13e964Ba1");
     }
 
     func testFormatSignature() {
@@ -109,6 +79,9 @@ class BarzTests: XCTestCase {
 
     // https://testnet.bscscan.com/tx/0xea1f5cddc0653e116327cbcb3bc770360a642891176eff2ec69c227e46791c31
     func testSignR1TransferAccountNotDeployed() {
+        let attestationObject = Data(hexString: "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d00000000000000000000000000000000000000000014c14f8a2dfd8f451581fad6e4e1c11821abcaacd6a5010203262001215820b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2225820116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f")!
+        let publicKey = WebAuthn.getPublicKey(attestationObject: attestationObject)!
+
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "61")!
             $0.nonce = Data(hexString: "00")!
@@ -124,9 +97,9 @@ class BarzTests: XCTestCase {
                 $0.preVerificationGas = Data(hexString: "b708")!
                 $0.entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"
                 $0.sender = "0x1392Ae041BfBdBAA0cFF9234a0C8F64df97B7218"
-                $0.initCode = Barz.getInitCodeFromAttestationObject(
+                $0.initCode = Barz.getInitCode(
                     factory: factory,
-                    attestationObject: "0xa363666d74646e6f6e656761747453746d74a068617574684461746158981a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e075d00000000000000000000000000000000000000000014c14f8a2dfd8f451581fad6e4e1c11821abcaacd6a5010203262001215820b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2225820116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f",
+                    publicKey: publicKey,
                     verificationFacet: "0x5034534Efe9902779eD6eA6983F435c00f3bc510"
                 )
             }

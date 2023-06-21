@@ -9,14 +9,6 @@ syntax = "proto3";
 package TW.Barz.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Represents the access control to the wallet
-message ContractOwner {
-  oneof kind {
-    string public_key = 1;
-    string attestation_object = 2;
-  }
-}
-
 // Input parameters for calculating a counterfactual address for ERC-4337 based smart contract wallet
 message ContractAddressInput {
   // Address of the contract factory
@@ -42,6 +34,6 @@ message ContractAddressInput {
   // Bytecode of the smart contract to deploy
   string bytecode = 9;
 
-  // Owner of the wallet
-  ContractOwner owner = 10;
+  // PublicKey of the wallet
+  string public_key = 10;
 }

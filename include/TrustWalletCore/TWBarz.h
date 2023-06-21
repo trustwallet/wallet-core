@@ -8,6 +8,7 @@
 #include "TWBase.h"
 #include "TWData.h"
 #include "TWString.h"
+#include "TWPublicKey.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -29,16 +30,7 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input);
 /// \param verificationFacet Verification facet address
 /// \return The address.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetInitCodeFromPublicKey(TWString* _Nonnull factory, TWString* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
-
-/// Returns the init code parameter of ERC-4337 User Operation
-///
-/// \param factory Wallet factory address (BarzFactory)
-/// \param attestationObject Attestation object from created webauthn credentials
-/// \param verificationFacet Verification facet address
-/// \return The address.
-TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetInitCodeFromAttestationObject(TWString* _Nonnull factory, TWString* _Nonnull attestationObject, TWString* _Nonnull verificationFacet);
+TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
 
 /// Converts the original ASN-encoded signature from webauthn to the format accepted by Barz
 ///
