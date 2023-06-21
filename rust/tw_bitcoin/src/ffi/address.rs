@@ -25,7 +25,7 @@ pub unsafe extern "C" fn tw_legacy_address_string(
         .expect("legacy address contains an internal 0 byte")
         .into_raw();
 
-    CStrMutResult::from(Result::<_, CTaprootError>::Ok(c_string))
+    CStrMutResult::ok(c_string)
 }
 
 #[no_mangle]
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn tw_segwit_address_string(
         .expect("legacy address contains an internal 0 byte")
         .into_raw();
 
-    CStrMutResult::from(Result::<_, CTaprootError>::Ok(c_string))
+    CStrMutResult::ok(c_string)
 }
 
 #[no_mangle]
@@ -74,7 +74,7 @@ pub unsafe extern "C" fn tw_taproot_address_string(
         .expect("legacy address contains an internal 0 byte")
         .into_raw();
 
-    CStrMutResult::from(Result::<_, CTaprootError>::Ok(c_string))
+    CStrMutResult::ok(c_string)
 }
 
 // A custom reimplementation of of `bitcoin::Network`.
