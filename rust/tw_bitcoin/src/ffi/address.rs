@@ -13,12 +13,12 @@ pub unsafe extern "C" fn tw_legacy_address_string(
 ) -> CStrMutResult {
     // Convert Recipient.
     let Some(slice) = CByteArrayRef::new(pubkey, pubkey_len).as_slice() else {
-		return CStrMutResult::error(CTaprootError::InvalidSlice);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidSlice);
+    };
 
     let Ok(recipient) = Recipient::<PublicKey>::from_slice(slice) else {
-		return CStrMutResult::error(CTaprootError::InvalidPubkey);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidPubkey);
+    };
 
     let address = recipient.legacy_address_string(network.into());
     let c_string = CString::new(address)
@@ -36,16 +36,16 @@ pub unsafe extern "C" fn tw_segwit_address_string(
 ) -> CStrMutResult {
     // Convert Recipient.
     let Some(slice) = CByteArrayRef::new(pubkey, pubkey_len).as_slice() else {
-		return CStrMutResult::error(CTaprootError::InvalidSlice);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidSlice);
+    };
 
     let Ok(recipient) = Recipient::<PublicKey>::from_slice(slice) else {
-		return CStrMutResult::error(CTaprootError::InvalidPubkey);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidPubkey);
+    };
 
     let Ok(address) = recipient.segwit_address_string(network.into()) else {
-		return CStrMutResult::error(CTaprootError::InvalidSegwitPukey);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidSegwitPukey);
+    };
 
     let c_string = CString::new(address)
         .expect("legacy address contains an internal 0 byte")
@@ -62,12 +62,12 @@ pub unsafe extern "C" fn tw_taproot_address_string(
 ) -> CStrMutResult {
     // Convert Recipient.
     let Some(slice) = CByteArrayRef::new(pubkey, pubkey_len).as_slice() else {
-		return CStrMutResult::error(CTaprootError::InvalidSlice);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidSlice);
+    };
 
     let Ok(recipient) = Recipient::<PublicKey>::from_slice(slice) else {
-		return CStrMutResult::error(CTaprootError::InvalidPubkey);
-	};
+        return CStrMutResult::error(CTaprootError::InvalidPubkey);
+    };
 
     let address = recipient.taproot_address_string(network.into());
     let c_string = CString::new(address)
