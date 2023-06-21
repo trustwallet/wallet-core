@@ -171,8 +171,6 @@ class TestBitcoinSigning {
         val forFeeAmount = fullAmount - brcInscribeAmount - minerFee
         val txIdInscription = Numeric.hexStringToByteArray("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca").reversedArray()
         val txIDForFees = Numeric.hexStringToByteArray("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1").reversedArray()
-        val brc20Ticker = "oadf"
-        val brc20Amount = "20"
 
         val privateKey = PrivateKey(privateKeyData)
         val publicKey = privateKey.getPublicKeySecp256k1(true)
@@ -248,15 +246,15 @@ class TestBitcoinSigning {
         val brcInscribeAmount = 7000
         val forFeeAmount = fullAmount - brcInscribeAmount - minerFee
         val txId = Numeric.hexStringToByteArray("089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e")
-        val ticker = "oadf"
-        val amount = "20"
+        val brc20Ticker = "oadf"
+        val brc20Amount = "20"
 
         val privateKey = PrivateKey(privateKeyData)
         val publicKey = privateKey.getPublicKeySecp256k1(true)
         val pubKeyHash = Hash.ripemd(Hash.sha256(publicKey.data()))
 
         val p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(pubKeyHash)
-        val outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker, amount, publicKey.data())
+        val outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(brc20Ticker, brc20Amount, publicKey.data())
         val outputInscribeProto = Bitcoin.TransactionOutput.parseFrom(outputInscribe)
 
         val input = Bitcoin.SigningInput.newBuilder()
