@@ -165,6 +165,7 @@ enum TWCoinType {
     TWCoinTypeScroll = 534353,
     TWCoinTypeRootstock = 137,
     TWCoinTypeThetaFuel = 361,
+    TWCoinTypeConfluxeSpace = 1030,
 };
 
 /// Returns the blockchain for a coin type.
