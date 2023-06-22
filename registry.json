@@ -3870,6 +3870,36 @@
     }
   },
   {
+    "id": "cfxevm",
+    "name": "Conflux eSpace",
+    "coinId": 1030,
+    "chainId": "1030",
+    "symbol": "CFX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://evm.confluxscan.net",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x920efefb3213b2d6a3b84149cb50b61a813d085443a20e1b0eab74120e41ff72",
+      "sampleAccount": "0x337a087daef75c72871de592fbbba570829a936a"
+    },
+    "info": {
+      "url": "https://confluxnetwork.org",
+      "source": "https://github.com/conflux-chain",
+      "rpc": "https://evm.confluxrpc.com",
+      "documentation": "https://doc.confluxnetwork.org/docs/espace"
+    }
+  },
+  {
     "id": "stratis",
     "name": "Stratis",
     "coinId": 105105,
