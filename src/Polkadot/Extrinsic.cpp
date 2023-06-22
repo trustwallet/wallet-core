@@ -27,7 +27,7 @@ static const std::string stakingChill = "Staking.chill";
 static const std::string stakingReBond = "Staking.rebond";
 
 // Readable decoded call index can be found from https://polkascan.io
-static std::map<const std::string, Data> polkadotCallIndices = {
+const static std::map<const std::string, Data> polkadotCallIndices = {
     {balanceTransfer, Data{0x05, 0x00}},
     {stakingBond, Data{0x07, 0x00}},
     {stakingBondExtra, Data{0x07, 0x01}},
@@ -39,7 +39,8 @@ static std::map<const std::string, Data> polkadotCallIndices = {
     {stakingReBond, Data{0x07, 0x13}},
 };
 
-static std::map<const std::string, Data> kusamaCallIndices = {
+// Default Kusama call indices.
+const static std::map<const std::string, Data> kusamaCallIndices = {
     {balanceTransfer, Data{0x04, 0x00}},
     {stakingBond, Data{0x06, 0x00}},
     {stakingBondExtra, Data{0x06, 0x01}},
@@ -51,17 +52,23 @@ static std::map<const std::string, Data> kusamaCallIndices = {
     {stakingReBond, Data{0x06, 0x13}},
 };
 
-static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
-    if (network == TWSS58AddressTypePolkadot) {
-        return polkadotCallIndices[key];
+static Data getCallIndex(const Proto::CallIndices& callIndices, uint32_t network, const std::string& key) {
+    if (callIndices.has_custom()) {
+        return encodeCallIndex(callIndices.custom().module_index(), callIndices.custom().method_index());
     }
-    // network == TWSS58AddressTypeKusama
-    return kusamaCallIndices[key];
+    if (network == static_cast<uint32_t>(TWSS58AddressTypePolkadot)) {
+        return polkadotCallIndices.at(key);
+    }
+    if (network == TWSS58AddressTypeKusama) {
+        return kusamaCallIndices.at(key);
+    }
+    throw std::invalid_argument("'call_indices' is not set");
 }
 
-bool Extrinsic::encodeRawAccount(TWSS58AddressType network, uint32_t specVersion) {
-    if ((network == TWSS58AddressTypePolkadot && specVersion >= multiAddrSpecVersion) ||
-        (network == TWSS58AddressTypeKusama && specVersion >= multiAddrSpecVersionKsm)) {
+bool Extrinsic::encodeRawAccount() const {
+    if (multiAddress ||
+        (network == static_cast<uint32_t>(TWSS58AddressTypePolkadot) && specVersion >= multiAddrSpecVersion) ||
+        (network == static_cast<uint32_t>(TWSS58AddressTypeKusama) && specVersion >= multiAddrSpecVersionKsm)) {
         return false;
     }
     return true;
@@ -78,71 +85,78 @@ Data Extrinsic::encodeEraNonceTip() const {
     return data;
 }
 
-Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
+Data Extrinsic::encodeCall(const Proto::SigningInput& input) const {
     // call index from MetadataV11
     Data data;
-    auto network = TWSS58AddressType(input.network());
     if (input.has_balance_call()) {
-        data = encodeBalanceCall(input.balance_call(), network, input.spec_version());
+        data = encodeBalanceCall(input.balance_call());
     } else if (input.has_staking_call()) {
-        data = encodeStakingCall(input.staking_call(), network, input.spec_version());
+        data = encodeStakingCall(input.staking_call());
     }
     return data;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network, uint32_t specVersion) {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
     Data data;
     if (balance.has_transfer()) {
-        auto transfer = balance.transfer();
-        auto address = SS58Address(transfer.to_address(), network);
-        auto value = load(transfer.value());
-        // call index
-        append(data, getCallIndex(network, balanceTransfer));
-        // destination
-        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
-        // value
-        append(data, encodeCompact(value));
+        data = encodeTransfer(balance.transfer());
     } else if (balance.has_batchtransfer()) {
         //init call array
         auto calls = std::vector<Data>();
-        auto batchTransfer = balance.batchtransfer().transfers();
-        for (auto transfer : batchTransfer) {
-            Data itemData;
-            auto address = SS58Address(transfer.to_address(), network);
-            auto value = load(transfer.value());
-            // index
-            append(itemData, getCallIndex(network, balanceTransfer));
-            // destination
-            append(itemData, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
-            // value
-            append(itemData, encodeCompact(value));
+        for (const auto& transfer : balance.batchtransfer().transfers()) {
+            Data itemData = encodeTransfer(transfer);
             // put into calls array
             calls.push_back(itemData);
         }
-        data = encodeBatchCall(calls, network);
+        data = encodeBatchCall(balance.batchtransfer().call_indices(), calls);
     }
 
     return data;
 }
 
-Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, TWSS58AddressType network) {
+Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer) const {
     Data data;
-    append(data, getCallIndex(network, utilityBatch));
+
+    auto address = SS58Address(transfer.to_address(), network);
+    auto value = load(transfer.value());
+    // call index
+    append(data, getCallIndex(transfer.call_indices(), network, balanceTransfer));
+    // destination
+    append(data, encodeAccountId(address.keyBytes(), encodeRawAccount()));
+    // value
+    append(data, encodeCompact(value));
+    // memo
+    if (transfer.memo().length() > 0) {
+        append(data, 0x01);
+        auto memo = transfer.memo();
+        if (memo.length() < 32) {
+            // padding memo with null
+            memo.append(32 - memo.length(), '\0');
+        }
+        append(data, TW::data(memo));
+    }
+
+    return data;
+}
+
+Data Extrinsic::encodeBatchCall(const Proto::CallIndices& batchCallIndices, const std::vector<Data>& calls) const {
+    Data data;
+    append(data, getCallIndex(batchCallIndices, network, utilityBatch));
     append(data, encodeVector(calls));
     return data;
 }
 
-Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network, uint32_t specVersion) {
+Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
     Data data;
     switch (staking.message_oneof_case()) {
     case Proto::Staking::kBond: {
-        auto address = SS58Address(staking.bond().controller(), byte(network));
+        auto address = SS58Address(staking.bond().controller(), network);
         auto value = load(staking.bond().value());
         auto reward = byte(staking.bond().reward_destination());
         // call index
-        append(data, getCallIndex(network, stakingBond));
+        append(data, getCallIndex(staking.bond().call_indices(), network, stakingBond));
         // controller
-        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
+        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount()));
         // value
         append(data, encodeCompact(value));
         // reward destination
@@ -159,7 +173,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             bond->set_value(staking.bond_and_nominate().value());
             bond->set_reward_destination(staking.bond_and_nominate().reward_destination());
             // recursive call
-            call1 = encodeStakingCall(staking1, network, specVersion);
+            call1 = encodeStakingCall(staking1);
         }
 
         // encode call2
@@ -171,17 +185,17 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
                 nominate->add_nominators(staking.bond_and_nominate().nominators(i));
             }
             // recursive call
-            call2 = encodeStakingCall(staking2, network, specVersion);
+            call2 = encodeStakingCall(staking2);
         }
 
         auto calls = std::vector<Data>{call1, call2};
-        data = encodeBatchCall(calls, network);
+        data = encodeBatchCall(staking.bond_and_nominate().call_indices(), calls);
     } break;
 
     case Proto::Staking::kBondExtra: {
         auto value = load(staking.bond_extra().value());
         // call index
-        append(data, getCallIndex(network, stakingBondExtra));
+        append(data, getCallIndex(staking.bond_extra().call_indices(), network, stakingBondExtra));
         // value
         append(data, encodeCompact(value));
     } break;
@@ -189,7 +203,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
     case Proto::Staking::kUnbond: {
         auto value = load(staking.unbond().value());
         // call index
-        append(data, getCallIndex(network, stakingUnbond));
+        append(data, getCallIndex(staking.unbond().call_indices(), network, stakingUnbond));
         // value
         append(data, encodeCompact(value));
     } break;
@@ -197,7 +211,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
     case Proto::Staking::kRebond: {
         auto value = load(staking.rebond().value());
         // call index
-        append(data, getCallIndex(network, stakingReBond));
+        append(data, getCallIndex(staking.rebond().call_indices(), network, stakingReBond));
         // value
         append(data, encodeCompact(value));
     } break;
@@ -205,7 +219,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
     case Proto::Staking::kWithdrawUnbonded: {
         auto spans = staking.withdraw_unbonded().slashing_spans();
         // call index
-        append(data, getCallIndex(network, stakingWithdrawUnbond));
+        append(data, getCallIndex(staking.withdraw_unbonded().call_indices(), network, stakingWithdrawUnbond));
         // num_slashing_spans
         encode32LE(spans, data);
     } break;
@@ -216,14 +230,14 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             accountIds.emplace_back(SS58Address(n, network));
         }
         // call index
-        append(data, getCallIndex(network, stakingNominate));
+        append(data, getCallIndex(staking.nominate().call_indices(), network, stakingNominate));
         // nominators
-        append(data, encodeAccountIds(accountIds, encodeRawAccount(network, specVersion)));
+        append(data, encodeAccountIds(accountIds, encodeRawAccount()));
     } break;
 
     case Proto::Staking::kChill:
         // call index
-        append(data, getCallIndex(network, stakingChill));
+        append(data, getCallIndex(staking.chill().call_indices(), network, stakingChill));
         break;
 
     case Proto::Staking::kChillAndUnbond: {
@@ -233,7 +247,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             auto staking1 = Proto::Staking();
             staking1.mutable_chill();
             // recursive call
-            call1 = encodeStakingCall(staking1, network, specVersion);
+            call1 = encodeStakingCall(staking1);
         }
 
         // encode call2
@@ -243,11 +257,11 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             auto* unbond = staking2.mutable_unbond();
             unbond->set_value(staking.chill_and_unbond().value());
             // recursive call
-            call2 = encodeStakingCall(staking2, network, specVersion);
+            call2 = encodeStakingCall(staking2);
         }
 
         auto calls = std::vector<Data>{call1, call2};
-        data = encodeBatchCall(calls, network);
+        data = encodeBatchCall(staking.chill_and_unbond().call_indices(), calls);
     } break;
 
     default:
@@ -278,7 +292,7 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     // version header
     append(data, Data{extrinsicFormat | signedBit});
     // signer public key
-    append(data, encodeAccountId(signer.bytes, encodeRawAccount(network, specVersion)));
+    append(data, encodeAccountId(signer.bytes, encodeRawAccount()));
     // signature type
     append(data, sigTypeEd25519);
     // signature
