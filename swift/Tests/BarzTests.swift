@@ -116,6 +116,57 @@ class BarzTests: XCTestCase {
         XCTAssertEqual(String(data: output.encoded, encoding: .utf8), "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"2500000\",\"initCode\":\"0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000005034534efe9902779ed6ea6983f435c00f3bc510000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x1392ae041bfbdbaa0cff9234a0c8f64df97b7218\",\"signature\":\"0xfcaecd5a66ef2d36a54437ce94185ef21a056dae4af66158e71cac84329050e570def91812915e059b08640cec070818aaef19fc8278e045d7b3e1f460869e581b\",\"verificationGasLimit\":\"3000000\"}")
     }
 
+    // https://testnet.bscscan.com/tx/0x872f709815a9f79623a349f2f16d93b52c4d5136967bab53a586f045edbe9203
+    func testSignR1BatchedTransferAccountDeployed() {
+        let approveFunc = EthereumAbiFunction(name: "approve")
+        approveFunc.addParamAddress(val: Data(hexString: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")!, isOutput: false)
+        approveFunc.addParamUInt256(val: Data(hexString: "8AC7230489E80000")!, isOutput: false)
+        let approveCall = EthereumAbi.encode(fn: approveFunc)
+
+        let transferFunc = EthereumAbiFunction(name: "transfer")
+        transferFunc.addParamAddress(val: Data(hexString: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")!, isOutput: false)
+        transferFunc.addParamUInt256(val: Data(hexString: "8AC7230489E80000")!, isOutput: false)
+        let transferCall = EthereumAbi.encode(fn: transferFunc)
+
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "56")!
+            $0.nonce = Data(hexString: "03")!
+            $0.txMode = .userOp
+            $0.gasLimit = Data(hexString: "015A61")!
+            $0.maxFeePerGas = Data(hexString: "02540BE400")!
+            $0.maxInclusionFeePerGas = Data(hexString: "02540BE400")!
+            $0.toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
+            $0.privateKey = Data(hexString: "3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483")!
+
+            $0.userOperation = EthereumUserOperation.with {
+                $0.verificationGasLimit = Data(hexString: "07F7C4")!
+                $0.preVerificationGas = Data(hexString: "DAFC")!
+                $0.entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"
+                $0.sender = "0x1e6c542ebc7c960c6a155a9094db838cef842cf5"
+            }
+
+            $0.transaction = EthereumTransaction.with {
+                $0.batch = EthereumTransaction.Batch.with {
+                    $0.calls = [
+                        EthereumTransaction.Batch.BatchedCall.with {
+                            $0.address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
+                            $0.amount = Data(hexString: "00")!
+                            $0.payload = approveCall
+                        },
+                        EthereumTransaction.Batch.BatchedCall.with {
+                            $0.address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
+                            $0.amount = Data(hexString: "00")!
+                            $0.payload = transferCall
+                        }
+                    ]
+                }
+            }
+        }
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
+        XCTAssertEqual(output.preHash.hexString, "9839e9e194c7043a1704c21361c026c8449ada3fe357dc21b02652027b789af9")
+        XCTAssertEqual(String(data: output.encoded, encoding: .utf8), "{\"callData\":\"0x47e1da2a000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000200000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b126600000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b12660000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e8000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"88673\",\"initCode\":\"0x\",\"maxFeePerGas\":\"10000000000\",\"maxPriorityFeePerGas\":\"10000000000\",\"nonce\":\"3\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"56060\",\"sender\":\"0x1e6c542ebc7c960c6a155a9094db838cef842cf5\",\"signature\":\"0x7ebf1a027c2ff80c5132d9afc79d924442b7b61c8bfeb486a5563ffb090df11e260bfb795e6edab904f78ccbddcc741b96a61f6aa544d945b75a9eba6a92ce491c\",\"verificationGasLimit\":\"522180\"}")
+    }
+
     let factory = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800"
     let diamondCutFacet = "0x312382b3B302bDcC0711fe710314BE298426296f"
     let accountFacet = "0x84E684272903737d807375197f9a581FEa094Bc3"

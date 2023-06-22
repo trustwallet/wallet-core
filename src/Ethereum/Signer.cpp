@@ -359,15 +359,12 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
             std::vector<Data> addresses;
             std::vector<uint256_t> amounts;
             std::vector<Data> payloads;
-            for (size_t i=0; i < input.transaction().batch().addresses().size(); i++) {
-                addresses.push_back(Data(input.transaction().batch().addresses()[i].begin(), input.transaction().batch().addresses()[i].end()));
+            for (int i=0; i < input.transaction().batch().calls().size(); i++) {
+                addresses.push_back(addressStringToData(input.transaction().batch().calls()[i].address()));
+                amounts.push_back(load(input.transaction().batch().calls()[i].amount()));
+                payloads.push_back(Data(input.transaction().batch().calls()[i].payload().begin(), input.transaction().batch().calls()[i].payload().end()));
             }
-            for (size_t i=0; i < input.transaction().batch().amounts().size(); i++) {
-                amounts.push_back(load(input.transaction().batch().amounts()[i]));
-            }
-            for (size_t i=0; i < input.transaction().batch().payloads().size(); i++) {
-                payloads.push_back(Data(input.transaction().batch().payloads()[i].begin(), input.transaction().batch().payloads()[i].end()));
-            }
+
             return UserOperation::buildBatch(
                 entryPointAddress,
                 senderAddress,

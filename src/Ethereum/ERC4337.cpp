@@ -29,17 +29,17 @@ Data getERC4337ExecuteBytecode(const Data& toAddress, const uint256_t& value, co
 }
 
 // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol#L65
-Data getERC4337ExecuteBatchBytecode(const std::vector<Data>& toAddresses, const std::vector<uint256_t>& values, const std::vector<Data>& payloads) {
+Data getERC4337ExecuteBatchBytecode(const std::vector<Data>& toAddresses, const std::vector<uint256_t>& amounts, const std::vector<Data>& payloads) {
     auto addressesParam = ABI::ParamArray();
     for (size_t i=0; i< toAddresses.size(); i++) {
         addressesParam.addParam(std::make_shared<ABI::ParamAddress>(toAddresses[i]));
     }
     auto valuesParam = ABI::ParamArray();
-    for (size_t i=0; i< toAddresses.size(); i++) {
-        valuesParam.addParam(std::make_shared<ABI::ParamUInt256>(values[i]));
+    for (size_t i=0; i< amounts.size(); i++) {
+        valuesParam.addParam(std::make_shared<ABI::ParamUInt256>(amounts[i]));
     }
     auto payloadsParam = ABI::ParamArray();
-    for (size_t i=0; i< toAddresses.size(); i++) {
+    for (size_t i=0; i< payloads.size(); i++) {
         payloadsParam.addParam(std::make_shared<ABI::ParamByteArray>(payloads[i]));
     }
     auto executeFunc = ABI::Function("executeBatch", ParamCollection{
