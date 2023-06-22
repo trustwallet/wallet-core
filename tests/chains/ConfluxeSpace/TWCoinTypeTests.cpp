@@ -24,7 +24,7 @@ TEST(TWConfluxeSpaceCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "cfxevm");
-    assertStringsEqual(name, "ConfluxeSpace");
+    assertStringsEqual(name, "Conflux eSpace");
     assertStringsEqual(symbol, "CFX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
