@@ -184,13 +184,13 @@ class TestBarz {
                         Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
-                            payload = ByteString.copyFrom(approveCall.toHexByteArray())
-                        },
+                            payload = ByteString.copyFrom(approveCall)
+                        }.build(),
                         Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
-                            payload = ByteString.copyFrom(transferCall.toHexByteArray())
-                        }
+                            payload = ByteString.copyFrom(transferCall)
+                        }.build()
                     ))
                 }.build()
             }.build()
