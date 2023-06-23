@@ -93,8 +93,8 @@ message Balance {
     oneof message_oneof {
         Transfer transfer = 1;
         BatchTransfer batchTransfer = 2;
-        AssetTransfer assetTransfer = 3;
-        BatchAssetTransfer batchAssetTransfer = 4;
+        AssetTransfer asset_transfer = 3;
+        BatchAssetTransfer batch_asset_transfer = 4;
     }
 }
 

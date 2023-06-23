@@ -26,6 +26,9 @@ static const std::string stakingNominate = "Staking.nominate";
 static const std::string stakingChill = "Staking.chill";
 static const std::string stakingReBond = "Staking.rebond";
 
+// Non-existent modules and methods on Polkadot and Kusama chains:
+static const std::string assetsTransfer = "Assets.transfer";
+
 // Readable decoded call index can be found from https://polkascan.io
 const static std::map<const std::string, Data> polkadotCallIndices = {
     {balanceTransfer, Data{0x05, 0x00}},
@@ -56,10 +59,10 @@ static Data getCallIndex(const Proto::CallIndices& callIndices, uint32_t network
     if (callIndices.has_custom()) {
         return encodeCallIndex(callIndices.custom().module_index(), callIndices.custom().method_index());
     }
-    if (network == static_cast<uint32_t>(TWSS58AddressTypePolkadot)) {
+    if (network == static_cast<uint32_t>(TWSS58AddressTypePolkadot) && polkadotCallIndices.contains(key)) {
         return polkadotCallIndices.at(key);
     }
-    if (network == TWSS58AddressTypeKusama) {
+    if (network == static_cast<uint32_t>(TWSS58AddressTypeKusama) && kusamaCallIndices.contains(key)) {
         return kusamaCallIndices.at(key);
     }
     throw std::invalid_argument("'call_indices' is not set");
@@ -109,6 +112,16 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
             calls.push_back(itemData);
         }
         data = encodeBatchCall(balance.batchtransfer().call_indices(), calls);
+    } else if (balance.has_asset_transfer()) {
+        data = encodeAssetTransfer(balance.asset_transfer());
+    } else if (balance.has_batch_asset_transfer()) {
+        // init call array
+        auto calls = std::vector<Data>();
+        for (const auto& transfer : balance.batch_asset_transfer().transfers()) {
+            // put into calls array
+            calls.push_back(encodeAssetTransfer(transfer));
+        }
+        data = encodeBatchCall(balance.batch_asset_transfer().call_indices(), calls);
     }
 
     return data;
@@ -135,6 +148,27 @@ Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer) const {
         }
         append(data, TW::data(memo));
     }
+
+    return data;
+}
+
+Data Extrinsic::encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer) const {
+    Data data;
+
+    auto address = SS58Address(transfer.to_address(), network);
+    auto value = load(transfer.value());
+
+    // call index
+    append(data, getCallIndex(transfer.call_indices(), network, assetsTransfer));
+    // asset id
+    if (transfer.asset_id() > 0) {
+        // For native token transfer, should ignore asset id
+        append(data, Polkadot::encodeCompact(transfer.asset_id()));
+    }
+    // destination
+    append(data, Polkadot::encodeAccountId(address.keyBytes(), encodeRawAccount()));
+    // value
+    append(data, Polkadot::encodeCompact(value));
 
     return data;
 }
@@ -276,6 +310,10 @@ Data Extrinsic::encodePayload() const {
     append(data, call);
     // era / nonce / tip
     append(data, encodeEraNonceTip());
+    // fee asset id
+    if (!feeAssetId.empty()) {
+        append(data, feeAssetId);
+    }
     // specVersion
     encode32LE(specVersion, data);
     // transactionVersion
@@ -299,11 +337,43 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     append(data, signature);
     // era / nonce / tip
     append(data, encodeEraNonceTip());
+    // fee asset id
+    if (!feeAssetId.empty()) {
+        append(data, feeAssetId);
+    }
     // call
     append(data, call);
     // append length
     encodeLengthPrefix(data);
     return data;
+}
+
+Data Extrinsic::encodeFeeAssetId(const Proto::SigningInput& input) {
+    if (!input.has_balance_call()) {
+        return {};
+    }
+
+    uint32_t rawFeeAssetId {0};
+    if (input.balance_call().has_asset_transfer()) {
+        rawFeeAssetId = input.balance_call().asset_transfer().fee_asset_id();
+    } else if (input.balance_call().has_batch_asset_transfer()) {
+        rawFeeAssetId = input.balance_call().batch_asset_transfer().fee_asset_id();
+    } else {
+        return {};
+    }
+
+    Data feeAssetId;
+    if (rawFeeAssetId > 0) {
+        feeAssetId.push_back(0x01);
+        Data feeEncoding;
+        encode32LE(rawFeeAssetId, feeEncoding);
+        append(feeAssetId, feeEncoding);
+    } else {
+        // use native token
+        feeAssetId.push_back(0x00);
+    }
+
+    return feeAssetId;
 }
 
 } // namespace TW::Polkadot

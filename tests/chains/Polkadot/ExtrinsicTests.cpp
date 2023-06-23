@@ -78,68 +78,85 @@ TEST(PolkadotExtrinsic, Polymesh_encodeTransferWithMemo) {
 //     EXPECT_EQ(hex(result), "07050b13000000000000");
 // }
 
-// TEST(PolkadotExtrinsic, Statemint_encodeAssetTransfer) {
-//     // tx on mainnet
-//     // https://statemint.subscan.io/extrinsic/2619512-2
-//
-//     Polkadot::Proto::SigningInput input;
-//     input.set_network(0);
-//     input.set_multi_address(true);
-//
-//     auto* transfer = input.mutable_balance_call()->mutable_assettransfer();
-//     transfer->set_to_address("14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD");
-//     auto* callIndices = transfer->mutable_call_indices()->mutable_custom();
-//     callIndices->set_module_index(0x32);
-//     callIndices->set_method_index(0x05);
-//
-//     auto value = store(999500000);
-//     transfer->set_value(std::string(value.begin(), value.end()));
-//     transfer->set_asset_id(1984);
-//
-//     auto result = Polkadot::Extrinsic(input).encodeCall(input);
-//     // clang-format off
-//     EXPECT_EQ(hex(result), "3205"
-//                            "011f"
-//                            "00"
-//                            "a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d"
-//                            "82a34cee");
-//     // clang-format on
-// }
+TEST(PolkadotExtrinsic, Statemint_encodeAssetTransfer) {
+    // tx on mainnet
+    // https://statemint.subscan.io/extrinsic/2619512-2
 
-// TEST(PolkadotExtrinsic, Statemint_encodeBatchAssetTransfer) {
-//     // tx on mainnet
-//     // https://statemint.subscan.io/extrinsic/2571849-2
-//
-//     Polkadot::Proto::SigningInput input;
-//     input.set_network(0);
-//     input.set_multi_address(true);
-//
-//     auto* transfer = input.mutable_balance_call()->mutable_batchassettransfer();
-//     auto* batchCallIndices = transfer->mutable_call_indices()->mutable_custom();
-//     batchCallIndices->set_module_index(0x28);
-//     batchCallIndices->set_method_index(0x00);
-//     transfer->set_fee_asset_id(0x00);
-//
-//     auto* t = transfer->add_transfers();
-//     t->set_to_address("13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy");
-//     auto value = store(808081);
-//     t->set_value(std::string(value.begin(), value.end()));
-//     t->set_asset_id(1984);
-//
-//     auto* transferCallIndices = t->mutable_call_indices()->mutable_custom();
-//     transferCallIndices->set_module_index(0x32);
-//     transferCallIndices->set_method_index(0x06);
-//
-//     auto result = Polkadot::Extrinsic(input).encodeCall(input);
-//     // clang-format off
-//     EXPECT_EQ(hex(result), "2800"
-//                            "04"
-//                            "3206"
-//                            "011f"
-//                            "00"
-//                            "81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91"
-//                            "46523100");
-//     // clang-format on
-// }
+    Polkadot::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+
+    auto* transfer = input.mutable_balance_call()->mutable_asset_transfer();
+    transfer->set_to_address("14ixj163bkk2UEKLEXsEWosuFNuijpqEWZbX5JzN4yMHbUVD");
+    auto* callIndices = transfer->mutable_call_indices()->mutable_custom();
+    callIndices->set_module_index(0x32);
+    callIndices->set_method_index(0x05);
+
+    auto value = store(999500000);
+    transfer->set_value(std::string(value.begin(), value.end()));
+    transfer->set_asset_id(1984);
+
+    auto result = Polkadot::Extrinsic(input).encodeCall(input);
+    // clang-format off
+    EXPECT_EQ(hex(result), "3205"
+                           "011f"
+                           "00"
+                           "a4b558a0342ae6e379a7ed00d23ff505f1101646cb279844496ad608943eda0d"
+                           "82a34cee");
+    // clang-format on
+}
+
+TEST(PolkadotExtrinsic, Statemint_encodeBatchAssetTransfer) {
+    // tx on mainnet
+    // https://statemint.subscan.io/extrinsic/2571849-2
+
+    Polkadot::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+
+    auto* transfer = input.mutable_balance_call()->mutable_batch_asset_transfer();
+    auto* batchCallIndices = transfer->mutable_call_indices()->mutable_custom();
+    batchCallIndices->set_module_index(0x28);
+    batchCallIndices->set_method_index(0x00);
+    transfer->set_fee_asset_id(0x00);
+
+    auto* t = transfer->add_transfers();
+    t->set_to_address("13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy");
+    auto value = store(808081);
+    t->set_value(std::string(value.begin(), value.end()));
+    t->set_asset_id(1984);
+
+    auto* transferCallIndices = t->mutable_call_indices()->mutable_custom();
+    transferCallIndices->set_module_index(0x32);
+    transferCallIndices->set_method_index(0x06);
+
+    auto result = Polkadot::Extrinsic(input).encodeCall(input);
+    // clang-format off
+    EXPECT_EQ(hex(result), "2800"
+                           "04"
+                           "3206"
+                           "011f"
+                           "00"
+                           "81f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c91"
+                           "46523100");
+    // clang-format on
+}
+
+TEST(PolkadotExtrinsic, Kusama_encodeAssetTransferNoCallIndices) {
+    Polkadot::Proto::SigningInput input;
+    input.set_network(0);
+    input.set_multi_address(true);
+
+    auto* transfer = input.mutable_balance_call()->mutable_batch_asset_transfer();
+    transfer->set_fee_asset_id(0x00);
+
+    auto* t = transfer->add_transfers();
+    t->set_to_address("13wQDQTMM6E9g5WD27e6UsWWTwHLaW763FQxnkbVaoKmsBQy");
+    auto value = store(808081);
+    t->set_value(std::string(value.begin(), value.end()));
+    t->set_asset_id(1984);
+
+    EXPECT_THROW(Polkadot::Extrinsic(input).encodeCall(input), std::invalid_argument);
+}
 
 } // namespace TW::Polkadot::tests

@@ -124,7 +124,6 @@ TEST(SubstrateSigner, encodeTransaction_JoinIdentityAsKey) {
     ASSERT_EQ(hex(encoded), "c5018400d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d061054007f5adbb2749e2f0ace29b409c41dd717681495b1f22dc5358311646a9fb8af8a173fc47f1b19748fb56831c2128773e2976986685adee83c741ab49934d80006750000000705bb53000000000000");
 }
 
-// TODO asset_transfer
 TEST(SubstrateSigner, Statemint_encodeTransaction_transfer) {
     // tx on mainnet
     // https://statemint.subscan.io/extrinsic/2686030-2
@@ -156,7 +155,6 @@ TEST(SubstrateSigner, Statemint_encodeTransaction_transfer) {
     ASSERT_EQ(hex(encoded), "4102840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100e0ae36a5ceaaa7ff53fadfecc8a285a436b15e39c43ea09e8897f34fa3fe55133028eb7d8a9ea2cd42ff1c786e945cd47a02243454ecb39c81acc3409d96f903000000003205011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
-// TODO asset_transfer
 TEST(SubstrateSigner, Statemint_encodeTransaction_transfer_keep_alive) {
     // tx on mainnet
     // https://statemint.subscan.io/extrinsic/2686081-2
@@ -192,7 +190,6 @@ TEST(SubstrateSigner, Statemint_encodeTransaction_transfer_keep_alive) {
     ASSERT_EQ(hex(encoded), "4502840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c910068c40526bd9e56e340bfc9385ea463afce34e5c49be75b5946974d9ef6a357f90842036cd1b811b60882ae7183aa23545ef5825aafc8aaa6274d71a03414dc0a85020800003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
-// TODO batch_asset_transfer
 TEST(SubstrateSigner, Statemint_encodeTransaction_batch_transfer_keep_alive) {
     // tx on mainnet
     // https://statemint.subscan.io/extrinsic/2711054-2
@@ -240,7 +237,6 @@ TEST(SubstrateSigner, Statemint_encodeTransaction_batch_transfer_keep_alive) {
     ASSERT_EQ(hex(encoded), "f502840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100e1d541271965858ff2ba1a1296f0b4d28c8cbcaddf0ea06a9866869caeca3d16eff1265591d11b46d66882493079fde9e425cd941f166260135e9d81f7daf60c85020c00002800083206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a06003206011f0050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
-// TODO asset_transfer
 TEST(SubstrateSigner, Statemint_encodeTransaction_dot_transfer_keep_alive) {
     // tx on mainnet
     // https://statemint.subscan.io/extrinsic/2789245-2
@@ -272,7 +268,6 @@ TEST(SubstrateSigner, Statemint_encodeTransaction_dot_transfer_keep_alive) {
     ASSERT_EQ(hex(encoded), "3902840081f5dd1432e5dd60aa71819e1141ad5e54d6f4277d7d128030154114444b8c9100c4f7cb46605986ff6dd1a192736feddd8ae468a10b1b458eadfa855ed6b59ad442a96c18e7109ad594d11ba2fd52920545f8a450234e9b03ee3e8f59a8f06f00001c00000a030050e47b3c8aef60bc4fc744d8d979cb0eb2d45fa25c2e9da74e1e5ebd9e117518821a0600");
 }
 
-// TODO asset_transfer
 TEST(SubstrateSigner, Statemint_encodeTransaction_usdt_transfer_keep_alive) {
     // tx on mainnet
     // https://statemint.subscan.io/extrinsic/2789377-2

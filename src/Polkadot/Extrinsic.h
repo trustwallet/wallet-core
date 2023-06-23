@@ -35,6 +35,8 @@ class Extrinsic {
     // enable multi-address
     // TODO ask De-Fi team how to determine when to set this true.
     bool multiAddress;
+    // fee asset id
+    Data feeAssetId;
 
     explicit Extrinsic(const Proto::SigningInput& input)
         : blockHash(input.block_hash().begin(), input.block_hash().end())
@@ -51,6 +53,9 @@ class Extrinsic {
           // immortal era
           era = encodeCompact(0);
         }
+        // keep fee asset id encoding which will be used in encodePayload & encodeSignature.
+        // see: https://github.com/paritytech/substrate/blob/d1221692968b8bc62d6eab9d10cb6b5bf38c5dc2/frame/transaction-payment/asset-tx-payment/src/lib.rs#L152
+        feeAssetId = encodeFeeAssetId(input);
         call = encodeCall(input);
     }
 
@@ -64,9 +69,12 @@ class Extrinsic {
     bool encodeRawAccount() const;
     Data encodeBalanceCall(const Proto::Balance& balance) const;
     Data encodeTransfer(const Proto::Balance::Transfer& transfer) const;
+    Data encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer) const;
     Data encodeStakingCall(const Proto::Staking& staking) const;
     Data encodeBatchCall(const Proto::CallIndices& batchCallIndices, const std::vector<Data>& calls) const;
     Data encodeEraNonceTip() const;
+
+    static Data encodeFeeAssetId(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Polkadot
