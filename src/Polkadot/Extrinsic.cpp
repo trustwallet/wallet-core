@@ -28,6 +28,8 @@ static const std::string stakingReBond = "Staking.rebond";
 
 // Non-existent modules and methods on Polkadot and Kusama chains:
 static const std::string assetsTransfer = "Assets.transfer";
+static const std::string joinIdentityAsKey = "Identity.join_identity_as_key";
+static const std::string identityAddAuthorization = "Identity.add_authorization";
 
 // Readable decoded call index can be found from https://polkascan.io
 const static std::map<const std::string, Data> polkadotCallIndices = {
@@ -95,6 +97,8 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) const {
         data = encodeBalanceCall(input.balance_call());
     } else if (input.has_staking_call()) {
         data = encodeStakingCall(input.staking_call());
+    } else if (input.has_polymesh_call()) {
+        data = encodePolymeshCall(input.polymesh_call());
     }
     return data;
 }
@@ -301,6 +305,86 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
     default:
         break;
     }
+    return data;
+}
+
+Data Extrinsic::encodePolymeshCall(const Proto::PolymeshCall& polymesh) const {
+    Data data;
+
+    if (polymesh.has_identity_call()) {
+        const auto& identity = polymesh.identity_call();
+        if (identity.has_join_identity_as_key()) {
+            data = encodeIdentityJoinIdentityAsKey(identity.join_identity_as_key());
+        } else if (identity.has_add_authorization()) {
+            data = encodeIdentityAddAuthorization(identity.add_authorization());
+        }
+    }
+
+    return data;
+}
+
+Data Extrinsic::encodeIdentityJoinIdentityAsKey(const Proto::Identity::JoinIdentityAsKey& joinIdentity) const {
+    Data data;
+
+    // call index
+    append(data, getCallIndex(joinIdentity.call_indices(), network, joinIdentityAsKey));
+
+    // data
+    encode64LE(joinIdentity.auth_id(), data);
+
+    return data;
+}
+
+Data Extrinsic::encodeIdentityAddAuthorization(const Proto::Identity::AddAuthorization & addAuthorization) const {
+    Data data;
+
+    // call index
+    append(data, getCallIndex(addAuthorization.call_indices(), network, identityAddAuthorization));
+
+    // target
+    append(data, 0x01);
+    SS58Address address(addAuthorization.target(), network);
+    append(data, Polkadot::encodeAccountId(address.keyBytes(), true));
+
+    // join identity
+    append(data, 0x05);
+
+    if (addAuthorization.has_data()) {
+        const auto& authData = addAuthorization.data();
+
+        // asset
+        if (authData.has_asset()) {
+            append(data, 0x01);
+            append(data, TW::data(authData.asset().data()));
+        } else {
+            append(data, 0x00);
+        }
+
+        // extrinsic
+        if (authData.has_extrinsic()) {
+            append(data, 0x01);
+            append(data, TW::data(authData.extrinsic().data()));
+        } else {
+            append(data, 0x00);
+        }
+
+        // portfolio
+        if (authData.has_portfolio()) {
+            append(data, 0x01);
+            append(data, TW::data(authData.portfolio().data()));
+        } else {
+            append(data, 0x00);
+        }
+    } else {
+        // authorize all permissions
+        append(data, {0x01, 0x00}); // asset
+        append(data, {0x01, 0x00}); // extrinsic
+        append(data, {0x01, 0x00}); // portfolio
+    }
+
+    // expiry
+    append(data, encodeCompact(addAuthorization.expiry()));
+
     return data;
 }
 

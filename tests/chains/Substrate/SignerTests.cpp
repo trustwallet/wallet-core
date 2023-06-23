@@ -62,7 +62,6 @@ TEST(SubstrateSigner, encodeTransaction) {
     ASSERT_EQ(hex(encoded), "bd0284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee000791ee378775eaff34ef7e529ab742f0d81d281fdf20ace0aa765ca484f5909c4eea0a59c8dbbc534c832704924b424ba3230c38acd0ad5360cef023ca2a420f25010400050100849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f8302093d00014d454d4f20504144444544205749544820535041434553000000000000000000");
 }
 
-// TODO authorization_call
 TEST(SubstrateSigner, encodeTransaction_Add_authorization) {
     // tx on mainnet
     // https://polymesh.subscan.io/extrinsic/0x7d9b9109027b36b72d37ba0648cb70e5254524d3d6752cc6b41601f4bdfb1af0
@@ -93,7 +92,6 @@ TEST(SubstrateSigner, encodeTransaction_Add_authorization) {
     ASSERT_EQ(hex(encoded), "490284004322cf71da08f9d56181a707af7c0c437dfcb93e6caac9825a5aba57548142ee0081e6561e4391862b5da961d7033baced1c4b25f0e27f938b02321af1118e0b859e1c2bd5607576a258f2c2befbc5f397ea4adb62938f30eb73c8060ab0eabf01b5031400070d01d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d0610540501000100010000");
 }
 
-// TODO join_identity_as_key
 TEST(SubstrateSigner, encodeTransaction_JoinIdentityAsKey) {
     // tx on mainnet
     // https://polymesh.subscan.io/extrinsic/0x9d7297d8b38af5668861996cb115f321ed681989e87024fda64eae748c2dc542

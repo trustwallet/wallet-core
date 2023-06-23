@@ -71,6 +71,9 @@ class Extrinsic {
     Data encodeTransfer(const Proto::Balance::Transfer& transfer) const;
     Data encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer) const;
     Data encodeStakingCall(const Proto::Staking& staking) const;
+    Data encodePolymeshCall(const Proto::PolymeshCall& polymesh) const;
+    Data encodeIdentityJoinIdentityAsKey(const Proto::Identity::JoinIdentityAsKey& joinIdentityAsKey) const;
+    Data encodeIdentityAddAuthorization(const Proto::Identity::AddAuthorization& addAuthorization) const;
     Data encodeBatchCall(const Proto::CallIndices& batchCallIndices, const std::vector<Data>& calls) const;
     Data encodeEraNonceTip() const;
 
