@@ -31,21 +31,21 @@ Data getERC4337ExecuteBytecode(const Data& toAddress, const uint256_t& value, co
 // https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol#L65
 Data getERC4337ExecuteBatchBytecode(const std::vector<Data>& toAddresses, const std::vector<uint256_t>& amounts, const std::vector<Data>& payloads) {
     auto addressesParam = ABI::ParamArray();
-    for (size_t i=0; i< toAddresses.size(); i++) {
-        addressesParam.addParam(std::make_shared<ABI::ParamAddress>(toAddresses[i]));
+    for (const auto& toAddress: toAddresses) {
+        addressesParam.addParam(std::make_shared<ABI::ParamAddress>(toAddress));
     }
     auto valuesParam = ABI::ParamArray();
-    for (size_t i=0; i< amounts.size(); i++) {
-        valuesParam.addParam(std::make_shared<ABI::ParamUInt256>(amounts[i]));
+    for (const auto& amount: amounts) {
+        valuesParam.addParam(std::make_shared<ABI::ParamUInt256>(amount));
     }
     auto payloadsParam = ABI::ParamArray();
-    for (size_t i=0; i< payloads.size(); i++) {
-        payloadsParam.addParam(std::make_shared<ABI::ParamByteArray>(payloads[i]));
+    for (const auto& payload: payloads) {
+        payloadsParam.addParam(std::make_shared<ABI::ParamByteArray>(payload));
     }
     auto executeFunc = ABI::Function("executeBatch", ParamCollection{
-                                                    std::make_shared<ABI::ParamArray>(addressesParam),
-                                                         std::make_shared<ABI::ParamArray>(valuesParam),
-                                                         std::make_shared<ABI::ParamArray>(payloadsParam)});
+                                                            std::make_shared<ABI::ParamArray>(addressesParam),
+                                                            std::make_shared<ABI::ParamArray>(valuesParam),
+                                                            std::make_shared<ABI::ParamArray>(payloadsParam)});
     Data executeFuncEncoded;
     executeFunc.encode(executeFuncEncoded);
     return executeFuncEncoded;
