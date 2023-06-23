@@ -135,7 +135,6 @@ class BarzTests: XCTestCase {
             $0.gasLimit = Data(hexString: "015A61")!
             $0.maxFeePerGas = Data(hexString: "02540BE400")!
             $0.maxInclusionFeePerGas = Data(hexString: "02540BE400")!
-            $0.toAddress = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"
             $0.privateKey = Data(hexString: "3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483")!
 
             $0.userOperation = EthereumUserOperation.with {

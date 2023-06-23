@@ -146,4 +146,50 @@ class TestBarz {
 
         assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"2500000\",\"initCode\":\"0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000005034534efe9902779ed6ea6983f435c00f3bc51000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f00000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x1392ae041bfbdbaa0cff9234a0c8f64df97b7218\",\"signature\":\"0xbf1b68323974e71ad9bd6dfdac07dc062599d150615419bb7876740d2bcf3c8909aa7e627bb0e08a2eab930e2e7313247c9b683c884236dd6ea0b6834fb2cb0a1b\",\"verificationGasLimit\":\"3000000\"}")
     }
+
+    // https://testnet.bscscan.com/tx/0x872f709815a9f79623a349f2f16d93b52c4d5136967bab53a586f045edbe9203
+    @Test
+    fun testSignR1BatchedTransferAccountDeployed() {
+
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x61".toHexByteArray())
+            nonce = ByteString.copyFrom("0x03".toHexByteArray())
+            txMode = TransactionMode.UserOp
+
+            gasLimit = ByteString.copyFrom("0x015A61".toHexByteArray())
+            maxFeePerGas = ByteString.copyFrom("0x02540BE400".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x02540BE400".toHexByteArray())
+
+            userOperation = Ethereum.UserOperation.newBuilder().apply {
+                entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"
+                sender = "0x1e6c542ebc7c960c6a155a9094db838cef842cf5"
+                preVerificationGas = ByteString.copyFrom("0xDAFC".toHexByteArray())
+                verificationGasLimit = ByteString.copyFrom("0x07F7C4".toHexByteArray())
+            }.build()
+
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                batch = Ethereum.Transaction.Batch.newBuilder().apply {
+                    calls = [
+                        Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
+                            address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
+                            amount = ByteString.copyFrom("0x00".toHexByteArray())
+                            payload = ByteString.copyFrom("0x00".toHexByteArray())
+                        },
+                        Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
+                            address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
+                            amount = ByteString.copyFrom("0x00".toHexByteArray())
+                            payload = ByteString.copyFrom("0x00".toHexByteArray())
+                        }
+                    ]
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(Numeric.toHexString(output.preHash.toByteArray()), "0x84d0464f5a2b191e06295443970ecdcd2d18f565d0d52b5a79443192153770ab");
+        assertEquals(output.encoded.toStringUtf8(), "{\"callData\":\"0x47e1da2a000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000200000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b126600000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b12660000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e8000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"88673\",\"initCode\":\"0x\",\"maxFeePerGas\":\"10000000000\",\"maxPriorityFeePerGas\":\"10000000000\",\"nonce\":\"3\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"56060\",\"sender\":\"0x1e6c542ebc7c960c6a155a9094db838cef842cf5\",\"signature\":\"0x0747b665fe9f3a52407f95a35ac3e76de37c9b89483ae440431244e89a77985f47df712c7364c1a299a5ef62d0b79a2cf4ed63d01772275dd61f72bd1ad5afce1c\",\"verificationGasLimit\":\"522180\"}")
+    }
 }
