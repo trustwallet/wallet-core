@@ -150,6 +150,15 @@ class TestBarz {
     // https://testnet.bscscan.com/tx/0x872f709815a9f79623a349f2f16d93b52c4d5136967bab53a586f045edbe9203
     @Test
     fun testSignR1BatchedTransferAccountDeployed() {
+        val approveFunc = EthereumAbiFunction("approve")
+        approveFunc.addParamAddress("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789".toHexByteArray(), false)
+        approveFunc.addParamUInt256("0x8AC7230489E80000".toHexByteArray(), false)
+        val approveCall = EthereumAbi.encode(approveFunc)
+
+        val transferFunc = EthereumAbiFunction("transfer")
+        transferFunc.addParamAddress("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789".toHexByteArray(), false)
+        transferFunc.addParamUInt256("0x8AC7230489E80000".toHexByteArray(), false)
+        val transferCall = EthereumAbi.encode(transferFunc)
 
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
@@ -171,18 +180,17 @@ class TestBarz {
 
             transaction = Ethereum.Transaction.newBuilder().apply {
                 batch = Ethereum.Transaction.Batch.newBuilder().apply {
-                    calls = [
+                    calls =
                         Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
-                            payload = ByteString.copyFrom("0x00".toHexByteArray())
+                            payload = approveCall
                         },
                         Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
-                            payload = ByteString.copyFrom("0x00".toHexByteArray())
+                            payload = transferCall
                         }
-                    ]
                 }.build()
             }.build()
         }
