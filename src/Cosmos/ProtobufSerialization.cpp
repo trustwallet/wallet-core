@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <future>
-
 #include "ProtobufSerialization.h"
 #include "JsonSerialization.h"
 #include "../proto/Cosmos.pb.h"
@@ -318,13 +316,14 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) {
     return txBody.SerializeAsString();
 }
 
-std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin, const Data& publicKeyData) {
+std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
     if (input.messages_size() >= 1 && input.messages(0).has_sign_direct_message()) {
         return input.messages(0).sign_direct_message().auth_info_bytes();
     }
 
     // AuthInfo
-    const PublicKey publicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
+    const auto privateKey = PrivateKey(input.private_key());
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto authInfo = cosmos::AuthInfo();
     auto* signerInfo = authInfo.add_signer_infos();
 
@@ -362,7 +361,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin, con
     return authInfo.SerializeAsString();
 }
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin, const std::function<Data(Data)> externalSigner) {
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin) {
     // SignDoc Preimage
     auto signDoc = cosmos::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
@@ -383,15 +382,8 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
         }
     }
 
-    auto signedHash = Data();
-    if(externalSigner) {
-        std::future<Data> signedHashFuture = std::async(externalSigner, hashToSign);
-        signedHash = signedHashFuture.get();
-    } else {
-        const auto privateKey = PrivateKey(input.private_key());
-        signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
-    }
-    
+    const auto privateKey = PrivateKey(input.private_key());
+    auto signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
     return signature;
 }

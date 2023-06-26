@@ -18,9 +18,9 @@ namespace TW::Cosmos::Protobuf {
 
 std::string buildProtoTxBody(const Proto::SigningInput& input);
 
-std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin, const Data& publicKeyData);
+std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin);
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin, const std::function<Data(Data)> externalSigner);
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin);
 
 std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
 
