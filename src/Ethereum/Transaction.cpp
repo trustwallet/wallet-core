@@ -290,6 +290,25 @@ UserOperation::buildNativeTransfer(const Data& entryPointAddress, const Data& se
 }
 
 UserOperationPtr
+UserOperation::buildBatch(const Data& entryPointAddress, const Data& senderAddress,
+                          const std::vector<Data>& toAddresses, const std::vector<uint256_t>& amounts, const uint256_t& nonce,
+                          const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                          const Data paymasterAndData, const Data& initCode, const std::vector<Data>& payloads) {
+    return std::make_shared<UserOperation>(
+        entryPointAddress,
+        senderAddress,
+        nonce,
+        initCode,
+        gasLimit,
+        verificationGasLimit,
+        maxFeePerGas,
+        maxInclusionFeePerGas,
+        preVerificationGas,
+        Ethereum::getERC4337ExecuteBatchBytecode(toAddresses, amounts, payloads),
+        paymasterAndData);
+}
+
+UserOperationPtr
 UserOperation::buildERC20Transfer(const Data& entryPointAddress, const Data& senderAddress,
                                   const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
                                   const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
