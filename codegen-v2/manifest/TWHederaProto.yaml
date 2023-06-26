@@ -1,0 +1,8 @@
+name: TWHederaProto
+protos:
+- TW_Hedera_Proto_Timestamp
+- TW_Hedera_Proto_TransactionID
+- TW_Hedera_Proto_TransferMessage
+- TW_Hedera_Proto_TransactionBody
+- TW_Hedera_Proto_SigningInput
+- TW_Hedera_Proto_SigningOutput

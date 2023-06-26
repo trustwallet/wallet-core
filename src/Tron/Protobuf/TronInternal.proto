@@ -17,6 +17,11 @@ message Transaction {
             WithdrawBalanceContract = 13;
             UnfreezeAssetContract = 14;
             TriggerSmartContract = 31;
+            FreezeBalanceV2Contract = 54;
+            UnfreezeBalanceV2Contract = 55;
+            WithdrawExpireUnfreezeContract = 56;
+            DelegateResourceContract = 57;
+            UnDelegateResourceContract = 58;
         }
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
@@ -78,11 +83,42 @@ message FreezeBalanceContract {
     bytes receiver_address = 15;
 }
 
+message FreezeBalanceV2Contract {
+    bytes owner_address = 1;
+    int64 frozen_balance = 2;
+    ResourceCode resource = 3;
+}
+
 message UnfreezeBalanceContract {
     bytes owner_address = 1;
 
     ResourceCode resource = 10;
     bytes receiver_address = 15;
+}
+
+message UnfreezeBalanceV2Contract {
+    bytes owner_address = 1;
+    int64 unfreeze_balance = 2;
+    ResourceCode resource = 3;
+}
+
+message WithdrawExpireUnfreezeContract {
+    bytes owner_address = 1;
+}
+
+message DelegateResourceContract {
+    bytes owner_address = 1;
+    ResourceCode resource = 2;
+    int64 balance = 3;
+    bytes receiver_address = 4;
+    bool  lock = 5;
+}
+
+message UnDelegateResourceContract {
+    bytes owner_address = 1;
+    ResourceCode resource = 2;
+    int64 balance = 3;
+    bytes receiver_address = 4;
 }
 
 message UnfreezeAssetContract {

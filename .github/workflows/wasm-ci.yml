@@ -1,0 +1,60 @@
+name: Wasm CI
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install system dependencies
+      run: |
+        tools/install-sys-dependencies-linux
+        tools/install-rust-dependencies
+    - name: Install emsdk
+      run: tools/install-wasm-dependencies
+
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v3
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
+    - name: Install internal dependencies
+      run: tools/install-dependencies
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+
+    - name: Code generation
+      run: |
+        source emsdk/emsdk_env.sh
+        tools/generate-files wasm
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+
+    - name: Build for Wasm
+      run: |
+        source emsdk/emsdk_env.sh
+        tools/wasm-build
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+
+    - name: Test
+      run: |
+        npm install && npm run build-and-test
+      working-directory: wasm

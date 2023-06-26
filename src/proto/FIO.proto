@@ -147,6 +147,9 @@ message SigningInput {
 
     // Context-specific action data
     Action action = 5;
+
+    // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+    string owner_public_key = 6;
 }
 
 // Result containing the signed and encoded transaction.
@@ -156,4 +159,7 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

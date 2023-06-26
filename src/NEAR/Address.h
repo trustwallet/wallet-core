@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,8 +16,10 @@ namespace TW::NEAR {
 
 class Address {
 public:
-    /// Number of bytes in an address, public key size
+    /// Number of bytes in an address, public key size.
     static const size_t size = PublicKey::ed25519Size;
+    /// Number of bytes of a checksum in a legacy address.
+    static const size_t legacyChecksumSize = 4;
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.

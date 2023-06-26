@@ -1,0 +1,60 @@
+<%= render('kotlin/package.erb') %>
+
+<% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
+<% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
+<% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+<%  if constructors.one? -%>
+<%  if constructors.first.return_type.is_nullable -%>
+expect class <%= entity.name %> @Throws(IllegalArgumentException::class) constructor(
+<%  else -%>
+expect class <%= entity.name %>(
+<%  end -%>
+<%- constructors.first.parameters.each do |parameter| -%>
+    <%= KotlinHelper.parameters([parameter]) %>,
+<%- end -%>
+) {
+<%- else -%>
+expect class <%= entity.name %> {
+<%# Constructors -%>
+<%- constructors.each do |constructor| -%>
+
+<%  if constructor.return_type.is_nullable -%>
+    @Throws(IllegalArgumentException::class)
+<%  end -%>
+    constructor(<%= KotlinHelper.parameters(constructor.parameters) %>)
+<%- end -%>
+<%  end -%>
+<%# Property declarations -%>
+<%  if entity.properties.any? -%>
+
+<%  end -%>
+<%  entity.properties.each do |property| -%>
+    val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+<%  end -%>
+<%# Method declarations -%>
+<%  if methods.any? -%>
+
+<%  end -%>
+<%  methods.each do |method| -%>
+    fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%  end -%>
+<%  if entity.static_properties.any? || static_methods.any? -%>
+
+    companion object {
+<%# Static property declarations -%>
+<%  if entity.static_properties.any? -%>
+
+<%  end -%>
+<%  entity.static_properties.each do |property| -%>
+        val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+<% end -%>
+<%# Static method declarations -%>
+<%  if static_methods.any? -%>
+
+<%  end -%>
+<%  static_methods.each do |method| -%>
+        fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%  end -%>
+    }
+<%  end -%>
+}

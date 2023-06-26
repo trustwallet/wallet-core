@@ -1,0 +1,116 @@
+name: TWTransactionCompiler
+structs:
+- name: TWTransactionCompiler
+  is_public: true
+  is_class: false
+functions:
+- name: TWTransactionCompilerBuildInput
+  is_public: true
+  is_static: true
+  params:
+  - name: coinType
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: from
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: to
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: amount
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: asset
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: memo
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: chainId
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWTransactionCompilerPreImageHashes
+  is_public: true
+  is_static: true
+  params:
+  - name: coinType
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: txInputData
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWTransactionCompilerCompileWithSignatures
+  is_public: true
+  is_static: true
+  params:
+  - name: coinType
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: txInputData
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: signatures
+    type:
+      variant: struct
+      value: TWDataVector
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: publicKeys
+    type:
+      variant: struct
+      value: TWDataVector
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

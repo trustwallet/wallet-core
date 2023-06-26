@@ -1,0 +1,102 @@
+name: Linux SampleApps CI
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install system dependencies
+      run: |
+        tools/install-sys-dependencies-linux
+        tools/install-rust-dependencies
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v3
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+    - name: Code generation
+      run: |
+        tools/generate-files native
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: CMake
+      run: |
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build
+      run: |
+        make -Cbuild -j12 TrustWalletCore
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+        CK_TIMEOUT_MULTIPLIER: 4
+    - name: Build and run C++ sample app
+      run: |
+        cd samples/cpp
+        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug
+        make
+        ./sample
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build, run, and test devconsole.ts
+      run: |
+        cd samples/typescript/devconsole.ts
+        npm install
+        npm run build
+        echo -e "help() \n .exit" | npm run start
+        npm run test
+    - name: Install Go
+      env:
+        GO_VERSION: 1.19
+        GO_ARCH: amd64
+      run: |
+        curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        sudo chown -R root:root ./go
+        sudo mv -v go /usr/local
+    - name: Build and run GoLang sample app
+      run: |
+        cd samples/go
+        go version
+        go build -o main
+        ./main
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build Golang dev console
+      run: |
+        cd samples/go/dev-console
+        ./prepare.sh
+        cd cmd && go build -o ../tw_dev_console && cd -
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build and run Rust sample app
+      run: |
+        cd samples/rust
+        rustc --version
+        cargo build
+        cargo run

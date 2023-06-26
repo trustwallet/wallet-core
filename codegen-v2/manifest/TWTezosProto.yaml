@@ -1,0 +1,14 @@
+name: TWTezosProto
+protos:
+- TW_Tezos_Proto_SigningInput
+- TW_Tezos_Proto_SigningOutput
+- TW_Tezos_Proto_OperationList
+- TW_Tezos_Proto_Operation
+- TW_Tezos_Proto_FA12Parameters
+- TW_Tezos_Proto_Txs
+- TW_Tezos_Proto_TxObject
+- TW_Tezos_Proto_FA2Parameters
+- TW_Tezos_Proto_OperationParameters
+- TW_Tezos_Proto_TransactionOperationData
+- TW_Tezos_Proto_RevealOperationData
+- TW_Tezos_Proto_DelegationOperationData

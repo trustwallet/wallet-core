@@ -7,22 +7,12 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWData.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_STRUCT
 struct TWEthereum;
-
-/// EIP-1014: Skinny CREATE2 (guess smart contract create2 address)
-///
-/// \param fromEthAddress valid eth address
-/// \param salt always 32 bytes stack item
-/// \param initCodeHash The init_code is the code that, when executed, produces the runtime bytecode that will be placed into the state, and which typically is used by high level languages to implement a ‘constructor’. Need to be provided hashed with keccak256
-/// \return Ethereum resulting address
-TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWEthereumEip1014AddressCreate2(TWString* _Nonnull fromEthAddress, TWData* _Nonnull salt, TWData* _Nonnull initCodeHash);
 
 /// Generate a layer 2 eip2645 derivation path from eth address, layer, application and given index.
 ///
@@ -35,12 +25,4 @@ TWString* _Nonnull TWEthereumEip1014AddressCreate2(TWString* _Nonnull fromEthAdd
 TW_EXPORT_STATIC_METHOD
 TWString* _Nonnull TWEthereumEip2645GetPath(TWString* _Nonnull ethAddress, TWString* _Nonnull layer,  TWString* _Nonnull application,  TWString* _Nonnull index);
 
-/// Generates a deployment address for a ERC-4337 compatible smart contract wallet
-///
-/// \param factoryAddress non-null address of the account factory
-/// \param logicAddress non-null address of the wallet's logic smart contract
-/// \param ownerAddress  non-null address of the signing key that controls the smart contract wallet
-/// \return Ethereum resulting address
-TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWEthereumEip4337GetDeploymentAddress(TWString* _Nonnull factoryAddress, TWString* _Nonnull logicAddress, TWString* _Nonnull ownerAddress);
 TW_EXTERN_C_END

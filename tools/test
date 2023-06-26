@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Perform full build and runs the tests.
+# Prerequisite: workspace with dependencies installed, see bootstrap.sh
+
+# Fail if any commands fails
+set -e
+
+make -Cbuild -j12 tests
+
+echo "#### Running unit tests... ####"
+FILTER="*"
+if [ -n "$1" ]; then
+    FILTER="*$1*"
+fi
+build/tests/tests --gtest_filter="$FILTER"

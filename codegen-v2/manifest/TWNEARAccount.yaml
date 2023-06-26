@@ -1,0 +1,26 @@
+name: TWNEARAccount
+structs:
+- name: TWNEARAccount
+  is_public: true
+  is_class: true
+inits:
+- name: TWNEARAccountCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWNEARAccountDelete
+properties:
+- name: TWNEARAccountDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

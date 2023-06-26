@@ -1,0 +1,13 @@
+name: TWStellarPassphrase
+enums:
+- name: TWStellarPassphrase
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: stellar
+    value: 0
+    as_string: Public Global Stellar Network ; September 2015
+  - name: kin
+    value: 1
+    as_string: Kin Mainnet ; December 2018

@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -88,13 +88,13 @@ TEST(EthereumSigner, SignERC20Transfer) {
 
 TEST(EthereumSigner, EIP1559_1442) {
     const auto transaction = TransactionEip1559::buildNativeTransfer(
-        6, // nonce
-        2000000000, // maxInclusionFeePerGas
-        3000000000, // maxFeePerGas
-        21100, // gasLimit
-        parse_hex("B9F5771C27664bF2282D98E09D7F50cEc7cB01a7"),
-        543210987654321, // amount
-        Data() // data
+        /* nonce: */ 6,
+        /* maxInclusionFeePerGas */ 2000000000,
+        /* maxFeePerGas */ 3000000000,
+        /* gasLimit */ 21100,
+        /* toAddress */ parse_hex("B9F5771C27664bF2282D98E09D7F50cEc7cB01a7"),
+        /* amount */ 543210987654321,
+        /* data */ Data()
     );
 
     const uint256_t chainID = 3;
@@ -107,6 +107,60 @@ TEST(EthereumSigner, EIP1559_1442) {
     const auto encoded = transaction->encoded(signature, chainID);
     // https://ropsten.etherscan.io/tx/0x14429509307efebfdaa05227d84c147450d168c68539351fbc01ed87c916ab2e
     EXPECT_EQ(hex(encoded), "02f8710306847735940084b2d05e0082526c94b9f5771c27664bf2282d98e09d7f50cec7cb01a78701ee0c29f50cb180c080a092c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c64a06487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e58");
+}
+
+TEST(EthereumSigner, SignatureBreakdownNoEip155) {
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto signature = Signer::sign(key, hash, false, 5);
+
+    const auto r = store(signature.r);
+    EXPECT_EQ(hex(r), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47");
+
+    const auto v = store(signature.v);
+    EXPECT_EQ(hex(v), "00");
+
+    const auto s = store(signature.s);
+    EXPECT_EQ(hex(s), "786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a");
+
+    const auto converted = Signer::simpleStructToSignatureData(signature);
+    EXPECT_EQ(hex(converted), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a00");
+}
+
+TEST(EthereumSigner, SignatureBreakdownEip155Legacy) {
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto signature = Signer::sign(key, hash, true, 0);
+
+    const auto r = store(signature.r);
+    EXPECT_EQ(hex(r), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47");
+
+    const auto v = store(signature.v);
+    EXPECT_EQ(hex(v), "1b");
+
+    const auto s = store(signature.s);
+    EXPECT_EQ(hex(s), "786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a");
+
+    const auto converted = Signer::simpleStructToSignatureData(signature);
+    EXPECT_EQ(hex(converted), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a1b");
+}
+
+TEST(EthereumSigner, SignatureBreakdownEip155) {
+    const auto key = PrivateKey(parse_hex("f9fb27c90dcaa5631f373330eeef62ae7931587a19bd8215d0c2addf28e439c8"));
+    const auto hash = parse_hex("0xf86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
+    const auto signature = Signer::sign(key, hash, true, 1);
+
+    const auto r = store(signature.r);
+    EXPECT_EQ(hex(r), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47");
+
+    const auto v = store(signature.v);
+    EXPECT_EQ(hex(v), "25");
+
+    const auto s = store(signature.s);
+    EXPECT_EQ(hex(s), "786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a");
+
+    const auto converted = Signer::simpleStructToSignatureData(signature);
+    EXPECT_EQ(hex(converted), "d93fc9ae934d4f72db91cb149e7e84b50ca83b5a8a7b873b0fdb009546e3af47786bfaf31af61eea6471dbb1bec7d94f73fb90887e4f04d0e9b85676c47ab02a25");
 }
 
 } // namespace TW::Ethereum

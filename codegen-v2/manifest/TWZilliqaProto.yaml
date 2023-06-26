@@ -1,0 +1,5 @@
+name: TWZilliqaProto
+protos:
+- TW_Zilliqa_Proto_Transaction
+- TW_Zilliqa_Proto_SigningInput
+- TW_Zilliqa_Proto_SigningOutput

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -136,6 +136,7 @@ enum OpCode {
    OP_NOP3 [[maybe_unused]] = OP_CHECKSEQUENCEVERIFY,
    OP_NOP4 [[maybe_unused]] = 0xb3,
    OP_NOP5 [[maybe_unused]] = 0xb4,
+   OP_CHECKBLOCKATHEIGHT = OP_NOP5,
    OP_NOP6 [[maybe_unused]] = 0xb5,
    OP_NOP7 [[maybe_unused]] = 0xb6,
    OP_NOP8 [[maybe_unused]] = 0xb7,

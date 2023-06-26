@@ -1,0 +1,4 @@
+name: TWAeternityProto
+protos:
+- TW_Aeternity_Proto_SigningInput
+- TW_Aeternity_Proto_SigningOutput

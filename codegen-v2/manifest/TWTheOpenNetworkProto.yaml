@@ -1,0 +1,5 @@
+name: TWTheOpenNetworkProto
+protos:
+- TW_TheOpenNetwork_Proto_Transfer
+- TW_TheOpenNetwork_Proto_SigningInput
+- TW_TheOpenNetwork_Proto_SigningOutput

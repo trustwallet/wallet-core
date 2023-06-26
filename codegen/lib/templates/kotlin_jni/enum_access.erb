@@ -1,0 +1,6 @@
+<% param = locals[:param] -%>
+<% name = param.name -%>
+<% type = param.type -%>
+    jclass <%= name %>Class = (*env)->GetObjectClass(env, <%= name %>);
+    jmethodID <%= name %>ValueMethodID = (*env)->GetMethodID(env, <%= name %>Class, "value", "()I");
+    jint <%= name %>Value = (*env)->CallIntMethod(env, <%= name %>, <%= name %>ValueMethodID);

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,12 +27,18 @@ class TransactionInput {
     /// before inclusion into a block.
     uint32_t sequence = std::numeric_limits<uint32_t>::max();
 
-    int64_t valueIn;
-    uint32_t blockHeight;
+    int64_t valueIn = 0;
+    uint32_t blockHeight = 0;
     uint32_t blockIndex = std::numeric_limits<uint32_t>::max();
 
     /// Computational Script for confirming transaction authorization.
     Bitcoin::Script script;
+
+    TransactionInput() = default;
+    /// Initializes a transaction input with a previous output, a script and a
+    /// sequence number.
+    TransactionInput(OutPoint previousOutput, Bitcoin::Script script, uint32_t sequence)
+        : previousOutput(std::move(previousOutput)), sequence(sequence), script(std::move(script)) {}
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;

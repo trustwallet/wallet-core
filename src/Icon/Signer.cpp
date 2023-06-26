@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -54,6 +54,10 @@ std::string Signer::preImage() const noexcept {
         txHash += "." + key + "." + value;
     }
     return txHash;
+}
+
+TW::Data Signer::hashImage(const Data& image) const {
+    return Hash::sha3_256(image);
 }
 
 std::string Signer::encode(const Data& signature) const noexcept {

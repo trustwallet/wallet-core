@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -193,6 +193,16 @@ struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessPubkeyHash(TWDa
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWData* _Nonnull scriptHash);
 
+/// Builds the Ordinals inscripton for BRC20 transfer.
+///
+/// \param ticker ticker of the brc20
+/// \param amount uint64 transfer amount
+/// \param pubkey Non-null pointer to a pubkey
+/// \note Must be deleted with \TWBitcoinScriptDelete
+/// \return A pointer to the built script
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* _Nonnull ticker, TWString* _Nonnull amount, TWData* _Nonnull pubkey);
+
 /// Builds a appropriate lock script for the given address..
 ///
 /// \param address Non-null pointer to an address
@@ -201,6 +211,10 @@ struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWDa
 /// \return A pointer to the built script
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript* _Nonnull TWBitcoinScriptLockScriptForAddress(TWString* _Nonnull address, enum TWCoinType coin);
+
+/// Builds a appropriate lock script for the given address with replay.
+TW_EXPORT_STATIC_METHOD
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddressReplay(TWString *_Nonnull address, enum TWCoinType coin, TWData *_Nonnull blockHash, int64_t blockHeight);
 
 /// Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
 ///

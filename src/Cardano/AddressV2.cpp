@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,7 +15,7 @@ namespace TW::Cardano {
 
 bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
     // Decode Bas58, decode payload + crc, decode root, attr
-    Data base58decoded = Base58::bitcoin.decode(addr);
+    Data base58decoded = Base58::decode(addr);
     if (base58decoded.empty()) {
         throw std::invalid_argument("Invalid address: could not Base58 decode");
     }
@@ -40,7 +40,7 @@ bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& att
     }
     root_out = payloadElems[0].getBytes();
     attrs_out = payloadElems[1].encoded(); // map, but encoded as bytes
-    type_out = (TW::byte)payloadElems[2].getValue();
+    type_out = (byte)payloadElems[2].getValue();
     return true;
 }
 
@@ -100,7 +100,7 @@ Data AddressV2::getCborData() const {
 
 std::string AddressV2::string() const {
     // Base58 encode the CBOR data
-    return Base58::bitcoin.encode(getCborData());
+    return Base58::encode(getCborData());
 }
 
 Data AddressV2::keyHash(const TW::Data& xpub) {

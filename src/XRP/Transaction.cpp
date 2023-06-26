@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -82,7 +82,6 @@ Data Transaction::serialize() const {
         encodeType(FieldType::vl, 3, data);
         encodeBytes(pub_key, data);
     }
-
     /// "txnSignature"
     if (!signature.empty()) {
         encodeType(FieldType::vl, 4, data);

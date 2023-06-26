@@ -11,8 +11,8 @@
     "codegen:js-browser": "pbjs -t static-module '../src/proto/*.proto' -w closure --no-delimited --force-long -o ../samples/wasm/core_proto.js",
     "codegen:ts": "pbts -o generated/core_proto.d.ts generated/core_proto.js",
     "clean": "rm -rf dist generated && mkdir -p dist/generated generated",
-    "build": "npm run clean && npm run generate && cp -R generated lib dist && tsc && cp src/wallet-core.d.ts dist/src",
-    "build-and-test": "npm run copy:wasm && npm run build && npm test",
+    "build": "npm run copy:wasm && npm run clean && npm run generate && cp -R generated lib dist && tsc && cp src/wallet-core.d.ts dist/src",
+    "build-and-test": "npm run build && npm test",
     "copy:wasm": "mkdir -p lib && cp ../wasm-build/wasm/wallet-core.* lib",
     "copy:wasm-sample": "cp ../wasm-build/wasm/wallet-core.* ../samples/wasm/"
   },

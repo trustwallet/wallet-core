@@ -1,0 +1,5 @@
+name: TWVeChainProto
+protos:
+- TW_VeChain_Proto_Clause
+- TW_VeChain_Proto_SigningInput
+- TW_VeChain_Proto_SigningOutput

@@ -1,0 +1,70 @@
+name: Linux CI Rust
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      checks: write
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: |
+          tools/install-sys-dependencies-linux
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+
+      - name: Install Rust dependencies
+        run: |
+          tools/install-rust-dependencies dev
+
+      - name: Check code formatting
+        run: |
+          cargo fmt --check
+        working-directory: rust
+
+      - name: Check Clippy warnings
+        run: |
+          cargo clippy -- -D warnings
+        working-directory: rust
+
+      - name: Run tests
+        run: |
+          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
+        working-directory: rust
+
+      - name: Rust Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        continue-on-error: true
+        with:
+          name: Rust Tests
+          path: |
+            rust/target/nextest/ci/junit.xml
+          reporter: java-junit
+
+      - name: Gather and check Rust code coverage
+        run: |
+          tools/check-coverage rust/coverage.stats rust/coverage.info

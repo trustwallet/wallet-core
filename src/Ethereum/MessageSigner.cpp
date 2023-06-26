@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,14 +11,6 @@
 #include <sstream>
 
 namespace TW::Ethereum::internal {
-
-Data generateMessage(const std::string& message) {
-    std::string prefix(1, MessageSigner::EthereumPrefix);
-    std::stringstream ss;
-    ss << prefix << MessageSigner::MessagePrefix << std::to_string(message.size()) << message;
-    Data signableMessage = Hash::keccak256(data(ss.str()));
-    return signableMessage;
-}
 
 std::string commonSign(const PrivateKey& privateKey, const Data& signableMessage, MessageType msgType, TW::Ethereum::MessageSigner::MaybeChainId chainId) {
     auto data = privateKey.sign(signableMessage, TWCurveSECP256k1);
@@ -40,8 +32,16 @@ std::string commonSign(const PrivateKey& privateKey, const Data& signableMessage
 
 namespace TW::Ethereum {
 
+Data MessageSigner::generateMessage(const std::string& message) {
+    std::string prefix(1, MessageSigner::EthereumPrefix);
+    std::stringstream ss;
+    ss << prefix << MessageSigner::MessagePrefix << std::to_string(message.size()) << message;
+    Data signableMessage = Hash::keccak256(data(ss.str()));
+    return signableMessage;
+}
+
 std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message, MessageType msgType, MaybeChainId chainId) {
-    auto signableMessage = internal::generateMessage(message);
+    auto signableMessage = generateMessage(message);
     return internal::commonSign(privateKey, signableMessage, msgType, chainId);
 }
 
@@ -59,7 +59,7 @@ std::string MessageSigner::signTypedData(const PrivateKey& privateKey, const std
 }
 
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {
-    Data msg = internal::generateMessage(message);
+    Data msg = generateMessage(message);
     //! If it's json && EIP712Domain then we hash the struct
     if (nlohmann::json::accept(message)) {
         auto json = nlohmann::json::parse(message);

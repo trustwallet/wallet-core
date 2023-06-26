@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -301,6 +301,12 @@ TEST(RLP, parseVarInt) {
     EXPECT_THROW(RLP::parseVarInt(4, parse_hex("0102"), 0), std::invalid_argument);               // too short
     EXPECT_THROW(RLP::parseVarInt(4, parse_hex("01020304"), 2), std::invalid_argument);           // too short
     EXPECT_THROW(RLP::parseVarInt(2, parse_hex("0002"), 0), std::invalid_argument);               // starts with 0
+}
+
+TEST(RLP, decodeLenOverflow) {
+    EXPECT_THROW(RLP::decode(parse_hex("c9bffffffffffffffff7")), std::invalid_argument); // String length overflow (64 bit)
+    EXPECT_THROW(RLP::decode(parse_hex("c7fbfffffffbc17f")), std::invalid_argument); // List length overflow (32 bit)
+    EXPECT_THROW(RLP::decode(parse_hex("cbfffffffffffffffff7c17f")), std::invalid_argument); // List length overflow (64 bit)
 }
 
 } // namespace TW::Ethereum::tests

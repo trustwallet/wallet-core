@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -52,6 +52,11 @@ TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivat
 
 TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey) {
     const auto string = TW::deriveAddress(coin, publicKey->impl);
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
+TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKeyAndDerivation(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey, enum TWDerivation derivation) {
+    const auto string = TW::deriveAddress(coin, publicKey->impl, derivation);
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

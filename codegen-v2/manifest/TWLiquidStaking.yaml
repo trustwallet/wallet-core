@@ -1,0 +1,21 @@
+name: TWLiquidStaking
+structs:
+- name: TWLiquidStaking
+  is_public: true
+  is_class: false
+functions:
+- name: TWLiquidStakingBuildRequest
+  is_public: true
+  is_static: true
+  params:
+  - name: input
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

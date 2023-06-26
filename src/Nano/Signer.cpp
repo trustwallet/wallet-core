@@ -1,5 +1,5 @@
 // Copyright © 2019 Mart Roosmaa.
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -170,6 +170,42 @@ Proto::SigningOutput Signer::build() const {
         {"balance", input.balance()},
         {"link", hex(link)},
         {"link_as_account", Address(PublicKey(Data(link.begin(), link.end()), TWPublicKeyTypeED25519Blake2b)).string()},
+        {"signature", hex(signature)},
+    };
+
+    if (input.work().size() > 0) {
+        json["work"] = input.work();
+    }
+
+    output.set_json(json.dump());
+    return output;
+}
+
+Data Signer::buildUnsignedTxBytes(const Proto::SigningInput& input) {
+    const auto pubKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeED25519Blake2b);
+    auto block = hashBlockData(pubKey, input);
+    return Data(block.begin(), block.end());
+}
+
+Proto::SigningOutput Signer::buildSigningOutput(const Proto::SigningInput& input, const Data& signature) {
+    auto output = Proto::SigningOutput();
+    const auto pubKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeED25519Blake2b);
+    auto block = hashBlockData(pubKey, input);
+    output.set_signature(signature.data(), signature.size());
+    output.set_block_hash(block.data(), block.size());
+
+    auto prev = previousFromInput(input);
+    auto li = linkFromInput(input);
+
+    // build json
+    json json = {
+        {"type", "state"},
+        {"account", Address(pubKey).string()},
+        {"previous", hex(prev)},
+        {"representative", Address(input.representative()).string()},
+        {"balance", input.balance()},
+        {"link", hex(li)},
+        {"link_as_account", Address(PublicKey(Data(li.begin(), li.end()), TWPublicKeyTypeED25519Blake2b)).string()},
         {"signature", hex(signature)},
     };
 

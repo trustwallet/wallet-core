@@ -1,0 +1,1213 @@
+name: TWEthereumAbiFunction
+structs:
+- name: TWEthereumAbiFunction
+  is_public: true
+  is_class: true
+inits:
+- name: TWEthereumAbiFunctionCreateWithString
+  is_public: true
+  is_nullable: false
+  params:
+  - name: name
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWEthereumAbiFunctionDelete
+functions:
+- name: TWEthereumAbiFunctionGetType
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiFunctionAddParamUInt8
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: u_int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamUInt16
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: u_int16_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamUInt32
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamUInt64
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: u_int64_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamUInt256
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamUIntN
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: bits
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamInt8
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamInt16
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: int16_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamInt32
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamInt64
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: int64_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamInt256
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamIntN
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: bits
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamBool
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamString
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamAddress
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamBytes
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamBytesFix
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: size
+    type:
+      variant: size_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddParamArray
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionGetParamUInt8
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: idx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: u_int8_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionGetParamUInt64
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: idx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: u_int64_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionGetParamUInt256
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: idx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiFunctionGetParamBool
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: idx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionGetParamString
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: idx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiFunctionGetParamAddress
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: idx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: isOutput
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiFunctionAddInArrayParamUInt8
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: u_int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamUInt16
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: u_int16_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamUInt32
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamUInt64
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: u_int64_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamUInt256
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamUIntN
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: bits
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamInt8
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: int8_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamInt16
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: int16_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamInt32
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamInt64
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: int64_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamInt256
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamIntN
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: bits
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamBool
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamString
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamAddress
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamBytes
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiFunctionAddInArrayParamBytesFix
+  is_public: true
+  is_static: false
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: arrayIdx
+    type:
+      variant: int
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: size
+    type:
+      variant: size_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: val
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: int
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

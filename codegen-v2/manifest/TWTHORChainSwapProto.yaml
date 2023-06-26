@@ -1,0 +1,6 @@
+name: TWTHORChainSwapProto
+protos:
+- TW_THORChainSwap_Proto_Error
+- TW_THORChainSwap_Proto_Asset
+- TW_THORChainSwap_Proto_SwapInput
+- TW_THORChainSwap_Proto_SwapOutput

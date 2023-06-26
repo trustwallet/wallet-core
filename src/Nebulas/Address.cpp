@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,11 +8,12 @@
 #include "../Base58.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include <cstring>
 
 namespace TW::Nebulas {
 
 bool Address::isValid(const std::string& string) {
-    auto data = Base58::bitcoin.decode(string);
+    auto data = Base58::decode(string);
     if (data.size() != (size_t)Address::size) {
         return false;
     }
@@ -27,7 +28,7 @@ bool Address::isValid(const std::string& string) {
     Data content(data.begin(), data.begin() + 22);
     Data checksum(data.begin() + 22, data.end());
     auto dataSha3 = Hash::sha3_256(content);
-    return ::memcmp(dataSha3.data(), checksum.data(), 4) == 0;
+    return std::memcmp(dataSha3.data(), checksum.data(), 4) == 0;
 }
 
 Address::Address(const std::string& string) {
@@ -35,7 +36,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    auto data = Base58::bitcoin.decode(string);
+    auto data = Base58::decode(string);
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
@@ -60,7 +61,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return Base58::encode(bytes);
 }
 
 } // namespace TW::Nebulas

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#
+# This script processes captured test code coverage information of the Rust part,
+# generates HTML report (if html argument is given),
+# and compares current value to previously saved value (stored in coverage.stats).
+#
+# To generate coverage info:
+# - install cargo-llvm-cov binary
+#   cargo install cargo-llvm-cov
+# - run unit tests ang generate coverage info (slow). Optionally generate report in HTML format:
+#   ./tools/rust-coverage html
+
+# Fail if any commands fails
+set -e
+
+pushd rust
+
+# Generate HTML report if requested
+if [[ "$1" == "html" ]]; then
+    cargo llvm-cov test --html
+    cargo llvm-cov report --lcov --output-path coverage.info
+else
+    cargo llvm-cov test --lcov --output-path coverage.info
+fi
+
+popd
+
+tools/check-coverage rust/coverage.stats rust/coverage.info

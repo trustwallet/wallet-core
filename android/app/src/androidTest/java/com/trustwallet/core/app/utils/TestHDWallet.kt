@@ -144,6 +144,9 @@ class TestHDWallet {
 
         val address2 = wallet.getAddressDerivation(coin, Derivation.BITCOINLEGACY)
         assertEquals(address2, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")
+
+        val address3 = wallet.getAddressDerivation(coin, Derivation.BITCOINTESTNET)
+        assertEquals(address3, "tb1qwgpxgwn33z3ke9s7q65l976pseh4edrzfmyvl0")
     }
 
     @Test

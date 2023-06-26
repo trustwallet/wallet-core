@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,6 +43,23 @@ TEST(OntologyAddress, fromMultiPubKeys) {
     uint8_t m = 2;
     auto multiAddress = Address(m, pubKeys);
     EXPECT_EQ("AYGWgijVZnrUa2tRoCcydsHUXR1111DgdW", multiAddress.string());
+}
+
+TEST(OntologyAddress, fromBytes) {
+    auto address = Address(
+        PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"), TWPublicKeyTypeSECP256k1));
+    EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address.string());
+
+    std::vector<uint8_t> v(20);
+
+    for (auto i = 0ul; i < address._data.size(); ++i) {
+        v[i] = address._data[i];
+    }
+    auto address2 = Address(v);
+    EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address2.string());
+
+    v.pop_back();
+    EXPECT_ANY_THROW(new Address(v));
 }
 
 } // namespace TW::Ontology::tests

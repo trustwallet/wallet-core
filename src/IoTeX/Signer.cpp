@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -39,8 +39,29 @@ Proto::SigningOutput Signer::build() const {
     return output;
 }
 
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature,
+                                     const TW::PublicKey& pubKey) noexcept {
+    auto signer = Signer(input);
+    auto signedAction = Proto::Action();
+    signedAction.mutable_core()->MergeFrom(signer.action);
+
+    signedAction.set_senderpubkey(pubKey.bytes.data(), pubKey.bytes.size());
+    signedAction.set_signature(signature.data(), signature.size());
+    // build output
+    auto output = Proto::SigningOutput();
+    auto serialized = signedAction.SerializeAsString();
+    output.set_encoded(serialized);
+    auto h = Hash::keccak256(serialized);
+    output.set_hash(h.data(), h.size());
+    return output;
+}
+
 Data Signer::hash() const {
     return Hash::keccak256(action.SerializeAsString());
+}
+
+std::string Signer::signaturePreimage() const {
+    return action.SerializeAsString();
 }
 
 void Signer::toActionCore() {

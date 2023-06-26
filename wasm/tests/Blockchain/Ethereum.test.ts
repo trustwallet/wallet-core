@@ -99,7 +99,7 @@ describe("Ethereum", () => {
   });
 
   it("test signing personal message", () => {
-    const { HexCoding, Hash, PrivateKey, Curve } = globalThis.core;;
+    const { HexCoding, Hash, PrivateKey, Curve } = globalThis.core;
     const message = Buffer.from("Some data");
     const prefix = Buffer.from("\x19Ethereum Signed Message:\n" + message.length);
     const hash = Hash.keccak256(Buffer.concat([prefix, message]));

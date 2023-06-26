@@ -1,0 +1,29 @@
+name: TWStarkWare
+structs:
+- name: TWStarkWare
+  is_public: true
+  is_class: false
+functions:
+- name: TWStarkWareGetStarkKeyFromSignature
+  is_public: true
+  is_static: true
+  params:
+  - name: derivationPath
+    type:
+      variant: struct
+      value: TWDerivationPath
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: signature
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPrivateKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true

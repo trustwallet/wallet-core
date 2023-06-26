@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -40,6 +40,8 @@ class Transaction {
 
     std::vector<SigData> sigVec;
 
+    Transaction() = default;
+    
     Transaction(uint8_t ver, uint8_t type, uint32_t nonce, uint64_t gasPrice, uint64_t gasLimit,
                 std::string payer, std::vector<uint8_t> payload)
         : version(ver)

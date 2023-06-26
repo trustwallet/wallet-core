@@ -1,0 +1,14 @@
+<%= render('kotlin/package.erb') %>
+
+@JsModule("@trustwallet/wallet-core")
+@JsName("<%= entity.name %>")
+external interface Js<%= entity.name %> {
+<%# Static method declarations -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') -%>
+    fun <%= KotlinHelper.fix_name(WasmCppHelper.function_name(entity: entity, function: method)) %>(<%= KotlinHelper.js_parameters(method.parameters) %>)<%= KotlinHelper.js_return_type(method.return_type) %>
+<%  end -%>
+}
+
+inline val JsWalletCore.<%= entity.name %>: Js<%= entity.name %>
+    get() = asDynamic().<%= entity.name %>.unsafeCast<Js<%= entity.name %>>()

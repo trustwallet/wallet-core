@@ -67,7 +67,7 @@ class TerraTests: XCTestCase {
         }
         """
         XCTAssertJSONEqual(expectedJSON, output.serialized)
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 
     func testSignWasmTransferTx() {
@@ -115,7 +115,7 @@ class TerraTests: XCTestCase {
         }
         """
         )
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 
     func testSignStakeTx() throws {
@@ -161,7 +161,7 @@ class TerraTests: XCTestCase {
 
         // https://finder.terra.money/mainnet/tx/4441c65f24783b8f59b20b1b80ee43f1f4f6ff827597d87b6bbc94982b45be0c
         XCTAssertJSONEqual(output.serialized, expected)
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 
     func testSignClaimRewards() throws {
@@ -211,7 +211,7 @@ class TerraTests: XCTestCase {
 
         // https://finder.terra.money/mainnet/tx/0e62170ed5407992251d7e161f23c3467e1bea54c7f601953953bdabc7f0c30c
         XCTAssertJSONEqual(output.serialized, expected)
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 
 }

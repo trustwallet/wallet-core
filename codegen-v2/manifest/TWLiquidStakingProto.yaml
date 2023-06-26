@@ -1,0 +1,9 @@
+name: TWLiquidStakingProto
+protos:
+- TW_LiquidStaking_Proto_Status
+- TW_LiquidStaking_Proto_Asset
+- TW_LiquidStaking_Proto_Stake
+- TW_LiquidStaking_Proto_Unstake
+- TW_LiquidStaking_Proto_Withdraw
+- TW_LiquidStaking_Proto_Input
+- TW_LiquidStaking_Proto_Output

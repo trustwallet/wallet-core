@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,7 +21,8 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-
+    /// Build the compile output
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature) noexcept;
   public:
     static constexpr auto SignatureSuffix = "K1";
     static constexpr auto SignaturePrefix = "SIG_K1_";

@@ -498,7 +498,7 @@ class TerraClassicTests: XCTestCase {
 }
 """
         )
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 
     func testSigningWasmTerraGenericProtobuf() {
@@ -547,7 +547,7 @@ class TerraClassicTests: XCTestCase {
     }
     """
             )
-            XCTAssertEqual(output.error, "")
+            XCTAssertEqual(output.errorMessage, "")
         }
 
         func testSigningWasmTerraGenericWithCoins() {
@@ -600,6 +600,6 @@ class TerraClassicTests: XCTestCase {
     }
     """
             )
-            XCTAssertEqual(output.error, "")
+            XCTAssertEqual(output.errorMessage, "")
         }
     }

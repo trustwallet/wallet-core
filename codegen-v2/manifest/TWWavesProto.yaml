@@ -1,0 +1,7 @@
+name: TWWavesProto
+protos:
+- TW_Waves_Proto_TransferMessage
+- TW_Waves_Proto_LeaseMessage
+- TW_Waves_Proto_CancelLeaseMessage
+- TW_Waves_Proto_SigningInput
+- TW_Waves_Proto_SigningOutput

@@ -1,0 +1,9 @@
+<%
+  method = locals[:method]
+  if method.static
+    parameters = 'jclass thisClass' + KotlinJniHelper.parameters(method.parameters)
+  else
+    parameters = 'jobject thisObject' + KotlinJniHelper.parameters(method.parameters.drop(1))
+  end
+-%>
+<%= KotlinJniHelper.type(method.return_type) %> JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, <%= parameters %>)<% -%>

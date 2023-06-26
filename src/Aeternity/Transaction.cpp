@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -34,7 +34,7 @@ TW::Data Transaction::buildTag(const std::string& address) {
 
     auto data = Data();
     append(data, Identifiers::iDTagAccount);
-    append(data, Base58::bitcoin.decodeCheck(payload));
+    append(data, Base58::decodeCheck(payload));
 
     return data;
 }

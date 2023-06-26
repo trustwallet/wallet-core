@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,6 +30,8 @@ class Transaction {
     uint256_t v = uint256_t();
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
+
+    Transaction() = default;
 
     Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, uint256_t fromShardID,
                 uint256_t toShardID, Address to, uint256_t amount, const Data& payload)

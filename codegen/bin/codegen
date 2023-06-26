@@ -22,6 +22,7 @@ options.jni_h = true
 options.jni_c = true
 options.wasm_cpp = true
 options.ts_declaration = true
+options.kotlin = true
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'
@@ -49,6 +50,9 @@ OptionParser.new do |opts|
   end
   opts.on('-t', '--typescript-declaration', "Generate typescript declaration file Default: #{options.ts_declaration}") do |v|
     options.ts_declaration = v
+  end
+  opts.on('-k', '--kotlin', "Generate Kotlin code. Default: #{options.kotlin}") do |v|
+    options.kotlin = v
   end
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
@@ -87,4 +91,13 @@ if options.wasm_cpp
 end
 if options.ts_declaration
   generator.render_ts_declaration
+end
+if options.kotlin
+  generator.render_kotlin_common
+  generator.render_kotlin_android
+  generator.render_kotlin_ios
+  generator.render_kotlin_js
+  generator.render_kotlin_js_accessors
+  generator.render_kotlin_jni_h
+  generator.render_kotlin_jni_c
 end

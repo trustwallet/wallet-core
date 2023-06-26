@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# This script processes captured test code coverage information
+# and compares current value to previously saved value (stored in coverage.stats).
+#
+# - Usage (CPP part):
+#   ./tools/check-coverage coverage.stats coverage.info
+#
+# - Usage (Rust part):
+#   ./tools/check-coverage rust/coverage.stats rust/coverage.info
+
+# Fail if any commands fails
+set -e
+
+coverage_stats=$1
+coverage_info=$2
+
+lcov --summary $coverage_info
+
+current=$(<$coverage_stats)
+new=$(lcov --summary $coverage_info | awk '/lines.*:/{sub("%", "", $2);print $2}')
+
+if (( $(echo "$current > $new" | bc -l) )); then
+    echo "Code coverage drops to ${new}% (current is ${current}%)"
+    exit -1
+else
+    echo "Update code coverage: ${current}% -> ${new}%"
+    echo -n $new > $coverage_stats
+    # commit to master
+fi

@@ -1,0 +1,8 @@
+name: TWNEOProto
+protos:
+- TW_NEO_Proto_TransactionInput
+- TW_NEO_Proto_TransactionOutput
+- TW_NEO_Proto_SigningInput
+- TW_NEO_Proto_SigningOutput
+- TW_NEO_Proto_TransactionOutputPlan
+- TW_NEO_Proto_TransactionPlan

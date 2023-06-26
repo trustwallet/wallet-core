@@ -1,0 +1,24 @@
+name: Codegen-v2 Tests
+
+on:
+  push:
+    branches: [ dev, master ]
+    paths:
+      - 'codegen-v2/**'
+  pull_request:
+    branches: [ dev, master ]
+    paths:
+      - 'codegen-v2/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --manifest-path codegen-v2/Cargo.toml

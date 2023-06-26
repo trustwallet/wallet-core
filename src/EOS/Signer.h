@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -35,7 +35,14 @@ class Signer {
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
 
+    /// Serialize the transaction.
+    Data serializeTx(const Transaction& transaction) const noexcept;
+    
     static int isCanonical(uint8_t by, uint8_t sig[64]);
+    
+    Transaction buildTx(const Proto::SigningInput& input) const;
+    Data buildUnsignedTx(const Proto::SigningInput& input) noexcept;
+    std::string buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept;
 };
 
 } // namespace TW::EOS

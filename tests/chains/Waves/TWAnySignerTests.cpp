@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,7 +15,7 @@ namespace TW::Waves::tests {
 
 TEST(TWAnySignerWaves, Sign) {
     auto input = Proto::SigningInput();
-    const auto privateKey = Base58::bitcoin.decode("83mqJpmgB5Mko1567sVAdqZxVKsT6jccXt3eFSi4G1zE");
+    const auto privateKey = Base58::decode("83mqJpmgB5Mko1567sVAdqZxVKsT6jccXt3eFSi4G1zE");
 
     input.set_timestamp(int64_t(1559146613));
     input.set_private_key(privateKey.data(), privateKey.size());
