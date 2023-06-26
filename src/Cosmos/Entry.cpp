@@ -51,14 +51,6 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
-// TANGEM
-void Entry::signExternally([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut, const Data& publicKey, const std::function<Data(Data)> externalSigner) const {
-    auto input = Proto::SigningInput();
-    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::sign(input, coin, publicKey, externalSigner).SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
-}
-
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key, coin);
 }
