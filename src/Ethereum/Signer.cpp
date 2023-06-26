@@ -348,6 +348,41 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         }
     }
 
+    case Proto::Transaction::kBatch: {
+        switch (input.tx_mode()) {
+        case Proto::TransactionMode::Legacy:
+        default:
+            return nullptr;
+        case Proto::TransactionMode::Enveloped: // Eip1559
+            return nullptr;
+        case Proto::TransactionMode::UserOp:
+            std::vector<Data> addresses;
+            std::vector<uint256_t> amounts;
+            std::vector<Data> payloads;
+            for (int i=0; i < input.transaction().batch().calls().size(); i++) {
+                addresses.push_back(addressStringToData(input.transaction().batch().calls()[i].address()));
+                amounts.push_back(load(input.transaction().batch().calls()[i].amount()));
+                payloads.push_back(Data(input.transaction().batch().calls()[i].payload().begin(), input.transaction().batch().calls()[i].payload().end()));
+            }
+
+            return UserOperation::buildBatch(
+                entryPointAddress,
+                senderAddress,
+                addresses,
+                amounts,
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode,
+                payloads
+            );
+        }
+    }
+
     case Proto::Transaction::kContractGeneric:
     default: {
         switch (input.tx_mode()) {
