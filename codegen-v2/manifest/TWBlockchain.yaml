@@ -59,6 +59,8 @@ enums:
     value: 26
   - name: algorand
     value: 27
+  - name: iost
+    value: 28
   - name: polkadot
     value: 29
   - name: cardano
@@ -83,17 +85,25 @@ enums:
     value: 39
   - name: kusama
     value: 40
-  - name: nervos
+  - name: zen
     value: 41
-  - name: everscale
+  - name: bitcoinDiamond
     value: 42
-  - name: aptos
+  - name: verge
     value: 43
-  - name: hedera
+  - name: nervos
     value: 44
-  - name: theOpenNetwork
+  - name: everscale
     value: 45
-  - name: sui
+  - name: aptos
     value: 46
+  - name: nebl
+    value: 47
+  - name: hedera
+    value: 48
+  - name: theOpenNetwork
+    value: 49
+  - name: sui
+    value: 50
   comments:
   - Blockchain enum type
