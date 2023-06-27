@@ -194,6 +194,31 @@ functions:
   - Computes the Groestl512 of a block of data.
   - \param data Non-null block of data
   - \return Non-null computed Groestl512 block of data
+- name: TWHashBlake2bPersonal
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_nullable: false
+  - name: personal
+    type:
+      variant: data
+      is_nullable: false
+  - name: outlen
+    type:
+      variant: size_t
+      is_nullable: false
+  return_type:
+    variant: data
+    is_nullable: false
+  comments:
+  - Computes the Blake2b of a block of data and a persona.
+  - \param data Non-null block of data
+  - \param personal Non-null persona
+  - \param outlen Non-null output length.
+  - \return Non-null computed Blake256D block of data
 - name: TWHashSHA256SHA256
   is_public: true
   is_static: true
