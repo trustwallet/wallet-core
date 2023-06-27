@@ -1,0 +1,86 @@
+name: TWSubstrateAddress
+structs:
+- name: TWSubstrateAddress
+  is_public: true
+  is_class: true
+  comments:
+  - Represents a Substrate address.
+inits:
+- name: TWSubstrateAddressCreateWithString
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_nullable: false
+  - name: network
+    type:
+      variant: int32_t
+      is_nullable: false
+  comments:
+  - Determines if the string is a valid Substrate address.
+- name: TWSubstrateAddressCreateWithPublicKey
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_nullable: false
+  - name: network
+    type:
+      variant: int32_t
+      is_nullable: false
+  comments:
+  - Determines if the string is a valid Substrate address.
+deinits:
+- name: TWSubstrateAddressDelete
+  comments:
+  - Delete address object
+functions:
+- name: TWSubstrateAddressEqual
+  is_public: true
+  is_static: true
+  params:
+  - name: lhs
+    type:
+      variant: struct
+      value: TWSubstrateAddress
+      is_nullable: false
+  - name: rhs
+    type:
+      variant: struct
+      value: TWSubstrateAddress
+      is_nullable: false
+  return_type:
+    variant: bool
+    is_nullable: false
+  comments:
+  - Compares two addresses for equality. 
+- name: TWSubstrateAddressIsValidString
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_nullable: false
+  - name: network
+    type:
+      variant: int32_t
+      is_nullable: false
+  return_type:
+    variant: bool
+    is_nullable: false
+  comments:
+  - Determines if the string is a valid Substrate address.
+properties:
+- name: TWSubstrateAddressDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_nullable: false
+  comments:
+  - Returns the address string representation.
