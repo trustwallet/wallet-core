@@ -111,3 +111,34 @@ functions:
   - \param signatures signatures to compile, using TWDataVector.
   - \param publicKeys public keys for signers to match private keys, using TWDataVector.
   - \return serialized data of a proto object `SigningOutput`.
+- name: TWTransactionCompilerCompileWithSignaturesAndPubKeyType
+  is_public: true
+  is_static: true
+  params:
+  - name: coinType
+    type:
+      variant: enum
+      value: TWCoinType
+      is_nullable: false
+  - name: txInputData
+    type:
+      variant: data
+      is_nullable: false
+  - name: signatures
+    type:
+      variant: struct
+      value: TWDataVector
+      is_nullable: false
+  - name: publicKeys
+    type:
+      variant: struct
+      value: TWDataVector
+      is_nullable: false
+  - name: pubKeyType
+    type:
+      variant: enum
+      value: TWPublicKeyType
+      is_nullable: false
+  return_type:
+    variant: data
+    is_nullable: false
