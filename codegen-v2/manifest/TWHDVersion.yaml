@@ -7,6 +7,7 @@ enums:
   variants:
   - name: None
     value: 0
+  # Bitcoin
   - name: XPUB
     value: 0x0488b21e
   - name: XPRV
@@ -19,6 +20,15 @@ enums:
     value: 0x04b24746
   - name: ZPRV
     value: 0x04b2430c
+  - name: VPUB
+    value: 0x045f1cf6
+  - name: VPRV
+    value: 0x045f18bc
+  - name: TPUB
+    value: 0x043587cf
+  - name: TPRV
+    value: 0x04358394
+  # Litecoin
   - name: LTUB
     value: 0x019da462
   - name: LTPV
@@ -27,10 +37,16 @@ enums:
     value: 0x01b26ef6
   - name: MTPV
     value: 0x01b26792
+  - name: TTUB
+    value: 0x0436f6e1
+  - name: TTPV
+    value: 0x0436ef7d
+  # Decred
   - name: DPUB
     value: 0x2fda926
   - name: DPRV
     value: 0x2fda4e8
+  # Dogecoin
   - name: DGUB
     value: 0x02facafd
   - name: DGPV
