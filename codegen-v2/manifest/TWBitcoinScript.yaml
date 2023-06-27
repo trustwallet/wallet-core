@@ -289,6 +289,33 @@ functions:
   - \param coin coin type
   - \note Must be deleted with \TWBitcoinScriptDelete
   - \return A pointer to the built script
+- name: TWBitcoinScriptLockScriptForAddressReplay
+  is_public: true
+  is_static: true
+  params:
+  - name: address
+    type:
+      variant: string
+      is_nullable: false
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_nullable: false
+  - name: blockHash
+    type:
+      variant: data 
+      is_nullable: false
+  - name: blockHeight
+    type:
+      variant: int64_t
+      is_nullable: false
+  return_type:
+    variant: struct
+    value: TWBitcoinScript
+    is_nullable: false
+  comments:
+  - Builds a appropriate lock script for the given address with replay.
 - name: TWBitcoinScriptHashTypeForCoin
   is_public: true
   is_static: true
