@@ -1,0 +1,83 @@
+name: TWEthereumAbi
+structs:
+- name: TWEthereumAbiFunction
+  is_public: false
+  is_class: false
+- name: TWEthereumAbi
+  is_public: true
+  is_class: false
+functions:
+- name: TWEthereumAbiEncode
+  is_public: true
+  is_static: true
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWEthereumAbiDecodeOutput
+  is_public: true
+  is_static: true
+  params:
+  - name: fn
+    type:
+      variant: struct
+      value: TWEthereumAbiFunction
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: encoded
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWEthereumAbiDecodeCall
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: abi
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWEthereumAbiEncodeTyped
+  is_public: true
+  is_static: true
+  params:
+  - name: messageJson
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

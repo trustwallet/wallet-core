@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,8 @@ jstring _Nonnull TWStringJString(TWString *_Nonnull string, JNIEnv *env) {
 }
 
 TWString *_Nonnull TWStringCreateWithJString(JNIEnv *env, jstring _Nonnull string) {
-    auto chars = env->GetStringUTFChars(string, nullptr);
-    auto twstring = TWStringCreateWithUTF8Bytes(chars);
+    const auto *chars = env->GetStringUTFChars(string, nullptr);
+    const auto *twstring = TWStringCreateWithUTF8Bytes(chars);
     env->ReleaseStringUTFChars(string, chars);
     return twstring;
 }

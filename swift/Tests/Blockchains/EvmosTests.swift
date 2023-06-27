@@ -71,6 +71,6 @@ class EvmosTests: XCTestCase {
         {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpoBCpcBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEncKLGV2bW9zMXJrMzlkazN3ZmY1bnBzN2VtdWh2M250a24zbnN6NnoyZXJxZnIwEixldm1vczEwazlscnJydWFwOW51OTZteHd3eWUyZjZhNXdhemVoMzNrcTY3ehoZCgZhZXZtb3MSDzIwMDAwMDAwMDAwMDAwMBJ7ClcKTwooL2V0aGVybWludC5jcnlwdG8udjEuZXRoc2VjcDI1NmsxLlB1YktleRIjCiEClHXJ+iPsaTZnuqdsTaabSczP3wWMTcsnumfPvJCC2e0SBAoCCAESIAoaCgZhZXZtb3MSEDE0MDAwMDAwMDAwMDAwMDAQ4MUIGkAz9vh1EutbLrLZmRA4eK72bA6bhfMX0YnhtRl5jeaL3AYmk0qdrwG9XzzleBsZ++IokJIk47cgOOyvEjl92Jhj"}
         """
         XCTAssertJSONEqual(output.serialized, expected)
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 }

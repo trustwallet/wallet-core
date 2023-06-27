@@ -1,0 +1,12 @@
+[package]
+name = "tw_proto"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+quick-protobuf = "0.8.1"
+tw_encoding = { path = "../tw_encoding" }
+tw_memory = { path = "../tw_memory" }
+
+[build-dependencies]
+pb-rs = "0.10.0"

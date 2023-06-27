@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,6 +20,9 @@ public:
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
     bool supportsJSONSigning() const final { return true; }
     std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const override;
+
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
 };
 
 } // namespace TW::Cosmos

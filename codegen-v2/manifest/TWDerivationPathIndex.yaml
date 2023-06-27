@@ -1,0 +1,46 @@
+name: TWDerivationPathIndex
+structs:
+- name: TWDerivationPathIndex
+  is_public: true
+  is_class: true
+inits:
+- name: TWDerivationPathIndexCreate
+  is_public: true
+  is_nullable: false
+  params:
+  - name: value
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: hardened
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+deinits:
+- name: TWDerivationPathIndexDelete
+properties:
+- name: TWDerivationPathIndexValue
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathIndexHardened
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathIndexDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

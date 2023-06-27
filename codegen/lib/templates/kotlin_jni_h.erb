@@ -1,0 +1,66 @@
+#ifndef JNI_TW_<%= entity.name.upcase %>_H
+#define JNI_TW_<%= entity.name.upcase %>_H
+
+#include <jni.h>
+#include <TrustWalletCore/TWBase.h>
+
+TW_EXTERN_C_BEGIN
+
+<%# Constructor declarations -%>
+<% entity.static_methods.each do |method| -%>
+<%   next unless method.name.start_with?('Create') -%>
+JNIEXPORT
+jlong JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass<%= KotlinJniHelper.parameters(method.parameters) %>);
+
+<% end -%>
+<%# Destructor declarations -%>
+<% entity.methods.each do |method| -%>
+<%   next unless method.name.start_with?('Delete') -%>
+JNIEXPORT
+void JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass, jlong handle);
+
+<% end -%>
+<%# Initializer declarations -%>
+<% entity.static_methods.each do |method| -%>
+<%   next unless method.name.start_with?('Init') -%>
+JNIEXPORT
+jbyteArray JNICALL <%= KotlinJniHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, jclass thisClass<%= KotlinJniHelper.parameters(method.parameters.drop(1)) %>);
+
+<% end -%>
+<%# Static property declarations -%>
+<% entity.static_properties.each do |property| -%>
+JNIEXPORT
+<%=  render('kotlin_jni/method_prototype.erb', { method: property }) %>;
+
+<% end -%>
+<%# Static method declarations -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
+JNIEXPORT
+<%=   render('kotlin_jni/method_prototype.erb', { method: method }) %>;
+
+<%  end -%>
+<%# Property declarations -%>
+<% entity.properties.each do |property| -%>
+JNIEXPORT
+<%=  render('kotlin_jni/method_prototype.erb', { method: property }) %>;
+
+<% end -%>
+<%# Method declarations -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name.start_with?('Delete') -%>
+JNIEXPORT
+<%=  render('kotlin_jni/method_prototype.erb', { method: method }) %>;
+
+<% end -%>
+<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
+<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
+<%  if !less.nil? && !equal.nil? -%>
+JNIEXPORT
+<%=   render('kotlin_jni/method_prototype.erb', { method: KotlinJniHelper.compareMethod(entity) }) %>;
+
+<%  end -%>
+
+TW_EXTERN_C_END
+
+#endif // JNI_TW_<%= entity.name.upcase %>_H

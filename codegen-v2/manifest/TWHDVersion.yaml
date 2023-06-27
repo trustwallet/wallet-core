@@ -1,0 +1,52 @@
+name: TWHDVersion
+enums:
+- name: TWHDVersion
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: none
+    value: 0
+  - name: xpub
+    value: 0x0488b21e
+  - name: xprv
+    value: 0x0488ade4
+  - name: ypub
+    value: 0x049d7cb2
+  - name: yprv
+    value: 0x049d7878
+  - name: zpub
+    value: 0x04b24746
+  - name: zprv
+    value: 0x04b2430c
+  - name: ltub
+    value: 0x019da462
+  - name: ltpv
+    value: 0x019d9cfe
+  - name: mtub
+    value: 0x01b26ef6
+  - name: mtpv
+    value: 0x01b26792
+  - name: dpub
+    value: 0x2fda926
+  - name: dprv
+    value: 0x2fda4e8
+  - name: dgub
+    value: 0x02facafd
+  - name: dgpv
+    value: 0x02fac398
+properties:
+- name: TWHDVersionIsPublic
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWHDVersionIsPrivate
+  is_public: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false

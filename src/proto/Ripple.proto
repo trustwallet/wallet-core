@@ -100,6 +100,9 @@ message SigningInput {
 
         OperationNFTokenCancelOffer op_nftoken_cancel_offer = 12;
     }
+
+    // Only used by tss chain-integration.
+    bytes public_key = 15;
 }
 
 // Result containing the signed and encoded transaction.
@@ -109,4 +112,7 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

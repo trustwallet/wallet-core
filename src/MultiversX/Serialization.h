@@ -1,0 +1,21 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#pragma once
+
+#include "Data.h"
+#include "Transaction.h"
+#include <nlohmann/json.hpp>
+
+namespace TW::MultiversX {
+
+using string = std::string;
+using json = nlohmann::json;
+
+string serializeTransaction(const Transaction& transaction);
+string serializeSignedTransaction(const Transaction& transaction, string encodedSignature);
+
+} // namespace TW::MultiversX

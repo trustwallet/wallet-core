@@ -1,0 +1,112 @@
+name: Optional
+structs:
+- name: MainStruct 
+  is_public: true
+  is_class: true
+inits:
+- name: MainStructCreate
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string 
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: true
+      is_pointer: true
+deinits:
+- name: MainStructDelete
+functions:
+- name: MainStructWithOptionalInt
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: int 
+      is_constant: false
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: true
+    is_pointer: false
+- name: MainStructWithOptionalStruct
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: struct
+      value: SomeStruct
+      is_constant: false
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: true
+    is_pointer: false
+- name: MainStructWithOptionalString
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: string
+      is_constant: false
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: true
+    is_pointer: false
+- name: MainStructWithOptionalEnum
+  is_public: true
+  is_static: true
+  params:
+  - name: first_param
+    type:
+      variant: enum
+      value: SomeEnum
+      is_constant: false
+      is_nullable: true
+      is_pointer: true
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: true
+    is_pointer: false
+properties:
+- name: MainStructWithOptionalInt
+  is_public: true
+  return_type:
+    variant: int
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: MainStructWithOptionalString
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: MainStructWithOptionalStruct
+  is_public: true
+  return_type:
+    variant: struct
+    value: SomeStruct
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: MainStructWithOptionalEnum
+  is_public: true
+  return_type:
+    variant: enum
+    value: SomeEnum
+    is_constant: true
+    is_nullable: true
+    is_pointer: true

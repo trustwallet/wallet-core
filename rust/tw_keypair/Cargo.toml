@@ -1,0 +1,9 @@
+[package]
+name = "tw_keypair"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tw_encoding = { path = "../tw_encoding" }
+tw_memory = { path = "../tw_memory" }
+der = "0.7.3"

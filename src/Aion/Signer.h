@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -28,6 +28,14 @@ class Signer {
 
     /// Signs the given transaction.
     static void sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+
+    /// Get transaction data to be signed
+    static TW::Data signaturePreimage(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+
+  private:
+    /// Builds an Aion transaction from the given `Proto::SigningInput`.
+    static Transaction buildTransaction(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Aion

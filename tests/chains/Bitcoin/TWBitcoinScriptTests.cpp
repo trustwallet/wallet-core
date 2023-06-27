@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,6 +23,10 @@ const auto PayToPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithD
 
 TEST(TWBitcoinScript, Create) {
     auto data = DATA("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");
+    {
+        auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreate());
+        ASSERT_TRUE(script.get() != nullptr);
+    }
     {
         auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(data.get()));
         ASSERT_TRUE(script.get() != nullptr);

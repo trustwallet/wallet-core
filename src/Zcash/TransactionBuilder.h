@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,11 +26,9 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Result<Transaction, Common::Proto::SigningError> build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
-        coin = TWCoinTypeZcash;
+    static Result<Transaction, Common::Proto::SigningError> build(const Bitcoin::TransactionPlan& plan, const Bitcoin::SigningInput& input) {
         auto tx_result =
-            Bitcoin::TransactionBuilder::build<Transaction>(plan, toAddress, changeAddress, coin, lockTime);
+            Bitcoin::TransactionBuilder::build<Transaction>(plan, input);
         if (!tx_result) { return Result<Transaction, Common::Proto::SigningError>::failure(tx_result.error()); }
         Transaction tx = tx_result.payload();
         // if not set, always use latest consensus branch id

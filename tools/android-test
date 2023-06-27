@@ -19,7 +19,7 @@ SERIAL=emulator-${PORT}
 echo -e "\nCreating Android emulator...\n"
 echo "no" | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
     -n "${AVD_NAME}" \
-    -k "system-images;android-26;google_apis;x86" \
+    -k "system-images;android-33;google_apis;arm64-v8a" \
 	-f
 echo -e "\nAVD ${AVD_NAME} created."
 

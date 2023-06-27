@@ -1,0 +1,15 @@
+name: TWStellarVersionByte
+enums:
+- name: TWStellarVersionByte
+  is_public: true
+  value_type:
+    variant: u_int16_t
+  variants:
+  - name: accountId
+    value: 0x30
+  - name: seed
+    value: 0xc0
+  - name: preAuthTx
+    value: 0xc8
+  - name: sha256Hash
+    value: 0x118

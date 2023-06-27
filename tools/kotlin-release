@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+source $(dirname $0)/library
+version=$(wc_read_version)
+
+echo "Building $version"
+
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+
+pushd kotlin
+./gradlew :wallet-core-kotlin:generateProtos
+./gradlew :wallet-core-kotlin:assemble :wallet-core-kotlin:publish -Pversion="$version"
+popd
+
+echo "Kotlin build uploaded"

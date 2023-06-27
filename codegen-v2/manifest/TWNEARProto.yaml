@@ -1,0 +1,17 @@
+name: TWNEARProto
+protos:
+- TW_NEAR_Proto_PublicKey
+- TW_NEAR_Proto_FunctionCallPermission
+- TW_NEAR_Proto_FullAccessPermission
+- TW_NEAR_Proto_AccessKey
+- TW_NEAR_Proto_CreateAccount
+- TW_NEAR_Proto_DeployContract
+- TW_NEAR_Proto_FunctionCall
+- TW_NEAR_Proto_Transfer
+- TW_NEAR_Proto_Stake
+- TW_NEAR_Proto_AddKey
+- TW_NEAR_Proto_DeleteKey
+- TW_NEAR_Proto_DeleteAccount
+- TW_NEAR_Proto_Action
+- TW_NEAR_Proto_SigningInput
+- TW_NEAR_Proto_SigningOutput

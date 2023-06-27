@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,6 +26,8 @@ class OngTxBuilder {
     static Data withdraw(const Ontology::Proto::SigningInput& input);
 
     static Data build(const Ontology::Proto::SigningInput& input);
+
+    static Transaction buildTransferTx(const Ontology::Proto::SigningInput &input);
 };
 
 } // namespace TW::Ontology

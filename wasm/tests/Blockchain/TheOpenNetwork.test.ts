@@ -78,7 +78,8 @@ describe("TheOpenNetwork", () => {
         amount: new Long(10),
         sequenceNumber: 6,
         mode: (TW.TheOpenNetwork.Proto.SendMode.PAY_FEES_SEPARATELY | TW.TheOpenNetwork.Proto.SendMode.IGNORE_ACTION_PHASE_ERRORS),
-        expireAt: 1671132440
+        expireAt: 1671132440,
+        bounceable: true
     });
 
     let input = TW.TheOpenNetwork.Proto.SigningInput.create({

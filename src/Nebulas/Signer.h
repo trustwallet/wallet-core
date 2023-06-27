@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,6 +32,14 @@ class Signer {
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
+
+    /// Computes hash.
+    Data hash(const Data& preImage) const noexcept;
+
+    Transaction buildTransaction(const Proto::SigningInput& input) const noexcept;
+
+    /// Get transaction data.
+    Data getPreImage(const Transaction& transaction) const noexcept;
 };
 
 } // namespace TW::Nebulas

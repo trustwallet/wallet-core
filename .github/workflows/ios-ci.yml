@@ -1,0 +1,42 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: [ self-hosted, macOS, ARM64, wallet-core ]
+    if: github.event.pull_request.draft == false
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install system dependencies
+      run: |
+        tools/install-sys-dependencies-mac
+        tools/install-rust-dependencies
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v3
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+    - name: Run codegen tests
+      run: tools/codegen-test
+
+    - name: Run iOS tests
+      run: |
+        tools/generate-files ios
+        tools/ios-test
+    - name: Build sample app
+      run: |
+        tools/samples-build ios

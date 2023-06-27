@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,7 +19,7 @@ public:
                                             const Address& validatorAddress,
                                             const Address& programId);
 
-    static Address addressFromRecentBlockhash(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId);
+    static Address addressFromRecentBlockhash(const Address& fromAddress, const Data& recentBlockhash, const Address& programId);
 };
 
 

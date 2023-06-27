@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -96,7 +96,7 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
     // may already be contain in hashSequence.
-    reinterpret_cast<const Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
+    inputs[index].previousOutput.encode(data);
     scriptCode.encode(data);
 
     encode64LE(amount, data);

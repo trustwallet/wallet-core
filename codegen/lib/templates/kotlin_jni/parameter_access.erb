@@ -1,0 +1,23 @@
+<%
+  method = locals[:method]
+  if method.static && !method.name.start_with?('Init')
+      parameters = method.parameters
+  else
+      parameters = method.parameters.drop(1)
+  end
+
+  parameters.each do |param|
+    if param.type.name == :data -%>
+    TWData *<%= param.name %>Data = TWDataCreateWithJByteArray(env, <%= param.name %>);
+<%  elsif param.type.name == :string -%>
+    TWString *<%= param.name %>String = TWStringCreateWithJString(env, <%= param.name %>);
+<%  elsif param.type.is_struct -%>
+<%=     render('kotlin_jni/struct_access.erb', { param: param }) -%>
+<%  elsif param.type.is_class -%>
+<%=     render('kotlin_jni/class_access.erb', { param: param }) -%>
+<%  elsif param.type.is_enum -%>
+<%=     render('kotlin_jni/enum_access.erb', { param: param }) -%>
+<%  elsif param.type.is_proto -%>
+<%=     render('kotlin_jni/proto_access.erb', { param: param }) -%>
+<%  end -%>
+<%end -%>

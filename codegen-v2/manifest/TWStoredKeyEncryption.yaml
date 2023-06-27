@@ -1,0 +1,15 @@
+name: TWStoredKeyEncryption
+enums:
+- name: TWStoredKeyEncryption
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: aes128Ctr
+    value: 0
+  - name: aes128Cbc
+    value: 1
+  - name: aes192Ctr
+    value: 2
+  - name: aes256Ctr
+    value: 3

@@ -1,0 +1,11 @@
+[package]
+name = "tw_starknet"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hex = "0.4.3"
+starknet-crypto = "0.5.1"
+starknet-ff = "0.3.3"
+tw_encoding = { path = "../tw_encoding" }
+tw_memory = { path = "../tw_memory" }

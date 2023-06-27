@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -31,6 +31,9 @@ class Ong : public Asset {
 
     Transaction withdraw(const Signer &claimer, const Address &receiver, uint64_t amount,
                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit, uint32_t nonce);
+
+    Transaction unsignedTransfer(const Address &from, const Address &to, uint64_t amount, const Address &payer,
+                                 uint64_t gasPrice, uint64_t gasLimit, uint32_t nonce) override;
 };
 
 } // namespace TW::Ontology

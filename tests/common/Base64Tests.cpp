@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -44,6 +44,15 @@ TEST(Base64, decode) {
     EXPECT_EQ("", hex(decoded));
     decoded = decode("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
     EXPECT_EQ("11ff8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d291b", hex(decoded));
+}
+
+
+
+TEST(Base64, EncodeDecodeSui) {
+    auto v = "AAIAAAAAAAAAAAAAAAAAAAAAAAAAAgEAAAAAAAAAINaXMihjlCd4CQVFRPjcNb7QfYP4wGgQyl1xbplvEKUCA3N1aQh0cmFuc2ZlcgACAQCDlY9/fBVEt0yclyDF8RrjSRBfRRsAAAAAAAAAIJttZrU/26Bim7ku4dwY8d3fdabngn0B6dY/hLKgb6+xABQv0f6HrJCZ/1cuDVuxh1BL12XMeC21AKyRnN3jUaw243EdgyxtuXZpG62iKzFvYdk6RMGXxnoWd8RcfwkUAQAAAAAAACDi9GYNIZ0FXpPPi+zdDUuzHfs6MDoxzPuXGPZJq8ZfOAEAAAAAAAAA0AcAAAAAAAA=";
+    auto decoded = decode(v);
+    auto encoded = encode(decoded);
+    ASSERT_EQ(encoded, v);
 }
 
 TEST(Base64, UrlFormat) {

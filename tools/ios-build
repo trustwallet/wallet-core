@@ -53,7 +53,8 @@ create_xc_framework() {
 
 main() {
     init
-    build_mac_x64_arm64 && build_ios_mac_catalyst
+    build_mac_x64_arm64
+    build_ios_mac_catalyst
     build_ios_arm64 && build_ios_simulator
     create_xc_framework
 }

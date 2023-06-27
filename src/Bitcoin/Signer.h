@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,8 +14,6 @@
 #include <utility>
 
 namespace TW::Bitcoin {
-
-typedef std::vector<std::pair<Data, Data>> SignaturePubkeyList;
 
 class Signer {
   public:

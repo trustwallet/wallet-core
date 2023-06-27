@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -99,7 +99,7 @@ TEST(Forging, forge_tz3) {
     ASSERT_EQ(output, parse_hex(expected));
 }
 
-TEST(Forging, ForgePublicKey) {
+TEST(Forging, ForgeED25519PublicKey) {
     auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
 
     auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
@@ -133,6 +133,15 @@ TEST(Forging, ForgeMichelsonFA12) {
     auto v = FA12ParameterToMichelson(data);
     ASSERT_EQ(hex(forgeMichelson(v)), "07070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb01");
 }
+TEST(Forging, ForgeSECP256k1PublicKey) {
+    auto expected = "0102b4ac9056d20c52ac11b0d7e83715dd3eac851cfc9cb64b8546d9ea0d4bb3bdfe";
+
+    auto privateKey = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"));
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto output = forgePublicKey(publicKey);
+
+    ASSERT_EQ(hex(output), expected);
+}
 
 TEST(TezosTransaction, forgeTransaction) {
     auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
@@ -151,7 +160,7 @@ TEST(TezosTransaction, forgeTransaction) {
     auto expected = "6c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
     auto serialized = forgeOperation(transactionOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeTransactionFA12) {
@@ -222,7 +231,7 @@ TEST(TezosTransaction, forgeReveal) {
     auto expected = "6b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto serialized = forgeOperation(revealOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeDelegate) {
@@ -241,7 +250,7 @@ TEST(TezosTransaction, forgeDelegate) {
     auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102ff003e47f837f0467b4acde406ed5842f35e2414b1a8";
     auto serialized = forgeOperation(delegateOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeUndelegate) {
@@ -260,7 +269,7 @@ TEST(TezosTransaction, forgeUndelegate) {
     auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200";
     auto serialized = forgeOperation(delegateOperation);
 
-    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 } // namespace TW::Tezos::tests

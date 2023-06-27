@@ -2,7 +2,7 @@
 
 set -e
 
-emsdk_version=3.1.22
+emsdk_version=3.1.30
 
 git clone https://github.com/emscripten-core/emsdk.git
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,12 +24,21 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         utxos.emplace_back(u);
     }
     useMaxAmount = input.use_max_amount();
+    useMaxUtxo = input.use_max_utxo();
+    disableDustFilter = input.disable_dust_filter();
     coinType = static_cast<TWCoinType>(input.coin_type());
     if (input.has_plan()) {
         plan = TransactionPlan(input.plan());
     }
     outputOpReturn = data(input.output_op_return());
     lockTime = input.lock_time();
+    time = input.time();
+
+    totalAmount = amount;
+    for (auto& output: input.extra_outputs()) {
+        totalAmount += output.amount();
+        extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
+    }
 }
 
 } // namespace TW::Bitcoin

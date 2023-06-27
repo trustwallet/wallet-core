@@ -4,8 +4,8 @@
 # terms governing use, modification, and redistribution, is contained in the
 # file LICENSE at the root of the source code distribution tree.
 
-set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.19.2)
-set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.19.2)
+set(protobuf_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
+set(protobuf_source_dir ${CMAKE_CURRENT_LIST_DIR}/../build/local/src/protobuf/protobuf-3.19.2)
 
 # sort + uniq -u
 # https://github.com/protocolbuffers/protobuf/blob/master/cmake/libprotobuf.cmake

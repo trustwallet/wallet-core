@@ -1,0 +1,16 @@
+<%= render('kotlin/package.erb') %>
+
+actual object <%= entity.name %> {
+<%# Static property declarations -%>
+<%  entity.static_properties.each do |property| -%>
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        get() = TODO()
+<% end -%>
+<%# Static method declarations -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') -%>
+
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> =
+        <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
+<%  end -%>
+}

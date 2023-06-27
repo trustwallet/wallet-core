@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,6 +21,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signature = sign(key, chainID, transaction);
 
         auto output = Proto::SigningOutput();
+
+        auto pre_hash = transaction->preHash(chainID);
+        output.set_pre_hash(pre_hash.data(), pre_hash.size());
 
         auto encoded = transaction->encoded(signature, chainID);
         output.set_encoded(encoded.data(), encoded.size());
@@ -58,6 +61,9 @@ Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Dat
 
         auto output = Proto::SigningOutput();
 
+        auto pre_hash = transaction->preHash(chainID);
+        output.set_pre_hash(pre_hash.data(), pre_hash.size());
+
         auto encoded = transaction->encoded(sigStruct, chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
@@ -88,6 +94,19 @@ Signature Signer::signatureDataToStructSimple(const Data& signature) noexcept {
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
     import_bits(v, signature.begin() + 64, signature.begin() + 65);
     return Signature{r, s, v};
+}
+
+Data Signer::simpleStructToSignatureData(const Signature& signature) noexcept {
+    Data fullSignature;
+
+    auto r = store(signature.r, 32);
+    append(fullSignature, r);
+    auto s = store(signature.s, 32);
+    append(fullSignature, s);
+    auto v = store(signature.v, 1);
+    append(fullSignature, v);
+
+    return fullSignature;
 }
 
 Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, const Data& signature) noexcept {
@@ -125,6 +144,15 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     uint256_t gasLimit = load(input.gas_limit());
     uint256_t maxInclusionFeePerGas = load(input.max_inclusion_fee_per_gas());
     uint256_t maxFeePerGas = load(input.max_fee_per_gas());
+
+    // EIP4337
+    Data entryPointAddress = addressStringToData(input.user_operation().entry_point());
+    Data senderAddress = addressStringToData(input.user_operation().sender());
+    Data initCode = Data(input.user_operation().init_code().begin(), input.user_operation().init_code().end());
+    uint256_t preVerificationGas = load(input.user_operation().pre_verification_gas());
+    uint256_t verificationGasLimit = load(input.user_operation().verification_gas_limit());
+    Data paymasterAndData = Data(input.user_operation().paymaster_and_data().begin(), input.user_operation().paymaster_and_data().end());
+
     switch (input.transaction().transaction_oneof_case()) {
     case Proto::Transaction::kTransfer: {
         switch (input.tx_mode()) {
@@ -142,6 +170,23 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* to: */ toAddress,
                 /* amount: */ load(input.transaction().transfer().amount()),
                 /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
+
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildNativeTransfer(
+                entryPointAddress,
+                senderAddress,
+                toAddress,
+                load(input.transaction().transfer().amount()),
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode,
+                Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end())
+                );
         }
     }
 
@@ -162,6 +207,22 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* tokenContract: */ toAddress,
                 /* toAddress */ tokenToAddress,
                 /* amount: */ load(input.transaction().erc20_transfer().amount()));
+
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC20Transfer(
+                entryPointAddress,
+                senderAddress,
+                toAddress,
+                tokenToAddress,
+                load(input.transaction().erc20_transfer().amount()),
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -182,6 +243,22 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* tokenContract: */ toAddress,
                 /* toAddress */ spenderAddress,
                 /* amount: */ load(input.transaction().erc20_approve().amount()));
+
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC20Approve(
+                entryPointAddress,
+                senderAddress,
+                toAddress,
+                spenderAddress,
+                load(input.transaction().erc20_approve().amount()),
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -205,6 +282,23 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* fromAddress: */ tokenFromAddress,
                 /* toAddress */ tokenToAddress,
                 /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
+
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC721Transfer(
+                entryPointAddress,
+                senderAddress,
+                toAddress,
+                tokenFromAddress,
+                tokenToAddress,
+                load(input.transaction().erc721_transfer().token_id()),
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode);
         }
     }
 
@@ -232,6 +326,60 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
                 /* value */ load(input.transaction().erc1155_transfer().value()),
                 /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()));
+
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildERC1155Transfer(
+                entryPointAddress,
+                senderAddress,
+                toAddress,
+                tokenFromAddress,
+                tokenToAddress,
+                load(input.transaction().erc1155_transfer().token_id()),
+                load(input.transaction().erc1155_transfer().value()),
+                Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()),
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode);
+        }
+    }
+
+    case Proto::Transaction::kBatch: {
+        switch (input.tx_mode()) {
+        case Proto::TransactionMode::Legacy:
+        default:
+            return nullptr;
+        case Proto::TransactionMode::Enveloped: // Eip1559
+            return nullptr;
+        case Proto::TransactionMode::UserOp:
+            std::vector<Data> addresses;
+            std::vector<uint256_t> amounts;
+            std::vector<Data> payloads;
+            for (int i=0; i < input.transaction().batch().calls().size(); i++) {
+                addresses.push_back(addressStringToData(input.transaction().batch().calls()[i].address()));
+                amounts.push_back(load(input.transaction().batch().calls()[i].amount()));
+                payloads.push_back(Data(input.transaction().batch().calls()[i].payload().begin(), input.transaction().batch().calls()[i].payload().end()));
+            }
+
+            return UserOperation::buildBatch(
+                entryPointAddress,
+                senderAddress,
+                addresses,
+                amounts,
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode,
+                payloads
+            );
         }
     }
 
@@ -252,6 +400,22 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
                 /* to: */ toAddress,
                 /* amount: */ load(input.transaction().contract_generic().amount()),
                 /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
+
+        case Proto::TransactionMode::UserOp:
+            return UserOperation::buildNativeTransfer(
+                entryPointAddress,
+                senderAddress,
+                toAddress,
+                load(input.transaction().contract_generic().amount()),
+                nonce,
+                gasLimit,
+                verificationGasLimit,
+                maxFeePerGas,
+                maxInclusionFeePerGas,
+                preVerificationGas,
+                paymasterAndData,
+                initCode,
+                Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
         }
     }
     }

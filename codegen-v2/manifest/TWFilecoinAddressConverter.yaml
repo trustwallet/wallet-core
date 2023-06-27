@@ -1,0 +1,36 @@
+name: TWFilecoinAddressConverter
+structs:
+- name: TWFilecoinAddressConverter
+  is_public: true
+  is_class: false
+functions:
+- name: TWFilecoinAddressConverterConvertToEthereum
+  is_public: true
+  is_static: true
+  params:
+  - name: filecoinAddress
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWFilecoinAddressConverterConvertFromEthereum
+  is_public: true
+  is_static: true
+  params:
+  - name: ethAddress
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

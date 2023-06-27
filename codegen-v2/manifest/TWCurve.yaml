@@ -1,0 +1,28 @@
+name: TWCurve
+enums:
+- name: TWCurve
+  is_public: true
+  value_type:
+    variant: u_int32_t
+  variants:
+  - name: secp256k1
+    value: 0
+    as_string: secp256k1
+  - name: ed25519
+    value: 1
+    as_string: ed25519
+  - name: ed25519Blake2bNano
+    value: 2
+    as_string: ed25519-blake2b-nano
+  - name: curve25519
+    value: 3
+    as_string: curve25519
+  - name: nist256p1
+    value: 4
+    as_string: nist256p1
+  - name: ed25519ExtendedCardano
+    value: 5
+    as_string: ed25519-cardano-seed
+  - name: starkex
+    value: 6
+    as_string: starkex

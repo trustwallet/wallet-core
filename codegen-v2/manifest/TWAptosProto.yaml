@@ -1,0 +1,14 @@
+name: TWAptosProto
+protos:
+- TW_Aptos_Proto_TransferMessage
+- TW_Aptos_Proto_StructTag
+- TW_Aptos_Proto_TokenTransferMessage
+- TW_Aptos_Proto_ManagedTokensRegisterMessage
+- TW_Aptos_Proto_CreateAccountMessage
+- TW_Aptos_Proto_OfferNftMessage
+- TW_Aptos_Proto_CancelOfferNftMessage
+- TW_Aptos_Proto_ClaimNftMessage
+- TW_Aptos_Proto_NftMessage
+- TW_Aptos_Proto_SigningInput
+- TW_Aptos_Proto_TransactionAuthenticator
+- TW_Aptos_Proto_SigningOutput

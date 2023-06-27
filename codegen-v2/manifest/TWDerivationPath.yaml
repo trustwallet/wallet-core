@@ -1,0 +1,137 @@
+name: TWDerivationPath
+structs:
+- name: TWDerivationPath
+  is_public: true
+  is_class: true
+inits:
+- name: TWDerivationPathCreate
+  is_public: true
+  is_nullable: false
+  params:
+  - name: purpose
+    type:
+      variant: enum
+      value: TWPurpose
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: coin
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: account
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: change
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  - name: address
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+- name: TWDerivationPathCreateWithString
+  is_public: true
+  is_nullable: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWDerivationPathDelete
+functions:
+- name: TWDerivationPathIndexAt
+  is_public: true
+  is_static: false
+  params:
+  - name: path
+    type:
+      variant: struct
+      value: TWDerivationPath
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: index
+    type:
+      variant: u_int32_t
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWDerivationPathIndex
+    is_constant: false
+    is_nullable: true
+    is_pointer: true
+- name: TWDerivationPathIndicesCount
+  is_public: true
+  is_static: false
+  params:
+  - name: path
+    type:
+      variant: struct
+      value: TWDerivationPath
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+properties:
+- name: TWDerivationPathPurpose
+  is_public: true
+  return_type:
+    variant: enum
+    value: TWPurpose
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathCoin
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathAccount
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathChange
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathAddress
+  is_public: true
+  return_type:
+    variant: u_int32_t
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWDerivationPathDescription
+  is_public: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

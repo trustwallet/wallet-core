@@ -23,14 +23,18 @@ lib/protobuf
 .vscode/
 .project
 .history/
+*.xcuserdatad/
 
 # Generated files
+jni/android/generated
 jni/cpp/generated
 jni/java/wallet/core/jni
-jni/java/wallet/core/proto
+jni/proto/wallet
 jni/dokka-out
 swift/Sources/Generated
 swift/wallet-core/
+codegen-v2/bindings/
+
 src/Generated/*.cpp
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
@@ -63,5 +67,5 @@ samples/cpp/*.cmake
 # built binary
 samples/cpp/sample
 
-*.xcuserdatad/
-
+# Rust target build
+**/target/

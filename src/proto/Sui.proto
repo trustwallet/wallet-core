@@ -1,0 +1,34 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Sui.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Base64 encoded msg to sign (string)
+message SignDirect {
+    // Obtain by calling any write RpcJson on SUI
+    string unsigned_tx_msg = 1;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    //  Private key to sign the transaction (bytes)
+    bytes private_key = 1;
+
+    oneof transaction_payload {
+        SignDirect sign_direct_message = 2;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    /// The raw transaction without indent in base64
+    string unsigned_tx = 1;
+    /// The signature encoded in base64
+    string signature = 2;
+}

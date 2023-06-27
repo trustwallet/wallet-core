@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Data.h"
-
-#include <TrezorCrypto/base32.h>
+#include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include <cassert>
 
@@ -17,41 +17,28 @@ namespace TW::Base32 {
 /// Decode Base32 string, return bytes as Data
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
 inline bool decode(const std::string& encoded_in, Data& decoded_out, const char* alphabet_in = nullptr) {
-    size_t inLen = encoded_in.size();
-    // obtain output length first
-    size_t outLen = base32_decoded_length(inLen);
-    uint8_t buf[outLen];
-    if (alphabet_in == nullptr) {
-        alphabet_in = BASE32_ALPHABET_RFC4648;
+    if (encoded_in.empty()) {
+        return true;
     }
-    // perform the base32 decode
-    uint8_t* retval = base32_decode(encoded_in.data(), inLen, buf, outLen, alphabet_in);
-    if (retval == nullptr) {
-        return false;
+    Rust::CByteArrayResultWrapper res = Rust::decode_base32(encoded_in.c_str(), alphabet_in, false);
+    if (res.isOk()) {
+        decoded_out = res.unwrap().data;
+        return true;
     }
-    decoded_out.assign(buf, buf + outLen);
-    return true;
+    return false;
 }
+
 
 /// Encode bytes in Data to Base32 string
 /// alphabet: Optional alphabet, if missing, default ALPHABET_RFC4648
-inline std::string encode(const Data& val, const char* alphabet = nullptr) {
-    size_t inLen = val.size();
-    // obtain output length first, reserve for terminator
-    size_t outLen = base32_encoded_length(inLen) + 1;
-    char buf[outLen];
-    if (alphabet == nullptr) {
-        alphabet = BASE32_ALPHABET_RFC4648;
+inline std::string encode(const Data &val, const char *alphabet = nullptr, bool padding = false) {
+    auto res = Rust::encode_base32(val.data(), val.size(), alphabet, padding);
+    if (res.code != Rust::OK_CODE) {
+        return {};
     }
-    // perform the base32 encode
-    char* retval = base32_encode(val.data(), inLen, buf, outLen, alphabet);
-    if (retval == nullptr) {
-        // return empty string if failed
-        return std::string();
-    }
-    // make sure there is a terminator ath the end
-    buf[outLen - 1] = '\0';
-    return std::string(buf);
+    std::string encoded_str(res.result);
+    Rust::free_string(res.result);
+    return encoded_str;
 }
 
 } // namespace TW::Base32

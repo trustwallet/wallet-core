@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -44,14 +44,14 @@ class OutPoint {
     OutPoint(const Bitcoin::Proto::OutPoint& other) {
         std::copy(other.hash().begin(), other.hash().begin() + hash.size(), hash.begin());
         index = other.index();
-        tree = 0;
+        tree = int8_t(other.tree());
     }
 
     /// Initializes an out-point from a Protobuf out-point.
     OutPoint(const Bitcoin::OutPoint& other) {
         hash = other.hash;
         index = other.index;
-        tree = 0;
+        tree = other.tree;
     }
 
     /// Encodes the out-point into the provided buffer.

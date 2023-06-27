@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,4 +27,3 @@ class Address: public SS58Address {
     Address(const PublicKey& publicKey): SS58Address(publicKey, TWSS58AddressTypeKusama) {}
 };
 } // namespace TW::Kusama
-

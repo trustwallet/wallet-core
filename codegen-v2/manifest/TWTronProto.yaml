@@ -1,0 +1,21 @@
+name: TWTronProto
+protos:
+- TW_Tron_Proto_TransferContract
+- TW_Tron_Proto_TransferAssetContract
+- TW_Tron_Proto_TransferTRC20Contract
+- TW_Tron_Proto_FreezeBalanceContract
+- TW_Tron_Proto_FreezeBalanceV2Contract
+- TW_Tron_Proto_UnfreezeBalanceV2Contract
+- TW_Tron_Proto_WithdrawExpireUnfreezeContract
+- TW_Tron_Proto_DelegateResourceContract
+- TW_Tron_Proto_UnDelegateResourceContract
+- TW_Tron_Proto_UnfreezeBalanceContract
+- TW_Tron_Proto_UnfreezeAssetContract
+- TW_Tron_Proto_VoteAssetContract
+- TW_Tron_Proto_VoteWitnessContract
+- TW_Tron_Proto_WithdrawBalanceContract
+- TW_Tron_Proto_TriggerSmartContract
+- TW_Tron_Proto_BlockHeader
+- TW_Tron_Proto_Transaction
+- TW_Tron_Proto_SigningInput
+- TW_Tron_Proto_SigningOutput

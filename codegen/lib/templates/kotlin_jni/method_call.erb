@@ -1,0 +1,6 @@
+<%
+  method = locals[:method]
+  instance = (method.entity.struct? ? '*' : '') + 'instance'
+  arguments = locals[:arguments] || [instance] + KotlinJniHelper.arguments(method.parameters.drop(1))
+-%>
+TW<%= entity.name %><%= method.name %>(<%= arguments.join(', ') %>)

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -34,6 +34,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature) noexcept {
+    FIO::Proto::SigningOutput output;
+    output = TransactionBuilder::buildSigningOutput(input, signature);
+    return output;
+}
+
 Data Signer::signData(const PrivateKey& privKey, const Data& data) {
     Data hash = Hash::sha256(data);
     Data signature = privKey.sign(hash, TWCurveSECP256k1, isCanonical);
@@ -47,7 +53,7 @@ std::string Signer::signatureToBase58(const Data& sig) {
     Data hash = Hash::ripemd(sigWithSuffix);
     Data sigWithChecksum(sig);
     append(sigWithChecksum, TW::data(hash.data(), 4));
-    string s = SignaturePrefix + Base58::bitcoin.encode(sigWithChecksum);
+    string s = SignaturePrefix + Base58::encode(sigWithChecksum);
     return s;
 }
 

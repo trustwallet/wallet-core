@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,12 +20,12 @@ using namespace TW;
 namespace TW::Solana {
 
 bool Address::isValid(const std::string& string) {
-    const auto data = Base58::bitcoin.decode(string);
+    const auto data = Base58::decode(string);
     return Address::isValid(data);
 }
 
 Address::Address(const std::string& string) {
-    const auto data = Base58::bitcoin.decode(string);
+    const auto data = Base58::decode(string);
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -48,12 +48,11 @@ Address::Address(const Data& publicKeyData) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encode(bytes);
+    return Base58::encode(bytes);
 }
 
 Data Address::vector() const {
-    Data vec(std::begin(bytes), std::end(bytes));
-    return vec;
+    return Data(begin(bytes), end(bytes));
 }
 
 Address Address::defaultTokenAddress(const Address& tokenMintAddress) {

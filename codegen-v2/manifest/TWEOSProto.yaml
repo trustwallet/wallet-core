@@ -1,0 +1,5 @@
+name: TWEOSProto
+protos:
+- TW_EOS_Proto_Asset
+- TW_EOS_Proto_SigningInput
+- TW_EOS_Proto_SigningOutput

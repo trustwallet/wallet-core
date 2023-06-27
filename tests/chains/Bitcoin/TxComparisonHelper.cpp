@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,7 +43,7 @@ UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
 
 SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin, bool omitPrivateKey) {
     SigningInput input;
-    input.amount = amount;
+    input.totalAmount = amount;
     input.byteFee = byteFee;
     input.useMaxAmount = useMaxAmount;
     input.coinType = coin;

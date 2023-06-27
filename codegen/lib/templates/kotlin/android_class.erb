@@ -1,0 +1,63 @@
+<%= render('kotlin/package.erb') %>
+
+<% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
+<% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
+<% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+actual class <%= entity.name %> private constructor(
+    private val nativeHandle: Long,
+) {
+
+    init {
+        if (nativeHandle == 0L) throw IllegalArgumentException()
+    }
+<%# Constructors -%>
+<%- constructors.each do |constructor| -%>
+
+<%  if constructor.return_type.is_nullable -%>
+    @Throws(IllegalArgumentException::class)
+<%  end -%>
+    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(<%= KotlinHelper.format_name(constructor.name) %>(<%= KotlinHelper.calling_parameters_android(constructor.parameters) %>))
+<%  end -%>
+<%# Property declarations -%>
+<%  entity.properties.each do |property| -%>
+
+    actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+        @JvmName("<%= KotlinHelper.format_name(property.name) %>")
+        external get
+<%  end -%>
+<%# Method declarations -%>
+<%  methods.each do |method| -%>
+
+    @JvmName("<%= KotlinHelper.format_name(method.name) %>")
+    actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%  end -%>
+<%  if entity.static_properties.any? || static_methods.any? || constructors.any? -%>
+
+    <%= if entity.static_properties.any? || static_methods.any? then "actual" else "private" end %> companion object {
+<%# Static property declarations -%>
+<%  entity.static_properties.each do |property| -%>
+
+        actual val <%= KotlinHelper.format_name(property.name) %><%= KotlinHelper.return_type(property.return_type) %>
+            @JvmName("<%= KotlinHelper.format_name(property.name) %>")
+            external get
+<% end -%>
+<%# Static method declarations -%>
+<%  static_methods.each do |method| -%>
+
+        @JvmStatic
+        @JvmName("<%= KotlinHelper.format_name(method.name) %>")
+        actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %>
+<%  end -%>
+
+        @JvmStatic
+        @JvmName("createFromNative")
+        private fun createFromNative(nativeHandle: Long) = <%= entity.name %>(nativeHandle)
+<%- constructors.each do |constructor| -%>
+
+        @JvmStatic
+        @JvmName("<%= KotlinHelper.format_name(constructor.name) %>")
+        private external fun <%= KotlinHelper.format_name(constructor.name) %>(<%= KotlinHelper.parameters(constructor.parameters) %>): Long
+<%- end -%>
+    }
+<%  end -%>
+}

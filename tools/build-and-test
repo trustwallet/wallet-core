@@ -7,7 +7,7 @@
 set -e
 
 echo "#### Generating files... ####"
-tools/generate-files
+tools/generate-files native
 
 echo "#### Building... ####"
 cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
@@ -24,4 +24,7 @@ build/trezor-crypto/crypto/tests/TrezorCryptoTests
 
 echo "#### Running unit tests... ####"
 FILTER="*"
+if [ -n "$1" ]; then
+    FILTER="*$1*"
+fi
 build/tests/tests --gtest_filter="$FILTER"

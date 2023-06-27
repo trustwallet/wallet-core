@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -78,6 +78,11 @@ TEST(HDWallet, SeedWithExtraSpaces) {
 
 TEST(HDWallet, CreateFromMnemonicNoPassword) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), STRING("").get()));
+    assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
+}
+
+TEST(HDWallet, CreateFromMnemonicCheck) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonicCheck(gWords.get(), STRING("").get(), false));
     assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
 }
 
@@ -286,11 +291,11 @@ TEST(HDWallet, DeriveAlgorand) {
     assertHexEqual(privateKeyData, "ce0b7ac644e2b7d9d14d3928b11643f43e48c33d3e328d059fef8add7f070e82");
 }
 
-TEST(HDWallet, DeriveElrond) {
+TEST(HDWallet, DeriveMultiversX) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
-    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeElrond));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeMultiversX));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
-    auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeElrond, privateKey.get()));
+    auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeMultiversX, privateKey.get()));
 
     assertHexEqual(privateKeyData, "0eb593141de897d60a0883320793eb49e63d556ccdf783a87ec014f150d50453");
     assertStringsEqual(address, "erd1a6l7q9cfvrgr80xuzm37tapdr4zm3mwrtl6vt8f45df45x7eadfs8ds5vv");

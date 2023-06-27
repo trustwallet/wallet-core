@@ -1,0 +1,322 @@
+name: TWPrivateKey
+structs:
+- name: TWPrivateKey
+  is_public: true
+  is_class: true
+inits:
+- name: TWPrivateKeyCreate
+  is_public: true
+  is_nullable: false
+- name: TWPrivateKeyCreateWithData
+  is_public: true
+  is_nullable: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+- name: TWPrivateKeyCreateCopy
+  is_public: true
+  is_nullable: true
+  params:
+  - name: key
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+deinits:
+- name: TWPrivateKeyDelete
+functions:
+- name: TWPrivateKeyIsValid
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: curve
+    type:
+      variant: enum
+      value: TWCurve
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: bool
+    is_constant: false
+    is_nullable: false
+    is_pointer: false
+- name: TWPrivateKeyGetPublicKey
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: coinType
+    type:
+      variant: enum
+      value: TWCoinType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeyByType
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: pubkeyType
+    type:
+      variant: enum
+      value: TWPublicKeyType
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeySecp256k1
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: compressed
+    type:
+      variant: bool
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeyNist256p1
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeyEd25519
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeyEd25519Blake2b
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeyEd25519Cardano
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetPublicKeyCurve25519
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: struct
+    value: TWPublicKey
+    is_constant: false
+    is_nullable: false
+    is_pointer: true
+- name: TWPrivateKeyGetSharedKey
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: curve
+    type:
+      variant: enum
+      value: TWCurve
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWPrivateKeySign
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: digest
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: curve
+    type:
+      variant: enum
+      value: TWCurve
+      is_constant: false
+      is_nullable: false
+      is_pointer: false
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWPrivateKeySignAsDER
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: digest
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWPrivateKeySignZilliqaSchnorr
+  is_public: true
+  is_static: false
+  params:
+  - name: pk
+    type:
+      variant: struct
+      value: TWPrivateKey
+      is_constant: false
+      is_nullable: false
+      is_pointer: true
+  - name: message
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+properties:
+- name: TWPrivateKeyData
+  is_public: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: false
+    is_pointer: true

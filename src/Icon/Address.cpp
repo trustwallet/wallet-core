@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -39,7 +39,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address prefix");
     }
 
-    const auto data = parse_hex(string.begin() + 2, string.end());
+    const auto data = parse_hex(string.substr(2));
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 

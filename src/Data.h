@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,8 +16,26 @@ namespace TW {
 using byte = std::uint8_t;
 using Data = std::vector<byte>;
 
+typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
+typedef std::vector<std::pair<Data, Data>> SignaturePubkeyList;
+
 inline void pad_left(Data& data, const uint32_t size) {
     data.insert(data.begin(), size - data.size(), 0);
+}
+
+template<typename It>
+inline Data data(It&& begin, It&& end) {
+    return Data(begin, end);
+}
+
+template<typename Collection>
+inline Data data_from(const Collection& collection) {
+    Data out;
+    out.reserve(collection.size());
+    for (auto&& cur : collection) {
+        out.emplace_back(uint8_t(cur));
+    }
+    return out;
 }
 
 inline Data data(const std::string& data) {

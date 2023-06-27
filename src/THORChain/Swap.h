@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,10 +8,12 @@
 
 #include "Data.h"
 #include "proto/THORChainSwap.pb.h"
+#include "uint256.h"
 
 #include <optional>
 #include <string>
 #include <utility>
+#include <optional>
 
 namespace TW::THORChainSwap {
 
@@ -48,11 +50,12 @@ class SwapBuilder {
     std::optional<std::string> mAffFeeAddress{std::nullopt};
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
+    std::optional<std::size_t> mExpirationPolicy{std::nullopt};
 
-    SwapBundled buildBitcoin(uint64_t amount, const std::string& memo, Chain fromChain);
-    SwapBundled buildBinance(Proto::Asset fromAsset, uint64_t amount, const std::string& memo);
-    SwapBundled buildEth(uint64_t amount, const std::string& memo);
-    SwapBundled buildAtom(uint64_t amount, const std::string& memo);
+    SwapBundled buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain);
+    SwapBundled buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo);
+    SwapBundled buildEth(uint256_t amount, const std::string& memo);
+    SwapBundled buildAtom(uint256_t amount, const std::string& memo);
 
 public:
     SwapBuilder() noexcept = default;
@@ -125,6 +128,15 @@ public:
 
     SwapBuilder& toAmountLimit(std::string toAmountLimit) noexcept {
         mToAmountLimit = std::move(toAmountLimit);
+        return *this;
+    }
+
+    SwapBuilder& expirationPolicy(std::size_t expirationTime)  noexcept {
+        if (expirationTime > 0) {
+            mExpirationPolicy = expirationTime;
+        } else {
+            mExpirationPolicy = std::nullopt;
+        }
         return *this;
     }
 

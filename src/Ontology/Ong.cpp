@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -55,6 +55,17 @@ Transaction Ong::withdraw(const Signer& claimer, const Address& receiver, uint64
                           invokeCode);
     claimer.sign(tx);
     payer.addSign(tx);
+    return tx;
+}
+
+Transaction Ong::unsignedTransfer(const Address &from, const Address &to, uint64_t amount, const Address &payer,
+                                  uint64_t gasPrice, uint64_t gasLimit,uint32_t nonce) {
+    NeoVmParamValue::ParamList transferParam{from._data, to._data, amount};
+    NeoVmParamValue::ParamArray args{transferParam};
+    auto invokeCode =
+            ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", {args});
+    auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit,
+                          payer.string(), invokeCode);
     return tx;
 }
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -49,11 +49,18 @@ TEST(EthereumAddress, FromPrivateKey) {
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
+
+    const auto publicKey2 = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519));
+    EXPECT_ANY_THROW(new Address(publicKey2));
 }
 
 TEST(EthereumAddress, IsValid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_TRUE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
+}
+
+TEST(EthereumAddress, FromData) {
+    EXPECT_ANY_THROW(new Address(Data{}));
 }
 
 } // namespace TW::Ethereum::tests

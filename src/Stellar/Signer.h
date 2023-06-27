@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -28,6 +28,8 @@ class Signer {
     std::string sign() const noexcept;
 
     Data encode(const Proto::SigningInput& input) const;
+    Data signaturePreimage() const;
+    Proto::SigningOutput compile(const Data& sig) const;
 
   private:
     static uint32_t operationType(const Proto::SigningInput& input);

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,7 +27,7 @@ uint32_t random32() {
 
 void random_buffer(uint8_t *buf, size_t len) {
     JNIEnv *env;
-    cachedJVM->AttachCurrentThread(&env, NULL);
+    cachedJVM->AttachCurrentThread(&env, nullptr);
 
     // SecureRandom random = new SecureRandom();
     jclass secureRandomClass = env->FindClass("java/security/SecureRandom");

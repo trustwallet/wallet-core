@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,6 +24,7 @@ Data forgeOperation(const Proto::Operation& operation);
 Data forgeAddress(const std::string& address);
 Data forgeArray(const Data& data);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
+Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);
 Data forgeInt32(int value, int len = 4);

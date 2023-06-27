@@ -1,0 +1,9 @@
+name: TWMultiversXProto
+protos:
+- TW_MultiversX_Proto_GenericAction
+- TW_MultiversX_Proto_EGLDTransfer
+- TW_MultiversX_Proto_ESDTTransfer
+- TW_MultiversX_Proto_ESDTNFTTransfer
+- TW_MultiversX_Proto_Accounts
+- TW_MultiversX_Proto_SigningInput
+- TW_MultiversX_Proto_SigningOutput

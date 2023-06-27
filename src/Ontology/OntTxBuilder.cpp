@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2023 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -41,6 +41,15 @@ Data OntTxBuilder::build(const Ontology::Proto::SigningInput& input) {
         return OntTxBuilder::decimals(input);
     }
     return Data();
+}
+
+Transaction OntTxBuilder::buildTransferTx(const Ontology::Proto::SigningInput &input) {
+    auto fromSigner = Address(input.owner_address());
+    auto toAddress = Address(input.to_address());
+    auto payerAddress = Address(input.payer_address());
+    auto transferTx = Ont().unsignedTransfer(fromSigner, toAddress, input.amount(), payerAddress,
+                                    input.gas_price(), input.gas_limit(), input.nonce());
+    return transferTx;
 }
 
 } // namespace TW::Ontology

@@ -1,0 +1,6 @@
+name: TWNebulasProto
+protos:
+- TW_Nebulas_Proto_SigningInput
+- TW_Nebulas_Proto_SigningOutput
+- TW_Nebulas_Proto_Data
+- TW_Nebulas_Proto_RawTransaction
