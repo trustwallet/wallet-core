@@ -1,0 +1,40 @@
+name: TWSubstrateSigner
+structs:
+- name: TWSubstrateSigner
+  is_public: true
+  is_class: true
+functions:
+- name: TWSubstrateSignerMessage
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_nullable: false
+  return_type:
+    variant: data
+    is_nullable: false
+  comments:
+  - Builds a message to be signed.
+- name: TWSubstrateSignerTransaction
+  is_public: true
+  is_static: true
+  params:
+  - name: data
+    type:
+      variant: data
+      is_nullable: false
+  - name: publicKey
+    type:
+      variant: data
+      is_nullable: false
+  - name: signature
+    type:
+      variant: data
+      is_nullable: false
+  return_type:
+    variant: data
+    is_nullable: false
+  comments:
+  - Builds a transaction to be broadcasted.
