@@ -34,6 +34,8 @@ enums:
     value: 1815
   - name: cosmos
     value: 118
+  - name: pivx
+    value: 119
   - name: dash
     value: 5
   - name: decred
@@ -142,6 +144,8 @@ enums:
     value: 10000714
   - name: smartChain
     value: 20000714
+  - name: tBinance
+    value: 30000714
   - name: oasis
     value: 474
   - name: polygon
@@ -174,14 +178,24 @@ enums:
     value: 10000118
   - name: ecash
     value: 899
+  - name: iost
+    value: 291
   - name: cronosChain
     value: 10000025
   - name: smartBitcoinCash
     value: 10000145
   - name: kuCoinCommunityChain
     value: 10000321
+  - name: bitcoinDiamond
+    value: 999
   - name: boba
     value: 10000288
+  - name: syscoin
+    value: 57
+  - name: verge
+    value: 77
+  - name: zen
+    value: 121
   - name: metis
     value: 1001088
   - name: aurora
@@ -202,12 +216,18 @@ enums:
     value: 18000
   - name: okxchain
     value: 996
+  - name: stratis
+    value: 105105
+  - name: komodo
+    value: 141
   - name: nervos
     value: 309
   - name: everscale
     value: 396
   - name: aptos
     value: 637
+  - name: nebl
+    value: 146
   - name: hedera
     value: 3030
   - name: secret
@@ -367,6 +387,30 @@ functions:
   - \param coin A coin type
   - \param publicKey A valid public key
   - \return Derived address for the given coin from the public key.
+- name: TWCoinTypeDeriveAddressFromPublicKeyAndDerivation
+  is_public: true
+  is_static: false
+  params:
+  - name: coin
+    type:
+      variant: enum
+      value: TWCoinType
+      is_nullable: false
+  - name: publicKey
+    type:
+      variant: struct
+      value: TWPublicKey
+      is_nullable: false
+  - name: derivation
+    type:
+      variant: enum
+      value: TWDerivation
+      is_nullable: false
+  return_type:
+    variant: string
+    is_nullable: false
+  comments:
+  - Derives the address for a particular coin from the public key with the derivation.
 properties:
 - name: TWCoinTypeBlockchain
   is_public: true
