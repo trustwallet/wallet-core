@@ -72,6 +72,9 @@ namespace TW::Wasm {
     auto CoinTypeExt::deriveAddressFromPublicKey(TWCoinType coin, WasmPublicKey* publicKey) {
         return TWStringToStd(TWCoinTypeDeriveAddressFromPublicKey(coin, publicKey->instance));
     }
+    auto CoinTypeExt::deriveAddressFromPublicKeyAndDerivation(TWCoinType coin, WasmPublicKey* publicKey, TWDerivation derivation) {
+        return TWStringToStd(TWCoinTypeDeriveAddressFromPublicKeyAndDerivation(coin, publicKey->instance, derivation));
+    }
 
     EMSCRIPTEN_BINDINGS(Wasm_CoinTypeExt) {
         class_<CoinTypeExt>("CoinTypeExt")
@@ -92,6 +95,7 @@ namespace TW::Wasm {
             .class_function("derivationPath", &CoinTypeExt::derivationPath)
             .class_function("derivationPathWithDerivation", &CoinTypeExt::derivationPathWithDerivation)
             .class_function("deriveAddress", &CoinTypeExt::deriveAddress, allow_raw_pointers())
-            .class_function("deriveAddressFromPublicKey", &CoinTypeExt::deriveAddressFromPublicKey, allow_raw_pointers());
+            .class_function("deriveAddressFromPublicKey", &CoinTypeExt::deriveAddressFromPublicKey, allow_raw_pointers())
+            .class_function("deriveAddressFromPublicKeyAndDerivation", &CoinTypeExt::deriveAddressFromPublicKeyAndDerivation, allow_raw_pointers());
     };
 }
