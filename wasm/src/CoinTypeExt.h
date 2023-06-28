@@ -44,5 +44,6 @@ namespace TW::Wasm {
         static auto derivationPathWithDerivation(TWCoinType coin, TWDerivation derivation);
         static auto deriveAddress(TWCoinType coin, WasmPrivateKey* privateKey);
         static auto deriveAddressFromPublicKey(TWCoinType coin, WasmPublicKey* publicKey);
+        static auto deriveAddressFromPublicKeyAndDerivation(TWCoinType coin, WasmPublicKey* publicKey, TWDerivation derivation);
     };
 }
