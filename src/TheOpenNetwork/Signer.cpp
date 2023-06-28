@@ -21,6 +21,7 @@ Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const Private
 Data Signer::createTransferMessage(std::shared_ptr<Wallet> wallet, const PrivateKey& privateKey, const Proto::Transfer& transfer, const std::function<Data(Data)> externalSigner) {
     const auto msg = wallet->createTransferMessage(
         privateKey,
+        externalSigner,
         Address(transfer.dest(), transfer.bounceable()),
         transfer.amount(),
         transfer.sequence_number(),
