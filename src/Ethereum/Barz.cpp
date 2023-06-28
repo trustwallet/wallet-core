@@ -43,10 +43,9 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
 }
 
 Data getInitCode(const std::string& factoryAddress, const PublicKey& publicKey, const std::string& verificationFacet) {
-    const auto rawPublicKey = subData(publicKey.bytes, 1);
     auto createAccountFunc = Ethereum::ABI::Function("createAccount", ParamCollection{
                                                                 std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(verificationFacet)),
-                                                                std::make_shared<Ethereum::ABI::ParamByteArray>(rawPublicKey),
+                                                                std::make_shared<Ethereum::ABI::ParamByteArray>(publicKey.bytes),
                                                                 std::make_shared<Ethereum::ABI::ParamUInt256>(0)});
     Data createAccountFuncEncoded;
     createAccountFunc.encode(createAccountFuncEncoded);

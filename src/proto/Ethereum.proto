@@ -72,6 +72,22 @@ message Transaction {
         bytes data = 2;
     }
 
+    // Batched transaction for ERC-4337 wallets
+    message Batch {
+        message BatchedCall {
+            // Recipient addresses.
+            string address = 1;
+
+            // Amounts to send in wei (uint256, serialized little endian)
+            bytes amount = 2;
+
+            // Contract call payloads data
+            bytes payload = 3;
+        }
+
+        repeated BatchedCall calls = 1;
+    }
+
     // Payload transfer
     oneof transaction_oneof {
         Transfer transfer = 1;
@@ -80,6 +96,7 @@ message Transaction {
         ERC721Transfer erc721_transfer = 4;
         ERC1155Transfer erc1155_transfer = 5;
         ContractGeneric contract_generic = 6;
+        Batch batch = 7;
     }
 }
 

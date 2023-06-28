@@ -257,7 +257,6 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
     input.set_to_address(*mRouterAddress);
     if (!toTokenId.empty()) {
         if (!mExpirationPolicy) {
-            std::cout << "here"<< std::endl;
             auto now = std::chrono::system_clock::now();
             auto in_15_minutes = now + std::chrono::minutes(15);
             mExpirationPolicy = std::chrono::duration_cast<std::chrono::seconds>(in_15_minutes.time_since_epoch()).count();
@@ -273,6 +272,10 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
         func.encode(payload);
         transfer.set_data(payload.data(), payload.size());
         Data amountData = store(uint256_t(0));
+        // if tokenId is set to 0x0000000000000000000000000000000000000000 this means we are sending ethereum and transfer amount also need to be set
+        if (toTokenId == "0x0000000000000000000000000000000000000000") {
+            amountData = store(uint256_t(amount));
+        }
         transfer.set_amount(amountData.data(), amountData.size());
     } else {
         input.set_to_address(mVaultAddress);

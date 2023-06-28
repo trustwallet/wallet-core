@@ -13,20 +13,22 @@
 #include "proto/Ethereum.pb.h"
 #include "HexCoding.h"
 #include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWEthereumAbi.h>
+#include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 namespace TW::Barz::tests {
 
 // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
 TEST(Barz, GetInitCode) {
     // C++
-    const PublicKey& publicKey = PublicKey(parse_hex("0x041dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58"), TWPublicKeyTypeNIST256p1Extended);
+    const PublicKey& publicKey = PublicKey(parse_hex("0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02"), TWPublicKeyTypeNIST256p1Extended);
 
     {
         const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
         const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
 
         const auto& initCode = Barz::getInitCode(factoryAddress, publicKey, verificationFacetAddress);
-        ASSERT_EQ(hexEncoded(initCode), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
+        ASSERT_EQ(hexEncoded(initCode), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000");
     }
 
     // C
@@ -36,7 +38,7 @@ TEST(Barz, GetInitCode) {
 
         const auto& initCodeData = TWBarzGetInitCode(factoryAddress.get(), WRAP(TWPublicKey, new TWPublicKey{ TW::PublicKey(publicKey) }).get(), verificationFacetAddress.get());
         const auto& initCode = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(initCodeData).get()));
-        EXPECT_EQ(initCode, "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401dba683ee34242c993f7588c30099969a1e58e64bdd0657958ced8e4220f69678a77e6fdf4633151105bdb1a9dd419fbd65f7d8b7a39923757534d4a578e9b58");
+        EXPECT_EQ(initCode, "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000");
     }
 }
 
@@ -182,15 +184,87 @@ TEST(Barz, SignR1TransferAccountNotDeployed) {
     auto& transfer = *input.mutable_transaction()->mutable_transfer();
     transfer.set_amount(amount.data(), amount.size());
 
-    std::string expected = "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"2500000\",\"initCode\":\"0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000005034534efe9902779ed6ea6983f435c00f3bc510000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x1392ae041bfbdbaa0cff9234a0c8f64df97b7218\",\"signature\":\"0xfcaecd5a66ef2d36a54437ce94185ef21a056dae4af66158e71cac84329050e570def91812915e059b08640cec070818aaef19fc8278e045d7b3e1f460869e581b\",\"verificationGasLimit\":\"3000000\"}";
-
+    std::string expected = "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"2500000\",\"initCode\":\"0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000005034534efe9902779ed6ea6983f435c00f3bc51000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f00000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x1392ae041bfbdbaa0cff9234a0c8f64df97b7218\",\"signature\":\"0xbf1b68323974e71ad9bd6dfdac07dc062599d150615419bb7876740d2bcf3c8909aa7e627bb0e08a2eab930e2e7313247c9b683c884236dd6ea0b6834fb2cb0a1b\",\"verificationGasLimit\":\"3000000\"}";
     {
         // sign test
         TW::Ethereum::Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEthereum);
 
-        ASSERT_EQ(hexEncoded(output.pre_hash()), "0xb0920a70eee3309563cf9a83ad170cca7905e1170720c55c52c566b41f8daf83");
+        ASSERT_EQ(hexEncoded(output.pre_hash()), "0x548c13a0bb87981d04a3a24a78ad5e4ba8d0afbf3cfe9311250e07b54cd38937");
         ASSERT_EQ(std::string(output.encoded()), expected);
     }
 }
+
+// https://testnet.bscscan.com/tx/0x872f709815a9f79623a349f2f16d93b52c4d5136967bab53a586f045edbe9203
+TEST(Barz, SignR1BatchedTransferAccountDeployed) {
+    TW::Ethereum::Proto::SigningInput input;
+    auto chainId = store(uint256_t(97));
+    auto nonce = store(uint256_t(3));
+    auto amount = store(uint256_t(0x00));
+    auto gasLimit = store(uint256_t(0x015A61));
+    auto verificationGasLimit = store(uint256_t(0x07F7C4));
+    auto maxFeePerGas = store(uint256_t(0x02540BE400));
+    auto maxInclusionFeePerGas = store(uint256_t(0x02540BE400));
+    auto preVerificationGas = store(uint256_t(0xDAFC));
+    auto entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
+    auto sender = "0x1e6c542ebc7c960c6a155a9094db838cef842cf5";
+    auto to = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266";
+
+    auto key = parse_hex("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483");
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_tx_mode(TW::Ethereum::Proto::TransactionMode::UserOp);
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_to_address(to);
+
+    auto& user_operation = *input.mutable_user_operation();
+    user_operation.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+    user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    user_operation.set_entry_point(entryPoint);
+    user_operation.set_sender(sender);
+
+
+    // approve
+    TWEthereumAbiFunction* approveFunc = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("approve")).get());
+    TWEthereumAbiFunctionAddParamAddress(approveFunc, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")).get())).get(), false);
+    TWEthereumAbiFunctionAddParamUInt256(approveFunc, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("8AC7230489E80000")).get())).get(), false);
+    auto approveCallEncoded = WRAPD(TWEthereumAbiEncode(approveFunc));
+    auto approveCall = data(TWDataBytes(approveCallEncoded.get()), TWDataSize(approveCallEncoded.get()));
+
+    // transfer
+    TWEthereumAbiFunction* transferFunc = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("transfer")).get());
+    TWEthereumAbiFunctionAddParamAddress(transferFunc, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")).get())).get(), false);
+    TWEthereumAbiFunctionAddParamUInt256(transferFunc, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("8AC7230489E80000")).get())).get(), false);
+    auto transferCallEncoded = WRAPD(TWEthereumAbiEncode(transferFunc));
+    auto transferCall = data(TWDataBytes(transferCallEncoded.get()), TWDataSize(transferCallEncoded.get()));
+
+    auto *batch = input.mutable_transaction()->mutable_batch();
+    auto *c1 = batch->add_calls();
+    c1->set_address(to);
+    c1->set_amount(amount.data(), amount.size());
+    c1->set_payload(approveCall.data(), approveCall.size());
+    auto *c2 = batch->add_calls();
+    c2->set_address(to);
+    c2->set_amount(amount.data(), amount.size());
+    c2->set_payload(transferCall.data(), transferCall.size());
+
+    input.set_private_key(key.data(), key.size());
+
+    std::string expected = "{\"callData\":\"0x47e1da2a000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000200000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b126600000000000000000000000003bbb5660b8687c2aa453a0e42dcb6e0732b12660000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e8000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"88673\",\"initCode\":\"0x\",\"maxFeePerGas\":\"10000000000\",\"maxPriorityFeePerGas\":\"10000000000\",\"nonce\":\"3\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"56060\",\"sender\":\"0x1e6c542ebc7c960c6a155a9094db838cef842cf5\",\"signature\":\"0x0747b665fe9f3a52407f95a35ac3e76de37c9b89483ae440431244e89a77985f47df712c7364c1a299a5ef62d0b79a2cf4ed63d01772275dd61f72bd1ad5afce1c\",\"verificationGasLimit\":\"522180\"}";
+    {
+        // sign test
+        TW::Ethereum::Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeEthereum);
+
+        ASSERT_EQ(hexEncoded(output.pre_hash()), "0x84d0464f5a2b191e06295443970ecdcd2d18f565d0d52b5a79443192153770ab");
+        ASSERT_EQ(std::string(output.encoded()), expected);
+    }
+
+    TWEthereumAbiFunctionDelete(approveFunc);
+    TWEthereumAbiFunctionDelete(transferFunc);
+}
+
 }
