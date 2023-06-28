@@ -33,7 +33,6 @@ class Extrinsic {
     // network
     uint32_t network;
     // enable multi-address
-    // TODO ask De-Fi team how to determine when to set this true.
     bool multiAddress;
     // fee asset id
     Data feeAssetId;

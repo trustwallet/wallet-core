@@ -33,7 +33,6 @@ message CustomCallIndices {
 // Optional call indices.
 // Must be set if `SigningInput::network` is different from `Polkadot` and `Kusama`.
 message CallIndices {
-    // TODO has_call_indices
     oneof variant {
         CustomCallIndices custom = 1;
     }
