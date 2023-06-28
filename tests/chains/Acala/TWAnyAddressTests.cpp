@@ -43,7 +43,6 @@ TEST(TWAcalaAnyAddress, createFromStringAcala) {
     ASSERT_TRUE(TWAnyAddressIsValidSS58(addrDescription, TWCoinTypePolkadot, acalaPrefix));
     TWStringDelete(addrDescription);
     TWAnyAddressDelete(anyAddr);
-
 }
 
 }

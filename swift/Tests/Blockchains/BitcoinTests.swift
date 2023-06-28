@@ -29,8 +29,6 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let bobPubkeyHash = PublicKey(data: Data(hexString: "02f453bb46e7afc8796a9629e89e07b5cb0867e9ca340b571e7bcc63fc20c43f2e")!, type: .secp256k1)!.bitcoinKeyHash
         let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
         let outputP2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: bobPubkeyHash)
-        let outputInscribe = BitcoinScript.buildBRC20InscribeTransfer(ticker: "oadf", amount: "20", pubkey: publicKey.data)
-        let outputProto = try BitcoinTransactionOutput(serializedData: outputInscribe)
         
         var input = BitcoinSigningInput.with {
             $0.isItBrcOperation = true
