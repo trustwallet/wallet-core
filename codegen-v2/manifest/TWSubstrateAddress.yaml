@@ -8,7 +8,7 @@ structs:
 inits:
 - name: TWSubstrateAddressCreateWithString
   is_public: true
-  is_static: true
+  is_nullable: true
   params:
   - name: string
     type:
@@ -22,7 +22,7 @@ inits:
   - Determines if the string is a valid Substrate address.
 - name: TWSubstrateAddressCreateWithPublicKey
   is_public: true
-  is_static: true
+  is_nullable: false
   params:
   - name: string
     type:
