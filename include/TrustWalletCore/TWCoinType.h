@@ -166,6 +166,8 @@ enum TWCoinType {
     TWCoinTypeRootstock = 137,
     TWCoinTypeThetaFuel = 361,
     TWCoinTypeConfluxeSpace = 1030,
+    TWCoinTypeAcala = 787,
+    TWCoinTypeAcalaEVM = 10000787,
 };
 
 /// Returns the blockchain for a coin type.

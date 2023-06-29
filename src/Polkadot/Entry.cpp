@@ -7,6 +7,7 @@
 #include "Entry.h"
 
 #include "Address.h"
+#include "Coin.h"
 #include "Signer.h"
 #include "../proto/TransactionCompiler.pb.h"
 
@@ -14,22 +15,25 @@ namespace TW::Polkadot {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
     if (auto* prefix = std::get_if<SS58Prefix>(&addressPrefix); prefix) {
         return Address::isValid(address, *prefix);
     }
-    return Address::isValid(address);
+    const auto ss58Prefix = TW::ss58Prefix(coin);
+    return Address::isValid(address, ss58Prefix);
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
     if (auto* ss58Prefix = std::get_if<SS58Prefix>(&addressPrefix); ss58Prefix) {
         return Address(publicKey, *ss58Prefix).string();
     }
-    return Address(publicKey).string();
+    const auto ss58Prefix = TW::ss58Prefix(coin);
+    return Address(publicKey, ss58Prefix).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    const auto addr = Address(address);
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    const auto ss58Prefix = TW::ss58Prefix(coin);
+    const auto addr = Address(address, ss58Prefix);
     return {addr.bytes.begin() + 1, addr.bytes.end()};
 }
 

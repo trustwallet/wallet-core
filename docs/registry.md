@@ -65,6 +65,7 @@ This list is generated from [./registry.json](../registry.json)
 | 637     | Aptos            | APT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png" width="32" />        | <https://aptoslabs.com/>      |
 | 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://www.bnbchain.org>    |
 | 784     | Sui              | SUI    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sui/info/logo.png" width="32" />          | <https://sui.io/>             |
+| 787     | Acala            | ACA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/acala/info/logo.png" width="32" />        | <https://acala.network>       |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/callisto/info/logo.png" width="32" />     | <https://callisto.network>    |
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neo/info/logo.png" width="32" />          | <https://neo.org>             |
@@ -105,6 +106,7 @@ This list is generated from [./registry.json](../registry.json)
 | 10000324 | zkSync Era       | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zksync/info/logo.png" width="32" />       | <https://portal.zksync.io/>   |
 | 10000330 | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terrav2/info/logo.png" width="32" />      | <https://terra.money>         |
 | 10000553 | Huobi ECO Chain  | HT     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/heco/info/logo.png" width="32" />         | <https://www.hecochain.com/en-us> |
+| 10000787 | Acala EVM        | ACA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/acalaevm/info/logo.png" width="32" />     | <https://acala.network>       |
 | 10000990 | Coreum           | CORE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/coreum/info/logo.png" width="32" />       | <https://www.coreum.com/>     |
 | 10001088 | Metis            | METIS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/metis/info/logo.png" width="32" />        | <https://www.metis.io/>       |
 | 10001101 | Polygon zkEVM    | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygonzkevm/info/logo.png" width="32" /> | <https://www.polygon.technology/> |
