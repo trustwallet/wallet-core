@@ -12,6 +12,7 @@ mod render;
 // Re-exports
 pub use self::primitives_android_main::*;
 pub use self::primitives_common_main::*;
+pub use self::primitives_ios_main::*;
 pub use self::render::{generate_android_main_types, render_to_strings, RenderIntput};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

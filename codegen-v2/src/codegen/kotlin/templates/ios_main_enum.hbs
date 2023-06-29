@@ -1,0 +1,30 @@
+package com.trustwallet.core
+
+import com.trustwallet.core.TW{{enum_name}}.*
+
+actual enum class {{enum_name}}(
+    val value: TW{{enum_name}},
+) {
+	{{! Variants}}
+    {{#each variants}}
+    {{name}}(TWCoinType{{name}}),
+    {{/each}}
+    ;
+    {{! Properties}}
+    {{#each properties}}
+    actual val {{name}}: {{return.type}}{{#if return.is_nullable}}?{{/if}}
+        get() = {{call}}!!
+
+    {{/each}}
+	{{! Methods}}
+    {{#each methods}}
+    actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if is_nullable}}?{{/if}} =
+        {{call}}!!
+
+    {{/each}}
+
+    companion object {
+        fun fromValue(value: TW{{enum_name}}: {{enum_name}}? =
+            values().firstOrNull { it.value == value }
+    }
+}

@@ -5,7 +5,7 @@ import cnames.structs.TW{{struct_name}}
 import kotlinx.cinterop.CPointer
 
 actual class {{struct_name}} constructor(
-    val pointer: CPointer<TWAccount>,
+    val pointer: CPointer<TW{{struct_name}}>,
 ) {
 {{else}}
 actual object {{struct_name}} {
@@ -19,7 +19,7 @@ actual object {{struct_name}} {
     {{/each}}
     {{! Methods}}
     {{#each methods}}
-    actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.value}}{{#if is_nullable}}?{{/if}} =
+    actual fun {{name}}({{#each params}}{{name}}: {{type}}{{#if is_nullable}}?{{/if}}{{#unless @last}}, {{/unless}}{{/each}}): {{return.type}}{{#if is_nullable}}?{{/if}} =
         {{call}}!!
 
     {{/each}}

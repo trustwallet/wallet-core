@@ -1,6 +1,6 @@
 use super::{
     AndroidMainEnum, AndroidMainEnumVariant, AndroidMainStruct, CommonMainEnum, CommonMainStruct,
-    KotlinType,
+    IosMainEnum, IosMainInit, IosMainMethod, IosMainProperty, IosMainStruct, KotlinType,
 };
 use crate::codegen::kotlin::functions::process_android_main_methods;
 use crate::codegen::kotlin::inits::process_android_main_inits;
@@ -29,6 +29,8 @@ pub struct RenderIntput<'a> {
     pub android_main_enum: &'a str,
     pub common_main_struct: &'a str,
     pub common_main_enum: &'a str,
+    pub ios_main_struct: &'a str,
+    pub ios_main_enum: &'a str,
 }
 
 // TODO: Rename
@@ -36,6 +38,7 @@ pub struct RenderIntput<'a> {
 pub struct GeneratedPlatformTypes {
     pub android_main: GeneratedTypes<AndroidMainStruct, AndroidMainEnum>,
     pub common_main: GeneratedTypes<CommonMainStruct, CommonMainEnum>,
+    pub ios_main: GeneratedTypes<IosMainStruct, IosMainEnum>,
 }
 
 #[derive(Debug, Clone)]
@@ -57,6 +60,7 @@ impl<S, E> Default for GeneratedTypes<S, E> {
 pub struct GeneratedMultiplatformStrings {
     pub android_main: GeneratedStrings,
     pub common_main: GeneratedStrings,
+    pub ios_main: GeneratedStrings,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -78,6 +82,8 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedMultipl
     engine.register_partial("android_main_enum", input.android_main_enum)?;
     engine.register_partial("common_main_struct", input.common_main_struct)?;
     engine.register_partial("common_main_enum", input.common_main_enum)?;
+    engine.register_partial("ios_main_struct", input.ios_main_struct)?;
+    engine.register_partial("ios_main_enum", input.ios_main_enum)?;
 
     let generated = generate_android_main_types(input.file_info)?;
     let mut out_strings = GeneratedMultiplatformStrings::default();
@@ -130,6 +136,30 @@ pub fn render_to_strings<'a>(input: RenderIntput<'a>) -> Result<GeneratedMultipl
         out_strings.common_main.enums.push((enm.name, out));
     }
 
+    for strct in generated.ios_main.structs {
+        let out = engine.render(
+            "ios_main_struct",
+            &WithYear {
+                current_year,
+                data: &strct,
+            },
+        )?;
+
+        out_strings.ios_main.structs.push((strct.name, out));
+    }
+
+    for enm in generated.ios_main.enums {
+        let out = engine.render(
+            "ios_main_enum",
+            &WithYear {
+                current_year,
+                data: &enm,
+            },
+        )?;
+
+        out_strings.ios_main.enums.push((enm.name, out));
+    }
+
     Ok(out_strings)
 }
 
@@ -170,12 +200,52 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         };
 
         outputs.common_main.structs.push(CommonMainStruct {
-            name: pretty_name,
+            name: pretty_name.clone(),
             is_class: strct.is_class,
             header_init,
-            inits,
-            methods,
-            properties,
+            inits: inits.clone(),
+            methods: methods.clone(),
+            properties: properties.clone(),
+        });
+
+        let ios_inits: Vec<IosMainInit> = inits
+            .into_iter()
+            .map(|init| {
+                // TODO:
+                IosMainInit {
+                    params: init.params,
+                    param_pass: vec![],
+                    c_ffi_name: "".to_string(),
+                }
+            })
+            .collect();
+
+        let ios_methods: Vec<IosMainMethod> = methods
+            .into_iter()
+            .map(|method| IosMainMethod {
+                name: method.name,
+                params: method.params,
+                is_static: method.is_static,
+                call: "TODO".to_string(),
+                return_ty: method.return_ty,
+            })
+            .collect();
+
+        let ios_properties: Vec<IosMainProperty> = properties
+            .into_iter()
+            .map(|property| IosMainProperty {
+                name: property.name,
+                call: "TODO".to_string(),
+                return_ty: property.return_ty,
+            })
+            .collect();
+
+        outputs.ios_main.structs.push(IosMainStruct {
+            name: pretty_name,
+            is_class: strct.is_class,
+            inits: ios_inits,
+            methods: ios_methods,
+            properties: ios_properties,
         });
     }
 
@@ -188,7 +258,7 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
 
         // TODO: Just deprecate `AndroidMainEnumVariant`?
         let mut add_string_value = false;
-        let variants = enm
+        let variants: Vec<AndroidMainEnumVariant> = enm
             .variants
             .into_iter()
             .map(|mut variant| {
@@ -213,16 +283,47 @@ pub fn generate_android_main_types(mut info: FileInfo) -> Result<GeneratedPlatfo
         let pretty_name = pretty_name(enm.name.clone());
 
         let andmain_enum = AndroidMainEnum {
-            name: pretty_name,
-            value_type: KotlinType::from(enm.value_type),
+            name: pretty_name.clone(),
+            value_type: KotlinType::from(enm.value_type.clone()),
             add_string_value,
-            methods,
-            properties,
-            variants,
+            methods: methods.clone(),
+            properties: properties.clone(),
+            variants: variants.clone(),
         };
 
         outputs.android_main.enums.push(andmain_enum.clone());
-        outputs.common_main.enums.push(andmain_enum);
+        outputs.common_main.enums.push(andmain_enum.clone());
+
+        let ios_methods: Vec<IosMainMethod> = methods
+            .into_iter()
+            .map(|method| IosMainMethod {
+                name: method.name,
+                params: method.params,
+                is_static: method.is_static,
+                call: "TODO".to_string(),
+                return_ty: method.return_ty,
+            })
+            .collect();
+
+        let ios_properties: Vec<IosMainProperty> = properties
+            .into_iter()
+            .map(|property| IosMainProperty {
+                name: property.name,
+                call: "TODO".to_string(),
+                return_ty: property.return_ty,
+            })
+            .collect();
+
+        let iosmain_enum = IosMainEnum {
+            name: pretty_name,
+            value_type: KotlinType::from(enm.value_type),
+            add_string_value,
+            methods: ios_methods,
+            properties: ios_properties,
+            variants,
+        };
+
+        outputs.ios_main.enums.push(iosmain_enum);
     }
 
     Ok(outputs)

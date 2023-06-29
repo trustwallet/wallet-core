@@ -24,7 +24,10 @@ pub fn parse_dir<P: AsRef<Path>>(path: P) -> Result<Vec<FileInfo>> {
         }
 
         // Read the file into a string
-        println!("Parsing manifest file '{}'", file_path.as_path().to_string_lossy());
+        println!(
+            "Parsing manifest file '{}'",
+            file_path.as_path().to_string_lossy()
+        );
         let file_contents = fs::read_to_string(&file_path)?;
 
         // Deserialize the JSON into a struct

@@ -65,11 +65,14 @@ cargo run -- kotlin
 
 rm -rf ../kotlin/wallet-core-kotlin/src/commonMain/generated
 rm -rf ../kotlin/wallet-core-kotlin/src/androidMain/generated
+rm -rf ../kotlin/wallet-core-kotlin/src/iosMain/generated
 mkdir -p ../kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core
 mkdir -p ../kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core
+mkdir -p ../kotlin/wallet-core-kotlin/src/iosMain/generated/com/trustwallet/core
 
 cp -R bindings/kotlin/commonMain/* ../kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core
 cp -R bindings/kotlin/androidMain/* ../kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core
+cp -R bindings/kotlin/iosMain/* ../kotlin/wallet-core-kotlin/src/iosMain/generated/com/trustwallet/core
 
 cd ..
 
