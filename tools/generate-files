@@ -52,14 +52,24 @@ codegen/bin/codegen
 # Generate Swift bindings with codegen-v2. This is a transitionary process 
 # and will eventually deprecate the current codegen/ entirely.
 cd codegen-v2/
+
 cargo run -- swift
-cp -R bindings/ ../swift/Sources/Generated/
+
+rm -rf ../swift/Sources/Generated/
+mkdir -p ../swift/Sources/Generated/
+
+cp -R bindings/swift/* ../swift/Sources/Generated/
 cp src/codegen/swift/templates/WalletCore.h ../swift/Sources/Generated/
 
 cargo run -- kotlin
 
-cp -R bindings/kotlin/commonMain ../kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core
-cp -R bindings/kotlin/androidMain ../kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core
+rm -rf ../kotlin/wallet-core-kotlin/src/commonMain/generated
+rm -rf ../kotlin/wallet-core-kotlin/src/androidMain/generated
+mkdir -p ../kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core
+mkdir -p ../kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core
+
+cp -R bindings/kotlin/commonMain/* ../kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core
+cp -R bindings/kotlin/androidMain/* ../kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core
 
 cd ..
 
