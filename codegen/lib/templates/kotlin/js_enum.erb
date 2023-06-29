@@ -16,6 +16,9 @@ actual enum class <%= entity.name %>(
 <%  end -%>
 <%  end -%>
     ;
+
+    actual val value: UInt
+        get() = jsValue.value.toInt().toUInt()
 <%# Property declarations -%>
 <%- entity.properties.each do |property| -%>
 
@@ -32,7 +35,10 @@ actual enum class <%= entity.name %>(
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>
 
-    companion object {
+    actual companion object {
+        actual fun fromValue(value: UInt): <%= entity.name %>? =
+            values().first { it.value == value }
+
         fun fromValue(jsValue: Js<%= entity.name %>): <%= entity.name %> =
             values().first { it.jsValue.value == jsValue.value }
     }
