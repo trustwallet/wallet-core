@@ -97,7 +97,7 @@ fi
 if [[ "$IOS" == "true" ]]; then
   echo "Generating iOS targets"
   cargo build --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --release &
-  cargo +nightly build -Z build-std --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release &
+  cargo build -Z build-std --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release &
   wait
   lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
   mkdir -p $BUILD_FOLDER/darwin_universal
