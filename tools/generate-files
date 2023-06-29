@@ -55,6 +55,12 @@ cd codegen-v2/
 cargo run -- swift
 cp -R bindings/ ../swift/Sources/Generated/
 cp src/codegen/swift/templates/WalletCore.h ../swift/Sources/Generated/
+
+cargo run -- kotlin
+
+cp -R bindings/kotlin/commonMain ../kotlin/wallet-core-kotlin/src/commonMain/generated/com/trustwallet/core
+cp -R bindings/kotlin/androidMain ../kotlin/wallet-core-kotlin/src/androidMain/generated/com/trustwallet/core
+
 cd ..
 
 # Convert doxygen comments to appropriate format
