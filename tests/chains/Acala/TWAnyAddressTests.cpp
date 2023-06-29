@@ -30,6 +30,7 @@ TEST(TWAcalaAnyAddress, createFromPubKey) {
     const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubkey.get(), TWCoinTypeAcala));
     const auto addrDescription = TWAnyAddressDescription(addr.get());
     EXPECT_EQ("269ZCS3WLGydTN8ynhyhZfzJrXkePUcdhwgLQs6TWFs5wVL5", *reinterpret_cast<const std::string*>(addrDescription));
+    TWStringDelete(addrDescription);
 }
 
 TEST(TWAcalaAnyAddress, createFromString) {
