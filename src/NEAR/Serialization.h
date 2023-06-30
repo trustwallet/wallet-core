@@ -13,5 +13,5 @@ namespace TW::NEAR {
 
 Data transactionData(const Proto::SigningInput& input);
 Data signedTransactionData(const Data& transactionData, const Data& signatureData);
-
+Data transactionDataWithPublicKey(const Proto::SigningInput& input);
 } // namespace TW::NEAR

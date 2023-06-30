@@ -22,9 +22,12 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
     /// Signs a json Proto::SigningInput with private key
     static std::string signJSON(const std::string& json, const Data& key);
+
   public:
     /// Signs the given transaction.
     Data signOperationList(const PrivateKey& privateKey, const OperationList& operationList);
+    Data buildUnsignedTx(const OperationList& operationList);
+    Data buildSignedTx(const OperationList& operationList, Data signature);
     Data signData(const PrivateKey& privateKey, const Data& data);
 };
 

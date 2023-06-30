@@ -24,10 +24,12 @@ class Address: public SS58Address {
     /// Initializes a Polkadot address with a string representation.
     explicit Address(const std::string& string): SS58Address(string, TWSS58AddressTypePolkadot) {}
 
+    /// Initializes a Polkadot address with a string representation.
+    explicit Address(const std::string& string, uint32_t ss58Prefix): SS58Address(string, ss58Prefix) {}
+
     /// Initializes a Polkadot address with a public key.
     explicit Address(const PublicKey& publicKey): SS58Address(publicKey, TWSS58AddressTypePolkadot) {}
     /// Initializes a Polkadot address with a public key and a given ss58Prefix.
     explicit Address(const PublicKey& publicKey, std::uint32_t ss58Prefix): SS58Address(publicKey, ss58Prefix) {}
 };
 } // namespace TW::Polkadot
-

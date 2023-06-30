@@ -1,0 +1,16 @@
+[package]
+name = "tw_bitcoin"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bitcoin = "0.30.0"
+secp256k1 = { version = "0.27.0", features = [ "global-context", "rand-std" ] }
+serde = { version = "1.0.163", features = [ "derive" ] }
+serde_json = "1.0.96"
+tw_encoding = { path = "../tw_encoding" }
+tw_memory = { path = "../tw_memory" }
+tw_misc = { path = "../tw_misc" }
+tw_proto = { path = "../tw_proto" }

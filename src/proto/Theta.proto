@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Theta.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 /// Input data necessary to create a signed transaction
 message SigningInput {
     /// Chain ID string, mainnet, testnet and privatenet
@@ -25,6 +27,9 @@ message SigningInput {
 
     /// The secret private key used for signing (32 bytes).
     bytes private_key = 7;
+
+    /// Public key
+    bytes public_key = 8;
 }
 
 // Result containing the signed and encoded transaction.
@@ -34,4 +39,10 @@ message SigningOutput {
 
     /// Signature
     bytes signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }

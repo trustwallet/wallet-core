@@ -65,7 +65,7 @@ class TestStargazeSigner {
             output.serialized,
             expected
         )
-        assertEquals(output.error, "")
+        assertEquals(output.errorMessage, "")
     }
 
     @Test
@@ -118,6 +118,6 @@ class TestStargazeSigner {
             output.serialized,
             expected
         )
-        assertEquals(output.error, "")
+        assertEquals(output.errorMessage, "")
     }
 }

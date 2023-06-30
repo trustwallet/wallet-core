@@ -21,38 +21,69 @@ static inline void serializerRemark(std::string& remark, Data& data) {
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
-static inline void serializerInput(const Proto::TransactionCoinFrom& input, Data& data) {
-    encodeVarInt(1, data); // there is one coinFrom
-    const auto& fromAddress = input.from_address();
-    if (!NULS::Address::isValid(fromAddress)) {
-        throw std::invalid_argument("Invalid address");
+static inline void serializerCoinData(const TW::NULS::Proto::Transaction& tx, Data& data) {
+    auto coinData = Data();
+    // CoinFrom
+    encodeVarInt(tx.input_size(), coinData);
+    for (int i = 0; i < tx.input_size(); i++) {
+        // address
+        const auto& fromAddress = tx.input(i).from_address();
+        if (!NULS::Address::isValid(fromAddress)) {
+            throw std::invalid_argument("Invalid address");
+        }
+        const auto& addr = NULS::Address(fromAddress);
+        encodeVarInt(addr.bytes.size() - 1, coinData);
+        std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(coinData));
+        // chain id of asset
+        encode16LE(static_cast<uint16_t>(tx.input(i).assets_chainid()), coinData);
+        // asset id
+        encode16LE(static_cast<uint16_t>(tx.input(i).assets_id()), coinData);
+        // amount
+        uint256_t numeric = load(tx.input(i).id_amount());
+        Data numericData = store(numeric);
+        std::reverse(numericData.begin(), numericData.end());
+        std::string numericStr;
+        numericStr.insert(numericStr.begin(), numericData.begin(), numericData.end());
+        numericStr.append(static_cast<unsigned long>(numericData.capacity() - numericData.size()),
+                          '\0');
+        std::copy(numericStr.begin(), numericStr.end(), std::back_inserter(coinData));
+        // nonce
+        Data nonce = parse_hex(tx.input(i).nonce());
+        encodeVarInt(nonce.size(), coinData);
+        append(coinData, nonce);
+        // locked
+        coinData.push_back(static_cast<uint8_t>(tx.input(i).locked()));
     }
-    const auto& addr = NULS::Address(fromAddress);
-    encodeVarInt(addr.bytes.size() - 1, data);
-    std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-    encode16LE(static_cast<uint16_t>(input.assets_chainid()), data);
-    encode16LE(static_cast<uint16_t>(input.assets_id()), data);
-    std::copy(input.id_amount().begin(), input.id_amount().end(), std::back_inserter(data));
-    Data nonce = parse_hex(input.nonce());
-    encodeVarInt(nonce.size(), data);
-    append(data, nonce);
-    data.push_back(static_cast<uint8_t>(input.locked()));
-}
-
-static inline void serializerOutput(const Proto::TransactionCoinTo& output, Data& data) {
-    encodeVarInt(1, data); // there is one coinTo
-
-    const auto& toAddress = output.to_address();
-    if (!NULS::Address::isValid(toAddress)) {
-        throw std::invalid_argument("Invalid address");
+    encodeVarInt(tx.output_size(), coinData);
+    for (int i = 0; i < tx.output_size(); i++) {
+        // address
+        const auto& toAddress = tx.output(i).to_address();
+        if (!NULS::Address::isValid(toAddress)) {
+            throw std::invalid_argument("Invalid address");
+        }
+        const auto& addr = NULS::Address(toAddress);
+        encodeVarInt(addr.bytes.size() - 1, coinData);
+        std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(coinData));
+        // chain id of asset
+        encode16LE(static_cast<uint16_t>(tx.output(i).assets_chainid()), coinData);
+        // asset id
+        encode16LE(static_cast<uint16_t>(tx.output(i).assets_id()), coinData);
+        // amount
+        uint256_t numeric = load(tx.output(i).id_amount());
+        Data numericData = store(numeric);
+        std::reverse(numericData.begin(), numericData.end());
+        std::string numericStr;
+        numericStr.insert(numericStr.begin(), numericData.begin(), numericData.end());
+        numericStr.append(static_cast<unsigned long>(numericData.capacity() - numericData.size()),
+                          '\0');
+        std::copy(numericStr.begin(), numericStr.end(), std::back_inserter(coinData));
+        // lock time
+        encode64LE(tx.output(i).lock_time(), coinData);
     }
-    const auto& addr = NULS::Address(toAddress);
-    encodeVarInt(addr.bytes.size() - 1, data);
-    std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-    encode16LE(static_cast<uint16_t>(output.assets_chainid()), data);
-    encode16LE(static_cast<uint16_t>(output.assets_id()), data);
-    std::copy(output.id_amount().begin(), output.id_amount().end(), std::back_inserter(data));
-    encode64LE(output.lock_time(), data);
+    encodeVarInt(tx.input_size() * Signer::TRANSACTION_INPUT_SIZE +
+                     tx.output_size() * Signer::TRANSACTION_OUTPUT_SIZE,
+                 data);
+    append(data, coinData);
 }
 
 static inline Data calcTransactionDigest(Data& data) {

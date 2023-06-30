@@ -38,4 +38,11 @@ pub trait RawPtrTrait: Sized {
         }
         Some(&*raw)
     }
+
+    unsafe fn from_ptr_as_box(raw: *mut Self) -> Option<Box<Self>> {
+        if raw.is_null() {
+            return None;
+        }
+        Some(Box::from_raw(raw))
+    }
 }

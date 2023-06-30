@@ -74,6 +74,7 @@ static const std::string invalidAddresses[] = {
     "f15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7rdrr",
     "f24vg6ut43yw2h2jqydgbg2xq7x6f4kub3bg6as66",
     "f3vvmn62lofvhjd2ugzca6sof2j2ubwok6cj4xxbfzz4yuxfkgobpihhd2thlanmsh3w2ptld2gqkn2jvlss44",
+    "f0vvmn62lofvhjd2ugzca6sof2j2ubwok6cj4xxbfzz4yuxfkgobpihhd2thlanmsh3w2ptld2gqkn2jvlss44",
     "f410f2oekwcmo2pueydmaq53eic2i62crtbeyuzx2gma",
 };
 
@@ -108,6 +109,8 @@ TEST(FilecoinAddress, Equal) {
         const Address lhs(test.string), rhs(encodedBytes);
         ASSERT_EQ(lhs, rhs) << "Address(string) != Address(Data)";
     }
+
+    EXPECT_ANY_THROW(new Address(Data{}));
 }
 
 TEST(FilecoinAddress, ExpectedProperties) {
@@ -139,6 +142,9 @@ TEST(FilecoinAddress, ToBytes) {
         Address a(test.string);
         ASSERT_EQ(hex(a.toBytes()), test.encoded) << "Address(" << test.string << ")";
     }
+
+    for (const auto& test : invalidAddresses)
+        EXPECT_ANY_THROW(new Address(test));
 }
 
-}
+} // TW::Filecoin::tests

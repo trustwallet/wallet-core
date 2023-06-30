@@ -39,7 +39,9 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Code generation
-      run: tools/generate-files
+      run: |
+        source emsdk/emsdk_env.sh
+        tools/generate-files wasm
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++

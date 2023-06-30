@@ -23,17 +23,19 @@ class Signer {
 
   public:
     std::string chainID;
-
-    Signer() = default;
+    Proto::SigningInput input;
+    /// Initializes a transaction signer.
+    explicit Signer(const Proto::SigningInput& input) : chainID(input.chain_id()), input(input) {}
     /// Initializes a signer with a chain identifier which could be `mainnet`, `testnet` or
     /// `privatenet`
     explicit Signer(std::string chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction
     Data sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept;
-
-  private:
-    Data encode(const Transaction& transaction) noexcept;
+    Data encode(const Transaction& transaction) const;
+    Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
+    Data signaturePreimage() const;
+    Transaction buildTransaction() const;
 };
 
 } // namespace TW::Theta

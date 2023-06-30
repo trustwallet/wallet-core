@@ -24,12 +24,18 @@ enum TWHDVersion {
     TWHDVersionYPRV = 0x049d7878,
     TWHDVersionZPUB = 0x04b24746,
     TWHDVersionZPRV = 0x04b2430c,
+    TWHDVersionVPUB = 0x045f1cf6,
+    TWHDVersionVPRV = 0x045f18bc,
+    TWHDVersionTPUB = 0x043587cf,
+    TWHDVersionTPRV = 0x04358394,
 
     // Litecoin
     TWHDVersionLTUB = 0x019da462,
     TWHDVersionLTPV = 0x019d9cfe,
     TWHDVersionMTUB = 0x01b26ef6,
     TWHDVersionMTPV = 0x01b26792,
+    TWHDVersionTTUB = 0x0436f6e1,
+    TWHDVersionTTPV = 0x0436ef7d,
 
     // Decred
     TWHDVersionDPUB = 0x2fda926,

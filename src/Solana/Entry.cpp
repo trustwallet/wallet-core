@@ -34,4 +34,29 @@ string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json
     return Signer::signJSON(json, key);
 }
 
+TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const TW::Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            auto signer = Signer(input);
+            auto preimageHash = signer.preImageHash();
+            // for Solana, there is no need to hash data.
+            output.set_data(preimageHash.data(), preimageHash.size());
+            auto signers = signer.signers();
+            auto nSigners = output.mutable_signers();
+            for (auto i = 0ul; i < signers.size();i++) {
+                auto newSigner = nSigners->Add();
+                *newSigner = signers[i];
+            }
+        });
+}
+
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
+                    const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            auto signer = Signer(input);
+            output = signer.compile(signatures, publicKeys);
+        });
+}
+
 } // namespace TW::Solana

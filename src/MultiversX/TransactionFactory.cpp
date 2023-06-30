@@ -65,9 +65,10 @@ Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput& inpu
     transaction.receiverUsername = transfer.accounts().receiver_username();
     transaction.guardian = transfer.accounts().guardian();
     transaction.value = transfer.amount();
+    transaction.data = transfer.data();
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
     transaction.chainID = coalesceChainId(input.chain_id());
-    transaction.version = TX_VERSION;
+    transaction.version = transfer.version() ? transfer.version() : TX_VERSION;
     transaction.options = decideOptions(transaction);
 
     // Estimate & set gasLimit:
@@ -95,7 +96,7 @@ Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput& inpu
     transaction.data = data;
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
     transaction.chainID = coalesceChainId(input.chain_id());
-    transaction.version = TX_VERSION;
+    transaction.version = transfer.version() ? transfer.version() : TX_VERSION;
     transaction.options = decideOptions(transaction);
 
     // Estimate & set gasLimit:
@@ -125,7 +126,7 @@ Transaction TransactionFactory::fromESDTNFTTransfer(const Proto::SigningInput& i
     transaction.data = data;
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
     transaction.chainID = coalesceChainId(input.chain_id());
-    transaction.version = TX_VERSION;
+    transaction.version = transfer.version() ? transfer.version() : TX_VERSION;
     transaction.options = decideOptions(transaction);
 
     // Estimate & set gasLimit:

@@ -27,6 +27,8 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
     case TWCoinTypeQtum:
     case TWCoinTypeViacoin:
     case TWCoinTypeBitcoinGold:
+    case TWCoinTypeSyscoin:
+    case TWCoinTypeStratis:
         return isValidBase58 || isValidHrp;
     case TWCoinTypeBitcoinCash:
         return base58Prefix ? isValidBase58 : BitcoinCashAddress::isValid(address);
@@ -34,6 +36,7 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
         return base58Prefix ? isValidBase58 : ECashAddress::isValid(address);
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
+    case TWCoinTypePivx:
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:
     default:
@@ -70,6 +73,11 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeBitcoinGold:
+    case TWCoinTypeSyscoin:
+    case TWCoinTypeStratis:
         switch (derivation) {
         case TWDerivationBitcoinLegacy:
         case TWDerivationLitecoinLegacy:
@@ -84,11 +92,6 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
             return SegwitAddress(publicKey, hrp).string();
         }
 
-    case TWCoinTypeDigiByte:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeBitcoinGold:
-        return SegwitAddress(publicKey, hrp).string();
-
     case TWCoinTypeBitcoinCash:
         return BitcoinCashAddress(publicKey).string();
 
@@ -98,6 +101,7 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeMonacoin:
+    case TWCoinTypePivx:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
     case TWCoinTypeFiro:
@@ -113,37 +117,24 @@ inline Data cashAddressToData(const CashAddress&& addr) {
 
 Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     switch (coin) {
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinGold:
-    case TWCoinTypeDigiByte:
-    case TWCoinTypeGroestlcoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin: {
-        const auto decoded = SegwitAddress::decode(address);
-        if (!std::get<2>(decoded)) {
-            return {};
-        }
-        return std::get<0>(decoded).witnessProgram;
-    }
-
     case TWCoinTypeBitcoinCash:
         return cashAddressToData(BitcoinCashAddress(address));
 
     case TWCoinTypeECash:
         return cashAddressToData(ECashAddress(address));
 
-    case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeMonacoin:
-    case TWCoinTypeQtum:
-    case TWCoinTypeRavencoin:
-    case TWCoinTypeFiro: {
-        const auto addr = Address(address);
-        return {addr.bytes.begin() + 1, addr.bytes.end()};
+    default: {
+        const auto decoded = SegwitAddress::decode(address);
+        if (!std::get<2>(decoded)) {
+            // check if it is a legacy address
+            if (Address::isValid(address)) {
+                const auto addr = Address(address);
+                return {addr.bytes.begin() + 1, addr.bytes.end()};
+            }
+            return {Data()};
+        }
+        return std::get<0>(decoded).witnessProgram;
     }
-
-    default:
-        return {};
     }
 }
 

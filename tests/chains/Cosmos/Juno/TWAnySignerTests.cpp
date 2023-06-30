@@ -50,7 +50,7 @@ TEST(TWAnySignerJuno, Sign) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(hex(output.signature()), "06b03649436dbabd57a80233363338518b45ca52804647cc776609522d75aaa3245f4ad97e61eb10b2fe42a8c4467d28defb11db7d5f98f1897b83f422c8f08f");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 } // namespace TW::Cosmos::tests

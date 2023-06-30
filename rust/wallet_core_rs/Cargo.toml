@@ -8,6 +8,7 @@ name = "wallet_core_rs"
 crate-type = ["staticlib"] # Creates static lib
 
 [dependencies]
+tw_bitcoin = { path = "../tw_bitcoin" }
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }

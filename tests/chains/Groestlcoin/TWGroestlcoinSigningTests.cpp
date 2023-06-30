@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bitcoin/Script.h"
+#include "Groestlcoin/Signer.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -104,6 +105,23 @@ TEST(GroestlcoinSigning, SignP2PKH) {
     EXPECT_EQ(output.transaction().outputs(0).value(), 2500);
     EXPECT_EQ(output.transaction().outputs(1).value(), 2274);
     ASSERT_EQ(hex(output.encoded()), "01000000019568b09e6c6d940302ec555a877c9e5f799de8ee473e18d3a19ae14478cc4e8f000000006a47304402202163ab98b028aa13563f0de00b785d6df81df5eac0b7c91d23f5be7ea674aa3702202bf6cd7055c6f8f697ce045b1a4f9b997cf6e5761a661d27696ac34064479d19012103b85cc59b67c35851eb5060cfc3a759a482254553c5857075c9e247d74d412c91ffffffff02c4090000000000001600147557920fbc32a1ef4ef26bae5e8ce3f95abf09cee20800000000000017a9140055b0c94df477ee6b9f75185dfc9aa8ce2e52e48700000000");
+}
+
+TEST(GroestlcoinSigning, SignWithError) {
+    Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(2500);
+    input.set_byte_fee(1);
+    input.set_to_address("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne");
+    input.set_change_address("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeGroestlcoin);
+
+    ASSERT_NE(output.error(), Common::Proto::OK);
+
+    auto result = Groestlcoin::Signer::preImageHashes(input);
+    ASSERT_NE(result.error(), Common::Proto::OK);
 }
 
 TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {

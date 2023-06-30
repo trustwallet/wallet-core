@@ -49,7 +49,7 @@ TEST(TWAnySignerStride, SignLiquidStaking) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(hex(output.signature()), "836991d5e7f677080402e435e4687985e8e294892e57283b25dd99c169a56e263952595daf03b30fc066c2d7b3fa8db549b79f192dcc48585b7be943b7cb58b1");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(TWAnySignerStride, SignLiquidStakingRedeem) {
@@ -87,7 +87,7 @@ TEST(TWAnySignerStride, SignLiquidStakingRedeem) {
     assertJSONEqual(output.serialized(), expectedJson);
     EXPECT_EQ(TW::Base64::encode(data(output.signature())), "p/zhNig+rCdfDbavR2iTZ9imVQW7TTdOUh+mhP7CpNkXWUc8L5FMCgmhvrHnQKd+8aWAkUERBg8P4Jy/rn1VUA==");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 } // namespace TW::Cosmos::tests

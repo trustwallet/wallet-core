@@ -19,6 +19,9 @@ public:
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     // normalizeAddress(): implement this if needed, e.g. Ethereum address is EIP55 checksummed
     // plan(): implement this if the blockchain is UTXO based
+
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
 };
 
 } // namespace TW::<%= format_name(coin) %>

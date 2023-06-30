@@ -56,19 +56,41 @@ public:
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
 class DefaultFeeCalculator : public LinearFeeCalculator {
+private:
+    bool disableDustFilter = false;
+
 public:
-    constexpr DefaultFeeCalculator() noexcept
-        : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase) {}
+    constexpr DefaultFeeCalculator(bool disableFilter = false) noexcept
+        : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase)
+        , disableDustFilter(disableFilter) {}
+    
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
+        if (disableDustFilter) { 
+            return 0; 
+        }
+        return LinearFeeCalculator::calculateSingleInput(byteFee);
+    }
 };
 
 /// Bitcoin Segwit transaction fee calculator
 class SegwitFeeCalculator : public LinearFeeCalculator {
+private:
+    bool disableDustFilter = false;
+
 public:
-    constexpr SegwitFeeCalculator() noexcept
-        : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase) {}
+    constexpr SegwitFeeCalculator(bool disableFilter = false) noexcept
+        : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase)
+        , disableDustFilter(disableFilter) {}
+
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
+        if (disableDustFilter) {
+            return 0;
+        }
+        return LinearFeeCalculator::calculateSingleInput(byteFee);
+    }
 };
 
 /// Return the fee calculator for the given coin.
-const FeeCalculator& getFeeCalculator(TWCoinType coinType) noexcept;
+const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter = false) noexcept;
 
 } // namespace TW::Bitcoin

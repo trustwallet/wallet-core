@@ -6,6 +6,7 @@
 
 #include <Aeternity/Address.h>
 #include <HexCoding.h>
+#include <PrivateKey.h>
 #include <gtest/gtest.h>
 
 namespace TW::Aeternity::tests {

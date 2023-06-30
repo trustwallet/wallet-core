@@ -24,6 +24,8 @@ namespace TW::Polkadot {
 static constexpr size_t kMinUint16 = (1ul << 6u);
 static constexpr size_t kMinUint32 = (1ul << 14u);
 static constexpr size_t kMinBigInteger = (1ul << 30u);
+// max uint8
+static constexpr byte kMaxByte = 255;
 
 inline size_t countBytes(CompactInteger value) {
     if (0 == value) {
@@ -37,6 +39,17 @@ inline size_t countBytes(CompactInteger value) {
     }
 
     return size;
+}
+
+inline Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
+    if (moduleIndex > kMaxByte) {
+        throw std::invalid_argument("module index too large");
+    }
+    if (methodIndex > kMaxByte) {
+        throw std::invalid_argument("method index too large");
+    }
+
+    return Data{static_cast<byte>(moduleIndex), static_cast<byte>(methodIndex)};
 }
 
 inline Data encodeCompact(CompactInteger value) {

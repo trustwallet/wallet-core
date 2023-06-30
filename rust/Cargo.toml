@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "tw_bitcoin",
     "tw_encoding",
     "tw_hash",
     "tw_keypair",

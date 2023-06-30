@@ -24,8 +24,8 @@ TEST(TWBitcoinGoldCoinType, TWCoinType) {
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinGold), 8);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinGold));
-    ASSERT_EQ(23, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinGold));
-    ASSERT_EQ(0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoinGold));
+    ASSERT_EQ(0x17, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinGold));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoinGold));
     assertStringsEqual(symbol, "BTG");
     assertStringsEqual(txUrl, "https://explorer.bitcoingold.org/insight/tx/2f807d7734de35d2236a1b3d8704eb12954f5f82ea66987949b10e94d9999b23");
     assertStringsEqual(accUrl, "https://explorer.bitcoingold.org/insight/address/GJjz2Du9BoJQ3CPcoyVTHUJZSj62i1693U");

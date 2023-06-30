@@ -35,7 +35,7 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
     - name: Code generation
       run: |
-        tools/generate-files
+        tools/generate-files native
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++

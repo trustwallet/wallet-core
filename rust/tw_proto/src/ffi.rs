@@ -74,6 +74,8 @@ pub unsafe extern "C" fn polkadot_test_signing_input() -> CByteArrayResult {
     let balance = BalanceEnum::transfer(proto::mod_Balance::Transfer {
         to_address: Cow::from(to_address),
         value: Cow::Borrowed(&value),
+        memo: Cow::default(),
+        call_indices: None,
     });
     let signing_input = proto::SigningInput {
         block_hash: Cow::Owned(block_hash),
