@@ -1925,6 +1925,67 @@
     }
   },
   {
+    "id": "acala",
+    "name": "Acala",
+    "coinId": 787,
+    "symbol": "ACA",
+    "decimals": 12,
+    "blockchain": "Polkadot",
+    "derivation": [
+      {
+        "path": "m/44'/787'/0'/0'/0'"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "addressHasher": "keccak256",
+    "ss58Prefix": 10,
+    "explorer": {
+      "url": "https://acala.subscan.io",
+      "txPath": "/extrinsic/",
+      "accountPath": "/account/",
+      "sampleTx": "0xf3d58aafb1208bc09d10ba74bbf1c7811dc55a9149c1505256b6fb5603f5047f",
+      "sampleAccount": "26JqMKx4HJJcmb1kXo24HYYobiK2jURGCq6zuEzFBK3hQ9Ti"
+    },
+    "info": {
+      "url": "https://acala.network",
+      "source": "https://github.com/AcalaNetwork/Acala",
+      "rpc": "wss://acala-rpc.dwellir.com",
+      "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
+    }
+  },
+  {
+    "id": "acalaevm",
+    "name": "Acala EVM",
+    "coinId": 10000787,
+    "slip44": 60,
+    "symbol": "ACA",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "787",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://blockscout.acala.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x4b0b151dd71ed8ef3174da18565790bf14f0a903a13e4f3266c7848bc8841593",
+      "sampleAccount": "0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1"
+    },
+    "info": {
+      "url": "https://acala.network",
+      "source": "https://github.com/AcalaNetwork/Acala",
+      "rpc": "https://eth-rpc-acala.aca-api.network",
+      "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
+    }
+  },
+  {
     "id": "aeternity",
     "name": "Aeternity",
     "coinId": 457,

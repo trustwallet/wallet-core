@@ -2,14 +2,19 @@
 
 set -e
 
+STABLE="stable-2023-06-01"
+NIGHTLY="nightly-2023-06-27"
+
 if [[ `uname` == "Darwin" || "$1" == "dev" ]]; then
-  rustup update
-  rustup toolchain install nightly
-  rustup default nightly
-  rustup toolchain install nightly-x86_64-apple-darwin --force-non-host
-  rustup toolchain install nightly-aarch64-apple-darwin --force-non-host
-  rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
-  rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+  rustup toolchain install $NIGHTLY
+  rustup default $NIGHTLY
+  rustup toolchain install $NIGHTLY-x86_64-apple-darwin --force-non-host
+  rustup toolchain install $NIGHTLY-aarch64-apple-darwin --force-non-host
+  rustup component add rust-src --toolchain $NIGHTLY-aarch64-apple-darwin
+  rustup component add rust-src --toolchain $NIGHTLY-x86_64-apple-darwin
+else
+  rustup toolchain install $STABLE
+  rustup default $STABLE
 fi
 
 # Android
