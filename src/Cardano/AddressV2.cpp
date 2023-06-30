@@ -40,7 +40,7 @@ bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& att
     }
     root_out = payloadElems[0].getBytes();
     attrs_out = payloadElems[1].encoded(); // map, but encoded as bytes
-    type_out = (TW::byte)payloadElems[2].getValue();
+    type_out = (byte)payloadElems[2].getValue();
     return true;
 }
 

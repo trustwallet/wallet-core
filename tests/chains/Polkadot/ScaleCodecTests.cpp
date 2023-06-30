@@ -8,6 +8,7 @@
 #include "HexCoding.h"
 #include "Polkadot/ScaleCodec.h"
 #include "Kusama/Address.h"
+#include "uint256.h"
 
 #include <gtest/gtest.h>
 
@@ -35,7 +36,7 @@ TEST(PolkadotCodec, EncodeCompact) {
 
     ASSERT_EQ(hex(encodeCompact(72057594037927935)), "0fffffffffffffff");
     ASSERT_EQ(hex(encodeCompact(72057594037927936)), "130000000000000001");
-    
+
     ASSERT_EQ(hex(encodeCompact(18446744073709551615u)), "13ffffffffffffffff");
 }
 
@@ -69,11 +70,27 @@ TEST(PolkadotCodec, EncodeVectorAccountIds) {
     ASSERT_EQ(hex(encoded), "08008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48000e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc72");
 }
 
+TEST(PolkadotCodec, EncodeVectorAccountIdsKusama) {
+    auto addresses = std::vector<SS58Address>{
+        SS58Address("FoQJpPyadYccjavVdTWxpxU7rUEaYhfLCPwXgkfD6Zat9QP", TWSS58AddressTypeKusama),
+        SS58Address("CtwdfrhECFs3FpvCGoiE4hwRC4UsSiM8WL899HjRdQbfYZY", TWSS58AddressTypeKusama)};
+    auto encoded = encodeAccountIds(addresses, false);
+    ASSERT_EQ(hex(encoded), "08008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48000e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc72");
+}
+
 TEST(PolkadotCodec, EncodeEra) {
     auto era1 = encodeEra(429119, 8);
     auto era2 = encodeEra(428861, 4);
+    auto era3 = encodeEra(4246319, 64);
     ASSERT_EQ(hex(era1), "7200");
     ASSERT_EQ(hex(era2), "1100");
+    EXPECT_EQ(hex(era3), "f502");
+}
+
+TEST(PolkadotCodec, CountBytes) {
+    EXPECT_EQ(size_t(1), countBytes(uint256_t(0)));
+    EXPECT_EQ(size_t(1), countBytes(uint256_t(1)));
+    EXPECT_EQ(size_t(2), countBytes(uint256_t("0x1ff")));
 }
 
 } // namespace TW::Polkadot::tests

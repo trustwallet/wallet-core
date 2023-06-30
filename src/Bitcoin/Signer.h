@@ -15,8 +15,6 @@
 
 namespace TW::Bitcoin {
 
-typedef std::vector<std::pair<Data, Data>> SignaturePubkeyList;
-
 class Signer {
   public:
     Signer() = delete;

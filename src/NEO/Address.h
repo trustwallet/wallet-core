@@ -31,9 +31,6 @@ class Address : public TW::Base58Address<AddressSize> {
     /// Initializes a NEO address with a collection of bytes.
     explicit Address(const Data& data) : TW::Base58Address<AddressSize>(data) {}
 
-    /// Initializes an address with a collection of public key.
-    explicit Address(uint8_t m, const std::vector<Data>& publicKeys);
-
     /// Initializes a NEO address with a public key.
     explicit Address(const PublicKey &publicKey);
 

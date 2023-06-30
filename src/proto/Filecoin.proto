@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Filecoin.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Defines the type of `from` address derivation.
 enum DerivationType {
     // Defines a Secp256k1 (`f1`) derivation for the sender address.
@@ -40,6 +42,9 @@ message SigningInput {
 
     // Sender address derivation type.
     DerivationType derivation = 9;
+
+    // Public key secp256k1 extended
+    bytes public_key = 10;
 }
 
 // Result containing the signed and encoded transaction.
@@ -47,6 +52,9 @@ message SigningOutput {
     // Resulting transaction, in JSON.
     string json = 1;
 
-    // Error description.
-    string error_message = 2;
+    // Error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // Error description
+    string error_message = 3;
 }

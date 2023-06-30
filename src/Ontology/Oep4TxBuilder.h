@@ -24,6 +24,8 @@ public:
     static Data transfer(const Ontology::Proto::SigningInput& input);
 
     static Data build(const Ontology::Proto::SigningInput& input);
+
+    static Transaction buildTx(const Ontology::Proto::SigningInput& input);
 };
 
 } // namespace TW::Ontology

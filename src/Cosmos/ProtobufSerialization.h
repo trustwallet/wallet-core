@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "PublicKey.h"
 #include "../proto/Cosmos.pb.h"
 
 #include <nlohmann/json.hpp>
@@ -19,12 +20,17 @@ namespace TW::Cosmos::Protobuf {
 std::string buildProtoTxBody(const Proto::SigningInput& input);
 
 std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin);
+std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& publicKey, TWCoinType coin);
 
+std::string signaturePreimageProto(const Proto::SigningInput& input, const PublicKey& publicKey, TWCoinType coin);
+
+std::string buildProtoTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature, TWCoinType coin);
+std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
 Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin);
 
-std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
-
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
+
+nlohmann::json wasmExecuteSendPayload(const Proto::Message_WasmExecuteContractSend& msg);
 
 nlohmann::json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg);
 

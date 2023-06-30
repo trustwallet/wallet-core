@@ -107,15 +107,36 @@ Data forgeAddress(const std::string& address) {
     throw std::invalid_argument("Invalid Prefix");
 }
 
+// https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L19
+Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val) {
+    const auto decoded = Base58::decodeCheck(val);
+    if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        throw std::invalid_argument("prefix not match");
+    }
+
+    const auto prefixSize = 3;
+    Data forged = Data();
+    forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+    return forged;
+}
+
 // Forge the given public key into a hex encoded string.
 Data forgePublicKey(PublicKey publicKey) {
-    std::array<uint8_t, 4> prefix = {13, 15, 37, 217};
+    std::string tag;
+    std::array<uint8_t, 4> prefix;
+    if (publicKey.type == TWPublicKeyTypeED25519) {
+        prefix = {13, 15, 37, 217};
+        tag = "00";
+    } else if (publicKey.type == TWPublicKeyTypeSECP256k1) {
+        prefix = {3, 254, 226, 86};
+        tag = "01";
+    }
     auto data = Data(prefix.begin(), prefix.end());
     auto bytes = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     append(data, bytes);
 
     auto pk = Base58::encodeCheck(data);
-    auto decoded = "00" + base58ToHex(pk, 4);
+    auto decoded = tag + base58ToHex(pk, 4);
     return parse_hex(decoded);
 }
 
@@ -135,14 +156,22 @@ Data forgeOperation(const Proto::Operation& operation) {
     using namespace Proto;
     auto forged = Data();
     auto source = Address(operation.source());
-    auto forgedSource = source.forge();
+    auto forgedSource = source.forgePKH(); //https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/schema/operation.ts#L40
     auto forgedFee = forgeZarith(operation.fee());
     auto forgedCounter = forgeZarith(operation.counter());
     auto forgedGasLimit = forgeZarith(operation.gas_limit());
     auto forgedStorageLimit = forgeZarith(operation.storage_limit());
 
     if (operation.kind() == Operation_OperationKind_REVEAL) {
-        auto publicKey = PublicKey(data(operation.reveal_operation_data().public_key()), TWPublicKeyTypeED25519);
+        enum TWPublicKeyType type;
+        if (operation.reveal_operation_data().public_key().size() == 32) {
+            type = TWPublicKeyTypeED25519;
+        } else if (operation.reveal_operation_data().public_key().size() == 33) {
+            type = TWPublicKeyTypeSECP256k1;
+        } else {
+            throw std::invalid_argument("unsupported public key type");
+        }
+        auto publicKey = PublicKey(data(operation.reveal_operation_data().public_key()), type);
         auto forgedPublicKey = forgePublicKey(publicKey);
 
         forged.push_back(Operation_OperationKind_REVEAL);
@@ -177,7 +206,7 @@ Data forgeOperation(const Proto::Operation& operation) {
 
     if (operation.kind() == Operation_OperationKind_TRANSACTION) {
         auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
-        auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
+        auto forgedDestination = forgeAddress(operation.transaction_operation_data().destination());
 
         forged.emplace_back(Operation_OperationKind_TRANSACTION);
         append(forged, forgedSource);
@@ -186,12 +215,10 @@ Data forgeOperation(const Proto::Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         append(forged, forgedAmount);
-        if (!operation.transaction_operation_data().has_parameters()) {
-            append(forged, forgeBool(false));
-            append(forged, forgedDestination);
+        append(forged, forgedDestination);
+        if (!operation.transaction_operation_data().has_parameters() && operation.transaction_operation_data().encoded_parameter().empty()) {
             append(forged, forgeBool(false));
         } else if (operation.transaction_operation_data().has_parameters()) {
-            append(forged, forgeAddress(operation.transaction_operation_data().destination()));
             append(forged, forgeBool(true));
             auto& parameters = operation.transaction_operation_data().parameters();
             switch (parameters.parameters_case()) {
@@ -206,6 +233,8 @@ Data forgeOperation(const Proto::Operation& operation) {
             case OperationParameters::PARAMETERS_NOT_SET:
                 break;
             }
+        } else {
+            append(forged, TW::data(operation.transaction_operation_data().encoded_parameter()));
         }
         return forged;
     }

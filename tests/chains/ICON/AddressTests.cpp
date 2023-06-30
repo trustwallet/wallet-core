@@ -29,6 +29,8 @@ TEST(IconAddress, String) {
 
     const auto address2 = Address("cx116f042497e5f34268b1b91e742680f84cf4e9f3");
     ASSERT_EQ(address2.string(), "cx116f042497e5f34268b1b91e742680f84cf4e9f3");
+
+    EXPECT_ANY_THROW(new Address(""));
 }
 
 TEST(IconAddress, FromPrivateKey) {

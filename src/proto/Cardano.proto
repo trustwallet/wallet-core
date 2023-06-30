@@ -24,6 +24,9 @@ message TokenAmount {
 
     // The amount (uint256, serialized little endian)
     bytes amount = 3;
+
+    // The name of the asset (hex encoded). Ignored if `asset_name` is set
+    string asset_name_hex = 4;
 }
 
 // One input for a transaction
@@ -140,7 +143,7 @@ message TransactionPlan {
     uint64 deposit = 10;
 
     // coins undeposited (coming from deposit) in this TX
-    uint64 undeposit = 11;  
+    uint64 undeposit = 11;
 
     // total tokens in the utxos (optional)
     repeated TokenAmount available_tokens = 5;
@@ -156,6 +159,9 @@ message TransactionPlan {
     
     // Optional error
     Common.Proto.SigningError error = 9;
+
+    // Optional additional destination addresses, additional to first to_address output
+    repeated TxOutput extra_outputs = 12;
 }
 
 // Input data necessary to create a signed transaction.
@@ -187,6 +193,9 @@ message SigningInput {
 
     // Optional plan, if missing it will be computed
     TransactionPlan plan = 5;
+
+    // extra output UTXOs
+    repeated TxOutput extra_outputs = 10;
 }
 
 // Result containing the signed and encoded transaction.
@@ -199,4 +208,7 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }

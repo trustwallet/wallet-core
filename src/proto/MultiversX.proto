@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.MultiversX.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Generic action. Using one of the more specific actions (e.g. transfers, see below) is recommended.
 message GenericAction {
     // Accounts involved
@@ -34,6 +36,10 @@ message EGLDTransfer {
 
     // Transfer amount (string)
     string      amount = 2;
+    string      data = 3;
+
+    // transaction version, if empty, the default value will be used
+    uint32      version = 4;
 }
 
 // ESDT transfer (transfer regular ESDTs - fungible tokens).
@@ -46,6 +52,9 @@ message ESDTTransfer {
 
     // Transfer token amount (string)
     string      amount = 3;
+
+    // transaction version, if empty, the default value will be used
+    uint32      version = 4;
 }
 
 // ESDTNFT transfer (transfer NFTs, SFTs and Meta ESDTs).
@@ -61,6 +70,9 @@ message ESDTNFTTransfer {
 
     // transfer amount
     string      amount = 4;
+
+    // transaction version, if empty, the default value will be used
+    uint32      version = 5;
 }
 
 // Transaction sender & receiver etc.
@@ -111,4 +123,10 @@ message SigningInput {
 message SigningOutput {
     string encoded = 1;
     string signature = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }

@@ -21,7 +21,8 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-
+    /// Build the compile output
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature) noexcept;
   public:
     static constexpr auto SignatureSuffix = "K1";
     static constexpr auto SignaturePrefix = "SIG_K1_";

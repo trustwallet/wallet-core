@@ -12,6 +12,7 @@
 #include "Cosmos/Signer.h"
 #include "TestUtilities.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
+#include "Cosmos/Protobuf/coin.pb.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -55,8 +56,6 @@ TEST(CosmosSigner, SignTxProtobuf) {
 
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47");
-    EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(CosmosSigner, SignProtobuf_ErrorMissingMessage) {
@@ -81,7 +80,7 @@ TEST(CosmosSigner, SignProtobuf_ErrorMissingMessage) {
 
     auto output = Signer::sign(input, TWCoinTypeCosmos);
 
-    EXPECT_EQ(output.error(), "Error: No message found");
+    EXPECT_EQ(output.error_message(), "Error: No message found");
     EXPECT_EQ(output.serialized(), "");
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(hex(output.signature()), "");
@@ -127,8 +126,84 @@ TEST(CosmosSigner, SignTxJson) {
     EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}})", output.json());
 
     EXPECT_EQ(hex(output.signature()), "fc3ef899d206c88077fec42f21ba0b4df4bd3fd115fdf606ae01d9136fef363f57e9e33a7b9ec6ddab658cd07e3c0067470de94e4e75b979a1085a29f0efd926");
-    EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
+}
+
+TEST(CosmosSigner, SignTxJsonWithExecuteContractMsg) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON); // obsolete
+    input.set_account_number(1037);
+    input.set_chain_id("gaia-13003");
+    input.set_memo("");
+    input.set_sequence(8);
+
+    auto fromAddress = Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
+    auto toAddress = Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_execute_contract_message();
+    message.set_sender(fromAddress.string());
+    message.set_contract(toAddress.string());
+    message.set_execute_msg("transfer");
+    auto* coin = message.add_coins();
+    coin->set_denom("muon");
+    coin->set_amount("1");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("muon");
+    amountOfFee->set_amount("200");
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+
+    EXPECT_EQ("{\"accountNumber\":\"1037\",\"chainId\":\"gaia-13003\",\"fee\":{\"amounts\":[{\"denom\":\"muon\",\"amount\":\"200\"}],\"gas\":\"200000\"},\"sequence\":\"8\",\"messages\":[{\"executeContractMessage\":{\"sender\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"contract\":\"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573\",\"executeMsg\":\"transfer\",\"coins\":[{\"denom\":\"muon\",\"amount\":\"1\"}]}}]}", json);
+
+    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+
+    EXPECT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"200\",\"denom\":\"muon\"}],\"gas\":\"200000\"},\"memo\":\"\",\"msg\":[{\"type\":\"wasm/MsgExecuteContract\",\"value\":{\"coins\":[{\"amount\":\"1\",\"denom\":\"muon\"}],\"contract\":\"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573\",\"execute_msg\":\"transfer\",\"sender\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"9iQTB1Jjw8FuYPwgzVLbs1cABGYFlk3JRKGQyojQcwY/ni+9D/ViNQMb+4UuokYi74GnpPZpH5RqbJ2ju6VL2g==\"}]}}", output.json());
+
+    EXPECT_EQ(hex(output.signature()), "f62413075263c3c16e60fc20cd52dbb35700046605964dc944a190ca88d073063f9e2fbd0ff56235031bfb852ea24622ef81a7a4f6691f946a6c9da3bba54bda");
+}
+
+TEST(CosmosSigner, SignTxJsonWithRawJSONMsg) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON); // obsolete
+    input.set_account_number(1037);
+    input.set_chain_id("gaia-13003");
+    input.set_memo("");
+    input.set_sequence(8);
+
+    auto fromAddress = Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
+    auto toAddress = Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_raw_json_message();
+    message.set_type("test");
+    message.set_value("{\"test\":\"hello\"}");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("muon");
+    amountOfFee->set_amount("200");
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+
+    EXPECT_EQ(json, "{\"accountNumber\":\"1037\",\"chainId\":\"gaia-13003\",\"fee\":{\"amounts\":[{\"denom\":\"muon\",\"amount\":\"200\"}],\"gas\":\"200000\"},\"sequence\":\"8\",\"messages\":[{\"rawJsonMessage\":{\"type\":\"test\",\"value\":\"{\\\"test\\\":\\\"hello\\\"}\"}}]}");
+
+    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+
+    EXPECT_EQ(output.json(), "{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"200\",\"denom\":\"muon\"}],\"gas\":\"200000\"},\"memo\":\"\",\"msg\":[{\"type\":\"test\",\"value\":{\"test\":\"hello\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"qhxxCOMiVhP7e7Mx+98HUZI0t5DNOFXwzIqNQz+fT6hDKR/ebW0uocsYnE5CiBNEalmBcs5gSIJegNkHhgyEmA==\"}]}}");
+
+    EXPECT_EQ(hex(output.signature()), "aa1c7108e3225613fb7bb331fbdf07519234b790cd3855f0cc8a8d433f9f4fa843291fde6d6d2ea1cb189c4e428813446a598172ce6048825e80d907860c8498");
 }
 
 TEST(CosmosSigner, SignTxJson_WithMode) {
@@ -163,13 +238,13 @@ TEST(CosmosSigner, SignTxJson_WithMode) {
     {
         auto output = Signer::sign(input, TWCoinTypeCosmos);
         EXPECT_EQ(R"({"mode":"async","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}})", output.json());
-        EXPECT_EQ(output.error(), "");
+        EXPECT_EQ(output.error_message(), "");
     }
     input.set_mode(Proto::BroadcastMode::SYNC);
     {
         auto output = Signer::sign(input, TWCoinTypeCosmos);
         EXPECT_EQ(R"({"mode":"sync","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}})", output.json());
-        EXPECT_EQ(output.error(), "");
+        EXPECT_EQ(output.error_message(), "");
     }
 }
 
@@ -214,7 +289,7 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"Cr4BCrsBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKNAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzE4czBoZG5zbGxnY2Nsd2V1OWF5bXc0bmdrdHIyazBya3ZuN2ptbjIHCAEQgI6ZBBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEC7O9c5DejAsZ/lUaN5LMfNukR9GfX5qUrQcHhPh1WNkkSBAoCCAEYAhIUCg4KBXVhdG9tEgUxMjUwMBCgwh4aQK0HIWdFMk+C6Gi1KG/vELe1ffcc1aEWUIqz2t/ZhwqNNHxUUSp27wteiugHEMVTEIOBhs84t2gIcT/nD/1yKOU=\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "ad07216745324f82e868b5286fef10b7b57df71cd5a116508ab3dadfd9870a8d347c54512a76ef0b5e8ae80710c55310838186cf38b76808713fe70ffd7228e5");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(CosmosSigner, SignDirect1) {
@@ -244,7 +319,7 @@ TEST(CosmosSigner, SignDirect1) {
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(CosmosSigner, SignDirect_0a90010a) {
@@ -289,7 +364,7 @@ TEST(CosmosSigner, SignDirect_0a90010a) {
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CpMBCpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKLWNvc21vczFwa3B0cmU3ZmRrbDZnZnJ6bGVzamp2aHhobGMzcjRnbW1rOHJzNhItY29zbW9zMXF5cHF4cHE5cWNyc3N6ZzJwdnhxNnJzMHpxZzN5eWM1bHp2N3h1GhAKBXVjb3NtEgcxMjM0NTY3EiEKCgoAEgQKAggBGAESEwoNCgV1Y29zbRIEMjAwMBDAmgwaQEgXmSAlm4M5bz+OX1GtvvZ3fBV2wrZrp4A/Imd55KM7ASivB/siYJegmYiOKzQ82uwoEmFalNnG2BrHHDwDR2Y=\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "48179920259b83396f3f8e5f51adbef6777c1576c2b66ba7803f226779e4a33b0128af07fb226097a099888e2b343cdaec2812615a94d9c6d81ac71c3c034766");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(CosmosSigner, MsgVote) {

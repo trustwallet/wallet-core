@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include "uint256.h"
 #include "proto/Zilliqa.pb.h"
+#include "uint256.h"
 #include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
@@ -14,7 +14,7 @@
 namespace TW::Zilliqa::tests {
 
 TEST(TWAnySignerZilliqa, Sign) {
-    auto input = Proto::SigningInput();
+    auto input = TW::Zilliqa::Proto::SigningInput();
     auto& tx = *input.mutable_transaction();
     auto& transfer = *tx.mutable_transfer();
     auto key = parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748");
@@ -29,7 +29,7 @@ TEST(TWAnySignerZilliqa, Sign) {
     input.set_private_key(key.data(), key.size());
     transfer.set_amount(amount.data(), amount.size());
 
-    Proto::SigningOutput output;
+    TW::Zilliqa::Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeZilliqa);
 
     EXPECT_EQ(hex(output.signature()), "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268");

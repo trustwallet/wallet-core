@@ -9,6 +9,7 @@
 #include "Amount.h"
 #include "Script.h"
 #include "Data.h"
+#include "PublicKey.h"
 
 #include <memory>
 

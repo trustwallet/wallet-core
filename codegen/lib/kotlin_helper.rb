@@ -72,7 +72,7 @@ module KotlinHelper
       "#{if t.is_nullable then '?' else '' end}.toTwString()"
     else
       if t.is_enum
-        "#{if t.is_nullable then '?' else '' end}.value"
+        "#{if t.is_nullable then '?' else '' end}.nativeValue"
       elsif t.is_class
         "#{if t.is_nullable then '?' else '' end}.pointer"
       else

@@ -61,7 +61,7 @@ class StargazeTests: XCTestCase {
         }
         """;
         XCTAssertJSONEqual(output.serialized, expected)
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 
     func testSign() {
@@ -111,6 +111,6 @@ class StargazeTests: XCTestCase {
         }
         """;
         XCTAssertJSONEqual(output.serialized, expected)
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 }

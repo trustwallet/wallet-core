@@ -11,10 +11,10 @@
 
 namespace TW::Binance {
 
-nlohmann::json signatureJSON(const Proto::SigningInput& input);
-nlohmann::json orderJSON(const Proto::SigningInput& input);
-nlohmann::json inputsJSON(const Proto::SendOrder& order);
-nlohmann::json outputsJSON(const Proto::SendOrder& order);
+nlohmann::json signatureJSON(const Proto::SigningInput& input, const std::string& chainHrp);
+nlohmann::json orderJSON(const Proto::SigningInput& input, const std::string& chainHrp);
+nlohmann::json inputsJSON(const Proto::SendOrder& order, const std::string& chainHrp);
+nlohmann::json outputsJSON(const Proto::SendOrder& order, const std::string& chainHrp);
 nlohmann::json tokenJSON(const Proto::SendOrder_Token& token, bool stringAmount = false);
 nlohmann::json tokensJSON(const ::google::protobuf::RepeatedPtrField<Proto::SendOrder_Token>& tokens);
 

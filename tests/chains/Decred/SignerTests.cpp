@@ -122,6 +122,88 @@ TEST(DecredSigner, SignP2PKH) {
     EXPECT_EQ(hex(encoded), expectedEncoded);
 }
 
+TEST(DecredSigner, SignP2PK) {
+    const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
+
+    const auto address = Address(publicKey);
+    ASSERT_EQ(address.string(), "DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");
+
+
+    // For this example, create a fake transaction that represents what would
+    // ordinarily be the real transaction that is being spent. It contains a
+    // single output that pays to address in the amount of 1 DCR.
+    auto originTx = Transaction();
+
+    auto txInOrigin = TransactionInput();
+    txInOrigin.previousOutput = OutPoint(std::array<byte, 32>{}, UINT32_MAX, 0);
+    txInOrigin.valueIn = 100'000'000;
+    txInOrigin.script = Bitcoin::Script(Data{OP_0, OP_0});
+    originTx.inputs.push_back(txInOrigin);
+
+    auto txOutOrigin = TransactionOutput();
+    txOutOrigin.value = 100'000'000;
+    txOutOrigin.script = Bitcoin::Script::buildPayToPublicKey(publicKey.bytes);
+    originTx.outputs.push_back(txOutOrigin);
+
+    ASSERT_EQ(hex(originTx.hash()), "ac59d53c1eaf3fa41a47a9fca9d6b5b79857e7ef8cbe2556460e690e71eeb08b");
+
+    // Setup input
+    Bitcoin::Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(100'000'000);
+    input.set_byte_fee(1);
+    input.set_to_address("DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");
+    input.set_change_address("DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");
+
+    auto utxoKey0 = parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c");
+    input.add_private_key(utxoKey0.data(), utxoKey0.size());
+
+    auto utxo0 = input.add_utxo();
+    auto utxo0Script = Bitcoin::Script::buildPayToPublicKey(publicKey.bytes);
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(100'000'000);
+    utxo0->mutable_out_point()->set_hash(originTx.hash().data(), originTx.hash().size());
+    utxo0->mutable_out_point()->set_index(0);
+
+	// Create the transaction to redeem the fake transaction.
+    auto redeemTx = Transaction();
+
+    auto txIn = TransactionInput();
+    txIn.previousOutput = OutPoint(originTx.hash(), 0, 0);
+    txIn.valueIn = 100'000'000;
+    redeemTx.inputs.push_back(txIn);
+
+    auto txOut = TransactionOutput();
+    redeemTx.outputs.push_back(txOut);
+
+    auto plan = input.mutable_plan();
+    plan->set_amount(100'000'000);
+    plan->set_available_amount(100'000'000);
+    plan->set_fee(0);
+    plan->set_change(0);
+    auto utxop0 = plan->add_utxos();
+    *utxop0 = *utxo0;
+
+    // Sign
+    auto signer = Signer(std::move(input));
+    signer._transaction = redeemTx;
+    signer.txPlan.amount = 100'000'000;
+    const auto result = signer.sign();
+
+    ASSERT_TRUE(result);
+
+    const auto expectedSignature = "47304402202f9e6b7c849fc4ebcea8f544680f2652d24cede340b9370084d740e6483f44a60220582c9e70faa35fdf5af38a4268ef5564bbb527fb4e39303afba6ce71848a7b9301";
+    EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
+
+    const auto expectedEncoded =
+        "0100000001ac59d53c1eaf3fa41a47a9fca9d6b5b79857e7ef8cbe2556460e690e71eeb08b0000000000ffffffff01000000000000000000000000000000000000000100e1f5050000000000000000ffffffff4847304402202f9e6b7c849fc4ebcea8f544680f2652d24cede340b9370084d740e6483f44a60220582c9e70faa35fdf5af38a4268ef5564bbb527fb4e39303afba6ce71848a7b9301";
+    auto encoded = Data();
+    result.payload().encode(encoded);
+    EXPECT_EQ(hex(encoded), expectedEncoded);
+}
+
 TEST(DecredSigner, SignP2SH) {
     const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -425,9 +507,12 @@ TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
     utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
 
     // Sign
-    auto result = Signer(std::move(input)).sign();
+    auto result = Signer::sign(std::move(input));
+    ASSERT_NE(result.error(), Common::Proto::OK);
 
-    ASSERT_FALSE(result) << std::to_string(result.error());
+    // PreImageHashes
+    auto preResult = Signer::preImageHashes(std::move(input));
+    ASSERT_NE(preResult.error(), Common::Proto::OK);
 }
 // clang-format on
 

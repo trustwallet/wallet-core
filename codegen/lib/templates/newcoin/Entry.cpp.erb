@@ -25,4 +25,12 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
+TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    return TW::Data();
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    
+}
+
 } // namespace TW::<%= format_name(coin) %>

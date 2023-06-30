@@ -8,6 +8,7 @@ expect enum class <%= entity.name %> {
 <%  end -%>
     ;
 
+    val value: UInt
 <%  if has_string -%>
     val stringValue: String
 <%  end -%>
@@ -25,5 +26,9 @@ expect enum class <%= entity.name %> {
 <%- end -%>
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>
+
+    companion object {
+        fun fromValue(value: UInt): <%= entity.name %>?
+    }
 <%  end -%>
 }

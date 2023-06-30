@@ -61,12 +61,12 @@ TEST(DigiByteTransaction, SignTransaction) {
     protoPlan = plan.proto();
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(Bitcoin::SigningInput(input));
+    auto result = Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::sign(Bitcoin::SigningInput(input));
     auto signedTx = result.payload();
     ASSERT_TRUE(result);
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::NonSegwit);
+    signedTx.encode(serialized, Bitcoin::Transaction::SegwitFormatMode::NonSegwit);
     ASSERT_EQ(
         hex(serialized),
         "01000000"
@@ -110,7 +110,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     input.add_private_key(utxoKey0.data(), utxoKey0.size());
 
     auto utxo0 = input.add_utxo();
-    auto utxo0Script = Script(parse_hex("00144b62694cfdd7bdac59cbed211288ccd5c0dabd02"));
+    auto utxo0Script = Bitcoin::Script(parse_hex("00144b62694cfdd7bdac59cbed211288ccd5c0dabd02"));
     utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
     utxo0->set_amount(utxo_amount);
     auto hash0 = parse_hex("80a16412a880d13b0c88929397a50341018da2e78b70b313062b4a496fea5940");
@@ -118,7 +118,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+    auto result = Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::sign(input);
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
