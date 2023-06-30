@@ -87,7 +87,6 @@ class CoinAddressDerivationTests: XCTestCase {
                      .polygonzkEVM,
                      .scroll,
                      .arbitrum,
-                     .arbitrumNova,
                      .ecochain,
                      .avalancheCChain,
                      .xdai,
@@ -107,14 +106,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .meter,
                      .okxchain,
                      .confluxeSpace,
-                     .opBNB,
-                     .acalaEVM,
-                     .neon,
-                     .base,
-                     .linea,
-                     .greenfield,
-                     .mantle,
-                     .zenEON:
+                     .acalaEVM:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
@@ -379,9 +371,6 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .noble:
                     let expectedResult = "noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa"
-                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .sei:
-                    let expectedResult = "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
