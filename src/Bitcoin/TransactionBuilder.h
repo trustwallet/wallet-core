@@ -30,11 +30,7 @@ public:
         Transaction tx;
         tx.lockTime = input.lockTime;
 
-        auto outputToAmount = input.amount;
-        if (plan.useMaxAmount) {
-            outputToAmount = plan.amount;
-        }
-        auto outputTo = prepareOutputWithScript(input.toAddress, outputToAmount, input.coinType);
+        auto outputTo = prepareOutputWithScript(input.toAddress, plan.amount, input.coinType);
         if (!outputTo.has_value()) { 
             return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_address);
         }

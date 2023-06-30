@@ -82,6 +82,65 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
     return input;
 }
 
+/// This test only checks if the transaction output will have an expected value.
+/// It doesn't check correctness of the encoded representation.
+/// Issue: https://github.com/trustwallet/wallet-core/issues/3273
+TEST(BitcoinSigning, SignMaxAmount) {
+    const auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
+
+    const auto revUtxoHash0 =
+        parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto inPubKey0 =
+        parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
+    const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
+    const auto utxoScript0 = parse_hex("0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+
+    const auto initialAmount = 10'189'533;
+    const auto availableAmount = 10'189'534;
+    const auto fee = 110;
+    const auto amountWithoutFee = availableAmount - fee;
+    // There shouldn't be any change
+    const auto change = 0;
+
+    Proto::SigningInput signingInput;
+    signingInput.set_coin_type(TWCoinTypeBitcoin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(initialAmount);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp");
+    signingInput.set_change_address(ownAddress);
+    signingInput.set_use_max_amount(true);
+
+    *signingInput.add_private_key() = std::string(privateKey.begin(), privateKey.end());
+
+    // Add UTXO
+    auto utxo = signingInput.add_utxo();
+    utxo->set_script(utxoScript0.data(), utxoScript0.size());
+    utxo->set_amount(availableAmount);
+    utxo->mutable_out_point()->set_hash(
+        std::string(revUtxoHash0.begin(), revUtxoHash0.end()));
+    utxo->mutable_out_point()->set_index(0);
+    utxo->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Plan
+    Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, TWCoinTypeBitcoin);
+    // Plan is checked, assume it is accepted
+    EXPECT_EQ(plan.amount(), amountWithoutFee);
+    EXPECT_EQ(plan.available_amount(), availableAmount);
+    EXPECT_EQ(plan.fee(), fee);
+    EXPECT_EQ(plan.change(), change);
+
+    *signingInput.mutable_plan() = plan;
+
+    Proto::SigningOutput output;
+    ANY_SIGN(signingInput, TWCoinTypeBitcoin);
+
+    const auto& output0 = output.transaction().outputs().at(0);
+    EXPECT_EQ(output0.value(), amountWithoutFee);
+}
+
 TEST(BitcoinSigning, SignBRC20TransferCommit) {
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto fullAmount = 26400;
@@ -589,11 +648,11 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
 TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     auto input = buildInputP2WPKH(1'000, TWBitcoinSigHashTypeAll, 625'000'000, 600'000'000, true);
-    input.totalAmount = 1224999773;
+    input.totalAmount = 1'224'999'773;
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000, 600'000'000}, 1224999773, 227));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000, 600'000'000}, 1'224'999'773, 227));
     }
 
     // Sign
