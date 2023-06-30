@@ -37,11 +37,7 @@ struct TransactionBuilder {
         auto blockHash = plan.preBlockHash;
         auto blockHeight = plan.preBlockHeight;
 
-        auto outputToAmount = input.amount;
-        if (plan.useMaxAmount) {
-            outputToAmount = plan.amount;
-        }
-        auto outputTo = prepareOutputWithScript(input.toAddress, outputToAmount, input.coinType, blockHash, blockHeight);
+        auto outputTo = prepareOutputWithScript(input.toAddress, plan.amount, input.coinType, blockHash, blockHeight);
         if (!outputTo.has_value()) { 
             return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_address);
         }
