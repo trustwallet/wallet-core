@@ -1,6 +1,6 @@
 <img src="docs/banner.png" align="center" title="Trust logo">
 
-Trust Wallet Core is an open source, cross-platform, mobile-focused library
+Trust Wallet Core is an open-source, cross-platform, mobile-focused library
 implementing low-level cryptographic wallet functionality for a high number of blockchains.
 It is a core part of the popular [Trust Wallet](https://trustwallet.com), and some other projects.
 Most of the code is C++ with a set of strict C interfaces, and idiomatic interfaces for supported languages:
@@ -26,7 +26,7 @@ For comprehensive documentation, see [developer.trustwallet.com](https://develop
 
 # Supported Blockchains
 
-Wallet Core supports more than **60** blockchains: Bitcoin, Ethereum, BNB, Cosmos, Solana, and most major blockchain platforms.
+Wallet Core supports more than **130** blockchains: Bitcoin, Ethereum, BNB, Cosmos, Solana, and most major blockchain platforms.
 The full list is [here](docs/registry.md).
 
 # Building
@@ -40,7 +40,7 @@ If you want to use wallet core in your project follow these instructions.
 
 ## Android
 
-Android releases are hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), you need to add GitHub access token to install it. Please checkout [this installation guide](https://developer.trustwallet.com/wallet-core/integration-guide/android-guide#adding-library-dependency) or `build.gradle` from our [android sample](https://github.com/trustwallet/wallet-core/blob/master/samples/android/build.gradle)
+Android releases are hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), you need to add GitHub access token to install it. Please check out [this installation guide](https://developer.trustwallet.com/wallet-core/integration-guide/android-guide#adding-library-dependency) or `build.gradle` from our [android sample](https://github.com/trustwallet/wallet-core/blob/master/samples/android/build.gradle)
 
 Don't forget replacing the version in the code with latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
 
@@ -100,7 +100,6 @@ Projects using Trust Wallet Core. Add yours too!
 [<img src="https://trustwallet.com/assets/images/trust_logotype.svg" alt="Trust Wallet"/>](https://trustwallet.com)
 
 [Coinpaprika](https://coinpaprika.com/)
-| [IFWallet](https://www.ifwallet.com/)
 | [crypto.com](https://crypto.com)
 | [Alice](https://www.alicedapp.com/)
 | [Frontier](https://frontier.xyz/)
