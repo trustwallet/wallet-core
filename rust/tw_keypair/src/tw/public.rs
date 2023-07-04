@@ -124,4 +124,14 @@ impl PublicKey {
             PublicKey::Starkex(stark) => stark.to_vec(),
         }
     }
+
+    /// Returns a `secp256k1` public key if the key type is matched.
+    pub fn to_secp256k1(&self) -> Option<&secp256k1::PublicKey> {
+        match self {
+            PublicKey::Secp256k1(secp256k1) | PublicKey::Secp256k1Extended(secp256k1) => {
+                Some(secp256k1)
+            },
+            _ => None,
+        }
+    }
 }

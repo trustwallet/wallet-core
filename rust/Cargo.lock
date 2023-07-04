@@ -1215,6 +1215,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_any_coin"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_coin_registry",
+ "tw_memory",
+]
+
+[[package]]
 name = "tw_bitcoin"
 version = "0.1.0"
 dependencies = [
@@ -1226,6 +1235,27 @@ dependencies = [
  "tw_memory",
  "tw_misc",
  "tw_proto",
+]
+
+[[package]]
+name = "tw_coin_entry"
+version = "0.1.0"
+dependencies = [
+ "tw_keypair",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_coin_registry"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "serde",
+ "serde_json",
+ "tw_coin_entry",
+ "tw_ethereum",
+ "tw_memory",
+ "tw_misc",
 ]
 
 [[package]]
@@ -1243,9 +1273,11 @@ dependencies = [
 name = "tw_ethereum"
 version = "0.1.0"
 dependencies = [
+ "tw_coin_entry",
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
+ "tw_proto",
 ]
 
 [[package]]

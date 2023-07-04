@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::AddressError;
 use std::fmt::{Display, Formatter};
 use std::ops::{RangeFrom, RangeInclusive};
 use std::str::FromStr;
+use tw_coin_entry::AddressError;
 use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160};
 use tw_keypair::ecdsa::secp256k1;

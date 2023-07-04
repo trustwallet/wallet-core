@@ -4,5 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod address;
-pub mod entry;
+/// TODO extend during adding new blockchains.
+pub trait Prefix {
+    // fn with_hrp(hrp: String) -> Option<Self> { None }
+}
+
+pub struct NoPrefix;
+
+impl Prefix for NoPrefix {}

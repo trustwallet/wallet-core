@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
+use quick_protobuf::{BytesReader, Writer};
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]
@@ -15,7 +15,7 @@ mod generated {
 pub use generated::TW::*;
 pub use quick_protobuf::{
     deserialize_from_slice as deserialize_prefixed, serialize_into_vec as serialize_prefixed,
-    Error as ProtoError, Result as ProtoResult,
+    Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
 };
 
 pub mod ffi;
