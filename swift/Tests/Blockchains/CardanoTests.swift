@@ -62,6 +62,51 @@ class CardanoTests: XCTestCase {
         let txid = output.txID
         XCTAssertEqual(txid.hexString, "9b5b15e133cd73ccaa85307d2986aebc846505118a2eb4e6111e6b4b67d1f389")
     }
+    
+    func testSignTransferFromLegacy() throws {
+        let privateKey = PrivateKey(data: Data(hexString: "c031e942f6bf2b2864700e7da20964ee6bb6d716345ce2e24d8c00e6500b574411111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")!)!
+        let publicKey = privateKey.getPublicKeyEd25519Cardano()
+        let byronAddress = Cardano.getByronAddress(publicKey: publicKey)
+        XCTAssertEqual(
+            byronAddress,
+            "Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn"
+        )
+        var input = CardanoSigningInput.with {
+            $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
+            $0.transferMessage.changeAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
+            $0.transferMessage.amount = 7000000
+            $0.ttl = 53333333
+        }
+        
+        input.privateKey.append(privateKey.data)
+
+        let utxo1 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")!
+            $0.outPoint.outputIndex = 1
+            $0.address = byronAddress
+            $0.amount = 1500000
+        }
+        input.utxos.append(utxo1)
+
+        let utxo2 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0")!
+            $0.outPoint.outputIndex = 0
+            $0.address = byronAddress
+            $0.amount = 6500000
+        }
+        input.utxos.append(utxo2)
+
+        // Sign
+        let output: CardanoSigningOutput = AnySigner.sign(input: input, coin: .cardano)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
+
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString,
+            "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000c9181021a0002b0bf031a032dcd55a20081825820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e0281845820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e5820000000000000000000000000000000000000000000000000000000000000000041a0f6")
+
+        let txid = output.txID
+        XCTAssertEqual(txid.hexString, "c83a6aec9c97a8c9f17e5b8e921c79f84ee150f062d1aa3cd0baaf60a48f790e")
+    }
 
     func testSignTransferToken1() throws {
         let toToken = CardanoTokenAmount.with {

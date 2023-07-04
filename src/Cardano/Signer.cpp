@@ -131,7 +131,7 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     // collect every unique input UTXO address, preserving order
     std::vector<std::string> addresses;
     for (auto& u : plan.utxos) {
-        if (!AddressV3::isValid(u.address)) {
+        if (!AddressV3::isValidLegacy(u.address)) {
             return Common::Proto::Error_invalid_address;
         }
         addresses.emplace_back(u.address);
@@ -181,24 +181,43 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     return Common::Proto::OK;
 }
 
-Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatures) {
+Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatures, const bool addByronSignatures) {
+    std::map<Cbor::Encode, Cbor::Encode> cborizeSigs;
     // signatures as Cbor
     // clang-format off
-    std::vector<Cbor::Encode> sigsCbor;
+    std::vector<Cbor::Encode> sigsShelly;
+    std::vector<Cbor::Encode> sigsByron;
+
     for (auto& s : signatures) {
-        sigsCbor.emplace_back(Cbor::Encode::array({
+        sigsShelly.emplace_back(Cbor::Encode::array({
             Cbor::Encode::bytes(s.first),
             Cbor::Encode::bytes(s.second)
         }));
+
+        if (addByronSignatures) {
+            sigsByron.emplace_back(Cbor::Encode::array({
+                Cbor::Encode::bytes(s.first),
+                Cbor::Encode::bytes(s.second),
+                Cbor::Encode::bytes(Data(32)),
+                Cbor::Encode::bytes(parse_hex("A0"))
+            }));
+        }
+    }
+
+    cborizeSigs.emplace(
+        Cbor::Encode::uint(0),
+        Cbor::Encode::array(sigsShelly)
+    );
+
+    if (!sigsByron.empty()) {
+        cborizeSigs.emplace(
+            Cbor::Encode::uint(2),
+            Cbor::Encode::array(sigsByron)
+        );
     }
 
     // Cbor-encode txAux & signatures
-    return Cbor::Encode::map({
-        std::make_pair(
-            Cbor::Encode::uint(0),
-            Cbor::Encode::array(sigsCbor)
-        )
-    });
+    return Cbor::Encode::map(cborizeSigs);
     // clang-format on
 }
 
@@ -242,7 +261,16 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
     if (sigError != Common::Proto::OK) {
         return sigError;
     }
-    const auto sigsCbor = cborizeSignatures(signatures);
+
+    bool hasLegacyUtxos = false;
+    for (const auto& utxo : input.utxos()) {
+        if (AddressV2::isValid(utxo.address())) {
+            hasLegacyUtxos = true;
+            break;
+        }
+    }
+
+    const auto sigsCbor = cborizeSignatures(signatures, hasLegacyUtxos);
 
     // Cbor-encode txAux & signatures
     const auto cbor = Cbor::Encode::array({
@@ -558,7 +586,16 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
 
     std::vector<std::pair<Data, Data>> signatures;
     signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
-    const auto sigsCbor = cborizeSignatures(signatures);
+
+    bool hasLegacyUtxos = false;
+    for (const auto& utxo : input.utxos()) {
+        if (AddressV2::isValid(utxo.address())) {
+            hasLegacyUtxos = true;
+            break;
+        }
+    }
+
+    const auto sigsCbor = cborizeSignatures(signatures, hasLegacyUtxos);
 
     // Cbor-encode txAux & signatures
     const auto cbor = Cbor::Encode::array({

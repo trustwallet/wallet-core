@@ -630,8 +630,9 @@ TEST(CardanoSigning, SignTransferFromLegacy) {
     auto signer = Signer(input);
     const auto output = signer.sign();
 
-    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
-    EXPECT_EQ(hex(output.encoded()), "");
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    EXPECT_EQ(hex(output.encoded()), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000c9181021a0002b0bf031a032dcd55a20081825820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e0281845820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e5820000000000000000000000000000000000000000000000000000000000000000041a0f6");
+    EXPECT_EQ(hex(data(output.tx_id())), "c83a6aec9c97a8c9f17e5b8e921c79f84ee150f062d1aa3cd0baaf60a48f790e");
 }
 
 TEST(CardanoSigning, SignTransferToLegacy) {
