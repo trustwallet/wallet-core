@@ -121,6 +121,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
 
+        const auto legacyAddress = AddressV2(publicKey);
+        privateKeys[legacyAddress.string()] = privateKeyData;
+
         // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
         const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
         if (!stakingPrivKeyData.empty()) {
