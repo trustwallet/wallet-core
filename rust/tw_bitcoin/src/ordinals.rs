@@ -70,23 +70,38 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
 
     // Create an Ordinals Inscription.
-    let script = ScriptBuf::builder()
+    let builder = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         .push_slice(b"ord")
         // Separator.
-        .push_opcode(OP_PUSHBYTES_1)
-        // This seems to be necessary for now and indicates the size of the
-        // length indicator. The method `push_slice` prefixes the data with the
-        // length, but does not specify how many bytes that prefix requires.
-        //
-        // TODO: Look up if this could be somehow improved or if the `bitcoin`
-        // crate can/should handle that.
-        .push_opcode(OP_PUSHBYTES_1)
+        .push_opcode(OP_PUSHBYTES_1);
+
+    // The function `script::Builder::push_slice()` has a default behavior where
+    // it only prefixes the length of the pushed bytes with an indicator when
+    // the number of pushed bytes exceeds 75. Specifically, when the number of
+    // bytes is 75 or less, the data pushed to the script has the format:
+    // <DATA.len><DATA>
+    //
+    // But when the number of bytes exceeds 75, the function prefixes the data
+    // with an opcode OP_PUSHDATA[1|2|4], creating a script in this format:
+    // <OP_PUSHDATA[1|2|4]><DATA.len><DATA>
+    //
+    // However, when dealing with the MIME type of an Ordinal Inscription, the
+    // requirements differ. The OP_PUSHDATA prefix is always needed, regardless
+    // of whether the number of bytes pushed to the script is below 76.
+    let builder = if data.len() < 76 {
+        builder.push_opcode(OP_PUSHBYTES_1)
+    } else {
+        builder
+    };
+
+    let script = builder
+        // MIME type identifying the data
         .push_slice(mime_buf.as_push_bytes())
         // Separator.
         .push_opcode(OP_PUSHBYTES_0)
-        // The payload itself.
+        // The data itself.
         .push_slice(data_buf)
         .push_opcode(OP_ENDIF)
         .into_script();
