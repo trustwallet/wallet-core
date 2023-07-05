@@ -19,9 +19,6 @@ class CoinAddressDerivationTests: XCTestCase {
                 let address = coin.address(string: derivedAddress)
 
                 switch coin {
-                case .acala:
-                    let expectedResult = "25GGezx3LWFQj6HZpYzoWoVzLsHojGtybef3vthC9nd19ms3"
-                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .aeternity:
                     let expectedResult = "ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -104,9 +101,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .kavaEvm,
                      .klaytn,
                      .meter,
-                     .okxchain,
-                     .confluxeSpace,
-                     .acalaEVM:
+                     .okxchain:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
