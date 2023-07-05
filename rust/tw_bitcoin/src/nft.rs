@@ -28,6 +28,10 @@ pub struct NftInscription(OrdinalsInscription);
 
 impl NftInscription {
     pub fn new_image(data: &[u8], ty: ImageType, recipient: Recipient<PublicKey>) -> Result<Self> {
-        OrdinalsInscription::new(ty.to_string().as_bytes(), data, recipient).map(NftInscription)
+        OrdinalsInscription::new(ty.to_string().as_bytes(), data, recipient)
+		.map(NftInscription)
+    }
+    pub fn inscription(&self) -> &OrdinalsInscription {
+        &self.0
     }
 }

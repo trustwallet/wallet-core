@@ -1,5 +1,6 @@
 mod address;
 mod brc20_transfer;
+mod nft;
 mod ffi;
 mod p2pkh;
 mod p2tr_key_path;
