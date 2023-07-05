@@ -177,8 +177,7 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         const auto privateKey = PrivateKey(privateKeyData);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto signature = privateKey.sign(txId, TWCurveED25519ExtendedCardano);
-        // public key (first 32 bytes) and signature (64 bytes)
-        signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
+        signatures.emplace_back(publicKey.bytes, signature);
     }
 
     return Common::Proto::OK;
@@ -193,15 +192,19 @@ Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatu
 
     for (auto& s : signatures) {
         sigsShelly.emplace_back(Cbor::Encode::array({
-            Cbor::Encode::bytes(s.first),
+            // public key (first 32 bytes)
+            Cbor::Encode::bytes(subData(s.first, 0, 32)),
             Cbor::Encode::bytes(s.second)
         }));
 
         if (addByronSignatures) {
             sigsByron.emplace_back(Cbor::Encode::array({
-                Cbor::Encode::bytes(s.first),
+                // skey - public key (first 32 bytes)  
+                Cbor::Encode::bytes(subData(s.first, 0, 32)),
                 Cbor::Encode::bytes(s.second),
-                Cbor::Encode::bytes(Data(32)),
+                // vkey - public key (second 32 bytes started from 32)
+                Cbor::Encode::bytes(subData(s.first, 32, 32)),
+                // payload
                 Cbor::Encode::bytes(parse_hex("A0"))
             }));
         }
@@ -588,7 +591,7 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
     }
 
     std::vector<std::pair<Data, Data>> signatures;
-    signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
+    signatures.emplace_back(publicKey.bytes, signature);
 
     bool hasLegacyUtxos = false;
     for (const auto& utxo : input.utxos()) {
