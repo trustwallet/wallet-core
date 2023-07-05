@@ -13,6 +13,7 @@ use std::collections::HashMap;
 
 type RegistryMap = HashMap<CoinType, CoinItem>;
 
+/// cbindgen:ignore
 const REGISTRY_JSON: &str =
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../registry.json"));
 

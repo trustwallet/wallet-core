@@ -1,0 +1,8 @@
+[package]
+name = "tw_number"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+primitive-types = "0.12.1"
+tw_hash = { path = "../tw_hash" }

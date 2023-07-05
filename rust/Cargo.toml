@@ -11,6 +11,7 @@ members = [
     "tw_memory",
     "tw_misc",
     "tw_move_parser",
+    "tw_number",
     "tw_proto",
     "wallet_core_rs",
 ]
