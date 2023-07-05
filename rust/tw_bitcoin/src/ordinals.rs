@@ -65,46 +65,38 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     let mut mime_buf = PushBytesBuf::new();
     mime_buf.extend_from_slice(mime).map_err(|_| Error::Todo)?;
 
-    // Create data buffer.
-    let mut data_buf = PushBytesBuf::new();
-    data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
-
     // Create an Ordinals Inscription.
-    let builder = ScriptBuf::builder()
+    let mut builder = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         .push_slice(b"ord")
         // Separator.
-        .push_opcode(OP_PUSHBYTES_1);
-
-    // The function `script::Builder::push_slice()` has a default behavior where
-    // it only prefixes the length of the pushed bytes with an indicator when
-    // the number of pushed bytes exceeds 75. Specifically, when the number of
-    // bytes is 75 or less, the data pushed to the script has the format:
-    // <DATA.len><DATA>
-    //
-    // But when the number of bytes exceeds 75, the function prefixes the data
-    // with an opcode OP_PUSHDATA[1|2|4], creating a script in this format:
-    // <OP_PUSHDATA[1|2|4]><DATA.len><DATA>
-    //
-    // However, when dealing with the MIME type of an Ordinal Inscription, the
-    // requirements differ. The OP_PUSHDATA prefix is always needed, regardless
-    // of whether the number of bytes pushed to the script is below 76.
-    let builder = if data.len() < 76 {
-        builder.push_opcode(OP_PUSHBYTES_1)
-    } else {
-        builder
-    };
-
-    let script = builder
+        .push_opcode(OP_PUSHBYTES_1)
+        // MIME types require this addtional push. It seems that the original
+        // creator inadvertently used `push_slice(&[1])`, which leads to
+        // `<1><1>`, which denotes a length prefix followed by the value. On the
+        // other hand, for the data, `push_slice(&[])` is used, producing `<0>`.
+        // This denotes a length prefix followed by no data, as opposed to
+        // '<1><0>', which would be a reasonable assumption. While this appears
+        // inconsistent, it's the current requirement.
+        .push_opcode(OP_PUSHBYTES_1)
         // MIME type identifying the data
         .push_slice(mime_buf.as_push_bytes())
         // Separator.
-        .push_opcode(OP_PUSHBYTES_0)
-        // The data itself.
-        .push_slice(data_buf)
-        .push_opcode(OP_ENDIF)
-        .into_script();
+        .push_opcode(OP_PUSHBYTES_0);
+
+    // Push the actual data in chunks.
+    for chunk in data.chunks(520) {
+        // Create data buffer.
+        let mut data_buf = PushBytesBuf::new();
+        data_buf.extend_from_slice(chunk).map_err(|_| Error::Todo)?;
+
+        // Push buffer
+        builder = builder.push_slice(data_buf);
+    }
+
+    // Finalize scripts.
+    let script = builder.push_opcode(OP_ENDIF).into_script();
 
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
