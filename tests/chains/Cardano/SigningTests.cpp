@@ -598,41 +598,43 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
     EXPECT_EQ(hex(txid), "0db1ea8c5c5828bbd027fcef3da02a63b86899db670ad7bb0630cefbe35944fa");
 }
 
+/// Successfully broadcasted:
+/// https://cardanoscan.io/transaction/87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628
 TEST(CardanoSigning, SignTransferFromLegacy) {
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();
-    const auto txHash1 = parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
+    const auto txHash1 = parse_hex("8316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f63");
     utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
-    utxo1->mutable_out_point()->set_output_index(1);
-    utxo1->set_address("Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
-    utxo1->set_amount(1500000);
+    utxo1->mutable_out_point()->set_output_index(0);
+    utxo1->set_address("Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8");
+    utxo1->set_amount(2500000);
     auto* utxo2 = input.add_utxos();
-    const auto txHash2 = parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
+    const auto txHash2 = parse_hex("e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946");
     utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
     utxo2->mutable_out_point()->set_output_index(0);
-    utxo2->set_address("Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
-    utxo2->set_amount(6500000);
+    utxo2->set_address("Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8");
+    utxo2->set_amount(1700000);
 
-    const auto privateKeyData = parse_hex("c031e942f6bf2b2864700e7da20964ee6bb6d716345ce2e24d8c00e6500b574411111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+    const auto privateKeyData = parse_hex("98f266d1aac660179bc2f456033941238ee6b2beb8ed0f9f34c9902816781f5a9903d1d395d6ab887b65ea5e344ef09b449507c21a75f0ce8c59d0ed1c6764eba7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f4e890ca4eb6bec44bf751b5a843174534af64d6ad1f44e0613db78a7018781f5aa151d2997f52059466b715d8eefab30a78b874ae6ef4931fa58bb21ef8ce2423d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4");
     {
         const auto privKey = PrivateKey(privateKeyData);
         const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto addr = AddressV2(pubKey);
-        EXPECT_EQ(addr.string(), "Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
+        EXPECT_EQ(addr.string(), "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8");
     }
     input.add_private_key(privateKeyData.data(), privateKeyData.size());
-    input.mutable_transfer_message()->set_to_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
-    input.mutable_transfer_message()->set_change_address(ownAddress1);
-    input.mutable_transfer_message()->set_amount(7000000);
+    input.mutable_transfer_message()->set_to_address("addr1q90uh2eawrdc9vaemftgd50l28yrh9lqxtjjh4z6dnn0u7ggasexxdyyk9f05atygnjlccsjsggtc87hhqjna32fpv5qeq96ls");
+    input.mutable_transfer_message()->set_change_address("addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08");
+    input.mutable_transfer_message()->set_amount(3000000);
     input.mutable_transfer_message()->set_use_max_amount(false);
-    input.set_ttl(53333333);
+    input.set_ttl(190000000);
 
     auto signer = Signer(input);
     const auto output = signer.sign();
 
     EXPECT_EQ(output.error(), Common::Proto::OK);
-    EXPECT_EQ(hex(output.encoded()), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000c9181021a0002b0bf031a032dcd55a20081825820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e0281845820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e5820000000000000000000000000000000000000000000000000000000000000000041a0f6");
-    EXPECT_EQ(hex(data(output.tx_id())), "c83a6aec9c97a8c9f17e5b8e921c79f84ee150f062d1aa3cd0baaf60a48f790e");
+    EXPECT_EQ(hex(output.encoded()), "83a400828258208316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f6300825820e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946000182825839015fcbab3d70db82b3b9da5686d1ff51c83b97e032e52bd45a6ce6fe7908ec32633484b152fa756444e5fc62128210bc1fd7b8253ec5490b281a002dc6c082583901a9426fe0cee6d01d1fe32af650e1e7b5d52c35d8a53218f3d0861531621c2b1ebdf4f11f96da67fdcb0e1d97a7e778566166be55f193c30f1a000f9ec1021a0002b0bf031a0b532b80a20081825820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d090281845820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d095820a7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f441a0f6");
+    EXPECT_EQ(hex(data(output.tx_id())), "0203ce2c91f59f169a26e9ef91254639d2b7911afac9c7c0ae64539f88ba46a5");
 }
 
 TEST(CardanoSigning, SignTransferToLegacy) {

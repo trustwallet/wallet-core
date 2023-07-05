@@ -63,36 +63,44 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(txid.hexString, "9b5b15e133cd73ccaa85307d2986aebc846505118a2eb4e6111e6b4b67d1f389")
     }
     
+    /// Successfully broadcasted:
+    /// https://cardanoscan.io/transaction/0203ce2c91f59f169a26e9ef91254639d2b7911afac9c7c0ae64539f88ba46a5
     func testSignTransferFromLegacy() throws {
-        let privateKey = PrivateKey(data: Data(hexString: "c031e942f6bf2b2864700e7da20964ee6bb6d716345ce2e24d8c00e6500b574411111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")!)!
+        let privateKey = PrivateKey(data: Data(hexString: "98f266d1aac660179bc2f456033941238ee6b2beb8ed0f9f34c9902816781f5a9903d1d395d6ab887b65ea5e344ef09b449507c21a75f0ce8c59d0ed1c6764eba7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f4e890ca4eb6bec44bf751b5a843174534af64d6ad1f44e0613db78a7018781f5aa151d2997f52059466b715d8eefab30a78b874ae6ef4931fa58bb21ef8ce2423d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4")!)!
         let publicKey = privateKey.getPublicKeyEd25519Cardano()
         let byronAddress = Cardano.getByronAddress(publicKey: publicKey)
+        
+        XCTAssertEqual(
+            publicKey.data.hexString,
+        "d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41ea7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f40b5aaa6103dc10842894a1eeefc5447b9bcb9bcf227d77e57be195d17bc03263d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4"
+        )
+
         XCTAssertEqual(
             byronAddress,
-            "Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn"
+            "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8"
         )
         var input = CardanoSigningInput.with {
-            $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
-            $0.transferMessage.changeAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
-            $0.transferMessage.amount = 7000000
-            $0.ttl = 53333333
+            $0.transferMessage.toAddress = "addr1q90uh2eawrdc9vaemftgd50l28yrh9lqxtjjh4z6dnn0u7ggasexxdyyk9f05atygnjlccsjsggtc87hhqjna32fpv5qeq96ls"
+            $0.transferMessage.changeAddress = "addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08"
+            $0.transferMessage.amount = 3000000
+            $0.ttl = 190000000
         }
-        
+
         input.privateKey.append(privateKey.data)
 
         let utxo1 = CardanoTxInput.with {
-            $0.outPoint.txHash = Data(hexString: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")!
-            $0.outPoint.outputIndex = 1
-            $0.address = byronAddress
-            $0.amount = 1500000
+            $0.outPoint.txHash = Data(hexString: "8316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f63")!
+            $0.outPoint.outputIndex = 0
+            $0.address = "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8"
+            $0.amount = 2500000
         }
         input.utxos.append(utxo1)
 
         let utxo2 = CardanoTxInput.with {
-            $0.outPoint.txHash = Data(hexString: "554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0")!
+            $0.outPoint.txHash = Data(hexString: "e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946")!
             $0.outPoint.outputIndex = 0
-            $0.address = byronAddress
-            $0.amount = 6500000
+            $0.address = "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8"
+            $0.amount = 1700000
         }
         input.utxos.append(utxo2)
 
@@ -100,12 +108,9 @@ class CardanoTests: XCTestCase {
         let output: CardanoSigningOutput = AnySigner.sign(input: input, coin: .cardano)
         XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
 
-        let encoded = output.encoded
-        XCTAssertEqual(encoded.hexString,
-            "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000c9181021a0002b0bf031a032dcd55a20081825820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e0281845820a98fa31516d17fff3724e0d28b2b68f121a167cbf2205c4bddbe4acba265725b5840f82a6fd89ce3618a63f54ab9aeebc55bd3adea3a1c9c7ba4a97f3c69773c16cf6c0cee0a68d91eb318ca821a57b3a9e1a3c378d06b8ded98d9fee10307bf8d0e5820000000000000000000000000000000000000000000000000000000000000000041a0f6")
+        XCTAssertEqual(output.encoded.hexString, "83a400828258208316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f6300825820e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946000182825839015fcbab3d70db82b3b9da5686d1ff51c83b97e032e52bd45a6ce6fe7908ec32633484b152fa756444e5fc62128210bc1fd7b8253ec5490b281a002dc6c082583901a9426fe0cee6d01d1fe32af650e1e7b5d52c35d8a53218f3d0861531621c2b1ebdf4f11f96da67fdcb0e1d97a7e778566166be55f193c30f1a000f9ec1021a0002b0bf031a0b532b80a20081825820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d090281845820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d095820a7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f441a0f6")
 
-        let txid = output.txID
-        XCTAssertEqual(txid.hexString, "c83a6aec9c97a8c9f17e5b8e921c79f84ee150f062d1aa3cd0baaf60a48f790e")
+        XCTAssertEqual(output.txID.hexString, "0203ce2c91f59f169a26e9ef91254639d2b7911afac9c7c0ae64539f88ba46a5")
     }
 
     func testSignTransferToken1() throws {
