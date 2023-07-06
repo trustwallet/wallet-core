@@ -3961,6 +3961,36 @@
     }
   },
   {
+    "id": "opbnb",
+    "name": "OpBNB testnet",
+    "coinId": 5611,
+    "chainId": "5611",
+    "symbol": "tBNB",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://opbnbscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x788ea8fb4a82dae957f1d3b18af3cd0bbde55a276e66bd17af8c869f24c03a0f",
+      "sampleAccount": "0x4eaf936c172b5e5511959167e8ab4f7031113ca3"
+    },
+    "info": {
+      "url": "https://opbnb.bnbchain.org/en",
+      "source": "https://github.com/bnb-chain/opbnb",
+      "rpc": "https://opbnb-testnet-rpc.bnbchain.org",
+      "documentation": "https://docs.bnbchain.org/opbnb-docs"
+    }
+  },
+  {
     "id": "stratis",
     "name": "Stratis",
     "coinId": 105105,
