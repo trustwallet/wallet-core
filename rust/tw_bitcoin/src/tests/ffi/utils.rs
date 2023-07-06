@@ -128,9 +128,9 @@ pub fn call_ffi_build_brc20_transfer_script<'a, 'b>(
 /// Convenience wrapper over `tw_build_brc20_inscribe_transfer` with Protobuf
 /// deserialization support.
 pub fn call_ffi_build_nft_inscription<'a, 'b>(
+    satoshis: u64,
     mime_type: ImageType,
     data: &[u8],
-    satoshis: u64,
     // We use 'b to clarify that `recipient` is not tied to the return value.
     recipient: &'b Recipient<PublicKey>,
 ) -> TransactionOutput<'a> {
