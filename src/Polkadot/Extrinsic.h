@@ -66,6 +66,7 @@ class Extrinsic {
 
   protected:
     bool encodeRawAccount() const;
+    Data encodeStakingController(const Proto::Staking::Bond& stakingBond) const;
     Data encodeBalanceCall(const Proto::Balance& balance) const;
     Data encodeTransfer(const Proto::Balance::Transfer& transfer) const;
     Data encodeAssetTransfer(const Proto::Balance::AssetTransfer& transfer) const;

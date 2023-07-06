@@ -15,6 +15,7 @@ static constexpr uint8_t sigTypeEd25519 = 0x00;
 static constexpr uint8_t extrinsicFormat = 4;
 static constexpr uint32_t multiAddrSpecVersion = 28;
 static constexpr uint32_t multiAddrSpecVersionKsm = 2028;
+static constexpr uint32_t stakingControllerSpecVersion = 9430;
 
 static const std::string balanceTransfer = "Balances.transfer";
 static const std::string utilityBatch = "Utility.batch_all";
@@ -77,6 +78,21 @@ bool Extrinsic::encodeRawAccount() const {
         return false;
     }
     return true;
+}
+
+Data Extrinsic::encodeStakingController(const Proto::Staking::Bond& bond) const {
+    if (bond.controller().empty()) {
+        return {};
+    }
+
+    bool polkadotOrKusama = network == static_cast<uint32_t>(TWSS58AddressTypePolkadot)
+                            || network == static_cast<uint32_t>(TWSS58AddressTypeKusama);
+    if (polkadotOrKusama && specVersion >= stakingControllerSpecVersion) {
+        return {};
+    }
+
+    auto controller = SS58Address(bond.controller(), network);
+    return encodeAccountId(controller.keyBytes(), encodeRawAccount());
 }
 
 Data Extrinsic::encodeEraNonceTip() const {
@@ -188,13 +204,12 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
     Data data;
     switch (staking.message_oneof_case()) {
     case Proto::Staking::kBond: {
-        auto address = SS58Address(staking.bond().controller(), network);
         auto value = load(staking.bond().value());
         auto reward = byte(staking.bond().reward_destination());
         // call index
         append(data, getCallIndex(staking.bond().call_indices(), network, stakingBond));
         // controller
-        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount()));
+        append(data, encodeStakingController(staking.bond()));
         // value
         append(data, encodeCompact(value));
         // reward destination
