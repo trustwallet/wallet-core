@@ -599,7 +599,7 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
 }
 
 /// Successfully broadcasted:
-/// https://cardanoscan.io/transaction/87ca43a36b09c0b140f0ef2b71fbdcfcf1fdc88f7aa378b861e8eed3e8974628
+/// https://cardanoscan.io/transaction/0203ce2c91f59f169a26e9ef91254639d2b7911afac9c7c0ae64539f88ba46a5
 TEST(CardanoSigning, SignTransferFromLegacy) {
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();
