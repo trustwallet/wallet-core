@@ -5,7 +5,7 @@ use std::fmt::Display;
 
 // Available inscription types, as specified in the `ord` repository.
 #[repr(C)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum ImageType {
     ApplicationJson,
     ApplicationPdf,
