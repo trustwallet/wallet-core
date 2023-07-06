@@ -69,7 +69,7 @@ impl Display for ImageType {
 pub struct NftInscription(OrdinalsInscription);
 
 impl NftInscription {
-    pub fn new_image(data: &[u8], ty: ImageType, recipient: Recipient<PublicKey>) -> Result<Self> {
+    pub fn new(ty: ImageType, data: &[u8], recipient: Recipient<PublicKey>) -> Result<Self> {
         OrdinalsInscription::new(ty.to_string().as_bytes(), data, recipient)
 		.map(NftInscription)
     }

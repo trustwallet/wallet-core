@@ -30,7 +30,7 @@ fn inscribe_nft() {
 	let mut content = vec![];
 	file.read_to_end(&mut content).unwrap();
 
-	let nft_inscription = NftInscription::new_image(&content, ImageType::ImagePng, alice.into()).unwrap();
+	let nft_inscription = NftInscription::new(ImageType::ImagePng, &content, alice.into()).unwrap();
 
     let txid = Txid::from_str(COMMIT_TXID).unwrap();
 
