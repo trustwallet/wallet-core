@@ -4,10 +4,10 @@ use crate::{
     TxInputP2WPKH, TxOutputP2WPKH,
 };
 use bitcoin::Txid;
-use tw_encoding::hex;
-use std::str::FromStr;
 use std::fs::File;
 use std::io::prelude::*;
+use std::str::FromStr;
+use tw_encoding::hex;
 
 pub const ALICE_WIF: &str = "L4of5AJ6aKmvChg7gQ7m2RzHFgpWe5Uirmuey1fXJ1FtfmXj59LW";
 pub const FULL_SATOSHIS: u64 = 32_400;
@@ -24,13 +24,13 @@ pub const REVEAL_RAW_TX: &str = include_str!("./data/tx_nft_reveal.hex");
 
 #[test]
 fn inscribe_nft() {
-	let alice = keypair_from_wif(ALICE_WIF).unwrap();
+    let alice = keypair_from_wif(ALICE_WIF).unwrap();
 
-	let mut file = File::open("./src/tests/data/tw_logo.png").unwrap();
-	let mut content = vec![];
-	file.read_to_end(&mut content).unwrap();
+    let mut file = File::open("./src/tests/data/tw_logo.png").unwrap();
+    let mut content = vec![];
+    file.read_to_end(&mut content).unwrap();
 
-	let nft_inscription = NftInscription::new(ImageType::ImagePng, &content, alice.into()).unwrap();
+    let nft_inscription = NftInscription::new(ImageType::ImagePng, &content, alice.into()).unwrap();
 
     let txid = Txid::from_str(COMMIT_TXID).unwrap();
 
@@ -62,7 +62,7 @@ fn inscribe_nft() {
 
     let txid = Txid::from_str(REVEAL_TXID).unwrap();
 
-	// Reveal NFT.
+    // Reveal NFT.
     let input = TxInputP2TRScriptPath::builder()
         .txid(txid)
         .vout(0)

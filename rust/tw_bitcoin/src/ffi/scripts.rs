@@ -1,4 +1,5 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
+use crate::nft::{ImageType, NftInscription};
 use crate::{
     Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
@@ -98,7 +99,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 
 #[no_mangle]
 // Builds the Ordinals inscripton for BRC20 transfer.
-pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
+pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
     // The 4-byte ticker.
     ticker: *const u8,
     amount: u64,
@@ -130,6 +131,48 @@ pub unsafe extern "C" fn tw_build_brc20_inscribe_transfer(
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, transfer.inscription().recipient());
     let spending_script = transfer.inscription().taproot_program();
+
+    // Prepare and serialize protobuf structure.
+    let proto = TransactionOutput {
+        value: satoshis,
+        script: Cow::from(tx_out.script_pubkey.as_bytes()),
+        spendingScript: Cow::from(spending_script.as_bytes()),
+    };
+
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
+
+    CByteArray::from(serialized)
+}
+
+#[no_mangle]
+// Builds the Ordinals inscripton for BRC20 transfer.
+pub unsafe extern "C" fn tw_build_nft_inscription(
+    mime_type: ImageType,
+    data: *const u8,
+    data_len: usize,
+    satoshis: i64,
+    pubkey: *const u8,
+    pubkey_len: usize,
+) -> CByteArray {
+    // Convert data to inscribe.
+    let data = try_or_else!(
+        CByteArrayRef::new(data, data_len).as_slice(),
+        CByteArray::null
+    );
+
+    // Convert Recipient.
+    let slice = try_or_else!(
+        CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
+        CByteArray::null
+    );
+
+    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
+
+    // Inscribe NFT data.
+    let nft = NftInscription::new(mime_type, data, recipient).expect("TODO");
+
+    let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, nft.inscription().recipient());
+    let spending_script = nft.inscription().taproot_program();
 
     // Prepare and serialize protobuf structure.
     let proto = TransactionOutput {

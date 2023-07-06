@@ -4,6 +4,8 @@ use bitcoin::PublicKey;
 use std::fmt::Display;
 
 // Available inscription types, as specified in the `ord` repository.
+#[repr(C)]
+#[derive(PartialEq, Debug)]
 pub enum ImageType {
     ApplicationJson,
     ApplicationPdf,
@@ -28,7 +30,6 @@ pub enum ImageType {
     TextMarkdown,
     VideoMp4,
     VideoWebm,
-    Custom(String),
 }
 
 impl Display for ImageType {
@@ -59,7 +60,6 @@ impl Display for ImageType {
             TextMarkdown => "text/markdown;charset=utf-8",
             VideoMp4 => "video/mp4",
             VideoWebm => "video/webm",
-            Custom(s) => s,
         };
 
         write!(f, "{}", str)
@@ -70,8 +70,7 @@ pub struct NftInscription(OrdinalsInscription);
 
 impl NftInscription {
     pub fn new(ty: ImageType, data: &[u8], recipient: Recipient<PublicKey>) -> Result<Self> {
-        OrdinalsInscription::new(ty.to_string().as_bytes(), data, recipient)
-		.map(NftInscription)
+        OrdinalsInscription::new(ty.to_string().as_bytes(), data, recipient).map(NftInscription)
     }
     pub fn inscription(&self) -> &OrdinalsInscription {
         &self.0
