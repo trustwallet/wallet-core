@@ -113,7 +113,7 @@ std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
     return PublicKey(publicKey, TWPublicKeyTypeNIST256p1Extended);
 }
 
-std::optional<Data> reconstructSignedMessage(const Data& authenticatorData, const Data& clientDataJSON) {
+Data reconstructSignedMessage(const Data& authenticatorData, const Data& clientDataJSON) {
     const auto& clientHash = Hash::sha256(clientDataJSON);
 
     Data message;

@@ -19,13 +19,13 @@ struct TWPublicKey *_Nullable TWWebAuthnGetPublicKey(TWData *_Nonnull attestatio
     }
 }
 
-TWData *_Nullable TWWebAuthnGetRSValues(TWData *_Nonnull signature) {
+TWData *_Nonnull TWWebAuthnGetRSValues(TWData *_Nonnull signature) {
     const auto& signatureData = *reinterpret_cast<const TW::Data*>(signature);
     const auto& rsValues = TW::ASN::AsnParser::ecdsa_signature_from_der(signatureData);
     return TWDataCreateWithData(&rsValues);
 }
 
-TWData *_Nullable TWWebAuthnReconstructOriginalMessage(TWData* _Nonnull authenticatorData, TWData* _Nonnull clientDataJSON) {
+TWData *_Nonnull TWWebAuthnReconstructOriginalMessage(TWData* _Nonnull authenticatorData, TWData* _Nonnull clientDataJSON) {
     const auto& authenticatorDataConverted = *reinterpret_cast<const TW::Data*>(authenticatorData);
     const auto& clientDataJSONConverted = *reinterpret_cast<const TW::Data*>(clientDataJSON);
     const auto& message = TW::WebAuthn::reconstructSignedMessage(authenticatorDataConverted, clientDataJSONConverted);
