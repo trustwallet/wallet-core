@@ -4,23 +4,66 @@ use crate::ordinals::OrdinalsInscription;
 use crate::{Error, Recipient, Result};
 use bitcoin::PublicKey;
 
+// Available inscription types, as specified in the `ord` repository.
 pub enum ImageType {
-    Png,
-    Jpeg,
-    Gif,
-    Webp,
+    ApplicationJson,
+    ApplicationPdf,
+    ApplicationPgpSignature,
+    ApplicationYaml,
+    AudioFlac,
+    AudioMpeg,
+    AudioWav,
+    ImageApng,
+    ImageAvif,
+    ImageGif,
+    ImageJpeg,
+    ImagePng,
+    ImageSvgXml,
+    ImageWebp,
+    ModelGltfBinary,
+    ModelStl,
+    TextCss,
+    TextHtml,
+    TextJavascript,
+    TextPlain,
+    TextMarkdown,
+    VideoMp4,
+    VideoWebm,
+    Custom(String),
 }
 
 impl Display for ImageType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use ImageType::*;
+
         let str = match self {
-            ImageType::Png => "png",
-            ImageType::Jpeg => "jpeg",
-            ImageType::Gif => "gif",
-            ImageType::Webp => "webp",
+            ApplicationJson => "application/json",
+            ApplicationPdf => "application/pdf",
+            ApplicationPgpSignature => "application/pgp-signature",
+            ApplicationYaml => "application/yaml",
+            AudioFlac => "audio/flac",
+            AudioMpeg => "audio/mpeg",
+            AudioWav => "audio/wav",
+            ImageApng => "image/apng",
+            ImageAvif => "image/avif",
+            ImageGif => "image/gif",
+            ImageJpeg => "image/jpeg",
+            ImagePng => "image/png",
+            ImageSvgXml => "image/svg+xml",
+            ImageWebp => "image/webp",
+            ModelGltfBinary => "model/gltf-binary",
+            ModelStl => "model/stl",
+            TextCss => "text/css",
+            TextHtml => "text/html;charset=utf-8",
+            TextJavascript => "text/javascript",
+            TextPlain => "text/plain;charset=utf-8",
+            TextMarkdown => "text/markdown;charset=utf-8",
+            VideoMp4 => "video/mp4",
+            VideoWebm => "video/webm",
+            Custom(s) => s,
         };
 
-        write!(f, "image/{}", str)
+        write!(f, "{}", str)
     }
 }
 
