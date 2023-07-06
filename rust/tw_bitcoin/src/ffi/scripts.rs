@@ -1,5 +1,5 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
-use crate::nft::{ImageType, NftInscription};
+use crate::nft::{MimeType, NftInscription};
 use crate::{
     Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 #[no_mangle]
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_build_nft_inscription(
-    mime_type: ImageType,
+    mime_type: MimeType,
     data: *const u8,
     data_len: usize,
     satoshis: i64,

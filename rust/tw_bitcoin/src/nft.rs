@@ -6,7 +6,7 @@ use std::fmt::Display;
 // Available inscription types, as specified in the `ord` repository.
 #[repr(C)]
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
-pub enum ImageType {
+pub enum MimeType {
     ApplicationJson,
     ApplicationPdf,
     ApplicationPgpSignature,
@@ -32,9 +32,9 @@ pub enum ImageType {
     VideoWebm,
 }
 
-impl Display for ImageType {
+impl Display for MimeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        use ImageType::*;
+        use MimeType::*;
 
         let str = match self {
             ApplicationJson => "application/json",
@@ -69,7 +69,7 @@ impl Display for ImageType {
 pub struct NftInscription(OrdinalsInscription);
 
 impl NftInscription {
-    pub fn new(ty: ImageType, data: &[u8], recipient: Recipient<PublicKey>) -> Result<Self> {
+    pub fn new(ty: MimeType, data: &[u8], recipient: Recipient<PublicKey>) -> Result<Self> {
         OrdinalsInscription::new(ty.to_string().as_bytes(), data, recipient).map(NftInscription)
     }
     pub fn inscription(&self) -> &OrdinalsInscription {
