@@ -1,8 +1,7 @@
-use std::fmt::{write, Display};
-
 use crate::ordinals::OrdinalsInscription;
-use crate::{Error, Recipient, Result};
+use crate::{Recipient, Result};
 use bitcoin::PublicKey;
+use std::fmt::Display;
 
 // Available inscription types, as specified in the `ord` repository.
 pub enum ImageType {
