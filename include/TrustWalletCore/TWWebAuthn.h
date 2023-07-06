@@ -34,5 +34,5 @@ TWData *_Nonnull TWWebAuthnGetRSValues(TWData *_Nonnull signature);
 /// \param clientDataJSON clientDataJSON: https://www.w3.org/TR/webauthn-2/#dom-authenticatorresponse-clientdatajson
 /// \return original messages.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nullable TWWebAuthnReconstructOriginalMessage(TWData* _Nonnull authenticatorData, TWString* _Nonnull clientDataJSON);
+TWData *_Nullable TWWebAuthnReconstructOriginalMessage(TWData* _Nonnull authenticatorData, TWData* _Nonnull clientDataJSON);
 TW_EXTERN_C_END
