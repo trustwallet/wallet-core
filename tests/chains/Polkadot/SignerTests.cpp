@@ -646,7 +646,7 @@ TEST(PolkadotSigner, Kusama_SignBond_NoController) {
     era->set_period(64UL);
 
     // Ignore `controller` as it was removed from the `Staking::bond` function at `spec_version = 9430`
-    // https://polkadot.subscan.io/runtime/Staking?version=9430
+    // https://kusama.subscan.io/runtime/Staking?version=9430
     auto* bond = input.mutable_staking_call()->mutable_bond();
     auto value = store(uint256_t(120'000'000'000)); // 0.12
     bond->set_value(value.data(), value.size());
