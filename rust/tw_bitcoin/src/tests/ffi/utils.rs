@@ -125,7 +125,7 @@ pub fn call_ffi_build_brc20_transfer_script<'a, 'b>(
     }
 }
 
-/// Convenience wrapper over `tw_build_brc20_inscribe_transfer` with Protobuf
+/// Convenience wrapper over `tw_build_nft_inscription` with Protobuf
 /// deserialization support.
 pub fn call_ffi_build_nft_inscription<'a, 'b>(
     satoshis: u64,
