@@ -15,6 +15,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.*
+import wallet.core.jni.Cardano.getByronAddress
 import wallet.core.jni.Cardano.getStakingAddress
 import wallet.core.jni.Cardano.outputMinAdaAmount
 import wallet.core.jni.CoinType.CARDANO
@@ -73,6 +74,60 @@ class TestCardanoSigning {
 
         val txid = output.txId
         assertEquals(Numeric.toHexString(txid.toByteArray()), "0x9b5b15e133cd73ccaa85307d2986aebc846505118a2eb4e6111e6b4b67d1f389");
+    }
+
+    /// Successfully broadcasted:
+    /// https://cardanoscan.io/transaction/0203ce2c91f59f169a26e9ef91254639d2b7911afac9c7c0ae64539f88ba46a5
+    @Test
+    fun testSignTransferFromLegacy() {
+        val privateKey = PrivateKey("98f266d1aac660179bc2f456033941238ee6b2beb8ed0f9f34c9902816781f5a9903d1d395d6ab887b65ea5e344ef09b449507c21a75f0ce8c59d0ed1c6764eba7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f4e890ca4eb6bec44bf751b5a843174534af64d6ad1f44e0613db78a7018781f5aa151d2997f52059466b715d8eefab30a78b874ae6ef4931fa58bb21ef8ce2423d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4".toHexByteArray())
+        var publicKey = privateKey.publicKeyEd25519Cardano
+        var byronAddress = wallet.core.jni.Cardano.getByronAddress(publicKey)
+        
+        assertEquals(byronAddress, "Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8")
+
+        val message = Cardano.Transfer.newBuilder()
+            .setToAddress("addr1q90uh2eawrdc9vaemftgd50l28yrh9lqxtjjh4z6dnn0u7ggasexxdyyk9f05atygnjlccsjsggtc87hhqjna32fpv5qeq96ls")
+            .setChangeAddress("addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08")
+            .setAmount(3_000_000)
+            .build()
+        val input = Cardano.SigningInput.newBuilder()
+            .setTransferMessage(message)
+            .setTtl(190000000)
+
+        input.addPrivateKey(ByteString.copyFrom(privateKey.data()))
+
+        val outpoint1 = Cardano.OutPoint.newBuilder()
+            .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("8316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f63")))
+            .setOutputIndex(0)
+            .build()
+        val utxo1 = Cardano.TxInput.newBuilder()
+            .setOutPoint(outpoint1)
+            .setAddress("Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8")
+            .setAmount(2_500_000)
+            .build()
+        input.addUtxos(utxo1)
+        
+        val outpoint2 = Cardano.OutPoint.newBuilder()
+            .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946")))
+            .setOutputIndex(0)
+            .build()
+        val utxo2 = Cardano.TxInput.newBuilder()
+            .setOutPoint(outpoint2)
+            .setAddress("Ae2tdPwUPEZ6vkqxSjJxaQYmDxHf5DTnxtZ67pFLJGTb9LTnCGkDP6ca3f8")
+            .setAmount(1_700_000)
+            .build()
+        input.addUtxos(utxo2)
+        
+        val output = AnySigner.sign(input.build(), CARDANO, Cardano.SigningOutput.parser())
+        assertEquals(output.error, SigningError.OK)
+
+        val encoded = output.encoded
+        assertEquals(Numeric.toHexString(encoded.toByteArray()),
+            "0x83a400828258208316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f6300825820e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946000182825839015fcbab3d70db82b3b9da5686d1ff51c83b97e032e52bd45a6ce6fe7908ec32633484b152fa756444e5fc62128210bc1fd7b8253ec5490b281a002dc6c082583901a9426fe0cee6d01d1fe32af650e1e7b5d52c35d8a53218f3d0861531621c2b1ebdf4f11f96da67fdcb0e1d97a7e778566166be55f193c30f1a000f9ec1021a0002b0bf031a0b532b80a20081825820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d090281845820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d095820a7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f441a0f6");
+
+        val txid = output.txId
+        assertEquals(Numeric.toHexString(txid.toByteArray()), "0x0203ce2c91f59f169a26e9ef91254639d2b7911afac9c7c0ae64539f88ba46a5");
     }
 
     @Test
