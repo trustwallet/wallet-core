@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::{NumberError, NumberResult};
+use std::fmt;
+use std::fmt::Formatter;
 use std::ops::Add;
 use tw_hash::H256;
 
@@ -79,6 +81,12 @@ impl U256 {
 
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
+    }
+}
+
+impl fmt::Display for U256 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

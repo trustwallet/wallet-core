@@ -10,7 +10,9 @@ use tw_keypair::ecdsa::secp256k1;
 use tw_number::U256;
 
 pub mod signature;
+pub mod transaction_eip1559;
 pub mod transaction_non_typed;
+pub mod user_operation;
 
 pub trait TransactionCommon {
     fn payload(&self) -> Vec<u8>;

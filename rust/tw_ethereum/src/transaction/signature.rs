@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use tw_hash::H520;
 use tw_keypair::ecdsa::secp256k1;
 use tw_number::U256;
 
@@ -19,6 +20,7 @@ pub struct Signature {
     v: U256,
     r: U256,
     s: U256,
+    rsv: H520,
 }
 
 impl Signature {
@@ -27,15 +29,12 @@ impl Signature {
             v: U256::from(sign.v()),
             r: U256::from_little_endian(sign.r()),
             s: U256::from_little_endian(sign.s()),
+            rsv: sign.to_bytes(),
         }
     }
 
-    pub fn zero_with_chain_id(chain_id: U256) -> Self {
-        Signature {
-            v: chain_id,
-            r: U256::zero(),
-            s: U256::zero(),
-        }
+    pub fn to_rsv_bytes(&self) -> H520 {
+        self.rsv
     }
 }
 
@@ -60,7 +59,7 @@ pub struct SignatureEip155 {
 }
 
 impl SignatureEip155 {
-    fn new(sign: secp256k1::Signature, chain_id: U256) -> Self {
+    pub fn new(sign: secp256k1::Signature, chain_id: U256) -> Self {
         let v = replay_protection(chain_id, sign.v());
         SignatureEip155 {
             v,

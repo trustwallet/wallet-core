@@ -6,7 +6,9 @@
 
 use crate::abi::prebuild::erc20::Erc20;
 use crate::address::Address;
+use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
+use crate::transaction::user_operation::UserOperation;
 use crate::transaction::UnsignedTransactionBox;
 use std::str::FromStr;
 use tw_coin_entry::{SigningError, SigningResult};
@@ -65,6 +67,9 @@ impl Signer {
         let nonce = U256::from_little_endian_slice(&input.nonce)?;
         let gas_price = U256::from_little_endian_slice(&input.gas_price)?;
         let gas_limit = U256::from_little_endian_slice(&input.gas_limit)?;
+        let max_inclusion_fee_per_gas =
+            U256::from_little_endian_slice(&input.max_inclusion_fee_per_gas)?;
+        let max_fee_per_gas = U256::from_little_endian_slice(&input.max_fee_per_gas)?;
 
         use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
         use Proto::TransactionMode as TxMode;
@@ -101,8 +106,43 @@ impl Signer {
                 payload,
             }
             .into_boxed(),
-            TxMode::Enveloped => todo!(),
-            TxMode::UserOp => todo!(),
+            TxMode::Enveloped => TransactionEip1559 {
+                nonce,
+                max_inclusion_fee_per_gas,
+                max_fee_per_gas,
+                gas_limit,
+                to,
+                amount,
+                payload,
+            }
+            .into_boxed(),
+            TxMode::UserOp => {
+                let Some(ref user_op) = input.user_operation else {
+                    return Err(SigningError(CommonError::Error_invalid_params))
+                };
+
+                let entry_point = Address::from_str(user_op.entry_point.as_ref())?;
+                let sender = Address::from_str(user_op.sender.as_ref())?;
+                let verification_gas_limit =
+                    U256::from_little_endian_slice(&user_op.verification_gas_limit)?;
+                let pre_verification_gas =
+                    U256::from_little_endian_slice(&user_op.pre_verification_gas)?;
+
+                UserOperation {
+                    nonce,
+                    entry_point,
+                    sender,
+                    init_code: user_op.init_code.to_vec(),
+                    gas_limit,
+                    verification_gas_limit,
+                    max_fee_per_gas,
+                    max_inclusion_fee_per_gas,
+                    pre_verification_gas,
+                    paymaster_and_data: user_op.paymaster_and_data.to_vec(),
+                    payload,
+                }
+                .into_boxed()
+            },
         };
         Ok(tx)
     }

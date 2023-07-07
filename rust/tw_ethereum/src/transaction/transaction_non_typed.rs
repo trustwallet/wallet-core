@@ -6,7 +6,7 @@
 
 use crate::address::Address;
 use crate::rlp::u256::RlpU256;
-use crate::transaction::signature::{EthSignature, Signature};
+use crate::transaction::signature::{EthSignature, SignatureEip155};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
 use rlp::RlpStream;
 use tw_keypair::ecdsa::secp256k1;
@@ -33,25 +33,26 @@ impl UnsignedTransaction for TransactionNonTyped {
     type SignedTransaction = SignedTransactionNonTyped;
 
     fn encode(&self, chain_id: U256) -> Vec<u8> {
-        let signature = Signature::zero_with_chain_id(chain_id);
-        encode_transaction(self, &signature)
+        encode_transaction(self, chain_id, None)
     }
 
     fn into_signed(
         self,
         signature: secp256k1::Signature,
-        _chain_id: U256,
+        chain_id: U256,
     ) -> Self::SignedTransaction {
         SignedTransactionNonTyped {
             unsigned: self,
-            signature: Signature::new(signature),
+            signature: SignatureEip155::new(signature, chain_id),
+            chain_id,
         }
     }
 }
 
 pub struct SignedTransactionNonTyped {
     unsigned: TransactionNonTyped,
-    signature: Signature,
+    signature: SignatureEip155,
+    chain_id: U256,
 }
 
 impl TransactionCommon for SignedTransactionNonTyped {
@@ -61,10 +62,10 @@ impl TransactionCommon for SignedTransactionNonTyped {
 }
 
 impl SignedTransaction for SignedTransactionNonTyped {
-    type Signature = Signature;
+    type Signature = SignatureEip155;
 
     fn encode(&self) -> Vec<u8> {
-        encode_transaction(&self.unsigned, &self.signature)
+        encode_transaction(&self.unsigned, self.chain_id, Some(&self.signature))
     }
 
     fn signature(&self) -> &Self::Signature {
@@ -72,7 +73,11 @@ impl SignedTransaction for SignedTransactionNonTyped {
     }
 }
 
-fn encode_transaction(tx: &TransactionNonTyped, signature: &Signature) -> Vec<u8> {
+fn encode_transaction(
+    tx: &TransactionNonTyped,
+    chain_id: U256,
+    signature: Option<&SignatureEip155>,
+) -> Vec<u8> {
     let mut stream = RlpStream::new_list(TX_FIELDS_LEN);
     stream
         .append(&RlpU256::from(tx.nonce))
@@ -80,17 +85,23 @@ fn encode_transaction(tx: &TransactionNonTyped, signature: &Signature) -> Vec<u8
         .append(&RlpU256::from(tx.gas_limit))
         .append(&tx.to.as_slice())
         .append(&RlpU256::from(tx.amount))
-        .append(&tx.payload.as_slice())
-        .append(&RlpU256::from(signature.v()))
-        .append(&RlpU256::from(signature.r()))
-        .append(&RlpU256::from(signature.s()));
+        .append(&tx.payload.as_slice());
+
+    let (v, r, s) = match signature {
+        Some(sign) => (sign.v(), sign.r(), sign.s()),
+        None => (chain_id, U256::zero(), U256::zero()),
+    };
+
+    stream
+        .append(&RlpU256::from(v))
+        .append(&RlpU256::from(r))
+        .append(&RlpU256::from(s));
     stream.out().to_vec()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::str::FromStr;
     use tw_encoding::hex;
 
     #[test]

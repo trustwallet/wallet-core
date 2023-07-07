@@ -22,12 +22,12 @@ impl From<ethabi::Error> for AbiError {
 }
 
 /// TODO remove this when Ethereum ABI is designed manually.
-fn convert_u256(num: U256) -> ethabi::Uint {
+pub fn convert_u256(num: U256) -> ethabi::Uint {
     let bytes = num.to_big_endian().take();
     ethabi::Uint::from_big_endian(&bytes)
 }
 
 /// TODO remove this when Ethereum ABI is designed manually.
-fn convert_address(addr: Address) -> ethabi::Address {
+pub fn convert_address(addr: Address) -> ethabi::Address {
     ethabi::Address::from(addr.bytes().take())
 }

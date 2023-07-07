@@ -13,7 +13,7 @@ use tw_hash::{sha3::keccak256, H160};
 use tw_keypair::ecdsa::secp256k1;
 
 /// Represents an Ethereum address.
-#[derive(Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Address {
     bytes: H160,
 }
