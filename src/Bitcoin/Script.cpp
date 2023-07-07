@@ -531,7 +531,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
 Proto::TransactionOutput Script::buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey) {
     TW::Bitcoin::Proto::TransactionOutput out;
     auto tickerBytes = data(ticker);
-    Rust::CByteArrayWrapper res = TW::Rust::tw_build_brc20_inscribe_transfer(tickerBytes.data(), amount, 0, publicKey.data(), publicKey.size());
+    Rust::CByteArrayWrapper res = TW::Rust::tw_build_brc20_transfer_inscription(tickerBytes.data(), amount, 0, publicKey.data(), publicKey.size());
     auto result = res.data;
     out.ParseFromArray(result.data(), static_cast<int>(result.size()));
     return out;
