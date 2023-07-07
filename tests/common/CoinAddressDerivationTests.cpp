@@ -37,6 +37,7 @@ TEST(Coin, DeriveAddress) {
         // Ethereum and ...
         case TWCoinTypeEthereum:
         // ... clones:
+        case TWCoinTypeAcalaEVM:
         case TWCoinTypeArbitrum:
         case TWCoinTypeAurora:
         case TWCoinTypeAvalancheCChain:
@@ -75,6 +76,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeXDai:
         case TWCoinTypeIoTeXEVM:
         case TWCoinTypeScroll:
+        case TWCoinTypeOpBNBtestnet:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 
@@ -101,7 +103,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeKomodo:
             EXPECT_EQ(address, "RSZYjMDCP4q3t7NAFXPPnqEGrMZn971pdB");
             break;
-
+        case TWCoinTypeAcala:
+            EXPECT_EQ(address, "26GQqmwt3154cQbG2fyBsh3cGuCBoRFtrwuCD6WcVJdFReA4");
+            break;
         case TWCoinTypeAeternity:
             EXPECT_EQ(address, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
             break;

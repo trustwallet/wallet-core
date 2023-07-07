@@ -41,9 +41,6 @@ struct TransactionPlan {
 
     Data outputOpReturn;
 
-    /// Check if we use max amount for output address
-    bool useMaxAmount = false;
-
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 
     TransactionPlan() = default;

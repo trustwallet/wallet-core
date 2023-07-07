@@ -19,24 +19,19 @@ class BarzTests: XCTestCase {
         XCTAssertEqual(result.hexString, "3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000")
     }
 
-    // https://testnet.bscscan.com/address/0x5d51930e0ce5cc08a67a1763fadb66892c0994d1
     func testCounterfactualAddress() {
-        let verificationFacet = "0xDcfbDE24847FdF29E6d0311f4bAEb2b49ae8B5a3"
         let input = BarzContractAddressInput.with {
-            $0.factory = factory
-            $0.diamondCutFacet = diamondCutFacet
-            $0.accountFacet = accountFacet
-            $0.verificationFacet = verificationFacet
-            $0.tokenReceiverFacet = tokenReceiverFacet
-            $0.diamondLoupeFacet = diamondLoupeFacet
+            $0.factory = "0x2c97f4a366Dd5D91178ec9E36c5C1fcA393A538C"
+            $0.accountFacet = "0x3322C04EAe11B9b14c6c289f2668b6f07071b591"
+            $0.verificationFacet = "0x90A6fE0A938B0d4188e9013C99A0d7D9ca6bFB63"
             $0.entryPoint = entryPoint
-            $0.diamondInit = diamondInit
-            $0.facetRegistry = facetRegistry
+            $0.facetRegistry = "0xFd1A8170c12747060324D9079a386BD4290e6f93"
+            $0.defaultFallback = "0x22eB0720d9Fc4bC90BB812B309e939880B71c20d"
             $0.bytecode = bytecode
             $0.publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
         }
 
-        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0x42138448be17503df67546CEE92470BF130e5611");
+        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0x77F62bb3E43190253D4E198199356CD2b25063cA");
     }
 
     func testFormatSignature() {

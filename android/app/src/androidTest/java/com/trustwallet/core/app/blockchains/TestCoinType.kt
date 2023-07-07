@@ -1,13 +1,15 @@
 package com.trustwallet.core.app.blockchains
 
+import com.trustwallet.core.app.utils.toHexByteArray
 import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
+import wallet.core.jni.PublicKey
 import wallet.core.jni.Purpose
 import wallet.core.jni.Derivation
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-
+import wallet.core.jni.PublicKeyType
 
 
 class TestCoinType {
@@ -54,5 +56,13 @@ class TestCoinType {
         assertEquals(res, "m/44'/0'/0'/0/0")
         res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANASOLANA).toString()
         assertEquals(res, "m/44'/501'/0'/0'")
+    }
+
+    @Test
+    fun testDeriveAddressFromPublicKeyAndDerivation() {
+        val publicKey = PublicKey("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798".toHexByteArray(), PublicKeyType.SECP256K1)
+
+        val address = CoinType.BITCOIN.deriveAddressFromPublicKeyAndDerivation(publicKey, Derivation.BITCOINSEGWIT)
+        assertEquals(address, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")
     }
 }

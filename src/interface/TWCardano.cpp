@@ -91,3 +91,11 @@ TWString *_Nonnull TWCardanoGetStakingAddress(TWString *_Nonnull baseAddress) {
         return TWStringCreateWithUTF8Bytes("");
     }
 }
+
+TWString *_Nonnull TWCardanoGetByronAddress(struct TWPublicKey *_Nonnull publicKey) {
+    try {
+        return TWStringCreateWithUTF8Bytes(TW::Cardano::AddressV2({ publicKey->impl }).string().c_str());
+    } catch (...) {
+        return TWStringCreateWithUTF8Bytes("");
+    }
+}

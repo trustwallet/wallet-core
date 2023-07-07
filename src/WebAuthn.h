@@ -13,5 +13,6 @@
 namespace TW::WebAuthn {
 
 std::optional<PublicKey> getPublicKey(const Data& attestationObject);
+Data reconstructSignedMessage(const Data& authenticatorData, const Data& clientDataJSON);
 
 }
