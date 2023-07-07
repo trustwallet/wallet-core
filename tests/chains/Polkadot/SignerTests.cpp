@@ -626,4 +626,34 @@ TEST(PolkadotSigner, encodeTransaction_JoinIdentityAsKey) {
     ASSERT_EQ(hex(encoded), "c5018400d3b2f1c41b9b4522eb3e23329b81aca6cc0231167ecfa3580c5a71ff6d061054007f5adbb2749e2f0ace29b409c41dd717681495b1f22dc5358311646a9fb8af8a173fc47f1b19748fb56831c2128773e2976986685adee83c741ab49934d80006750000000705bb53000000000000");
 }
 
+TEST(PolkadotSigner, Kusama_SignBond_NoController) {
+    // tx on mainnet
+    // https://kusama.subscan.io/extrinsic/0x4e52e59b63910cbdb8c5430c2d100908934f473363c8994cddfd6d1501b017f5
+
+    Polkadot::Proto::SigningInput input;
+    input.set_network(ss58Prefix(TWCoinTypeKusama));
+    auto blockHash = parse_hex("beb02a3ee782f4bd60ffcfc3de473e3c5a00b2cf124dd302c559b0e77b4331eb");
+    auto vGenesisHash = parse_hex("b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe");
+    input.set_block_hash(std::string(blockHash.begin(), blockHash.end()));
+    input.set_genesis_hash(std::string(vGenesisHash.begin(), vGenesisHash.end()));
+    input.set_nonce(3UL);
+    input.set_spec_version(9430U);
+    input.set_transaction_version(23U);
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    auto* era = input.mutable_era();
+    era->set_block_number(18672490UL);
+    era->set_period(64UL);
+
+    // Ignore `controller` as it was removed from the `Staking::bond` function at `spec_version = 9430`
+    // https://kusama.subscan.io/runtime/Staking?version=9430
+    auto* bond = input.mutable_staking_call()->mutable_bond();
+    auto value = store(uint256_t(120'000'000'000)); // 0.12
+    bond->set_value(value.data(), value.size());
+    bond->set_reward_destination(Proto::RewardDestination::CONTROLLER);
+
+    auto output = Signer::sign(input);
+    ASSERT_EQ(hex(output.encoded()), "c101840088dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee00bc4d7a166bd1e7e2bfe9b53e81239c9e340d5a326f17c0a3d2768fcc127f20f4f85d888ecb90aa3ed9a0943f8ae8116b9a19747e563c8d8151dfe3b1b5deb40ca5020c0006000700b08ef01b02");
+}
+
 } // namespace TW::Polkadot::tests
