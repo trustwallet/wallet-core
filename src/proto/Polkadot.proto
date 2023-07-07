@@ -102,7 +102,7 @@ message Balance {
 message Staking {
     // Bond to a controller
     message Bond {
-        // controller ID
+        // controller ID (optional)
         string controller = 1;
 
         // amount (uint256, serialized little endian)
@@ -117,7 +117,7 @@ message Staking {
 
     // Bond to a controller, with nominators
     message BondAndNominate {
-        // controller ID
+        // controller ID (optional)
         string controller = 1;
 
         // amount (uint256, serialized little endian)
