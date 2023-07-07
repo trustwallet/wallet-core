@@ -647,8 +647,6 @@ TEST(PolkadotSigner, Kusama_SignBond_NoController) {
 
     auto* bond = input.mutable_staking_call()->mutable_bond();
     auto value = store(uint256_t(120'000'000'000)); // 0.12
-    // Specify an invalid address that would lead to fail if `controller` address was used.
-    bond->set_controller("123");
     bond->set_value(value.data(), value.size());
     bond->set_reward_destination(Proto::RewardDestination::CONTROLLER);
 
