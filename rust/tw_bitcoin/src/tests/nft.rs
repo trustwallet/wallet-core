@@ -60,6 +60,8 @@ fn inscribe_nft() {
     let hex = hex::encode(&transaction, false);
     assert_eq!(hex, COMMIT_RAW_TX);
 
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
+
     let txid = Txid::from_str(REVEAL_TXID).unwrap();
 
     // Reveal NFT.
