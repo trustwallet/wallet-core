@@ -537,4 +537,19 @@ Proto::TransactionOutput Script::buildBRC20InscribeTransfer(const std::string& t
     return out;
 }
 
+Proto::TransactionOutput Script::buildNftInscription(TW::Rust::MimeType mimeType, const Data& payload, const Data& publicKey) {
+    TW::Bitcoin::Proto::TransactionOutput out;
+    Rust::CByteArrayWrapper res = TW::Rust::tw_build_nft_inscription(
+        mimeType,
+        payload.data(),
+        payload.size(),
+        0,
+        publicKey.data(),
+        publicKey.size()
+    );
+    auto result = res.data;
+    out.ParseFromArray(result.data(), static_cast<int>(result.size()));
+    return out;
+}
+
 } // namespace TW::Bitcoin
