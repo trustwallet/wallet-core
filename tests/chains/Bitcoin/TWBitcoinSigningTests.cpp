@@ -310,14 +310,15 @@ TEST(BitcoinSigning, SignBRC20TransferInscription) {
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
 }
 
-TEST(BitcoinSigning, SignNftInscription) {
+TEST(BitcoinSigning, SignNftInscriptionCommit) {
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto fullAmount = 32400;
     auto minerFee = 1300;
     auto inscribeAmount = fullAmount - minerFee;
-    auto txIDInscription = parse_hex("579590c3227253ad423b1e7e3c5b073b8a280d307c68aecd779df2600daa2f99");
-    std::reverse(begin(txIDInscription), end(txIDInscription));
+    auto txId = parse_hex("579590c3227253ad423b1e7e3c5b073b8a280d307c68aecd779df2600daa2f99");
+    std::reverse(begin(txId), end(txId));
 
+    // The inscribed image
     std::ifstream file("./rust/tw_bitcoin/src/tests/data/tw_logo.png", std::ios::binary);
     if (!file) {
         throw std::runtime_error("Unable to open file");
@@ -342,7 +343,7 @@ TEST(BitcoinSigning, SignNftInscription) {
 
     Proto::OutPoint out0;
     out0.set_index(0);
-    out0.set_hash(txIDInscription.data(), txIDInscription.size());
+    out0.set_hash(txId.data(), txId.size());
     *utxo0.mutable_out_point() = out0;
 
     Proto::TransactionPlan plan;
@@ -361,6 +362,68 @@ TEST(BitcoinSigning, SignNftInscription) {
     ASSERT_EQ(output.error(), Common::Proto::OK);
 
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
+}
+
+TEST(BitcoinSigning, SignNftInscriptionReveal) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    auto inscribeAmount = 31100;
+    auto dustSatoshi = 546;
+    auto txId = parse_hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117");
+    std::reverse(begin(txId), end(txId));
+
+    // The inscribed image
+    std::ifstream file("./rust/tw_bitcoin/src/tests/data/tw_logo.png", std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Unable to open file");
+    }
+    std::vector<uint8_t> payload((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    // The expected TX hex output
+    std::ifstream fileTwo("./rust/tw_bitcoin/src/tests/data/tx_nft_reveal.hex", std::ios::binary);
+    if (!fileTwo) {
+        throw std::runtime_error("Unable to open file");
+    }
+    std::string expectedHex((std::istreambuf_iterator<char>(fileTwo)), std::istreambuf_iterator<char>());
+
+    PrivateKey key(privateKey);
+    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+    auto inputInscribe = TW::Bitcoin::Script::buildNftInscription(TW::Rust::MimeType::ImagePng, payload, pubKey.bytes);
+    auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
+
+    Proto::SigningInput input;
+    input.set_is_it_brc_operation(true);
+    input.add_private_key(key.bytes.data(), key.bytes.size());
+    input.set_coin_type(TWCoinTypeBitcoin);
+
+    auto& utxo = *input.add_utxo();
+    utxo.set_amount(inscribeAmount);
+    utxo.set_script(inputInscribe.script());
+    utxo.set_variant(Proto::TransactionVariant::NFTINSCRIPTION);
+    utxo.set_spendingscript(inputInscribe.spendingscript());
+
+    Proto::OutPoint out;
+    out.set_index(0);
+    out.set_hash(txId.data(), txId.size());
+    *utxo.mutable_out_point() = out;
+
+    Proto::TransactionPlan plan;
+    auto& utxo1 = *plan.add_utxos();
+    utxo1.set_amount(dustSatoshi);
+    utxo1.set_script(outputP2wpkh.bytes.data(), outputP2wpkh.bytes.size());
+    utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+
+    *input.mutable_plan() = plan;
+    Proto::SigningOutput output;
+
+    ANY_SIGN(input, TWCoinTypeBitcoin);
+    auto result = hex(output.encoded());
+    ASSERT_EQ(result.substr(0, 164), expectedHex.substr(0, 164));
+    ASSERT_EQ(result.substr(292, result.size() - 292), expectedHex.substr(292, result.size() - 292));
+    ASSERT_EQ(output.transaction_id(), "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac");
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
 }
 
 TEST(BitcoinSigning, SignP2PKH) {

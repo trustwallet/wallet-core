@@ -95,4 +95,6 @@ fn inscribe_nft() {
     // signing on each construction and is therefore not reproducible.
     assert_ne!(hex[164..292], REVEAL_RAW_TX[164..292]);
     assert_eq!(hex[292..], REVEAL_RAW_TX[292..]);
+
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
 }
