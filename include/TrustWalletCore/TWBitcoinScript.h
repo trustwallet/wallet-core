@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWBitcoinSigHashType.h"
+#include "TWBitcoinOrdinalsMimeType.h"
 #include "TWCoinType.h"
 #include "TWData.h"
 #include "TWPublicKey.h"
@@ -202,6 +203,16 @@ struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWDa
 /// \return A pointer to the built script
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* _Nonnull ticker, TWString* _Nonnull amount, TWData* _Nonnull pubkey);
+
+/// Builds the Ordinals inscripton for NFT construction.
+///
+/// \param mimeType the MIME type of the payload
+/// \param payload the payload to inscribe
+/// \param pubkey Non-null pointer to a pubkey
+/// \note Must be deleted with \TWBitcoinScriptDelete
+/// \return A pointer to the built script
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWBitcoinScriptBuildNftInscription(enum TWBitcoinOrdinalsMimeType mimeType, TWData *_Nonnull payload, TWData *_Nonnull pubkey);
 
 /// Builds a appropriate lock script for the given address..
 ///

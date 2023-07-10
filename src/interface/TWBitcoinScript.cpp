@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWBitcoinScript.h>
+#include <TrustWalletCore/TWBitcoinOrdinalsMimeType.h>
 
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/SigHashType.h"
@@ -171,6 +172,16 @@ TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TW
     auto* brcAmount = reinterpret_cast<const std::string*>(amount);
     auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
     auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, std::stoull(*brcAmount), *brcPubkey);
+    auto serialized = TW::data(script.SerializeAsString());
+    return TWDataCreateWithBytes(serialized.data(), serialized.size());
+}
+
+TWData *_Nullable TWBitcoinScriptBuildNftInscription(enum TWBitcoinOrdinalsMimeType mimeType, TWData* payload, TWData* pubkey) {
+    auto* ordMimeType = reinterpret_cast<const TW::Rust::MimeType*>(mimeType);
+    auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
+    auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
+    auto script = TW::Bitcoin::Script::buildNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
+    //(TW::Rust::MimeType mimeType, const Data& payload, const Data& publicKey) {
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }
