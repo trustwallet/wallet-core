@@ -11,7 +11,7 @@
 TW_EXTERN_C_BEGIN
 
 /// The Bitcoin inscription MIME type.
-TW_EXPORT_ENUM()
+TW_EXPORT_ENUM(uint32_t)
 enum TWOrdMimeType {
     TWOrdMimeTypeApplicationJson = 1,
     TWOrdMimeTypeApplicationPdf = 2,

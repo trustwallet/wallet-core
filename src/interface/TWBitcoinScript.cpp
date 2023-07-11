@@ -181,7 +181,6 @@ TWData *_Nullable TWBitcoinScriptBuildNftInscription(enum TWOrdMimeType mimeType
     auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
     auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
     auto script = TW::Bitcoin::Script::buildNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
-    //(TW::Rust::MimeType mimeType, const Data& payload, const Data& publicKey) {
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }
