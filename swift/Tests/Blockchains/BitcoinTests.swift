@@ -301,8 +301,26 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let transactionId = output.transactionID
         XCTAssertEqual(transactionId, "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac")
         let encoded = output.encoded
-        //XCTAssertEqual(encoded.hexString[0..<164], expectedHex[0..<164]);
-        //XCTAssertEqual(encoded.hexString[292..<], expectedHex[292..<]);
+
+        // Compare ..164
+        let start1 = encoded.hexString.index(encoded.hexString.startIndex, offsetBy: 0)
+        let end1 = encoded.hexString.index(encoded.hexString.startIndex, offsetBy: 164)
+        let subString1 = encoded.hexString[start1..<end1]
+
+        let start2 = expectedHex.index(expectedHex.startIndex, offsetBy: 0)
+        let end2 = expectedHex.index(expectedHex.startIndex, offsetBy: 164)
+        let subString2 = expectedHex[start2..<end2]
+
+        XCTAssertEqual(subString1, subString2)
+
+        // Compare 292.., skipping the Schnorr signature from 164..291
+        let start3 = encoded.hexString.index(encoded.hexString.startIndex, offsetBy: 292)
+        let subString3 = encoded.hexString[start3...]
+
+        let start4 = expectedHex.index(expectedHex.startIndex, offsetBy: 292)
+        let subString4 = expectedHex[start4...]
+
+        XCTAssertEqual(subString3, subString4)
     }
 
     func testSignP2WSH() throws {
