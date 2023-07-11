@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWBitcoinScript.h>
-#include <TrustWalletCore/TWBitcoinOrdinalsMimeType.h>
+#include <TrustWalletCore/TWOrdMimeType.h>
 
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/SigHashType.h"
@@ -176,7 +176,7 @@ TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TW
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }
 
-TWData *_Nullable TWBitcoinScriptBuildNftInscription(enum TWBitcoinOrdinalsMimeType mimeType, TWData* payload, TWData* pubkey) {
+TWData *_Nullable TWBitcoinScriptBuildNftInscription(enum TWOrdMimeType mimeType, TWData* payload, TWData* pubkey) {
     auto* ordMimeType = reinterpret_cast<const TW::Rust::MimeType*>(mimeType);
     auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
     auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);

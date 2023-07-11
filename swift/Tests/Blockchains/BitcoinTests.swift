@@ -6,6 +6,7 @@
 
 import XCTest
 import WalletCore
+import Foundation
 
 class BitcoinTransactionSignerTests: XCTestCase {
     override func setUp() {
@@ -178,6 +179,130 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertTrue(encoded.hexString.hasPrefix("02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340"));
         
         XCTAssertTrue(encoded.hexString.hasSuffix("5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000"));
+    }
+
+    func testSignNftInscriptionCommit() throws {
+        // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
+        let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
+        let fullAmount = 32400 as Int64;
+        let minerFee = 1300 as Int64;
+        let inscribeAmount = fullAmount - minerFee;
+        let txId = Data(hexString: "579590c3227253ad423b1e7e3c5b073b8a280d307c68aecd779df2600daa2f99")!;
+
+        let filePath = "./rust/tw_bitcoin/src/tests/data/tw_logo.png"
+        let url = URL(fileURLWithPath: filePath)
+        let payload: Data;
+        do {
+            payload = try Data(contentsOf: url)
+        } catch {
+            print("Unable to open file")
+        }
+        
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let pubKeyHash = publicKey.bitcoinKeyHash
+        let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
+        let outputInscribe = BitcoinScript.buildNftInscription(mimeType: OrdMimeType.imagePng, payload: payload, pubkey: publicKey.data)
+        let outputProto = try BitcoinTransactionOutput(serializedData: outputInscribe)
+        
+        var input = BitcoinSigningInput.with {
+            $0.isItBrcOperation = true
+            $0.privateKey = [privateKeyData]
+        }
+        let utxo0 = BitcoinUnspentTransaction.with {
+            $0.script = p2wpkh.data
+            $0.amount = fullAmount
+            $0.variant = .p2Wpkh
+            $0.outPoint.hash = txId
+            $0.outPoint.index = 0
+        }
+        input.utxo.append(utxo0)
+        
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.script = outputProto.script
+                $0.amount = inscribeAmount
+                $0.variant = .nftInscription
+            }
+        ]
+
+        let plan = BitcoinTransactionPlan.with {
+            $0.utxos = utxos
+        }
+        input.plan = plan
+
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+        let transactionId = output.transactionID
+        XCTAssertEqual(transactionId, "f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString, "02000000000101992faa0d60f29d77cdae687c300d288a3b075b3c7e1e3b42ad537222c39095570000000000ffffffff017c790000000000002251202ac69a7e9dba801e9fcba826055917b84ca6fba4d51a29e47d478de603eedab602473044022054212984443ed4c66fc103d825bfd2da7baf2ab65d286e3c629b36b98cd7debd022050214cfe5d3b12a17aaaf1a196bfeb2f0ad15ffb320c4717eb7614162453e4fe0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    }
+    
+    func testSignNftInscriptionReveal() throws {
+        // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
+        let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
+        let inscribeAmount = 31100 as Int64;
+        let dustSatoshis = 546 as Int64;
+        let txId = Data(hexString: "f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")!;
+
+        let filePath = "./rust/tw_bitcoin/src/tests/data/tw_logo.png"
+        let url = URL(fileURLWithPath: filePath)
+        let payload: Data;
+        do {
+            payload = try Data(contentsOf: url)
+        } catch {
+            print("Unable to open file")
+        }
+
+        let filePath = "./rust/tw_bitcoin/src/tests/data/tx_nft_reveal.hex"
+        let url = URL(fileURLWithPath: filePath)
+        let expectedHex: String;
+        do {
+            expectedHex = try String(contentsOf: url)
+        } catch {
+            print("Unable to open file")
+        }
+        
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let pubKeyHash = publicKey.bitcoinKeyHash
+        let inputInscribe = BitcoinScript.buildNftInscription(mimeType: OrdMimeType.imagePng, payload: payload, pubkey: publicKey.data)
+        let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
+        let inputProto = try BitcoinTransactionOutput(serializedData: inputInscribe)
+        
+        var input = BitcoinSigningInput.with {
+            $0.isItBrcOperation = true
+            $0.privateKey = [privateKeyData]
+        }
+        let utxo0 = BitcoinUnspentTransaction.with {
+            $0.script = inputProto.script
+            $0.amount = inscribeAmount
+            $0.variant = .nftInscription
+            $0.spendingScript = inputProto.spendingScript
+            $0.outPoint.hash = txId
+            $0.outPoint.index = 0
+        }
+        input.utxo.append(utxo0)
+        
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.script = p2wpkh.data
+                $0.amount = dustSatoshis
+                $0.variant = .p2Wpkh
+            }
+        ]
+
+        let plan = BitcoinTransactionPlan.with {
+            $0.utxos = utxos
+        }
+        input.plan = plan
+
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+        let transactionId = output.transactionID
+        XCTAssertEqual(transactionId, "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac")
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString[0..164], expectedHex[0..164]);
+        XCTAssertEqual(encoded.hexString[292..], expectedHex[292..]);
     }
 
     func testSignP2WSH() throws {

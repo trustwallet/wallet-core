@@ -8,7 +8,7 @@
 
 #include "TWBase.h"
 #include "TWBitcoinSigHashType.h"
-#include "TWBitcoinOrdinalsMimeType.h"
+#include "TWOrdMimeType.h"
 #include "TWCoinType.h"
 #include "TWData.h"
 #include "TWPublicKey.h"
@@ -212,7 +212,7 @@ TWData* _Nonnull TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* _Nonnull ti
 /// \note Must be deleted with \TWBitcoinScriptDelete
 /// \return A pointer to the built script
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWBitcoinScriptBuildNftInscription(enum TWBitcoinOrdinalsMimeType mimeType, TWData *_Nonnull payload, TWData *_Nonnull pubkey);
+TWData* _Nonnull TWBitcoinScriptBuildNftInscription(enum TWOrdMimeType mimeType, TWData *_Nonnull payload, TWData *_Nonnull pubkey);
 
 /// Builds a appropriate lock script for the given address..
 ///
