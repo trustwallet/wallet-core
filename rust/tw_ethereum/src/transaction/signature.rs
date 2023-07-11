@@ -27,8 +27,8 @@ impl Signature {
     pub fn new(sign: secp256k1::Signature) -> Self {
         Signature {
             v: U256::from(sign.v()),
-            r: U256::from_little_endian(sign.r()),
-            s: U256::from_little_endian(sign.s()),
+            r: U256::from_big_endian(sign.r()),
+            s: U256::from_big_endian(sign.s()),
             rsv: sign.to_bytes(),
         }
     }
@@ -63,8 +63,8 @@ impl SignatureEip155 {
         let v = replay_protection(chain_id, sign.v());
         SignatureEip155 {
             v,
-            r: U256::from_little_endian(sign.r()),
-            s: U256::from_little_endian(sign.s()),
+            r: U256::from_big_endian(sign.r()),
+            s: U256::from_big_endian(sign.s()),
         }
     }
 }

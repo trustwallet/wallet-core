@@ -1627,6 +1627,7 @@ name = "tw_number"
 version = "0.1.0"
 dependencies = [
  "primitive-types",
+ "tw_encoding",
  "tw_hash",
 ]
 

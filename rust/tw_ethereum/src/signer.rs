@@ -36,7 +36,7 @@ impl Signer {
     }
 
     fn sign_proto_impl(input: Proto::SigningInput<'_>) -> SigningResult<Proto::SigningOutput<'_>> {
-        let chain_id = U256::from_little_endian_slice(&input.chain_id)?;
+        let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
         let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
 
         let unsigned = Self::transaction_from_proto(&input)?;
@@ -50,9 +50,9 @@ impl Signer {
 
         Ok(Proto::SigningOutput {
             encoded: signed.encode().into(),
-            v: eth_signature.v().to_little_endian_compact().into(),
-            r: eth_signature.r().to_little_endian_compact().into(),
-            s: eth_signature.s().to_little_endian_compact().into(),
+            v: eth_signature.v().to_big_endian_compact().into(),
+            r: eth_signature.r().to_big_endian_compact().into(),
+            s: eth_signature.s().to_big_endian_compact().into(),
             data: signed.payload().into(),
             pre_hash: pre_hash.to_vec().into(),
             ..Proto::SigningOutput::default()
@@ -67,31 +67,31 @@ impl Signer {
         };
 
         let to = Address::from_str(&input.to_address)?;
-        let nonce = U256::from_little_endian_slice(&input.nonce)?;
-        let gas_price = U256::from_little_endian_slice(&input.gas_price)?;
-        let gas_limit = U256::from_little_endian_slice(&input.gas_limit)?;
+        let nonce = U256::from_big_endian_slice(&input.nonce)?;
+        let gas_price = U256::from_big_endian_slice(&input.gas_price)?;
+        let gas_limit = U256::from_big_endian_slice(&input.gas_limit)?;
         let max_inclusion_fee_per_gas =
-            U256::from_little_endian_slice(&input.max_inclusion_fee_per_gas)?;
-        let max_fee_per_gas = U256::from_little_endian_slice(&input.max_fee_per_gas)?;
+            U256::from_big_endian_slice(&input.max_inclusion_fee_per_gas)?;
+        let max_fee_per_gas = U256::from_big_endian_slice(&input.max_fee_per_gas)?;
 
         use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
         use Proto::TransactionMode as TxMode;
 
         let (eth_amount, payload) = match transaction.transaction_oneof {
             Tx::transfer(ref transfer) => {
-                let amount = U256::from_little_endian_slice(&transfer.amount)?;
+                let amount = U256::from_big_endian_slice(&transfer.amount)?;
                 (amount, transfer.data.to_vec())
             },
             Tx::erc20_transfer(ref erc20_transfer) => {
                 let token_to_address = Address::from_str(&erc20_transfer.to)?;
-                let token_amount = U256::from_little_endian_slice(&erc20_transfer.amount)?;
+                let token_amount = U256::from_big_endian_slice(&erc20_transfer.amount)?;
 
                 let payload = Erc20::transfer(token_to_address, token_amount)?;
                 (U256::zero(), payload)
             },
             Tx::erc20_approve(ref erc20_approve) => {
                 let spender = Address::from_str(&erc20_approve.spender)?;
-                let token_amount = U256::from_little_endian_slice(&erc20_approve.amount)?;
+                let token_amount = U256::from_big_endian_slice(&erc20_approve.amount)?;
 
                 let payload = Erc20::approve(spender, token_amount)?;
                 (U256::zero(), payload)
@@ -99,7 +99,7 @@ impl Signer {
             Tx::erc721_transfer(ref erc721_transfer) => {
                 let from = Address::from_str(&erc721_transfer.from)?;
                 let to = Address::from_str(&erc721_transfer.to)?;
-                let token_id = U256::from_little_endian_slice(&erc721_transfer.token_id)?;
+                let token_id = U256::from_big_endian_slice(&erc721_transfer.token_id)?;
 
                 let payload = Erc721::encode_transfer_from(from, to, token_id)?;
                 (U256::zero(), payload)
@@ -107,15 +107,15 @@ impl Signer {
             Tx::erc1155_transfer(ref erc1155_transfer) => {
                 let from = Address::from_str(&erc1155_transfer.from)?;
                 let to = Address::from_str(&erc1155_transfer.to)?;
-                let token_id = U256::from_little_endian_slice(&erc1155_transfer.token_id)?;
-                let value = U256::from_little_endian_slice(&erc1155_transfer.value)?;
+                let token_id = U256::from_big_endian_slice(&erc1155_transfer.token_id)?;
+                let value = U256::from_big_endian_slice(&erc1155_transfer.value)?;
                 let data = erc1155_transfer.data.to_vec();
 
                 let payload = Erc1155::encode_safe_transfer_from(from, to, token_id, value, data)?;
                 (U256::zero(), payload)
             },
             Tx::contract_generic(ref contract_generic) => {
-                let amount = U256::from_little_endian_slice(&contract_generic.amount)?;
+                let amount = U256::from_big_endian_slice(&contract_generic.amount)?;
                 let payload = contract_generic.data.to_vec();
                 (amount, payload)
             },
@@ -177,9 +177,9 @@ impl Signer {
                 let entry_point = Address::from_str(user_op.entry_point.as_ref())?;
                 let sender = Address::from_str(user_op.sender.as_ref())?;
                 let verification_gas_limit =
-                    U256::from_little_endian_slice(&user_op.verification_gas_limit)?;
+                    U256::from_big_endian_slice(&user_op.verification_gas_limit)?;
                 let pre_verification_gas =
-                    U256::from_little_endian_slice(&user_op.pre_verification_gas)?;
+                    U256::from_big_endian_slice(&user_op.pre_verification_gas)?;
 
                 UserOperation {
                     nonce,
@@ -205,7 +205,7 @@ fn erc4337_execute_call_from_proto(
     call: &Proto::mod_Transaction::mod_Batch::BatchedCall,
 ) -> SigningResult<ExecuteArgs> {
     let to = Address::from_str(&call.address)?;
-    let value = U256::from_little_endian_slice(&call.amount)?;
+    let value = U256::from_big_endian_slice(&call.amount)?;
     Ok(ExecuteArgs {
         to,
         value,

@@ -11,7 +11,7 @@ use std::fmt::Formatter;
 use std::ops::Add;
 use tw_hash::H256;
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Debug, Default)]
 pub struct U256(primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {
@@ -39,6 +39,19 @@ impl U256 {
         U256::from(inner)
     }
 
+    pub fn from_big_endian(data: H256) -> U256 {
+        let inner = primitive_types::U256::from_big_endian(data.as_slice());
+        U256::from(inner)
+    }
+
+    pub fn from_big_endian_slice(data: &[u8]) -> NumberResult<U256> {
+        if data.len() > Self::BYTES {
+            return Err(NumberError::InvalidBinaryRepresentation);
+        }
+        let inner = primitive_types::U256::from_big_endian(data);
+        Ok(U256::from(inner))
+    }
+
     pub fn from_little_endian_slice(data: &[u8]) -> NumberResult<U256> {
         if data.len() > Self::BYTES {
             return Err(NumberError::InvalidBinaryRepresentation);
@@ -53,11 +66,11 @@ impl U256 {
         res
     }
 
-    /// TODO test.
     pub fn to_little_endian_compact(&self) -> Vec<u8> {
         let leading_zero_bytes = self.leading_zero_bytes();
+        let zero_bytes_start_at = U256::BYTES - leading_zero_bytes;
         let bytes = self.to_little_endian();
-        bytes[..leading_zero_bytes].to_vec()
+        bytes[..zero_bytes_start_at].to_vec()
     }
 
     pub fn to_big_endian(&self) -> H256 {
@@ -87,8 +100,8 @@ impl U256 {
 
 #[cfg(feature = "helpers")]
 impl U256 {
-    pub fn encode_le_compact(num: u64) -> Cow<'static, [u8]> {
-        U256::from(num).to_little_endian_compact().into()
+    pub fn encode_be_compact(num: u64) -> Cow<'static, [u8]> {
+        U256::from(num).to_big_endian_compact().into()
     }
 }
 

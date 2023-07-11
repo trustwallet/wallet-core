@@ -7,6 +7,9 @@ edition = "2021"
 primitive-types = "0.12.1"
 tw_hash = { path = "../tw_hash" }
 
+[dev-dependencies]
+tw_encoding = { path = "../tw_encoding" }
+
 [features]
 default = ["helpers"]
 helpers = []
