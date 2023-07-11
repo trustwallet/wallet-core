@@ -4,14 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::abi::prebuild::erc1155::Erc1155;
 use crate::abi::prebuild::erc20::Erc20;
+use crate::abi::prebuild::erc4337::{Erc4337SimpleAccount, ExecuteArgs};
+use crate::abi::prebuild::erc721::Erc721;
 use crate::address::Address;
 use crate::transaction::transaction_eip1559::TransactionEip1559;
 use crate::transaction::transaction_non_typed::TransactionNonTyped;
 use crate::transaction::user_operation::UserOperation;
 use crate::transaction::UnsignedTransactionBox;
 use std::str::FromStr;
-use tw_coin_entry::{SigningError, SigningResult};
+use tw_coin_entry::{SigningError, SigningErrorType, SigningResult};
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
@@ -74,7 +77,7 @@ impl Signer {
         use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
         use Proto::TransactionMode as TxMode;
 
-        let (amount, payload) = match transaction.transaction_oneof {
+        let (eth_amount, payload) = match transaction.transaction_oneof {
             Tx::transfer(ref transfer) => {
                 let amount = U256::from_little_endian_slice(&transfer.amount)?;
                 (amount, transfer.data.to_vec())
@@ -82,18 +85,49 @@ impl Signer {
             Tx::erc20_transfer(ref erc20_transfer) => {
                 let token_to_address = Address::from_str(&erc20_transfer.to)?;
                 let token_amount = U256::from_little_endian_slice(&erc20_transfer.amount)?;
-                let payload = Erc20::transfer(token_to_address, token_amount)
-                    .map_err(|_| SigningError(CommonError::Error_internal))?;
+
+                let payload = Erc20::transfer(token_to_address, token_amount)?;
                 (U256::zero(), payload)
             },
             Tx::erc20_approve(ref erc20_approve) => {
                 let spender = Address::from_str(&erc20_approve.spender)?;
                 let token_amount = U256::from_little_endian_slice(&erc20_approve.amount)?;
-                let payload = Erc20::approve(spender, token_amount)
-                    .map_err(|_| SigningError(CommonError::Error_internal))?;
+
+                let payload = Erc20::approve(spender, token_amount)?;
                 (U256::zero(), payload)
             },
-            _ => todo!(),
+            Tx::erc721_transfer(ref erc721_transfer) => {
+                let from = Address::from_str(&erc721_transfer.from)?;
+                let to = Address::from_str(&erc721_transfer.to)?;
+                let token_id = U256::from_little_endian_slice(&erc721_transfer.token_id)?;
+
+                let payload = Erc721::encode_transfer_from(from, to, token_id)?;
+                (U256::zero(), payload)
+            },
+            Tx::erc1155_transfer(ref erc1155_transfer) => {
+                let from = Address::from_str(&erc1155_transfer.from)?;
+                let to = Address::from_str(&erc1155_transfer.to)?;
+                let token_id = U256::from_little_endian_slice(&erc1155_transfer.token_id)?;
+                let value = U256::from_little_endian_slice(&erc1155_transfer.value)?;
+                let data = erc1155_transfer.data.to_vec();
+
+                let payload = Erc1155::encode_safe_transfer_from(from, to, token_id, value, data)?;
+                (U256::zero(), payload)
+            },
+            Tx::contract_generic(ref contract_generic) => {
+                let amount = U256::from_little_endian_slice(&contract_generic.amount)?;
+                let payload = contract_generic.data.to_vec();
+                (amount, payload)
+            },
+            Tx::batch(_) => {
+                if input.tx_mode != TxMode::UserOp {
+                    return Err(SigningError(SigningErrorType::Error_invalid_params));
+                }
+
+                // `payload` will be calculated in `TxMode::UserOp` branch later.
+                (U256::zero(), Vec::default())
+            },
+            Tx::None => return Err(SigningError(SigningErrorType::Error_invalid_params)),
         };
 
         let tx = match input.tx_mode {
@@ -102,7 +136,7 @@ impl Signer {
                 gas_price,
                 gas_limit,
                 to,
-                amount,
+                amount: eth_amount,
                 payload,
             }
             .into_boxed(),
@@ -112,13 +146,32 @@ impl Signer {
                 max_fee_per_gas,
                 gas_limit,
                 to,
-                amount,
+                amount: eth_amount,
                 payload,
             }
             .into_boxed(),
             TxMode::UserOp => {
                 let Some(ref user_op) = input.user_operation else {
                     return Err(SigningError(CommonError::Error_invalid_params))
+                };
+
+                // Payload should match ERC4337 standard.
+                let payload = match transaction.transaction_oneof {
+                    // Encode a batch of `Erc4337::execute` function calls.
+                    Tx::batch(ref batch) => {
+                        let calls: Vec<_> = batch
+                            .calls
+                            .iter()
+                            .map(erc4337_execute_call_from_proto)
+                            .collect::<Result<Vec<_>, _>>()?;
+                        Erc4337SimpleAccount::encode_execute_batch(calls)?
+                    },
+                    // Encode a single `Erc4337::execute` function call.
+                    _ => Erc4337SimpleAccount::encode_execute(ExecuteArgs {
+                        to,
+                        value: eth_amount,
+                        data: payload,
+                    })?,
                 };
 
                 let entry_point = Address::from_str(user_op.entry_point.as_ref())?;
@@ -146,4 +199,16 @@ impl Signer {
         };
         Ok(tx)
     }
+}
+
+fn erc4337_execute_call_from_proto(
+    call: &Proto::mod_Transaction::mod_Batch::BatchedCall,
+) -> SigningResult<ExecuteArgs> {
+    let to = Address::from_str(&call.address)?;
+    let value = U256::from_little_endian_slice(&call.amount)?;
+    Ok(ExecuteArgs {
+        to,
+        value,
+        data: call.payload.to_vec(),
+    })
 }

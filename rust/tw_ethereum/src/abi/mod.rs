@@ -5,12 +5,14 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
+use tw_coin_entry::{SigningError, SigningErrorType};
 use tw_number::U256;
 
 pub mod prebuild;
 
 pub type AbiResult<T> = Result<T, AbiError>;
 
+#[derive(Debug)]
 pub enum AbiError {
     InvalidParams,
 }
@@ -18,6 +20,12 @@ pub enum AbiError {
 impl From<ethabi::Error> for AbiError {
     fn from(_err: ethabi::Error) -> Self {
         AbiError::InvalidParams
+    }
+}
+
+impl From<AbiError> for SigningError {
+    fn from(_: AbiError) -> Self {
+        SigningError(SigningErrorType::Error_internal)
     }
 }
 

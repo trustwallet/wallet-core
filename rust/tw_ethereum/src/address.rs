@@ -38,7 +38,7 @@ impl Address {
 
     /// Displays the address in mixed-case checksum form
     /// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
-    fn to_checksum_address(&self) -> String {
+    fn into_checksum_address(self) -> String {
         const UPPER_RANGE_1: RangeInclusive<char> = '8'..='9';
         const UPPER_RANGE_2: RangeInclusive<char> = 'a'..='f';
 
@@ -91,7 +91,7 @@ impl From<&'static str> for Address {
 
 impl Display for Address {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_checksum_address())
+        write!(f, "{}", self.into_checksum_address())
     }
 }
 

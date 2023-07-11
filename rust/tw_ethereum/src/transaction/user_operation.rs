@@ -145,23 +145,31 @@ struct SignedUserOperationSerde {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::abi::prebuild::erc4337::{Erc4337SimpleAccount, ExecuteArgs};
 
     #[test]
     fn test_encode_user_operation() {
         let chain_id = U256::from(97u64);
+
+        let execute_args = ExecuteArgs {
+            to: Address::from("0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"),
+            value: U256::from(0x2_386f_26fc_10000u64),
+            data: Vec::default(),
+        };
+        let payload = Erc4337SimpleAccount::encode_execute(execute_args).unwrap();
 
         let user_op = UserOperation {
             nonce: U256::from(2u64),
             entry_point: Address::from("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"),
             sender: Address::from("0xb16Db98B365B1f89191996942612B14F1Da4Bd5f"),
             init_code: Vec::default(),
-            gas_limit: U256::from(100_000u64),
-            verification_gas_limit: U256::from(100_000u64),
-            max_fee_per_gas: U256::from(7_033_440_745u64),
-            max_inclusion_fee_per_gas: U256::from(7_033_440_745u64),
-            pre_verification_gas: U256::from(46_856u64),
+            gas_limit: U256::from(0x186a0u64),
+            verification_gas_limit: U256::from(0x186a0u64),
+            max_fee_per_gas: U256::from(0x1_a339_c9e9u64),
+            max_inclusion_fee_per_gas: U256::from(0x1_a339_c9e9u64),
+            pre_verification_gas: U256::from(0xb708u64),
             paymaster_and_data: Vec::default(),
-            payload: hex::decode("0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000").unwrap(),
+            payload,
         };
 
         let encoded = hex::encode(user_op.encode(chain_id), false);

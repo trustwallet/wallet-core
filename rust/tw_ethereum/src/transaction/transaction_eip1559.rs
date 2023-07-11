@@ -97,7 +97,7 @@ fn encode_transaction(
         .append(&RlpU256::from(tx.amount))
         .append(&tx.payload.as_slice())
         // empty `access_list`.
-        .append_raw(&&EMPTY_LIST_RLP[..], 1);
+        .append_raw(&EMPTY_LIST_RLP[..], 1);
 
     if let Some(signature) = signature {
         stream
