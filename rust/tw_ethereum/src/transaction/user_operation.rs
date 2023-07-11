@@ -104,17 +104,17 @@ impl SignedTransaction for SignedUserOperation {
 
         let prefix = true;
         let tx = SignedUserOperationSerde {
-            sender: self.unsigned.sender.to_string(),
-            nonce: self.unsigned.nonce.to_string(),
-            init_code: hex::encode(&self.unsigned.init_code, prefix),
             call_data: hex::encode(&self.unsigned.payload, prefix),
             call_gas_limit: self.unsigned.gas_limit.to_string(),
-            verification_gas_limit: self.unsigned.verification_gas_limit.to_string(),
+            init_code: hex::encode(&self.unsigned.init_code, prefix),
             max_fee_per_gas: self.unsigned.max_fee_per_gas.to_string(),
             max_priority_fee_per_gas: self.unsigned.max_inclusion_fee_per_gas.to_string(),
+            nonce: self.unsigned.nonce.to_string(),
             paymaster_and_data: hex::encode(&self.unsigned.paymaster_and_data, prefix),
             pre_verification_gas: self.unsigned.pre_verification_gas.to_string(),
+            sender: self.unsigned.sender.to_string(),
             signature: hex::encode(signature.as_slice(), prefix),
+            verification_gas_limit: self.unsigned.verification_gas_limit.to_string(),
         };
         serde_json::to_string(&tx)
             .expect("Simple structure should never fail on serialization")
@@ -129,17 +129,17 @@ impl SignedTransaction for SignedUserOperation {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct SignedUserOperationSerde {
-    sender: String,
-    nonce: String,
-    init_code: String,
     call_data: String,
     call_gas_limit: String,
-    verification_gas_limit: String,
+    init_code: String,
     max_fee_per_gas: String,
     max_priority_fee_per_gas: String,
+    nonce: String,
     paymaster_and_data: String,
     pre_verification_gas: String,
+    sender: String,
     signature: String,
+    verification_gas_limit: String,
 }
 
 #[cfg(test)]

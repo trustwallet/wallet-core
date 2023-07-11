@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::{NumberError, NumberResult};
+use std::borrow::Cow;
 use std::fmt;
 use std::fmt::Formatter;
 use std::ops::Add;
@@ -81,6 +82,13 @@ impl U256 {
 
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
+    }
+}
+
+#[cfg(feature = "helpers")]
+impl U256 {
+    pub fn encode_le_compact(num: u64) -> Cow<'static, [u8]> {
+        U256::from(num).to_little_endian_compact().into()
     }
 }
 
