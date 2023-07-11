@@ -11,6 +11,7 @@
 
 #include "OpCodes.h"
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWOrdMimeType.h>
 #include "proto/Bitcoin.pb.h"
 
 #include <string>
@@ -120,7 +121,7 @@ class Script {
     static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey);
 
     /// Builds the Ordinals inscripton for NFTs.
-    static Proto::TransactionOutput buildNftInscription(TW::Rust::MimeType mimeType, const Data& payload, const Data& publicKey);
+    static Proto::TransactionOutput buildNftInscription(enum TWOrdMimeType mimeType, const Data& payload, const Data& publicKey);
 
     /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
     static Script buildOpReturnScript(const Data& data);

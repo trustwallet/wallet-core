@@ -177,10 +177,9 @@ TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TW
 }
 
 TWData *_Nullable TWBitcoinScriptBuildNftInscription(enum TWOrdMimeType mimeType, TWData* payload, TWData* pubkey) {
-    auto* ordMimeType = reinterpret_cast<const TW::Rust::MimeType*>(mimeType);
     auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
     auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
+    auto script = TW::Bitcoin::Script::buildNftInscription(mimeType, *ordPayload, *ordPubkey);
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }
