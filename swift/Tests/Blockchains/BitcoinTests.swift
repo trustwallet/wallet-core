@@ -245,7 +245,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let dustSatoshis = 546 as Int64;
         let txId = Data(hexString: "f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")!;
 
-        let filePath = "./rust/tw_bitcoin/src/tests/data/tw_logo.png"
+        let filePath = "../rust/tw_bitcoin/src/tests/data/tw_logo.png"
         let url = URL(fileURLWithPath: filePath)
         var payload: Data? = nil;
         do {
@@ -254,14 +254,16 @@ class BitcoinTransactionSignerTests: XCTestCase {
             print("Unable to open file")
         }
 
-        let filePathTx = "./rust/tw_bitcoin/src/tests/data/tx_nft_reveal.hex"
+        let filePathTx = "../rust/tw_bitcoin/src/tests/data/tx_nft_reveal.hex"
         let urlTx = URL(fileURLWithPath: filePathTx)
-        let expectedHex: String;
+        var expectedHexNil: String? = nil;
         do {
-            expectedHex = try String(contentsOf: urlTx)
+            expectedHexNil = try String(contentsOf: urlTx)
         } catch {
             print("Unable to open file")
         }
+
+        let expectedHex = expectedHexNil!;
         
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
