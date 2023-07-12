@@ -1,5 +1,5 @@
 PODS:
-  - SwiftProtobuf (1.13.0)
+  - SwiftProtobuf (1.11.3)
 
 DEPENDENCIES:
   - SwiftProtobuf
