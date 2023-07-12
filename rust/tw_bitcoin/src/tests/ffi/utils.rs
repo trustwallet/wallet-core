@@ -138,7 +138,7 @@ pub fn call_ffi_build_nft_inscription<'a, 'b>(
 
     let raw = unsafe {
         tw_build_nft_inscription(
-            mime_type,
+            mime_type as u32,
             data.as_ptr(),
             data.len(),
             satoshis as i64,

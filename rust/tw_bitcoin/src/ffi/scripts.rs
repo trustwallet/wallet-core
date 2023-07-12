@@ -147,13 +147,18 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 #[no_mangle]
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_build_nft_inscription(
-    mime_type: MimeType,
+    mime_type: u32,
     data: *const u8,
     data_len: usize,
     satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
 ) -> CByteArray {
+    let mime_type = try_or_else!(
+        MimeType::from_raw(mime_type as usize),
+        CByteArray::null
+    );
+
     // Convert data to inscribe.
     let data = try_or_else!(
         CByteArrayRef::new(data, data_len).as_slice(),

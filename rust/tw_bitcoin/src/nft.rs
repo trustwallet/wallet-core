@@ -32,6 +32,41 @@ pub enum MimeType {
     VideoWebm = 23,
 }
 
+impl MimeType {
+    pub fn from_raw(raw: usize) -> Option<Self> {
+        use MimeType::*;
+
+        let res = match raw {
+            1 => ApplicationJson,
+            2 => ApplicationPdf,
+            3 => ApplicationPgpSignature,
+            4 => ApplicationYaml,
+            5 => AudioFlac,
+            6 => AudioMpeg,
+            7 => AudioWav,
+            8 => ImageApng,
+            9 => ImageAvif,
+            10 => ImageGif,
+            11 => ImageJpeg,
+            12 => ImagePng,
+            13 => ImageSvgXml,
+            14 => ImageWebp,
+            15 => ModelGltfBinary,
+            16 => ModelStl,
+            17 => TextCss,
+            18 => TextHtml,
+            19 => TextJavascript,
+            20 => TextPlain,
+            21 => TextMarkdown,
+            22 => VideoMp4,
+            23 => VideoWebm,
+            _ => return None,
+        };
+
+        Some(res)
+    }
+}
+
 impl Display for MimeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         use MimeType::*;

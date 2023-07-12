@@ -24,6 +24,7 @@
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
+#include <TrustWalletCore/TWOrdMimeType.h>
 
 #include <fstream>
 #include <vector>
@@ -329,7 +330,7 @@ TEST(BitcoinSigning, SignNftInscriptionCommit) {
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
     auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildNftInscription(TW::Rust::MimeType::ImagePng, payload, pubKey.bytes);
+    auto outputInscribe = TW::Bitcoin::Script::buildNftInscription(TWOrdMimeType::TWOrdMimeTypeImagePng, payload, pubKey.bytes);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);
@@ -388,7 +389,7 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     PrivateKey key(privateKey);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto inputInscribe = TW::Bitcoin::Script::buildNftInscription(TW::Rust::MimeType::ImagePng, payload, pubKey.bytes);
+    auto inputInscribe = TW::Bitcoin::Script::buildNftInscription(TWOrdMimeType::TWOrdMimeTypeImagePng, payload, pubKey.bytes);
     auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
 
     Proto::SigningInput input;
