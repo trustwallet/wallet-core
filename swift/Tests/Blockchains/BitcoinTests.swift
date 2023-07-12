@@ -187,7 +187,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let fullAmount = 32400 as Int64;
         let minerFee = 1300 as Int64;
         let inscribeAmount = fullAmount - minerFee;
-        let txId = Data(hexString: "579590c3227253ad423b1e7e3c5b073b8a280d307c68aecd779df2600daa2f99")!;
+        let txId = Data(hexString: "992faa0d60f29d77cdae687c300d288a3b075b3c7e1e3b42ad537222c3909557")!;
         let payload = Data(hexString: nftInscriptionImageData)!;
         
         let privateKey = PrivateKey(data: privateKeyData)!
@@ -235,7 +235,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let privateKeyData = Data(hexString: "e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129")!
         let inscribeAmount = 31100 as Int64;
         let dustSatoshis = 546 as Int64;
-        let txId = Data(hexString: "f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")!;
+        let txId = Data(hexString: "1771decbce2766b39d8fe66f4dc11737b3146c71f8cc6ae1397384c5e508e7f1")!;
         let payload = Data(hexString: nftInscriptionImageData)!;
 
         let privateKey = PrivateKey(data: privateKeyData)!
