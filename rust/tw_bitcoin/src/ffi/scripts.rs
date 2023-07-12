@@ -154,10 +154,7 @@ pub unsafe extern "C" fn tw_build_nft_inscription(
     pubkey: *const u8,
     pubkey_len: usize,
 ) -> CByteArray {
-    let mime_type = try_or_else!(
-        MimeType::from_raw(mime_type as usize),
-        CByteArray::null
-    );
+    let mime_type = try_or_else!(MimeType::from_raw(mime_type as usize), CByteArray::null);
 
     // Convert data to inscribe.
     let data = try_or_else!(
