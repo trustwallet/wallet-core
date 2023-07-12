@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
+use crate::rlp::address::RlpAddressOption;
 use crate::rlp::u256::RlpU256;
 use crate::transaction::signature::{EthSignature, Signature};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
@@ -21,7 +22,7 @@ pub struct TransactionEip1559 {
     pub max_inclusion_fee_per_gas: U256,
     pub max_fee_per_gas: U256,
     pub gas_limit: U256,
-    pub to: Address,
+    pub to: Option<Address>,
     pub amount: U256,
     pub payload: Vec<u8>,
 }
@@ -93,7 +94,7 @@ fn encode_transaction(
         .append(&RlpU256::from(tx.max_inclusion_fee_per_gas))
         .append(&RlpU256::from(tx.max_fee_per_gas))
         .append(&RlpU256::from(tx.gas_limit))
-        .append(&tx.to.as_slice())
+        .append(&RlpAddressOption::from(tx.to))
         .append(&RlpU256::from(tx.amount))
         .append(&tx.payload.as_slice())
         // empty `access_list`.
@@ -126,7 +127,7 @@ mod tests {
             max_inclusion_fee_per_gas: U256::from(2_000_000_000u64),
             max_fee_per_gas: U256::from(3_000_000_000u64),
             gas_limit: U256::from(21100u32),
-            to: Address::from("0x6b175474e89094c44da98b954eedeac495271d0f"),
+            to: Some(Address::from("0x6b175474e89094c44da98b954eedeac495271d0f")),
             amount: U256::zero(),
             payload: hex::decode("a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000001ee0c29f50cb1").unwrap(),
         };

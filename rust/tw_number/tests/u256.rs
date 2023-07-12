@@ -21,6 +21,13 @@ struct TestCase {
 
 const TEST_CASES: &[TestCase] = &[
     TestCase {
+        num_str: "0",
+        little_endian_compact: "",
+        little_endian: "0000000000000000000000000000000000000000000000000000000000000000",
+        big_endian_compact: "",
+        big_endian: "0000000000000000000000000000000000000000000000000000000000000000",
+    },
+    TestCase {
         num_str: "1",
         little_endian_compact: "01",
         little_endian: "0100000000000000000000000000000000000000000000000000000000000000",

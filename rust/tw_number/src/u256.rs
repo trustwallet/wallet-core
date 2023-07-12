@@ -11,7 +11,7 @@ use std::fmt::Formatter;
 use std::ops::Add;
 use tw_hash::H256;
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct U256(primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {

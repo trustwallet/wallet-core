@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
+use crate::rlp::address::RlpAddressOption;
 use crate::rlp::u256::RlpU256;
 use crate::transaction::signature::{EthSignature, SignatureEip155};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
@@ -18,7 +19,7 @@ pub struct TransactionNonTyped {
     pub nonce: U256,
     pub gas_price: U256,
     pub gas_limit: U256,
-    pub to: Address,
+    pub to: Option<Address>,
     pub amount: U256,
     pub payload: Vec<u8>,
 }
@@ -83,7 +84,7 @@ fn encode_transaction(
         .append(&RlpU256::from(tx.nonce))
         .append(&RlpU256::from(tx.gas_price))
         .append(&RlpU256::from(tx.gas_limit))
-        .append(&tx.to.as_slice())
+        .append(&RlpAddressOption::from(tx.to))
         .append(&RlpU256::from(tx.amount))
         .append(&tx.payload.as_slice());
 
@@ -110,7 +111,7 @@ mod tests {
             nonce: U256::zero(),
             gas_price: U256::zero(),
             gas_limit: U256::zero(),
-            to: Address::default(),
+            to: Some(Address::default()),
             amount: U256::zero(),
             payload: Vec::new(),
         };
@@ -125,16 +126,33 @@ mod tests {
     fn test_encode_unsigned_non_typed() {
         let tx = TransactionNonTyped {
             nonce: U256::zero(),
-            gas_price: U256::from(42_000_000_000u64),
-            gas_limit: U256::from(78009u32),
-            to: Address::from("0x6b175474e89094c44da98b954eedeac495271d0f"),
+            gas_price: U256::from(42_000_000_000_u64),
+            gas_limit: U256::from(78009_u32),
+            to: Some(Address::from("0x6b175474e89094c44da98b954eedeac495271d0f")),
             amount: U256::zero(),
             payload: hex::decode("a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000").unwrap(),
         };
-        let chain_id = U256::from(10u8);
+        let chain_id = U256::from(10_u8);
         let actual = tx.encode(chain_id);
 
         let expected = "f86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec800000a8080";
+        assert_eq!(hex::encode(actual, false), expected);
+    }
+
+    #[test]
+    fn test_encode_unsigned_non_typed_pre_hash() {
+        let tx = TransactionNonTyped {
+            nonce: U256::from(9_u64),
+            gas_price: U256::from(20_000_000_000_u64),
+            gas_limit: U256::from(21_000_u64),
+            to: Some(Address::from("0x3535353535353535353535353535353535353535")),
+            amount: U256::from(1_000_000_000_000_000_000_u64),
+            payload: Vec::default(),
+        };
+        let chain_id = U256::from(1_u64);
+        let actual = tx.pre_hash(chain_id);
+
+        let expected = "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53";
         assert_eq!(hex::encode(actual, false), expected);
     }
 }

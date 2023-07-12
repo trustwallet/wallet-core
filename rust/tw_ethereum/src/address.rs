@@ -7,7 +7,7 @@
 use std::fmt::{Display, Formatter};
 use std::ops::{RangeFrom, RangeInclusive};
 use std::str::FromStr;
-use tw_coin_entry::AddressError;
+use tw_coin_entry::{AddressError, AddressResult};
 use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160};
 use tw_keypair::ecdsa::secp256k1;
@@ -21,6 +21,14 @@ pub struct Address {
 /// cbindgen:ignore
 impl Address {
     pub const LEN: usize = 20;
+
+    pub fn from_str_optional(s: &str) -> AddressResult<Option<Address>> {
+        if s.is_empty() {
+            return Ok(None);
+        }
+
+        Address::from_str(s).map(Some)
+    }
 
     /// Initializes an address with a `secp256k1` public key.
     pub fn with_secp256k1_pubkey(pubkey: &secp256k1::PublicKey) -> Address {

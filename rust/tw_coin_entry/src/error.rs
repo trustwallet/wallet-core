@@ -33,7 +33,7 @@ impl From<NumberError> for SigningError {
 
 impl From<AddressError> for SigningError {
     fn from(_err: AddressError) -> Self {
-        SigningError(SigningErrorType::Error_invalid_params)
+        SigningError(SigningErrorType::Error_invalid_address)
     }
 }
 
