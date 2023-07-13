@@ -329,7 +329,7 @@ TEST(BitcoinSigning, SignNftInscriptionCommit) {
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
     auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
-    auto outputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription(TWOrdMimeType::TWOrdMimeTypeImagePng, payload, pubKey.bytes);
+    auto outputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription("image/png", payload, pubKey.bytes);
 
     Proto::SigningInput input;
     input.set_is_it_brc_operation(true);
@@ -388,7 +388,7 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     PrivateKey key(privateKey);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    auto inputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription(TWOrdMimeType::TWOrdMimeTypeImagePng, payload, pubKey.bytes);
+    auto inputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription("image/png", payload, pubKey.bytes);
     auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
 
     Proto::SigningInput input;

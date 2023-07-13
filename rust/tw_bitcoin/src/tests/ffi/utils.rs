@@ -1,5 +1,5 @@
 use crate::ffi::{
-    tw_build_brc20_transfer_inscription, tw_build_ordinal_nft_inscription, tw_build_p2pkh_script,
+    tw_build_brc20_transfer_inscription, tw_bitcoin_build_nft_inscription, tw_build_p2pkh_script,
     tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
 };
 use crate::Recipient;
@@ -124,7 +124,7 @@ pub fn call_ffi_build_brc20_transfer_script<'a, 'b>(
     }
 }
 
-/// Convenience wrapper over `tw_build_ordinal_nft_inscription` with Protobuf
+/// Convenience wrapper over `tw_bitcoin_build_nft_inscription` with Protobuf
 /// deserialization support.
 pub fn call_ffi_build_nft_inscription<'a, 'b>(
     satoshis: u64,
@@ -136,7 +136,7 @@ pub fn call_ffi_build_nft_inscription<'a, 'b>(
     let pubkey = recipient.public_key().to_bytes();
 
     let raw = unsafe {
-        tw_build_ordinal_nft_inscription(
+        tw_bitcoin_build_nft_inscription(
             mime_type.as_ptr(),
             mime_type.len(),
             data.as_ptr(),

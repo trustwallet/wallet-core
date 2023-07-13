@@ -146,7 +146,7 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 
 #[no_mangle]
 // Builds the Ordinals inscripton for BRC20 transfer.
-pub unsafe extern "C" fn tw_build_ordinal_nft_inscription(
+pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     mime_type: *const u8,
     mime_type_len: usize,
     data: *const u8,
