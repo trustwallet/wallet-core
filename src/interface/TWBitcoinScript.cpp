@@ -178,7 +178,7 @@ TWData *_Nullable TWBitcoinScriptBuildOrdinalNftInscription(TWString* mimeType, 
     auto* ordMimeType = reinterpret_cast<const std::string*>(mimeType);
     auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
     auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
-    auto script = TW::Bitcoin::Script::buildOrdinalNftInscription(ordMimeType, *ordPayload, *ordPubkey);
+    auto script = TW::Bitcoin::Script::buildOrdinalNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }

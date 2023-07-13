@@ -1,7 +1,6 @@
 use crate::ordinals::OrdinalsInscription;
 use crate::{Recipient, Result};
 use bitcoin::PublicKey;
-use std::fmt::Display;
 
 pub struct OrdinalNftInscription(OrdinalsInscription);
 

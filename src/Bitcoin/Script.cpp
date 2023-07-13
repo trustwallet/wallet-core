@@ -541,7 +541,8 @@ Proto::TransactionOutput Script::buildOrdinalNftInscription(const std::string& m
     TW::Bitcoin::Proto::TransactionOutput out;
     auto mimeTypeBytes = data(mimeType);
     Rust::CByteArrayWrapper res = TW::Rust::tw_build_ordinal_nft_inscription(
-        mimeTypeBytes,
+        mimeTypeBytes.data(),
+        mimeTypeBytes.size(),
         payload.data(),
         payload.size(),
         0,
