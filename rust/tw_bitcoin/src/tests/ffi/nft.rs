@@ -1,5 +1,5 @@
 use crate::ffi::taproot_build_and_sign_transaction;
-use crate::nft::{MimeType, NftInscription};
+use crate::nft::OrdinalNftInscription;
 use crate::tests::ffi::utils::{
     call_ffi_build_p2wpkh_script, reverse_txid, ProtoSigningInputBuilder, ProtoTransactionBuilder,
 };
@@ -17,7 +17,7 @@ fn proto_nft_inscription_script() {
     let keypair: secp256k1::KeyPair = keypair_from_wif(ALICE_WIF).unwrap();
     let recipient = Recipient::<PublicKey>::from(keypair);
 
-    let mime_type = MimeType::ImagePng;
+    let mime_type = b"image/png";
     let data = include_bytes!("../data/tw_logo.png");
     let satoshis: u64 = 1_000;
 
@@ -25,7 +25,7 @@ fn proto_nft_inscription_script() {
     let ffi_out = call_ffi_build_nft_inscription(satoshis, mime_type, data, &recipient);
 
     // Compare with native call.
-    let nft = NftInscription::new(mime_type, data, recipient).unwrap();
+    let nft = OrdinalNftInscription::new(mime_type, data, recipient).unwrap();
 
     let tapscript = nft.inscription().recipient().clone();
     let spending_script = nft.inscription().taproot_program();
@@ -51,7 +51,7 @@ fn proto_sign_nft_inscription_commit() {
     let privkey = alice.secret_bytes();
     let recipient = Recipient::<PublicKey>::from(&alice);
 
-    let mime_type = MimeType::ImagePng;
+    let mime_type = b"image/png";
     let data = include_bytes!("../data/tw_logo.png");
     let satoshis: u64 = 1_000;
 
@@ -99,7 +99,7 @@ fn proto_sign_nft_inscription_reveal() {
     let privkey = alice.secret_bytes();
     let recipient = Recipient::<PublicKey>::from(&alice);
 
-    let mime_type = MimeType::ImagePng;
+    let mime_type = b"image/png";
     let data = include_bytes!("../data/tw_logo.png");
     let satoshis: u64 = 1_000;
 

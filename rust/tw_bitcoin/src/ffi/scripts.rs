@@ -1,5 +1,5 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
-use crate::nft::{MimeType, NftInscription};
+use crate::nft::OrdinalNftInscription;
 use crate::{
     Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
@@ -147,14 +147,19 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 #[no_mangle]
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_build_ordinal_nft_inscription(
-    mime_type: u32,
+    mime_type: *const u8,
+    mime_type_len: usize,
     data: *const u8,
     data_len: usize,
     satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
 ) -> CByteArray {
-    let mime_type = try_or_else!(MimeType::from_raw(mime_type as usize), CByteArray::null);
+    // Convert mimeType.
+    let mime_type = try_or_else!(
+        CByteArrayRef::new(mime_type, mime_type_len).as_slice(),
+        CByteArray::null
+    );
 
     // Convert data to inscribe.
     let data = try_or_else!(
@@ -171,7 +176,8 @@ pub unsafe extern "C" fn tw_build_ordinal_nft_inscription(
     let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
 
     // Inscribe NFT data.
-    let nft = NftInscription::new(mime_type, data, recipient).expect("Ordinal NFT inscription incorrectly constructed");
+    let nft = OrdinalNftInscription::new(mime_type, data, recipient)
+        .expect("Ordinal NFT inscription incorrectly constructed");
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, nft.inscription().recipient());
     let spending_script = nft.inscription().taproot_program();

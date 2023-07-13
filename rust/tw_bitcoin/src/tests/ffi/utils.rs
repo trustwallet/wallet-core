@@ -2,7 +2,6 @@ use crate::ffi::{
     tw_build_brc20_transfer_inscription, tw_build_ordinal_nft_inscription, tw_build_p2pkh_script,
     tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
 };
-use crate::nft::MimeType;
 use crate::Recipient;
 use bitcoin::PublicKey;
 use std::borrow::Cow;
@@ -129,7 +128,7 @@ pub fn call_ffi_build_brc20_transfer_script<'a, 'b>(
 /// deserialization support.
 pub fn call_ffi_build_nft_inscription<'a, 'b>(
     satoshis: u64,
-    mime_type: MimeType,
+    mime_type: &[u8],
     data: &[u8],
     // We use 'b to clarify that `recipient` is not tied to the return value.
     recipient: &'b Recipient<PublicKey>,
@@ -138,7 +137,8 @@ pub fn call_ffi_build_nft_inscription<'a, 'b>(
 
     let raw = unsafe {
         tw_build_ordinal_nft_inscription(
-            mime_type as u32,
+            mime_type.as_ptr(),
+            mime_type.len(),
             data.as_ptr(),
             data.len(),
             satoshis as i64,

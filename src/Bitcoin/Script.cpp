@@ -537,10 +537,11 @@ Proto::TransactionOutput Script::buildBRC20InscribeTransfer(const std::string& t
     return out;
 }
 
-Proto::TransactionOutput Script::buildNftInscription(enum TWOrdMimeType mimeType, const Data& payload, const Data& publicKey) {
+Proto::TransactionOutput Script::buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey) {
     TW::Bitcoin::Proto::TransactionOutput out;
-    Rust::CByteArrayWrapper res = TW::Rust::tw_build_nft_inscription(
-        mimeType,
+    auto mimeTypeBytes = data(mimeType);
+    Rust::CByteArrayWrapper res = TW::Rust::tw_build_ordinal_nft_inscription(
+        mimeTypeBytes,
         payload.data(),
         payload.size(),
         0,

@@ -1,4 +1,4 @@
-use crate::nft::{MimeType, NftInscription};
+use crate::nft::OrdinalNftInscription;
 use crate::{
     keypair_from_wif, TXOutputP2TRScriptPath, TransactionBuilder, TxInputP2TRScriptPath,
     TxInputP2WPKH, TxOutputP2WPKH,
@@ -30,7 +30,7 @@ fn inscribe_nft() {
     let mut content = vec![];
     file.read_to_end(&mut content).unwrap();
 
-    let nft_inscription = NftInscription::new(MimeType::ImagePng, &content, alice.into()).unwrap();
+    let nft_inscription = OrdinalNftInscription::new(b"image/png", &content, alice.into()).unwrap();
 
     let txid = Txid::from_str(COMMIT_TXID).unwrap();
 
