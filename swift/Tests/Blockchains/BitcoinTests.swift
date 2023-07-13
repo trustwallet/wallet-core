@@ -193,8 +193,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let pubKeyHash = publicKey.bitcoinKeyHash
         let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
-        let mimeType = Data("image/png")!;
-        let outputInscribe = BitcoinScript.buildOrdinalNftInscription(mimeType: mimeType, payload: payload, pubkey: publicKey.data)
+        let outputInscribe = BitcoinScript.buildOrdinalNftInscription(mimeType: "image/png", payload: payload, pubkey: publicKey.data)
         let outputProto = try BitcoinTransactionOutput(serializedData: outputInscribe)
         
         var input = BitcoinSigningInput.with {
@@ -241,8 +240,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let pubKeyHash = publicKey.bitcoinKeyHash
-        let mimeType = Data("image/png")!;
-        let inputInscribe = BitcoinScript.buildOrdinalNftInscription(mimeType: mimeType, payload: payload, pubkey: publicKey.data)
+        let inputInscribe = BitcoinScript.buildOrdinalNftInscription(mimeType: "image/png", payload: payload, pubkey: publicKey.data)
         let p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubKeyHash)
         let inputProto = try BitcoinTransactionOutput(serializedData: inputInscribe)
         
