@@ -225,6 +225,15 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
     }
 }
 
+void CellBuilder::appendAddress(const AddressData& addressData) {
+    Data rawData(addressData.hash.begin(), addressData.hash.end());
+    Data prefix{0x80};
+    appendRaw(prefix, 2);
+    appendBitZero();
+    appendI8(addressData.workchainId);
+    appendRaw(rawData, 256);
+}
+
 uint8_t CellBuilder::clzU128(const uint128_t& u) {
     auto hi = static_cast<uint64_t>(u >> 64);
     auto lo = static_cast<uint64_t>(u);
