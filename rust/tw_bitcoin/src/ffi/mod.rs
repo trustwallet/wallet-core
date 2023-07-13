@@ -155,7 +155,8 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             TrVariant::P2TRKEYPATH => {
                 TxOutputP2TRKeyPath::new_with_script(satoshis, script_buf).into()
             },
-            // TODO: We could combine the next two variants into a single one.
+            // We're keeping those two variants separate for now, we're planning
+            // on writing a new interface as part of a larger task anyway.
             TrVariant::BRC20TRANSFER => {
                 TXOutputP2TRScriptPath::new_with_script(satoshis, script_buf).into()
             },

@@ -171,7 +171,7 @@ pub unsafe extern "C" fn tw_build_nft_inscription(
     let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
 
     // Inscribe NFT data.
-    let nft = NftInscription::new(mime_type, data, recipient).expect("TODO");
+    let nft = NftInscription::new(mime_type, data, recipient).expect("Ordinal NFT inscription incorrectly constructed");
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, nft.inscription().recipient());
     let spending_script = nft.inscription().taproot_program();
