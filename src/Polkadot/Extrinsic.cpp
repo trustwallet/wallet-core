@@ -188,13 +188,15 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking) const {
     Data data;
     switch (staking.message_oneof_case()) {
     case Proto::Staking::kBond: {
-        auto address = SS58Address(staking.bond().controller(), network);
         auto value = load(staking.bond().value());
         auto reward = byte(staking.bond().reward_destination());
         // call index
         append(data, getCallIndex(staking.bond().call_indices(), network, stakingBond));
         // controller
-        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount()));
+        if (!staking.bond().controller().empty()) {
+            auto controller = SS58Address(staking.bond().controller(), network);
+            append(data, encodeAccountId(controller.keyBytes(), encodeRawAccount()));
+        }
         // value
         append(data, encodeCompact(value));
         // reward destination
