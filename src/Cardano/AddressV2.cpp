@@ -17,26 +17,26 @@ bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& att
     // Decode Bas58, decode payload + crc, decode root, attr
     Data base58decoded = Base58::decode(addr);
     if (base58decoded.empty()) {
-        throw std::invalid_argument("Invalid address: could not Base58 decode");
+        return false;
     }
     auto elems = Cbor::Decode(base58decoded).getArrayElements();
     if (elems.size() < 2) {
-        throw std::invalid_argument("Could not parse address payload from CBOR data");
+        return false;
     }
     auto tag = elems[0].getTagValue();
     if (tag != PayloadTag) {
-        throw std::invalid_argument("wrong tag value");
+        return false;
     }
     Data payload = elems[0].getTagElement().getBytes();
     uint64_t crcPresent = (uint32_t)elems[1].getValue();
     uint32_t crcComputed = TW::Crc::crc32(payload);
     if (crcPresent != crcComputed) {
-        throw std::invalid_argument("CRC mismatch");
+        return false;
     }
     // parse payload, 3 elements
     auto payloadElems = Cbor::Decode(payload).getArrayElements();
     if (payloadElems.size() < 3) {
-        throw std::invalid_argument("Could not parse address root and attrs from CBOR data");
+        return false;
     }
     root_out = payloadElems[0].getBytes();
     attrs_out = payloadElems[1].encoded(); // map, but encoded as bytes
@@ -105,7 +105,7 @@ std::string AddressV2::string() const {
 
 Data AddressV2::keyHash(const TW::Data& xpub) {
     if (xpub.size() != 64) {
-        throw std::invalid_argument("invalid xpub length");
+        return {};
     }
     // hash of following Cbor-array: [0, [0, xpub], {} ]
     // 3rd entry map is empty map for V2, contains derivation path for V1
