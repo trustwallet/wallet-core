@@ -1,5 +1,5 @@
 use crate::ffi::{
-    tw_build_brc20_transfer_inscription, tw_bitcoin_build_nft_inscription, tw_build_p2pkh_script,
+    tw_bitcoin_build_nft_inscription, tw_build_brc20_transfer_inscription, tw_build_p2pkh_script,
     tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
 };
 use crate::Recipient;
