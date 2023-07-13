@@ -6,7 +6,6 @@
 
 import XCTest
 import WalletCore
-import Foundation
 
 class BitcoinTransactionSignerTests: XCTestCase {
     override func setUp() {
