@@ -14,7 +14,7 @@ use crate::transaction::transaction_non_typed::TransactionNonTyped;
 use crate::transaction::user_operation::UserOperation;
 use crate::transaction::UnsignedTransactionBox;
 use std::str::FromStr;
-use tw_coin_entry::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
@@ -24,7 +24,7 @@ use tw_proto::Ethereum::Proto;
 pub struct Signer;
 
 impl Signer {
-    pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'_> {
+    pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
         match Signer::sign_proto_impl(input) {
             Ok(output) => output,
             Err(error) => Proto::SigningOutput {
@@ -35,7 +35,9 @@ impl Signer {
         }
     }
 
-    fn sign_proto_impl(input: Proto::SigningInput<'_>) -> SigningResult<Proto::SigningOutput<'_>> {
+    fn sign_proto_impl(
+        input: Proto::SigningInput<'_>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
         let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
 

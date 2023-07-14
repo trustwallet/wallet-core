@@ -1508,6 +1508,7 @@ dependencies = [
 name = "tw_coin_entry"
 version = "0.1.0"
 dependencies = [
+ "serde_json",
  "tw_keypair",
  "tw_number",
  "tw_proto",

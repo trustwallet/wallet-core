@@ -1,11 +1,10 @@
-mod coin_context;
-mod coin_entry;
-mod derivation;
-mod error;
-mod prefix;
+extern crate core;
 
-pub use coin_context::CoinContext;
-pub use coin_entry::{CoinEntry, ProtoError, ProtoResult};
-pub use derivation::Derivation;
-pub use error::{AddressError, AddressResult, SigningError, SigningErrorType, SigningResult};
-pub use prefix::{NoPrefix, Prefix};
+pub mod coin_context;
+pub mod coin_entry;
+pub mod coin_entry_ext;
+pub mod common;
+pub mod derivation;
+pub mod error;
+pub mod modules;
+pub mod prefix;

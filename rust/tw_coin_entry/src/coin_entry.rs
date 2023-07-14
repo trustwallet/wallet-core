@@ -7,17 +7,31 @@
 use crate::coin_context::CoinContext;
 use crate::derivation::Derivation;
 use crate::error::AddressError;
+use crate::modules::input_builder::InputBuilder;
+use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::Prefix;
-use tw_keypair::tw::PublicKey;
-use tw_proto::{deserialize, serialize, MessageRead, MessageWrite};
+use std::fmt;
+use tw_keypair::tw::{PublicKey, Signature};
+use tw_proto::{MessageRead, MessageWrite};
 
+use crate::modules::json_signer::JsonSigner;
 pub use tw_proto::{ProtoError, ProtoResult};
 
-pub trait CoinEntry: Sized {
+pub trait CoinAddress: fmt::Display {
+    fn data(&self) -> Vec<u8>;
+}
+
+pub trait CoinEntry {
     type AddressPrefix: Prefix;
-    type Address;
-    type SigningInput<'a>: MessageRead<'a>;
+    type Address: CoinAddress;
+    type SigningInput<'a>: MessageRead<'a> + MessageWrite;
     type SigningOutput: MessageWrite;
+    type PreSigningOutput: MessageWrite;
+
+    // Optional modules:
+    type JsonSigner: JsonSigner;
+    type InputBuilder: InputBuilder<SigningInput = Self::SigningInput<'static>>;
+    type PlanBuilder: PlanBuilder;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
     fn parse_address(
@@ -26,16 +40,6 @@ pub trait CoinEntry: Sized {
         address: &str,
         prefix: Option<Self::AddressPrefix>,
     ) -> Result<Self::Address, AddressError>;
-
-    /// Validates the given `address` by `coin` type and address `prefix`.
-    fn validate_address(
-        &self,
-        coin: &dyn CoinContext,
-        address: &str,
-        prefix: Option<Self::AddressPrefix>,
-    ) -> Result<(), AddressError> {
-        <Self as CoinEntry>::parse_address(self, coin, address, prefix).map(|_| ())
-    }
 
     /// Derives an address associated with the given `public_key` by `coin` type, `derivation` and address `prefix`.
     fn derive_address(
@@ -49,10 +53,39 @@ pub trait CoinEntry: Sized {
     /// Signs a transaction declared as the given `input`.
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput;
 
-    /// Signs a transaction declared as the given raw `input`.
-    fn sign_raw(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Vec<u8>> {
-        let input: Self::SigningInput<'_> = deserialize(input)?;
-        let output = <Self as CoinEntry>::sign(self, coin, input);
-        serialize(&output)
+    /// Returns hash(es) for signing, needed for external signing.
+    fn preimage_hashes(
+        &self,
+        coin: &dyn CoinContext,
+        input: Self::SigningInput<'_>,
+    ) -> Self::PreSigningOutput;
+
+    /// Compiles a transaction with externally-supplied `signatures` and `public_keys`.
+    fn compile(
+        &self,
+        coin: &dyn CoinContext,
+        input: Self::SigningInput<'_>,
+        signatures: Vec<Signature>,
+        public_keys: Vec<PublicKey>,
+    ) -> Self::SigningOutput;
+
+    /// It is optional, Signing JSON input with private key.
+    /// Returns `Ok(None)` if the chain doesn't support signing JSON.
+    fn json_signer(&self) -> Option<Self::JsonSigner> {
+        None
+    }
+
+    /// Planning, for UTXO chains, in preparation for signing.
+    /// Returns an optional `Plan` builder. Only UTXO chains need it.
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        None
+    }
+
+    /// Optional helper to prepare a `SigningInput` from simple parameters.
+    /// Not suitable for UTXO chains.
+    ///
+    /// Returns `None` if the chain doesn't support creating `SigningInput` from the simple parameters.
+    fn signing_input_builder(&self) -> Option<Self::InputBuilder> {
+        None
     }
 }

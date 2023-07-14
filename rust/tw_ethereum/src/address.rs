@@ -7,7 +7,8 @@
 use std::fmt::{Display, Formatter};
 use std::ops::{RangeFrom, RangeInclusive};
 use std::str::FromStr;
-use tw_coin_entry::{AddressError, AddressResult};
+use tw_coin_entry::coin_entry::CoinAddress;
+use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160};
 use tw_keypair::ecdsa::secp256k1;
@@ -76,6 +77,12 @@ impl Address {
     /// Returns bytes as a slice of the address.
     pub fn as_slice(&self) -> &[u8] {
         self.bytes.as_slice()
+    }
+}
+
+impl CoinAddress for Address {
+    fn data(&self) -> Vec<u8> {
+        self.bytes.to_vec()
     }
 }
 

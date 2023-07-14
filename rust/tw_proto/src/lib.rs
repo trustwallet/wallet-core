@@ -37,3 +37,19 @@ pub fn deserialize<'a, T: MessageRead<'a>>(data: &'a [u8]) -> ProtoResult<T> {
     let mut reader = BytesReader::from_bytes(data);
     T::from_reader(&mut reader, data)
 }
+
+/// There is no way to create an instance of the `NoMessage` enum as it doesn't has variants.
+pub enum NoMessage {}
+
+impl MessageWrite for NoMessage {}
+
+/// `DummyMessage` has no effect on `MessageWrite` and `MessageRead`.
+pub struct DummyMessage;
+
+impl MessageWrite for DummyMessage {}
+
+impl<'a> MessageRead<'a> for DummyMessage {
+    fn from_reader(_r: &mut BytesReader, _bytes: &'a [u8]) -> ProtoResult<Self> {
+        Ok(DummyMessage)
+    }
+}

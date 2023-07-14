@@ -7,7 +7,7 @@
 use crate::coin_type::CoinType;
 use crate::error::RegistryResult;
 use crate::registry::{get_coin_item, CoinItem};
-use tw_coin_entry::CoinContext;
+use tw_coin_entry::coin_context::CoinContext;
 
 pub struct CoinRegistryContext {
     _item: &'static CoinItem,

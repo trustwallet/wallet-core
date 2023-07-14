@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 /// TODO extend this enum.
+/// TODO make this trait.
 pub enum Derivation {
     /// Default derivation.
     Default = 0,

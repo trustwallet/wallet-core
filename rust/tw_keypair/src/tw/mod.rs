@@ -10,6 +10,8 @@ mod public;
 pub use private::PrivateKey;
 pub use public::PublicKey;
 
+pub type Signature = Vec<u8>;
+
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]

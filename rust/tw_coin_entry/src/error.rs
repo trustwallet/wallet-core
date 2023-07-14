@@ -9,6 +9,7 @@ use std::fmt::Formatter;
 use tw_keypair::KeyPairError;
 use tw_number::NumberError;
 use tw_proto::Common::Proto;
+use tw_proto::ProtoError;
 
 pub type AddressResult<T> = Result<T, AddressError>;
 
@@ -17,6 +18,7 @@ pub enum AddressError {
     MissingPrefix,
     FromHexError,
     PublicKeyTypeMismatch,
+    UnexpectedAddressPrefix,
 }
 
 pub type SigningResult<T> = Result<T, SigningError>;
@@ -43,9 +45,20 @@ impl From<KeyPairError> for SigningError {
             KeyPairError::InvalidSecretKey => {
                 SigningError(SigningErrorType::Error_invalid_private_key)
             },
+            KeyPairError::InvalidPublicKey
+            | KeyPairError::InvalidSignature
+            | KeyPairError::InvalidSignMessage
+            | KeyPairError::SignatureVerifyError => {
+                SigningError(SigningErrorType::Error_invalid_params)
+            },
             KeyPairError::SigningError => SigningError(SigningErrorType::Error_signing),
-            _ => SigningError(SigningErrorType::Error_internal),
         }
+    }
+}
+
+impl From<ProtoError> for SigningError {
+    fn from(_e: ProtoError) -> Self {
+        SigningError(SigningErrorType::Error_input_parse)
     }
 }
 

@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_coin_entry::CoinEntry;
-
 mod blockchain_type;
 mod coin_context;
 mod coin_type;
@@ -17,15 +15,16 @@ pub use coin_context::CoinRegistryContext;
 pub use coin_type::CoinType;
 pub use error::{RegistryError, RegistryResult};
 pub use registry::{get_coin_item, CoinItem};
+use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 
-pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<impl CoinEntry> {
+pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<impl CoinEntryExt> {
     match blockchain {
         BlockchainType::Ethereum => Ok(tw_ethereum::entry::EthereumEntry),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }
 
-pub fn coin_dispatcher(coin: CoinType) -> RegistryResult<impl CoinEntry> {
+pub fn coin_dispatcher(coin: CoinType) -> RegistryResult<impl CoinEntryExt> {
     let item = get_coin_item(coin)?;
     blockchain_dispatcher(item.blockchain)
 }

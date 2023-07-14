@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
-use tw_coin_entry::{SigningError, SigningErrorType};
+use tw_coin_entry::error::{SigningError, SigningErrorType};
 use tw_number::U256;
 
 pub mod prebuild;
