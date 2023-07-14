@@ -157,3 +157,14 @@ fn test_u256_little_endian() {
         assert_eq!(actual_bytes, bytes);
     }
 }
+
+#[test]
+fn test_u256_from_str() {
+    for test in TEST_CASES {
+        let bytes = H256::from_str(test.little_endian).unwrap();
+        let num = U256::from_little_endian(bytes);
+
+        let actual = U256::from_str(test.num_str).unwrap();
+        assert_eq!(num, actual);
+    }
+}

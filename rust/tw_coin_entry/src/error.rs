@@ -11,6 +11,19 @@ use tw_number::NumberError;
 use tw_proto::Common::Proto;
 use tw_proto::ProtoError;
 
+#[macro_export]
+macro_rules! signing_output_error {
+    ($output:ty, $error:expr) => {{
+        let err = $error;
+
+        let mut output = <$output>::default();
+        output.error = err.0;
+        output.error_message = std::borrow::Cow::from(err.to_string());
+
+        output
+    }};
+}
+
 pub type AddressResult<T> = Result<T, AddressError>;
 
 #[derive(Debug)]
@@ -25,6 +38,7 @@ pub type SigningResult<T> = Result<T, SigningError>;
 pub type SigningErrorType = Proto::SigningError;
 
 /// The wrapper over the `Common::SigningErrorType` error for convenient use.
+#[derive(Debug)]
 pub struct SigningError(pub SigningErrorType);
 
 impl From<NumberError> for SigningError {

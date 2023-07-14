@@ -5,13 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::coin_context::CoinContext;
+use crate::error::SigningResult;
 use std::marker::PhantomData;
-use tw_number::U256;
 
+#[derive(Clone)]
 pub struct BuildSigningInputArgs {
     pub from: String,
     pub to: String,
-    pub amount: U256,
+    /// Base-10 decimal string.
+    pub amount: String,
     pub asset: String,
     pub memo: String,
     pub chain_id: String,
@@ -26,7 +28,7 @@ pub trait InputBuilder {
         &self,
         coin: &dyn CoinContext,
         args: BuildSigningInputArgs,
-    ) -> Self::SigningInput;
+    ) -> SigningResult<Self::SigningInput>;
 }
 
 /// `NoInputBuilder` can't be created since there is no a public constructors.
@@ -41,7 +43,7 @@ impl<SigningInput> InputBuilder for NoInputBuilder<SigningInput> {
         &self,
         _coin: &dyn CoinContext,
         _args: BuildSigningInputArgs,
-    ) -> Self::SigningInput {
+    ) -> SigningResult<Self::SigningInput> {
         panic!("`NoInputBuilder` should never be constructed")
     }
 }

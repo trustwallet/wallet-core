@@ -9,6 +9,7 @@ use std::borrow::Cow;
 use std::fmt;
 use std::fmt::Formatter;
 use std::ops::Add;
+use std::str::FromStr;
 use tw_hash::H256;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
@@ -102,6 +103,16 @@ impl U256 {
 impl U256 {
     pub fn encode_be_compact(num: u64) -> Cow<'static, [u8]> {
         U256::from(num).to_big_endian_compact().into()
+    }
+}
+
+impl FromStr for U256 {
+    type Err = NumberError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let inner = primitive_types::U256::from_dec_str(s)
+            .map_err(|_| NumberError::InvalidStringRepresentation)?;
+        Ok(U256(inner))
     }
 }
 

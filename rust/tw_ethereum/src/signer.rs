@@ -15,6 +15,7 @@ use crate::transaction::user_operation::UserOperation;
 use crate::transaction::UnsignedTransactionBox;
 use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
@@ -25,14 +26,8 @@ pub struct Signer;
 
 impl Signer {
     pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
-        match Signer::sign_proto_impl(input) {
-            Ok(output) => output,
-            Err(error) => Proto::SigningOutput {
-                error: error.0,
-                error_message: error.to_string().into(),
-                ..Proto::SigningOutput::default()
-            },
-        }
+        Signer::sign_proto_impl(input)
+            .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
     fn sign_proto_impl(

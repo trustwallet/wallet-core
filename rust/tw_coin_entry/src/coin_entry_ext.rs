@@ -77,7 +77,7 @@ pub trait CoinEntryExt {
         &self,
         coin: &dyn CoinContext,
         args: BuildSigningInputArgs,
-    ) -> ProtoResult<Option<Vec<u8>>>;
+    ) -> SigningResult<Option<Vec<u8>>>;
 }
 
 impl<T> CoinEntryExt for T
@@ -179,11 +179,11 @@ where
         &self,
         coin: &dyn CoinContext,
         args: BuildSigningInputArgs,
-    ) -> ProtoResult<Option<Vec<u8>>> {
+    ) -> SigningResult<Option<Vec<u8>>> {
         let Some(input_builder) = self.signing_input_builder() else {
             return Ok(None);
         };
-        let input = input_builder.build_signing_input(coin, args);
+        let input = input_builder.build_signing_input(coin, args)?;
         Ok(Some(serialize(&input)?))
     }
 }

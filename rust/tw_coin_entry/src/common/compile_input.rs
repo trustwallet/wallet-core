@@ -4,10 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_keypair::{
-    tw::{PublicKey, Signature},
-};
 use crate::error::{SigningError, SigningErrorType, SigningResult};
+use tw_keypair::tw::{PublicKey, Signature};
 
 pub struct SingleSignaturePubkey {
     pub signature: Signature,

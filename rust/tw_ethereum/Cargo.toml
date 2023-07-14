@@ -15,3 +15,6 @@ tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
 tw_proto = { path = "../tw_proto" }
 tw_number = { path = "../tw_number" }
+
+[dev-dependencies]
+tw_coin_entry = { path = "../tw_coin_entry", features = ["test-helpers"] }

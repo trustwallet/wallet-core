@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::borrow::Cow;
-use tw_coin_entry::SigningErrorType;
+use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex;
 use tw_ethereum::signer::Signer;
 use tw_number::U256;
