@@ -191,6 +191,13 @@ public:
                                                 const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,
                                                 const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
                                                 const Data& paymasterAndData = {}, const Data& initCode = {}, const Data& payload = {});
+
+    // Create a batched transaction for ERC-4337 wallets
+    static UserOperationPtr buildBatch(const Data& entryPointAddress, const Data& senderAddress,
+                                       const std::vector<Data>& toAddresses, const std::vector<uint256_t>& amounts, const uint256_t& nonce,
+                                       const uint256_t& gasLimit, const uint256_t& verificationGasLimit, const uint256_t& maxFeePerGas, const uint256_t& maxInclusionFeePerGas, const uint256_t& preVerificationGas,
+                                       const Data paymasterAndData = {}, const Data& initCode = {}, const std::vector<Data>& payloads = {});
+
     // Create an ERC20 token transfer transaction
     static UserOperationPtr buildERC20Transfer(const Data& entryPointAddress, const Data& senderAddress,
                                                const Data& tokenContract, const Data& toAddress, const uint256_t& amount, const uint256_t& nonce,

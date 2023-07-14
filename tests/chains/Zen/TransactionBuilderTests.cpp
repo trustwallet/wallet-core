@@ -66,7 +66,6 @@ TEST(ZenTransactionBuilder, Build) {
     ASSERT_EQ(plan.fee, 294);
     plan.preBlockHash = blockHash;
     plan.preBlockHeight = blockHeight;
-    plan.useMaxAmount = true;
 
     // plan1
     auto result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input).payload();
@@ -75,7 +74,6 @@ TEST(ZenTransactionBuilder, Build) {
     ASSERT_EQ(result.outputs[0].value, plan.amount);
 
     // plan2
-    plan.useMaxAmount = false;
     result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input).payload();
   
     ASSERT_EQ(result.outputs.size(), 4ul);

@@ -29,18 +29,13 @@ struct TransactionBuilder {
     static Transaction build(const Bitcoin::TransactionPlan& plan, const Bitcoin::SigningInput& input) {
         auto coin = TWCoinTypeDecred;
 
-        auto outputToAmount = input.amount;
-        if (plan.useMaxAmount) {
-            outputToAmount = plan.amount;
-        }
-
         auto lockingScriptTo = Bitcoin::Script::lockScriptForAddress(input.toAddress, coin);
         if (lockingScriptTo.empty()) {
             return {};
         }
 
         Transaction tx;
-        tx.outputs.emplace_back(TransactionOutput(outputToAmount, /* version: */ 0, lockingScriptTo));
+        tx.outputs.emplace_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
 
         if (plan.change > 0) {
             auto lockingScriptChange = Bitcoin::Script::lockScriptForAddress(input.changeAddress, coin);

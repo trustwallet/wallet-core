@@ -10,6 +10,7 @@
 
 #include "OpCodes.h"
 #include <TrustWalletCore/TWCoinType.h>
+#include "proto/Bitcoin.pb.h"
 
 #include <string>
 #include <utility>
@@ -113,6 +114,9 @@ class Script {
 
     /// Builds a V1 pay-to-witness-program script, P2TR (from a 32-byte Schnorr public key).
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
+
+    /// Builds the Ordinals inscripton for BRC20 transfer.
+    static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey);
 
     /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
     static Script buildOpReturnScript(const Data& data);

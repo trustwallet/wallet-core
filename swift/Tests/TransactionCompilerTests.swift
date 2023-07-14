@@ -173,4 +173,13 @@ class TransactionCompilerTests: XCTestCase {
         XCTAssertEqual(output.encoded.count, 518)
         XCTAssertEqual(output.encoded.hexString, ExpectedTx)
     }
+    
+    // Test if `compileWithSignaturesAndPubKeyType` binding is available in Swift.
+    func testBitcoinCompileWithSignaturesAndPubKeyType() {
+        let txInputData = Data()
+        let signatureVec = DataVector()
+        let pubkeyVec = DataVector()
+
+        let _ = TransactionCompiler.compileWithSignaturesAndPubKeyType(coinType: .bitcoin, txInputData: txInputData, signatures: signatureVec, publicKeys: pubkeyVec, pubKeyType: .secp256k1)
+    }
 }

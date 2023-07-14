@@ -256,6 +256,8 @@ enums:
     value: 17000118
   - name: noble
     value: 18000118
+  - name: gatechain
+    value: 10000086
 functions:
 - name: TWCoinTypeValidate
   is_public: true

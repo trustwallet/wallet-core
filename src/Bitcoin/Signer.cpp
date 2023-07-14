@@ -10,6 +10,7 @@
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "TransactionSigner.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include "proto/Common.pb.h"
 
@@ -22,12 +23,17 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     Proto::SigningOutput output;
+    if (input.is_it_brc_operation()) {
+        auto serializedInput = data(input.SerializeAsString());
+        Rust::CByteArrayWrapper res = Rust::tw_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
+        output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
+        return output;
+    }
     auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
         output.set_error(result.error());
         return output;
     }
-
     const auto& tx = result.payload();
     *output.mutable_transaction() = tx.proto();
 

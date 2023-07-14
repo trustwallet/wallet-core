@@ -54,6 +54,9 @@ message TransactionOutput {
 
     // Usually contains the public key as a Bitcoin script setting up conditions to claim this output.
     bytes script = 2;
+
+    // Optional spending script for P2TR script-path transactions.
+    bytes spendingScript = 5;
 }
 
 // An unspent transaction output, that can serve as input to a transaction
@@ -66,6 +69,19 @@ message UnspentTransaction {
 
     // Amount of the UTXO
     int64 amount = 3;
+
+    // The transaction variant
+    TransactionVariant variant = 4;
+
+    // Optional spending script for P2TR script-path transactions.
+    bytes spendingScript = 5;
+}
+
+enum TransactionVariant {
+    P2PKH = 0;
+    P2WPKH = 1;
+    P2TRKEYPATH = 2;
+    BRC20TRANSFER = 3;
 }
 
 // Pair of destination address and amount, used for extra outputs
@@ -123,7 +139,7 @@ message SigningInput {
 
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 13;
-    
+
     // Optional additional destination addresses, additional to first to_address output
     repeated OutputAddress extra_outputs = 14;
 
@@ -135,6 +151,8 @@ message SigningInput {
 
     // transaction creation time that will be used for verge(xvg)
     uint32 time = 17;
+
+    bool is_it_brc_operation = 18;
 }
 
 // Describes a preliminary transaction plan.

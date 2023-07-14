@@ -12,5 +12,6 @@
 namespace TW::Ethereum {
 
 Data getERC4337ExecuteBytecode(const Data& toAddress, const uint256_t& value, const Data& data);
+Data getERC4337ExecuteBatchBytecode(const std::vector<Data>& toAddresses, const std::vector<uint256_t>& values, const std::vector<Data>& payloads);
 
 }
