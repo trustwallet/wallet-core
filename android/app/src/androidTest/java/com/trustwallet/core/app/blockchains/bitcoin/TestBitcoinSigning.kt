@@ -358,4 +358,72 @@ class TestBitcoinSigning {
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
     }
+
+    @Test
+    fun testSignBrc20CommitLiveSample() {
+        val privateKeyData = (Numeric.hexStringToByteArray("421fd685839b589d0ba3437c06dbd492f91bf09127ec29ec8c92c2cf7badffce"))
+        val fullAmount = 26400
+        val minerFee = 3000
+        val brcInscribeAmount = 7000
+        val dustSatoshis = 546
+        val forFeeAmount = fullAmount - brcInscribeAmount - minerFee
+
+        val input = Bitcoin.SigningInput.newBuilder()
+            .setIsItBrcOperation(true)
+            .addPrivateKey(ByteString.copyFrom(privateKeyData))
+
+        val unspentOutputPoint0 = Bitcoin.OutPoint.newBuilder()
+            .setHash(ByteString.copyFrom(Numeric.hexStringToByteArray("603e8606dcf835d789c9de745115dfa6ff94954365fb75416810656ef26a1b3f").reversedArray()))
+            .setIndex(0)
+            .build()
+
+        val utxo0 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141c7c69879af10faf53735715d534adc67f640345")))
+            .setAmount(4000)
+            .setVariant(Bitcoin.TransactionVariant.P2WPKH)
+            .setOutPoint(unspentOutputPoint0)
+            .build()
+
+        val unspentOutputPoint1 = Bitcoin.OutPoint.newBuilder()
+            .setHash(ByteString.copyFrom(Numeric.hexStringToByteArray("56a2aebd1a8f3bf2d90961e83f223b9679c6fe46669b5db587dac45bc3c14e5f").reversedArray()))
+            .setIndex(0)
+            .build()
+
+        val utxo1 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141c7c69879af10faf53735715d534adc67f640345")))
+            .setAmount(5000)
+            .setVariant(Bitcoin.TransactionVariant.P2WPKH)
+            .setOutPoint(unspentOutputPoint1)
+            .build()
+
+        input.addUtxo(utxo0)
+        input.addUtxo(utxo1)
+
+        val utxoPlan0 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("5120edd7ef204f25ec573b010e9828cd246fee42263a11e9bb77613727fa1a72f66c")))
+            .setAmount(2642)
+            .setVariant(Bitcoin.TransactionVariant.BRC20TRANSFER)
+            .build()
+
+        val utxoPlan1 = Bitcoin.UnspentTransaction.newBuilder()
+            .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141c7c69879af10faf53735715d534adc67f640345")))
+            .setAmount(3014)
+            .setVariant(Bitcoin.TransactionVariant.P2WPKH)
+            .build()
+
+        val plan = Bitcoin.TransactionPlan.newBuilder()
+            .addUtxos(utxoPlan0)
+            .addUtxos(utxoPlan1)
+            .build()
+        input.plan = plan
+
+        val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
+
+        assertEquals(output.error, SigningError.OK)
+        assertEquals(output.transactionId, "3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7")
+        assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "0x02000000000102ca3edda74a46877efa5364ab85947e148508713910ada23e147ea28926dc46700000000000ffffffffb11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790100000000ffffffff022202000000000000160014e891850afc55b64aa8247b2076f8894ebdf889015834000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d024830450221008798393eb0b7390217591a8c33abe18dd2f7ea7009766e0d833edeaec63f2ec302200cf876ff52e68dbaf108a3f6da250713a9b04949a8f1dcd1fb867b24052236950121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb0248304502210096bbb9d1f0596d69875646689e46f29485e8ceccacde9d0025db87fd96d3066902206d6de2dd69d965d28df3441b94c76e812384ab9297e69afe3480ee4031e1b2060121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000")
+
+        val signedTransaction = output.transaction
+        assert(signedTransaction.isInitialized)
+    }
 }
