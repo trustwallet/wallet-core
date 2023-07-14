@@ -4,12 +4,12 @@ use crate::ffi::{
 };
 use crate::Recipient;
 use bitcoin::PublicKey;
+use std::borrow::Cow;
+use std::ffi::CString;
 use tw_proto::Bitcoin::Proto::{
     OutPoint, SigningInput, TransactionOutput, TransactionPlan, TransactionVariant,
     UnspentTransaction,
 };
-use std::borrow::Cow;
-use std::ffi::CString;
 
 /// Convenience function for reversing the Txid before it's being passed on to
 /// the FFI.

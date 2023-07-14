@@ -4,12 +4,12 @@ use crate::{
     Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
 use bitcoin::{PublicKey, WPubkeyHash};
+use std::borrow::Cow;
+use std::ffi::{c_char, CStr};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto::TransactionOutput;
-use std::borrow::Cow;
-use std::ffi::{c_char, CStr};
 
 #[no_mangle]
 // Builds the P2PKH scriptPubkey.
