@@ -22,7 +22,7 @@ fn proto_nft_inscription_script() {
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let ffi_out = call_ffi_build_nft_inscription(satoshis, mime_type, data, &recipient);
+    let ffi_out = call_ffi_build_nft_inscription(mime_type, data, satoshis, &recipient);
 
     // Compare with native call.
     let nft = OrdinalNftInscription::new(mime_type, data, recipient).unwrap();
@@ -62,7 +62,7 @@ fn proto_sign_nft_inscription_commit() {
     let input = call_ffi_build_p2wpkh_script(FULL_SATOSHIS, &recipient);
 
     // Build inscription output.
-    let output = call_ffi_build_nft_inscription(satoshis, mime_type, data, &recipient);
+    let output = call_ffi_build_nft_inscription(mime_type, data, satoshis, &recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -107,7 +107,7 @@ fn proto_sign_nft_inscription_reveal() {
     let txid = reverse_txid(REVEAL_TXID);
 
     // Build inscription input.
-    let input = call_ffi_build_nft_inscription(satoshis, mime_type, data, &recipient);
+    let input = call_ffi_build_nft_inscription(mime_type, data, satoshis, &recipient);
 
     // Build inscription output.
     let output_p2wpkh = call_ffi_build_p2wpkh_script(DUST_SATOSHIS, &recipient);

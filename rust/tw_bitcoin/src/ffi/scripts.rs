@@ -4,11 +4,12 @@ use crate::{
     Recipient, TXOutputP2TRScriptPath, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
 use bitcoin::{PublicKey, WPubkeyHash};
-use std::borrow::Cow;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto::TransactionOutput;
+use std::borrow::Cow;
+use std::ffi::{c_char, CStr};
 
 #[no_mangle]
 // Builds the P2PKH scriptPubkey.
@@ -101,21 +102,23 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
     // The 4-byte ticker.
-    ticker: *const u8,
+    ticker: *const c_char,
     amount: u64,
     satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
 ) -> CByteArray {
     // Convert ticket.
-    let slice = try_or_else!(CByteArrayRef::new(ticker, 4).as_slice(), CByteArray::null);
+    let ticker = match CStr::from_ptr(ticker).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArray::null(),
+    };
 
-    if slice.len() != 4 {
+    if ticker.len() != 4 {
         return CByteArray::null();
     }
 
-    let string = try_or_else!(String::from_utf8(slice.to_vec()), CByteArray::null);
-    let ticker = Ticker::new(string).expect("ticker must be 4 bytes");
+    let ticker = Ticker::new(ticker.to_string()).expect("ticker must be 4 bytes");
 
     // Convert Recipient
     let slice = try_or_else!(
@@ -147,8 +150,7 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 #[no_mangle]
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
-    mime_type: *const u8,
-    mime_type_len: usize,
+    mime_type: *const c_char,
     data: *const u8,
     data_len: usize,
     satoshis: i64,
@@ -156,10 +158,10 @@ pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     pubkey_len: usize,
 ) -> CByteArray {
     // Convert mimeType.
-    let mime_type = try_or_else!(
-        CByteArrayRef::new(mime_type, mime_type_len).as_slice(),
-        CByteArray::null
-    );
+    let mime_type = match CStr::from_ptr(mime_type).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArray::null(),
+    };
 
     // Convert data to inscribe.
     let data = try_or_else!(
@@ -176,7 +178,7 @@ pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
 
     // Inscribe NFT data.
-    let nft = OrdinalNftInscription::new(mime_type, data, recipient)
+    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, recipient)
         .expect("Ordinal NFT inscription incorrectly constructed");
 
     let tx_out = TXOutputP2TRScriptPath::new(satoshis as u64, nft.inscription().recipient());
