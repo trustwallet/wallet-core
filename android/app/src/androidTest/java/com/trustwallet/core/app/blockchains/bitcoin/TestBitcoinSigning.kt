@@ -435,13 +435,13 @@ class TestBitcoinSigning {
         val minerFee = 1300
         val inscribeAmount = fullAmount - minerFee;
         val txId = Numeric.hexStringToByteArray("992faa0d60f29d77cdae687c300d288a3b075b3c7e1e3b42ad537222c3909557")
-        val payload = Numeric.hexStringToByteArray(nftInscriptionImageData)
 
         val privateKey = PrivateKey(privateKeyData)
         val publicKey = privateKey.getPublicKeySecp256k1(true)
         val pubKeyHash = Hash.ripemd(Hash.sha256(publicKey.data()))
 
         val p2wpkh = BitcoinScript.buildPayToWitnessPubkeyHash(pubKeyHash)
+        val payload = Numeric.hexStringToByteArray(nftInscriptionImageData)
         val outputInscribe = BitcoinScript.buildOrdinalNftInscription("image/png", payload, publicKey.data())
         val outputInscribeProto = Bitcoin.TransactionOutput.parseFrom(outputInscribe)
 
