@@ -1,10 +1,11 @@
 use crate::ffi::{
-    tw_build_brc20_inscribe_transfer, tw_build_p2pkh_script, tw_build_p2tr_key_path_script,
-    tw_build_p2wpkh_script,
+    tw_bitcoin_build_nft_inscription, tw_build_brc20_transfer_inscription, tw_build_p2pkh_script,
+    tw_build_p2tr_key_path_script, tw_build_p2wpkh_script,
 };
 use crate::Recipient;
 use bitcoin::PublicKey;
 use std::borrow::Cow;
+use std::ffi::CString;
 use tw_proto::Bitcoin::Proto::{
     OutPoint, SigningInput, TransactionOutput, TransactionPlan, TransactionVariant,
     UnspentTransaction,
@@ -101,11 +102,47 @@ pub fn call_ffi_build_brc20_transfer_script<'a, 'b>(
     recipient: &'b Recipient<PublicKey>,
 ) -> TransactionOutput<'a> {
     let pubkey = recipient.public_key().to_bytes();
+    let c_ticker = CString::new(ticker).unwrap();
 
     let raw = unsafe {
-        tw_build_brc20_inscribe_transfer(
-            ticker.as_bytes().as_ptr(),
+        tw_build_brc20_transfer_inscription(
+            c_ticker.as_ptr(),
             brc20_amount,
+            satoshis as i64,
+            pubkey.as_ptr(),
+            pubkey.len(),
+        )
+        .into_vec()
+    };
+
+    let des: TransactionOutput = tw_proto::deserialize(&raw).unwrap();
+
+    // We convert the referenced data into owned data since `raw` goes out of
+    // scope at the end of the function.
+    TransactionOutput {
+        value: des.value,
+        script: des.script.into_owned().into(),
+        spendingScript: des.spendingScript.into_owned().into(),
+    }
+}
+
+/// Convenience wrapper over `tw_bitcoin_build_nft_inscription` with Protobuf
+/// deserialization support.
+pub fn call_ffi_build_nft_inscription<'a, 'b>(
+    mime_type: &[u8],
+    data: &[u8],
+    satoshis: u64,
+    // We use 'b to clarify that `recipient` is not tied to the return value.
+    recipient: &'b Recipient<PublicKey>,
+) -> TransactionOutput<'a> {
+    let pubkey = recipient.public_key().to_bytes();
+    let c_mime_type = CString::new(mime_type).unwrap();
+
+    let raw = unsafe {
+        tw_bitcoin_build_nft_inscription(
+            c_mime_type.as_ptr(),
+            data.as_ptr(),
+            data.len(),
             satoshis as i64,
             pubkey.as_ptr(),
             pubkey.len(),

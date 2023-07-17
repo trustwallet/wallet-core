@@ -13,6 +13,7 @@
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
+#include "BitcoinOrdinalNftData.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -25,6 +26,9 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
 
+#include <fstream>
+#include <vector>
+#include <iterator>
 #include <cassert>
 #include <gtest/gtest.h>
 
@@ -305,6 +309,110 @@ TEST(BitcoinSigning, SignBRC20TransferInscription) {
     ASSERT_EQ(output.error(), Common::Proto::OK);
 
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
+}
+
+TEST(BitcoinSigning, SignNftInscriptionCommit) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    auto fullAmount = 32400;
+    auto minerFee = 1300;
+    auto inscribeAmount = fullAmount - minerFee;
+    auto txId = parse_hex("579590c3227253ad423b1e7e3c5b073b8a280d307c68aecd779df2600daa2f99");
+    std::reverse(begin(txId), end(txId));
+
+    // The inscribed image
+    auto payload = parse_hex(nftInscriptionImageData);
+
+    PrivateKey key(privateKey);
+    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+    auto inputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
+    auto outputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription("image/png", payload, pubKey.bytes);
+
+    Proto::SigningInput input;
+    input.set_is_it_brc_operation(true);
+    input.add_private_key(key.bytes.data(), key.bytes.size());
+    input.set_coin_type(TWCoinTypeBitcoin);
+
+    auto& utxo0 = *input.add_utxo();
+    utxo0.set_amount(fullAmount);
+    utxo0.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
+    utxo0.set_variant(Proto::TransactionVariant::P2WPKH);
+
+    Proto::OutPoint out0;
+    out0.set_index(0);
+    out0.set_hash(txId.data(), txId.size());
+    *utxo0.mutable_out_point() = out0;
+
+    Proto::TransactionPlan plan;
+    auto& utxo1 = *plan.add_utxos();
+    utxo1.set_amount(inscribeAmount);
+    utxo1.set_script(outputInscribe.script());
+    utxo1.set_variant(Proto::TransactionVariant::NFTINSCRIPTION);
+
+    *input.mutable_plan() = plan;
+    Proto::SigningOutput output;
+
+    ANY_SIGN(input, TWCoinTypeBitcoin);
+    auto result = hex(output.encoded());
+    ASSERT_EQ(hex(output.encoded()), "02000000000101992faa0d60f29d77cdae687c300d288a3b075b3c7e1e3b42ad537222c39095570000000000ffffffff017c790000000000002251202ac69a7e9dba801e9fcba826055917b84ca6fba4d51a29e47d478de603eedab602473044022054212984443ed4c66fc103d825bfd2da7baf2ab65d286e3c629b36b98cd7debd022050214cfe5d3b12a17aaaf1a196bfeb2f0ad15ffb320c4717eb7614162453e4fe0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    ASSERT_EQ(output.transaction_id(), "f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117");
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
+}
+
+TEST(BitcoinSigning, SignNftInscriptionReveal) {
+    auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    auto inscribeAmount = 31100;
+    auto dustSatoshi = 546;
+    auto txId = parse_hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117");
+    std::reverse(begin(txId), end(txId));
+
+    // The inscribed image
+    auto payload = parse_hex(nftInscriptionImageData);
+
+    // The expected TX hex output
+    auto expectedHex = nftInscriptionRawHex;
+
+    PrivateKey key(privateKey);
+    auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubKeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+    auto inputInscribe = TW::Bitcoin::Script::buildOrdinalNftInscription("image/png", payload, pubKey.bytes);
+    auto outputP2wpkh = TW::Bitcoin::Script::buildPayToWitnessPublicKeyHash(utxoPubKeyHash);
+
+    Proto::SigningInput input;
+    input.set_is_it_brc_operation(true);
+    input.add_private_key(key.bytes.data(), key.bytes.size());
+    input.set_coin_type(TWCoinTypeBitcoin);
+
+    auto& utxo = *input.add_utxo();
+    utxo.set_amount(inscribeAmount);
+    utxo.set_script(inputInscribe.script());
+    utxo.set_variant(Proto::TransactionVariant::NFTINSCRIPTION);
+    utxo.set_spendingscript(inputInscribe.spendingscript());
+
+    Proto::OutPoint out;
+    out.set_index(0);
+    out.set_hash(txId.data(), txId.size());
+    *utxo.mutable_out_point() = out;
+
+    Proto::TransactionPlan plan;
+    auto& utxo1 = *plan.add_utxos();
+    utxo1.set_amount(dustSatoshi);
+    utxo1.set_script(outputP2wpkh.bytes.data(), outputP2wpkh.bytes.size());
+    utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+
+    *input.mutable_plan() = plan;
+    Proto::SigningOutput output;
+
+    ANY_SIGN(input, TWCoinTypeBitcoin);
+    auto result = hex(output.encoded());
+    ASSERT_EQ(result.substr(0, 164), expectedHex.substr(0, 164));
+    ASSERT_EQ(result.substr(292, result.size() - 292), expectedHex.substr(292, result.size() - 292));
+    ASSERT_EQ(output.transaction_id(), "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac");
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
 }
 
 TEST(BitcoinSigning, SignP2PKH) {

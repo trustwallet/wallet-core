@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWBitcoinScript.h>
-
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/SigHashType.h"
 #include "Data.h"
@@ -171,6 +170,15 @@ TWData *_Nullable TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* ticker, TW
     auto* brcAmount = reinterpret_cast<const std::string*>(amount);
     auto* brcPubkey = reinterpret_cast<const TW::Data*>(pubkey);
     auto script = TW::Bitcoin::Script::buildBRC20InscribeTransfer(*brcTicker, std::stoull(*brcAmount), *brcPubkey);
+    auto serialized = TW::data(script.SerializeAsString());
+    return TWDataCreateWithBytes(serialized.data(), serialized.size());
+}
+
+TWData *_Nullable TWBitcoinScriptBuildOrdinalNftInscription(TWString* mimeType, TWData* payload, TWData* pubkey) {
+    auto* ordMimeType = reinterpret_cast<const std::string*>(mimeType);
+    auto* ordPayload = reinterpret_cast<const TW::Data*>(payload);
+    auto* ordPubkey = reinterpret_cast<const TW::Data*>(pubkey);
+    auto script = TW::Bitcoin::Script::buildOrdinalNftInscription(*ordMimeType, *ordPayload, *ordPubkey);
     auto serialized = TW::data(script.SerializeAsString());
     return TWDataCreateWithBytes(serialized.data(), serialized.size());
 }

@@ -65,31 +65,38 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     let mut mime_buf = PushBytesBuf::new();
     mime_buf.extend_from_slice(mime).map_err(|_| Error::Todo)?;
 
-    // Create data buffer.
-    let mut data_buf = PushBytesBuf::new();
-    data_buf.extend_from_slice(data).map_err(|_| Error::Todo)?;
-
     // Create an Ordinals Inscription.
-    let script = ScriptBuf::builder()
+    let mut builder = ScriptBuf::builder()
         .push_opcode(OP_FALSE)
         .push_opcode(OP_IF)
         .push_slice(b"ord")
         // Separator.
         .push_opcode(OP_PUSHBYTES_1)
-        // This seems to be necessary for now and indicates the size of the
-        // length indicator. The method `push_slice` prefixes the data with the
-        // length, but does not specify how many bytes that prefix requires.
-        //
-        // TODO: Look up if this could be somehow improved or if the `bitcoin`
-        // crate can/should handle that.
+        // MIME types require this addtional push. It seems that the original
+        // creator inadvertently used `push_slice(&[1])`, which leads to
+        // `<1><1>`, which denotes a length prefix followed by the value. On the
+        // other hand, for the data, `push_slice(&[])` is used, producing `<0>`.
+        // This denotes a length prefix followed by no data, as opposed to
+        // '<1><0>', which would be a reasonable assumption. While this appears
+        // inconsistent, it's the current requirement.
         .push_opcode(OP_PUSHBYTES_1)
+        // MIME type identifying the data
         .push_slice(mime_buf.as_push_bytes())
         // Separator.
-        .push_opcode(OP_PUSHBYTES_0)
-        // The payload itself.
-        .push_slice(data_buf)
-        .push_opcode(OP_ENDIF)
-        .into_script();
+        .push_opcode(OP_PUSHBYTES_0);
+
+    // Push the actual data in chunks.
+    for chunk in data.chunks(520) {
+        // Create data buffer.
+        let mut data_buf = PushBytesBuf::new();
+        data_buf.extend_from_slice(chunk).map_err(|_| Error::Todo)?;
+
+        // Push buffer
+        builder = builder.push_slice(data_buf);
+    }
+
+    // Finalize scripts.
+    let script = builder.push_opcode(OP_ENDIF).into_script();
 
     // Generate the necessary spending information. As mentioned in the
     // documentation of this function at the top, this serves two purposes;
