@@ -13,6 +13,7 @@
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
+#include "BitcoinOrdinalNftData.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -319,11 +320,7 @@ TEST(BitcoinSigning, SignNftInscriptionCommit) {
     std::reverse(begin(txId), end(txId));
 
     // The inscribed image
-    std::ifstream file("./rust/tw_bitcoin/src/tests/data/tw_logo.png", std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Unable to open file");
-    }
-    std::vector<uint8_t> payload((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    auto payload = parse_hex(nftInscriptionImageData);
 
     PrivateKey key(privateKey);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -372,18 +369,10 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     std::reverse(begin(txId), end(txId));
 
     // The inscribed image
-    std::ifstream file("./rust/tw_bitcoin/src/tests/data/tw_logo.png", std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Unable to open file");
-    }
-    std::vector<uint8_t> payload((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    auto payload = parse_hex(nftInscriptionImageData);
 
     // The expected TX hex output
-    std::ifstream fileTwo("./rust/tw_bitcoin/src/tests/data/tx_nft_reveal.hex", std::ios::binary);
-    if (!fileTwo) {
-        throw std::runtime_error("Unable to open file");
-    }
-    std::string expectedHex((std::istreambuf_iterator<char>(fileTwo)), std::istreambuf_iterator<char>());
+    auto expectedHex = nftInscriptionRawHex;
 
     PrivateKey key(privateKey);
     auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);

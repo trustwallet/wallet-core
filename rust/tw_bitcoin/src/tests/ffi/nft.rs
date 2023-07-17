@@ -18,14 +18,14 @@ fn proto_nft_inscription_script() {
     let recipient = Recipient::<PublicKey>::from(keypair);
 
     let mime_type = b"image/png";
-    let data = include_bytes!("../data/tw_logo.png");
+    let payload = hex::decode(crate::tests::data::NFT_INSCRIPTION_IMAGE_DATA).unwrap();
     let satoshis: u64 = 1_000;
 
     // Call FFI function.
-    let ffi_out = call_ffi_build_nft_inscription(mime_type, data, satoshis, &recipient);
+    let ffi_out = call_ffi_build_nft_inscription(mime_type, &payload, satoshis, &recipient);
 
     // Compare with native call.
-    let nft = OrdinalNftInscription::new(mime_type, data, recipient).unwrap();
+    let nft = OrdinalNftInscription::new(mime_type, &payload, recipient).unwrap();
 
     let tapscript = nft.inscription().recipient().clone();
     let spending_script = nft.inscription().taproot_program();
@@ -52,7 +52,7 @@ fn proto_sign_nft_inscription_commit() {
     let recipient = Recipient::<PublicKey>::from(&alice);
 
     let mime_type = b"image/png";
-    let data = include_bytes!("../data/tw_logo.png");
+    let payload = hex::decode(crate::tests::data::NFT_INSCRIPTION_IMAGE_DATA).unwrap();
     let satoshis: u64 = 1_000;
 
     // Note that the Txid must be reversed.
@@ -62,7 +62,7 @@ fn proto_sign_nft_inscription_commit() {
     let input = call_ffi_build_p2wpkh_script(FULL_SATOSHIS, &recipient);
 
     // Build inscription output.
-    let output = call_ffi_build_nft_inscription(mime_type, data, satoshis, &recipient);
+    let output = call_ffi_build_nft_inscription(mime_type, &payload, satoshis, &recipient);
 
     // Construct Protobuf payload.
     let signing = ProtoSigningInputBuilder::new()
@@ -100,14 +100,14 @@ fn proto_sign_nft_inscription_reveal() {
     let recipient = Recipient::<PublicKey>::from(&alice);
 
     let mime_type = b"image/png";
-    let data = include_bytes!("../data/tw_logo.png");
+    let payload = hex::decode(crate::tests::data::NFT_INSCRIPTION_IMAGE_DATA).unwrap();
     let satoshis: u64 = 1_000;
 
     // Note that the Txid must be reversed.
     let txid = reverse_txid(REVEAL_TXID);
 
     // Build inscription input.
-    let input = call_ffi_build_nft_inscription(mime_type, data, satoshis, &recipient);
+    let input = call_ffi_build_nft_inscription(mime_type, &payload, satoshis, &recipient);
 
     // Build inscription output.
     let output_p2wpkh = call_ffi_build_p2wpkh_script(DUST_SATOSHIS, &recipient);
