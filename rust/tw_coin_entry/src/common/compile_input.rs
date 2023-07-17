@@ -13,7 +13,7 @@ pub struct SingleSignaturePubkey {
 }
 
 impl SingleSignaturePubkey {
-    fn from_sign_pubkey_list(
+    pub fn from_sign_pubkey_list(
         signatures: Vec<Signature>,
         public_keys: Vec<PublicKey>,
     ) -> SigningResult<Self> {

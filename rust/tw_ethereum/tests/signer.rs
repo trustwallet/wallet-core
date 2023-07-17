@@ -7,7 +7,7 @@
 use std::borrow::Cow;
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex;
-use tw_ethereum::signer::Signer;
+use tw_ethereum::modules::signer::Signer;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::Ethereum::Proto::TransactionMode;

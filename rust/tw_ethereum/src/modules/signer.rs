@@ -1,0 +1,48 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+use crate::modules::tx_builder::TxBuilder;
+use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::signing_output_error;
+use tw_keypair::ecdsa::secp256k1;
+use tw_keypair::traits::SigningKeyTrait;
+use tw_number::U256;
+use tw_proto::Ethereum::Proto;
+
+pub struct Signer;
+
+impl Signer {
+    pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
+        Signer::sign_proto_impl(input)
+            .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
+    }
+
+    fn sign_proto_impl(
+        input: Proto::SigningInput<'_>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
+        let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
+
+        let unsigned = TxBuilder::tx_from_proto(&input)?;
+
+        let pre_hash = unsigned.pre_hash(chain_id);
+        let signature = private_key.sign(pre_hash)?;
+
+        let signed = unsigned.into_signed(signature, chain_id);
+
+        let eth_signature = signed.signature();
+
+        Ok(Proto::SigningOutput {
+            encoded: signed.encode().into(),
+            v: eth_signature.v().to_big_endian_compact().into(),
+            r: eth_signature.r().to_big_endian_compact().into(),
+            s: eth_signature.s().to_big_endian_compact().into(),
+            data: signed.payload().into(),
+            pre_hash: pre_hash.to_vec().into(),
+            ..Proto::SigningOutput::default()
+        })
+    }
+}

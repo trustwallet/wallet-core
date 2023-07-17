@@ -9,5 +9,4 @@ pub mod address;
 pub mod entry;
 pub mod modules;
 pub mod rlp;
-pub mod signer;
 pub mod transaction;

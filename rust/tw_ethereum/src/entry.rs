@@ -5,9 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
+use crate::modules::compiler::Compiler;
 use crate::modules::input_builder::EthInputBuilder;
 use crate::modules::json_signer::EthJsonSigner;
-use crate::signer::Signer;
+use crate::modules::signer::Signer;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinEntry;
@@ -17,6 +18,7 @@ use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::{PublicKey, Signature};
 use tw_proto::Ethereum::Proto;
+use tw_proto::TxCompiler::Proto as CompilerProto;
 
 pub struct EthereumEntry;
 
@@ -25,7 +27,7 @@ impl CoinEntry for EthereumEntry {
     type Address = Address;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
-    type PreSigningOutput = tw_proto::TxCompiler::Proto::PreSigningOutput<'static>;
+    type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = EthJsonSigner;
@@ -61,19 +63,19 @@ impl CoinEntry for EthereumEntry {
     fn preimage_hashes(
         &self,
         _coin: &dyn CoinContext,
-        _input: Self::SigningInput<'_>,
+        input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        todo!()
+        Compiler::preimage_hashes(input)
     }
 
     fn compile(
         &self,
         _coin: &dyn CoinContext,
-        _input: Self::SigningInput<'_>,
-        _signatures: Vec<Signature>,
-        _public_keys: Vec<PublicKey>,
+        input: Self::SigningInput<'_>,
+        signatures: Vec<Signature>,
+        public_keys: Vec<PublicKey>,
     ) -> Self::SigningOutput {
-        todo!()
+        Compiler::compile(input, signatures, public_keys)
     }
 
     fn json_signer(&self) -> Option<Self::JsonSigner> {

@@ -15,48 +15,14 @@ use crate::transaction::user_operation::UserOperation;
 use crate::transaction::UnsignedTransactionBox;
 use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_coin_entry::signing_output_error;
-use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError as CommonError;
 use tw_proto::Ethereum::Proto;
 
-pub struct Signer;
+pub struct TxBuilder;
 
-impl Signer {
-    pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
-        Signer::sign_proto_impl(input)
-            .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
-    }
-
-    fn sign_proto_impl(
-        input: Proto::SigningInput<'_>,
-    ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
-        let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
-
-        let unsigned = Self::transaction_from_proto(&input)?;
-
-        let pre_hash = unsigned.pre_hash(chain_id);
-        let signature = private_key.sign(pre_hash)?;
-
-        let signed = unsigned.into_signed(signature, chain_id);
-
-        let eth_signature = signed.signature();
-
-        Ok(Proto::SigningOutput {
-            encoded: signed.encode().into(),
-            v: eth_signature.v().to_big_endian_compact().into(),
-            r: eth_signature.r().to_big_endian_compact().into(),
-            s: eth_signature.s().to_big_endian_compact().into(),
-            data: signed.payload().into(),
-            pre_hash: pre_hash.to_vec().into(),
-            ..Proto::SigningOutput::default()
-        })
-    }
-
-    fn transaction_from_proto(
+impl TxBuilder {
+    pub fn tx_from_proto(
         input: &Proto::SigningInput<'_>,
     ) -> SigningResult<Box<dyn UnsignedTransactionBox>> {
         use Proto::mod_Transaction::OneOftransaction_oneof as Tx;
