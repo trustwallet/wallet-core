@@ -121,6 +121,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
 
+        const auto legacyAddress = AddressV2(publicKey);
+        privateKeys[legacyAddress.string()] = privateKeyData;
+
         // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
         const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
         if (!stakingPrivKeyData.empty()) {
@@ -131,7 +134,7 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     // collect every unique input UTXO address, preserving order
     std::vector<std::string> addresses;
     for (auto& u : plan.utxos) {
-        if (!AddressV3::isValid(u.address)) {
+        if (!AddressV3::isValidLegacy(u.address)) {
             return Common::Proto::Error_invalid_address;
         }
         addresses.emplace_back(u.address);
@@ -174,31 +177,53 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         const auto privateKey = PrivateKey(privateKeyData);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto signature = privateKey.sign(txId, TWCurveED25519ExtendedCardano);
-        // public key (first 32 bytes) and signature (64 bytes)
-        signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
+        signatures.emplace_back(publicKey.bytes, signature);
     }
 
     return Common::Proto::OK;
 }
 
-Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatures) {
+Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatures, const bool addByronSignatures) {
+    std::map<Cbor::Encode, Cbor::Encode> cborizeSigs;
     // signatures as Cbor
     // clang-format off
-    std::vector<Cbor::Encode> sigsCbor;
+    std::vector<Cbor::Encode> sigsShelly;
+    std::vector<Cbor::Encode> sigsByron;
+
     for (auto& s : signatures) {
-        sigsCbor.emplace_back(Cbor::Encode::array({
-            Cbor::Encode::bytes(s.first),
+        sigsShelly.emplace_back(Cbor::Encode::array({
+            // public key (first 32 bytes)
+            Cbor::Encode::bytes(subData(s.first, 0, 32)),
             Cbor::Encode::bytes(s.second)
         }));
+
+        if (addByronSignatures) {
+            sigsByron.emplace_back(Cbor::Encode::array({
+                // skey - public key (first 32 bytes)  
+                Cbor::Encode::bytes(subData(s.first, 0, 32)),
+                Cbor::Encode::bytes(s.second),
+                // vkey - public key (second 32 bytes started from 32)
+                Cbor::Encode::bytes(subData(s.first, 32, 32)),
+                // payload
+                Cbor::Encode::bytes(parse_hex("A0"))
+            }));
+        }
+    }
+
+    cborizeSigs.emplace(
+        Cbor::Encode::uint(0),
+        Cbor::Encode::array(sigsShelly)
+    );
+
+    if (!sigsByron.empty()) {
+        cborizeSigs.emplace(
+            Cbor::Encode::uint(2),
+            Cbor::Encode::array(sigsByron)
+        );
     }
 
     // Cbor-encode txAux & signatures
-    return Cbor::Encode::map({
-        std::make_pair(
-            Cbor::Encode::uint(0),
-            Cbor::Encode::array(sigsCbor)
-        )
-    });
+    return Cbor::Encode::map(cborizeSigs);
     // clang-format on
 }
 
@@ -242,7 +267,16 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
     if (sigError != Common::Proto::OK) {
         return sigError;
     }
-    const auto sigsCbor = cborizeSignatures(signatures);
+
+    bool hasLegacyUtxos = false;
+    for (const auto& utxo : input.utxos()) {
+        if (AddressV2::isValid(utxo.address())) {
+            hasLegacyUtxos = true;
+            break;
+        }
+    }
+
+    const auto sigsCbor = cborizeSignatures(signatures, hasLegacyUtxos);
 
     // Cbor-encode txAux & signatures
     const auto cbor = Cbor::Encode::array({
@@ -557,8 +591,17 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
     }
 
     std::vector<std::pair<Data, Data>> signatures;
-    signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
-    const auto sigsCbor = cborizeSignatures(signatures);
+    signatures.emplace_back(publicKey.bytes, signature);
+
+    bool hasLegacyUtxos = false;
+    for (const auto& utxo : input.utxos()) {
+        if (AddressV2::isValid(utxo.address())) {
+            hasLegacyUtxos = true;
+            break;
+        }
+    }
+
+    const auto sigsCbor = cborizeSignatures(signatures, hasLegacyUtxos);
 
     // Cbor-encode txAux & signatures
     const auto cbor = Cbor::Encode::array({
