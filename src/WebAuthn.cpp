@@ -113,4 +113,14 @@ std::optional<PublicKey> getPublicKey(const Data& attestationObject) {
     return PublicKey(publicKey, TWPublicKeyTypeNIST256p1Extended);
 }
 
+Data reconstructSignedMessage(const Data& authenticatorData, const Data& clientDataJSON) {
+    const auto& clientHash = Hash::sha256(clientDataJSON);
+
+    Data message;
+    append(message, authenticatorData);
+    append(message, clientHash);
+
+    return Hash::sha256(message);
+}
+
 } // namespace TW::Webauthn

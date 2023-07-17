@@ -11,24 +11,19 @@ option java_package = "wallet.core.jni.proto";
 
 // Input parameters for calculating a counterfactual address for ERC-4337 based smart contract wallet
 message ContractAddressInput {
+  // ERC-4337 entry point
+  string entry_point = 1;
   // Address of the contract factory
-  string factory = 1;
+  string factory = 2;
 
   // Diamond proxy facets required for the contract setup
-  string diamond_cut_facet = 2;
   string account_facet = 3;
   string verification_facet = 4;
-  string token_receiver_facet= 5;
-  string diamond_loupe_facet = 6;
-  string diamond_init = 7;
-  string facet_registry = 8;
-
-  // ERC-4337 entry point
-  string entry_point = 9;
+  string facet_registry = 5;
+  string default_fallback = 6;
 
   // Bytecode of the smart contract to deploy
-  string bytecode = 10;
-
+  string bytecode = 7;
   // PublicKey of the wallet
-  string public_key = 11;
+  string public_key = 8;
 }
