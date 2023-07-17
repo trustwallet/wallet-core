@@ -409,12 +409,10 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
 
     ANY_SIGN(input, TWCoinTypeBitcoin);
     auto result = hex(output.encoded());
-    ASSERT_EQ(result.substr(0, 164), expectedHex.substr(0, 164));
-    ASSERT_EQ(result.substr(292, result.size() - 292), expectedHex.substr(292, result.size() - 292));
     ASSERT_EQ(output.transaction_id(), "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac");
     ASSERT_EQ(output.error(), Common::Proto::OK);
-
-    // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
+    ASSERT_EQ(result.substr(0, 164), expectedHex.substr(0, 164));
+    ASSERT_EQ(result.substr(292, result.size() - 292), expectedHex.substr(292, result.size() - 292));
 }
 
 TEST(BitcoinSigning, SignP2PKH) {
