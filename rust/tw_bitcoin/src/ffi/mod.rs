@@ -42,21 +42,25 @@ pub unsafe extern "C" fn tw_calculate_transaction_fee(
     encoded: *const c_char,
     sat_vb: u64,
 ) -> CUInt64Result {
+    // Decode string.
     let Ok(hex) = CStr::from_ptr(encoded).to_str() else {
         // TODO: Should be enum.
         return CUInt64Result::error(1);
     };
 
+    // Decode hex value.
     let Ok(decoded) = tw_encoding::hex::decode(hex) else {
         // TODO: Should be enum.
         return CUInt64Result::error(2);
     };
 
+    // Decode transaction.
     let Ok(tx) = Transaction::consensus_decode(&mut decoded.as_slice()) else {
         // TODO: Should be enum.
         return CUInt64Result::error(3);
     };
 
+    // Calculate fee.
     let (_weight, fee) = calculate_fee(&tx, sat_vb);
 
     CUInt64Result::ok(fee)
