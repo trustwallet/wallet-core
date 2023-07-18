@@ -13,8 +13,8 @@ use bitcoin::{secp256k1, Address, TxIn, TxOut};
 pub struct TransactionBuilder {
     pub version: i32,
     pub lock_time: LockTime,
-    pub inputs: Vec<TxInput>,
-    pub outputs: Vec<TxOutput>,
+    inputs: Vec<TxInput>,
+    outputs: Vec<TxOutput>,
     miner_fee: Option<u64>,
     return_address: Option<Address>,
     contains_taproot: bool,
