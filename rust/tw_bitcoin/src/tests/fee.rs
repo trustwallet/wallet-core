@@ -32,9 +32,9 @@ fn brc20_commit_fee() {
     // Metadata can be observed live on:
     // https://www.blockchain.com/explorer/transactions/btc/797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1
     //
-    // Fee/VB	19.608 sat/vByte
-    // Size		235 Bytes
-    // Weight	610
+    // Fee/VB   19.608 sat/vByte
+    // Size     235 Bytes
+    // Weight   610
 
     // 19 satoshis per vbyte.
     const SAT_19_VB: u64 = 19;
@@ -51,9 +51,9 @@ fn brc20_reveal_fee() {
     // Metadata can be observed live on:
     // https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
     //
-    // Fee/VB	49.267 sat/vByte
-    // Size		276 Bytes
-    // Weight	522
+    // Fee/VB   49.267 sat/vByte
+    // Size     276 Bytes
+    // Weight   522
 
     // 49 satoshis per vbyte (slightly overpaid here...)
     const SAT_49_VB: u64 = 49;
@@ -70,9 +70,9 @@ fn ordinal_nft_commit_fee() {
     // Metadata can be observed live on:
     // https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
     //
-    // Fee/VB	10.656 sat/vByte
-    // Size		203 Bytes
-    // Weight	485
+    // Fee/VB   10.656 sat/vByte
+    // Size     203 Bytes
+    // Weight   485
 
     // 19 satoshis per vbyte.
     const SAT_10_VB: u64 = 10;
@@ -89,9 +89,9 @@ fn ordinal_nft_reveal_fee() {
     // Metadata can be observed live on:
     // https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
     //
-    // Fee/VB	15.133 sat/vByte
-    // Size		7'829 Bytes
-    // Weight	8'075
+    // Fee/VB   15.133 sat/vByte
+    // Size     7'829 Bytes
+    // Weight   8'075
 
     // 19 satoshis per vbyte.
     const SAT_15_VB: u64 = 15;
