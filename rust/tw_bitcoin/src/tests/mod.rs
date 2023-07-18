@@ -1,6 +1,7 @@
 mod address;
 mod brc20_transfer;
 mod data;
+mod fee;
 mod ffi;
 mod nft;
 mod p2pkh;
