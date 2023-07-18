@@ -2,12 +2,17 @@ use crate::claim::{ClaimLocation, TransactionSigner};
 use crate::input::*;
 use crate::output::*;
 use crate::{Error, Result};
+use bitcoin::{Transaction, Weight};
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
-use bitcoin::transaction::Transaction;
 use bitcoin::{secp256k1, Address, TxIn, TxOut};
+
+pub fn calculate_fee(tx: &Transaction, sat_vb: u64) -> (Weight, u64) {
+    let weight = tx.weight();
+    (weight, weight.to_vbytes_ceil() * sat_vb)
+}
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
