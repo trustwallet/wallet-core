@@ -1,20 +1,27 @@
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{Error, Result, TXOutputP2TRScriptPath, TaprootScript, TxInputP2TRScriptPath};
+use crate::{
+    calculate_fee, Error, Result, TXOutputP2TRScriptPath, TaprootScript, TxInputP2TRScriptPath,
+};
 use bitcoin::{
+    consensus::Decodable,
     taproot::{NodeInfo, TapNodeHash, TaprootSpendInfo},
-    PublicKey, ScriptBuf, Txid,
+    PublicKey, ScriptBuf, Transaction, Txid,
 };
 use secp256k1::hashes::Hash;
 use secp256k1::KeyPair;
-use std::borrow::Cow;
+use std::{
+    borrow::Cow,
+    ffi::{c_char, CStr},
+};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
+use tw_memory::ffi::c_result::CUInt64Result;
 use tw_memory::ffi::c_result::ErrorCode;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto::{
-    OutPoint, SigningInput, SigningOutput, Transaction, TransactionInput, TransactionOutput,
-    TransactionVariant as TrVariant,
+    OutPoint, SigningInput, SigningOutput, Transaction as ProtoTransaction, TransactionInput,
+    TransactionOutput, TransactionVariant as TrVariant,
 };
 
 pub mod address;
@@ -28,6 +35,32 @@ use crate::{
     Recipient, TransactionBuilder, TxInput, TxInputP2PKH, TxInputP2TRKeyPath, TxInputP2WPKH,
     TxOutput, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
 };
+
+#[no_mangle]
+pub unsafe extern "C" fn tw_calculate_transaction_fee(
+    // TODO: Should this take a hex value? Or the raw transaction?
+    encoded: *const c_char,
+    sat_vb: u64,
+) -> CUInt64Result {
+    let Ok(hex) = CStr::from_ptr(encoded).to_str() else {
+        // TODO: Should be enum.
+        return CUInt64Result::error(1);
+    };
+
+    let Ok(decoded) = tw_encoding::hex::decode(hex) else {
+        // TODO: Should be enum.
+        return CUInt64Result::error(2);
+    };
+
+    let Ok(tx) = Transaction::consensus_decode(&mut decoded.as_slice()) else {
+        // TODO: Should be enum.
+        return CUInt64Result::error(3);
+    };
+
+    let (_weight, fee) = calculate_fee(&tx, sat_vb);
+
+    CUInt64Result::ok(fee)
+}
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
@@ -223,7 +256,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
 
     // Create Protobuf structure of the full transaction.
     let mut signing = SigningOutput {
-        transaction: Some(Transaction {
+        transaction: Some(ProtoTransaction {
             version,
             lockTime: lock_time,
             inputs: proto_inputs,

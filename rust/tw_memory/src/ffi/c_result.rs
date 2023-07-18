@@ -97,6 +97,13 @@ pub struct CBoolResult {
     pub result: bool,
 }
 
+#[repr(C)]
+pub struct CUInt64Result {
+    pub code: i32,
+    pub result: u64,
+}
+
 impl_c_result!(CStrResult, *const c_char, core::ptr::null());
 impl_c_result!(CStrMutResult, *mut c_char, core::ptr::null_mut());
 impl_c_result!(CBoolResult, bool, false);
+impl_c_result!(CUInt64Result, u64, 0);
