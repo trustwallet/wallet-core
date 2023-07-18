@@ -37,7 +37,7 @@ use crate::{
 };
 
 #[no_mangle]
-pub unsafe extern "C" fn tw_calculate_transaction_fee(
+pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
     // TODO: Should this take a hex value? Or the raw transaction?
     encoded: *const c_char,
     sat_vb: u64,
