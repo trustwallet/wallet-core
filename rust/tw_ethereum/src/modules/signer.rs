@@ -5,12 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::modules::tx_builder::TxBuilder;
+use std::borrow::Cow;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::SigningKeyTrait;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
+
+const SIGNATURE_V_MIN_LEN: usize = 1;
 
 pub struct Signer;
 
@@ -35,13 +38,17 @@ impl Signer {
 
         let eth_signature = signed.signature();
 
+        let v = eth_signature
+            .v()
+            .to_big_endian_compact_min_len(SIGNATURE_V_MIN_LEN);
+
         Ok(Proto::SigningOutput {
-            encoded: signed.encode().into(),
-            v: eth_signature.v().to_big_endian_compact().into(),
-            r: eth_signature.r().to_big_endian_compact().into(),
-            s: eth_signature.s().to_big_endian_compact().into(),
-            data: signed.payload().into(),
-            pre_hash: pre_hash.to_vec().into(),
+            encoded: Cow::from(signed.encode()),
+            v: Cow::from(v),
+            r: Cow::from(eth_signature.r().to_big_endian().to_vec()),
+            s: Cow::from(eth_signature.s().to_big_endian().to_vec()),
+            data: Cow::from(signed.payload()),
+            pre_hash: Cow::from(pre_hash.to_vec()),
             ..Proto::SigningOutput::default()
         })
     }

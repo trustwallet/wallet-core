@@ -83,6 +83,10 @@ void signTemplate(const Data& dataIn, Data& dataOut) {
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
+// In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Rust Signer implement.
+// Note: use output parameter to avoid unneeded copies
+void signRust(const Data& dataIn, TWCoinType coin, Data& dataOut);
+
 // Note: use output parameter to avoid unneeded copies
 template <typename Planner, typename Input>
 void planTemplate(const Data& dataIn, Data& dataOut) {

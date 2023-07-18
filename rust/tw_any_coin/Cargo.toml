@@ -7,3 +7,4 @@ edition = "2021"
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_coin_registry = { path = "../tw_coin_registry" }
 tw_memory = { path = "../tw_memory" }
+tw_misc = { path = "../tw_misc" }

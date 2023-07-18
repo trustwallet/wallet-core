@@ -6,6 +6,25 @@
 
 pub use hex::FromHexError;
 
+pub trait ToHex {
+    fn to_hex(&self) -> String;
+
+    fn to_hex_prefixed(&self) -> String;
+}
+
+impl<T> ToHex for T
+where
+    T: AsRef<[u8]>,
+{
+    fn to_hex(&self) -> String {
+        encode(self, false)
+    }
+
+    fn to_hex_prefixed(&self) -> String {
+        encode(self, true)
+    }
+}
+
 pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
     let hex_string = data.trim_start_matches("0x");
     hex::decode(hex_string)

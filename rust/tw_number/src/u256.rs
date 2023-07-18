@@ -86,6 +86,19 @@ impl U256 {
         bytes[leading_zero_bytes..].to_vec()
     }
 
+    pub fn to_big_endian_compact_min_len(&self, min_len: usize) -> Vec<u8> {
+        let bytes = self.to_big_endian_compact();
+
+        if min_len > bytes.len() {
+            let mut output = vec![0; min_len];
+            let starts_at = min_len - bytes.len();
+            output[starts_at..min_len].copy_from_slice(bytes.as_slice());
+            return output;
+        }
+
+        bytes
+    }
+
     pub fn is_zero(&self) -> bool {
         self.0.is_zero()
     }

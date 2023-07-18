@@ -1488,6 +1488,7 @@ dependencies = [
  "tw_coin_entry",
  "tw_coin_registry",
  "tw_memory",
+ "tw_misc",
 ]
 
 [[package]]

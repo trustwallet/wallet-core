@@ -8,6 +8,7 @@ extern crate core;
 
 use std::str::FromStr;
 use tw_encoding::hex;
+use tw_encoding::hex::ToHex;
 use tw_hash::H256;
 use tw_number::U256;
 
@@ -167,4 +168,43 @@ fn test_u256_from_str() {
         let actual = U256::from_str(test.num_str).unwrap();
         assert_eq!(num, actual);
     }
+}
+
+#[test]
+fn test_u256_big_endian_min_len() {
+    // 0x0100
+    let num = U256::from(256_u64);
+
+    let num_0 = num.to_big_endian_compact_min_len(0);
+    assert_eq!(hex::encode(num_0, false), "0100");
+
+    let num_1 = num.to_big_endian_compact_min_len(1);
+    assert_eq!(hex::encode(num_1, false), "0100");
+
+    let num_2 = num.to_big_endian_compact_min_len(2);
+    assert_eq!(hex::encode(num_2, false), "0100");
+
+    let num_3 = num.to_big_endian_compact_min_len(3);
+    assert_eq!(num_3.to_hex(), "000100");
+
+    let num_20 = num.to_big_endian_compact_min_len(20);
+    assert_eq!(num_20.to_hex(), "0000000000000000000000000000000000000100");
+
+    let num_32 = num.to_big_endian_compact_min_len(32);
+    assert_eq!(
+        num_32.to_hex(),
+        "0000000000000000000000000000000000000000000000000000000000000100"
+    );
+
+    let num_33 = num.to_big_endian_compact_min_len(33);
+    assert_eq!(
+        num_33.to_hex(),
+        "000000000000000000000000000000000000000000000000000000000000000100"
+    );
+
+    let num_64 = num.to_big_endian_compact_min_len(64);
+    assert_eq!(
+        num_64.to_hex(),
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100"
+    );
 }

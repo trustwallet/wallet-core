@@ -5,10 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::borrow::Cow;
+use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::test_helpers::dummy_context::DummyCoinContext;
 use tw_encoding::hex;
+use tw_encoding::hex::ToHex;
+use tw_ethereum::entry::EthereumEntry;
 use tw_ethereum::modules::signer::Signer;
 use tw_number::U256;
+use tw_proto::serialize;
 use tw_proto::Ethereum::Proto;
 use tw_proto::Ethereum::Proto::TransactionMode;
 
@@ -225,18 +230,17 @@ fn test_sign_transaction_eip1559_native_transfer() {
     assert_eq!(hex::encode(output.encoded, false), expected);
 
     assert_eq!(
-        hex::encode(output.r, false),
+        output.r.to_hex(),
         "92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c64"
     );
     assert_eq!(
-        hex::encode(output.s, false),
+        output.s.to_hex(),
         "6487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e58"
     );
-    // Equals to `0x00`.
-    assert!(output.v.is_empty());
+    assert_eq!(output.v.to_hex(), "00");
 
     assert_eq!(
-        hex::encode(output.pre_hash, false),
+        output.pre_hash.to_hex(),
         "6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155"
     );
 }
@@ -583,4 +587,14 @@ fn test_sign_transaction_non_typed_erc1155_transfer() {
 
     let expected_data = "f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000";
     assert_eq!(hex::encode(output.data, false), expected_data);
+}
+
+#[test]
+fn test_plan_not_supported() {
+    let input = Proto::SigningInput::default();
+    let input_data = serialize(&input).unwrap();
+    let maybe_plan = EthereumEntry
+        .plan(&DummyCoinContext, &input_data)
+        .expect("!plan");
+    assert_eq!(maybe_plan, None, "Ethereum does not support plan()");
 }

@@ -6,32 +6,10 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::any_signer::{AnySigner, SigningError};
-use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
-use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::c_result::ErrorCode;
-
-#[repr(C)]
-pub enum CAnySignerError {
-    Ok = 0,
-    InvalidInput = 1,
-    Unsupported = 2,
-}
-
-impl From<SigningError> for CAnySignerError {
-    fn from(err: SigningError) -> Self {
-        match err {
-            SigningError::InvalidInput => CAnySignerError::InvalidInput,
-            SigningError::Unsupported => CAnySignerError::Unsupported,
-        }
-    }
-}
-
-impl From<CAnySignerError> for ErrorCode {
-    fn from(e: CAnySignerError) -> Self {
-        e as ErrorCode
-    }
-}
+use crate::any_signer::AnySigner;
+use tw_memory::ffi::tw_data::TWData;
+use tw_memory::ffi::RawPtrTrait;
+use tw_misc::try_or_else;
 
 /// Signs a transaction specified by the signing input and coin type.
 ///
@@ -40,18 +18,10 @@ impl From<CAnySignerError> for ErrorCode {
 /// \param coin The given coin type to sign the transaction for.
 /// \return The serialized data of a `SigningOutput` proto object. (e.g. TW.Bitcoin.Proto.SigningOutput).
 #[no_mangle]
-pub unsafe extern "C" fn tw_any_signer_sign(
-    input: *const u8,
-    input_len: usize,
-    coin: u32,
-) -> CByteArrayResult {
-    let input_ref = CByteArrayRef::new(input, input_len);
-    let Some(input) = input_ref.as_slice() else {
-        return CByteArrayResult::error(CAnySignerError::InvalidInput);
-    };
+pub unsafe extern "C" fn tw_any_signer_sign(input: *mut TWData, coin: u32) -> *mut TWData {
+    let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
 
-    AnySigner::sign(input, coin)
-        .map(CByteArray::from)
-        .map_err(CAnySignerError::from)
-        .into()
+    AnySigner::sign(input.as_slice(), coin)
+        .map(|output| TWData::from(output).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
 }

@@ -6,6 +6,7 @@
 
 #include "CoinEntry.h"
 #include "Coin.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 #include <variant>
 
 namespace TW {
@@ -27,6 +28,20 @@ byte getFromPrefixPkhOrDefault(const PrefixVariant &prefix, TWCoinType coin) {
     }
     // Prefix contains no base58 prefixes, return coin-default
     return TW::p2pkhPrefix(coin);
+}
+
+void signRust(const Data& dataIn, TWCoinType coin, Data& dataOut)  {
+    auto* data = Rust::tw_data_create_with_bytes(dataIn.data(), dataIn.size());
+    if (!data) {
+        return;
+    }
+    auto *output = Rust::tw_any_signer_sign(data,static_cast<uint32_t>(coin));
+    if (!output) {
+        return;
+    }
+    auto* output_data = Rust::tw_data_bytes(output);
+    auto output_size = Rust::tw_data_size(output);
+    dataOut.assign(output_data, output_data + output_size);
 }
 
 } // namespace TW

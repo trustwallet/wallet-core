@@ -23,6 +23,7 @@ lazy_static! {
 
 /// TODO extend this structure according to `registry.json`.
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CoinItem {
     pub(crate) coin_id: CoinType,
     pub(crate) blockchain: BlockchainType,

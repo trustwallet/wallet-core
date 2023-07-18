@@ -11,6 +11,8 @@ use std::ffi::{c_char, CString};
 pub mod c_byte_array;
 pub mod c_byte_array_ref;
 pub mod c_result;
+pub mod tw_data;
+pub mod tw_string;
 
 /// Releases the memory previously allocated for the `ptr` string.
 /// \param ptr *non-null* C-compatible, nul-terminated string.

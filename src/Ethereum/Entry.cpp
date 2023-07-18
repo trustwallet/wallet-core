@@ -7,11 +7,12 @@
 #include "Entry.h"
 
 #include "Address.h"
+#include "HexCoding.h"
 #include "proto/Common.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 #include "Signer.h"
 
-#include "proto/TransactionCompiler.pb.h"
+#include <google/protobuf/util/json_util.h>
 
 namespace TW::Ethereum {
 
@@ -36,11 +37,27 @@ Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& a
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signRust(dataIn, coin, dataOut);
 }
 
+// TODO call `signRustJSON` when it's done.
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return Signer::signJSON(json, key);
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+
+    auto inputData = data(input.SerializeAsString());
+    Data dataOut;
+    sign(coin, inputData, dataOut);
+
+    if(dataOut.empty()) {
+        return {};
+    }
+
+    Proto::SigningOutput output;
+    output.ParseFromArray(dataOut.data(), static_cast<int>(dataOut.size()));
+
+    return hex(output.encoded());
 }
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
