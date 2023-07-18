@@ -1,4 +1,4 @@
-use crate::fee::calculate_fee;
+use crate::calculate_fee;
 use bitcoin::{consensus::Decodable, Transaction};
 
 // 10 satoshis per virtual byte.
