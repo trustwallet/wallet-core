@@ -154,11 +154,11 @@ fn proto_sign_brc20_transfer_inscription_reveal() {
     let signed = taproot_build_and_sign_transaction(signing).unwrap();
     let hex = hex::encode(&signed.encoded, false);
 
-    assert_eq!(hex[..164], REVEAL_RAW[..164]);
+    assert_eq!(hex[..164], REVEAL_TX_RAW[..164]);
     // We ignore the 64-byte Schnorr signature, since it uses random data for
     // signing on each construction and is therefore not reproducible.
-    assert_ne!(hex[164..292], REVEAL_RAW[164..292]);
-    assert_eq!(hex[292..], REVEAL_RAW[292..]);
+    assert_ne!(hex[164..292], REVEAL_TX_RAW[164..292]);
+    assert_eq!(hex[292..], REVEAL_TX_RAW[292..]);
 }
 
 /// Transfer the Inscription with P2WPKH.

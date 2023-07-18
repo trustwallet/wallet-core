@@ -32,7 +32,7 @@ fn ffi_calculate_brc20_commit_fee() {
 
 #[test]
 fn ffi_calculate_brc20_reveal_fee() {
-    let fee = call_ffi_calculate_fee(crate::tests::brc20_transfer::REVEAL_RAW, 49);
+    let fee = call_ffi_calculate_fee(crate::tests::brc20_transfer::REVEAL_TX_RAW, 49);
     assert_eq!(fee, 131 * 49);
 }
 

@@ -58,7 +58,7 @@ fn brc20_reveal_fee() {
     // 49 satoshis per vbyte (slightly overpaid here...)
     const SAT_49_VB: u64 = 49;
 
-    let tx = decode_tx(super::brc20_transfer::REVEAL_RAW);
+    let tx = decode_tx(super::brc20_transfer::REVEAL_TX_RAW);
 
     let (weight, fee) = calculate_fee(&tx, SAT_49_VB);
     assert_eq!(weight.to_vbytes_ceil(), 131); // 131 = ceil(522/4)
