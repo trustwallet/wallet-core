@@ -2,6 +2,7 @@ extern crate serde;
 
 pub mod brc20;
 pub mod claim;
+pub mod fee;
 pub mod ffi;
 pub mod input;
 pub mod nft;
