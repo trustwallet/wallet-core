@@ -7,7 +7,7 @@
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
-use tw_coin_entry::test_helpers::dummy_context::DummyCoinContext;
+use tw_coin_entry::test_helpers::empty_context::EmptyCoinContext;
 use tw_encoding::hex;
 use tw_encoding::hex::ToHex;
 use tw_ethereum::entry::EthereumEntry;
@@ -594,7 +594,7 @@ fn test_plan_not_supported() {
     let input = Proto::SigningInput::default();
     let input_data = serialize(&input).unwrap();
     let maybe_plan = EthereumEntry
-        .plan(&DummyCoinContext, &input_data)
+        .plan(&EmptyCoinContext, &input_data)
         .expect("!plan");
     assert_eq!(maybe_plan, None, "Ethereum does not support plan()");
 }

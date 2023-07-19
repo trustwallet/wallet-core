@@ -10,6 +10,7 @@ use crate::BlockchainType;
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use std::collections::HashMap;
+use tw_keypair::tw::PublicKeyType;
 
 type RegistryMap = HashMap<CoinType, CoinItem>;
 
@@ -27,6 +28,7 @@ lazy_static! {
 pub struct CoinItem {
     pub(crate) coin_id: CoinType,
     pub(crate) blockchain: BlockchainType,
+    pub(crate) public_key_type: PublicKeyType,
 }
 
 pub fn get_coin_item(coin: CoinType) -> RegistryResult<&'static CoinItem> {

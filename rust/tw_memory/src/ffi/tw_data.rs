@@ -11,7 +11,7 @@ use crate::ffi::RawPtrTrait;
 ///
 /// The implementation of these methods should be language-specific to minimize translation overhead.
 /// For instance it should be a `jbyteArray` for Java and an `NSData` for Swift.
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct TWData(Vec<u8>);
 
 impl TWData {
@@ -28,6 +28,11 @@ impl TWData {
     /// Converts `TWData` into `Vec<u8>` without additional allocation.
     pub fn into_vec(self) -> Vec<u8> {
         self.0
+    }
+
+    /// Copies underlying `Vec<u8>` data.
+    pub fn to_vec(&self) -> Vec<u8> {
+        self.0.clone()
     }
 
     /// Returns the data slice.
@@ -64,6 +69,15 @@ pub unsafe extern "C" fn tw_data_create_with_bytes(bytes: *const u8, size: usize
     TWData::from_raw_data(bytes, size)
         .map(|data| data.into_ptr())
         .unwrap_or_else(std::ptr::null_mut)
+}
+
+/// Deletes a block of data created with a `TWDataCreate*` method.
+///
+/// \param data A non-null valid block of data
+#[no_mangle]
+pub unsafe extern "C" fn tw_data_delete(data: *mut TWData) {
+    // Take the ownership back to rust and drop the owner.
+    let _ = TWData::from_ptr(data);
 }
 
 /// Returns the raw pointer to the contents of data.

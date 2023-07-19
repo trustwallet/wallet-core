@@ -6,3 +6,4 @@
 
 pub mod any_signer;
 pub mod ffi;
+pub mod transaction_compiler;

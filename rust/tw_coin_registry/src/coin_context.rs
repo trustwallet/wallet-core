@@ -8,15 +8,20 @@ use crate::coin_type::CoinType;
 use crate::error::RegistryResult;
 use crate::registry::{get_coin_item, CoinItem};
 use tw_coin_entry::coin_context::CoinContext;
+use tw_keypair::tw::PublicKeyType;
 
 pub struct CoinRegistryContext {
-    _item: &'static CoinItem,
+    item: &'static CoinItem,
 }
 
 impl CoinRegistryContext {
     pub fn new(coin: CoinType) -> RegistryResult<CoinRegistryContext> {
-        get_coin_item(coin).map(|item| CoinRegistryContext { _item: item })
+        get_coin_item(coin).map(|item| CoinRegistryContext { item })
     }
 }
 
-impl CoinContext for CoinRegistryContext {}
+impl CoinContext for CoinRegistryContext {
+    fn public_key_type(&self) -> PublicKeyType {
+        self.item.public_key_type
+    }
+}

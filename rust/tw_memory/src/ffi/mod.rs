@@ -12,6 +12,7 @@ pub mod c_byte_array;
 pub mod c_byte_array_ref;
 pub mod c_result;
 pub mod tw_data;
+pub mod tw_data_vector;
 pub mod tw_string;
 
 /// Releases the memory previously allocated for the `ptr` string.
@@ -39,6 +40,13 @@ pub trait RawPtrTrait: Sized {
             return None;
         }
         Some(&*raw)
+    }
+
+    unsafe fn from_ptr_as_mut(raw: *mut Self) -> Option<&'static mut Self> {
+        if raw.is_null() {
+            return None;
+        }
+        Some(&mut *raw)
     }
 
     unsafe fn from_ptr_as_box(raw: *mut Self) -> Option<Box<Self>> {

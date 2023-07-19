@@ -144,14 +144,13 @@ TEST(EthereumCompiler, BuildTransactionInput) {
 
 TEST(EthereumCompiler, BuildTransactionInputInvalidAddress) {
     const auto coin = TWCoinTypeEthereum;
-    EXPECT_EXCEPTION(
-        TransactionCompiler::buildInput(coin,
-                                        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
-                                        "__INVALID_ADDRESS__",                        // to
-                                        "1000000000000000000",                        // amount
-                                        "ETH",                                        // asset
-                                        "",                                           // memo
-                                        ""                                            // chainId
-                                        ),
-        "Invalid to address");
+    auto input = TransactionCompiler::buildInput(coin,
+                                                 "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
+                                                 "__INVALID_ADDRESS__",                        // to
+                                                 "1000000000000000000",                        // amount
+                                                 "ETH",                                        // asset
+                                                 "",                                           // memo
+                                                 ""                                            // chainId
+    );
+    ASSERT_TRUE(input.empty());
 }

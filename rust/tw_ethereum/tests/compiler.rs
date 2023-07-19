@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
 use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
-use tw_coin_entry::test_helpers::dummy_context::DummyCoinContext;
+use tw_coin_entry::test_helpers::empty_context::EmptyCoinContext;
 use tw_encoding::hex;
 use tw_ethereum::entry::EthereumEntry;
 use tw_keypair::ecdsa::secp256k1;
@@ -29,7 +29,7 @@ fn test_external_signature_sign() {
         chain_id: "".to_string(),
     };
     let res = EthereumEntry
-        .build_signing_input(&DummyCoinContext, args.clone())
+        .build_signing_input(&EmptyCoinContext, args.clone())
         .expect("!build_signing_input")
         .expect("'build_signing_input' should return something");
     let mut input: Proto::SigningInput =
@@ -58,7 +58,7 @@ fn test_external_signature_sign() {
     // Step 2: Obtain preimage hash
     let input_data = serialize(&input).unwrap();
     let preimage_data = EthereumEntry
-        .preimage_hashes(&DummyCoinContext, &input_data)
+        .preimage_hashes(&EmptyCoinContext, &input_data)
         .expect("!preimage_hashes");
     let preimage: CompilerProto::PreSigningOutput =
         deserialize(&preimage_data).expect("Coin entry returned an invalid output");
@@ -82,10 +82,10 @@ fn test_external_signature_sign() {
     let input_data = serialize(&input).unwrap();
     let output_data = EthereumEntry
         .compile(
-            &DummyCoinContext,
+            &EmptyCoinContext,
             &input_data,
             vec![signature],
-            vec![public_key],
+            vec![public_key.to_bytes()],
         )
         .expect("!compile");
     let output: Proto::SigningOutput =
@@ -104,7 +104,7 @@ fn test_external_signature_sign() {
 
     let input_data = serialize(&input).unwrap();
     let output_data = EthereumEntry
-        .sign(&DummyCoinContext, &input_data)
+        .sign(&EmptyCoinContext, &input_data)
         .expect("!output_data");
     let output: Proto::SigningOutput =
         deserialize(&output_data).expect("Coin entry returned an invalid output");

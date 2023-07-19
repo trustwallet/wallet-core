@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::ffi::RawPtrTrait;
-use std::ffi::{c_char, CString};
+use std::ffi::{c_char, CStr, CString};
 
 /// Defines a resizable string.
 ///
@@ -22,12 +22,12 @@ impl TWString {
     }
 
     /// Creates a `TWString` from a null-terminated UTF8 byte array.
-    pub unsafe fn from_c_str(ptr: *mut c_char) -> Option<TWString> {
+    pub unsafe fn from_c_str(ptr: *const c_char) -> Option<TWString> {
         if ptr.is_null() {
             return None;
         }
-        let str = CString::from_raw(ptr);
-        Some(TWString(str))
+        let str = CStr::from_ptr(ptr);
+        Some(TWString(CString::from(str)))
     }
 
     /// Converts `TWString` into `String` without additional allocation.
@@ -57,7 +57,7 @@ impl RawPtrTrait for TWString {}
 /// Creates a `TWString` from a null-terminated UTF8 byte array. It must be deleted at the end.
 /// \param bytes a null-terminated UTF8 byte array.
 #[no_mangle]
-pub unsafe extern "C" fn tw_string_create_with_utf8_bytes(bytes: *mut c_char) -> *mut TWString {
+pub unsafe extern "C" fn tw_string_create_with_utf8_bytes(bytes: *const c_char) -> *mut TWString {
     TWString::from_c_str(bytes)
         .map(TWString::into_ptr)
         .unwrap_or_else(std::ptr::null_mut)

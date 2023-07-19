@@ -13,6 +13,82 @@
 
 namespace TW::Rust {
 
+struct TWDataVectorWrapper {
+    /// Implicit constructor.
+    TWDataVectorWrapper(const std::vector<Data>& vec) {
+        ptr = tw_data_vector_create();
+
+        for (const auto& item : vec) {
+            auto* itemData = tw_data_create_with_bytes(item.data(), item.size());
+            Rust::tw_data_vector_add(ptr, itemData);
+            Rust::tw_data_delete(itemData);
+        }
+    }
+
+    ~TWDataVectorWrapper() {
+        Rust::tw_data_vector_delete(ptr);
+    }
+
+    TWDataVector* ptr;
+};
+
+struct TWDataWrapper {
+    /// Implicit constructor.
+    TWDataWrapper(const Data& bytes) {
+        ptr = tw_data_create_with_bytes(bytes.data(), bytes.size());
+    }
+
+    /// Implicit constructor.
+    TWDataWrapper(TWData *ptr): ptr(ptr) {
+    }
+
+    ~TWDataWrapper() {
+        if (ptr) {
+            Rust::tw_data_delete(ptr);
+        }
+    }
+
+    Data toDataOrDefault() const {
+        if (!ptr) {
+            return {};
+        }
+
+        auto* bytes = tw_data_bytes(ptr);
+        Data out(bytes, bytes + tw_data_size(ptr));
+        return out;
+    }
+
+    TWData* ptr = nullptr;
+};
+
+struct TWStringWrapper {
+    /// Implicit constructor.
+    TWStringWrapper(const std::string& string) {
+        ptr = tw_string_create_with_utf8_bytes(string.c_str());
+    }
+
+    /// Implicit constructor.
+    TWStringWrapper(TWString *ptr): ptr(ptr) {
+    }
+
+    ~TWStringWrapper() {
+        if (ptr) {
+            Rust::tw_string_delete(ptr);
+        }
+    }
+
+    std::string toStringOrDefault() const {
+        if (!ptr) {
+            return {};
+        }
+
+        auto* bytes = tw_string_utf8_bytes(ptr);
+        return {bytes};
+    }
+
+    TWString* ptr = nullptr;
+};
+
 struct CByteArrayWrapper {
     CByteArrayWrapper() = default;
 

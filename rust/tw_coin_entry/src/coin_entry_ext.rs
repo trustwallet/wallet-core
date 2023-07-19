@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::coin_context::CoinContext;
-use crate::coin_entry::{CoinAddress, CoinEntry};
+use crate::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use crate::derivation::Derivation;
 use crate::error::AddressResult;
 use crate::error::SigningResult;
@@ -13,7 +13,7 @@ use crate::modules::input_builder::{BuildSigningInputArgs, InputBuilder};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::AddressPrefix;
-use tw_keypair::tw::{PrivateKey, PublicKey, Signature};
+use tw_keypair::tw::PrivateKey;
 use tw_proto::{deserialize, serialize, ProtoResult};
 
 /// The [`CoinEntry`] trait extension.
@@ -28,7 +28,7 @@ pub trait CoinEntryExt {
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKey,
+        public_key: PublicKeyBytes,
         derivation: Derivation,
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<String>;
@@ -62,8 +62,8 @@ pub trait CoinEntryExt {
         &self,
         coin: &dyn CoinContext,
         input: &[u8],
-        signatures: Vec<Signature>,
-        public_keys: Vec<PublicKey>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> ProtoResult<Vec<u8>>;
 
     fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Vec<u8>>>;
@@ -100,7 +100,7 @@ where
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKey,
+        public_key: PublicKeyBytes,
         derivation: Derivation,
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<String> {
@@ -157,8 +157,8 @@ where
         &self,
         coin: &dyn CoinContext,
         input: &[u8],
-        signatures: Vec<Signature>,
-        public_keys: Vec<PublicKey>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> ProtoResult<Vec<u8>> {
         let input: T::SigningInput<'_> = deserialize(input)?;
         let output = self.compile(coin, input, signatures, public_keys);

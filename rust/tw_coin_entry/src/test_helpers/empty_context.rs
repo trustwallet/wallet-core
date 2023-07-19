@@ -5,7 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::coin_context::CoinContext;
+use tw_keypair::tw::PublicKeyType;
 
-pub struct DummyCoinContext;
+pub struct EmptyCoinContext;
 
-impl CoinContext for DummyCoinContext {}
+impl CoinContext for EmptyCoinContext {
+    fn public_key_type(&self) -> PublicKeyType {
+        panic!()
+    }
+}

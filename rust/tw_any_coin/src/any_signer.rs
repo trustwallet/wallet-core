@@ -4,34 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_coin_entry::coin_entry::ProtoError;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
-use tw_coin_registry::{coin_dispatcher, CoinRegistryContext, CoinType, RegistryError};
+use tw_coin_entry::error::{SigningError, SigningResult};
+use tw_coin_registry::{coin_dispatcher, CoinRegistryContext, CoinType};
 
 pub struct AnySigner;
-
-pub type SigningResult<T> = Result<T, SigningError>;
-
-pub enum SigningError {
-    InvalidInput,
-    Unsupported,
-}
-
-impl From<RegistryError> for SigningError {
-    fn from(err: RegistryError) -> Self {
-        match err {
-            RegistryError::UnknownCoinType | RegistryError::Unsupported => {
-                SigningError::Unsupported
-            },
-        }
-    }
-}
-
-impl From<ProtoError> for SigningError {
-    fn from(_err: ProtoError) -> Self {
-        SigningError::InvalidInput
-    }
-}
 
 impl AnySigner {
     pub fn sign(input: &[u8], coin: CoinType) -> SigningResult<Vec<u8>> {

@@ -5,3 +5,4 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod any_signer;
+pub mod transaction_compiler;

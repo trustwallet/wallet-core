@@ -6,7 +6,7 @@
 
 #include "CoinEntry.h"
 #include "Coin.h"
-#include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 #include <variant>
 
 namespace TW {
@@ -31,17 +31,66 @@ byte getFromPrefixPkhOrDefault(const PrefixVariant &prefix, TWCoinType coin) {
 }
 
 void signRust(const Data& dataIn, TWCoinType coin, Data& dataOut)  {
-    auto* data = Rust::tw_data_create_with_bytes(dataIn.data(), dataIn.size());
-    if (!data) {
-        return;
+    Rust::TWDataWrapper input = Rust::tw_data_create_with_bytes(dataIn.data(), dataIn.size());
+    Rust::TWDataWrapper output = Rust::tw_any_signer_sign(input.ptr, static_cast<uint32_t>(coin));
+
+    dataOut = output.toDataOrDefault();
+}
+
+Data preImageHashesRust(TWCoinType coin, const Data& dataIn) {
+    Rust::TWDataWrapper input = dataIn;
+    Rust::TWDataWrapper output = Rust::tw_transaction_compiler_pre_image_hashes(static_cast<uint32_t>(coin), input.ptr);
+
+    return output.toDataOrDefault();
+}
+
+void compileRust(
+    TWCoinType coin,
+    const Data& dataIn,
+    const std::vector<Data>& signatures,
+    const std::vector<PublicKey>& publicKeys,
+    Data& dataOut
+) {
+    Rust::TWDataWrapper input = dataIn;
+
+    std::vector<Data> publicKeysData;
+    for (const auto& publicKey : publicKeys) {
+        publicKeysData.push_back(publicKey.bytes);
     }
-    auto *output = Rust::tw_any_signer_sign(data,static_cast<uint32_t>(coin));
-    if (!output) {
-        return;
-    }
-    auto* output_data = Rust::tw_data_bytes(output);
-    auto output_size = Rust::tw_data_size(output);
-    dataOut.assign(output_data, output_data + output_size);
+
+    Rust::TWDataVectorWrapper signaturesVec = signatures;
+    Rust::TWDataVectorWrapper publicKeysVec = publicKeysData;
+
+    Rust::TWDataWrapper output = Rust::tw_transaction_compiler_compile(static_cast<uint32_t>(coin), input.ptr, signaturesVec.ptr, publicKeysVec.ptr);
+    dataOut = output.toDataOrDefault();
+}
+
+Data buildSigningInputRust(
+    TWCoinType coinType,
+    const std::string& from,
+    const std::string& to,
+    const uint256_t& amount,
+    const std::string& asset,
+    const std::string& memo,
+    const std::string& chainId
+) {
+    Rust::TWStringWrapper fromPtr = from;
+    Rust::TWStringWrapper toPtr = to;
+    Rust::TWStringWrapper amountPtr = toString(amount);
+    Rust::TWStringWrapper assetPtr = asset;
+    Rust::TWStringWrapper memoPtr = memo;
+    Rust::TWStringWrapper chainIdPtr = chainId;
+
+    Rust::TWDataWrapper input = Rust::tw_transaction_compiler_build_input(
+        static_cast<uint32_t>(coinType),
+        fromPtr.ptr,
+        toPtr.ptr,
+        amountPtr.ptr,
+        assetPtr.ptr,
+        memoPtr.ptr,
+        chainIdPtr.ptr
+    );
+    return input.toDataOrDefault();
 }
 
 } // namespace TW

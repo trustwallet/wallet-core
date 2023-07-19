@@ -6,16 +6,18 @@
 
 use crate::coin_context::CoinContext;
 use crate::derivation::Derivation;
-use crate::error::AddressError;
+use crate::error::AddressResult;
 use crate::modules::input_builder::InputBuilder;
+use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::Prefix;
 use std::fmt;
-use tw_keypair::tw::{PublicKey, Signature};
 use tw_proto::{MessageRead, MessageWrite};
 
-use crate::modules::json_signer::JsonSigner;
 pub use tw_proto::{ProtoError, ProtoResult};
+
+pub type SignatureBytes = Vec<u8>;
+pub type PublicKeyBytes = Vec<u8>;
 
 pub trait CoinAddress: fmt::Display {
     fn data(&self) -> Vec<u8>;
@@ -39,16 +41,16 @@ pub trait CoinEntry {
         coin: &dyn CoinContext,
         address: &str,
         prefix: Option<Self::AddressPrefix>,
-    ) -> Result<Self::Address, AddressError>;
+    ) -> AddressResult<Self::Address>;
 
     /// Derives an address associated with the given `public_key` by `coin` type, `derivation` and address `prefix`.
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKey,
+        public_key: PublicKeyBytes,
         derivation: Derivation,
         prefix: Option<Self::AddressPrefix>,
-    ) -> Result<Self::Address, AddressError>;
+    ) -> AddressResult<Self::Address>;
 
     /// Signs a transaction declared as the given `input`.
     fn sign(&self, coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput;
@@ -65,8 +67,8 @@ pub trait CoinEntry {
         &self,
         coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
-        signatures: Vec<Signature>,
-        public_keys: Vec<PublicKey>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput;
 
     /// It is optional, Signing JSON input with private key.

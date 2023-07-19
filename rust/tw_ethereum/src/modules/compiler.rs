@@ -6,11 +6,11 @@
 
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
+use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
-use tw_keypair::tw;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -27,8 +27,8 @@ impl Compiler {
 
     pub fn compile(
         input: Proto::SigningInput<'_>,
-        signatures: Vec<tw::Signature>,
-        public_keys: Vec<tw::PublicKey>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> Proto::SigningOutput<'static> {
         Compiler::compile_impl(input, signatures, public_keys)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
@@ -52,15 +52,14 @@ impl Compiler {
 
     fn compile_impl(
         input: Proto::SigningInput<'_>,
-        signatures: Vec<tw::Signature>,
-        public_keys: Vec<tw::PublicKey>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let SingleSignaturePubkey {
             signature,
             public_key: _,
-        } = SingleSignaturePubkey::from_sign_pubkey_list(signatures, public_keys)?;
+        } = SingleSignaturePubkey::<secp256k1::Signature, secp256k1::PublicKey>::from_sign_pubkey_list(signatures, public_keys)?;
 
-        let signature = secp256k1::Signature::from_bytes(signature.as_slice())?;
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
 
         let unsigned = TxBuilder::tx_from_proto(&input)?;

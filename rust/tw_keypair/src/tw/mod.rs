@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use serde::Deserialize;
+
 mod private;
 mod public;
 
@@ -44,19 +46,30 @@ impl Curve {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum PublicKeyType {
+    #[serde(rename = "secp256k1")]
     Secp256k1 = 0,
+    #[serde(rename = "secp256k1Extended")]
     Secp256k1Extended = 1,
+    /// TODO rename to Nist256p1.
+    #[serde(rename = "nist256p1")]
     Nist256k1 = 2,
+    /// TODO rename to Nist256p1.
+    #[serde(rename = "nist256p1")]
     Nist256k1Extended = 3,
+    #[serde(rename = "ed25519")]
     Ed25519 = 4,
+    #[serde(rename = "ed25519Blake2b")]
     Ed25519Blake2b = 5,
     /// Waves blockchain specific public key.
+    #[serde(rename = "curve25519")]
     Curve25519Waves = 6,
     /// Cardano blockchain specific extended public key.
+    #[serde(rename = "ed25519Cardano")]
     Ed25519ExtendedCardano = 7,
+    #[serde(rename = "starkex")]
     Starkex = 8,
 }
 

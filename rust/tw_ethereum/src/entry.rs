@@ -11,12 +11,12 @@ use crate::modules::json_signer::EthJsonSigner;
 use crate::modules::signer::Signer;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::CoinEntry;
+use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::tw::{PublicKey, Signature};
+use tw_keypair::ecdsa::secp256k1;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -39,21 +39,20 @@ impl CoinEntry for EthereumEntry {
         _coin: &dyn CoinContext,
         address: &str,
         _prefix: Option<Self::AddressPrefix>,
-    ) -> Result<Self::Address, AddressError> {
+    ) -> AddressResult<Self::Address> {
         Address::from_str(address)
     }
 
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        public_key: PublicKey,
+        public_key: PublicKeyBytes,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
-    ) -> Result<Self::Address, AddressError> {
-        let public_key = public_key
-            .to_secp256k1()
-            .ok_or(AddressError::PublicKeyTypeMismatch)?;
-        Ok(Address::with_secp256k1_pubkey(public_key))
+    ) -> AddressResult<Self::Address> {
+        let public_key = secp256k1::PublicKey::try_from(public_key.as_slice())
+            .map_err(|_| AddressError::PublicKeyTypeMismatch)?;
+        Ok(Address::with_secp256k1_pubkey(&public_key))
     }
 
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
@@ -72,8 +71,8 @@ impl CoinEntry for EthereumEntry {
         &self,
         _coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
-        signatures: Vec<Signature>,
-        public_keys: Vec<PublicKey>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         Compiler::compile(input, signatures, public_keys)
     }

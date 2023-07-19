@@ -1511,6 +1511,7 @@ version = "0.1.0"
 dependencies = [
  "serde_json",
  "tw_keypair",
+ "tw_misc",
  "tw_number",
  "tw_proto",
 ]
@@ -1524,6 +1525,7 @@ dependencies = [
  "serde_json",
  "tw_coin_entry",
  "tw_ethereum",
+ "tw_keypair",
  "tw_memory",
  "tw_misc",
 ]
