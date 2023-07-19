@@ -14,6 +14,6 @@ TW_EXPORT_CLASS
 struct TWBitcoinFee;
 
 TW_EXPORT_STATIC_METHOD
-uint64_t TWBitcoinFeeCalculateFee(TWData *_Nonnull data, uint64_t satVb);
+uint64_t TWBitcoinFeeCalculateFee(TWData* _Nonnull data, uint64_t satVb);
 
 TW_EXTERN_C_END
