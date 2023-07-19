@@ -238,9 +238,9 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     }
 }
 
-std::optional<uint64_t> Transaction::calculate_fee(Data& encoded, uint64_t sat_vb) const {
-    Rust::CUInt64ResultWrapper res = Rust::tw_bitcoin_calculate_transaction_fee(encoded.data(), encoded.size(), sat_vb);
-    if (!res.isOk()) {
+std::optional<uint64_t> Transaction::calculateFee(const Data& encoded, uint64_t satVb) {
+    Rust::CUInt64ResultWrapper res = Rust::tw_bitcoin_calculate_transaction_fee(encoded.data(), encoded.size(), satVb);
+    if (res.isErr()) {
         return std::nullopt;
     }
     return res.unwrap().value;
