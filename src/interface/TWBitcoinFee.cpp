@@ -12,7 +12,7 @@ using namespace TW;
 
 namespace internal {
 
-int64_t TWBitcoinFeeCalculateFee(TWData *_Nonnull data, uint64_t satVb) {
+int64_t TWBitcoinFeeCalculateFee(TWData *data, uint64_t satVb) {
     auto* encoded = reinterpret_cast<const TW::Data*>(data);
 	auto fee = TW::Bitcoin::Transaction::calculateFee(*encoded, satVb);
     if (!fee) {
