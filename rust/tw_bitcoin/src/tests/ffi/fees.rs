@@ -1,13 +1,12 @@
 use crate::ffi::tw_bitcoin_calculate_transaction_fee;
-use std::ffi::CString;
 use tw_memory::ffi::c_result::CUInt64Result;
 
 /// Convenience wrapper.
 fn call_ffi_calculate_fee(hex: &str, sat_vb: u64) -> u64 {
-    let c_hex = CString::new(hex).unwrap();
+    let hex = tw_encoding::hex::decode(hex).unwrap();
 
     let res: CUInt64Result =
-        unsafe { tw_bitcoin_calculate_transaction_fee(c_hex.as_ptr(), sat_vb) };
+        unsafe { tw_bitcoin_calculate_transaction_fee(hex.as_ptr(), hex.len(), sat_vb) };
 
     res.unwrap()
 }

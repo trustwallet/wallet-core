@@ -96,6 +96,8 @@ public:
 
     void serializeInput(size_t subindex, const Script&, size_t index, enum TWBitcoinSigHashType hashType, Data& data) const;
 
+    uint64_t Transaction::calculate_fees(Data& encoded, uint64_t sat_vb) const;
+
     /// Converts to Protobuf model
     Proto::Transaction proto() const;
 

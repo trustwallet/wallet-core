@@ -8,9 +8,11 @@
 #include "SegwitAddress.h"
 #include "SignatureVersion.h"
 #include "SigHashType.h"
+#include "HexCoding.h"
 
 #include "../BinaryCoding.h"
 
+#include <boost/operators.hpp>
 #include <cassert>
 
 namespace TW::Bitcoin {
@@ -234,6 +236,12 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     } else {
         encode32LE(inputs[subindex].sequence, data);
     }
+}
+
+uint64_t Transaction::calculate_fees(Data& encoded, uint64_t sat_vb) {
+    //auto x = Rust::tw_bitcoin_calculate_transaction_fee()
+
+    return 0
 }
 
 Proto::Transaction Transaction::proto() const {

@@ -10,10 +10,7 @@ use bitcoin::{
 };
 use secp256k1::hashes::Hash;
 use secp256k1::KeyPair;
-use std::{
-    borrow::Cow,
-    ffi::{c_char, CStr},
-};
+use std::borrow::Cow;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::CUInt64Result;
@@ -38,24 +35,17 @@ use crate::{
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
-    // TODO: Should this take a hex value? Or the raw transaction?
-    encoded: *const c_char,
+    input: *const u8,
+    input_len: usize,
     sat_vb: u64,
 ) -> CUInt64Result {
-    // Decode string.
-    let Ok(hex) = CStr::from_ptr(encoded).to_str() else {
+    let Some(mut encoded) = CByteArrayRef::new(input, input_len).as_slice() else {
         // TODO: Should be enum.
         return CUInt64Result::error(1);
     };
 
-    // Decode hex value.
-    let Ok(decoded) = tw_encoding::hex::decode(hex) else {
-        // TODO: Should be enum.
-        return CUInt64Result::error(2);
-    };
-
     // Decode transaction.
-    let Ok(tx) = Transaction::consensus_decode(&mut decoded.as_slice()) else {
+    let Ok(tx) = Transaction::consensus_decode(&mut encoded) else {
         // TODO: Should be enum.
         return CUInt64Result::error(3);
     };
