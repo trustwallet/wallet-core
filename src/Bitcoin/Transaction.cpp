@@ -238,10 +238,12 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     }
 }
 
-uint64_t Transaction::calculate_fees(Data& encoded, uint64_t sat_vb) {
-    //auto x = Rust::tw_bitcoin_calculate_transaction_fee()
-
-    return 0
+std::optional<uint64_t> Transaction::calculate_fee(Data& encoded, uint64_t sat_vb) const {
+    Rust::CUInt64ResultWrapper res = Rust::tw_bitcoin_calculate_transaction_fee(encoded.data(), encoded.size(), sat_vb);
+    if (!res.isOk()) {
+        return std::nullopt;
+    }
+    return res.unwrap().value;
 }
 
 Proto::Transaction Transaction::proto() const {
