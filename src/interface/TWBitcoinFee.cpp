@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBitcoinFeeCalculator.h>
+#include <TrustWalletCore/TWBitcoinFee.h>
 #include "Bitcoin/Transaction.h"
 #include "Data.h"
 
@@ -12,9 +12,14 @@ using namespace TW;
 
 namespace internal {
 
-std::optional<uint64_t> TWBitcoinCalculateFee(TWData *_Nonnull data, uint64_t satVb) {
+int64_t TWBitcoinFeeCalculateFee(TWData *_Nonnull data, uint64_t satVb) {
     auto* encoded = reinterpret_cast<const TW::Data*>(data);
-	return TW::Bitcoin::Transaction::calculateFee(*encoded, satVb);
+	auto fee = TW::Bitcoin::Transaction::calculateFee(*encoded, satVb);
+    if (!fee) {
+        return 0;
+    }
+
+    return fee.value();
 }
 
-}
+}   
