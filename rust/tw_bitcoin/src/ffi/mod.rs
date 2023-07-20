@@ -40,14 +40,12 @@ pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
     sat_vb: u64,
 ) -> CUInt64Result {
     let Some(mut encoded) = CByteArrayRef::new(input, input_len).as_slice() else {
-        // TODO: Should be enum.
         return CUInt64Result::error(1);
     };
 
     // Decode transaction.
     let Ok(tx) = Transaction::consensus_decode(&mut encoded) else {
-        // TODO: Should be enum.
-        return CUInt64Result::error(3);
+        return CUInt64Result::error(1);
     };
 
     // Calculate fee.
@@ -226,9 +224,6 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             script: {
                 // If `scriptSig` is empty, then the Witness is being used.
                 if input.script_sig.is_empty() {
-                    // TODO: `to_vec` returns a `Vec<Vec<u8>>` representing
-                    // individual items. Is it appropriate to simply merge
-                    // everything here?
                     let witness: Vec<u8> = input.witness.to_vec().into_iter().flatten().collect();
                     Cow::from(witness)
                 } else {
