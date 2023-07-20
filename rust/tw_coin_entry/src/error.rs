@@ -28,6 +28,7 @@ pub type AddressResult<T> = Result<T, AddressError>;
 
 #[derive(Debug)]
 pub enum AddressError {
+    UnknownCoinType,
     MissingPrefix,
     FromHexError,
     PublicKeyTypeMismatch,

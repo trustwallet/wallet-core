@@ -12,6 +12,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
 /// Represents a public key that can be used to verify signatures and messages.
+#[derive(Clone)]
 pub enum PublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),

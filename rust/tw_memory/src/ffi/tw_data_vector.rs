@@ -48,7 +48,7 @@ pub unsafe extern "C" fn tw_data_vector_create() -> *mut TWDataVector {
 
 /// Delete/Deallocate a Vector of Data
 ///
-/// \param dataVector A non-null Vector of data
+/// \param data_vector A non-null Vector of data
 #[no_mangle]
 pub unsafe extern "C" fn tw_data_vector_delete(data_vector: *mut TWDataVector) {
     // Take the ownership back to rust and drop the owner.
@@ -57,7 +57,7 @@ pub unsafe extern "C" fn tw_data_vector_delete(data_vector: *mut TWDataVector) {
 
 /// Add an element to a Vector of Data. Element is cloned
 ///
-/// \param dataVector A non-null Vector of data
+/// \param data_vector A non-null Vector of data
 /// \param data A non-null valid block of data
 /// \note data input parameter must be deleted on its own
 #[no_mangle]

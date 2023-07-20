@@ -24,7 +24,9 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<impl 
     }
 }
 
-pub fn coin_dispatcher(coin: CoinType) -> RegistryResult<impl CoinEntryExt> {
+pub fn coin_dispatcher(coin: CoinType) -> RegistryResult<(CoinRegistryContext, impl CoinEntryExt)> {
     let item = get_coin_item(coin)?;
-    blockchain_dispatcher(item.blockchain)
+    let coin_entry = blockchain_dispatcher(item.blockchain)?;
+    let coin_context = CoinRegistryContext::with_coin_item(item);
+    Ok((coin_context, coin_entry))
 }

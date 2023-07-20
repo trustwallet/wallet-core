@@ -13,39 +13,50 @@
 
 namespace TW::Rust {
 
+inline std::shared_ptr<TWAnyAddress> wrapTWAnyAddress(TWAnyAddress* anyAddress) {
+    return std::shared_ptr<TWAnyAddress>(anyAddress, tw_any_address_delete);
+}
+
+inline std::shared_ptr<TWPublicKey> wrapTWPublicKey(TWPublicKey* publicKey) {
+    return std::shared_ptr<TWPublicKey>(publicKey, tw_public_key_delete);
+}
+
 struct TWDataVectorWrapper {
     /// Implicit constructor.
     TWDataVectorWrapper(const std::vector<Data>& vec) {
-        ptr = tw_data_vector_create();
+        ptr = std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete);
 
         for (const auto& item : vec) {
             auto* itemData = tw_data_create_with_bytes(item.data(), item.size());
-            Rust::tw_data_vector_add(ptr, itemData);
+            Rust::tw_data_vector_add(ptr.get(), itemData);
             Rust::tw_data_delete(itemData);
         }
     }
 
-    ~TWDataVectorWrapper() {
-        Rust::tw_data_vector_delete(ptr);
+    ~TWDataVectorWrapper() = default;
+
+    TWDataVector* get() const {
+        return ptr.get();
     }
 
-    TWDataVector* ptr;
+    std::shared_ptr<TWDataVector> ptr;
 };
 
 struct TWDataWrapper {
     /// Implicit constructor.
     TWDataWrapper(const Data& bytes) {
-        ptr = tw_data_create_with_bytes(bytes.data(), bytes.size());
+        auto* dataRaw = tw_data_create_with_bytes(bytes.data(), bytes.size());
+        ptr = std::shared_ptr<TWData>(dataRaw, tw_data_delete);
     }
 
     /// Implicit constructor.
-    TWDataWrapper(TWData *ptr): ptr(ptr) {
+    TWDataWrapper(TWData *ptr): ptr(std::shared_ptr<TWData>(ptr, tw_data_delete)) {
     }
 
-    ~TWDataWrapper() {
-        if (ptr) {
-            Rust::tw_data_delete(ptr);
-        }
+    ~TWDataWrapper() = default;
+
+    TWData* get() const {
+        return ptr.get();
     }
 
     Data toDataOrDefault() const {
@@ -53,28 +64,29 @@ struct TWDataWrapper {
             return {};
         }
 
-        auto* bytes = tw_data_bytes(ptr);
-        Data out(bytes, bytes + tw_data_size(ptr));
+        auto* bytes = tw_data_bytes(ptr.get());
+        Data out(bytes, bytes + tw_data_size(ptr.get()));
         return out;
     }
 
-    TWData* ptr = nullptr;
+    std::shared_ptr<TWData> ptr;
 };
 
 struct TWStringWrapper {
     /// Implicit constructor.
     TWStringWrapper(const std::string& string) {
-        ptr = tw_string_create_with_utf8_bytes(string.c_str());
+        auto* stringRaw = tw_string_create_with_utf8_bytes(string.c_str());
+        ptr = std::shared_ptr<TWString>(stringRaw, tw_string_delete);
     }
 
     /// Implicit constructor.
-    TWStringWrapper(TWString *ptr): ptr(ptr) {
+    TWStringWrapper(TWString *ptr): ptr(std::shared_ptr<TWString>(ptr, tw_string_delete)) {
     }
 
-    ~TWStringWrapper() {
-        if (ptr) {
-            Rust::tw_string_delete(ptr);
-        }
+    ~TWStringWrapper() = default;
+
+    TWString* get() const {
+        return ptr.get();
     }
 
     std::string toStringOrDefault() const {
@@ -82,11 +94,11 @@ struct TWStringWrapper {
             return {};
         }
 
-        auto* bytes = tw_string_utf8_bytes(ptr);
+        auto* bytes = tw_string_utf8_bytes(ptr.get());
         return {bytes};
     }
 
-    TWString* ptr = nullptr;
+    std::shared_ptr<TWString> ptr;
 };
 
 struct CByteArrayWrapper {

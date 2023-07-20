@@ -16,7 +16,7 @@ use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::ecdsa::secp256k1;
+use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -46,13 +46,14 @@ impl CoinEntry for EthereumEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        public_key: PublicKeyBytes,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        let public_key = secp256k1::PublicKey::try_from(public_key.as_slice())
-            .map_err(|_| AddressError::PublicKeyTypeMismatch)?;
-        Ok(Address::with_secp256k1_pubkey(&public_key))
+        let public_key = public_key
+            .to_secp256k1()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        Ok(Address::with_secp256k1_pubkey(public_key))
     }
 
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {

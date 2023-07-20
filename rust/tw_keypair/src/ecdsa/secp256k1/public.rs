@@ -14,6 +14,7 @@ use tw_hash::{Hash, H256, H264, H512, H520};
 use tw_misc::traits::ToBytesVec;
 
 /// Represents a `secp256k1` public key.
+#[derive(Clone)]
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }

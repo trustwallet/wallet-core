@@ -22,7 +22,7 @@ use tw_misc::try_or_else;
 /// \param amount transaction amount in string
 /// \param asset optional asset name, like "BNB"
 /// \param memo optional memo
-/// \param chainId optional chainId to override default
+/// \param chain_id optional chainId to override default
 /// \return serialized data of the SigningInput proto object.
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_compiler_build_input(
@@ -63,7 +63,7 @@ pub unsafe extern "C" fn tw_transaction_compiler_build_input(
 /// We provide a default `PreSigningOutput` in TransactionCompiler.proto.
 /// For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
 /// \param coin coin type.
-/// \param txInputData The serialized data of a signing input
+/// \param input The serialized data of a signing input
 /// \return serialized data of a proto object `PreSigningOutput` includes hash.
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_compiler_pre_image_hashes(
@@ -83,9 +83,9 @@ pub unsafe extern "C" fn tw_transaction_compiler_pre_image_hashes(
 /// returned by `TWTransactionCompilerPreImageHashes`, in the same order. The publicKeyHash attached
 /// to the hashes enable identifying the private key needed for signing the hash.
 /// \param coin coin type.
-/// \param txInputData The serialized data of a signing input.
+/// \param input The serialized data of a signing input.
 /// \param signatures signatures to compile, using `TWDataVector`.
-/// \param publicKeys public keys for signers to match private keys, using `TWDataVector`.
+/// \param public_keys public keys for signers to match private keys, using `TWDataVector`.
 /// \return serialized data of a proto object `SigningOutput`.
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_compiler_compile(

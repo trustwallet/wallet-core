@@ -64,7 +64,7 @@ pub unsafe extern "C" fn tw_string_create_with_utf8_bytes(bytes: *const c_char) 
 }
 
 /// Returns the raw pointer to the string's UTF8 bytes (null-terminated).
-/// \param string a TWString pointer.
+/// \param str a TWString pointer.
 #[no_mangle]
 pub unsafe extern "C" fn tw_string_utf8_bytes(str: *mut TWString) -> *const c_char {
     TWString::from_ptr_as_ref(str)
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn tw_string_utf8_bytes(str: *mut TWString) -> *const c_ch
 }
 
 /// Deletes a string created with a `TWStringCreate*` method and frees the memory.
-/// \param string a `TWString` pointer.
+/// \param str a `TWString` pointer.
 #[no_mangle]
 pub unsafe extern "C" fn tw_string_delete(str: *mut TWString) {
     let _ = TWString::from_ptr(str);

@@ -12,6 +12,7 @@ use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::Prefix;
 use std::fmt;
+use tw_keypair::tw::PublicKey;
 use tw_proto::{MessageRead, MessageWrite};
 
 pub use tw_proto::{ProtoError, ProtoResult};
@@ -47,7 +48,7 @@ pub trait CoinEntry {
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKeyBytes,
+        public_key: PublicKey,
         derivation: Derivation,
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address>;

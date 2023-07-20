@@ -14,7 +14,6 @@ use tw_misc::try_or_else;
 /// Signs a transaction specified by the signing input and coin type.
 ///
 /// \param input The serialized data of a signing input (e.g. TW.Bitcoin.Proto.SigningInput).
-/// \param input_len The length of the signing input.
 /// \param coin The given coin type to sign the transaction for.
 /// \return The serialized data of a `SigningOutput` proto object. (e.g. TW.Bitcoin.Proto.SigningOutput).
 #[no_mangle]

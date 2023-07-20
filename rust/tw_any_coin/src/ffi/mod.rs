@@ -4,5 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod any_signer;
-pub mod transaction_compiler;
+pub mod tw_any_address;
+pub mod tw_any_signer;
+pub mod tw_transaction_compiler;

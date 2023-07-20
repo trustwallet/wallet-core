@@ -8,14 +8,13 @@ use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
-use tw_coin_registry::{coin_dispatcher, CoinRegistryContext, CoinType};
+use tw_coin_registry::{coin_dispatcher, CoinType};
 
 pub struct TransactionCompiler;
 
 impl TransactionCompiler {
     pub fn build_input(coin: CoinType, args: BuildSigningInputArgs) -> SigningResult<Vec<u8>> {
-        let ctx = CoinRegistryContext::new(coin)?;
-        let entry = coin_dispatcher(coin)?;
+        let (ctx, entry) = coin_dispatcher(coin)?;
         match entry.build_signing_input(&ctx, args) {
             Ok(Some(result)) => Ok(result),
             // The chain doesn't support `build_signing_input`.
@@ -25,8 +24,7 @@ impl TransactionCompiler {
     }
 
     pub fn preimage_hashes(coin: CoinType, input: &[u8]) -> SigningResult<Vec<u8>> {
-        let ctx = CoinRegistryContext::new(coin)?;
-        let entry = coin_dispatcher(coin)?;
+        let (ctx, entry) = coin_dispatcher(coin)?;
         entry
             .preimage_hashes(&ctx, input)
             .map_err(SigningError::from)
@@ -38,8 +36,7 @@ impl TransactionCompiler {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> SigningResult<Vec<u8>> {
-        let ctx = CoinRegistryContext::new(coin)?;
-        let entry = coin_dispatcher(coin)?;
+        let (ctx, entry) = coin_dispatcher(coin)?;
         entry
             .compile(&ctx, input, signatures, public_keys)
             .map_err(SigningError::from)

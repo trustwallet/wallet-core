@@ -13,7 +13,7 @@ use crate::modules::input_builder::{BuildSigningInputArgs, InputBuilder};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::AddressPrefix;
-use tw_keypair::tw::PrivateKey;
+use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_proto::{deserialize, serialize, ProtoResult};
 
 /// The [`CoinEntry`] trait extension.
@@ -23,12 +23,20 @@ pub trait CoinEntryExt {
         coin: &dyn CoinContext,
         address: &str,
         prefix: Option<AddressPrefix>,
-    ) -> bool;
+    ) -> AddressResult<()>;
+
+    /// Validates and normalizes the given `address`.
+    fn normalize_address(
+        &self,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<AddressPrefix>,
+    ) -> AddressResult<String>;
 
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKeyBytes,
+        public_key: PublicKey,
         derivation: Derivation,
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<String>;
@@ -89,18 +97,27 @@ where
         coin: &dyn CoinContext,
         address: &str,
         prefix: Option<AddressPrefix>,
-    ) -> bool {
-        let Ok(prefix) = prefix.map(T::AddressPrefix::try_from).transpose() else {
-            return false;
-        };
+    ) -> AddressResult<()> {
+        let prefix = prefix.map(T::AddressPrefix::try_from).transpose()?;
+        self.parse_address(coin, address, prefix).map(|_| ())
+    }
 
-        self.parse_address(coin, address, prefix).is_ok()
+    fn normalize_address(
+        &self,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<AddressPrefix>,
+    ) -> AddressResult<String> {
+        let prefix = prefix.map(T::AddressPrefix::try_from).transpose()?;
+        // Parse the address and display it.
+        // Please note that `Self::Address::to_string()` returns a normalize address.
+        <Self as CoinEntry>::parse_address(self, coin, address, prefix).map(|addr| addr.to_string())
     }
 
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
-        public_key: PublicKeyBytes,
+        public_key: PublicKey,
         derivation: Derivation,
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<String> {

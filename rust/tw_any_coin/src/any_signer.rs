@@ -6,14 +6,13 @@
 
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::{SigningError, SigningResult};
-use tw_coin_registry::{coin_dispatcher, CoinRegistryContext, CoinType};
+use tw_coin_registry::{coin_dispatcher, CoinType};
 
 pub struct AnySigner;
 
 impl AnySigner {
     pub fn sign(input: &[u8], coin: CoinType) -> SigningResult<Vec<u8>> {
-        let ctx = CoinRegistryContext::new(coin)?;
-        let entry = coin_dispatcher(coin)?;
+        let (ctx, entry) = coin_dispatcher(coin)?;
         entry.sign(&ctx, input).map_err(SigningError::from)
     }
 }

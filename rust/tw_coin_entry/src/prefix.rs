@@ -6,6 +6,7 @@
 
 use crate::error::AddressError;
 
+#[derive(Clone)]
 pub enum AddressPrefix {
     Hrp(String),
 }
