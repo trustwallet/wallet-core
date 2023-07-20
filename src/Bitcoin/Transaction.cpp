@@ -8,11 +8,11 @@
 #include "SegwitAddress.h"
 #include "SignatureVersion.h"
 #include "SigHashType.h"
-#include "HexCoding.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include "../BinaryCoding.h"
 
-#include <boost/operators.hpp>
 #include <cassert>
 
 namespace TW::Bitcoin {
