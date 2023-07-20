@@ -25,6 +25,16 @@ where
     }
 }
 
+pub trait DecodeHex {
+    fn decode_hex(&self) -> Result<Vec<u8>, FromHexError>;
+}
+
+impl<'a> DecodeHex for &'a str {
+    fn decode_hex(&self) -> Result<Vec<u8>, FromHexError> {
+        decode(self)
+    }
+}
+
 pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
     let hex_string = data.trim_start_matches("0x");
     hex::decode(hex_string)

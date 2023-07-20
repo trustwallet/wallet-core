@@ -37,9 +37,8 @@ impl Address {
 
         let pubkey_bytes = pubkey.uncompressed_without_prefix();
         let hash = keccak256(pubkey_bytes.as_slice());
-
-        // TODO
         assert_eq!(hash.len(), 32);
+
         let bytes = H160::try_from(&hash[ADDRESS_HASH_RANGE]).expect("Expected 20 byte array");
 
         Address { bytes }
@@ -89,7 +88,6 @@ impl CoinAddress for Address {
 impl FromStr for Address {
     type Err = AddressError;
 
-    /// TODO validate checksum. Currently, in C++ we don't validate it.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let addr_hex = s.strip_prefix("0x").ok_or(AddressError::MissingPrefix)?;
         let addr_hash = H160::from_str(addr_hex).map_err(|_| AddressError::FromHexError)?;

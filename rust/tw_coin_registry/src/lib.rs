@@ -4,17 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod blockchain_type;
-mod coin_context;
-mod coin_type;
-mod error;
-mod registry;
+pub mod blockchain_type;
+pub mod coin_context;
+pub mod coin_type;
+pub mod error;
+pub mod registry;
 
-pub use blockchain_type::BlockchainType;
-pub use coin_context::CoinRegistryContext;
-pub use coin_type::CoinType;
-pub use error::{RegistryError, RegistryResult};
-pub use registry::{get_coin_item, CoinItem};
+use crate::blockchain_type::BlockchainType;
+use crate::coin_context::CoinRegistryContext;
+use crate::coin_type::CoinType;
+use crate::error::{RegistryError, RegistryResult};
+use crate::registry::get_coin_item;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<impl CoinEntryExt> {

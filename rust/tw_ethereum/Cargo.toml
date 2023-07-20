@@ -17,4 +17,4 @@ tw_proto = { path = "../tw_proto" }
 tw_number = { path = "../tw_number" }
 
 [dev-dependencies]
-tw_coin_entry = { path = "../tw_coin_entry", features = ["test-helpers"] }
+tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }

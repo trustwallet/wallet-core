@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
 use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
-use tw_coin_entry::test_helpers::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_encoding::hex;
 use tw_ethereum::entry::EthereumEntry;
 use tw_keypair::ecdsa::secp256k1;

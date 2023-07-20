@@ -38,11 +38,6 @@ pub trait UnsignedTransaction: TransactionCommon {
 pub trait SignedTransaction: TransactionCommon {
     type Signature: EthSignature;
 
-    fn hash(&self) -> H256 {
-        let hash = keccak256(&self.encode());
-        H256::try_from(hash.as_slice()).expect("keccak256 returns 32 bytes")
-    }
-
     fn encode(&self) -> Vec<u8>;
 
     fn signature(&self) -> &Self::Signature;
@@ -91,8 +86,6 @@ where
 }
 
 pub trait SignedTransactionBox: TransactionCommon {
-    fn hash(&self) -> H256;
-
     fn encode(&self) -> Vec<u8>;
 
     fn signature(&self) -> &dyn EthSignature;
@@ -102,10 +95,6 @@ impl<T> SignedTransactionBox for T
 where
     T: SignedTransaction,
 {
-    fn hash(&self) -> H256 {
-        <Self as SignedTransaction>::hash(self)
-    }
-
     fn encode(&self) -> Vec<u8> {
         <Self as SignedTransaction>::encode(self)
     }

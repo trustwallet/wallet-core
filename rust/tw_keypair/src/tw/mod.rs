@@ -53,12 +53,10 @@ pub enum PublicKeyType {
     Secp256k1 = 0,
     #[serde(rename = "secp256k1Extended")]
     Secp256k1Extended = 1,
-    /// TODO rename to Nist256p1.
     #[serde(rename = "nist256p1")]
-    Nist256k1 = 2,
-    /// TODO rename to Nist256p1.
-    #[serde(rename = "nist256p1")]
-    Nist256k1Extended = 3,
+    Nist256p1 = 2,
+    #[serde(rename = "nist256p1Extended")]
+    Nist256p1Extended = 3,
     #[serde(rename = "ed25519")]
     Ed25519 = 4,
     #[serde(rename = "ed25519Blake2b")]
@@ -79,8 +77,8 @@ impl PublicKeyType {
         match ty {
             0 => Some(PublicKeyType::Secp256k1),
             1 => Some(PublicKeyType::Secp256k1Extended),
-            2 => Some(PublicKeyType::Nist256k1),
-            3 => Some(PublicKeyType::Nist256k1Extended),
+            2 => Some(PublicKeyType::Nist256p1),
+            3 => Some(PublicKeyType::Nist256p1Extended),
             4 => Some(PublicKeyType::Ed25519),
             5 => Some(PublicKeyType::Ed25519Blake2b),
             6 => Some(PublicKeyType::Curve25519Waves),
@@ -117,8 +115,8 @@ mod tests {
         let tests = [
             (0, Some(PublicKeyType::Secp256k1)),
             (1, Some(PublicKeyType::Secp256k1Extended)),
-            (2, Some(PublicKeyType::Nist256k1)),
-            (3, Some(PublicKeyType::Nist256k1Extended)),
+            (2, Some(PublicKeyType::Nist256p1)),
+            (3, Some(PublicKeyType::Nist256p1Extended)),
             (4, Some(PublicKeyType::Ed25519)),
             (5, Some(PublicKeyType::Ed25519Blake2b)),
             (6, Some(PublicKeyType::Curve25519Waves)),

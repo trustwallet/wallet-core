@@ -51,6 +51,9 @@ pub mod starkex;
 pub mod traits;
 pub mod tw;
 
+#[cfg(feature = "test-utils")]
+pub mod test_utils;
+
 pub type KeyPairResult<T> = Result<T, KeyPairError>;
 
 #[derive(Debug)]

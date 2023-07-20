@@ -14,7 +14,8 @@ use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::prefix::AddressPrefix;
-use tw_coin_registry::{coin_dispatcher, CoinType};
+use tw_coin_registry::coin_dispatcher;
+use tw_coin_registry::coin_type::CoinType;
 use tw_keypair::tw::PublicKey;
 use tw_misc::try_or_false;
 

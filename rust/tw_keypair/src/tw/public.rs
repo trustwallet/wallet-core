@@ -39,11 +39,11 @@ impl PublicKey {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Secp256k1Extended(pubkey))
             },
-            PublicKeyType::Nist256k1 if nist256p1::PublicKey::COMPRESSED == bytes.len() => {
+            PublicKeyType::Nist256p1 if nist256p1::PublicKey::COMPRESSED == bytes.len() => {
                 let pubkey = nist256p1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Nist256p1(pubkey))
             },
-            PublicKeyType::Nist256k1Extended
+            PublicKeyType::Nist256p1Extended
                 if nist256p1::PublicKey::UNCOMPRESSED == bytes.len() =>
             {
                 let pubkey = nist256p1::PublicKey::try_from(bytes.as_slice())?;

@@ -8,7 +8,8 @@ use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
-use tw_coin_registry::{coin_dispatcher, CoinType};
+use tw_coin_registry::coin_dispatcher;
+use tw_coin_registry::coin_type::CoinType;
 
 pub struct TransactionCompiler;
 

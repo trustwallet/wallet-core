@@ -3,6 +3,9 @@ name = "tw_keypair"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+test-utils = []
+
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
 lazy_static = "1.4.0"

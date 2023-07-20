@@ -26,13 +26,21 @@ lazy_static! {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CoinItem {
-    pub(crate) coin_id: CoinType,
-    pub(crate) blockchain: BlockchainType,
-    pub(crate) public_key_type: PublicKeyType,
+    pub coin_id: CoinType,
+    pub blockchain: BlockchainType,
+    pub public_key_type: PublicKeyType,
 }
 
 pub fn get_coin_item(coin: CoinType) -> RegistryResult<&'static CoinItem> {
     REGISTRY.get(&coin).ok_or(RegistryError::UnknownCoinType)
+}
+
+pub fn registry_iter() -> impl Iterator<Item = &'static CoinItem> {
+    REGISTRY.iter().map(|(_coin_type, item)| item)
+}
+
+pub fn supported_coin_items() -> impl Iterator<Item = &'static CoinItem> {
+    registry_iter().filter(|item| !matches!(item.blockchain, BlockchainType::Unsupported))
 }
 
 fn parse_registry_json() -> RegistryMap {

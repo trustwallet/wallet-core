@@ -1487,9 +1487,12 @@ version = "0.1.0"
 dependencies = [
  "tw_coin_entry",
  "tw_coin_registry",
+ "tw_encoding",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
+ "tw_number",
+ "tw_proto",
 ]
 
 [[package]]

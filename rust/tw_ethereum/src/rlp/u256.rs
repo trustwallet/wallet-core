@@ -7,7 +7,7 @@
 use rlp::{Encodable, RlpStream};
 use tw_number::U256;
 
-/// TODO implement `RlpEncode` for `U256` when Ethereum ABI is designed manually.
+/// TODO refactor this by implementing `RlpEncode` for `Address` at the next iteration.
 pub struct RlpU256(U256);
 
 impl From<U256> for RlpU256 {

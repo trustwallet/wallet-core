@@ -125,11 +125,11 @@ impl PrivateKey {
                 let privkey = self.to_secp256k1_privkey()?;
                 Ok(PublicKey::Secp256k1Extended(privkey.public()))
             },
-            PublicKeyType::Nist256k1 => {
+            PublicKeyType::Nist256p1 => {
                 let privkey = self.to_nist256p1_privkey()?;
                 Ok(PublicKey::Nist256p1(privkey.public()))
             },
-            PublicKeyType::Nist256k1Extended => {
+            PublicKeyType::Nist256p1Extended => {
                 let privkey = self.to_nist256p1_privkey()?;
                 Ok(PublicKey::Nist256p1Extended(privkey.public()))
             },

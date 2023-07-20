@@ -10,7 +10,7 @@ use serde::{Deserialize, Deserializer};
 use std::str::FromStr;
 
 /// Blockchain implementation type.
-/// TODO extend this enum.
+/// Extend this enum when adding new blockchains.
 #[derive(Copy, Clone, Debug)]
 pub enum BlockchainType {
     Ethereum,
