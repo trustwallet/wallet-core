@@ -11,14 +11,14 @@
 namespace TW::Bitcoin {
 
 TEST(TWBitcoinFee, P2pkhFee) {
-	auto satVb = 19;
+	auto satVb = 10;
     auto data = DATA("02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000");
 	auto fee = TWBitcoinFeeCalculateFee(data.get(), satVb);
 	ASSERT_EQ(fee, 191 * satVb);
 }
 
 TEST(TWBitcoinFee, P2wpkhFee) {
-	auto satVb = 19;
+	auto satVb = 12;
     auto data = DATA("020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000");
 	auto fee = TWBitcoinFeeCalculateFee(data.get(), satVb);
 	ASSERT_EQ(fee, 189 * satVb);

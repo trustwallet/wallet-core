@@ -10,7 +10,7 @@
 
 uint64_t TWBitcoinFeeCalculateFee(TWData* _Nonnull data, uint64_t satVb) {
     auto* encoded = reinterpret_cast<const TW::Data*>(data);
-	auto fee = TW::Bitcoin::Transaction::calculateFee(*encoded, satVb);
+    auto fee = TW::Bitcoin::Transaction::calculateFee(*encoded, satVb);
     if (!fee) {
         return 0;
     }
