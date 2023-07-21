@@ -4,11 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::Address;
-use crate::modules::compiler::Compiler;
-use crate::modules::input_builder::EthInputBuilder;
-use crate::modules::json_signer::EthJsonSigner;
-use crate::modules::signer::Signer;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -16,6 +11,11 @@ use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
+use tw_evm::address::Address;
+use tw_evm::modules::compiler::Compiler;
+use tw_evm::modules::input_builder::EthInputBuilder;
+use tw_evm::modules::json_signer::EthJsonSigner;
+use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;

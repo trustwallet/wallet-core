@@ -1549,6 +1549,18 @@ dependencies = [
 name = "tw_ethereum"
 version = "0.1.0"
 dependencies = [
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_evm",
+ "tw_keypair",
+ "tw_number",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_evm"
+version = "0.1.0"
+dependencies = [
  "ethabi",
  "lazy_static",
  "rlp",
