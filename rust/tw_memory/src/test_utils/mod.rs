@@ -5,5 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod tw_data_helper;
+pub mod tw_data_vector_helper;
 pub mod tw_string_helper;
 pub mod tw_wrapper;
