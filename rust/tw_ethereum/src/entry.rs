@@ -82,6 +82,10 @@ impl CoinEntry for EthereumEntry {
         Some(EthJsonSigner)
     }
 
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        None
+    }
+
     fn signing_input_builder(&self) -> Option<Self::InputBuilder> {
         Some(EthInputBuilder)
     }
