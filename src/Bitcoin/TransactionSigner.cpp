@@ -45,6 +45,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             auto& protoUtxo = *proto.add_utxo();
             protoUtxo.set_amount(utxo.amount);
             protoUtxo.set_script(utxo.script.bytes.data(), utxo.script.bytes.size());
+            protoUtxo.set_spendingscript(utxo.spendingScript.bytes.data(), utxo.spendingScript.bytes.size());
             protoUtxo.set_variant(utxo.variant);
 
             // For each input, which track whether we need a scriptSig or a witness for claiming.
@@ -83,6 +84,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             out.index = protoInput.previousoutput().index();
             out.sequence = protoInput.previousoutput().sequence();
 
+            // Determine whether a scriptSig should be set.
             Script script;
             auto doSetScript = isScript[counter];
             std::vector<byte> claimScript(protoInput.script().begin(), protoInput.script().end());
@@ -92,6 +94,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
                 script = Script();
             }
 
+            // Determine whether a witness should be set.
             auto input = TW::Bitcoin::TransactionInput(out, script, protoInput.sequence());
             if (!doSetScript) {
                 input.scriptWitness.push_back(claimScript);

@@ -26,6 +26,9 @@ public:
     // Variant
     Proto::TransactionVariant variant;
 
+    // Spending script for P2TR script-path
+    Script spendingScript;
+
     // Amount of the UTXO
     Amount amount;
 
@@ -36,6 +39,7 @@ public:
         : outPoint(utxo.out_point())
         , script(utxo.script().begin(), utxo.script().end())
         , variant(utxo.variant())
+        , spendingScript(utxo.spendingscript().begin(), utxo.spendingscript().end())
         , amount(utxo.amount())
         {}
 
@@ -43,6 +47,8 @@ public:
         auto utxo = Proto::UnspentTransaction();
         *utxo.mutable_out_point() = outPoint.proto();
         utxo.set_script(std::string(script.bytes.begin(), script.bytes.end()));
+        utxo.set_spendingscript(std::string(spendingScript.bytes.begin(), spendingScript.bytes.end()));
+        utxo.set_variant(variant);
         utxo.set_amount(amount);
         return utxo;
     }
