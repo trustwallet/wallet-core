@@ -65,12 +65,16 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
         // no segwit, virtual size is defined as non-segwit size
         vSize = sizeNonSegwit;
     } else {
-        Data dataWitness;
-        transaction.encodeWitness(dataWitness);
-        int64_t witnessSize = 2 + dataWitness.size();
-        // compute virtual size:  (smaller) non-segwit + 1/4 of the diff (witness-only)
-        // (in other way: 3/4 of (smaller) non-segwit + 1/4 of segwit size)
-        vSize = sizeNonSegwit + witnessSize/4 + (witnessSize % 4 != 0);
+        for (auto entry: transaction.inputs) {
+            for (auto witness: entry.scriptWitness) {
+                Data dataWitness = Data(witness);
+                transaction.encodeWitness(dataWitness);
+                int64_t witnessSize = 2 + dataWitness.size();
+                // compute virtual size:  (smaller) non-segwit + 1/4 of the diff (witness-only)
+                // (in other way: 3/4 of (smaller) non-segwit + 1/4 of segwit size)
+                vSize += sizeNonSegwit + witnessSize/4 + (witnessSize % 4 != 0);
+            }
+        }
     }
     uint64_t fee = input.byteFee * vSize;
 

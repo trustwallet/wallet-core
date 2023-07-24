@@ -33,8 +33,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         plan = TransactionBuilder::plan(input);
     }
 
-    auto callRust = input.isItBrcOperation;
-    if (true) {
+    if (&input.isItBrcOperation) {
         Proto::SigningInput proto;
         for (auto key: input.privateKeys) {
             proto.add_private_key(key.bytes.data(), key.bytes.size());
