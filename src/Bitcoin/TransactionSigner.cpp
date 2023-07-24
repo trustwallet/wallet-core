@@ -40,11 +40,19 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             proto.add_private_key(key.bytes.data(), key.bytes.size());
         }
 
+        std::vector<bool> is_script;
         for (auto utxo: input.utxos) {
             auto& protoUtxo = *proto.add_utxo();
             protoUtxo.set_amount(utxo.amount);
             protoUtxo.set_script(utxo.script.bytes.data(), utxo.script.bytes.size());
             protoUtxo.set_variant(utxo.variant);
+
+            // For each input, which track whether we need a scriptSig or a witness for claiming.
+            if (utxo.variant == Proto::TransactionVariant::P2PKH) {
+                is_script.push_back(true);
+            } else {
+                is_script.push_back(false);
+            }
 
             Proto::OutPoint out;
             out.set_index(utxo.outPoint.index);
@@ -64,6 +72,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         tx._version = protoTx.version();
         tx.lockTime = protoTx.locktime();
 
+        int counter = 0;
         for (auto protoInput: protoTx.inputs()) {
             TW::Data vec = parse_hex(protoInput.previousoutput().hash());
             std::array<byte, 32> hash;
@@ -74,14 +83,29 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             out.index = protoInput.previousoutput().index();
             out.sequence = protoInput.previousoutput().sequence();
 
-            auto script = Script(parse_hex(protoInput.script()));
+            Script script;
+            auto doSetScript = is_script[0];
+            std::vector<byte> claimScript(protoInput.script().begin(), protoInput.script().end());
+            if (doSetScript) {
+                script = Script(claimScript);
+            } else {
+                script = Script();
+            }
+
             auto input = TW::Bitcoin::TransactionInput(out, script, protoInput.sequence());
+
+            if (!doSetScript) {
+                input.encodeWitness(claimScript);
+            }
+
             tx.inputs.push_back(input);
+
+            counter++;
         }
 
         for (auto protoOutput: protoTx.outputs()) {
-            auto script = Script(parse_hex(protoOutput.script()));
-            auto output = TransactionOutput(protoOutput.value(), script);
+            std::vector<byte> script(protoOutput.script().begin(), protoOutput.script().end());
+            auto output = TransactionOutput(protoOutput.value(), Script(script));
             tx.outputs.push_back(output);
         }
 
