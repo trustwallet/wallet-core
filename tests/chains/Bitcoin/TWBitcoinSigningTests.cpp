@@ -165,7 +165,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     input.set_is_it_brc_operation(true);
     input.add_private_key(key.bytes.data(), key.bytes.size());
     input.set_coin_type(TWCoinTypeBitcoin);
-    input.set_amount(fullAmount - minerFee);
+    input.set_amount(fullAmount);
     input.set_byte_fee(19);
 
     auto& utxo = *input.add_utxo();
@@ -179,6 +179,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     *utxo.mutable_out_point() = out;
 
     Proto::TransactionPlan plan;
+
     auto& utxo1 = *plan.add_utxos();
     utxo1.set_amount(brcInscribeAmount);
     utxo1.set_script(outputInscribe.script());
@@ -206,6 +207,8 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
 }
 
 TEST(BitcoinSigning, SignBRC20TransferReveal) {
+    auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
+
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto dustSatoshi = 546;
     auto brcInscribeAmount = 7000;
@@ -221,6 +224,8 @@ TEST(BitcoinSigning, SignBRC20TransferReveal) {
     input.set_is_it_brc_operation(true);
     input.add_private_key(key.bytes.data(), key.bytes.size());
     input.set_coin_type(TWCoinTypeBitcoin);
+    input.set_amount(brcInscribeAmount);
+    input.set_byte_fee(49);
 
     auto& utxo = *input.add_utxo();
     utxo.set_amount(brcInscribeAmount);
@@ -238,10 +243,14 @@ TEST(BitcoinSigning, SignBRC20TransferReveal) {
     utxo1.set_amount(dustSatoshi);
     utxo1.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
     utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+    *utxo1.mutable_out_point() = emptyTxOutPoint.proto();
 
     *input.mutable_plan() = plan;
-    Proto::SigningOutput output;
 
+    ANY_PLAN(input, plan, TWCoinTypeBitcoin);
+    ASSERT_EQ(plan.fee(), 6419);
+
+    Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeBitcoin);
     auto result = hex(output.encoded());
     ASSERT_EQ(result.substr(0, 164), "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340");
@@ -322,7 +331,6 @@ TEST(BitcoinSigning, SignBRC20TransferInscription) {
 
 TEST(BitcoinSigning, SignNftInscriptionCommit) {
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
-
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto fullAmount = 32400;
     auto minerFee = 1300;
@@ -372,6 +380,7 @@ TEST(BitcoinSigning, SignNftInscriptionCommit) {
 
 TEST(BitcoinSigning, SignNftInscriptionReveal) {
     // Successfully broadcasted: https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
+    auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
 
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto inscribeAmount = 31100;
@@ -395,6 +404,8 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     input.set_is_it_brc_operation(true);
     input.add_private_key(key.bytes.data(), key.bytes.size());
     input.set_coin_type(TWCoinTypeBitcoin);
+    input.set_amount(inscribeAmount);
+    input.set_byte_fee(15);
 
     auto& utxo = *input.add_utxo();
     utxo.set_amount(inscribeAmount);
@@ -412,10 +423,14 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     utxo1.set_amount(dustSatoshi);
     utxo1.set_script(outputP2wpkh.bytes.data(), outputP2wpkh.bytes.size());
     utxo1.set_variant(Proto::TransactionVariant::P2WPKH);
+    *utxo1.mutable_out_point() = emptyTxOutPoint.proto();
 
     *input.mutable_plan() = plan;
-    Proto::SigningOutput output;
 
+    ANY_PLAN(input, plan, TWCoinTypeBitcoin);
+    ASSERT_EQ(plan.fee(), 30285);
+
+    Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeBitcoin);
     auto result = hex(output.encoded());
     ASSERT_EQ(output.transaction_id(), "173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac");
