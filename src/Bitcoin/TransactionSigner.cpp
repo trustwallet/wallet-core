@@ -34,7 +34,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     }
 
     auto callRust = input.isItBrcOperation;
-    if (callRust) {
+    if (true) {
         Proto::SigningInput proto;
         for (auto key: input.privateKeys) {
             proto.add_private_key(key.bytes.data(), key.bytes.size());
@@ -58,7 +58,34 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         auto serializedInput = data(proto.SerializeAsString());
         Rust::CByteArrayWrapper res = Rust::tw_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
         output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
-        return output.transaction().;
+        auto protoTx = output.transaction();
+
+        auto tx = Transaction();
+        tx._version = protoTx.version();
+        tx.lockTime = protoTx.locktime();
+
+        for (auto protoInput: protoTx.inputs()) {
+            TW::Data vec = parse_hex(protoInput.previousoutput().hash());
+            std::array<byte, 32> hash;
+            std::copy(vec.begin(), vec.end(), hash.begin());
+
+            auto out = TW::Bitcoin::OutPoint();
+            out.hash = hash;
+            out.index = protoInput.previousoutput().index();
+            out.sequence = protoInput.previousoutput().sequence();
+
+            auto script = Script(parse_hex(protoInput.script()));
+            auto input = TW::Bitcoin::TransactionInput(out, script, protoInput.sequence());
+            tx.inputs.push_back(input);
+        }
+
+        for (auto protoOutput: protoTx.outputs()) {
+            auto script = Script(parse_hex(protoOutput.script()));
+            auto output = TransactionOutput(protoOutput.value(), script);
+            tx.outputs.push_back(output);
+        }
+
+        return Result<Transaction, Common::Proto::SigningError>(tx);
     }
 
     auto tx_result = TransactionBuilder::template build<Transaction>(plan, input);
