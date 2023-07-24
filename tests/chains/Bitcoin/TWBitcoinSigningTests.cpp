@@ -167,6 +167,7 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     input.set_coin_type(TWCoinTypeBitcoin);
     input.set_amount(fullAmount);
     input.set_byte_fee(19);
+    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
 
     auto& utxo = *input.add_utxo();
     utxo.set_amount(fullAmount);
