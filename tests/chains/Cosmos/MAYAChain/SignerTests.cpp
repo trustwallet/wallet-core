@@ -88,7 +88,7 @@ TEST(MAYAChainSigner, SignTx_Protobuf_7E480F) {
 
     EXPECT_EQ(hex(output.signature()), "5da43964a16c9e98b59f6ec622e000b2e3b3bae0fb8657a952de90810d50c0dc2a618851a0eb1fa925eadd4bbd69308a5963fd5c3874372973fee87f7b1eeb2e");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(MAYAChainSigner, SignTx_Json_Deprecated) {
