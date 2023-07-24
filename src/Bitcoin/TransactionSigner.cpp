@@ -34,11 +34,13 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     }
 
     if (&input.isItBrcOperation) {
+        // Convert to a protobuf structure, only use the necessary information.
         Proto::SigningInput proto;
         for (auto key: input.privateKeys) {
             proto.add_private_key(key.bytes.data(), key.bytes.size());
         }
 
+        // Process inputs.
         std::vector<bool> isScript;
         for (auto utxo: input.utxos) {
             auto& protoUtxo = *proto.add_utxo();
@@ -60,14 +62,17 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             *protoUtxo.mutable_out_point() = out;
         }
 
+        // Update with existing plan.
         *proto.mutable_plan() = plan.proto();
 
+        // Call Rust FFI.
         Proto::SigningOutput output;
         auto serializedInput = data(proto.SerializeAsString());
         Rust::CByteArrayWrapper res = Rust::tw_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
         output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
         auto protoTx = output.transaction();
 
+        // Convert protobuf structure to native.
         auto tx = Transaction();
         tx._version = protoTx.version();
         tx.lockTime = protoTx.locktime();
