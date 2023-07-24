@@ -11,9 +11,11 @@ use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
 use tw_coin_registry::coin_dispatcher;
 use tw_coin_registry::coin_type::CoinType;
 
+/// Non-core transaction utility methods, like building a transaction using an external signature.
 pub struct TransactionCompiler;
 
 impl TransactionCompiler {
+    /// Builds a coin-specific SigningInput (proto object) from a simple transaction.
     pub fn build_input(coin: CoinType, args: BuildSigningInputArgs) -> SigningResult<Vec<u8>> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         match entry.build_signing_input(&ctx, args) {
@@ -24,6 +26,7 @@ impl TransactionCompiler {
         }
     }
 
+    /// Obtains pre-signing hashes of a transaction.
     pub fn preimage_hashes(coin: CoinType, input: &[u8]) -> SigningResult<Vec<u8>> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry
@@ -31,6 +34,7 @@ impl TransactionCompiler {
             .map_err(SigningError::from)
     }
 
+    /// Compiles a complete transaction with one or more external signatures.
     pub fn compile(
         coin: CoinType,
         input: &[u8],

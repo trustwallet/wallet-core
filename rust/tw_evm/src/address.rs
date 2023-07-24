@@ -23,6 +23,8 @@ pub struct Address {
 impl Address {
     pub const LEN: usize = 20;
 
+    /// Tries to parse an address from the string representation.
+    /// Returns `Ok(None)` if the given `s` string is empty.
     pub fn from_str_optional(s: &str) -> AddressResult<Option<Address>> {
         if s.is_empty() {
             return Ok(None);

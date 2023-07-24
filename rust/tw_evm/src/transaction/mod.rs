@@ -4,6 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+//! Transactions can be:
+//! - Non-typed (legacy, pre-EIP2718) transactions:
+//!  -- simple ETH transfer
+//!  -- others with payload, function call, e.g. ERC20 transfer
+//! - Typed transactions (enveloped, EIP2718), with specific type and transaction payload
+//! - User operations (EIP4337)
+
 use crate::transaction::signature::EthSignature;
 use tw_hash::{sha3::keccak256, H256};
 use tw_keypair::ecdsa::secp256k1;

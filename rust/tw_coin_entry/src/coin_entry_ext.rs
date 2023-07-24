@@ -33,6 +33,7 @@ pub trait CoinEntryExt {
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<String>;
 
+    /// Derives an address associated with the given `public_key` by `coin` context, `derivation` and address `prefix`.
     fn derive_address(
         &self,
         coin: &dyn CoinContext,
@@ -41,6 +42,7 @@ pub trait CoinEntryExt {
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<String>;
 
+    /// Returns underlying data (public key or key hash).
     fn address_to_data(
         &self,
         coin: &dyn CoinContext,
@@ -48,11 +50,15 @@ pub trait CoinEntryExt {
         prefix: Option<AddressPrefix>,
     ) -> AddressResult<Vec<u8>>;
 
+    /// Signs a transaction declared as the given `input`.
     fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Vec<u8>>;
 
     /// Returns `true` if the chain supports JSON signing.
     fn supports_json_signing(&self) -> bool;
 
+    /// Signs a transaction specified by the JSON representation of signing input and a private key.
+    /// Returns the JSON representation of the signing output if the blockchain supports JSON signing.
+    /// Checks [`CoinEntryExt::supports_json_signing`].
     fn sign_json(
         &self,
         coin: &dyn CoinContext,
@@ -74,6 +80,7 @@ pub trait CoinEntryExt {
         public_keys: Vec<PublicKeyBytes>,
     ) -> ProtoResult<Vec<u8>>;
 
+    /// Plans a transaction (for UTXO chains only).
     fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Vec<u8>>>;
 
     /// Optional helper to prepare a `SigningInput` from simple parameters.

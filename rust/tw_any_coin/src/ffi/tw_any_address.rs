@@ -14,6 +14,7 @@ use tw_memory::ffi::tw_string::TWString;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::{try_or_else, try_or_false};
 
+/// Represents an address in Rust for almost any blockchain.
 pub struct TWAnyAddress(AnyAddress);
 
 impl RawPtrTrait for TWAnyAddress {}
@@ -31,6 +32,11 @@ pub unsafe extern "C" fn tw_any_address_is_valid(string: *mut TWString, coin: u3
     AnyAddress::is_valid(coin, string, None)
 }
 
+/// Creates an address from a string representation and a coin type. Must be deleted with `TWAnyAddressDelete` after use.
+///
+/// \param string address to create.
+/// \param coin coin type of the address.
+/// \return `TWAnyAddress` pointer or nullptr if address and coin are invalid.
 #[no_mangle]
 pub unsafe extern "C" fn tw_any_address_create_with_string(
     string: *mut TWString,

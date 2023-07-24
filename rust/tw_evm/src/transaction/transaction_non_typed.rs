@@ -15,6 +15,7 @@ use tw_number::U256;
 
 const TX_FIELDS_LEN: usize = 9;
 
+/// Original transaction format, with no explicit type, legacy as pre-EIP2718.
 pub struct TransactionNonTyped {
     pub nonce: U256,
     pub gas_price: U256,

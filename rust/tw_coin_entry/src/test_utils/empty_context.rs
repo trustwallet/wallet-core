@@ -7,6 +7,7 @@
 use crate::coin_context::CoinContext;
 use tw_keypair::tw::PublicKeyType;
 
+/// Test coin context that panics on any `CoinContext` method call.
 pub struct EmptyCoinContext;
 
 impl CoinContext for EmptyCoinContext {

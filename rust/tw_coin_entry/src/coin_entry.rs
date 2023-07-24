@@ -44,7 +44,7 @@ pub trait CoinEntry {
         prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address>;
 
-    /// Derives an address associated with the given `public_key` by `coin` type, `derivation` and address `prefix`.
+    /// Derives an address associated with the given `public_key` by `coin` context, `derivation` and address `prefix`.
     fn derive_address(
         &self,
         coin: &dyn CoinContext,

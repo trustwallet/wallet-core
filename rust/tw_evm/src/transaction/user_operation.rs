@@ -15,6 +15,8 @@ use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_number::U256;
 
+/// EIP4337 UserOperation
+/// https://github.com/ethereum/EIPs/blob/3fd65b1a782912bfc18cb975c62c55f733c7c96e/EIPS/eip-4337.md#specification
 pub struct UserOperation {
     pub nonce: U256,
     pub entry_point: Address,

@@ -22,7 +22,7 @@ lazy_static! {
     static ref REGISTRY: RegistryMap = parse_registry_json();
 }
 
-/// TODO extend this structure according to `registry.json`.
+/// Extend this structure according to `registry.json`.
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CoinItem {

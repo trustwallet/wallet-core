@@ -16,6 +16,7 @@ pub trait EthSignature {
     fn s(&self) -> U256;
 }
 
+/// R-S-V Signature values.
 pub struct Signature {
     v: U256,
     r: U256,
@@ -52,6 +53,7 @@ impl EthSignature for Signature {
     }
 }
 
+/// R-S-V Signature values EIP115.
 pub struct SignatureEip155 {
     v: U256,
     r: U256,

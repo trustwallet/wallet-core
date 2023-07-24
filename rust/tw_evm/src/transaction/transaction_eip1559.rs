@@ -17,6 +17,7 @@ const EIP1559_TX_TYPE: u8 = 0x02;
 const TX_FIELDS_LEN: usize = 9;
 const TX_FIELDS_WITH_SIGNATURE_LEN: usize = TX_FIELDS_LEN + 3;
 
+/// EIP1559 transaction.
 pub struct TransactionEip1559 {
     pub nonce: U256,
     pub max_inclusion_fee_per_gas: U256,
