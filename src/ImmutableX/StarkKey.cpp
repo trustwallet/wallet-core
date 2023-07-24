@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <Ethereum/EIP2645.h>
-#include <Ethereum/Signer.h>
 #include <HDWallet.h>
 #include <Hash.h>
 #include <HexCoding.h>
@@ -47,9 +45,8 @@ PrivateKey getPrivateKeyFromEthPrivKey(const PrivateKey& ethPrivKey) {
 
 PrivateKey getPrivateKeyFromRawSignature(const Data& signature, const DerivationPath& derivationPath) {
     using namespace internal;
-    //auto data = parse_hex(signature);
-    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(signature);
-    auto seed = store(ethSignature.s);
+    // The signature is `rsv`, where `s` starts at 32 and is 32 long.
+    auto seed = subData(signature, 32, 32);
     return getPrivateKeyFromSeed(seed, derivationPath);
 }
 

@@ -7,7 +7,7 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "../Ethereum/Signer.h"
+#include "../Ethereum/Entry.h"
 
 using namespace TW;
 using namespace std;
@@ -32,11 +32,13 @@ Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& a
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Ethereum::Signer, Ethereum::Proto::SigningInput>(dataIn, dataOut);
+    // TODO fix this
+    Ethereum::Entry().sign(TWCoinTypeEthereum, dataIn, dataOut);
 }
 
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return Ethereum::Signer::signJSON(json, key);
+    // TODO fix this
+    return Ethereum::Entry().signJSON(TWCoinTypeEthereum, json, key);
 }
 
 } // namespace TW::Ronin

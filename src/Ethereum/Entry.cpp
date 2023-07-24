@@ -8,9 +8,7 @@
 
 #include "Address.h"
 #include "HexCoding.h"
-#include "proto/Common.pb.h"
-#include "proto/TransactionCompiler.pb.h"
-#include "Signer.h"
+#include "proto/Ethereum.pb.h"
 
 #include <google/protobuf/util/json_util.h>
 
