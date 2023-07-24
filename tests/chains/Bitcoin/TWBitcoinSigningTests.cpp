@@ -407,6 +407,7 @@ TEST(BitcoinSigning, SignNftInscriptionReveal) {
     input.set_coin_type(TWCoinTypeBitcoin);
     input.set_amount(inscribeAmount);
     input.set_byte_fee(15);
+    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
 
     auto& utxo = *input.add_utxo();
     utxo.set_amount(inscribeAmount);

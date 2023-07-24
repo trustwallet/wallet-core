@@ -40,7 +40,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             proto.add_private_key(key.bytes.data(), key.bytes.size());
         }
 
-        std::vector<bool> is_script;
+        std::vector<bool> isScript;
         for (auto utxo: input.utxos) {
             auto& protoUtxo = *proto.add_utxo();
             protoUtxo.set_amount(utxo.amount);
@@ -49,9 +49,9 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 
             // For each input, which track whether we need a scriptSig or a witness for claiming.
             if (utxo.variant == Proto::TransactionVariant::P2PKH) {
-                is_script.push_back(true);
+                isScript.push_back(true);
             } else {
-                is_script.push_back(false);
+                isScript.push_back(false);
             }
 
             Proto::OutPoint out;
@@ -84,7 +84,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             out.sequence = protoInput.previousoutput().sequence();
 
             Script script;
-            auto doSetScript = is_script[counter];
+            auto doSetScript = isScript[counter];
             std::vector<byte> claimScript(protoInput.script().begin(), protoInput.script().end());
             if (doSetScript) {
                 script = Script(claimScript);
