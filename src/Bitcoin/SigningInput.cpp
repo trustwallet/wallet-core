@@ -18,7 +18,7 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         privateKeys.emplace_back(key);
     }
     for (auto&& script : input.scripts()) {
-        scripts[script.first] = Script(script.second.begin(), script.second.end());
+    scripts[script.first] = Script(script.second.begin(), script.second.end());
     }
     for (auto&& u : input.utxo()) {
         utxos.emplace_back(u);

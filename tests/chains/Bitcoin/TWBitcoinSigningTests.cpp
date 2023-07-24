@@ -146,6 +146,8 @@ TEST(BitcoinSigning, SignMaxAmount) {
 }
 
 TEST(BitcoinSigning, SignBRC20TransferCommit) {
+    auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
+
     auto privateKey = parse_hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     auto fullAmount = 26400;
     auto minerFee = 3000;
@@ -163,6 +165,8 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     input.set_is_it_brc_operation(true);
     input.add_private_key(key.bytes.data(), key.bytes.size());
     input.set_coin_type(TWCoinTypeBitcoin);
+    input.set_amount(fullAmount - minerFee);
+    input.set_byte_fee(19);
 
     auto& utxo = *input.add_utxo();
     utxo.set_amount(fullAmount);
@@ -179,11 +183,13 @@ TEST(BitcoinSigning, SignBRC20TransferCommit) {
     utxo1.set_amount(brcInscribeAmount);
     utxo1.set_script(outputInscribe.script());
     utxo1.set_variant(Proto::TransactionVariant::BRC20TRANSFER);
+    *utxo1.mutable_out_point() = emptyTxOutPoint.proto();
 
     auto& utxo2 = *plan.add_utxos();
     utxo2.set_amount(forFeeAmount);
     utxo2.set_script(inputP2wpkh.bytes.data(), inputP2wpkh.bytes.size());
     utxo2.set_variant(Proto::TransactionVariant::P2WPKH);
+    *utxo2.mutable_out_point() = emptyTxOutPoint.proto();
 
     *input.mutable_plan() = plan;
 
