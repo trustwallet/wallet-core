@@ -35,6 +35,7 @@ public:
     UTXO(const Proto::UnspentTransaction& utxo)
         : outPoint(utxo.out_point())
         , script(utxo.script().begin(), utxo.script().end())
+        , variant(utxo.variant())
         , amount(utxo.amount())
         {}
 

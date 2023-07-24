@@ -84,7 +84,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             out.sequence = protoInput.previousoutput().sequence();
 
             Script script;
-            auto doSetScript = is_script[0];
+            auto doSetScript = is_script[counter];
             std::vector<byte> claimScript(protoInput.script().begin(), protoInput.script().end());
             if (doSetScript) {
                 script = Script(claimScript);
@@ -93,11 +93,9 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             }
 
             auto input = TW::Bitcoin::TransactionInput(out, script, protoInput.sequence());
-
             if (!doSetScript) {
-                input.encodeWitness(claimScript);
+                input.scriptWitness.push_back(claimScript);
             }
-
             tx.inputs.push_back(input);
 
             counter++;
