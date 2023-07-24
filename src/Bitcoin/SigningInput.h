@@ -75,7 +75,7 @@ public:
     // Total amount to send, including all outputs amount
     Amount totalAmount = 0;
 
-    bool isItBrcOperation = false;
+    bool isItBrcOperation;
 
 public:
     SigningInput() = default;

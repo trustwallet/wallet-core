@@ -23,6 +23,9 @@ public:
     // Script for claiming this UTXO
     Script script;
 
+    // Variant
+    Proto::TransactionVariant variant;
+
     // Amount of the UTXO
     Amount amount;
 

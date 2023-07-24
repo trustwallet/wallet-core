@@ -32,6 +32,35 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     } else {
         plan = TransactionBuilder::plan(input);
     }
+
+    auto callRust = input.isItBrcOperation;
+    if (callRust) {
+        Proto::SigningInput proto;
+        for (auto key: input.privateKeys) {
+            proto.add_private_key(key.bytes.data(), key.bytes.size());
+        }
+
+        for (auto utxo: input.utxos) {
+            auto& protoUtxo = *proto.add_utxo();
+            protoUtxo.set_amount(utxo.amount);
+            protoUtxo.set_script(utxo.script.bytes.data(), utxo.script.bytes.size());
+            protoUtxo.set_variant(utxo.variant);
+
+            Proto::OutPoint out;
+            out.set_index(utxo.outPoint.index);
+            out.set_hash(std::string(utxo.outPoint.hash.begin(), utxo.outPoint.hash.end()));
+            *protoUtxo.mutable_out_point() = out;
+        }
+
+        *proto.mutable_plan() = plan.proto();
+
+        Proto::SigningOutput output;
+        auto serializedInput = data(proto.SerializeAsString());
+        Rust::CByteArrayWrapper res = Rust::tw_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
+        output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
+        return output.transaction().;
+    }
+
     auto tx_result = TransactionBuilder::template build<Transaction>(plan, input);
     if (!tx_result) {
         return Result<Transaction, Common::Proto::SigningError>::failure(tx_result.error());
