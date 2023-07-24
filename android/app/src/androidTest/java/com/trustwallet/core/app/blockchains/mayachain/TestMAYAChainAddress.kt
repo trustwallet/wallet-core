@@ -1,4 +1,4 @@
-// Copyright © 2017-2023 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,6 +11,7 @@ import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
+import wallet.core.jni.CoinType.MAYACHAIN
 
 class TestMAYAChainAddress {
 
@@ -19,15 +20,14 @@ class TestMAYAChainAddress {
     }
 
     @Test
-    fun testAddress() {
-        // TODO: Check and finalize implementation
-
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
-        val pubkey = key.publicKeyEd25519
-        val address = AnyAddress(pubkey, CoinType.MAYACHAIN)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.MAYACHAIN)
-
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
-        assertEquals(address.description(), expected.description())
+    fun testAddressValidation() {
+        var addr = listOf(
+            "maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r",
+            "maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65"
+        )
+        addr.forEach {
+            assert(CoinType.MAYACHAIN.validate(it))
+            assertEquals(it, AnyAddress(it, CoinType.MAYACHAIN).description())
+        }
     }
 }
