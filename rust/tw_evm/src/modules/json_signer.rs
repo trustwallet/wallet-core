@@ -17,6 +17,7 @@ pub struct EthJsonSigner<Context: EvmContext> {
 }
 
 impl<Context: EvmContext> JsonSigner for EthJsonSigner<Context> {
+    #[inline]
     fn sign_json(
         &self,
         _coin: &dyn CoinContext,

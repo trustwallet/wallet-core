@@ -13,12 +13,14 @@ pub struct CoinRegistryContext {
 }
 
 impl CoinRegistryContext {
+    #[inline]
     pub fn with_coin_item(item: &'static CoinItem) -> CoinRegistryContext {
         CoinRegistryContext { item }
     }
 }
 
 impl CoinContext for CoinRegistryContext {
+    #[inline]
     fn public_key_type(&self) -> PublicKeyType {
         self.item.public_key_type
     }

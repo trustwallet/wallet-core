@@ -22,6 +22,7 @@ pub struct Compiler<Context: EvmContext> {
 }
 
 impl<Context: EvmContext> Compiler<Context> {
+    #[inline]
     pub fn preimage_hashes(
         input: Proto::SigningInput<'_>,
     ) -> CompilerProto::PreSigningOutput<'static> {
@@ -29,6 +30,7 @@ impl<Context: EvmContext> Compiler<Context> {
             .unwrap_or_else(|e| signing_output_error!(CompilerProto::PreSigningOutput, e))
     }
 
+    #[inline]
     pub fn compile(
         input: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,

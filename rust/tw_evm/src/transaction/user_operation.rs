@@ -33,6 +33,7 @@ pub struct UserOperation {
 }
 
 impl TransactionCommon for UserOperation {
+    #[inline]
     fn payload(&self) -> Data {
         self.payload.clone()
     }
@@ -75,6 +76,7 @@ impl UnsignedTransaction for UserOperation {
         ethabi::encode(&tokens)
     }
 
+    #[inline]
     fn into_signed(
         self,
         signature: tw_keypair::ecdsa::secp256k1::Signature,
@@ -93,6 +95,7 @@ pub struct SignedUserOperation {
 }
 
 impl TransactionCommon for SignedUserOperation {
+    #[inline]
     fn payload(&self) -> Data {
         self.unsigned.payload.clone()
     }
@@ -124,6 +127,7 @@ impl SignedTransaction for SignedUserOperation {
             .into_bytes()
     }
 
+    #[inline]
     fn signature(&self) -> &Self::Signature {
         &self.signature
     }

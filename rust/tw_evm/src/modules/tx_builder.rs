@@ -129,6 +129,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         Ok(tx)
     }
 
+    #[inline]
     fn erc4337_execute_call_from_proto(
         call: &Proto::mod_Transaction::mod_Batch::BatchedCall,
     ) -> SigningResult<ExecuteArgs> {
@@ -141,6 +142,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         })
     }
 
+    #[inline]
     fn transaction_non_typed_from_proto(
         input: &Proto::SigningInput,
         eth_amount: U256,
@@ -161,6 +163,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
         })
     }
 
+    #[inline]
     fn transaction_eip1559_from_proto(
         input: &Proto::SigningInput,
         eth_amount: U256,
@@ -218,10 +221,12 @@ impl<Context: EvmContext> TxBuilder<Context> {
         })
     }
 
+    #[inline]
     fn parse_address(addr: &str) -> AddressResult<Address> {
         Context::Address::from_str(addr).map(Context::Address::into)
     }
 
+    #[inline]
     fn parse_address_optional(addr: &str) -> AddressResult<Option<Address>> {
         match Context::Address::from_str_optional(addr) {
             Ok(Some(addr)) => Ok(Some(addr.into())),

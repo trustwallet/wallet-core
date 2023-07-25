@@ -22,12 +22,14 @@ pub struct AnyAddress {
 
 impl AnyAddress {
     /// Determines if the string is a valid Any address.
+    #[inline]
     pub fn is_valid(coin: CoinType, address: &str, prefix: Option<AddressPrefix>) -> bool {
         let (ctx, entry) = try_or_false!(coin_dispatcher(coin));
         entry.validate_address(&ctx, address, prefix).is_ok()
     }
 
     /// Creates an address from a string representation and a coin type.
+    #[inline]
     pub fn with_string(
         coin: CoinType,
         address: &str,
@@ -39,6 +41,7 @@ impl AnyAddress {
     }
 
     /// Creates an address from a public key, derivation and prefix option.
+    #[inline]
     pub fn with_public_key(
         coin: CoinType,
         public_key: PublicKey,
@@ -51,12 +54,14 @@ impl AnyAddress {
     }
 
     /// Returns underlying data (public key or key hash).
+    #[inline]
     pub fn get_data(&self) -> AddressResult<Data> {
         let (ctx, entry) = coin_dispatcher(self.coin).map_err(|_| AddressError::UnknownCoinType)?;
         entry.address_to_data(&ctx, &self.address, None)
     }
 
     /// Returns the address string representation.
+    #[inline]
     pub fn description(&self) -> &str {
         &self.address
     }

@@ -31,14 +31,17 @@ pub struct CoinItem {
     pub public_key_type: PublicKeyType,
 }
 
+#[inline]
 pub fn get_coin_item(coin: CoinType) -> RegistryResult<&'static CoinItem> {
     REGISTRY.get(&coin).ok_or(RegistryError::UnknownCoinType)
 }
 
+#[inline]
 pub fn registry_iter() -> impl Iterator<Item = &'static CoinItem> {
     REGISTRY.iter().map(|(_coin_type, item)| item)
 }
 
+#[inline]
 pub fn supported_coin_items() -> impl Iterator<Item = &'static CoinItem> {
     registry_iter().filter(|item| !matches!(item.blockchain, BlockchainType::Unsupported))
 }

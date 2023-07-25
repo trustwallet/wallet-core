@@ -25,6 +25,7 @@ pub struct Signature {
 }
 
 impl Signature {
+    #[inline]
     pub fn new(sign: secp256k1::Signature) -> Self {
         Signature {
             v: U256::from(sign.v()),
@@ -34,20 +35,24 @@ impl Signature {
         }
     }
 
+    #[inline]
     pub fn to_rsv_bytes(&self) -> H520 {
         self.rsv
     }
 }
 
 impl EthSignature for Signature {
+    #[inline]
     fn v(&self) -> U256 {
         self.v
     }
 
+    #[inline]
     fn r(&self) -> U256 {
         self.r
     }
 
+    #[inline]
     fn s(&self) -> U256 {
         self.s
     }
@@ -61,6 +66,7 @@ pub struct SignatureEip155 {
 }
 
 impl SignatureEip155 {
+    #[inline]
     pub fn new(sign: secp256k1::Signature, chain_id: U256) -> Self {
         let v = replay_protection(chain_id, sign.v());
         SignatureEip155 {
@@ -72,20 +78,24 @@ impl SignatureEip155 {
 }
 
 impl EthSignature for SignatureEip155 {
+    #[inline]
     fn v(&self) -> U256 {
         self.v
     }
 
+    #[inline]
     fn r(&self) -> U256 {
         self.r
     }
 
+    #[inline]
     fn s(&self) -> U256 {
         self.s
     }
 }
 
 /// Embeds `chain_id` in `v` param, for replay protection, legacy (EIP155).
+#[inline]
 pub fn replay_protection(chain_id: U256, v: u8) -> U256 {
     if chain_id.is_zero() {
         U256::from(v + 27)

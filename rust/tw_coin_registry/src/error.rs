@@ -15,6 +15,7 @@ pub enum RegistryError {
 }
 
 impl From<RegistryError> for SigningError {
+    #[inline]
     fn from(e: RegistryError) -> Self {
         match e {
             RegistryError::UnknownCoinType => SigningError(SigningErrorType::Error_invalid_params),

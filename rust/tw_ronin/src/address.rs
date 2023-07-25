@@ -20,6 +20,7 @@ pub struct Address(EthAddress);
 
 impl Address {
     /// Initializes an address with a `secp256k1` public key.
+    #[inline]
     pub fn with_secp256k1_pubkey(pubkey: &secp256k1::PublicKey) -> Address {
         Address(EthAddress::with_secp256k1_pubkey(pubkey))
     }
@@ -28,6 +29,7 @@ impl Address {
 impl EvmAddress for Address {}
 
 impl From<Address> for EthAddress {
+    #[inline]
     fn from(addr: Address) -> Self {
         addr.0
     }
@@ -58,6 +60,7 @@ impl fmt::Display for Address {
 }
 
 impl CoinAddress for Address {
+    #[inline]
     fn data(&self) -> Data {
         self.0.data()
     }

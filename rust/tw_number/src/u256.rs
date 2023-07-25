@@ -17,12 +17,14 @@ use tw_memory::Data;
 pub struct U256(primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {
+    #[inline]
     fn from(num: primitive_types::U256) -> Self {
         U256(num)
     }
 }
 
 impl From<U256> for primitive_types::U256 {
+    #[inline]
     fn from(num: U256) -> Self {
         num.0
     }
@@ -32,20 +34,24 @@ impl U256 {
     pub const WORDS_COUNT: usize = 4;
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
 
+    #[inline]
     pub fn zero() -> U256 {
         U256::default()
     }
 
+    #[inline]
     pub fn from_little_endian(data: H256) -> U256 {
         let inner = primitive_types::U256::from_little_endian(data.as_slice());
         U256::from(inner)
     }
 
+    #[inline]
     pub fn from_big_endian(data: H256) -> U256 {
         let inner = primitive_types::U256::from_big_endian(data.as_slice());
         U256::from(inner)
     }
 
+    #[inline]
     pub fn from_big_endian_slice(data: &[u8]) -> NumberResult<U256> {
         if data.len() > Self::BYTES {
             return Err(NumberError::InvalidBinaryRepresentation);
@@ -54,6 +60,7 @@ impl U256 {
         Ok(U256::from(inner))
     }
 
+    #[inline]
     pub fn from_little_endian_slice(data: &[u8]) -> NumberResult<U256> {
         if data.len() > Self::BYTES {
             return Err(NumberError::InvalidBinaryRepresentation);
@@ -62,6 +69,7 @@ impl U256 {
         Ok(U256::from(inner))
     }
 
+    #[inline]
     pub fn to_little_endian(&self) -> H256 {
         let mut res = H256::default();
         self.0.to_little_endian(res.as_mut_slice());
@@ -75,6 +83,7 @@ impl U256 {
         bytes[..zero_bytes_start_at].to_vec()
     }
 
+    #[inline]
     pub fn to_big_endian(&self) -> H256 {
         let mut res = H256::default();
         self.0.to_big_endian(res.as_mut_slice());
@@ -100,14 +109,17 @@ impl U256 {
         bytes
     }
 
+    #[inline]
     pub fn is_zero(&self) -> bool {
         self.0.is_zero()
     }
 
+    #[inline]
     pub fn bits(&self) -> usize {
         self.0.bits()
     }
 
+    #[inline]
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
     }
@@ -115,6 +127,7 @@ impl U256 {
 
 #[cfg(feature = "helpers")]
 impl U256 {
+    #[inline]
     pub fn encode_be_compact(num: u64) -> Cow<'static, [u8]> {
         U256::from(num).to_big_endian_compact().into()
     }
@@ -123,6 +136,7 @@ impl U256 {
 impl FromStr for U256 {
     type Err = NumberError;
 
+    #[inline]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let inner = primitive_types::U256::from_dec_str(s)
             .map_err(|_| NumberError::InvalidStringRepresentation)?;
@@ -131,6 +145,7 @@ impl FromStr for U256 {
 }
 
 impl fmt::Display for U256 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -143,6 +158,7 @@ where
 {
     type Output = U256;
 
+    #[inline]
     fn add(self, rhs: T) -> Self::Output {
         U256(self.0 + rhs.into())
     }

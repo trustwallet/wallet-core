@@ -30,6 +30,7 @@ pub struct TransactionEip1559 {
 }
 
 impl TransactionCommon for TransactionEip1559 {
+    #[inline]
     fn payload(&self) -> Data {
         self.payload.clone()
     }
@@ -38,10 +39,12 @@ impl TransactionCommon for TransactionEip1559 {
 impl UnsignedTransaction for TransactionEip1559 {
     type SignedTransaction = SignedTransactionEip1559;
 
+    #[inline]
     fn encode(&self, chain_id: U256) -> Data {
         encode_transaction(self, chain_id, None)
     }
 
+    #[inline]
     fn into_signed(
         self,
         signature: secp256k1::Signature,
@@ -62,6 +65,7 @@ pub struct SignedTransactionEip1559 {
 }
 
 impl TransactionCommon for SignedTransactionEip1559 {
+    #[inline]
     fn payload(&self) -> Data {
         self.unsigned.payload.clone()
     }
@@ -70,10 +74,12 @@ impl TransactionCommon for SignedTransactionEip1559 {
 impl SignedTransaction for SignedTransactionEip1559 {
     type Signature = Signature;
 
+    #[inline]
     fn encode(&self) -> Data {
         encode_transaction(&self.unsigned, self.chain_id, Some(&self.signature))
     }
 
+    #[inline]
     fn signature(&self) -> &Self::Signature {
         &self.signature
     }

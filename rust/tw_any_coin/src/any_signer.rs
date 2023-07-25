@@ -14,6 +14,7 @@ pub struct AnySigner;
 
 impl AnySigner {
     /// Signs a transaction specified by the signing input and coin type.
+    #[inline]
     pub fn sign(input: &[u8], coin: CoinType) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry.sign(&ctx, input).map_err(SigningError::from)

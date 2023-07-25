@@ -27,6 +27,7 @@ pub struct TransactionNonTyped {
 }
 
 impl TransactionCommon for TransactionNonTyped {
+    #[inline]
     fn payload(&self) -> Data {
         self.payload.to_vec()
     }
@@ -35,10 +36,12 @@ impl TransactionCommon for TransactionNonTyped {
 impl UnsignedTransaction for TransactionNonTyped {
     type SignedTransaction = SignedTransactionNonTyped;
 
+    #[inline]
     fn encode(&self, chain_id: U256) -> Data {
         encode_transaction(self, chain_id, None)
     }
 
+    #[inline]
     fn into_signed(
         self,
         signature: secp256k1::Signature,
@@ -59,6 +62,7 @@ pub struct SignedTransactionNonTyped {
 }
 
 impl TransactionCommon for SignedTransactionNonTyped {
+    #[inline]
     fn payload(&self) -> Data {
         self.unsigned.payload.clone()
     }
@@ -67,10 +71,12 @@ impl TransactionCommon for SignedTransactionNonTyped {
 impl SignedTransaction for SignedTransactionNonTyped {
     type Signature = SignatureEip155;
 
+    #[inline]
     fn encode(&self) -> Data {
         encode_transaction(&self.unsigned, self.chain_id, Some(&self.signature))
     }
 
+    #[inline]
     fn signature(&self) -> &Self::Signature {
         &self.signature
     }

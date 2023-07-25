@@ -43,12 +43,14 @@ pub type SigningErrorType = Proto::SigningError;
 pub struct SigningError(pub SigningErrorType);
 
 impl From<NumberError> for SigningError {
+    #[inline]
     fn from(_err: NumberError) -> Self {
         SigningError(SigningErrorType::Error_invalid_params)
     }
 }
 
 impl From<AddressError> for SigningError {
+    #[inline]
     fn from(_err: AddressError) -> Self {
         SigningError(SigningErrorType::Error_invalid_address)
     }

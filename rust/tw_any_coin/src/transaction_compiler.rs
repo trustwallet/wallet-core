@@ -16,6 +16,7 @@ pub struct TransactionCompiler;
 
 impl TransactionCompiler {
     /// Builds a coin-specific SigningInput (proto object) from a simple transaction.
+    #[inline]
     pub fn build_input(coin: CoinType, args: BuildSigningInputArgs) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         match entry.build_signing_input(&ctx, args) {
@@ -27,6 +28,7 @@ impl TransactionCompiler {
     }
 
     /// Obtains pre-signing hashes of a transaction.
+    #[inline]
     pub fn preimage_hashes(coin: CoinType, input: &[u8]) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry
@@ -35,6 +37,7 @@ impl TransactionCompiler {
     }
 
     /// Compiles a complete transaction with one or more external signatures.
+    #[inline]
     pub fn compile(
         coin: CoinType,
         input: &[u8],

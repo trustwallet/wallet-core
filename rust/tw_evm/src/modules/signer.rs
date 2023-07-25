@@ -22,6 +22,7 @@ pub struct Signer<Context: EvmContext> {
 }
 
 impl<Context: EvmContext> Signer<Context> {
+    #[inline]
     pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
         Self::sign_proto_impl(input)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))

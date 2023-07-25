@@ -12,6 +12,7 @@ pub enum Derivation {
 }
 
 impl Derivation {
+    #[inline]
     pub fn from_raw(derivation: u32) -> Option<Derivation> {
         match derivation {
             0 => Some(Derivation::Default),

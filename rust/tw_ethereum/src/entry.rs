@@ -35,6 +35,7 @@ impl CoinEntry for EthereumEntry {
     type InputBuilder = EthInputBuilder<StandardEvmContext>;
     type PlanBuilder = NoPlanBuilder;
 
+    #[inline]
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
@@ -57,10 +58,12 @@ impl CoinEntry for EthereumEntry {
         Ok(Address::with_secp256k1_pubkey(public_key))
     }
 
+    #[inline]
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
         Signer::<StandardEvmContext>::sign_proto(input)
     }
 
+    #[inline]
     fn preimage_hashes(
         &self,
         _coin: &dyn CoinContext,
@@ -69,6 +72,7 @@ impl CoinEntry for EthereumEntry {
         Compiler::<StandardEvmContext>::preimage_hashes(input)
     }
 
+    #[inline]
     fn compile(
         &self,
         _coin: &dyn CoinContext,
@@ -79,14 +83,17 @@ impl CoinEntry for EthereumEntry {
         Compiler::<StandardEvmContext>::compile(input, signatures, public_keys)
     }
 
+    #[inline]
     fn json_signer(&self) -> Option<Self::JsonSigner> {
         Some(EthJsonSigner::default())
     }
 
+    #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         None
     }
 
+    #[inline]
     fn signing_input_builder(&self) -> Option<Self::InputBuilder> {
         Some(EthInputBuilder::default())
     }

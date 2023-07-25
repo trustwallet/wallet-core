@@ -17,6 +17,7 @@ impl From<U256> for RlpU256 {
 }
 
 impl Encodable for RlpU256 {
+    #[inline]
     fn rlp_append(&self, s: &mut RlpStream) {
         s.encoder().encode_value(&self.0.to_big_endian_compact());
     }

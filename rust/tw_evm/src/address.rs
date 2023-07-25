@@ -17,6 +17,7 @@ use tw_memory::Data;
 pub trait EvmAddress: FromStr<Err = AddressError> + Into<Address> {
     /// Tries to parse an address from the string representation.
     /// Returns `Ok(None)` if the given `s` string is empty.
+    #[inline]
     fn from_str_optional(s: &str) -> AddressResult<Option<Self>> {
         if s.is_empty() {
             return Ok(None);
@@ -74,17 +75,20 @@ impl Address {
     }
 
     /// Returns bytes of the address.
+    #[inline]
     pub fn bytes(&self) -> H160 {
         self.bytes
     }
 
     /// Returns bytes as a slice of the address.
+    #[inline]
     pub fn as_slice(&self) -> &[u8] {
         self.bytes.as_slice()
     }
 }
 
 impl CoinAddress for Address {
+    #[inline]
     fn data(&self) -> Data {
         self.bytes.to_vec()
     }
@@ -104,12 +108,14 @@ impl EvmAddress for Address {}
 
 /// Implement `str` -> `PrivateKey` conversion for test purposes.
 impl From<&'static str> for Address {
+    #[inline]
     fn from(addr: &'static str) -> Self {
         Address::from_str(addr).expect("Expected a valid Ethereum address")
     }
 }
 
 impl Display for Address {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.into_checksum_address())
     }

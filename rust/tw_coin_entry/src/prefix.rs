@@ -23,6 +23,7 @@ pub enum NoPrefix {}
 impl TryFrom<AddressPrefix> for NoPrefix {
     type Error = AddressError;
 
+    #[inline]
     fn try_from(_: AddressPrefix) -> Result<Self, Self::Error> {
         Err(AddressError::UnexpectedAddressPrefix)
     }
