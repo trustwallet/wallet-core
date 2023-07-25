@@ -33,7 +33,8 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         plan = TransactionBuilder::plan(input);
     }
 
-    if (&input.isItBrcOperation) {
+    bool x = input.isItBrcOperation;
+    if (x) {
         // Convert to a protobuf structure, only use the necessary information.
         auto proto = input.proto();
 
@@ -48,11 +49,11 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         }
 
         // Call Rust FFI.
-        Proto::SigningOutput output;
+        Proto::SigningOutput rustOutput;
         auto serializedInput = data(proto.SerializeAsString());
         Rust::CByteArrayWrapper res = Rust::tw_taproot_build_and_sign_transaction(serializedInput.data(), serializedInput.size());
-        output.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
-        auto protoTx = output.transaction();
+        rustOutput.ParseFromArray(res.data.data(), static_cast<int>(res.data.size()));
+        auto protoTx = rustOutput.transaction();
 
         // Convert protobuf structure to native.
         auto tx = Transaction();
@@ -81,19 +82,19 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
             }
 
             // Determine whether a witness should be set.
-            auto input = TW::Bitcoin::TransactionInput(out, script, protoInput.sequence());
+            auto txInput = TW::Bitcoin::TransactionInput(out, script, protoInput.sequence());
             if (!doSetScript) {
-                input.scriptWitness.push_back(claimScript);
+                txInput.scriptWitness.push_back(claimScript);
             }
-            tx.inputs.push_back(input);
+            tx.inputs.push_back(txInput);
 
             counter++;
         }
 
         for (auto protoOutput: protoTx.outputs()) {
             std::vector<byte> script(protoOutput.script().begin(), protoOutput.script().end());
-            auto output = TransactionOutput(protoOutput.value(), Script(script));
-            tx.outputs.push_back(output);
+            auto txOutput = TransactionOutput(protoOutput.value(), Script(script));
+            tx.outputs.push_back(txOutput);
         }
 
         return Result<Transaction, Common::Proto::SigningError>(tx);
