@@ -12,3 +12,4 @@ tw_ethereum = { path = "../tw_ethereum" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
+tw_ronin = { path = "../tw_ronin" }

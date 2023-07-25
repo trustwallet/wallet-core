@@ -14,6 +14,7 @@ members = [
     "tw_move_parser",
     "tw_number",
     "tw_proto",
+    "tw_ronin",
     "wallet_core_rs",
 ]
 

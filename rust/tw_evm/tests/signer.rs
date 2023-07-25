@@ -7,6 +7,7 @@
 use std::borrow::Cow;
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::{self, ToHex};
+use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::signer::Signer;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
@@ -40,7 +41,7 @@ fn test_sign_transaction_non_typed_erc20_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -76,7 +77,7 @@ fn test_sign_transaction_non_typed_native() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -127,7 +128,7 @@ fn test_sign_transaction_non_typed_erc20_approve() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -176,7 +177,7 @@ fn test_sign_transaction_non_typed_contract_generic() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -217,7 +218,7 @@ fn test_sign_transaction_eip1559_native_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -271,7 +272,7 @@ fn test_sign_transaction_eip1559_erc20_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -315,7 +316,7 @@ fn test_sign_transaction_eip1559_erc20_approve() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -359,7 +360,7 @@ fn test_sign_transaction_eip1559_erc721_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -405,7 +406,7 @@ fn test_sign_transaction_eip1559_erc1155_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -448,7 +449,7 @@ fn test_sign_transaction_non_typed_erc20_transfer_as_contract_generic() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -489,7 +490,7 @@ fn test_sign_transaction_non_typed_erc20_transfer_invalid_address() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::Error_invalid_address);
     assert!(!output.error_message.is_empty());
 }
@@ -522,7 +523,7 @@ fn test_sign_transaction_non_typed_erc721_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -568,7 +569,7 @@ fn test_sign_transaction_non_typed_erc1155_transfer() {
         ..Proto::SigningInput::default()
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 

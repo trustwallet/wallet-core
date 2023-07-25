@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::Address;
+use crate::evm_context::EvmContext;
 use std::borrow::Cow;
+use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::SigningResult;
@@ -13,9 +14,12 @@ use tw_coin_entry::modules::input_builder::{BuildSigningInputArgs, InputBuilder}
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 
-pub struct EthInputBuilder;
+#[derive(Default)]
+pub struct EthInputBuilder<Context: EvmContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl InputBuilder for EthInputBuilder {
+impl<Context: EvmContext> InputBuilder for EthInputBuilder<Context> {
     type SigningInput = Proto::SigningInput<'static>;
 
     fn build_signing_input(
@@ -30,7 +34,7 @@ impl InputBuilder for EthInputBuilder {
         };
 
         // Check if the `to` argument is valid.
-        Address::from_str(&args.to)?;
+        Context::Address::from_str(&args.to)?;
 
         let amount = U256::from_str(&args.amount)?;
         let transfer = Proto::mod_Transaction::Transfer {

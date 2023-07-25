@@ -16,15 +16,25 @@ use crate::coin_type::CoinType;
 use crate::error::{RegistryError, RegistryResult};
 use crate::registry::get_coin_item;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
+use tw_ethereum::entry::EthereumEntry;
+use tw_ronin::entry::RoninEntry;
 
-pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<impl CoinEntryExt> {
+pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
+
+const ETHEREUM: EthereumEntry = EthereumEntry;
+const RONIN: RoninEntry = RoninEntry;
+
+pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
     match blockchain {
-        BlockchainType::Ethereum => Ok(tw_ethereum::entry::EthereumEntry),
+        BlockchainType::Ethereum => Ok(&ETHEREUM),
+        BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
 }
 
-pub fn coin_dispatcher(coin: CoinType) -> RegistryResult<(CoinRegistryContext, impl CoinEntryExt)> {
+pub fn coin_dispatcher(
+    coin: CoinType,
+) -> RegistryResult<(CoinRegistryContext, CoinEntryExtStaticRef)> {
     let item = get_coin_item(coin)?;
     let coin_entry = blockchain_dispatcher(item.blockchain)?;
     let coin_context = CoinRegistryContext::with_coin_item(item);

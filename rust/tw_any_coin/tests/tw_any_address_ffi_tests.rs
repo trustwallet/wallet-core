@@ -35,6 +35,7 @@ fn test_any_address_derive() {
         // TODO match `CoinType` when it's generated.
         let expected_address = match coin.blockchain {
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
+            BlockchainType::Ronin => "ronin:Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::Unsupported => unreachable!(),
         };
 
@@ -54,27 +55,74 @@ fn test_any_address_derive() {
 
 #[test]
 fn test_any_address_normalize_eth() {
-    let original = TWStringHelper::create("0xb16db98b365b1f89191996942612b14f1da4bd5f");
+    for coin in supported_coin_items() {
+        let (denormalized, expected_normalized) = match coin.blockchain {
+            BlockchainType::Ethereum => (
+                "0xb16db98b365b1f89191996942612b14f1da4bd5f",
+                "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
+            ),
+            BlockchainType::Ronin => (
+                "0xb16db98b365b1f89191996942612b14f1da4bd5f",
+                "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
+            ),
+            BlockchainType::Unsupported => unreachable!(),
+        };
 
-    let any_address = TWAnyAddressHelper::wrap(unsafe {
-        tw_any_address_create_with_string(original.ptr(), ETHEREUM_COIN_TYPE)
-    });
+        let denormalized = TWStringHelper::create(denormalized);
 
-    let description =
-        TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
-    assert_eq!(
-        description.to_string(),
-        Some("0xb16Db98B365B1f89191996942612B14F1Da4Bd5f".to_string())
-    );
+        let any_address = TWAnyAddressHelper::wrap(unsafe {
+            tw_any_address_create_with_string(denormalized.ptr(), coin.coin_id)
+        });
+
+        let normalized =
+            TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+
+        assert_eq!(
+            normalized.to_string(),
+            Some(expected_normalized.to_string())
+        );
+    }
 }
 
 #[test]
 fn test_any_address_is_valid_eth() {
-    let valid = TWStringHelper::create("0xb16Db98B365B1f89191996942612B14F1Da4Bd5f");
-    assert!(unsafe { tw_any_address_is_valid(valid.ptr(), ETHEREUM_COIN_TYPE) });
+    for coin in supported_coin_items() {
+        let valid = match coin.blockchain {
+            BlockchainType::Ethereum => vec![
+                "0xb16db98b365b1f89191996942612b14f1da4bd5f",
+                "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
+            ],
+            BlockchainType::Ronin => vec![
+                "0xb16db98b365b1f89191996942612b14f1da4bd5f",
+                "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
+                "ronin:b16db98b365b1f89191996942612b14f1da4bd5f",
+                "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
+            ],
+            BlockchainType::Unsupported => unreachable!(),
+        };
 
-    let invalid = TWStringHelper::create("b16Db98B365B1f89191996942612B14F1Da4Bd5f");
-    assert!(!unsafe { tw_any_address_is_valid(invalid.ptr(), ETHEREUM_COIN_TYPE) });
+        for valid_addr in valid {
+            let valid = TWStringHelper::create(valid_addr);
+            assert!(unsafe { tw_any_address_is_valid(valid.ptr(), coin.coin_id) });
+        }
+    }
+}
+
+#[test]
+fn test_any_address_is_valid_eth_invalid() {
+    for coin in supported_coin_items() {
+        let invalid = match coin.blockchain {
+            BlockchainType::Ethereum | BlockchainType::Ronin => {
+                vec!["b16Db98B365B1f89191996942612B14F1Da4Bd5f"]
+            },
+            BlockchainType::Unsupported => unreachable!(),
+        };
+
+        for invalid_addr in invalid {
+            let valid = TWStringHelper::create(invalid_addr);
+            assert!(!unsafe { tw_any_address_is_valid(valid.ptr(), coin.coin_id) });
+        }
+    }
 }
 
 #[test]

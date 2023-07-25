@@ -4,8 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::evm_context::EvmContext;
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
+use std::marker::PhantomData;
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::common::compile_input::SingleSignaturePubkey;
 use tw_coin_entry::error::SigningResult;
@@ -15,13 +17,15 @@ use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-pub struct Compiler;
+pub struct Compiler<Context: EvmContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl Compiler {
+impl<Context: EvmContext> Compiler<Context> {
     pub fn preimage_hashes(
         input: Proto::SigningInput<'_>,
     ) -> CompilerProto::PreSigningOutput<'static> {
-        Compiler::preimage_hashes_impl(input)
+        Self::preimage_hashes_impl(input)
             .unwrap_or_else(|e| signing_output_error!(CompilerProto::PreSigningOutput, e))
     }
 
@@ -30,7 +34,7 @@ impl Compiler {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Proto::SigningOutput<'static> {
-        Compiler::compile_impl(input, signatures, public_keys)
+        Self::compile_impl(input, signatures, public_keys)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
@@ -39,7 +43,7 @@ impl Compiler {
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
 
-        let unsigned = TxBuilder::tx_from_proto(&input)?;
+        let unsigned = TxBuilder::<Context>::tx_from_proto(&input)?;
         let prehash = unsigned.pre_hash(chain_id);
         let preimage_data = unsigned.encode(chain_id);
 
@@ -62,7 +66,7 @@ impl Compiler {
 
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
 
-        let unsigned = TxBuilder::tx_from_proto(&input)?;
+        let unsigned = TxBuilder::<Context>::tx_from_proto(&input)?;
 
         let pre_hash = unsigned.pre_hash(chain_id);
 

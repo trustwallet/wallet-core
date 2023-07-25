@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::address::Address;
+use crate::ronin_context::RoninContext;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -11,8 +13,6 @@ use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
-use tw_evm::address::Address;
-use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::compiler::Compiler;
 use tw_evm::modules::input_builder::EthInputBuilder;
 use tw_evm::modules::json_signer::EthJsonSigner;
@@ -21,9 +21,9 @@ use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-pub struct EthereumEntry;
+pub struct RoninEntry;
 
-impl CoinEntry for EthereumEntry {
+impl CoinEntry for RoninEntry {
     type AddressPrefix = NoPrefix;
     type Address = Address;
     type SigningInput<'a> = Proto::SigningInput<'a>;
@@ -31,8 +31,8 @@ impl CoinEntry for EthereumEntry {
     type PreSigningOutput = CompilerProto::PreSigningOutput<'static>;
 
     // Optional modules:
-    type JsonSigner = EthJsonSigner<StandardEvmContext>;
-    type InputBuilder = EthInputBuilder<StandardEvmContext>;
+    type JsonSigner = EthJsonSigner<RoninContext>;
+    type InputBuilder = EthInputBuilder<RoninContext>;
     type PlanBuilder = NoPlanBuilder;
 
     fn parse_address(
@@ -58,7 +58,7 @@ impl CoinEntry for EthereumEntry {
     }
 
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        Signer::<StandardEvmContext>::sign_proto(input)
+        Signer::<RoninContext>::sign_proto(input)
     }
 
     fn preimage_hashes(
@@ -66,7 +66,7 @@ impl CoinEntry for EthereumEntry {
         _coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        Compiler::<StandardEvmContext>::preimage_hashes(input)
+        Compiler::<RoninContext>::preimage_hashes(input)
     }
 
     fn compile(
@@ -76,7 +76,7 @@ impl CoinEntry for EthereumEntry {
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        Compiler::<StandardEvmContext>::compile(input, signatures, public_keys)
+        Compiler::<RoninContext>::compile(input, signatures, public_keys)
     }
 
     fn json_signer(&self) -> Option<Self::JsonSigner> {

@@ -9,6 +9,7 @@ use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex;
 use tw_evm::abi::prebuild::erc20::Erc20;
 use tw_evm::address::Address;
+use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::signer::Signer;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
@@ -48,7 +49,7 @@ fn test_barz_transfer_account_deployed() {
         user_operation: Some(user_op),
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -101,7 +102,7 @@ fn test_barz_transfer_account_not_deployed() {
         user_operation: Some(user_op),
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
@@ -178,7 +179,7 @@ fn test_barz_batched_account_deployed() {
         user_operation: Some(user_op),
     };
 
-    let output = Signer::sign_proto(input);
+    let output = Signer::<StandardEvmContext>::sign_proto(input);
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 

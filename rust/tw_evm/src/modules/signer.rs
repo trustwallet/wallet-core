@@ -4,8 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::evm_context::EvmContext;
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
+use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
@@ -15,11 +17,13 @@ use tw_proto::Ethereum::Proto;
 
 const SIGNATURE_V_MIN_LEN: usize = 1;
 
-pub struct Signer;
+pub struct Signer<Context: EvmContext> {
+    _phantom: PhantomData<Context>,
+}
 
-impl Signer {
+impl<Context: EvmContext> Signer<Context> {
     pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningOutput<'static> {
-        Signer::sign_proto_impl(input)
+        Self::sign_proto_impl(input)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
@@ -29,7 +33,7 @@ impl Signer {
         let chain_id = U256::from_big_endian_slice(&input.chain_id)?;
         let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
 
-        let unsigned = TxBuilder::tx_from_proto(&input)?;
+        let unsigned = TxBuilder::<Context>::tx_from_proto(&input)?;
 
         let pre_hash = unsigned.pre_hash(chain_id);
         let signature = private_key.sign(pre_hash)?;

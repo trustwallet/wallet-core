@@ -13,6 +13,18 @@ use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160};
 use tw_keypair::ecdsa::secp256k1;
 
+pub trait EvmAddress: FromStr<Err = AddressError> + Into<Address> {
+    /// Tries to parse an address from the string representation.
+    /// Returns `Ok(None)` if the given `s` string is empty.
+    fn from_str_optional(s: &str) -> AddressResult<Option<Self>> {
+        if s.is_empty() {
+            return Ok(None);
+        }
+
+        Self::from_str(s).map(Some)
+    }
+}
+
 /// Represents an Ethereum address.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Address {
@@ -22,16 +34,6 @@ pub struct Address {
 /// cbindgen:ignore
 impl Address {
     pub const LEN: usize = 20;
-
-    /// Tries to parse an address from the string representation.
-    /// Returns `Ok(None)` if the given `s` string is empty.
-    pub fn from_str_optional(s: &str) -> AddressResult<Option<Address>> {
-        if s.is_empty() {
-            return Ok(None);
-        }
-
-        Address::from_str(s).map(Some)
-    }
 
     /// Initializes an address with a `secp256k1` public key.
     pub fn with_secp256k1_pubkey(pubkey: &secp256k1::PublicKey) -> Address {
@@ -96,6 +98,8 @@ impl FromStr for Address {
         Ok(Address { bytes: addr_hash })
     }
 }
+
+impl EvmAddress for Address {}
 
 /// Implement `str` -> `PrivateKey` conversion for test purposes.
 impl From<&'static str> for Address {
