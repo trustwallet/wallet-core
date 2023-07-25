@@ -81,6 +81,32 @@ public:
     SigningInput() = default;
 
     SigningInput(const Proto::SigningInput& input);
+
+    Proto::SigningInput proto() const {
+        Proto::SigningInput proto;
+        for (auto key: privateKeys) {
+            proto.add_private_key(key.bytes.data(), key.bytes.size());
+        }
+
+        // Process inputs.
+        for (auto utxo: utxos) {
+            auto& protoUtxo = *proto.add_utxo();
+            protoUtxo.set_amount(utxo.amount);
+            protoUtxo.set_script(utxo.script.bytes.data(), utxo.script.bytes.size());
+            protoUtxo.set_spendingscript(utxo.spendingScript.bytes.data(), utxo.spendingScript.bytes.size());
+            protoUtxo.set_variant(utxo.variant);
+
+            Proto::OutPoint out;
+            out.set_index(utxo.outPoint.index);
+            out.set_hash(std::string(utxo.outPoint.hash.begin(), utxo.outPoint.hash.end()));
+            *protoUtxo.mutable_out_point() = out;
+        }
+
+        // Update plan.
+        *proto.mutable_plan() = plan.value().proto();
+
+        return proto;
+    }
 };
 
 } // namespace TW::Bitcoin

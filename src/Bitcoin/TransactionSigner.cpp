@@ -35,35 +35,17 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 
     if (&input.isItBrcOperation) {
         // Convert to a protobuf structure, only use the necessary information.
-        Proto::SigningInput proto;
-        for (auto key: input.privateKeys) {
-            proto.add_private_key(key.bytes.data(), key.bytes.size());
-        }
+        auto proto = input.proto();
 
-        // Process inputs.
+        // For each input, which track whether we need a scriptSig or a witness for claiming.
         std::vector<bool> isScript;
-        for (auto utxo: input.utxos) {
-            auto& protoUtxo = *proto.add_utxo();
-            protoUtxo.set_amount(utxo.amount);
-            protoUtxo.set_script(utxo.script.bytes.data(), utxo.script.bytes.size());
-            protoUtxo.set_spendingscript(utxo.spendingScript.bytes.data(), utxo.spendingScript.bytes.size());
-            protoUtxo.set_variant(utxo.variant);
-
-            // For each input, which track whether we need a scriptSig or a witness for claiming.
-            if (utxo.variant == Proto::TransactionVariant::P2PKH) {
+        for (auto utxo: proto.utxo()) {
+            if (utxo.variant() == Proto::TransactionVariant::P2PKH) {
                 isScript.push_back(true);
             } else {
                 isScript.push_back(false);
             }
-
-            Proto::OutPoint out;
-            out.set_index(utxo.outPoint.index);
-            out.set_hash(std::string(utxo.outPoint.hash.begin(), utxo.outPoint.hash.end()));
-            *protoUtxo.mutable_out_point() = out;
         }
-
-        // Update with existing plan.
-        *proto.mutable_plan() = plan.proto();
 
         // Call Rust FFI.
         Proto::SigningOutput output;
