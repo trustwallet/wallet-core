@@ -33,8 +33,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         plan = TransactionBuilder::plan(input);
     }
 
-    bool x = input.isItBrcOperation;
-    if (x) {
+    if (input.isItBrcOperation) {
         // Convert to a protobuf structure, only use the necessary information.
         auto proto = input.proto();
 

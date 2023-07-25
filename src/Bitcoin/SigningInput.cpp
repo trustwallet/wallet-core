@@ -39,6 +39,8 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
         totalAmount += output.amount();
         extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
     }
+
+    isItBrcOperation = input.is_it_brc_operation();
 }
 
 } // namespace TW::Bitcoin
