@@ -1515,6 +1515,7 @@ version = "0.1.0"
 dependencies = [
  "serde_json",
  "tw_keypair",
+ "tw_memory",
  "tw_misc",
  "tw_number",
  "tw_proto",
@@ -1571,6 +1572,7 @@ dependencies = [
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
+ "tw_memory",
  "tw_number",
  "tw_proto",
 ]
@@ -1650,6 +1652,7 @@ dependencies = [
  "primitive-types",
  "tw_encoding",
  "tw_hash",
+ "tw_memory",
 ]
 
 [[package]]
@@ -1670,6 +1673,7 @@ dependencies = [
  "tw_encoding",
  "tw_evm",
  "tw_keypair",
+ "tw_memory",
  "tw_number",
  "tw_proto",
 ]

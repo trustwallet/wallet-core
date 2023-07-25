@@ -13,15 +13,16 @@ use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::Prefix;
 use std::fmt;
 use tw_keypair::tw::PublicKey;
+use tw_memory::Data;
 use tw_proto::{MessageRead, MessageWrite};
 
 pub use tw_proto::{ProtoError, ProtoResult};
 
-pub type SignatureBytes = Vec<u8>;
-pub type PublicKeyBytes = Vec<u8>;
+pub type SignatureBytes = Data;
+pub type PublicKeyBytes = Data;
 
 pub trait CoinAddress: fmt::Display {
-    fn data(&self) -> Vec<u8>;
+    fn data(&self) -> Data;
 }
 
 pub trait CoinEntry {

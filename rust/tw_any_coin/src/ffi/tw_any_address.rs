@@ -25,7 +25,7 @@ impl RawPtrTrait for TWAnyAddress {}
 /// \param coin coin type of the address.
 /// \return bool indicating if the address is valid.
 #[no_mangle]
-pub unsafe extern "C" fn tw_any_address_is_valid(string: *mut TWString, coin: u32) -> bool {
+pub unsafe extern "C" fn tw_any_address_is_valid(string: *const TWString, coin: u32) -> bool {
     let string = try_or_false!(TWString::from_ptr_as_ref(string));
     let string = try_or_false!(string.as_str());
 
@@ -39,7 +39,7 @@ pub unsafe extern "C" fn tw_any_address_is_valid(string: *mut TWString, coin: u3
 /// \return `TWAnyAddress` pointer or nullptr if address and coin are invalid.
 #[no_mangle]
 pub unsafe extern "C" fn tw_any_address_create_with_string(
-    string: *mut TWString,
+    string: *const TWString,
     coin: u32,
 ) -> *mut TWAnyAddress {
     let string = try_or_else!(TWString::from_ptr_as_ref(string), std::ptr::null_mut);
@@ -83,7 +83,7 @@ pub unsafe extern "C" fn tw_any_address_delete(address: *mut TWAnyAddress) {
 ///
 /// \param address address to get the string representation of.
 #[no_mangle]
-pub unsafe extern "C" fn tw_any_address_description(address: *mut TWAnyAddress) -> *mut TWString {
+pub unsafe extern "C" fn tw_any_address_description(address: *const TWAnyAddress) -> *mut TWString {
     // Take the ownership back to rust and drop the owner.
     let address = try_or_else!(TWAnyAddress::from_ptr_as_ref(address), std::ptr::null_mut);
 
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn tw_any_address_description(address: *mut TWAnyAddress) 
 ///
 /// \param address address to get the data of.
 #[no_mangle]
-pub unsafe extern "C" fn tw_any_address_data(address: *mut TWAnyAddress) -> *mut TWData {
+pub unsafe extern "C" fn tw_any_address_data(address: *const TWAnyAddress) -> *mut TWData {
     // Take the ownership back to rust and drop the owner.
     let address = try_or_else!(TWAnyAddress::from_ptr_as_ref(address), std::ptr::null_mut);
 

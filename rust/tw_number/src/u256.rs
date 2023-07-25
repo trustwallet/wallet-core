@@ -11,6 +11,7 @@ use std::fmt::Formatter;
 use std::ops::Add;
 use std::str::FromStr;
 use tw_hash::H256;
+use tw_memory::Data;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct U256(primitive_types::U256);
@@ -67,7 +68,7 @@ impl U256 {
         res
     }
 
-    pub fn to_little_endian_compact(&self) -> Vec<u8> {
+    pub fn to_little_endian_compact(&self) -> Data {
         let leading_zero_bytes = self.leading_zero_bytes();
         let zero_bytes_start_at = U256::BYTES - leading_zero_bytes;
         let bytes = self.to_little_endian();
@@ -80,13 +81,13 @@ impl U256 {
         res
     }
 
-    pub fn to_big_endian_compact(&self) -> Vec<u8> {
+    pub fn to_big_endian_compact(&self) -> Data {
         let leading_zero_bytes = self.leading_zero_bytes();
         let bytes = self.to_big_endian();
         bytes[leading_zero_bytes..].to_vec()
     }
 
-    pub fn to_big_endian_compact_min_len(&self, min_len: usize) -> Vec<u8> {
+    pub fn to_big_endian_compact_min_len(&self, min_len: usize) -> Data {
         let bytes = self.to_big_endian_compact();
 
         if min_len > bytes.len() {

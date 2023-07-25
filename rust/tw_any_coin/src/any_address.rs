@@ -10,6 +10,7 @@ use tw_coin_entry::prefix::AddressPrefix;
 use tw_coin_registry::coin_dispatcher;
 use tw_coin_registry::coin_type::CoinType;
 use tw_keypair::tw::PublicKey;
+use tw_memory::Data;
 use tw_misc::try_or_false;
 
 /// Represents an address in Rust for almost any blockchain.
@@ -50,7 +51,7 @@ impl AnyAddress {
     }
 
     /// Returns underlying data (public key or key hash).
-    pub fn get_data(&self) -> AddressResult<Vec<u8>> {
+    pub fn get_data(&self) -> AddressResult<Data> {
         let (ctx, entry) = coin_dispatcher(self.coin).map_err(|_| AddressError::UnknownCoinType)?;
         entry.address_to_data(&ctx, &self.address, None)
     }

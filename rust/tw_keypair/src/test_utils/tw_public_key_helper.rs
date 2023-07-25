@@ -8,13 +8,14 @@ use crate::ffi::pubkey::{tw_public_key_create_with_data, tw_public_key_delete, T
 use crate::tw::PublicKeyType;
 use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
+use tw_memory::Data;
 
 pub struct TWPublicKeyHelper {
     ptr: *mut TWPublicKey,
 }
 
 impl TWPublicKeyHelper {
-    pub fn with_bytes<T: Into<Vec<u8>>>(bytes: T, ty: PublicKeyType) -> TWPublicKeyHelper {
+    pub fn with_bytes<T: Into<Data>>(bytes: T, ty: PublicKeyType) -> TWPublicKeyHelper {
         let public_key_raw = CByteArray::from(bytes.into());
         let ptr = unsafe {
             tw_public_key_create_with_data(public_key_raw.data(), public_key_raw.size(), ty as u32)

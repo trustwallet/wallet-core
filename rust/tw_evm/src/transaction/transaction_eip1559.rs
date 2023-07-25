@@ -11,6 +11,7 @@ use crate::transaction::signature::{EthSignature, Signature};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
 use rlp::{RlpStream, EMPTY_LIST_RLP};
 use tw_keypair::ecdsa::secp256k1;
+use tw_memory::Data;
 use tw_number::U256;
 
 const EIP1559_TX_TYPE: u8 = 0x02;
@@ -25,11 +26,11 @@ pub struct TransactionEip1559 {
     pub gas_limit: U256,
     pub to: Option<Address>,
     pub amount: U256,
-    pub payload: Vec<u8>,
+    pub payload: Data,
 }
 
 impl TransactionCommon for TransactionEip1559 {
-    fn payload(&self) -> Vec<u8> {
+    fn payload(&self) -> Data {
         self.payload.clone()
     }
 }
@@ -37,7 +38,7 @@ impl TransactionCommon for TransactionEip1559 {
 impl UnsignedTransaction for TransactionEip1559 {
     type SignedTransaction = SignedTransactionEip1559;
 
-    fn encode(&self, chain_id: U256) -> Vec<u8> {
+    fn encode(&self, chain_id: U256) -> Data {
         encode_transaction(self, chain_id, None)
     }
 
@@ -61,7 +62,7 @@ pub struct SignedTransactionEip1559 {
 }
 
 impl TransactionCommon for SignedTransactionEip1559 {
-    fn payload(&self) -> Vec<u8> {
+    fn payload(&self) -> Data {
         self.unsigned.payload.clone()
     }
 }
@@ -69,7 +70,7 @@ impl TransactionCommon for SignedTransactionEip1559 {
 impl SignedTransaction for SignedTransactionEip1559 {
     type Signature = Signature;
 
-    fn encode(&self) -> Vec<u8> {
+    fn encode(&self) -> Data {
         encode_transaction(&self.unsigned, self.chain_id, Some(&self.signature))
     }
 
@@ -82,7 +83,7 @@ fn encode_transaction(
     tx: &TransactionEip1559,
     chain_id: U256,
     signature: Option<&Signature>,
-) -> Vec<u8> {
+) -> Data {
     let len = match signature {
         Some(_) => TX_FIELDS_WITH_SIGNATURE_LEN,
         None => TX_FIELDS_LEN,

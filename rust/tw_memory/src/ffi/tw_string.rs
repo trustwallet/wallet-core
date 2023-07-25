@@ -66,7 +66,7 @@ pub unsafe extern "C" fn tw_string_create_with_utf8_bytes(bytes: *const c_char) 
 /// Returns the raw pointer to the string's UTF8 bytes (null-terminated).
 /// \param str a TWString pointer.
 #[no_mangle]
-pub unsafe extern "C" fn tw_string_utf8_bytes(str: *mut TWString) -> *const c_char {
+pub unsafe extern "C" fn tw_string_utf8_bytes(str: *const TWString) -> *const c_char {
     TWString::from_ptr_as_ref(str)
         .map(|str| str.as_c_char())
         .unwrap_or_else(std::ptr::null)

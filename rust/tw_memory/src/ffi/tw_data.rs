@@ -6,13 +6,14 @@
 
 use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
+use crate::Data;
 
 /// Defines a resizable block of data.
 ///
 /// The implementation of these methods should be language-specific to minimize translation overhead.
 /// For instance it should be a `jbyteArray` for Java and an `NSData` for Swift.
 #[derive(Clone, Debug, Default)]
-pub struct TWData(Vec<u8>);
+pub struct TWData(Data);
 
 impl TWData {
     /// Returns an empty `TWData` instance.
@@ -25,13 +26,13 @@ impl TWData {
         CByteArrayRef::new(bytes, size).to_vec().map(TWData)
     }
 
-    /// Converts `TWData` into `Vec<u8>` without additional allocation.
-    pub fn into_vec(self) -> Vec<u8> {
+    /// Converts `TWData` into `Data` without additional allocation.
+    pub fn into_vec(self) -> Data {
         self.0
     }
 
-    /// Copies underlying `Vec<u8>` data.
-    pub fn to_vec(&self) -> Vec<u8> {
+    /// Copies underlying data.
+    pub fn to_vec(&self) -> Data {
         self.0.clone()
     }
 
@@ -51,8 +52,8 @@ impl TWData {
     }
 }
 
-impl From<Vec<u8>> for TWData {
-    fn from(data: Vec<u8>) -> Self {
+impl From<Data> for TWData {
+    fn from(data: Data) -> Self {
         TWData(data)
     }
 }
@@ -85,7 +86,7 @@ pub unsafe extern "C" fn tw_data_delete(data: *mut TWData) {
 /// \param data A non-null valid block of data
 /// \return the raw pointer to the contents of data
 #[no_mangle]
-pub unsafe extern "C" fn tw_data_bytes(data: *mut TWData) -> *const u8 {
+pub unsafe extern "C" fn tw_data_bytes(data: *const TWData) -> *const u8 {
     TWData::from_ptr_as_ref(data)
         .map(TWData::data)
         .unwrap_or_else(std::ptr::null)
@@ -96,7 +97,7 @@ pub unsafe extern "C" fn tw_data_bytes(data: *mut TWData) -> *const u8 {
 /// \param data A non-null valid block of data
 /// \return the size of the given block of data
 #[no_mangle]
-pub unsafe extern "C" fn tw_data_size(data: *mut TWData) -> usize {
+pub unsafe extern "C" fn tw_data_size(data: *const TWData) -> usize {
     TWData::from_ptr_as_ref(data)
         .map(|data| data.size())
         .unwrap_or_default()

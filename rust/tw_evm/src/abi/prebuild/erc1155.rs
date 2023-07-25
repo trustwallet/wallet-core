@@ -8,6 +8,7 @@ use crate::abi::{convert_address, convert_u256, AbiError, AbiResult};
 use crate::address::Address;
 use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
+use tw_memory::Data;
 use tw_number::U256;
 
 /// Generated via https://remix.ethereum.org
@@ -26,8 +27,8 @@ impl Erc1155 {
         to: Address,
         token_id: U256,
         value: U256,
-        data: Vec<u8>,
-    ) -> AbiResult<Vec<u8>> {
+        data: Data,
+    ) -> AbiResult<Data> {
         let func = ERC1155.function("safeTransferFrom")?;
         func.encode_input(&[
             Token::Address(convert_address(from)),

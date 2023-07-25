@@ -14,6 +14,7 @@
 use crate::transaction::signature::EthSignature;
 use tw_hash::{sha3::keccak256, H256};
 use tw_keypair::ecdsa::secp256k1;
+use tw_memory::Data;
 use tw_number::U256;
 
 pub mod signature;
@@ -22,7 +23,7 @@ pub mod transaction_non_typed;
 pub mod user_operation;
 
 pub trait TransactionCommon {
-    fn payload(&self) -> Vec<u8>;
+    fn payload(&self) -> Data;
 }
 
 pub trait UnsignedTransaction: TransactionCommon {
@@ -33,7 +34,7 @@ pub trait UnsignedTransaction: TransactionCommon {
         H256::try_from(hash.as_slice()).expect("keccak256 returns 32 bytes")
     }
 
-    fn encode(&self, chain_id: U256) -> Vec<u8>;
+    fn encode(&self, chain_id: U256) -> Data;
 
     fn into_signed(
         self,
@@ -45,7 +46,7 @@ pub trait UnsignedTransaction: TransactionCommon {
 pub trait SignedTransaction: TransactionCommon {
     type Signature: EthSignature;
 
-    fn encode(&self) -> Vec<u8>;
+    fn encode(&self) -> Data;
 
     fn signature(&self) -> &Self::Signature;
 }
@@ -60,7 +61,7 @@ pub trait UnsignedTransactionBox: TransactionCommon {
 
     fn pre_hash(&self, chain_id: U256) -> H256;
 
-    fn encode(&self, chain_id: U256) -> Vec<u8>;
+    fn encode(&self, chain_id: U256) -> Data;
 
     fn into_signed(
         self: Box<Self>,
@@ -77,7 +78,7 @@ where
         <Self as UnsignedTransaction>::pre_hash(self, chain_id)
     }
 
-    fn encode(&self, chain_id: U256) -> Vec<u8> {
+    fn encode(&self, chain_id: U256) -> Data {
         <Self as UnsignedTransaction>::encode(self, chain_id)
     }
 
@@ -93,7 +94,7 @@ where
 }
 
 pub trait SignedTransactionBox: TransactionCommon {
-    fn encode(&self) -> Vec<u8>;
+    fn encode(&self) -> Data;
 
     fn signature(&self) -> &dyn EthSignature;
 }
@@ -102,7 +103,7 @@ impl<T> SignedTransactionBox for T
 where
     T: SignedTransaction,
 {
-    fn encode(&self) -> Vec<u8> {
+    fn encode(&self) -> Data {
         <Self as SignedTransaction>::encode(self)
     }
 

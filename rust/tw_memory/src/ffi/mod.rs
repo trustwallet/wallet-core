@@ -35,7 +35,7 @@ pub trait RawPtrTrait: Sized {
         Some(*Box::from_raw(raw))
     }
 
-    unsafe fn from_ptr_as_ref(raw: *mut Self) -> Option<&'static Self> {
+    unsafe fn from_ptr_as_ref(raw: *const Self) -> Option<&'static Self> {
         if raw.is_null() {
             return None;
         }

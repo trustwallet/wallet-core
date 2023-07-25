@@ -8,6 +8,7 @@ use crate::abi::{convert_address, convert_u256, AbiError, AbiResult};
 use crate::address::Address;
 use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
+use tw_memory::Data;
 use tw_number::U256;
 
 /// Generated via https://remix.ethereum.org
@@ -21,7 +22,7 @@ lazy_static! {
 pub struct Erc20;
 
 impl Erc20 {
-    pub fn transfer(recipient: Address, amount: U256) -> AbiResult<Vec<u8>> {
+    pub fn transfer(recipient: Address, amount: U256) -> AbiResult<Data> {
         let func = ERC20.function("transfer")?;
         func.encode_input(&[
             Token::Address(convert_address(recipient)),
@@ -30,7 +31,7 @@ impl Erc20 {
         .map_err(AbiError::from)
     }
 
-    pub fn approve(spender: Address, amount: U256) -> AbiResult<Vec<u8>> {
+    pub fn approve(spender: Address, amount: U256) -> AbiResult<Data> {
         let func = ERC20.function("approve")?;
         func.encode_input(&[
             Token::Address(convert_address(spender)),

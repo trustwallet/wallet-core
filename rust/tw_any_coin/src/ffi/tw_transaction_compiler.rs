@@ -27,16 +27,16 @@ use tw_misc::try_or_else;
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_compiler_build_input(
     coin: u32,
-    from: *mut TWString,
-    to: *mut TWString,
-    amount: *mut TWString,
-    asset: *mut TWString,
-    memo: *mut TWString,
-    chain_id: *mut TWString,
+    from: *const TWString,
+    to: *const TWString,
+    amount: *const TWString,
+    asset: *const TWString,
+    memo: *const TWString,
+    chain_id: *const TWString,
 ) -> *mut TWData {
     macro_rules! try_str {
         ($arg:expr) => {{
-            // Try to cast `*mut TWString` into `&TWString`.
+            // Try to cast `*const TWString` into `&TWString`.
             let tw_string = try_or_else!(TWString::from_ptr_as_ref($arg), std::ptr::null_mut);
             // Try to get `&str` from `&TWString`.
             let str = try_or_else!(tw_string.as_str(), std::ptr::null_mut);
@@ -68,7 +68,7 @@ pub unsafe extern "C" fn tw_transaction_compiler_build_input(
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_compiler_pre_image_hashes(
     coin: u32,
-    input: *mut TWData,
+    input: *const TWData,
 ) -> *mut TWData {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
 
@@ -90,9 +90,9 @@ pub unsafe extern "C" fn tw_transaction_compiler_pre_image_hashes(
 #[no_mangle]
 pub unsafe extern "C" fn tw_transaction_compiler_compile(
     coin: u32,
-    input: *mut TWData,
-    signatures: *mut TWDataVector,
-    public_keys: *mut TWDataVector,
+    input: *const TWData,
+    signatures: *const TWDataVector,
+    public_keys: *const TWDataVector,
 ) -> *mut TWData {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
     let signatures_ref = try_or_else!(

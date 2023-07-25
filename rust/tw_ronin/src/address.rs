@@ -10,6 +10,7 @@ use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::AddressError;
 use tw_evm::address::{Address as EthAddress, EvmAddress};
 use tw_keypair::ecdsa::secp256k1;
+use tw_memory::Data;
 
 /// cbindgen:ignore
 const RONIN_PREFIX: &str = "ronin:";
@@ -57,7 +58,7 @@ impl fmt::Display for Address {
 }
 
 impl CoinAddress for Address {
-    fn data(&self) -> Vec<u8> {
+    fn data(&self) -> Data {
         self.0.data()
     }
 }

@@ -8,6 +8,7 @@ use crate::abi::{convert_address, convert_u256, AbiError, AbiResult};
 use crate::address::Address;
 use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
+use tw_memory::Data;
 use tw_number::U256;
 
 /// Generated via https://remix.ethereum.org
@@ -23,13 +24,13 @@ lazy_static! {
 pub struct ExecuteArgs {
     pub to: Address,
     pub value: U256,
-    pub data: Vec<u8>,
+    pub data: Data,
 }
 
 pub struct Erc4337SimpleAccount;
 
 impl Erc4337SimpleAccount {
-    pub fn encode_execute(args: ExecuteArgs) -> AbiResult<Vec<u8>> {
+    pub fn encode_execute(args: ExecuteArgs) -> AbiResult<Data> {
         let func = ERC4337_SIMPLE_ACCOUNT.function("execute")?;
         func.encode_input(&[
             Token::Address(convert_address(args.to)),
@@ -39,7 +40,7 @@ impl Erc4337SimpleAccount {
         .map_err(AbiError::from)
     }
 
-    pub fn encode_execute_batch<I>(args: I) -> AbiResult<Vec<u8>>
+    pub fn encode_execute_batch<I>(args: I) -> AbiResult<Data>
     where
         I: IntoIterator<Item = ExecuteArgs>,
     {

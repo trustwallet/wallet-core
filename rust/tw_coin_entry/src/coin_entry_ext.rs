@@ -14,7 +14,10 @@ use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
+use tw_memory::Data;
 use tw_proto::{deserialize, serialize, ProtoResult};
+
+pub type PrivateKeyBytes = Data;
 
 /// The [`CoinEntry`] trait extension.
 pub trait CoinEntryExt {
@@ -48,10 +51,10 @@ pub trait CoinEntryExt {
         coin: &dyn CoinContext,
         address: &str,
         prefix: Option<AddressPrefix>,
-    ) -> AddressResult<Vec<u8>>;
+    ) -> AddressResult<Data>;
 
     /// Signs a transaction declared as the given `input`.
-    fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Vec<u8>>;
+    fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Data>;
 
     /// Returns `true` if the chain supports JSON signing.
     fn supports_json_signing(&self) -> bool;
@@ -63,13 +66,13 @@ pub trait CoinEntryExt {
         &self,
         coin: &dyn CoinContext,
         input_json: &str,
-        private_key: Vec<u8>,
+        private_key: PrivateKeyBytes,
     ) -> SigningResult<Option<String>>;
 
     /// Returns hash(es) for signing, needed for external signing.
     /// It will return a proto object named `PreSigningOutput` which will include hash.
     /// We provide a default `PreSigningOutput` in TransactionCompiler.proto.
-    fn preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Vec<u8>>;
+    fn preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Data>;
 
     /// Compiles a transaction with externally-supplied `signatures` and `public_keys`.
     fn compile(
@@ -78,10 +81,10 @@ pub trait CoinEntryExt {
         input: &[u8],
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
-    ) -> ProtoResult<Vec<u8>>;
+    ) -> ProtoResult<Data>;
 
     /// Plans a transaction (for UTXO chains only).
-    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Vec<u8>>>;
+    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Data>>;
 
     /// Optional helper to prepare a `SigningInput` from simple parameters.
     /// Not suitable for UTXO chains. Some parameters, like chain-specific fee/gas parameters,
@@ -92,7 +95,7 @@ pub trait CoinEntryExt {
         &self,
         coin: &dyn CoinContext,
         args: BuildSigningInputArgs,
-    ) -> SigningResult<Option<Vec<u8>>>;
+    ) -> SigningResult<Option<Data>>;
 }
 
 impl<T> CoinEntryExt for T
@@ -140,14 +143,14 @@ where
         coin: &dyn CoinContext,
         address: &str,
         prefix: Option<AddressPrefix>,
-    ) -> AddressResult<Vec<u8>> {
+    ) -> AddressResult<Data> {
         let prefix = prefix.map(T::AddressPrefix::try_from).transpose()?;
 
         self.parse_address(coin, address, prefix)
             .map(|addr| addr.data())
     }
 
-    fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Vec<u8>> {
+    fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Data> {
         let input: T::SigningInput<'_> = deserialize(input)?;
         let output = <Self as CoinEntry>::sign(self, coin, input);
         serialize(&output)
@@ -161,7 +164,7 @@ where
         &self,
         coin: &dyn CoinContext,
         input_json: &str,
-        private_key: Vec<u8>,
+        private_key: PrivateKeyBytes,
     ) -> SigningResult<Option<String>> {
         let Some(json_signer) = self.json_signer() else {
             return Ok(None);
@@ -171,7 +174,7 @@ where
         json_signer.sign_json(coin, input_json, &private_key)
     }
 
-    fn preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Vec<u8>> {
+    fn preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Data> {
         let input: T::SigningInput<'_> = deserialize(input)?;
         let output = <Self as CoinEntry>::preimage_hashes(self, coin, input);
         serialize(&output)
@@ -183,13 +186,13 @@ where
         input: &[u8],
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
-    ) -> ProtoResult<Vec<u8>> {
+    ) -> ProtoResult<Data> {
         let input: T::SigningInput<'_> = deserialize(input)?;
         let output = self.compile(coin, input, signatures, public_keys);
         serialize(&output)
     }
 
-    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Vec<u8>>> {
+    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Data>> {
         let Some(plan_builder) = self.plan_builder() else {
             return Ok(None);
         };
@@ -203,7 +206,7 @@ where
         &self,
         coin: &dyn CoinContext,
         args: BuildSigningInputArgs,
-    ) -> SigningResult<Option<Vec<u8>>> {
+    ) -> SigningResult<Option<Data>> {
         let Some(input_builder) = self.signing_input_builder() else {
             return Ok(None);
         };

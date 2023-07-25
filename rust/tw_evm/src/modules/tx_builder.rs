@@ -17,6 +17,7 @@ use crate::transaction::UnsignedTransactionBox;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::{AddressResult, SigningError, SigningErrorType, SigningResult};
+use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::Common::Proto::SigningError as CommonError;
 use tw_proto::Ethereum::Proto;
@@ -143,7 +144,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
     fn transaction_non_typed_from_proto(
         input: &Proto::SigningInput,
         eth_amount: U256,
-        payload: Vec<u8>,
+        payload: Data,
         to_address: Option<Address>,
     ) -> SigningResult<TransactionNonTyped> {
         let nonce = U256::from_big_endian_slice(&input.nonce)?;
@@ -163,7 +164,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
     fn transaction_eip1559_from_proto(
         input: &Proto::SigningInput,
         eth_amount: U256,
-        payload: Vec<u8>,
+        payload: Data,
         to_address: Option<Address>,
     ) -> SigningResult<TransactionEip1559> {
         let nonce = U256::from_big_endian_slice(&input.nonce)?;
@@ -185,7 +186,7 @@ impl<Context: EvmContext> TxBuilder<Context> {
 
     fn user_operation_from_proto(
         input: &Proto::SigningInput,
-        erc4337_payload: Vec<u8>,
+        erc4337_payload: Data,
     ) -> SigningResult<UserOperation> {
         let Some(ref user_op) = input.user_operation else {
             return Err(SigningError(CommonError::Error_invalid_params))

@@ -12,6 +12,7 @@ use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::hex;
 use tw_hash::{sha3::keccak256, H160};
 use tw_keypair::ecdsa::secp256k1;
+use tw_memory::Data;
 
 pub trait EvmAddress: FromStr<Err = AddressError> + Into<Address> {
     /// Tries to parse an address from the string representation.
@@ -84,7 +85,7 @@ impl Address {
 }
 
 impl CoinAddress for Address {
-    fn data(&self) -> Vec<u8> {
+    fn data(&self) -> Data {
         self.bytes.to_vec()
     }
 }

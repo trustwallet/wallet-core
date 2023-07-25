@@ -7,13 +7,14 @@
 use crate::ffi::tw_data::{
     tw_data_bytes, tw_data_create_with_bytes, tw_data_delete, tw_data_size, TWData,
 };
+use crate::Data;
 
 pub struct TWDataHelper {
     ptr: *mut TWData,
 }
 
 impl TWDataHelper {
-    pub fn create(bytes: Vec<u8>) -> Self {
+    pub fn create(bytes: Data) -> Self {
         let ptr = unsafe { tw_data_create_with_bytes(bytes.as_ptr(), bytes.len()) };
         assert!(!ptr.is_null());
         TWDataHelper { ptr }
@@ -31,7 +32,7 @@ impl TWDataHelper {
         self.ptr.is_null()
     }
 
-    pub fn to_vec(&self) -> Option<Vec<u8>> {
+    pub fn to_vec(&self) -> Option<Data> {
         if self.ptr.is_null() {
             return None;
         }

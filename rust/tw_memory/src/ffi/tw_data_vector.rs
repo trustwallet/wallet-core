@@ -61,7 +61,7 @@ pub unsafe extern "C" fn tw_data_vector_delete(data_vector: *mut TWDataVector) {
 /// \param data A non-null valid block of data
 /// \note data input parameter must be deleted on its own
 #[no_mangle]
-pub unsafe extern "C" fn tw_data_vector_add(data_vector: *mut TWDataVector, data: *mut TWData) {
+pub unsafe extern "C" fn tw_data_vector_add(data_vector: *mut TWDataVector, data: *const TWData) {
     let Some(data_vector) = TWDataVector::from_ptr_as_mut(data_vector) else {
         return;
     };

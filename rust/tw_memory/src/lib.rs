@@ -6,6 +6,8 @@
 
 use std::ffi::{c_char, CString};
 
+pub type Data = Vec<u8>;
+
 pub mod ffi;
 
 #[cfg(feature = "test-utils")]

@@ -9,13 +9,14 @@ use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
 use tw_coin_registry::coin_dispatcher;
 use tw_coin_registry::coin_type::CoinType;
+use tw_memory::Data;
 
 /// Non-core transaction utility methods, like building a transaction using an external signature.
 pub struct TransactionCompiler;
 
 impl TransactionCompiler {
     /// Builds a coin-specific SigningInput (proto object) from a simple transaction.
-    pub fn build_input(coin: CoinType, args: BuildSigningInputArgs) -> SigningResult<Vec<u8>> {
+    pub fn build_input(coin: CoinType, args: BuildSigningInputArgs) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         match entry.build_signing_input(&ctx, args) {
             Ok(Some(result)) => Ok(result),
@@ -26,7 +27,7 @@ impl TransactionCompiler {
     }
 
     /// Obtains pre-signing hashes of a transaction.
-    pub fn preimage_hashes(coin: CoinType, input: &[u8]) -> SigningResult<Vec<u8>> {
+    pub fn preimage_hashes(coin: CoinType, input: &[u8]) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry
             .preimage_hashes(&ctx, input)
@@ -39,7 +40,7 @@ impl TransactionCompiler {
         input: &[u8],
         signatures: Vec<SignatureBytes>,
         public_keys: Vec<PublicKeyBytes>,
-    ) -> SigningResult<Vec<u8>> {
+    ) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry
             .compile(&ctx, input, signatures, public_keys)

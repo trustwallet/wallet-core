@@ -17,7 +17,7 @@ use tw_misc::try_or_else;
 /// \param coin The given coin type to sign the transaction for.
 /// \return The serialized data of a `SigningOutput` proto object. (e.g. TW.Bitcoin.Proto.SigningOutput).
 #[no_mangle]
-pub unsafe extern "C" fn tw_any_signer_sign(input: *mut TWData, coin: u32) -> *mut TWData {
+pub unsafe extern "C" fn tw_any_signer_sign(input: *const TWData, coin: u32) -> *mut TWData {
     let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
 
     AnySigner::sign(input.as_slice(), coin)

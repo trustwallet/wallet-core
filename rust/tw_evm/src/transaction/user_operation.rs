@@ -13,6 +13,7 @@ use serde::Serialize;
 use tw_encoding::hex;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
+use tw_memory::Data;
 use tw_number::U256;
 
 /// EIP4337 UserOperation
@@ -21,18 +22,18 @@ pub struct UserOperation {
     pub nonce: U256,
     pub entry_point: Address,
     pub sender: Address,
-    pub init_code: Vec<u8>,
+    pub init_code: Data,
     pub gas_limit: U256,
     pub verification_gas_limit: U256,
     pub max_fee_per_gas: U256,
     pub max_inclusion_fee_per_gas: U256,
     pub pre_verification_gas: U256,
-    pub paymaster_and_data: Vec<u8>,
-    pub payload: Vec<u8>,
+    pub paymaster_and_data: Data,
+    pub payload: Data,
 }
 
 impl TransactionCommon for UserOperation {
-    fn payload(&self) -> Vec<u8> {
+    fn payload(&self) -> Data {
         self.payload.clone()
     }
 }
@@ -53,7 +54,7 @@ impl UnsignedTransaction for UserOperation {
         H256::try_from(pre_hash.as_slice()).expect("keccak256 returns 32 bytes")
     }
 
-    fn encode(&self, _chain_id: U256) -> Vec<u8> {
+    fn encode(&self, _chain_id: U256) -> Data {
         let init_code_hash = keccak256(&self.init_code);
         let payload_hash = keccak256(&self.payload);
         let paymaster_and_data_hash = keccak256(&self.paymaster_and_data);
@@ -92,7 +93,7 @@ pub struct SignedUserOperation {
 }
 
 impl TransactionCommon for SignedUserOperation {
-    fn payload(&self) -> Vec<u8> {
+    fn payload(&self) -> Data {
         self.unsigned.payload.clone()
     }
 }
@@ -100,7 +101,7 @@ impl TransactionCommon for SignedUserOperation {
 impl SignedTransaction for SignedUserOperation {
     type Signature = Signature;
 
-    fn encode(&self) -> Vec<u8> {
+    fn encode(&self) -> Data {
         let mut signature = self.signature.to_rsv_bytes();
         signature[64] += 27;
 
