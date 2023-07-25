@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod compiler;
-pub mod input_builder;
 pub mod json_signer;
 pub mod signer;
 pub mod tx_builder;

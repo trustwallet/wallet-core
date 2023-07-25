@@ -64,8 +64,4 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
     compileRust(coin, txInputData, signatures, publicKeys, dataOut);
 }
 
-Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
-    return buildSigningInputRust(coinType, from, to, amount, asset, memo, chainId);
-}
-
 } // namespace TW::Ethereum

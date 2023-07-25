@@ -14,7 +14,6 @@ use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::address::Address;
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::compiler::Compiler;
-use tw_evm::modules::input_builder::EthInputBuilder;
 use tw_evm::modules::json_signer::EthJsonSigner;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
@@ -32,7 +31,6 @@ impl CoinEntry for EthereumEntry {
 
     // Optional modules:
     type JsonSigner = EthJsonSigner<StandardEvmContext>;
-    type InputBuilder = EthInputBuilder<StandardEvmContext>;
     type PlanBuilder = NoPlanBuilder;
 
     #[inline]
@@ -91,10 +89,5 @@ impl CoinEntry for EthereumEntry {
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         None
-    }
-
-    #[inline]
-    fn signing_input_builder(&self) -> Option<Self::InputBuilder> {
-        Some(EthInputBuilder::default())
     }
 }

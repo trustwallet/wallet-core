@@ -6,14 +6,12 @@
 
 use std::borrow::Cow;
 use tw_any_coin::ffi::tw_transaction_compiler::{
-    tw_transaction_compiler_build_input, tw_transaction_compiler_compile,
-    tw_transaction_compiler_pre_image_hashes,
+    tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_memory::test_utils::tw_data_vector_helper::TWDataVectorHelper;
-use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -23,48 +21,21 @@ const ETHEREUM_COIN_TYPE: u32 = 60;
 
 #[test]
 fn test_transaction_compiler_eth() {
-    let from = TWStringHelper::create("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
-    let to = TWStringHelper::create("0x3535353535353535353535353535353535353535");
-    let amount = TWStringHelper::create("1000000000000000000");
-    let asset = TWStringHelper::create("ETH");
-    let memo = TWStringHelper::create("");
-    let chain_id = TWStringHelper::create("");
-    let res = TWDataHelper::wrap(unsafe {
-        tw_transaction_compiler_build_input(
-            ETHEREUM_COIN_TYPE,
-            from.ptr(),
-            to.ptr(),
-            amount.ptr(),
-            asset.ptr(),
-            memo.ptr(),
-            chain_id.ptr(),
-        )
-    })
-    .to_vec()
-    .expect("!tw_transaction_compiler_build_input returned nullptr");
-
-    let mut input: Proto::SigningInput =
-        deserialize(&res).expect("Coin entry returned an invalid output");
-
     let transfer = Proto::mod_Transaction::Transfer {
         amount: U256::encode_be_compact(1_000_000_000_000_000_000),
         data: Cow::default(),
     };
-    let expected_input = Proto::SigningInput {
+    let input = Proto::SigningInput {
+        nonce: U256::encode_be_compact(11),
         chain_id: U256::encode_be_compact(1),
-        to_address: Cow::from("0x3535353535353535353535353535353535353535"),
+        gas_price: U256::encode_be_compact(20_000_000_000),
+        gas_limit: U256::encode_be_compact(21_000),
+        to_address: "0x3535353535353535353535353535353535353535".into(),
         transaction: Some(Proto::Transaction {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
         ..Proto::SigningInput::default()
     };
-    assert_eq!(input, expected_input);
-
-    // Set a few other values.
-    input.nonce = U256::encode_be_compact(11);
-    input.gas_price = U256::encode_be_compact(20_000_000_000);
-    input.gas_limit = U256::encode_be_compact(21_000);
-    input.tx_mode = Proto::TransactionMode::Legacy;
 
     // Step 2: Obtain preimage hash
     let input_data = TWDataHelper::create(serialize(&input).unwrap());

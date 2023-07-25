@@ -5,8 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use tw_coin_entry::coin_entry::{PublicKeyBytes, SignatureBytes};
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
-use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
+use tw_coin_entry::error::{SigningError, SigningResult};
 use tw_coin_registry::coin_dispatcher;
 use tw_coin_registry::coin_type::CoinType;
 use tw_memory::Data;
@@ -15,18 +14,6 @@ use tw_memory::Data;
 pub struct TransactionCompiler;
 
 impl TransactionCompiler {
-    /// Builds a coin-specific SigningInput (proto object) from a simple transaction.
-    #[inline]
-    pub fn build_input(coin: CoinType, args: BuildSigningInputArgs) -> SigningResult<Data> {
-        let (ctx, entry) = coin_dispatcher(coin)?;
-        match entry.build_signing_input(&ctx, args) {
-            Ok(Some(result)) => Ok(result),
-            // The chain doesn't support `build_signing_input`.
-            Ok(None) => Err(SigningError(SigningErrorType::Error_internal)),
-            Err(e) => Err(e),
-        }
-    }
-
     /// Obtains pre-signing hashes of a transaction.
     #[inline]
     pub fn preimage_hashes(coin: CoinType, input: &[u8]) -> SigningResult<Data> {

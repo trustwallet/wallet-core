@@ -7,7 +7,6 @@
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
-use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_encoding::hex;
 use tw_ethereum::entry::EthereumEntry;
@@ -20,42 +19,23 @@ use tw_proto::{deserialize, serialize};
 
 #[test]
 fn test_external_signature_sign() {
-    let args = BuildSigningInputArgs {
-        from: "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F".to_string(),
-        to: "0x3535353535353535353535353535353535353535".to_string(),
-        amount: "1000000000000000000".to_string(),
-        asset: "ETH".to_string(),
-        memo: "".to_string(),
-        chain_id: "".to_string(),
-    };
-    let res = EthereumEntry
-        .build_signing_input(&EmptyCoinContext, args.clone())
-        .expect("!build_signing_input")
-        .expect("'build_signing_input' should return something");
-    let mut input: Proto::SigningInput =
-        deserialize(res.as_slice()).expect("Coin entry returned an invalid output");
-
     let transfer = Proto::mod_Transaction::Transfer {
         amount: U256::encode_be_compact(1_000_000_000_000_000_000),
         data: Cow::default(),
     };
-    let expected_input = Proto::SigningInput {
+    let input = Proto::SigningInput {
+        nonce: U256::encode_be_compact(11),
         chain_id: U256::encode_be_compact(1),
-        to_address: Cow::from(args.to),
+        gas_price: U256::encode_be_compact(20_000_000_000),
+        gas_limit: U256::encode_be_compact(21_000),
+        to_address: "0x3535353535353535353535353535353535353535".into(),
         transaction: Some(Proto::Transaction {
             transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
         }),
         ..Proto::SigningInput::default()
     };
-    assert_eq!(input, expected_input);
 
-    // Set a few other values.
-    input.nonce = U256::encode_be_compact(11);
-    input.gas_price = U256::encode_be_compact(20_000_000_000);
-    input.gas_limit = U256::encode_be_compact(21_000);
-    input.tx_mode = Proto::TransactionMode::Legacy;
-
-    // Step 2: Obtain preimage hash
+    // Step 1: Obtain preimage hash
     let input_data = serialize(&input).unwrap();
     let preimage_data = EthereumEntry
         .preimage_hashes(&EmptyCoinContext, &input_data)
@@ -78,7 +58,7 @@ fn test_external_signature_sign() {
     // Verify signature (pubkey & hash & signature)
     assert!(public_key.verify(&signature, &preimage.data_hash));
 
-    // Step 3: Compile transaction info
+    // Step 2: Compile transaction info
     let input_data = serialize(&input).unwrap();
     let output_data = EthereumEntry
         .compile(
@@ -98,9 +78,13 @@ fn test_external_signature_sign() {
 
     // Double check: check if simple signature process gives the same result. Note that private
     // keys were not used anywhere up to this point.
-    input.private_key = Cow::from(
-        hex::decode("4646464646464646464646464646464646464646464646464646464646464646").unwrap(),
-    );
+    let input = Proto::SigningInput {
+        private_key: Cow::from(
+            hex::decode("4646464646464646464646464646464646464646464646464646464646464646")
+                .unwrap(),
+        ),
+        ..input
+    };
 
     let input_data = serialize(&input).unwrap();
     let output_data = EthereumEntry

@@ -7,7 +7,6 @@
 use crate::coin_context::CoinContext;
 use crate::derivation::Derivation;
 use crate::error::AddressResult;
-use crate::modules::input_builder::InputBuilder;
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::Prefix;
@@ -34,7 +33,6 @@ pub trait CoinEntry {
 
     // Optional modules:
     type JsonSigner: JsonSigner;
-    type InputBuilder: InputBuilder<SigningInput = Self::SigningInput<'static>>;
     type PlanBuilder: PlanBuilder;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
@@ -80,10 +78,4 @@ pub trait CoinEntry {
     /// Planning, for UTXO chains, in preparation for signing.
     /// Returns an optional `Plan` builder. Only UTXO chains need it.
     fn plan_builder(&self) -> Option<Self::PlanBuilder>;
-
-    /// Optional helper to prepare a `SigningInput` from simple parameters.
-    /// Not suitable for UTXO chains.
-    ///
-    /// Returns `None` if the chain doesn't support creating `SigningInput` from the simple parameters.
-    fn signing_input_builder(&self) -> Option<Self::InputBuilder>;
 }

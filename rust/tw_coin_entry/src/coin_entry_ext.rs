@@ -9,7 +9,6 @@ use crate::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use crate::derivation::Derivation;
 use crate::error::AddressResult;
 use crate::error::SigningResult;
-use crate::modules::input_builder::{BuildSigningInputArgs, InputBuilder};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::AddressPrefix;
@@ -85,17 +84,6 @@ pub trait CoinEntryExt {
 
     /// Plans a transaction (for UTXO chains only).
     fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Data>>;
-
-    /// Optional helper to prepare a `SigningInput` from simple parameters.
-    /// Not suitable for UTXO chains. Some parameters, like chain-specific fee/gas parameters,
-    /// may need to be set in the `SigningInput`.
-    ///
-    /// Returns `None` if the chain doesn't support creating `SigningInput` from the simple parameters.
-    fn build_signing_input(
-        &self,
-        coin: &dyn CoinContext,
-        args: BuildSigningInputArgs,
-    ) -> SigningResult<Option<Data>>;
 }
 
 impl<T> CoinEntryExt for T
@@ -200,17 +188,5 @@ where
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
         let output = plan_builder.plan(coin, input);
         Ok(Some(serialize(&output)?))
-    }
-
-    fn build_signing_input(
-        &self,
-        coin: &dyn CoinContext,
-        args: BuildSigningInputArgs,
-    ) -> SigningResult<Option<Data>> {
-        let Some(input_builder) = self.signing_input_builder() else {
-            return Ok(None);
-        };
-        let input = input_builder.build_signing_input(coin, args)?;
-        Ok(Some(serialize(&input)?))
     }
 }

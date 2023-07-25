@@ -14,7 +14,6 @@ use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::modules::compiler::Compiler;
-use tw_evm::modules::input_builder::EthInputBuilder;
 use tw_evm::modules::json_signer::EthJsonSigner;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
@@ -32,7 +31,6 @@ impl CoinEntry for RoninEntry {
 
     // Optional modules:
     type JsonSigner = EthJsonSigner<RoninContext>;
-    type InputBuilder = EthInputBuilder<RoninContext>;
     type PlanBuilder = NoPlanBuilder;
 
     #[inline]
@@ -91,10 +89,5 @@ impl CoinEntry for RoninEntry {
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         None
-    }
-
-    #[inline]
-    fn signing_input_builder(&self) -> Option<Self::InputBuilder> {
-        Some(EthInputBuilder::default())
     }
 }

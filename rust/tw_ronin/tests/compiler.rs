@@ -7,7 +7,6 @@
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
-use tw_coin_entry::modules::input_builder::BuildSigningInputArgs;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ecdsa::secp256k1;
@@ -17,39 +16,6 @@ use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_proto::{deserialize, serialize};
 use tw_ronin::entry::RoninEntry;
-
-#[test]
-fn test_ronin_build_signing_input() {
-    let args = BuildSigningInputArgs {
-        from: "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F".to_string(),
-        to: "ronin:3535353535353535353535353535353535353535".to_string(),
-        amount: "1000000000000000000".to_string(),
-        asset: "RONIN".to_string(),
-        memo: "".to_string(),
-        chain_id: "".to_string(),
-    };
-    let res = RoninEntry
-        .build_signing_input(&EmptyCoinContext, args.clone())
-        .expect("!build_signing_input")
-        .expect("'build_signing_input' should return something");
-    let input: Proto::SigningInput =
-        deserialize(res.as_slice()).expect("Coin entry returned an invalid output");
-
-    let transfer = Proto::mod_Transaction::Transfer {
-        amount: U256::encode_be_compact(1_000_000_000_000_000_000),
-        data: Cow::default(),
-    };
-
-    let expected_input = Proto::SigningInput {
-        chain_id: U256::encode_be_compact(1),
-        to_address: "ronin:3535353535353535353535353535353535353535".into(),
-        transaction: Some(Proto::Transaction {
-            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
-        }),
-        ..Proto::SigningInput::default()
-    };
-    assert_eq!(input, expected_input);
-}
 
 #[test]
 fn test_ronin_preimage_hashes_and_compile() {

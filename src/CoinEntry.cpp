@@ -129,32 +129,4 @@ void compileRust(
     dataOut = output.toDataOrDefault();
 }
 
-Data buildSigningInputRust(
-    TWCoinType coinType,
-    const std::string& from,
-    const std::string& to,
-    const uint256_t& amount,
-    const std::string& asset,
-    const std::string& memo,
-    const std::string& chainId
-) {
-    Rust::TWStringWrapper fromStr = from;
-    Rust::TWStringWrapper toStr = to;
-    Rust::TWStringWrapper amountStr = toString(amount);
-    Rust::TWStringWrapper assetStr = asset;
-    Rust::TWStringWrapper memoStr = memo;
-    Rust::TWStringWrapper chainIdStr = chainId;
-
-    Rust::TWDataWrapper input = Rust::tw_transaction_compiler_build_input(
-        static_cast<uint32_t>(coinType),
-        fromStr.get(),
-        toStr.get(),
-        amountStr.get(),
-        assetStr.get(),
-        memoStr.get(),
-        chainIdStr.get()
-    );
-    return input.toDataOrDefault();
-}
-
 } // namespace TW

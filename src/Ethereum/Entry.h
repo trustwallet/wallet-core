@@ -24,7 +24,6 @@ public:
 
     Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
     void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
-    Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const override;
 };
 
 } // namespace TW::Ethereum

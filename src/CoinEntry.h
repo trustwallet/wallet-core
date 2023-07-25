@@ -110,15 +110,6 @@ void compileRust(TWCoinType coin,
                  const std::vector<PublicKey>& publicKeys,
                  Data& dataOut);
 
-// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_transaction_compiler_build_input`.
-Data buildSigningInputRust(TWCoinType coinType,
-                           const std::string& from,
-                           const std::string& to,
-                           const uint256_t& amount,
-                           const std::string& asset,
-                           const std::string& memo,
-                           const std::string& chainId);
-
 // Note: use output parameter to avoid unneeded copies
 template <typename Planner, typename Input>
 void planTemplate(const Data& dataIn, Data& dataOut) {
