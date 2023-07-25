@@ -6,7 +6,6 @@
 
 #include "Entry.h"
 
-#include "Address.h"
 #include "Ethereum/Entry.h"
 #include "HexCoding.h"
 
