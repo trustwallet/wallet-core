@@ -12,8 +12,7 @@ use tw_memory::Data;
 use tw_number::U256;
 
 /// Generated via https://remix.ethereum.org
-/// Modified solidity interface: [`erc4337.simple_account.sol`].
-/// Original: https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol
+/// https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol
 const ERC4337_SIMPLE_ACCOUNT_ABI: &str = include_str!("resource/erc4337.simple_account.abi.json");
 
 lazy_static! {
