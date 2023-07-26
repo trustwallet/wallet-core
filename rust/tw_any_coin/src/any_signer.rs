@@ -19,4 +19,12 @@ impl AnySigner {
         let (ctx, entry) = coin_dispatcher(coin)?;
         entry.sign(&ctx, input).map_err(SigningError::from)
     }
+
+    /// Planning, for UTXO chains, in preparation for signing
+    /// It is optional, only UTXO chains need it, default impl. leaves empty result.
+    #[inline]
+    pub fn plan(input: &[u8], coin: CoinType) -> SigningResult<Data> {
+        let (ctx, entry) = coin_dispatcher(coin)?;
+        entry.plan(&ctx, input)
+    }
 }

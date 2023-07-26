@@ -8,8 +8,6 @@ use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_encoding::hex::DecodeHex;
 use tw_ethereum::entry::EthereumEntry;
-use tw_proto::serialize;
-use tw_proto::Ethereum::Proto;
 
 #[test]
 fn test_sign_json() {
@@ -23,14 +21,4 @@ fn test_sign_json() {
         .expect_err("'EthEntry::sign_json' is not supported yet");
 
     // Expected result - "f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10"
-}
-
-#[test]
-fn test_plan_not_supported() {
-    let input = Proto::SigningInput::default();
-    let input_data = serialize(&input).unwrap();
-    let maybe_plan = EthereumEntry
-        .plan(&EmptyCoinContext, &input_data)
-        .expect("!plan");
-    assert_eq!(maybe_plan, None, "Ethereum does not support plan()");
 }

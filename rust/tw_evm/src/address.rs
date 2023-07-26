@@ -10,7 +10,7 @@ use std::str::FromStr;
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::hex;
-use tw_hash::{sha3::keccak256, H160};
+use tw_hash::{sha3::keccak256, H160, H256};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 
@@ -39,11 +39,13 @@ impl Address {
 
     /// Initializes an address with a `secp256k1` public key.
     pub fn with_secp256k1_pubkey(pubkey: &secp256k1::PublicKey) -> Address {
-        const ADDRESS_HASH_RANGE: RangeFrom<usize> = 12..;
+        /// `keccak256` returns 32 bytes, but Ethereum address is the last 20 bytes of the hash.
+        const ADDRESS_HASH_STARTS_AT: usize = H256::len() - H160::len();
+        const ADDRESS_HASH_RANGE: RangeFrom<usize> = ADDRESS_HASH_STARTS_AT..;
 
         let pubkey_bytes = pubkey.uncompressed_without_prefix();
         let hash = keccak256(pubkey_bytes.as_slice());
-        assert_eq!(hash.len(), 32);
+        assert_eq!(hash.len(), H256::len());
 
         let bytes = H160::try_from(&hash[ADDRESS_HASH_RANGE]).expect("Expected 20 byte array");
 
@@ -62,9 +64,8 @@ impl Address {
 
         let payload_chars = addr_hex.chars().zip(addr_hash.chars()).map(|(a, h)| {
             if a.is_ascii_digit() {
-                return a;
-            }
-            if UPPER_RANGE_1.contains(&h) || UPPER_RANGE_2.contains(&h) {
+                a
+            } else if UPPER_RANGE_1.contains(&h) || UPPER_RANGE_2.contains(&h) {
                 a.to_ascii_uppercase()
             } else {
                 a.to_ascii_lowercase()

@@ -23,7 +23,7 @@ impl<Context: EvmContext> JsonSigner for EthJsonSigner<Context> {
         _coin: &dyn CoinContext,
         _input_json: &str,
         _key: &PrivateKey,
-    ) -> SigningResult<Option<String>> {
+    ) -> SigningResult<String> {
         // TODO implement when `quick_protobuf` is replaced with `rust-protobuf`.
         Err(SigningError(SigningErrorType::Error_internal))
     }

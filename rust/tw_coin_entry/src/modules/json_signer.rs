@@ -15,7 +15,7 @@ pub trait JsonSigner {
         coin: &dyn CoinContext,
         input_json: &str,
         key: &PrivateKey,
-    ) -> SigningResult<Option<String>>;
+    ) -> SigningResult<String>;
 }
 
 /// `NoJsonSigner` can't be created since there are no enum variants.
@@ -27,7 +27,7 @@ impl JsonSigner for NoJsonSigner {
         _coin: &dyn CoinContext,
         _input_json: &str,
         _key: &PrivateKey,
-    ) -> SigningResult<Option<String>> {
+    ) -> SigningResult<String> {
         panic!("`NoJsonSigner` should never be constructed and used")
     }
 }

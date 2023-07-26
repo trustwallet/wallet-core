@@ -24,3 +24,17 @@ pub unsafe extern "C" fn tw_any_signer_sign(input: *const TWData, coin: u32) -> 
         .map(|output| TWData::from(output).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
+
+/// Plans a transaction (for UTXO chains only).
+///
+/// \param input The serialized data of a signing input
+/// \param coin The given coin type to plan the transaction for.
+/// \return The serialized data of a `TransactionPlan` proto object.
+#[no_mangle]
+pub unsafe extern "C" fn tw_any_signer_plan(input: *const TWData, coin: u32) -> *mut TWData {
+    let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+
+    AnySigner::plan(input.as_slice(), coin)
+        .map(|output| TWData::from(output).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}

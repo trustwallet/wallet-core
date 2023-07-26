@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::borrow::Cow;
+use tw_any_coin::ffi::tw_any_signer::tw_any_signer_plan;
 use tw_any_coin::ffi::tw_transaction_compiler::{
     tw_transaction_compiler_compile, tw_transaction_compiler_pre_image_hashes,
 };
@@ -83,4 +84,27 @@ fn test_transaction_compiler_eth() {
     assert!(output.error_message.is_empty());
     let expected_encoded = "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779";
     assert_eq!(output.encoded.to_hex(), expected_encoded);
+}
+
+#[test]
+fn test_transaction_compiler_plan_not_supported() {
+    let transfer = Proto::mod_Transaction::Transfer {
+        amount: U256::encode_be_compact(1),
+        data: Cow::default(),
+    };
+    let input = Proto::SigningInput {
+        to_address: "0x3535353535353535353535353535353535353535".into(),
+        transaction: Some(Proto::Transaction {
+            transaction_oneof: Proto::mod_Transaction::OneOftransaction_oneof::transfer(transfer),
+        }),
+        ..Proto::SigningInput::default()
+    };
+    let input_data = TWDataHelper::create(serialize(&input).unwrap());
+    let plan =
+        TWDataHelper::wrap(unsafe { tw_any_signer_plan(input_data.ptr(), ETHEREUM_COIN_TYPE) });
+    assert!(
+        plan.is_null(),
+        "Transaction plan is expected to be not supported by the {} coin",
+        ETHEREUM_COIN_TYPE
+    );
 }

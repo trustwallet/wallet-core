@@ -66,13 +66,3 @@ fn test_sign_json() {
 
     // Expected result - "f86880843b9aca0082520894c36edf48e21cf395b206352a1819de658fd7f988830437df80820feca0442aa06b0d0465bfecf84b28e2ce614a32a1ccc12735dc03a5799517d6659d7aa004e1bf2efa30743f1b6d49dbec2671e9fb5ead1e7da15e352ca1df6fb86a8ba7"
 }
-
-#[test]
-fn test_plan_not_supported() {
-    let input = Proto::SigningInput::default();
-    let input_data = serialize(&input).unwrap();
-    let maybe_plan = RoninEntry
-        .plan(&EmptyCoinContext, &input_data)
-        .expect("!plan");
-    assert_eq!(maybe_plan, None, "Ronin does not support plan()");
-}

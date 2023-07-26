@@ -7,8 +7,8 @@
 use crate::coin_context::CoinContext;
 use crate::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use crate::derivation::Derivation;
-use crate::error::AddressResult;
 use crate::error::SigningResult;
+use crate::error::{AddressResult, SigningError, SigningErrorType};
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::AddressPrefix;
@@ -66,7 +66,7 @@ pub trait CoinEntryExt {
         coin: &dyn CoinContext,
         input_json: &str,
         private_key: PrivateKeyBytes,
-    ) -> SigningResult<Option<String>>;
+    ) -> SigningResult<String>;
 
     /// Returns hash(es) for signing, needed for external signing.
     /// It will return a proto object named `PreSigningOutput` which will include hash.
@@ -83,7 +83,7 @@ pub trait CoinEntryExt {
     ) -> ProtoResult<Data>;
 
     /// Plans a transaction (for UTXO chains only).
-    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Data>>;
+    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
 }
 
 impl<T> CoinEntryExt for T
@@ -153,9 +153,9 @@ where
         coin: &dyn CoinContext,
         input_json: &str,
         private_key: PrivateKeyBytes,
-    ) -> SigningResult<Option<String>> {
+    ) -> SigningResult<String> {
         let Some(json_signer) = self.json_signer() else {
-            return Ok(None);
+            return Err(SigningError(SigningErrorType::Error_not_supported));
         };
 
         let private_key = PrivateKey::new(private_key)?;
@@ -180,13 +180,13 @@ where
         serialize(&output)
     }
 
-    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Option<Data>> {
+    fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(plan_builder) = self.plan_builder() else {
-            return Ok(None);
+            return Err(SigningError(SigningErrorType::Error_not_supported));
         };
 
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
         let output = plan_builder.plan(coin, input);
-        Ok(Some(serialize(&output)?))
+        serialize(&output).map_err(SigningError::from)
     }
 }

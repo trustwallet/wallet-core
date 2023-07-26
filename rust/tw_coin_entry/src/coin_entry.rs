@@ -73,9 +73,15 @@ pub trait CoinEntry {
 
     /// It is optional, Signing JSON input with private key.
     /// Returns `Ok(None)` if the chain doesn't support signing JSON.
-    fn json_signer(&self) -> Option<Self::JsonSigner>;
+    #[inline]
+    fn json_signer(&self) -> Option<Self::JsonSigner> {
+        None
+    }
 
     /// Planning, for UTXO chains, in preparation for signing.
     /// Returns an optional `Plan` builder. Only UTXO chains need it.
-    fn plan_builder(&self) -> Option<Self::PlanBuilder>;
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        None
+    }
 }
