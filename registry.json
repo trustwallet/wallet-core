@@ -4208,7 +4208,7 @@
   {
     "id": "neon",
     "name": "Neon",
-    "coinId": 255022934,
+    "coinId": 245022934,
     "symbol": "NEON",
     "decimals": 18,
     "blockchain": "Ethereum",
