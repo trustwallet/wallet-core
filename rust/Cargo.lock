@@ -1681,6 +1681,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_utxo"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
 name = "typenum"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
