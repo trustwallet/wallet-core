@@ -12,6 +12,24 @@
 
 namespace TW::Theta {
 
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+    return Ethereum::Address::isValid(address);
+}
+
+std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+    // normalized with EIP55 checksum
+    return Ethereum::Address(address).string();
+}
+
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+    return Ethereum::Address(publicKey).string();
+}
+
+Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+    const auto addr = Ethereum::Address(address);
+    return {addr.bytes.begin(), addr.bytes.end()};
+}
+
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

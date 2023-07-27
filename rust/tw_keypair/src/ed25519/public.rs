@@ -21,7 +21,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
 /// Represents an `ed25519` public key.
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct PublicKey<H: Hasher512> {
     compressed: CompressedEdwardsY,
     point: EdwardsPoint,

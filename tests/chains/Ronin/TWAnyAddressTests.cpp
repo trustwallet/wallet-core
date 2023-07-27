@@ -9,7 +9,6 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWCoinType.h>
 
-#include "Ronin/Address.h"
 #include "Ronin/Entry.h"
 
 #include <gtest/gtest.h>
