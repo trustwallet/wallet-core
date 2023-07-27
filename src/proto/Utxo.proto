@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+message SigningInput {
+	// The protocol version, is currently expected to be 1 or 2 (BIP68)
+	int32 version = 1;
+
+	// Block height or timestamp indicating at what point transactions can be
+	// included in a block.
+	int32 lock_time = 2;
+
+	// The inputs of the transaction to sign. If an individual input does not
+	// provide an index, then the index of the inserted order is used.
+	repeated Input inputs = 3;
+
+	repeated Output outputs = 4;
+}
+
+// Input for legacy hashing algorithm (e.g. P2SH, P2PK, P2PKH).
+message InputLegacy {
+	// (optional) The index of the inout.
+	int32 index = 1;
+
+	// The spending condition of the input.
+	bytes script_sig = 2;
+
+	// The sighash type.
+	SighashType sighash = 3;
+}
+
+// Input for segwit hashing algorithm (e.g. P2WSH, P2WPK).
+message InputSegwit {
+	// (optional) The index of the inout.
+	int32 index = 1;
+
+	// The value (amount) and spending condition of the input.
+	PrevOut prevout = 2;
+
+	// The sighash type.
+	SighashType sighash = 3;
+}
+
+message InputTaproot {
+	// (optional) The index of the inout.
+	int32 index = 1;
+
+	// Contains one more inputs. Most often `prevouts` is used which contains
+	// all inputs. If SighashType::*AnyoneCanPay is provided, then `one` can be
+	// used.
+	oneof prevouts {
+		Prevout one = 2;
+		repeated PrevOut prevouts = 3;
+	}
+
+	// The sighash type.
+	SighashType sighash = 4;
+}
+
+message PrevOut {
+	// The value of the output, in satoshis.
+	int64 value = 1;
+	// The spending condition of the output.
+	bytes script_pubkey = 2;
+}
+
+enum SighashType {
+	// Sign all outputs (default).
+	All = 1; // 0x01
+	// Sign no outputs, anyone can choose the destination.
+	None = 2; // 0x02
+	// Sign the output whose index matches this inputs index.
+	Single = 3; // 0x03
+	//Sign all outputs but only this input.
+	AllPlusAnyoneCanPay = 129; //  0x81
+	// Sign no outputs and only this input.
+	NonePlusAnyoneCanPay = 130; // 0x82
+	// Sign one output and only this input.
+	SinglePlusAnyoneCanPay = 131; // 0x83
+}
