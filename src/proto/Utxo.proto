@@ -14,9 +14,17 @@ message SigningInput {
 
 	// The inputs of the transaction to sign. If an individual input does not
 	// provide an index, then the index of the inserted order is used.
-	repeated Input inputs = 3;
+	repeated InputVariant inputs = 3;
 
 	repeated Output outputs = 4;
+}
+
+message InputVariant {
+	oneof variant {
+		InputLegacy legacy_input = 1;
+		InputSegwit segwit_input = 2;
+		InputTaproot taproot_input = 3;
+	}
 }
 
 // Input for legacy hashing algorithm (e.g. P2SH, P2PK, P2PKH).
@@ -31,7 +39,7 @@ message InputLegacy {
 	SighashType sighash = 3;
 }
 
-// Input for segwit hashing algorithm (e.g. P2WSH, P2WPK).
+// Input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
 message InputSegwit {
 	// (optional) The index of the inout.
 	int32 index = 1;
@@ -43,6 +51,7 @@ message InputSegwit {
 	SighashType sighash = 3;
 }
 
+// Input for Taproot
 message InputTaproot {
 	// (optional) The index of the inout.
 	int32 index = 1;
@@ -59,8 +68,9 @@ message InputTaproot {
 	SighashType sighash = 4;
 }
 
+// The output of a previous transaction that is used as input.
 message PrevOut {
-	// The value of the output, in satoshis.
+	// The value of the output (amount).
 	int64 value = 1;
 	// The spending condition of the output.
 	bytes script_pubkey = 2;
@@ -79,4 +89,30 @@ enum SighashType {
 	NonePlusAnyoneCanPay = 130; // 0x82
 	// Sign one output and only this input.
 	SinglePlusAnyoneCanPay = 131; // 0x83
+}
+
+message TxIn {
+	// The referenced transaction hash.
+	bytes txid = 1;
+
+	// The index of the referenced output.
+	int32 vout = 2;
+
+	// The data used to statisfy the spending condition of the referenced
+	// output.
+	oneof spending_data = {
+		bytes script_isg = 3;
+		bytes witness = 4;
+	}
+
+	// The sequence number (TODO).
+	int32 sequence = 5;
+}
+
+// The output of a transaction.
+message TxOut {
+	// The value of the output (amount).
+	int64 value = 1;
+	// The spending condition of the output.
+	bytes script_pubkey = 2;
 }
