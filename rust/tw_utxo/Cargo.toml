@@ -6,3 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+tw_coin_entry = { path = "../tw_coin_entry" }
+tw_keypair = { path = "../tw_keypair" }
+tw_proto = { path = "../tw_proto" }
+tw_memory = { path = "../tw_memory" }
