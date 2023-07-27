@@ -15,6 +15,7 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
 /// Represents an `ed25519` extended public key that is used in Cardano blockchain.
+#[derive(Clone)]
 pub struct ExtendedPublicKey<H: Hasher512> {
     /// The first half of the public key (64 bytes).
     key: ExtendedPublicPart<H>,
@@ -81,6 +82,7 @@ impl<'a, H: Hasher512> TryFrom<&'a str> for ExtendedPublicKey<H> {
     }
 }
 
+#[derive(Clone)]
 pub(crate) struct ExtendedPublicPart<H: Hasher512> {
     public: PublicKey<H>,
     chain_code: H256,

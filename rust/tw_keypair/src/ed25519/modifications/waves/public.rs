@@ -16,6 +16,7 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 
 /// Represents an `ed25519` public key that is used in Waves blockchain.
+#[derive(Clone)]
 pub struct PublicKey<H: Hasher512> {
     /// A public key that is calculated through converting
     /// a standard [`curve25519_dalek::edwards::EdwardsPoint`] to [`MontgomeryPoint`].

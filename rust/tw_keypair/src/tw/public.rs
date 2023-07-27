@@ -12,6 +12,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
 /// Represents a public key that can be used to verify signatures and messages.
+#[derive(Clone)]
 pub enum PublicKey {
     Secp256k1(secp256k1::PublicKey),
     Secp256k1Extended(secp256k1::PublicKey),
@@ -38,11 +39,11 @@ impl PublicKey {
                 let pubkey = secp256k1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Secp256k1Extended(pubkey))
             },
-            PublicKeyType::Nist256k1 if nist256p1::PublicKey::COMPRESSED == bytes.len() => {
+            PublicKeyType::Nist256p1 if nist256p1::PublicKey::COMPRESSED == bytes.len() => {
                 let pubkey = nist256p1::PublicKey::try_from(bytes.as_slice())?;
                 Ok(PublicKey::Nist256p1(pubkey))
             },
-            PublicKeyType::Nist256k1Extended
+            PublicKeyType::Nist256p1Extended
                 if nist256p1::PublicKey::UNCOMPRESSED == bytes.len() =>
             {
                 let pubkey = nist256p1::PublicKey::try_from(bytes.as_slice())?;
@@ -122,6 +123,16 @@ impl PublicKey {
             PublicKey::Curve25519Waves(waves) => waves.to_vec(),
             PublicKey::Ed25519ExtendedCardano(cardano) => cardano.to_vec(),
             PublicKey::Starkex(stark) => stark.to_vec(),
+        }
+    }
+
+    /// Returns a `secp256k1` public key if the key type is matched.
+    pub fn to_secp256k1(&self) -> Option<&secp256k1::PublicKey> {
+        match self {
+            PublicKey::Secp256k1(secp256k1) | PublicKey::Secp256k1Extended(secp256k1) => {
+                Some(secp256k1)
+            },
+            _ => None,
         }
     }
 }

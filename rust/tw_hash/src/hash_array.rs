@@ -11,6 +11,7 @@ use std::str::FromStr;
 use tw_encoding::hex;
 use zeroize::DefaultIsZeroes;
 
+pub type H160 = Hash<20>;
 pub type H256 = Hash<32>;
 pub type H264 = Hash<33>;
 pub type H512 = Hash<64>;

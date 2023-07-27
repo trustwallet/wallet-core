@@ -1,13 +1,20 @@
 [workspace]
 members = [
+    "tw_any_coin",
     "tw_bitcoin",
+    "tw_coin_entry",
+    "tw_coin_registry",
     "tw_encoding",
+    "tw_ethereum",
+    "tw_evm",
     "tw_hash",
     "tw_keypair",
     "tw_memory",
     "tw_misc",
     "tw_move_parser",
+    "tw_number",
     "tw_proto",
+    "tw_ronin",
     "wallet_core_rs",
 ]
 

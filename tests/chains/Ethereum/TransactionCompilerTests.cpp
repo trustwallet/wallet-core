@@ -25,33 +25,22 @@ using namespace TW;
 TEST(EthereumCompiler, CompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 =
-        TransactionCompiler::buildInput(coin,
-                                        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
-                                        "0x3535353535353535353535353535353535353535", // to
-                                        "1000000000000000000",                        // amount
-                                        "ETH",                                        // asset
-                                        "",                                           // memo
-                                        ""                                            // chainId
-        );
-
-    // Check, by parsing
-    EXPECT_EQ((int)txInputData0.size(), 61);
     Ethereum::Proto::SigningInput input;
-    ASSERT_TRUE(input.ParseFromArray(txInputData0.data(), (int)txInputData0.size()));
-    EXPECT_EQ(hex(input.chain_id()), "01");
-    EXPECT_EQ(input.to_address(), "0x3535353535353535353535353535353535353535");
-    ASSERT_TRUE(input.transaction().has_transfer());
-    EXPECT_EQ(hex(input.transaction().transfer().amount()), "0de0b6b3a7640000");
 
-    // Set a few other values
     const auto nonce = store(uint256_t(11));
+    const auto chainId = store(uint256_t(1));
     const auto gasPrice = store(uint256_t(20000000000));
     const auto gasLimit = store(uint256_t(21000));
+    const auto amount = store(uint256_t(1'000'000'000'000'000'000));
+
     input.set_nonce(nonce.data(), nonce.size());
+    input.set_chain_id(chainId.data(), chainId.size());
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_tx_mode(Ethereum::Proto::Legacy);
+    input.set_to_address("0x3535353535353535353535353535353535353535");
+
+    input.mutable_transaction()->mutable_transfer()->set_amount(amount.data(), amount.size());
 
     // Serialize back, this shows how to serialize SigningInput protobuf to byte array
     const auto txInputData = data(input.SerializeAsString());
@@ -120,7 +109,7 @@ TEST(EthereumCompiler, CompileWithSignatures) {
     }
 }
 
-TEST(EthereumCompiler, BuildTransactionInput) {
+TEST(EthereumCompiler, BuildTransactionInputShouldFail) {
     const auto coin = TWCoinTypeEthereum;
     const auto txInputData0 =
         TransactionCompiler::buildInput(coin,
@@ -131,27 +120,6 @@ TEST(EthereumCompiler, BuildTransactionInput) {
                                         "Memo",                                       // memo
                                         "05"                                          // chainId
         );
-
-    // Check, by parsing
-    EXPECT_EQ(txInputData0.size(), 61ul);
-    Ethereum::Proto::SigningInput input;
-    ASSERT_TRUE(input.ParseFromArray(txInputData0.data(), (int)txInputData0.size()));
-    EXPECT_EQ(hex(input.chain_id()), "05");
-    EXPECT_EQ(input.to_address(), "0x3535353535353535353535353535353535353535");
-    ASSERT_TRUE(input.transaction().has_transfer());
-    EXPECT_EQ(hex(input.transaction().transfer().amount()), "0de0b6b3a7640000");
-}
-
-TEST(EthereumCompiler, BuildTransactionInputInvalidAddress) {
-    const auto coin = TWCoinTypeEthereum;
-    EXPECT_EXCEPTION(
-        TransactionCompiler::buildInput(coin,
-                                        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
-                                        "__INVALID_ADDRESS__",                        // to
-                                        "1000000000000000000",                        // amount
-                                        "ETH",                                        // asset
-                                        "",                                           // memo
-                                        ""                                            // chainId
-                                        ),
-        "Invalid to address");
+    // Ethereum doesn't support `buildInput`.
+    EXPECT_TRUE(txInputData0.empty());
 }

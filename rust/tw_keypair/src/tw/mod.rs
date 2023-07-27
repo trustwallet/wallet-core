@@ -4,11 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use serde::Deserialize;
+
 mod private;
 mod public;
 
 pub use private::PrivateKey;
 pub use public::PublicKey;
+
+pub type Signature = Vec<u8>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -42,19 +46,28 @@ impl Curve {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum PublicKeyType {
+    #[serde(rename = "secp256k1")]
     Secp256k1 = 0,
+    #[serde(rename = "secp256k1Extended")]
     Secp256k1Extended = 1,
-    Nist256k1 = 2,
-    Nist256k1Extended = 3,
+    #[serde(rename = "nist256p1")]
+    Nist256p1 = 2,
+    #[serde(rename = "nist256p1Extended")]
+    Nist256p1Extended = 3,
+    #[serde(rename = "ed25519")]
     Ed25519 = 4,
+    #[serde(rename = "ed25519Blake2b")]
     Ed25519Blake2b = 5,
     /// Waves blockchain specific public key.
+    #[serde(rename = "curve25519")]
     Curve25519Waves = 6,
     /// Cardano blockchain specific extended public key.
+    #[serde(rename = "ed25519Cardano")]
     Ed25519ExtendedCardano = 7,
+    #[serde(rename = "starkex")]
     Starkex = 8,
 }
 
@@ -64,8 +77,8 @@ impl PublicKeyType {
         match ty {
             0 => Some(PublicKeyType::Secp256k1),
             1 => Some(PublicKeyType::Secp256k1Extended),
-            2 => Some(PublicKeyType::Nist256k1),
-            3 => Some(PublicKeyType::Nist256k1Extended),
+            2 => Some(PublicKeyType::Nist256p1),
+            3 => Some(PublicKeyType::Nist256p1Extended),
             4 => Some(PublicKeyType::Ed25519),
             5 => Some(PublicKeyType::Ed25519Blake2b),
             6 => Some(PublicKeyType::Curve25519Waves),
@@ -102,8 +115,8 @@ mod tests {
         let tests = [
             (0, Some(PublicKeyType::Secp256k1)),
             (1, Some(PublicKeyType::Secp256k1Extended)),
-            (2, Some(PublicKeyType::Nist256k1)),
-            (3, Some(PublicKeyType::Nist256k1Extended)),
+            (2, Some(PublicKeyType::Nist256p1)),
+            (3, Some(PublicKeyType::Nist256p1Extended)),
             (4, Some(PublicKeyType::Ed25519)),
             (5, Some(PublicKeyType::Ed25519Blake2b)),
             (6, Some(PublicKeyType::Curve25519Waves)),

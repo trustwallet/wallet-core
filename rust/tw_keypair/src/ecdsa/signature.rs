@@ -105,6 +105,14 @@ impl<C: EcdsaCurve> ToBytesVec for Signature<C> {
     }
 }
 
+impl<'a, C: EcdsaCurve> TryFrom<&'a [u8]> for Signature<C> {
+    type Error = KeyPairError;
+
+    fn try_from(bytes: &'a [u8]) -> Result<Self, Self::Error> {
+        Signature::from_bytes(bytes)
+    }
+}
+
 /// To verify the signature, it's enough to check `r` and `s` parts without the recovery ID.
 pub struct VerifySignature<C: EcdsaCurve> {
     pub signature: ecdsa::Signature<C>,

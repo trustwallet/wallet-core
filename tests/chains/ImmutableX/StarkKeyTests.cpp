@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Ethereum/EIP2645.h"
-#include "Ethereum/Signer.h"
 #include "HexCoding.h"
 #include "ImmutableX/Constants.h"
 #include "ImmutableX/StarkKey.h"
@@ -39,8 +38,8 @@ TEST(ImmutableX, GrindKey) {
 TEST(ImmutableX, GetPrivateKeySignature) {
     std::string signature = "0x21fbf0696d5e0aa2ef41a2b4ffb623bcaf070461d61cf7251c74161f82fec3a4370854bc0a34b3ab487c1bc021cd318c734c51ae29374f2beb0e6f2dd49b4bf41c";
     auto data = parse_hex(signature);
-    auto ethSignature = Ethereum::Signer::signatureDataToStructSimple(data);
-    auto seed = store(ethSignature.r);
+    // The signature is `rsv`, where `r` starts at 0 and is 32 long.
+    auto seed = subData(data, 0, 32);
     auto result = grindKey(seed);
     ASSERT_EQ(result, "766f11e90cd7c7b43085b56da35c781f8c067ac0d578eabdceebc4886435bda");
 }

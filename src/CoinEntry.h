@@ -83,6 +83,33 @@ void signTemplate(const Data& dataIn, Data& dataOut) {
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_any_address_is_valid*`.
+bool validateAddressRust(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix);
+
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_any_address_create_with_string*`.
+std::string normalizeAddressRust(TWCoinType coin, const std::string& address);
+
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_any_address_create_with_public_key*`.
+std::string deriveAddressRust(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix);
+
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_any_address_create_with_string*`.
+Data addressToDataRust(TWCoinType coin, const std::string& address);
+
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_any_signer_sign`.
+// Note: use output parameter to avoid unneeded copies
+void signRust(const Data& dataIn, TWCoinType coin, Data& dataOut);
+
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_transaction_compiler_pre_image_hashes`.
+Data preImageHashesRust(TWCoinType coin, const Data& dataIn);
+
+// In each coin's Entry.cpp that is implemented in Rust, this function calls `tw_transaction_compiler_compile`.
+// Note: use output parameter to avoid unneeded copies
+void compileRust(TWCoinType coin,
+                 const Data& dataIn,
+                 const std::vector<Data>& signatures,
+                 const std::vector<PublicKey>& publicKeys,
+                 Data& dataOut);
+
 // Note: use output parameter to avoid unneeded copies
 template <typename Planner, typename Input>
 void planTemplate(const Data& dataIn, Data& dataOut) {

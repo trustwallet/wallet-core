@@ -6,37 +6,34 @@
 
 #include "Entry.h"
 
-#include "Address.h"
-#include "../Ethereum/Signer.h"
-
-using namespace TW;
-using namespace std;
+#include "Ethereum/Entry.h"
+#include "HexCoding.h"
 
 namespace TW::Ronin {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return Address::isValid(address);
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
+    return validateAddressRust(coin, address, addressPrefix);
 }
 
-string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const string& address) const {
-    return Address(address).string();
+std::string Entry::normalizeAddress(TWCoinType coin, const std::string& address) const {
+    return normalizeAddressRust(coin, address);
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return Address(publicKey).string();
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const PrefixVariant& addressPrefix) const {
+    return deriveAddressRust(coin, publicKey, derivation, addressPrefix);
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    const auto addr = Address(address);
-    return {addr.bytes.begin(), addr.bytes.end()};
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    return addressToDataRust(coin, address);
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Ethereum::Signer, Ethereum::Proto::SigningInput>(dataIn, dataOut);
+void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+    signRust(dataIn, coin, dataOut);
 }
 
-string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return Ethereum::Signer::signJSON(json, key);
+// TODO call `signRustJSON` when it's done.
+std::string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
+    return Ethereum::Entry().signJSON(coin, json, key);
 }
 
 } // namespace TW::Ronin

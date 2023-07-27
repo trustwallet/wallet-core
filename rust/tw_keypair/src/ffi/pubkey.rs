@@ -14,6 +14,12 @@ use tw_misc::{try_or_else, try_or_false};
 
 pub struct TWPublicKey(pub(crate) PublicKey);
 
+impl AsRef<PublicKey> for TWPublicKey {
+    fn as_ref(&self) -> &PublicKey {
+        &self.0
+    }
+}
+
 impl RawPtrTrait for TWPublicKey {}
 
 /// Create a public key with the given block of data and specified public key type.

@@ -9,46 +9,26 @@ use tw_hash::sha2::sha256;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_keypair::ffi::privkey::{
-    tw_private_key_create_with_data, tw_private_key_delete, tw_private_key_get_public_key_by_type,
-    tw_private_key_is_valid, tw_private_key_sign, TWPrivateKey,
+    tw_private_key_create_with_data, tw_private_key_get_public_key_by_type,
+    tw_private_key_is_valid, tw_private_key_sign,
 };
 use tw_keypair::ffi::pubkey::{tw_public_key_data, tw_public_key_delete};
+use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
 use tw_keypair::tw::{Curve, PublicKeyType};
 use tw_memory::ffi::c_byte_array::CByteArray;
-
-struct TWPrivateKeyHelper {
-    ptr: *mut TWPrivateKey,
-}
-
-impl TWPrivateKeyHelper {
-    fn with_bytes<T: Into<Vec<u8>>>(bytes: T) -> TWPrivateKeyHelper {
-        let priv_key_raw = CByteArray::from(bytes.into());
-        let ptr =
-            unsafe { tw_private_key_create_with_data(priv_key_raw.data(), priv_key_raw.size()) };
-        TWPrivateKeyHelper { ptr }
-    }
-
-    fn with_hex(hex: &str) -> TWPrivateKeyHelper {
-        let priv_key_data = hex::decode(hex).unwrap();
-        TWPrivateKeyHelper::with_bytes(priv_key_data)
-    }
-}
-
-impl Drop for TWPrivateKeyHelper {
-    fn drop(&mut self) {
-        if self.ptr.is_null() {
-            return;
-        }
-        unsafe { tw_private_key_delete(self.ptr) };
-    }
-}
 
 fn test_sign(curve: Curve, secret: &str, msg: &str, expected_sign: &str) {
     let tw_privkey = TWPrivateKeyHelper::with_hex(secret);
     let msg = hex::decode(msg).unwrap();
     let msg_raw = CByteArray::from(msg);
     let actual = unsafe {
-        tw_private_key_sign(tw_privkey.ptr, msg_raw.data(), msg_raw.size(), curve as u32).into_vec()
+        tw_private_key_sign(
+            tw_privkey.ptr(),
+            msg_raw.data(),
+            msg_raw.size(),
+            curve as u32,
+        )
+        .into_vec()
     };
     let expected = hex::decode(expected_sign).unwrap();
     assert_eq!(actual, expected);
@@ -59,17 +39,17 @@ fn test_tw_private_key_create() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a",
     );
-    assert!(!tw_privkey.ptr.is_null());
+    assert!(!tw_privkey.is_null());
 
     // Invalid hex.
     let tw_privkey = TWPrivateKeyHelper::with_bytes(*b"123");
-    assert!(tw_privkey.ptr.is_null());
+    assert!(tw_privkey.is_null());
 
     // Zero private key.
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "0000000000000000000000000000000000000000000000000000000000000000",
     );
-    assert!(tw_privkey.ptr.is_null());
+    assert!(tw_privkey.is_null());
 }
 
 #[test]
@@ -143,7 +123,7 @@ fn test_tw_private_key_sign_invalid_hash() {
     let hash_raw = CByteArray::from(hash);
     let actual = unsafe {
         tw_private_key_sign(
-            tw_privkey.ptr,
+            tw_privkey.ptr(),
             hash_raw.data(),
             hash_raw.size(),
             Curve::Secp256k1 as u32,
@@ -159,7 +139,13 @@ fn test_tw_private_key_sign_null_hash() {
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
     );
     let actual = unsafe {
-        tw_private_key_sign(tw_privkey.ptr, std::ptr::null(), 0, Curve::Secp256k1 as u32).into_vec()
+        tw_private_key_sign(
+            tw_privkey.ptr(),
+            std::ptr::null(),
+            0,
+            Curve::Secp256k1 as u32,
+        )
+        .into_vec()
     };
     assert!(actual.is_empty());
 }
@@ -168,7 +154,8 @@ fn test_tw_private_key_sign_null_hash() {
 fn test_tw_private_key_get_public_key_by_type() {
     #[track_caller]
     fn test_get_public_key_data_hex(tw_privkey: &TWPrivateKeyHelper, ty: PublicKeyType) -> String {
-        let tw_pubkey = unsafe { tw_private_key_get_public_key_by_type(tw_privkey.ptr, ty as u32) };
+        let tw_pubkey =
+            unsafe { tw_private_key_get_public_key_by_type(tw_privkey.ptr(), ty as u32) };
         assert!(!tw_pubkey.is_null());
 
         let actual = unsafe { tw_public_key_data(tw_pubkey).into_vec() };
@@ -179,7 +166,7 @@ fn test_tw_private_key_get_public_key_by_type() {
     let tw_privkey = TWPrivateKeyHelper::with_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
     );
-    assert!(!tw_privkey.ptr.is_null());
+    assert!(!tw_privkey.is_null());
 
     // secp256k1 compressed
     let actual = test_get_public_key_data_hex(&tw_privkey, PublicKeyType::Secp256k1);

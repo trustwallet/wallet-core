@@ -14,6 +14,7 @@ use tw_hash::{H256, H264, H520};
 use tw_misc::traits::ToBytesVec;
 
 /// Represents a `nist256p1` public key.
+#[derive(Clone)]
 pub struct PublicKey {
     pub(crate) public: VerifyingKey,
 }

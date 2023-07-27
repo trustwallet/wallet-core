@@ -15,6 +15,7 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_false;
 
+#[derive(Clone)]
 pub struct PublicKey {
     public: FieldElement,
 }
