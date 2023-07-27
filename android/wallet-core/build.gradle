@@ -4,10 +4,11 @@ apply plugin: 'maven-publish'
 group = 'com.trustwallet'
 
 android {
-    compileSdkVersion 31
+    namespace 'wallet.core'
+    compileSdkVersion 32
     ndkVersion '23.1.7779620'
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
