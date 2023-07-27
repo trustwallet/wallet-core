@@ -4,6 +4,7 @@ pub mod brc20;
 pub mod claim;
 pub mod ffi;
 pub mod input;
+pub mod nft;
 pub mod ordinals;
 pub mod output;
 pub mod recipient;

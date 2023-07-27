@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
 
 #include "OpCodes.h"
 #include <TrustWalletCore/TWCoinType.h>
@@ -117,6 +118,9 @@ class Script {
 
     /// Builds the Ordinals inscripton for BRC20 transfer.
     static Proto::TransactionOutput buildBRC20InscribeTransfer(const std::string& ticker, uint64_t amount, const Data& publicKey);
+
+    /// Builds the Ordinals inscripton for NFTs.
+    static Proto::TransactionOutput buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey);
 
     /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
     static Script buildOpReturnScript(const Data& data);

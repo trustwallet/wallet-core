@@ -11,7 +11,7 @@ import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.toKString
 
 internal fun String?.toTwString(): COpaquePointer? =
-    TWStringCreateWithUTF8Bytes(this)
+    this?.let { TWStringCreateWithUTF8Bytes(it) }
 
 internal fun CValuesRef<*>?.fromTwString(): String? =
-    TWStringUTF8Bytes(this)?.toKString()
+    this?.let { TWStringUTF8Bytes(it)?.toKString() }

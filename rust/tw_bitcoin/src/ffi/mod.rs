@@ -101,7 +101,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
                 script_buf,
             )
             .into(),
-            TrVariant::BRC20TRANSFER => {
+            TrVariant::BRC20TRANSFER | TrVariant::NFTINSCRIPTION => {
                 // We construct the merkle root for the given spending script.
                 let spending_script = ScriptBuf::from_bytes(input.spendingScript.to_vec());
                 let merkle_root = TapNodeHash::from_script(
@@ -155,9 +155,14 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             TrVariant::P2TRKEYPATH => {
                 TxOutputP2TRKeyPath::new_with_script(satoshis, script_buf).into()
             },
+            // We're keeping those two variants separate for now, we're planning
+            // on writing a new interface as part of a larger task anyway.
             TrVariant::BRC20TRANSFER => {
                 TXOutputP2TRScriptPath::new_with_script(satoshis, script_buf).into()
             },
+            TrVariant::NFTINSCRIPTION => {
+                TXOutputP2TRScriptPath::new_with_script(satoshis, script_buf).into()
+            }
         };
 
         builder = builder.add_output(tx);

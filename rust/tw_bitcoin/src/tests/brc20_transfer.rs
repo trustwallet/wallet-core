@@ -31,9 +31,6 @@ pub const COMMIT_TX_RAW: &str = "02000000000101089098890d2653567b9e8df2d1fbe5c3c
 // https://www.blockchain.com/explorer/transactions/btc/7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca
 pub const REVEAL_TXID: &str = "797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1";
 pub const REVEAL_RAW: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340de6fd13e43700f59876d305e5a4a5c41ad7ada10bc5a4e4bdd779eb0060c0a78ebae9c33daf77bb3725172edb5bd12e26f00c08f9263e480d53b93818138ad0b5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
-pub const REVEAL_RAW_P1: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340";
-pub const REVEAL_RAW_SCHNORR: &str = "de6fd13e43700f59876d305e5a4a5c41ad7ada10bc5a4e4bdd779eb0060c0a78ebae9c33daf77bb3725172edb5bd12e26f00c08f9263e480d53b93818138ad0b";
-pub const REVEAL_RAW_P2: &str = "5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
 
 // Used for transfering the Inscription ("BRC20 transfer").
 // https://www.blockchain.com/explorer/transactions/btc/3e3576eb02667fac284a5ecfcb25768969680cc4c597784602d0a33ba7c654b7
@@ -129,16 +126,11 @@ fn brc20_transfer() {
     // Encode the signed transaction.
     let hex = hex::encode(&transaction, false);
 
-    assert_eq!(
-        REVEAL_RAW,
-        [REVEAL_RAW_P1, REVEAL_RAW_SCHNORR, REVEAL_RAW_P2].concat()
-    );
-
-    assert_eq!(&hex[..164], REVEAL_RAW_P1);
+    assert_eq!(hex[..164], REVEAL_RAW[..164]);
     // We ignore the 64-byte Schnorr signature, since it uses random data for
     // signing on each construction and is therefore not reproducible.
-    assert_ne!(&hex[164..292], REVEAL_RAW_SCHNORR);
-    assert_eq!(&hex[292..], REVEAL_RAW_P2);
+    assert_ne!(hex[164..292], REVEAL_RAW[164..292]);
+    assert_eq!(hex[292..], REVEAL_RAW[292..]);
 
     // # Actually transfer the "transferable" tokens.
     // Based on Bitcoin transaction:
