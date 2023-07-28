@@ -40,6 +40,16 @@ public:
         const std::string& comment = ""
     ) const;
 
+    [[nodiscard]] Cell::Ref createQueryMessage(
+        const PrivateKey& privateKey,
+        const Address& dest,
+        uint64_t amount,
+        uint32_t sequence_number,
+        uint8_t mode,
+        const Cell::Ref& payload,
+        uint32_t expireAt = 0
+    ) const;
+
 protected:
     [[nodiscard]] virtual Cell::Ref createDataCell() const = 0;
     virtual void writeSigningPayload(CellBuilder& builder, uint32_t sequence_number = 0, uint32_t expireAt = 0) const = 0;
@@ -50,8 +60,8 @@ private:
         uint64_t amount,
         uint32_t sequence_number,
         uint8_t mode,
-        uint32_t expireAt = 0,
-        const std::string& comment = ""
+        const Cell::Ref& payload,
+        uint32_t expireAt = 0
     ) const;
     [[nodiscard]] CommonTON::StateInit createStateInit() const;
 };

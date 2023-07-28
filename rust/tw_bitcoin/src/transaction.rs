@@ -6,8 +6,15 @@ use bitcoin::blockdata::locktime::absolute::{Height, LockTime};
 use bitcoin::consensus::Encodable;
 use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
-use bitcoin::transaction::Transaction;
 use bitcoin::{secp256k1, Address, TxIn, TxOut};
+use bitcoin::{Transaction, Weight};
+
+/// Determines the weight of the transaction and calculates the fee with the
+/// given satoshis per vbyte.
+pub fn calculate_fee(tx: &Transaction, sat_vb: u64) -> (Weight, u64) {
+    let weight = tx.weight();
+    (weight, weight.to_vbytes_ceil() * sat_vb)
+}
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
