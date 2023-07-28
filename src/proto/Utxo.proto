@@ -29,11 +29,11 @@ message InputVariant {
 
 // Input for legacy hashing algorithm (e.g. P2SH, P2PK, P2PKH).
 message InputLegacy {
-	// (optional) The index of the inout.
+	// (optional) The index of the input.
 	int32 index = 1;
 
-	// The spending condition of the input.
-	bytes script_sig = 2;
+	// The referenced transaction input.
+	TxIn txin = 2;
 
 	// The sighash type.
 	SighashType sighash = 3;
@@ -41,8 +41,11 @@ message InputLegacy {
 
 // Input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
 message InputSegwit {
-	// (optional) The index of the inout.
+	// (optional) The index of the input.
 	int32 index = 1;
+
+	// The referenced transaction input.
+	TxIn txin = 2;
 
 	// The value (amount) and spending condition of the input.
 	PrevOut prevout = 2;
@@ -53,8 +56,11 @@ message InputSegwit {
 
 // Input for Taproot
 message InputTaproot {
-	// (optional) The index of the inout.
+	// (optional) The index of the input.
 	int32 index = 1;
+
+	// The referenced transaction input.
+	TxIn txin = 2;
 
 	// Contains one more inputs. Most often `prevouts` is used which contains
 	// all inputs. If SighashType::*AnyoneCanPay is provided, then `one` can be
@@ -110,7 +116,7 @@ message TxIn {
 }
 
 // The output of a transaction.
-message TxOut {
+message Output {
 	// The value of the output (amount).
 	int64 value = 1;
 	// The spending condition of the output.
