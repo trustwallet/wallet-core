@@ -72,8 +72,8 @@ public:
     // we have other outputs that include address and value
     std::vector<std::pair<std::string, int64_t>> extraOutputs;
 
-    // Total amount to send, including all outputs amount
-    Amount totalAmount = 0;
+    // Total amount of the `extraOutputs`.
+    Amount extraOutputsAmount = 0;
 
 public:
     SigningInput() = default;
