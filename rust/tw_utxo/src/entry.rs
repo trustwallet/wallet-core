@@ -7,6 +7,7 @@ use tw_coin_entry::prefix::NoPrefix;
 use tw_coin_entry::derivation::Derivation;
 use tw_keypair::tw::{PrivateKey, PublicKey};
 use std::fmt::Display;
+use tw_proto::Utxo::Proto;
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
@@ -40,7 +41,7 @@ pub struct BitcoinEntry;
 impl CoinEntry for BitcoinEntry {
 	type AddressPrefix = NoPrefix;
 	type Address = PlaceHolder;
-	type SigningInput<'a> = PlaceHolderProto<'a>;
+	type SigningInput<'a> = Proto::SigningInput<'a>;
 	type SigningOutput = PlaceHolderProto<'static>;
 	type PreSigningOutput = PlaceHolderProto<'static>;
 
