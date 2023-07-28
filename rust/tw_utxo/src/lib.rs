@@ -1,6 +1,7 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::hashes::Hash;
-use bitcoin::sighash::{EcdsaSighashType, SighashCache};
+use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
+use bitcoin::taproot::TapLeafHash;
 use bitcoin::{
     secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
 };
@@ -14,7 +15,8 @@ pub mod entry;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
 type ProtoSpendingData<'a> = Proto::mod_TxIn::OneOfspending_data<'a>;
-type ProtoSignerVariant = Proto::Signer;
+type ProtoSignerVariant<'a> = Proto::mod_TxIn::OneOfsigner<'a>;
+type ProtoPrevoutVariant<'a> = Proto::mod_TxIn::mod_Taproot::OneOfprevouts<'a>;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -46,29 +48,29 @@ impl Signer<StandardBitcoinContext> {
     ) -> SigningResult<Proto::SigningInput<'static>> {
         let private_key = secp256k1::SecretKey::from_slice(proto.private_key.as_ref()).unwrap();
 
+        // Convert Protobuf structure to `bitcoin` crate native transaction.
+        // Prepare signing mechanism.
         let tx = convert_proto_to_tx(&proto).unwrap();
-        let mut cache = SighashCache::new(tx.clone());
+        let mut cache = SighashCache::new(&tx);
 
-        for (index, input) in tx.input.iter().enumerate() {
-            let proto_input = proto.inputs.get(index).expect("index miscalculated");
+        for (index, input) in proto.inputs.iter().enumerate() {
+            let script_pubkey_ref = &input.script_pubkey;
 
-            match proto_input.signer {
-                ProtoSignerVariant::Legacy => {
-                    let script_pubkey = Script::from_bytes(
-                        proto_input.prevout.as_ref().unwrap().script_pubkey.as_ref(),
-                    );
-                    let sighash = proto_input.sighash as u32;
+            match input.signer {
+                // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
+                ProtoSignerVariant::legacy(_) => {
+                    let script_pubkey = Script::from_bytes(script_pubkey_ref.as_ref());
+                    let sighash = input.sighash as u32;
 
                     let hash = cache
                         .legacy_signature_hash(index, script_pubkey, sighash)
                         .unwrap();
                 },
-                Proto::Signer::Segwit => {
-                    let script_pubkey = ScriptBuf::from_bytes(
-                        proto_input.prevout.as_ref().unwrap().script_pubkey.to_vec(),
-                    );
-                    let sighash = EcdsaSighashType::from_consensus(proto_input.sighash as u32);
-                    let value = proto_input.prevout.as_ref().unwrap().value;
+                // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
+                ProtoSignerVariant::segwit(ref segwit) => {
+                    let script_pubkey = ScriptBuf::from_bytes(script_pubkey_ref.to_vec());
+                    let sighash = EcdsaSighashType::from_consensus(input.sighash as u32);
+                    let value = segwit.value;
 
                     let hash = cache
                         .segwit_signature_hash(
@@ -79,9 +81,45 @@ impl Signer<StandardBitcoinContext> {
                         )
                         .unwrap();
                 },
-                Proto::Signer::Taproot => {
-                    todo!()
+                // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
+                ProtoSignerVariant::taproot(ref taproot) => {
+                    // TODO: field should technically be `Option<T>`(?)
+                    let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
+                    let script_pubkey = ScriptBuf::from_bytes(script_pubkey_ref.to_vec());
+                    let sighash = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
+                    // Default: 0xFFFFFFFF
+                    let separator_position = taproot.code_separator_position;
+
+                    let prevouts = match taproot.prevouts {
+                        ProtoPrevoutVariant::one(ref one) => {
+                            let script_pubkey = ScriptBuf::from_bytes(
+                                one.txout.as_ref().unwrap().script_pubkey.to_vec(),
+                            );
+                            Prevouts::One(
+                                one.index as usize,
+                                TxOut {
+                                    value: one.txout.as_ref().unwrap().value,
+                                    script_pubkey,
+                                },
+                            )
+                        },
+                        ProtoPrevoutVariant::all(ref _all) => {
+                            panic!()
+                        },
+                        ProtoPrevoutVariant::None => panic!(),
+                    };
+
+                    let hash = cache
+                        .taproot_signature_hash(
+                            index,
+                            &prevouts,
+                            None,
+                            Some((leaf_hash.into(), separator_position)),
+                            sighash,
+                        )
+                        .unwrap();
                 },
+                ProtoSignerVariant::None => panic!(),
             }
         }
 
