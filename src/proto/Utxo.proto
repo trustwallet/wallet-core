@@ -20,46 +20,45 @@ message SigningInput {
 
 	// The inputs of the transaction to sign. If an individual input does not
 	// provide an index, then the index of the inserted order is used.
-	repeated TxVariant inputs = 5;
+	repeated TxIn inputs = 5;
 
 	repeated TxOut outputs = 6;
 }
 
-message TxVariant {
+message TxIn {
 	optional bytes private_key = 1;
 
-	// The referenced transaction input.
-	TxIn txin = 2;
+	// The referenced transaction hash.
+	bytes txid = 2;
+
+	// The index of the referenced output.
+	uint32 vout = 3;
+
+	// The data used to statisfy the spending condition of the referenced
+	// output.
+	oneof spending_data {
+		bytes script_sig = 4;
+		Witness witness = 5;
+	}
+
+	// Witness data containing witness items.
+	message Witness {
+		repeated bytes items = 1;
+	}
+
+	// The sequence number (TODO).
+	uint32 sequence = 6;
+
+	Signer signer = 7;
 
 	// The sighash type.
-	SighashType sighash = 3;
+	SighashType sighash = 8;
+}
 
-	// Extra input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
-	message Segwit {
-		// The value (amount) and spending condition of the input.
-		TxOut txout = 1;
-	}
-
-	// Extra input for Taproot
-	message Taproot {
-		message Prevouts {
-			repeated TxOut prevouts = 1;
-		}
-
-		// Contains one more inputs. Most often `all` is used which contains
-		// all inputs. If SighashType::*AnyoneCanPay is provided, then `one` can be
-		// used.
-		oneof prevouts {
-			TxOut one = 1;
-			Prevouts all = 2;
-		}
-	}
-
-	oneof variant {
-		// None implies _Legacy_
-		Segwit segwit_input = 4;
-		Taproot taproot_input = 5;
-	}
+enum Signer {
+	Legacy = 0;
+	Segwit = 1;
+	Taproot = 2;
 }
 
 enum SighashType {
@@ -75,24 +74,6 @@ enum SighashType {
 	NonePlusAnyoneCanPay = 130; // 0x82
 	// Sign one output and only this input.
 	SinglePlusAnyoneCanPay = 131; // 0x83
-}
-
-message TxIn {
-	// The referenced transaction hash.
-	bytes txid = 1;
-
-	// The index of the referenced output.
-	uint32 vout = 2;
-
-	// The data used to statisfy the spending condition of the referenced
-	// output.
-	oneof spending_data {
-		bytes script_isg = 3;
-		bytes witness = 4;
-	}
-
-	// The sequence number (TODO).
-	uint32 sequence = 5;
 }
 
 // The output of a transaction.
