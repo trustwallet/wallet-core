@@ -1,6 +1,9 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::hashes::Hash;
-use bitcoin::{secp256k1, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
+use bitcoin::sighash::{EcdsaSighashType, SighashCache};
+use bitcoin::{
+    secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
+};
 use std::marker::PhantomData;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::SigningResult;
@@ -11,6 +14,7 @@ pub mod entry;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
 type ProtoSpendingData<'a> = Proto::mod_TxIn::OneOfspending_data<'a>;
+type ProtoSignerVariant = Proto::Signer;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -43,9 +47,42 @@ impl Signer<StandardBitcoinContext> {
         let private_key = secp256k1::SecretKey::from_slice(proto.private_key.as_ref()).unwrap();
 
         let tx = convert_proto_to_tx(&proto).unwrap();
+        let mut cache = SighashCache::new(tx.clone());
 
         for (index, input) in tx.input.iter().enumerate() {
-            //match proto.inputs.get(index).expect("index miscalculated").variant {
+            let proto_input = proto.inputs.get(index).expect("index miscalculated");
+
+            match proto_input.signer {
+                ProtoSignerVariant::Legacy => {
+                    let script_pubkey = Script::from_bytes(
+                        proto_input.prevout.as_ref().unwrap().script_pubkey.as_ref(),
+                    );
+                    let sighash = proto_input.sighash as u32;
+
+                    let hash = cache
+                        .legacy_signature_hash(index, script_pubkey, sighash)
+                        .unwrap();
+                },
+                Proto::Signer::Segwit => {
+                    let script_pubkey = ScriptBuf::from_bytes(
+                        proto_input.prevout.as_ref().unwrap().script_pubkey.to_vec(),
+                    );
+                    let sighash = EcdsaSighashType::from_consensus(proto_input.sighash as u32);
+                    let value = proto_input.prevout.as_ref().unwrap().value;
+
+                    let hash = cache
+                        .segwit_signature_hash(
+                            index,
+                            script_pubkey.p2wpkh_script_code().as_ref().unwrap(),
+                            value,
+                            sighash,
+                        )
+                        .unwrap();
+                },
+                Proto::Signer::Taproot => {
+                    todo!()
+                },
+            }
         }
 
         todo!()
