@@ -34,9 +34,6 @@ message TxIn {
 	// The index of the referenced output.
 	uint32 vout = 3;
 
-	// The spending condition of the output.
-	bytes script_pubkey = 4;
-
 	// The data used to statisfy the spending condition of the referenced
 	// output.
 	oneof spending_data {
@@ -61,9 +58,15 @@ message TxIn {
 		repeated bytes items = 1;
 	}
 
-	message Legacy {}
+	message Legacy {
+		// The spending condition of the output.
+		bytes script_pubkey = 4;
+	}
 
 	message Segwit {
+		// The spending condition of the output.
+		bytes script_pubkey = 4;
+
 		uint64 value = 1;
 	}
 

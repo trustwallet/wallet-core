@@ -54,12 +54,10 @@ impl Signer<StandardBitcoinContext> {
         let mut cache = SighashCache::new(&tx);
 
         for (index, input) in proto.inputs.iter().enumerate() {
-            let script_pubkey_ref = &input.script_pubkey;
-
             match input.signer {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
-                ProtoSignerVariant::legacy(_) => {
-                    let script_pubkey = Script::from_bytes(script_pubkey_ref.as_ref());
+                ProtoSignerVariant::legacy(ref legacy) => {
+                    let script_pubkey = Script::from_bytes(legacy.script_pubkey.as_ref());
                     let sighash = input.sighash as u32;
 
                     let hash = cache
@@ -68,7 +66,7 @@ impl Signer<StandardBitcoinContext> {
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSignerVariant::segwit(ref segwit) => {
-                    let script_pubkey = ScriptBuf::from_bytes(script_pubkey_ref.to_vec());
+                    let script_pubkey = ScriptBuf::from_bytes(segwit.script_pubkey.to_vec());
                     let sighash = EcdsaSighashType::from_consensus(input.sighash as u32);
                     let value = segwit.value;
 
@@ -85,7 +83,6 @@ impl Signer<StandardBitcoinContext> {
                 ProtoSignerVariant::taproot(ref taproot) => {
                     // TODO: field should technically be `Option<T>`(?)
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
-                    let script_pubkey = ScriptBuf::from_bytes(script_pubkey_ref.to_vec());
                     let sighash = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
                     // Default: 0xFFFFFFFF
                     let separator_position = taproot.code_separator_position;
