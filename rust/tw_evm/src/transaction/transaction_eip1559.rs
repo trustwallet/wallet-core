@@ -5,18 +5,14 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
-use crate::rlp::address::RlpAddressOption;
-use crate::rlp::u256::RlpU256;
+use crate::rlp::list::RlpList;
 use crate::transaction::signature::{EthSignature, Signature};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
-use rlp::{RlpStream, EMPTY_LIST_RLP};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
 
 const EIP1559_TX_TYPE: u8 = 0x02;
-const TX_FIELDS_LEN: usize = 9;
-const TX_FIELDS_WITH_SIGNATURE_LEN: usize = TX_FIELDS_LEN + 3;
 
 /// EIP1559 transaction.
 pub struct TransactionEip1559 {
@@ -90,36 +86,29 @@ fn encode_transaction(
     chain_id: U256,
     signature: Option<&Signature>,
 ) -> Data {
-    let len = match signature {
-        Some(_) => TX_FIELDS_WITH_SIGNATURE_LEN,
-        None => TX_FIELDS_LEN,
-    };
-
-    let mut stream = RlpStream::new_list(len);
-    stream
-        .append(&RlpU256::from(chain_id))
-        .append(&RlpU256::from(tx.nonce))
-        .append(&RlpU256::from(tx.max_inclusion_fee_per_gas))
-        .append(&RlpU256::from(tx.max_fee_per_gas))
-        .append(&RlpU256::from(tx.gas_limit))
-        .append(&RlpAddressOption::from(tx.to))
-        .append(&RlpU256::from(tx.amount))
-        .append(&tx.payload.as_slice())
+    let mut list = RlpList::new();
+    list.append(chain_id)
+        .append(tx.nonce)
+        .append(tx.max_inclusion_fee_per_gas)
+        .append(tx.max_fee_per_gas)
+        .append(tx.gas_limit)
+        .append(tx.to)
+        .append(tx.amount)
+        .append(tx.payload.as_slice())
         // empty `access_list`.
-        .append_raw(&EMPTY_LIST_RLP[..], 1);
+        .append_empty_list();
 
     if let Some(signature) = signature {
-        stream
-            .append(&RlpU256::from(signature.v()))
-            .append(&RlpU256::from(signature.r()))
-            .append(&RlpU256::from(signature.s()));
+        list.append(signature.v());
+        list.append(signature.r());
+        list.append(signature.s());
     }
 
-    let tx_encoded = stream.out();
+    let tx_encoded = list.finish();
 
-    let mut envelope = Vec::with_capacity(tx_encoded.len() + 1);
+    let mut envelope = Vec::with_capacity(tx_encoded.as_ref().len() + 1);
     envelope.push(EIP1559_TX_TYPE);
-    envelope.extend_from_slice(&tx_encoded);
+    envelope.extend_from_slice(tx_encoded.as_ref());
     envelope
 }
 

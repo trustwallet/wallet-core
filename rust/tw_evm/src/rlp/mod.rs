@@ -4,5 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod address;
-pub mod u256;
+use crate::rlp::buffer::RlpBuffer;
+
+pub mod buffer;
+pub mod impls;
+pub mod list;
+
+/// The trait should be implemented for all types that need to be encoded in RLP.
+pub trait RlpEncode {
+    fn rlp_append(&self, buf: &mut RlpBuffer);
+}

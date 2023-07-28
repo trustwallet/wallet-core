@@ -5,16 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::Address;
-use crate::rlp::address::RlpAddressOption;
-use crate::rlp::u256::RlpU256;
+use crate::rlp::list::RlpList;
 use crate::transaction::signature::{EthSignature, SignatureEip155};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
-use rlp::RlpStream;
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
-
-const TX_FIELDS_LEN: usize = 9;
 
 /// Original transaction format, with no explicit type, legacy as pre-EIP2718.
 pub struct TransactionNonTyped {
@@ -87,25 +83,20 @@ fn encode_transaction(
     chain_id: U256,
     signature: Option<&SignatureEip155>,
 ) -> Data {
-    let mut stream = RlpStream::new_list(TX_FIELDS_LEN);
-    stream
-        .append(&RlpU256::from(tx.nonce))
-        .append(&RlpU256::from(tx.gas_price))
-        .append(&RlpU256::from(tx.gas_limit))
-        .append(&RlpAddressOption::from(tx.to))
-        .append(&RlpU256::from(tx.amount))
-        .append(&tx.payload.as_slice());
+    let mut list = RlpList::new();
+    list.append(tx.nonce)
+        .append(tx.gas_price)
+        .append(tx.gas_limit)
+        .append(tx.to)
+        .append(tx.amount)
+        .append(tx.payload.as_slice());
 
     let (v, r, s) = match signature {
         Some(sign) => (sign.v(), sign.r(), sign.s()),
         None => (chain_id, U256::zero(), U256::zero()),
     };
-
-    stream
-        .append(&RlpU256::from(v))
-        .append(&RlpU256::from(r))
-        .append(&RlpU256::from(s));
-    stream.out().to_vec()
+    list.append(v).append(r).append(s);
+    list.finish().as_ref().to_vec()
 }
 
 #[cfg(test)]

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package TW.EthereumRLP.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// String.
+message String {
+  string str = 1;
+}
+
+// U64 number.
+message U64 {
+    uint64 number = 1;
+}
+
+// U256 number.
+message U256 {
+    bytes number = 1;
+}
+
+// Block of data.
+message Data {
+    bytes data = 1;
+}
+
+// List of elements.
+message List {
+    repeated Item items = 1;
+}
+
+// Wraps encoded data as a list.
+message RawList {
+    Data data = 1;
+}
+
+// RLP item.
+message Item {
+    oneof item {
+        String str = 1;
+        U64 u64 = 2;
+        U256 u256 = 3;
+        Data data = 4;
+        List list = 5;
+        RawList raw_list = 6;
+    }
+}
