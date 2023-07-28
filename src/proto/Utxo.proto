@@ -34,8 +34,8 @@ message TxIn {
 	// The index of the referenced output.
 	uint32 vout = 3;
 
-	// The previous output itself.
-	TxOut prevout = 4;
+	// The spending condition of the output.
+	bytes script_pubkey = 4;
 
 	// The data used to statisfy the spending condition of the referenced
 	// output.
@@ -44,24 +44,48 @@ message TxIn {
 		Witness witness = 6;
 	}
 
+	// The sequence number (TODO).
+	uint32 sequence = 7;
+
+	oneof signer {
+		Legacy legacy = 8;
+		Segwit segwit = 9;
+		Taproot taproot = 10;
+	}
+
+	// The sighash type.
+	SighashType sighash = 11;
+
 	// Witness data containing witness items.
 	message Witness {
 		repeated bytes items = 1;
 	}
 
-	// The sequence number (TODO).
-	uint32 sequence = 7;
+	message Legacy {}
 
-	Signer signer = 8;
+	message Segwit {
+		uint64 value = 1;
+	}
 
-	// The sighash type.
-	SighashType sighash = 9;
-}
+	message Taproot {
+		bytes leaf_hash = 1;
 
-enum Signer {
-	Legacy = 0;
-	Segwit = 1;
-	Taproot = 2;
+		uint32 code_separator_position = 2;
+
+		oneof prevouts {
+			OnePrevouts one = 3;
+			AllPrevouts all = 4;
+		}
+
+		message OnePrevouts {
+			uint32 index = 1;
+			TxOut txout = 2;
+		}
+
+		message AllPrevouts {
+			repeated TxOut items = 1;
+		}
+	}
 }
 
 enum SighashType {
