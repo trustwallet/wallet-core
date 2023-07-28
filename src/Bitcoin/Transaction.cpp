@@ -8,6 +8,8 @@
 #include "SegwitAddress.h"
 #include "SignatureVersion.h"
 #include "SigHashType.h"
+#include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "rust/Wrapper.h"
 
 #include "../BinaryCoding.h"
 
@@ -234,6 +236,14 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     } else {
         encode32LE(inputs[subindex].sequence, data);
     }
+}
+
+std::optional<uint64_t> Transaction::calculateFee(const Data& encoded, uint64_t satVb) {
+    Rust::CUInt64ResultWrapper res = Rust::tw_bitcoin_calculate_transaction_fee(encoded.data(), encoded.size(), satVb);
+    if (res.isErr()) {
+        return std::nullopt;
+    }
+    return res.unwrap().value;
 }
 
 Proto::Transaction Transaction::proto() const {
