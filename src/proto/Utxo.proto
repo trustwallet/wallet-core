@@ -34,11 +34,14 @@ message TxIn {
 	// The index of the referenced output.
 	uint32 vout = 3;
 
+	// The previous output itself.
+	TxOut prevout = 4;
+
 	// The data used to statisfy the spending condition of the referenced
 	// output.
 	oneof spending_data {
-		bytes script_sig = 4;
-		Witness witness = 5;
+		bytes script_sig = 5;
+		Witness witness = 6;
 	}
 
 	// Witness data containing witness items.
@@ -47,12 +50,12 @@ message TxIn {
 	}
 
 	// The sequence number (TODO).
-	uint32 sequence = 6;
+	uint32 sequence = 7;
 
-	Signer signer = 7;
+	Signer signer = 8;
 
 	// The sighash type.
-	SighashType sighash = 8;
+	SighashType sighash = 9;
 }
 
 enum Signer {
