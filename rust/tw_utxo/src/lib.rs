@@ -38,12 +38,12 @@ impl Signer<StandardBitcoinContext> {
     }
 
     fn sign_proto_impl(
-        input: Proto::SigningInput<'_>,
+        proto: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningInput<'static>> {
-        let private_key = secp256k1::SecretKey::from_slice(input.private_key.as_ref()).unwrap();
-        let version = input.version;
+        let private_key = secp256k1::SecretKey::from_slice(proto.private_key.as_ref()).unwrap();
+        let version = proto.version;
 
-        let lock_time = match input.lock_time {
+        let lock_time = match proto.lock_time {
             ProtoLockTimeVariant::blocks(block) => {
                 LockTime::Blocks(Height::from_consensus(block).unwrap())
             },
@@ -54,18 +54,14 @@ impl Signer<StandardBitcoinContext> {
         };
 
         let mut tx = Transaction {
-            version: input.version,
+            version,
             lock_time,
             input: vec![],
             output: vec![],
         };
 
-        for input in input.inputs {
-            let txin = match input.variant {
-                Proto::mod_TxVariant::OneOfvariant::legacy_input(legacy) => legacy.txin.unwrap(),
-                _ => panic!(),
-            };
-
+        for input in proto.inputs {
+            let txin = input.txin.unwrap();
             let txid = Txid::from_slice(txin.txid.as_ref()).unwrap();
             let vout = txin.vout;
 

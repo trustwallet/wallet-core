@@ -28,61 +28,37 @@ message SigningInput {
 message TxVariant {
 	optional bytes private_key = 1;
 
-	// Input for legacy hashing algorithm (e.g. P2SH, P2PK, P2PKH).
-	message Legacy {
-		// The index of the input.
-		optional int32 index = 1;
+	// The referenced transaction input.
+	TxIn txin = 2;
 
-		// The referenced transaction input.
-		TxIn txin = 2;
+	// The sighash type.
+	SighashType sighash = 3;
 
-		// The sighash type.
-		SighashType sighash = 3;
-	}
-
-	// Input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
+	// Extra input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
 	message Segwit {
-		// The index of the input.
-		optional int32 index = 1;
-
-		// The referenced transaction input.
-		TxIn txin = 2;
-
 		// The value (amount) and spending condition of the input.
-		TxOut txout = 3;
-
-		// The sighash type.
-		SighashType sighash = 4;
+		TxOut txout = 1;
 	}
 
-	// Input for Taproot
+	// Extra input for Taproot
 	message Taproot {
-		//  The index of the input.
-		optional int32 index = 1;
-
-		// The referenced transaction input.
-		TxIn txin = 2;
-
-		// The sighash type.
-		SighashType sighash = 3;
-
 		message Prevouts {
 			repeated TxOut prevouts = 1;
 		}
 
-		// Contains one more inputs. Most often `prevouts` is used which contains
+		// Contains one more inputs. Most often `all` is used which contains
 		// all inputs. If SighashType::*AnyoneCanPay is provided, then `one` can be
 		// used.
 		oneof prevouts {
-			TxOut one = 4;
-			Prevouts all = 5;
+			TxOut one = 1;
+			Prevouts all = 2;
 		}
 	}
 
 	oneof variant {
-		Legacy legacy_input = 2;
-		Segwit segwit_input = 3;
-		Taproot taproot_input = 4;
+		// None implies _Legacy_
+		Segwit segwit_input = 4;
+		Taproot taproot_input = 5;
 	}
 }
 
