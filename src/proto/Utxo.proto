@@ -1,85 +1,89 @@
 syntax = "proto3";
 
+package TW.Utxo.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
 message SigningInput {
+	bytes private_key = 1;
+
 	// The protocol version, is currently expected to be 1 or 2 (BIP68)
-	int32 version = 1;
+	int32 version = 2;
 
 	// Block height or timestamp indicating at what point transactions can be
 	// included in a block.
-	int32 lock_time = 2;
+	oneof lock_time {
+		uint32 blocks = 3;
+		uint32 seconds = 4;
+	}
 
 	// The inputs of the transaction to sign. If an individual input does not
 	// provide an index, then the index of the inserted order is used.
-	repeated InputVariant inputs = 3;
+	repeated TxVariant inputs = 5;
 
-	repeated Output outputs = 4;
+	repeated TxOut outputs = 6;
 }
 
-message InputVariant {
+message TxVariant {
+	optional bytes private_key = 1;
+
+	// Input for legacy hashing algorithm (e.g. P2SH, P2PK, P2PKH).
+	message Legacy {
+		// The index of the input.
+		optional int32 index = 1;
+
+		// The referenced transaction input.
+		TxIn txin = 2;
+
+		// The sighash type.
+		SighashType sighash = 3;
+	}
+
+	// Input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
+	message Segwit {
+		// The index of the input.
+		optional int32 index = 1;
+
+		// The referenced transaction input.
+		TxIn txin = 2;
+
+		// The value (amount) and spending condition of the input.
+		TxOut txout = 3;
+
+		// The sighash type.
+		SighashType sighash = 4;
+	}
+
+	// Input for Taproot
+	message Taproot {
+		//  The index of the input.
+		optional int32 index = 1;
+
+		// The referenced transaction input.
+		TxIn txin = 2;
+
+		// The sighash type.
+		SighashType sighash = 3;
+
+		message Prevouts {
+			repeated TxOut prevouts = 1;
+		}
+
+		// Contains one more inputs. Most often `prevouts` is used which contains
+		// all inputs. If SighashType::*AnyoneCanPay is provided, then `one` can be
+		// used.
+		oneof prevouts {
+			TxOut one = 4;
+			Prevouts all = 5;
+		}
+	}
+
 	oneof variant {
-		InputLegacy legacy_input = 1;
-		InputSegwit segwit_input = 2;
-		InputTaproot taproot_input = 3;
+		Legacy legacy_input = 2;
+		Segwit segwit_input = 3;
+		Taproot taproot_input = 4;
 	}
-}
-
-// Input for legacy hashing algorithm (e.g. P2SH, P2PK, P2PKH).
-message InputLegacy {
-	// (optional) The index of the input.
-	int32 index = 1;
-
-	// The referenced transaction input.
-	TxIn txin = 2;
-
-	// The sighash type.
-	SighashType sighash = 3;
-}
-
-// Input for Segwit hashing algorithm (e.g. P2WSH, P2WPK).
-message InputSegwit {
-	// (optional) The index of the input.
-	int32 index = 1;
-
-	// The referenced transaction input.
-	TxIn txin = 2;
-
-	// The value (amount) and spending condition of the input.
-	PrevOut prevout = 2;
-
-	// The sighash type.
-	SighashType sighash = 3;
-}
-
-// Input for Taproot
-message InputTaproot {
-	// (optional) The index of the input.
-	int32 index = 1;
-
-	// The referenced transaction input.
-	TxIn txin = 2;
-
-	// Contains one more inputs. Most often `prevouts` is used which contains
-	// all inputs. If SighashType::*AnyoneCanPay is provided, then `one` can be
-	// used.
-	oneof prevouts {
-		Prevout one = 2;
-		repeated PrevOut prevouts = 3;
-	}
-
-	// The sighash type.
-	SighashType sighash = 4;
-}
-
-// The output of a previous transaction that is used as input.
-message PrevOut {
-	// The value of the output (amount).
-	int64 value = 1;
-	// The spending condition of the output.
-	bytes script_pubkey = 2;
 }
 
 enum SighashType {
@@ -102,23 +106,23 @@ message TxIn {
 	bytes txid = 1;
 
 	// The index of the referenced output.
-	int32 vout = 2;
+	uint32 vout = 2;
 
 	// The data used to statisfy the spending condition of the referenced
 	// output.
-	oneof spending_data = {
+	oneof spending_data {
 		bytes script_isg = 3;
 		bytes witness = 4;
 	}
 
 	// The sequence number (TODO).
-	int32 sequence = 5;
+	uint32 sequence = 5;
 }
 
 // The output of a transaction.
-message Output {
+message TxOut {
 	// The value of the output (amount).
-	int64 value = 1;
+	uint64 value = 1;
 	// The spending condition of the output.
 	bytes script_pubkey = 2;
 }
