@@ -34,6 +34,7 @@ const auto Address1Btc = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
 const auto Address1Eth = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7";
 const auto Address1Bnb = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx";
 const auto Address1Thor = "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r";
+const auto Address1Maya = "maya1xhfwp27s3y3lsnzp6d0qd870q9vleelunq7f2f";
 const Data TestKey1Btc = parse_hex("13fcaabaf9e71ffaf915e242ec58a743d55f102cf836968e5bd4881135e0c52c");
 const Data TestKey1Eth = parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904");
 const Data TestKey1Bnb = parse_hex("bcf8b072560dda05122c99390def2c385ec400e1a93df0657a85cf6b57a715da");
@@ -761,6 +762,53 @@ TEST(THORChainSwap, SwapBnbRune) {
     // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
 }
 
+TEST(THORChainSwap, SwapBnbCacao) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::MAYA));
+    toAsset.set_symbol("CACAO");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(Address1Bnb)
+                                         .toAddress(Address1Maya)
+                                         .vault(VaultBnb)
+                                         .fromAmount("4000000")
+                                         .toAmountLimit("121065076")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "2a423d3a4d4159412e434143414f3a6d6179613178686677703237733379336c736e7a7036643071643837307139766c65656c756e71376632663a31323130363530373652480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e42108092f40112220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e42108092f401");
+
+    auto tx = Binance::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+    // check fields
+    EXPECT_EQ(tx.memo(), "=:MAYA.CACAO:maya1xhfwp27s3y3lsnzp6d0qd870q9vleelunq7f2f:121065076");
+    ASSERT_TRUE(tx.has_send_order());
+    ASSERT_EQ(tx.send_order().inputs_size(), 1);
+    ASSERT_EQ(tx.send_order().outputs_size(), 1);
+    EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "e42be736e933cf8b97c26f33789a3ca6f8348cd1");
+    EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "99730371c7c77cb81ffa76b566dcef7c1e5dc19c");
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set private key and few other fields
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb)), Address1Bnb);
+    tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
+    tx.set_chain_id("Binance-Chain-Tigris");
+    tx.set_account_number(1902570);
+    tx.set_sequence(4);
+    // sign and encode resulting input
+    Binance::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBinance);
+    EXPECT_EQ(hex(output.encoded()), "8802f0625dee0a4c2a2c87fa0a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e42108092f40112220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e42108092f40112700a26eb5ae9872103ea4b4bc12dc6f36a28d2c9775e01eef44def32cc70fb54f0e4177b659dbc0e19124086f387225f5e94ddc05fa76952150ca6d9873c4e128846023a4e7a16323147d814d5ce87a0f59db3c47ef441ff7a1fb2b85347410ea4c138f28f582d95f575c418ea8f7420041a423d3a4d4159412e434143414f3a6d6179613178686677703237733379336c736e7a7036643071643837307139766c65656c756e71376632663a313231303635303736");
+
+    // real transaction:
+    // https://explorer.binance.org/tx/84EE429B35945F0568097527A084532A9DE7BBAB0E6A5562E511CEEFB188DE69
+    // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
+}
+
 TEST(THORChainSwap, SwapBusdTokenBnb) {
     Proto::Asset fromAsset;
     fromAsset.set_symbol("BNB");
@@ -1154,6 +1202,24 @@ TEST(THORChainSwap, FromRuneNotSupported) {
                                        .build();
     EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Unsupported_from_chain);
     EXPECT_EQ(error, "Unsupported from chain: 0");
+}
+
+TEST(THORChainSwap, FromCacaoNotSupported) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::MAYA));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+    auto&& [_, errorCode, error] = SwapBuilder::builder()
+                                       .from(fromAsset)
+                                       .to(toAsset)
+                                       .fromAddress(Address1Maya)
+                                       .toAddress(Address1Bnb)
+                                       .fromAmount("1000")
+                                       .toAmountLimit("1000")
+                                       .build();
+    EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Unsupported_from_chain);
+    EXPECT_EQ(error, "Unsupported from chain: 9");
 }
 
 TEST(THORChainSwap, EthInvalidVault) {

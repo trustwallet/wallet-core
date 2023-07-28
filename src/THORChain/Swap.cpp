@@ -64,6 +64,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeLitecoin;
     case Chain::ATOM:
         return TWCoinTypeCosmos;
+    case Chain::MAYA:
+        return TWCoinTypeMAYAChain;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -88,6 +90,8 @@ std::string chainName(Chain chain) {
         return "LTC";
     case Chain::ATOM:
         return "GAIA";
+    case Chain::MAYA:
+        return "MAYA";
     case Chain::THOR:
     default:
         return "THOR";

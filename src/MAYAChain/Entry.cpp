@@ -6,7 +6,7 @@
 
 #include "Entry.h"
 
-#include "Signer.h"
+#include "../THORChain/Signer.h"
 #include "../proto/Cosmos.pb.h"
 
 using namespace std;
@@ -18,12 +18,12 @@ namespace TW::MAYAChain {
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     auto input = Cosmos::Proto::SigningInput();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::sign(input).SerializeAsString();
+    auto serializedOut = THORChain::Signer::sign(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return Signer::signJSON(json, key);
+    return THORChain::Signer::signJSON(json, key);
 }
 
 } // namespace TW::MAYAChain

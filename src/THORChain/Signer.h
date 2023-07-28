@@ -14,6 +14,9 @@ namespace TW::THORChain {
 
 /// Helper class that performs THORChain transaction signing.
 class Signer {
+  private:
+    /// Checks if JSON file contains maya address on fromAddress field
+    static bool checkJSONMayaAddress(const std::string& json);
   public:
     /// Signs a Proto::SigningInput transaction
     static Cosmos::Proto::SigningOutput sign(Cosmos::Proto::SigningInput& input) noexcept;
