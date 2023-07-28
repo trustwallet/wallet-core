@@ -170,4 +170,63 @@ TEST(TheOpenNetworkSigner, InvalidWalletVersion) {
     ASSERT_EQ(output.error(), 22);
 }
 
+TEST(TheOpenNetworkSigner, JettonTransfer) {
+    auto input = Proto::SigningInput();
+    auto& jettonTransfer = *input.mutable_jetton_transfer();
+    auto& transferData = *jettonTransfer.mutable_transfer();
+
+    transferData.set_wallet_version(Proto::WALLET_V4_R2);
+    transferData.set_dest("EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja");
+    transferData.set_amount(100 * 1000 * 1000); 
+    transferData.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
+    transferData.set_expire_at(1787693046);
+    transferData.set_bounceable(true);
+    jettonTransfer.set_response_address("EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk"); // send unused toncoins back to sender
+    jettonTransfer.set_to_owner("EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8");
+    jettonTransfer.set_query_id(69);
+    jettonTransfer.set_forward_amount(1);
+    jettonTransfer.set_jetton_amount(1000 * 1000 * 1000); // transfer 1 testtwt (decimal precision is 9)
+
+    const auto privateKey = parse_hex("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(CommonTON::Cell::fromBase64(output.encoded())->hash), "3e4dac37acdc99ca670b3747ab2730e818727d9d25c80d3987abe501356d0da0");
+    
+    // tx: https://testnet.tonscan.org/tx/2HOPGAXhez3v6sdfj-5p8mPHX4S4T0CgxVbm0E2swxE=
+    ASSERT_EQ(output.encoded(), "te6ccgICABoAAQAABCMAAAJFiAC0UQZVyBNtT/W+jqQKnhYasPiDIdSWnNgo1FPyLHxLKh4ABAABAZz3iNHD1z2mxbtpFAtmbVevYMnB4yHPkF3WAsL3KHcrqCw0SWezOg4lVz1zzSReeFDx98ByAqY9+eR5VF3xyugAKamjF/////8AAAAAAAMAAgFoYgAxNB+Hnam4Pt4pSYNuGp+1rhx1QxEXrrZTGnfPOq6D8yAvrwgAAAAAAAAAAAAAAAAAAQADAKoPin6lAAAAAAAAAEVDuaygCAALgZZzC14dAz6ZxChX5pn6bIJ3WNipSJrCELO7Ex0TOQAWiiDKuQJtqf630dSBU8LDVh8QZDqS05sFGop+RY+JZUICAgE0AAYABQBRAAAAACmpoxfOamBhePRNnx/pqQViBzW0dDCy/+1WLV1VhgbVTL6i30ABFP8A9KQT9LzyyAsABwIBIAANAAgE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8ADAALAAoACQAK9ADJ7VQAbIEBCNcY+gDTPzBSJIEBCPRZ8qeCEGRzdHJwdIAYyMsFywJQBc8WUAP6AhPLassfEss/yXP7AABwgQEI1xj6ANM/yFQgR4EBCPRR8qeCEG5vdGVwdIAYyMsFywJQBs8WUAT6AhTLahLLH8s/yXP7AAIAbtIH+gDU1CL5AAXIygcVy//J0Hd0gBjIywXLAiLPFlAF+gIUy2sSzMzJc/sAyEAUgQEI9FHypwICAUgAFwAOAgEgABAADwBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgEgABIAEQARuMl+1E0NcLH4AgFYABYAEwIBIAAVABQAGa8d9qJoQBBrkOuFj8AAGa3OdqJoQCBrkOuF/8AAPbKd+1E0IEBQNch9AQwAsjKB8v/ydABgQEI9ApvoTGAC5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0AGQAYAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+IAeAH6APQEMPgnbyIwUAqhIb7y4FCCEHBsdWeDHrFwgBhQBMsFJs8WWPoCGfQAy2kXyx9SYMs/IMmAQPsABg==");
+}
+
+TEST(TheOpenNetworkSigner, JettonTransferComment) {
+    auto input = Proto::SigningInput();
+    auto& jettonTransfer = *input.mutable_jetton_transfer();
+    auto& transferData = *jettonTransfer.mutable_transfer();
+
+    transferData.set_wallet_version(Proto::WALLET_V4_R2);
+    transferData.set_dest("EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja");
+    transferData.set_amount(100 * 1000 * 1000);
+    transferData.set_sequence_number(1);
+    transferData.set_mode(Proto::SendMode::PAY_FEES_SEPARATELY | Proto::SendMode::IGNORE_ACTION_PHASE_ERRORS);
+    transferData.set_expire_at(1787693046);
+    transferData.set_comment("test comment");
+    transferData.set_bounceable(true);
+    jettonTransfer.set_jetton_amount(500 * 1000 * 1000); // transfer 0.5 testtwt (decimal precision is 9)
+    jettonTransfer.set_to_owner("EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8");
+    jettonTransfer.set_response_address("EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk"); // send unused toncoins back to sender
+    jettonTransfer.set_forward_amount(1);
+    
+
+    const auto privateKey = parse_hex("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(CommonTON::Cell::fromBase64(output.encoded())->hash), "c98c205c8dd37d9a6ab5db6162f5b9d37cefa067de24a765154a5eb7a359f22f");
+    
+    // tx: https://testnet.tonscan.org/tx/Er_oT5R3QK7D-qVPBKUGkJAOOq6ayVls-mgEphpI9Ck=
+    // comment can be seen here: https://testnet.tonviewer.com/transaction/12bfe84f947740aec3faa54f04a50690900e3aae9ac9596cfa6804a61a48f429
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAARgAAAFFiAC0UQZVyBNtT/W+jqQKnhYasPiDIdSWnNgo1FPyLHxLKgwAAQGcaIWVosi1XnveAmoG9y0/mPeNUqUu7GY76mdbRAaVeNeDOPDlh5M3BEb26kkc6XoYDekV60o2iOobN+TGS76jBSmpoxdqjgf2AAAAAQADAAIBaGIAMTQfh52puD7eKUmDbhqfta4cdUMRF662Uxp3zzqug/MgL68IAAAAAAAAAAAAAAAAAAEAAwDKD4p+pQAAAAAAAAAAQdzWUAgAC4GWcwteHQM+mcQoV+aZ+myCd1jYqUiawhCzuxMdEzkAFoogyrkCban+t9HUgVPCw1YfEGQ6ktObBRqKfkWPiWVCAgAAAAB0ZXN0IGNvbW1lbnQ=");
+}
+
 } // namespace TW::TheOpenNetwork::tests

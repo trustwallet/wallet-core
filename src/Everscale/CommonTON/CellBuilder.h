@@ -12,6 +12,7 @@
 
 #include "Cell.h"
 #include "CellSlice.h"
+#include "RawAddress.h"
 
 namespace TW::CommonTON {
 
@@ -40,6 +41,7 @@ public:
     void appendReferenceCell(Cell::Ref child);
     void appendBuilder(const CellBuilder& builder);
     void appendCellSlice(const CellSlice& other);
+    void appendAddress(const AddressData& addressData);
 
     Cell::Ref intoCell();
 
