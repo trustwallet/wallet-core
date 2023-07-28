@@ -34,9 +34,9 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     lockTime = input.lock_time();
     time = input.time();
 
-    totalAmount = amount;
+    extraOutputsAmount = 0;
     for (auto& output: input.extra_outputs()) {
-        totalAmount += output.amount();
+        extraOutputsAmount += output.amount();
         extraOutputs.push_back(std::make_pair(output.to_address(), output.amount()));
     }
 }
