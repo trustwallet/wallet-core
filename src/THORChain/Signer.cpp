@@ -60,10 +60,10 @@ bool Signer::checkJSONMayaAddress(const std::string& json) {
     size_t maya = json.find(MAYA_ADDRESS);
     
     if(((begin != std::string::npos) && (end != std::string::npos) && (maya != std::string::npos)) && ((maya > begin) && (maya < end))) {
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 } // namespace TW::THORChain
