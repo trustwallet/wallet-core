@@ -3,6 +3,9 @@ syntax = "proto3";
 package TW.Common.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// None value.
+message None {}
+
 // Error codes, used in multiple blockchains.
 enum SigningError {
     // This is the OK case, with value=0
