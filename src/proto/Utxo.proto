@@ -3,8 +3,6 @@ syntax = "proto3";
 package TW.Utxo.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Common.proto";
-
 message SigningInput {
 	bytes private_key = 1;
 
@@ -26,7 +24,7 @@ message SigningInput {
 }
 
 message TxIn {
-	optional bytes private_key = 1;
+	bytes private_key = 1;
 
 	// The referenced transaction hash.
 	bytes txid = 2;
@@ -61,11 +59,15 @@ message TxIn {
 	message Taproot {
 		bytes leaf_hash = 1;
 
-		optional uint32 one_prevout = 2;
+		oneof prevout {
+			uint32 one = 2;
+			bool all = 3;
+		}
 	}
 }
 
 enum SighashType {
+	UseDefault = 0;
 	// Sign all outputs (default).
 	All = 1; // 0x01
 	// Sign no outputs, anyone can choose the destination.

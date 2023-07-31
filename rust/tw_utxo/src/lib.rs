@@ -2,14 +2,13 @@ use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::hashes::Hash;
 use bitcoin::secp256k1::KeyPair;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
-use bitcoin::taproot::{LeafVersion, TapLeafHash};
+use bitcoin::taproot::TapLeafHash;
 use bitcoin::{
     secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
 };
 use secp256k1::Secp256k1;
 use std::borrow::Cow;
 use std::marker::PhantomData;
-use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::SigningResult;
 use tw_proto::Utxo::Proto;
 
@@ -94,38 +93,42 @@ impl Signer<StandardBitcoinContext> {
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::taproot(ref taproot) => {
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
-                    let sighash_type = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
+                    let sighash_type =
+                        TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
 
                     // This owner only exists to avoid running into lifetime
                     // issues related to `Prevouts::All(&[T])`.
                     let _owner;
 
-                    let one_prevout = Some(taproot.one_prevout);
-                    let prevouts: Prevouts<'_, TxOut> = if let Some(index) = one_prevout {
-                        let index = index as usize;
+                    let prevouts: Prevouts<'_, TxOut> = match taproot.prevout {
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(index) => {
+                            let index = index as usize;
 
-                        let txout = tx.output.get(index).unwrap();
-                        Prevouts::One(
-                            index,
-                            TxOut {
-                                value: txout.value,
-                                // TODO: Can we avoid cloning here?
-                                script_pubkey: txout.script_pubkey.clone(),
-                            },
-                        )
-                    } else {
-                        _owner = Some(
-                            tx.output
-                                .iter()
-                                .map(|out| TxOut {
-                                    value: out.value,
+                            let txout = tx.output.get(index).unwrap();
+                            Prevouts::One(
+                                index,
+                                TxOut {
+                                    value: txout.value,
                                     // TODO: Can we avoid cloning here?
-                                    script_pubkey: out.script_pubkey.clone(),
-                                })
-                                .collect::<Vec<TxOut>>(),
-                        );
+                                    script_pubkey: txout.script_pubkey.clone(),
+                                },
+                            )
+                        },
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(_) => {
+                            _owner = Some(
+                                tx.output
+                                    .iter()
+                                    .map(|out| TxOut {
+                                        value: out.value,
+                                        // TODO: Can we avoid cloning here?
+                                        script_pubkey: out.script_pubkey.clone(),
+                                    })
+                                    .collect::<Vec<TxOut>>(),
+                            );
 
-                        Prevouts::All(_owner.as_ref().unwrap())
+                            Prevouts::All(_owner.as_ref().unwrap())
+                        },
+                        _ => panic!(),
                     };
 
                     let hash = cache
