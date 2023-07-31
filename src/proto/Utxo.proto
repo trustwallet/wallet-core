@@ -61,19 +61,7 @@ message TxIn {
 	message Taproot {
 		bytes leaf_hash = 1;
 
-		oneof prevouts {
-			OnePrevouts one = 3;
-			AllPrevouts all = 4;
-		}
-
-		message OnePrevouts {
-			uint32 index = 1;
-			TxOut txout = 2;
-		}
-
-		message AllPrevouts {
-			repeated TxOut items = 1;
-		}
+		optional uint32 one_prevout = 2;
 	}
 }
 

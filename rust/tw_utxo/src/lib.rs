@@ -17,7 +17,6 @@ pub mod entry;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
 type ProtoSignerVariant<'a> = Proto::mod_TxIn::OneOfsigner<'a>;
-type ProtoPrevoutVariant<'a> = Proto::mod_TxIn::mod_Taproot::OneOfprevouts<'a>;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -92,37 +91,35 @@ impl Signer<StandardBitcoinContext> {
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
                     let sighash = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
 
+
                     let mut owner = None;
-                    let prevouts = match taproot.prevouts {
-                        ProtoPrevoutVariant::one(ref one) => {
-                            let script_pubkey = ScriptBuf::from_bytes(
-                                one.txout.as_ref().unwrap().script_pubkey.to_vec(),
-                            );
 
-                            Prevouts::One(
-                                one.index as usize,
-                                TxOut {
-                                    value: one.txout.as_ref().unwrap().value,
-                                    script_pubkey,
-                                },
-                            )
-                        },
-                        ProtoPrevoutVariant::all(ref all) => {
-                            owner = Some(
-                                all.items
-                                    .iter()
-                                    .map(|out| TxOut {
-                                        value: out.value,
-                                        script_pubkey: ScriptBuf::from_bytes(
-                                            out.script_pubkey.to_vec(),
-                                        ),
-                                    })
-                                    .collect::<Vec<TxOut>>(),
-                            );
+                    let one_prevout = Some(taproot.one_prevout);
+                    let prevouts = if let Some(index) = one_prevout {
+                        let index = index as usize;
 
-                            Prevouts::All(owner.as_ref().unwrap())
-                        },
-                        ProtoPrevoutVariant::None => panic!(),
+                        let txout = tx.output.get(index).unwrap();
+                        Prevouts::One(
+                            index,
+                            TxOut {
+                                value: txout.value,
+                                // TODO: Can we avoid cloning here?
+                                script_pubkey: txout.script_pubkey.clone(),
+                            },
+                        )
+                    } else {
+                        owner = Some(
+                            tx.output
+                                .iter()
+                                .map(|out| TxOut {
+                                    value: out.value,
+                                    // TODO: Can we avoid cloning here?
+                                    script_pubkey: out.script_pubkey.clone(),
+                                })
+                                .collect::<Vec<TxOut>>(),
+                        );
+
+                        Prevouts::All(owner.as_ref().unwrap())
                     };
 
                     let hash = cache
