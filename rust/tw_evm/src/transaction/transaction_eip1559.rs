@@ -106,9 +106,9 @@ fn encode_transaction(
 
     let tx_encoded = list.finish();
 
-    let mut envelope = Vec::with_capacity(tx_encoded.as_ref().len() + 1);
+    let mut envelope = Vec::with_capacity(tx_encoded.len() + 1);
     envelope.push(EIP1559_TX_TYPE);
-    envelope.extend_from_slice(tx_encoded.as_ref());
+    envelope.extend_from_slice(tx_encoded.as_slice());
     envelope
 }
 

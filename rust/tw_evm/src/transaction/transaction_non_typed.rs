@@ -96,7 +96,7 @@ fn encode_transaction(
         None => (chain_id, U256::zero(), U256::zero()),
     };
     list.append(v).append(r).append(s);
-    list.finish().as_ref().to_vec()
+    list.finish()
 }
 
 #[cfg(test)]

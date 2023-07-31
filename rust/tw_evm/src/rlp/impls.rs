@@ -7,7 +7,6 @@
 use crate::address::Address;
 use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
-use tw_memory::Data;
 use tw_number::U256;
 
 impl RlpEncode for U256 {
@@ -31,14 +30,14 @@ impl RlpEncode for Option<Address> {
     }
 }
 
-impl RlpEncode for Data {
-    fn rlp_append(&self, buf: &mut RlpBuffer) {
-        buf.append_data(self.as_slice())
-    }
-}
-
 impl<'a> RlpEncode for &'a [u8] {
     fn rlp_append(&self, buf: &mut RlpBuffer) {
         buf.append_data(self)
+    }
+}
+
+impl<'a> RlpEncode for &'a str {
+    fn rlp_append(&self, buf: &mut RlpBuffer) {
+        buf.append_data(self.as_bytes())
     }
 }

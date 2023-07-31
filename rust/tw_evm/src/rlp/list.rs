@@ -6,6 +6,7 @@
 
 use crate::rlp::buffer::RlpBuffer;
 use crate::rlp::RlpEncode;
+use tw_memory::Data;
 
 /// An RLP list of items.
 pub struct RlpList {
@@ -48,9 +49,15 @@ impl RlpList {
         self
     }
 
+    /// Appends an already encoded with all required headers value.
+    pub fn append_raw_encoded(&mut self, encoded: &[u8]) -> &mut Self {
+        self.buf.append_raw_encoded(encoded);
+        self
+    }
+
     /// Finalizes the RLP list buffer. Returns encoded RLP list with a header.
     #[must_use]
-    pub fn finish(mut self) -> impl AsRef<[u8]> {
+    pub fn finish(mut self) -> Data {
         self.buf.finalize_list();
         self.buf.finish()
     }

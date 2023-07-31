@@ -7,6 +7,7 @@
 pub mod abi;
 pub mod address;
 pub mod evm_context;
+pub mod ffi;
 pub mod modules;
 pub mod rlp;
 pub mod transaction;

@@ -4,12 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::rlp::RlpEncode;
+use tw_memory::Data;
+
 #[derive(Default)]
 pub struct RlpBuffer {
     stream: rlp::RlpStream,
 }
 
 impl RlpBuffer {
+    /// cbindgen:ignore
+    const NO_ITEMS: usize = 0;
+    /// cbindgen:ignore
+    const ONE_ITEM: usize = 1;
+
     /// Creates `RlpBuffer` with a default capacity.
     pub fn new() -> RlpBuffer {
         RlpBuffer::default()
@@ -21,6 +29,14 @@ impl RlpBuffer {
         self.stream.begin_unbounded_list();
     }
 
+    /// Appends encodable `value`.
+    pub fn append<T>(&mut self, value: T)
+    where
+        T: RlpEncode,
+    {
+        value.rlp_append(self)
+    }
+
     /// Appends an item by its `bytes` representation.
     /// This method is usually called from [`RlpEncode::rlp_append`].
     pub fn append_data(&mut self, bytes: &[u8]) {
@@ -29,7 +45,18 @@ impl RlpBuffer {
 
     /// Appends an empty list.
     pub(crate) fn append_empty_list(&mut self) {
-        self.stream.begin_list(0);
+        self.stream.begin_list(Self::NO_ITEMS);
+    }
+
+    // /// Appends the given `bytes` as an RLP list.
+    // pub(crate) fn append_raw_list(&mut self, bytes: &[u8]) {
+    //     self.stream.begin_list(Self::ONE_ITEM);
+    //     self.stream.append_raw(bytes, Self::ONE_ITEM);
+    // }
+
+    /// Appends an already encoded with all required headers value.
+    pub(crate) fn append_raw_encoded(&mut self, bytes: &[u8]) {
+        self.stream.append_raw(bytes, Self::ONE_ITEM);
     }
 
     /// Finalize the list.
@@ -46,7 +73,7 @@ impl RlpBuffer {
     /// # Panic
     ///
     /// Tte method panic if [`RlpBuffer::begin_list`] has been called without [`RlpBuffer::finalize_list`].
-    pub fn finish(self) -> impl AsRef<[u8]> {
-        self.stream.out()
+    pub fn finish(self) -> Data {
+        self.stream.out().into()
     }
 }
