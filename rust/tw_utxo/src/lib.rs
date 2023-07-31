@@ -1,7 +1,7 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::hashes::Hash;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
-use bitcoin::taproot::TapLeafHash;
+use bitcoin::taproot::{TapLeafHash, LeafVersion};
 use bitcoin::{
     secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
 };
@@ -78,20 +78,21 @@ impl Signer<StandardBitcoinContext> {
                             sighash,
                         )
                         .unwrap();
+
+                    let message = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSignerVariant::taproot(ref taproot) => {
-                    // TODO: field should technically be `Option<T>`(?)
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
                     let sighash = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
-                    // Default: 0xFFFFFFFF
-                    let separator_position = taproot.code_separator_position;
 
+                    let mut owner = None;
                     let prevouts = match taproot.prevouts {
                         ProtoPrevoutVariant::one(ref one) => {
                             let script_pubkey = ScriptBuf::from_bytes(
                                 one.txout.as_ref().unwrap().script_pubkey.to_vec(),
                             );
+
                             Prevouts::One(
                                 one.index as usize,
                                 TxOut {
@@ -100,8 +101,20 @@ impl Signer<StandardBitcoinContext> {
                                 },
                             )
                         },
-                        ProtoPrevoutVariant::all(ref _all) => {
-                            panic!()
+                        ProtoPrevoutVariant::all(ref all) => {
+                            owner = Some(
+                                all.items
+                                    .iter()
+                                    .map(|out| TxOut {
+                                        value: out.value,
+                                        script_pubkey: ScriptBuf::from_bytes(
+                                            out.script_pubkey.to_vec(),
+                                        ),
+                                    })
+                                    .collect::<Vec<TxOut>>(),
+                            );
+
+                            Prevouts::All(owner.as_ref().unwrap())
                         },
                         ProtoPrevoutVariant::None => panic!(),
                     };
@@ -111,10 +124,12 @@ impl Signer<StandardBitcoinContext> {
                             index,
                             &prevouts,
                             None,
-                            Some((leaf_hash.into(), separator_position)),
+                            Some((leaf_hash.into(), 0xFFFFFFFF)),
                             sighash,
                         )
                         .unwrap();
+
+                    let message = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
                 },
                 ProtoSignerVariant::None => panic!(),
             }
