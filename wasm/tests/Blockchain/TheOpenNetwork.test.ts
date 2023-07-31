@@ -96,6 +96,47 @@ describe("TheOpenNetwork", () => {
 
     assert.equal(output.encoded, expectedString)
   });
+
+  it("test jetton transfer TheOpenNetwork", () => {
+    const { PrivateKey, HexCoding, CoinType, AnySigner } = globalThis.core;
+
+    let privateKeyData = HexCoding.decode("c054900a527538c1b4325688a421c0469b171c29f23a62da216e90b0df2412ee");
+
+    let transferData = TW.TheOpenNetwork.Proto.Transfer.create({
+        walletVersion: TW.TheOpenNetwork.Proto.WalletVersion.WALLET_V4_R2,
+        dest: "EQBiaD8PO1NwfbxSkwbcNT9rXDjqhiIvXWymNO-edV0H5lja",
+        amount: new Long(100 * 1000 * 1000),
+        sequenceNumber: 1,
+        mode: (TW.TheOpenNetwork.Proto.SendMode.PAY_FEES_SEPARATELY | TW.TheOpenNetwork.Proto.SendMode.IGNORE_ACTION_PHASE_ERRORS),
+        expireAt: 1787693046,
+        comment: "test comment",
+        bounceable: true,
+    });
+
+    let jettonTransfer = TW.TheOpenNetwork.Proto.JettonTransfer.create({
+      transfer: transferData,
+      jettonAmount: new Long(500 * 1000 * 1000),
+      toOwner: "EQAFwMs5ha8OgZ9M4hQr80z9NkE7rGxUpE1hCFndiY6JnDx8",
+      responseAddress: "EQBaKIMq5Am2p_rfR1IFTwsNWHxBkOpLTmwUain5Fj4llTXk",
+      forwardAmount: new Long(1)
+    })
+
+    let input = TW.TheOpenNetwork.Proto.SigningInput.create({
+        jettonTransfer: jettonTransfer,
+        privateKey: PrivateKey.createWithData(privateKeyData).data(),
+    });
+
+    const encoded = TW.TheOpenNetwork.Proto.SigningInput.encode(input).finish();
+    let outputData = AnySigner.sign(encoded, CoinType.ton);
+    let output = TW.TheOpenNetwork.Proto.SigningOutput.decode(outputData);
+
+    // tx: https://testnet.tonscan.org/tx/Er_oT5R3QK7D-qVPBKUGkJAOOq6ayVls-mgEphpI9Ck=
+    let expectedString = "te6ccgICAAQAAQAAARgAAAFFiAC0UQZVyBNtT/W+jqQKnhYasPiDIdSWnNgo1FPyLHxLKgwAAQGcaIWVosi1XnveAmoG9y0/mPeNUqUu7GY76mdbRAaVeNeDOPDlh5M3BEb26kkc6XoYDekV60o2iOobN+TGS76jBSmpoxdqjgf2AAAAAQADAAIBaGIAMTQfh52puD7eKUmDbhqfta4cdUMRF662Uxp3zzqug/MgL68IAAAAAAAAAAAAAAAAAAEAAwDKD4p+pQAAAAAAAAAAQdzWUAgAC4GWcwteHQM+mcQoV+aZ+myCd1jYqUiawhCzuxMdEzkAFoogyrkCban+t9HUgVPCw1YfEGQ6ktObBRqKfkWPiWVCAgAAAAB0ZXN0IGNvbW1lbnQ=";
+
+    assert.equal(output.encoded, expectedString)
+  });
+
+  
 });
 
 

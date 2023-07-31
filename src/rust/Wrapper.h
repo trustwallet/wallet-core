@@ -141,6 +141,20 @@ struct CStringWrapper {
     std::string str;
 };
 
+struct CUInt64Wrapper {
+    /// Implicit move constructor.
+    CUInt64Wrapper(uint64_t c_u64) {
+        *this = c_u64;
+    }
+
+    CUInt64Wrapper& operator=(uint64_t c_u64) {
+        value = c_u64;
+        return *this;
+    }
+
+    uint64_t value;
+};
+
 template<typename T>
 class CResult {
 public:
@@ -188,5 +202,6 @@ private:
 };
 
 using CByteArrayResultWrapper = CResult<CByteArrayWrapper>;
+using CUInt64ResultWrapper = CResult<CUInt64Wrapper>;
 
 } // namespace TW::Rust

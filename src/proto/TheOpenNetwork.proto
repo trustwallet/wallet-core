@@ -55,6 +55,26 @@ message Transfer {
     bool bounceable = 8;
 }
 
+message JettonTransfer {
+    // Dest in Transfer means contract address of sender's jetton wallet. 
+    Transfer transfer = 1;
+
+    // Arbitrary request number. Deafult is 0. Optional field.
+    uint64 query_id = 2;
+
+    // Amount of transferred jettons in elementary integer units. The real value transferred is jetton_amount multiplied by ten to the power of token decimal precision
+    uint64 jetton_amount = 3;
+
+    // Address of the new owner of the jettons.
+    string to_owner = 4;
+
+    // Address where to send a response with confirmation of a successful transfer and the rest of the incoming message Toncoins. Usually the sender should get back their toncoins.
+    string response_address = 5;
+
+    // Amount in nanotons to forward to recipient. Basically minimum amount - 1 nanoton should be used
+    uint64 forward_amount = 6;
+}
+
 message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
@@ -62,6 +82,7 @@ message SigningInput {
     // The payload transfer
     oneof action_oneof {
         Transfer transfer = 2;
+        JettonTransfer jetton_transfer = 3;
     }
 }
 

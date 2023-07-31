@@ -44,7 +44,6 @@ UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
 SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin, bool omitPrivateKey) {
     SigningInput input;
     input.amount = amount;
-    input.totalAmount = amount;
     input.byteFee = byteFee;
     input.useMaxAmount = useMaxAmount;
     input.coinType = coin;
