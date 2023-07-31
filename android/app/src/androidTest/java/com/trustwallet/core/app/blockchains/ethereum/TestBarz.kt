@@ -34,7 +34,7 @@ class TestBarz {
         val publicKeyData = Numeric.hexStringToByteArray("04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02")
         val publicKey = PublicKey(publicKeyData, PublicKeyType.NIST256P1EXTENDED)
         val verificationFacet = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf"
-        val result = WCBarz.getInitCode(factoryAddress, publicKey, verificationFacet)
+        val result = WCBarz.getInitCode(factoryAddress, publicKey, verificationFacet, 0)
         assertEquals(Numeric.toHexString(result), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000")
     }
 
@@ -155,7 +155,7 @@ class TestBarz {
                 sender = "0x1392Ae041BfBdBAA0cFF9234a0C8F64df97B7218"
                 preVerificationGas = ByteString.copyFrom("0xb708".toHexByteArray())
                 verificationGasLimit = ByteString.copyFrom("0x2DC6C0".toHexByteArray())
-                initCode = ByteString.copyFrom(WCBarz.getInitCode(factoryAddress, publicKey, verificationFacet))
+                initCode = ByteString.copyFrom(WCBarz.getInitCode(factoryAddress, publicKey, verificationFacet, 0))
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {

@@ -122,7 +122,8 @@ class BarzTests: XCTestCase {
                 $0.initCode = Barz.getInitCode(
                     factory: factory,
                     publicKey: publicKey,
-                    verificationFacet: "0x5034534Efe9902779eD6eA6983F435c00f3bc510"
+                    verificationFacet: "0x5034534Efe9902779eD6eA6983F435c00f3bc510",
+                    salt: 0
                 )
             }
 
