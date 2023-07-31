@@ -34,13 +34,6 @@ message TxIn {
 	// The index of the referenced output.
 	uint32 vout = 3;
 
-	// The data used to statisfy the spending condition of the referenced
-	// output.
-	oneof spending_data {
-		bytes script_sig = 5;
-		Witness witness = 6;
-	}
-
 	// The sequence number (TODO).
 	uint32 sequence = 7;
 
@@ -52,11 +45,6 @@ message TxIn {
 
 	// The sighash type.
 	SighashType sighash = 11;
-
-	// Witness data containing witness items.
-	message Witness {
-		repeated bytes items = 1;
-	}
 
 	message Legacy {
 		// The spending condition of the output.

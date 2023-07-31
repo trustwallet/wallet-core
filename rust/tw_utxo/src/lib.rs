@@ -1,10 +1,12 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::hashes::Hash;
+use bitcoin::secp256k1::KeyPair;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
-use bitcoin::taproot::{TapLeafHash, LeafVersion};
+use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::{
     secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
 };
+use secp256k1::Secp256k1;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::SigningResult;
@@ -14,7 +16,6 @@ pub mod compiler;
 pub mod entry;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
-type ProtoSpendingData<'a> = Proto::mod_TxIn::OneOfspending_data<'a>;
 type ProtoSignerVariant<'a> = Proto::mod_TxIn::OneOfsigner<'a>;
 type ProtoPrevoutVariant<'a> = Proto::mod_TxIn::mod_Taproot::OneOfprevouts<'a>;
 
@@ -46,7 +47,8 @@ impl Signer<StandardBitcoinContext> {
     fn sign_proto_impl(
         proto: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningInput<'static>> {
-        let private_key = secp256k1::SecretKey::from_slice(proto.private_key.as_ref()).unwrap();
+        let secp = Secp256k1::new();
+        let keypair = KeyPair::from_seckey_slice(&secp, proto.private_key.as_ref()).unwrap();
 
         // Convert Protobuf structure to `bitcoin` crate native transaction.
         // Prepare signing mechanism.
@@ -63,6 +65,9 @@ impl Signer<StandardBitcoinContext> {
                     let hash = cache
                         .legacy_signature_hash(index, script_pubkey, sighash)
                         .unwrap();
+
+                    let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
+                    let sig = secp.sign_ecdsa(&sighash, &keypair.secret_key());
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSignerVariant::segwit(ref segwit) => {
@@ -79,7 +84,8 @@ impl Signer<StandardBitcoinContext> {
                         )
                         .unwrap();
 
-                    let message = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
+                    let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
+                    let sig = secp.sign_ecdsa(&sighash, &keypair.secret_key());
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSignerVariant::taproot(ref taproot) => {
@@ -129,7 +135,8 @@ impl Signer<StandardBitcoinContext> {
                         )
                         .unwrap();
 
-                    let message = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
+                    let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
+                    let sig = secp.sign_schnorr(&sighash, &keypair);
                 },
                 ProtoSignerVariant::None => panic!(),
             }
@@ -165,21 +172,11 @@ fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transactio
         let txid = Txid::from_slice(txin.txid.as_ref()).unwrap();
         let vout = txin.vout;
 
-        let (script_sig, witness) = match &txin.spending_data {
-            ProtoSpendingData::script_sig(script) => {
-                (ScriptBuf::from_bytes(script.to_vec()), Witness::new())
-            },
-            ProtoSpendingData::witness(witness) => {
-                (ScriptBuf::new(), Witness::from_slice(&witness.items))
-            },
-            ProtoSpendingData::None => panic!(),
-        };
-
         tx.input.push(TxIn {
             previous_output: OutPoint { txid, vout },
-            script_sig,
+            script_sig: ScriptBuf::new(),
             sequence: Sequence::default(),
-            witness,
+            witness: Witness::new(),
         });
     }
 
