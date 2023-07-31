@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Utxo.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message SigningInput {
 	bytes private_key = 1;
 
@@ -61,7 +63,7 @@ message TxIn {
 
 		oneof prevout {
 			uint32 one = 2;
-			bool all = 3;
+			Common.Proto.None all = 3;
 		}
 	}
 }
