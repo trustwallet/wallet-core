@@ -64,16 +64,14 @@ message TxIn {
 	}
 
 	message Segwit {
+		uint64 value = 1;
+
 		// The spending condition of the output.
 		bytes script_pubkey = 4;
-
-		uint64 value = 1;
 	}
 
 	message Taproot {
 		bytes leaf_hash = 1;
-
-		uint32 code_separator_position = 2;
 
 		oneof prevouts {
 			OnePrevouts one = 3;
