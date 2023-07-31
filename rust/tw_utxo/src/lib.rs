@@ -7,6 +7,7 @@ use bitcoin::{
     secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
 };
 use secp256k1::Secp256k1;
+use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::error::SigningResult;
@@ -16,7 +17,7 @@ pub mod compiler;
 pub mod entry;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
-type ProtoSignerVariant<'a> = Proto::mod_TxIn::OneOfsigner<'a>;
+type ProtoSigningMethod<'a> = Proto::mod_TxIn::OneOfsigning_method<'a>;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -45,7 +46,7 @@ impl Signer<StandardBitcoinContext> {
 
     fn sign_proto_impl(
         proto: Proto::SigningInput<'_>,
-    ) -> SigningResult<Proto::SigningInput<'static>> {
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
         let secp = Secp256k1::new();
         let keypair = KeyPair::from_seckey_slice(&secp, proto.private_key.as_ref()).unwrap();
 
@@ -54,24 +55,27 @@ impl Signer<StandardBitcoinContext> {
         let tx = convert_proto_to_tx(&proto).unwrap();
         let mut cache = SighashCache::new(&tx);
 
+        let mut signatures: Vec<Vec<u8>> = vec![];
+
         for (index, input) in proto.inputs.iter().enumerate() {
-            match input.signer {
+            match input.signing_method {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
-                ProtoSignerVariant::legacy(ref legacy) => {
+                ProtoSigningMethod::legacy(ref legacy) => {
                     let script_pubkey = Script::from_bytes(legacy.script_pubkey.as_ref());
-                    let sighash = input.sighash as u32;
+                    let sighash_type = input.sighash as u32;
 
                     let hash = cache
-                        .legacy_signature_hash(index, script_pubkey, sighash)
+                        .legacy_signature_hash(index, script_pubkey, sighash_type)
                         .unwrap();
 
                     let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
                     let sig = secp.sign_ecdsa(&sighash, &keypair.secret_key());
+                    signatures.push(sig.serialize_der().to_vec());
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
-                ProtoSignerVariant::segwit(ref segwit) => {
+                ProtoSigningMethod::segwit(ref segwit) => {
                     let script_pubkey = ScriptBuf::from_bytes(segwit.script_pubkey.to_vec());
-                    let sighash = EcdsaSighashType::from_consensus(input.sighash as u32);
+                    let sighash_type = EcdsaSighashType::from_consensus(input.sighash as u32);
                     let value = segwit.value;
 
                     let hash = cache
@@ -79,23 +83,25 @@ impl Signer<StandardBitcoinContext> {
                             index,
                             script_pubkey.p2wpkh_script_code().as_ref().unwrap(),
                             value,
-                            sighash,
+                            sighash_type,
                         )
                         .unwrap();
 
                     let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
                     let sig = secp.sign_ecdsa(&sighash, &keypair.secret_key());
+                    signatures.push(sig.serialize_der().to_vec());
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
-                ProtoSignerVariant::taproot(ref taproot) => {
+                ProtoSigningMethod::taproot(ref taproot) => {
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
-                    let sighash = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
+                    let sighash_type = TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
 
-
-                    let mut owner = None;
+                    // This owner only exists to avoid running into lifetime
+                    // issues related to `Prevouts::All(&[T])`.
+                    let _owner;
 
                     let one_prevout = Some(taproot.one_prevout);
-                    let prevouts = if let Some(index) = one_prevout {
+                    let prevouts: Prevouts<'_, TxOut> = if let Some(index) = one_prevout {
                         let index = index as usize;
 
                         let txout = tx.output.get(index).unwrap();
@@ -108,7 +114,7 @@ impl Signer<StandardBitcoinContext> {
                             },
                         )
                     } else {
-                        owner = Some(
+                        _owner = Some(
                             tx.output
                                 .iter()
                                 .map(|out| TxOut {
@@ -119,7 +125,7 @@ impl Signer<StandardBitcoinContext> {
                                 .collect::<Vec<TxOut>>(),
                         );
 
-                        Prevouts::All(owner.as_ref().unwrap())
+                        Prevouts::All(_owner.as_ref().unwrap())
                     };
 
                     let hash = cache
@@ -128,18 +134,21 @@ impl Signer<StandardBitcoinContext> {
                             &prevouts,
                             None,
                             Some((leaf_hash.into(), 0xFFFFFFFF)),
-                            sighash,
+                            sighash_type,
                         )
                         .unwrap();
 
                     let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
                     let sig = secp.sign_schnorr(&sighash, &keypair);
+                    signatures.push(sig.as_ref().to_vec());
                 },
-                ProtoSignerVariant::None => panic!(),
+                ProtoSigningMethod::None => panic!(),
             }
         }
 
-        todo!()
+        Ok(Proto::SigningOutput {
+            signatures: signatures.into_iter().map(|sig| Cow::Owned(sig)).collect(),
+        })
     }
 }
 

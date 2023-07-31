@@ -37,7 +37,7 @@ message TxIn {
 	// The sequence number (TODO).
 	uint32 sequence = 7;
 
-	oneof signer {
+	oneof signing_method {
 		Legacy legacy = 8;
 		Segwit segwit = 9;
 		Taproot taproot = 10;
@@ -86,4 +86,8 @@ message TxOut {
 	uint64 value = 1;
 	// The spending condition of the output.
 	bytes script_pubkey = 2;
+}
+
+message SigningOutput {
+	repeated bytes signatures = 1;
 }
