@@ -38,10 +38,10 @@ class BarzTests: XCTestCase {
             $0.defaultFallback = "0x22eB0720d9Fc4bC90BB812B309e939880B71c20d"
             $0.bytecode = bytecode
             $0.publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
-            $0.salt = 123456
+            $0.salt = 0
         }
 
-        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1");
+        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0x77F62bb3E43190253D4E198199356CD2b25063cA");
     }
 
     func testCounterfactualAddressNonZeroSalt() {
@@ -54,10 +54,10 @@ class BarzTests: XCTestCase {
             $0.defaultFallback = "0x22eB0720d9Fc4bC90BB812B309e939880B71c20d"
             $0.bytecode = bytecode
             $0.publicKey = "0xB5547FBdC56DCE45e1B8ef75569916D438e09c46"
-            $0.salt = 0
+            $0.salt = 12345
         }
 
-        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0x77F62bb3E43190253D4E198199356CD2b25063cA");
+        XCTAssertEqual(Barz.getCounterfactualAddress(input: try! input.serializedData()), "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1");
     }
 
     func testFormatSignature() {
