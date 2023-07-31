@@ -38,12 +38,7 @@ pub struct Signer<Context: UtxoContext> {
 
 impl Signer<StandardBitcoinContext> {
     #[inline]
-    pub fn sign_proto(input: Proto::SigningInput<'_>) -> Proto::SigningInput {
-        Self::sign_proto_impl(input).unwrap();
-        todo!()
-    }
-
-    fn sign_proto_impl(
+    pub fn sign_proto(
         proto: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let secp = Secp256k1::new();
