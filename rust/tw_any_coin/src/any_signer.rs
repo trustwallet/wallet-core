@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use tw_coin_entry::error::{SigningError, SigningResult};
-use tw_coin_registry::coin_dispatcher;
 use tw_coin_registry::coin_type::CoinType;
+use tw_coin_registry::dispatcher::coin_dispatcher;
 use tw_memory::Data;
 
 /// Represents a signer to sign transactions for any blockchain.

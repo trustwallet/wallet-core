@@ -13,11 +13,14 @@ use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::address::Address;
 use tw_evm::evm_context::StandardEvmContext;
+use tw_evm::evm_entry::EvmEntry;
 use tw_evm::modules::compiler::Compiler;
 use tw_evm::modules::json_signer::EthJsonSigner;
+use tw_evm::modules::rlp_encoder::RlpEncoder;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
+use tw_proto::EthereumRLP::Proto as RlpProto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
 pub struct EthereumEntry;
@@ -84,5 +87,14 @@ impl CoinEntry for EthereumEntry {
     #[inline]
     fn json_signer(&self) -> Option<Self::JsonSigner> {
         Some(EthJsonSigner::default())
+    }
+}
+
+impl EvmEntry for EthereumEntry {
+    type RlpEncodingInput<'a> = RlpProto::EncodingInput<'a>;
+    type RlpEncodingOutput = RlpProto::EncodingOutput<'static>;
+
+    fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput {
+        RlpEncoder::<StandardEvmContext>::encode_with_proto(input)
     }
 }
