@@ -46,7 +46,7 @@ static Data ethAddressStringToData(const std::string& asString) {
     return asData;
 }
 
-TWCoinType chainCoinType(Chain chain) {
+TWCoinType chainCoinTypeTHOR(Chain chain) {
     switch (chain) {
     case Chain::ETH:
         return TWCoinTypeEthereum;
@@ -64,15 +64,37 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeLitecoin;
     case Chain::ATOM:
         return TWCoinTypeCosmos;
-    case Chain::MAYA:
-        return TWCoinTypeMAYAChain;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
     }
 }
 
-std::string chainName(Chain chain) {
+TWCoinType chainCoinTypeMAYA(Chain chain) {
+    switch (chain) {
+    case Chain::ETH:
+        return TWCoinTypeEthereum;
+    case Chain::BTC:
+        return TWCoinTypeBitcoin;
+    case Chain::THOR:
+        return TWCoinTypeTHORChain;
+    case Chain::DASH:
+        return TWCoinTypeDash;
+    case Chain::MAYA:
+    default:
+        return TWCoinTypeMAYAChain;
+    }
+}
+
+TWCoinType chainCoinType(Chain toChain, Chain mfromChain) {
+    if(mfromChain == Chain::MAYA){
+        return chainCoinTypeMAYA(toChain);
+    }
+
+    return chainCoinTypeTHOR(toChain);
+}
+
+std::string chainNameTHOR(Chain chain) {
     switch (chain) {
     case Chain::AVAX:
         return "AVAX";
@@ -90,26 +112,47 @@ std::string chainName(Chain chain) {
         return "LTC";
     case Chain::ATOM:
         return "GAIA";
-    case Chain::MAYA:
-        return "MAYA";
     case Chain::THOR:
     default:
         return "THOR";
     }
 }
 
-bool validateAddress(Chain chain, const std::string& address) {
-    return TW::validateAddress(chainCoinType(chain), address);
+std::string chainNameMAYA(Chain chain) {
+    switch (chain) {
+    case Chain::ETH:
+        return "ETH";
+    case Chain::BTC:
+        return "BTC";
+    case Chain::THOR:
+        return "THOR";
+    case Chain::DASH:
+        return "DASH";
+    default:
+        return "MAYA";
+    }
+}
+
+std::string chainName(Chain toChain, Chain mfromChain) {
+    if(mfromChain == Chain::MAYA){
+        return chainNameMAYA(toChain);
+    }
+
+    return chainNameTHOR(toChain);
+}
+
+bool validateAddress(Chain chain, const std::string& address, Chain mfromChain) {
+    return TW::validateAddress(chainCoinType(chain, mfromChain), address);
 }
 
 SwapBundled SwapBuilder::build(bool shortened) {
     auto fromChain = static_cast<Chain>(mFromAsset.chain());
     auto toChain = static_cast<Chain>(mToAsset.chain());
 
-    if (!validateAddress(fromChain, mFromAddress)) {
+    if (!validateAddress(fromChain, mFromAddress, mfromChain)) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_from_address), .error = "Invalid from address"};
     }
-    if (!validateAddress(toChain, mToAddress)) {
+    if (!validateAddress(toChain, mToAddress, mfromChain)) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_to_address), .error = "Invalid to address"};
     }
 
@@ -144,7 +187,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     const auto& toSymbol = mToAsset.symbol();
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
-    memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress;
+    memo << prefix + ":" + chainName(toChain, mfromChain) + "." + toCoinToken + ":" + mToAddress;
     if (toAmountLimitNum > 0) {
         memo << ":" << std::to_string(toAmountLimitNum);
     }
@@ -172,7 +215,7 @@ SwapBundled SwapBuilder::buildBitcoin(uint256_t amount, const std::string& memo,
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
-    auto coinType = chainCoinType(fromChain);
+    auto coinType = chainCoinType(fromChain, mfromChain);
     input.set_hash_type(Bitcoin::hashTypeForCoin(coinType));
     input.set_byte_fee(1);
     input.set_use_max_amount(false);

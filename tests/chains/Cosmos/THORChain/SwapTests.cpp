@@ -26,6 +26,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <gtest/gtest.h>
+#include <iostream>
 
 namespace TW::THORChainSwap {
 
@@ -762,51 +763,58 @@ TEST(THORChainSwap, SwapBnbRune) {
     // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
 }
 
-TEST(THORChainSwap, SwapBnbCacao) {
+TEST(THORChainSwap, SwapBtcCacao) {
     Proto::Asset fromAsset;
-    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
     Proto::Asset toAsset;
     toAsset.set_chain(static_cast<Proto::Chain>(Chain::MAYA));
     toAsset.set_symbol("CACAO");
     auto&& [out, errorCode, error] = SwapBuilder::builder()
                                          .from(fromAsset)
                                          .to(toAsset)
-                                         .fromAddress(Address1Bnb)
+                                         .fromAddress(Address1Btc)
                                          .toAddress(Address1Maya)
-                                         .vault(VaultBnb)
+                                         .vault(VaultBtc)
                                          .fromAmount("4000000")
                                          .toAmountLimit("121065076")
+                                         .fromChain(Chain::MAYA)
                                          .build();
     ASSERT_EQ(errorCode, 0);
     ASSERT_EQ(error, "");
-    EXPECT_EQ(hex(out), "2a423d3a4d4159412e434143414f3a6d6179613178686677703237733379336c736e7a7036643071643837307139766c65656c756e71376632663a31323130363530373652480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e42108092f40112220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e42108092f401");
+    EXPECT_EQ(hex(out), "0801108092f4011801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a423d3a4d4159412e434143414f3a6d6179613178686677703237733379336c736e7a7036643071643837307139766c65656c756e71376632663a313231303635303736");
 
-    auto tx = Binance::Proto::SigningInput();
+    auto tx = Bitcoin::Proto::SigningInput();
     ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
 
     // check fields
-    EXPECT_EQ(tx.memo(), "=:MAYA.CACAO:maya1xhfwp27s3y3lsnzp6d0qd870q9vleelunq7f2f:121065076");
-    ASSERT_TRUE(tx.has_send_order());
-    ASSERT_EQ(tx.send_order().inputs_size(), 1);
-    ASSERT_EQ(tx.send_order().outputs_size(), 1);
-    EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "e42be736e933cf8b97c26f33789a3ca6f8348cd1");
-    EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "99730371c7c77cb81ffa76b566dcef7c1e5dc19c");
-    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+    EXPECT_EQ(tx.amount(), 4000000);
+    EXPECT_EQ(tx.to_address(), VaultBtc);
+    EXPECT_EQ(tx.change_address(), Address1Btc);
+    EXPECT_EQ(tx.output_op_return(), "=:MAYA.CACAO:maya1xhfwp27s3y3lsnzp6d0qd870q9vleelunq7f2f:121065076");
+    EXPECT_EQ(tx.coin_type(), 0ul);
+    EXPECT_EQ(tx.private_key_size(), 0);
+    EXPECT_FALSE(tx.has_plan());
 
-    // set private key and few other fields
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb)), Address1Bnb);
-    tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
-    tx.set_chain_id("Binance-Chain-Tigris");
-    tx.set_account_number(1902570);
-    tx.set_sequence(4);
+    // set few fields before signing
+    tx.set_byte_fee(20);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
+    auto& utxo = *tx.add_utxo();
+    Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");
+    utxo.mutable_out_point()->set_hash(utxoHash.data(), utxoHash.size());
+    utxo.mutable_out_point()->set_index(0);
+    utxo.mutable_out_point()->set_sequence(UINT32_MAX);
+    auto utxoScript = Bitcoin::Script::lockScriptForAddress(Address1Btc, TWCoinTypeBitcoin);
+    utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    utxo.set_amount(50000000);
+    tx.set_use_max_amount(false);
+
     // sign and encode resulting input
-    Binance::Proto::SigningOutput output;
-    ANY_SIGN(tx, TWCoinTypeBinance);
-    EXPECT_EQ(hex(output.encoded()), "8802f0625dee0a4c2a2c87fa0a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e42108092f40112220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e42108092f40112700a26eb5ae9872103ea4b4bc12dc6f36a28d2c9775e01eef44def32cc70fb54f0e4177b659dbc0e19124086f387225f5e94ddc05fa76952150ca6d9873c4e128846023a4e7a16323147d814d5ce87a0f59db3c47ef441ff7a1fb2b85347410ea4c138f28f582d95f575c418ea8f7420041a423d3a4d4159412e434143414f3a6d6179613178686677703237733379336c736e7a7036643071643837307139766c65656c756e71376632663a313231303635303736");
-
-    // real transaction:
-    // https://explorer.binance.org/tx/84EE429B35945F0568097527A084532A9DE7BBAB0E6A5562E511CEEFB188DE69
-    // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), 0);
+    EXPECT_EQ(hex(output.encoded()), "0100000000010112340000000000000000000000000000000000000000000000000000000056780000000000ffffffff0300093d0000000000160014d6cbc5021c3eee72798718d447758b91d14e8c5f78d6bd02000000001600140cb9f5c6b62c03249367bc20a90dd2425e6926af0000000000000000446a423d3a4d4159412e434143414f3a6d6179613178686677703237733379336c736e7a7036643071643837307139766c65656c756e71376632663a313231303635303736024730440220755f9ffd5b55693f564aa8cbcc3e4af6dba58ab510ba886ef17ab51d1b3bf4d702204c35ff7c0ca7720b904ded65b170ce79d812d98e3534e09fa24f01b972b9ead80121021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee00000000"
+    );
 }
 
 TEST(THORChainSwap, SwapBusdTokenBnb) {
@@ -1208,15 +1216,16 @@ TEST(THORChainSwap, FromCacaoNotSupported) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::MAYA));
     Proto::Asset toAsset;
-    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
-    toAsset.set_symbol("BNB");
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
+    toAsset.set_symbol("BTC");
     auto&& [_, errorCode, error] = SwapBuilder::builder()
                                        .from(fromAsset)
                                        .to(toAsset)
                                        .fromAddress(Address1Maya)
-                                       .toAddress(Address1Bnb)
+                                       .toAddress(Address1Btc)
                                        .fromAmount("1000")
                                        .toAmountLimit("1000")
+                                       .fromChain(Chain::MAYA)
                                        .build();
     EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Unsupported_from_chain);
     EXPECT_EQ(error, "Unsupported from chain: 9");
