@@ -7,11 +7,7 @@ use tw_utxo::{Signer, StandardBitcoinContext};
 
 #[test]
 fn sign_p2pkh_emtpy() {
-    let private_key =
-        hex::decode("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657").unwrap();
-
     let input = Proto::SigningInput {
-        private_key: Cow::Borrowed(&private_key),
         version: 2,
         inputs: vec![],
         outputs: vec![],
@@ -26,9 +22,6 @@ fn sign_p2pkh_emtpy() {
 
 #[test]
 fn sign_p2pkh_one_in_one_out() {
-    let private_key =
-        hex::decode("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657").unwrap();
-
     let pubkey_hash = PubkeyHash::from_byte_array(
         hex::decode("e4c1ea86373d554b8f4efff2cfb0001ea19124d2")
             .unwrap()
@@ -41,7 +34,6 @@ fn sign_p2pkh_one_in_one_out() {
     let txid =
         hex::decode("7be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e").unwrap();
     let input = Proto::TxIn {
-        private_key: Cow::Borrowed(&[]),
         txid: txid.into(),
         vout: 0,
         sequence: u32::MAX,
@@ -66,7 +58,6 @@ fn sign_p2pkh_one_in_one_out() {
     };
 
     let signing = Proto::SigningInput {
-        private_key: Cow::Borrowed(&private_key),
         version: 2,
         inputs: vec![input],
         outputs: vec![output],
@@ -77,5 +68,8 @@ fn sign_p2pkh_one_in_one_out() {
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
-    assert_eq!(hex::encode(hashes[0].as_ref(), false), "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18");
+    assert_eq!(
+        hex::encode(hashes[0].as_ref(), false),
+        "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18"
+    );
 }
