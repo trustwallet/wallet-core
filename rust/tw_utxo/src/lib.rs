@@ -14,6 +14,7 @@ use tw_proto::Utxo::Proto::{self, SighashType};
 
 pub mod compiler;
 pub mod entry;
+pub mod builder;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
 type ProtoSigningMethod<'a> = Proto::mod_TxIn::OneOfsigning_method<'a>;

@@ -26,6 +26,7 @@ message SigningInput {
 }
 
 message TxIn {
+	// Use this private key for this individual TxIn.
 	bytes private_key = 1;
 
 	// The referenced transaction hash.
@@ -90,6 +91,11 @@ message TxOut {
 	uint64 value = 1;
 	// The spending condition of the output.
 	bytes script_pubkey = 2;
+}
+
+message PreSigningOutput {
+    /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    repeated bytes sighash = 1;
 }
 
 message SigningOutput {
