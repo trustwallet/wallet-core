@@ -21,8 +21,7 @@ fn sign_p2pkh_emtpy() {
     let output = Signer::<StandardBitcoinContext>::sign_proto(input).unwrap();
 
     let sigs = output.signatures;
-    //assert_eq!(s)
-    println!("{:?}", sigs);
+    assert!(sigs.is_empty());
 }
 
 #[test]
@@ -78,6 +77,5 @@ fn sign_p2pkh_one_in_one_out() {
 
     let sigs = output.signatures;
     assert_eq!(sigs.len(), 1);
-	// TODO: Note that there should be a SIGHASH type indicator at the end (73 bytes in total).
-    assert_eq!(hex::encode(sigs[0].as_ref(), false), "3044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd459");
+    assert_eq!(hex::encode(sigs[0].as_ref(), false), "3044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd45901");
 }
