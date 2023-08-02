@@ -3,18 +3,19 @@ use secp256k1::hashes::Hash;
 use std::borrow::Cow;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
+use tw_utxo::builder::TxInBuilder;
 use tw_utxo::{Signer, StandardBitcoinContext};
 
 #[test]
 fn sign_p2pkh_emtpy() {
-    let input = Proto::SigningInput {
+    let signing = Proto::SigningInput {
         version: 2,
         inputs: vec![],
         outputs: vec![],
         lock_time: Proto::mod_SigningInput::OneOflock_time::None,
     };
 
-    let output = Signer::<StandardBitcoinContext>::sign_proto(input).unwrap();
+    let output = Signer::<StandardBitcoinContext>::sign_proto(signing).unwrap();
 
     let hashes = output.sighashes;
     assert!(hashes.is_empty());
@@ -33,15 +34,14 @@ fn sign_p2pkh_one_in_one_out() {
 
     let txid =
         hex::decode("7be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e").unwrap();
-    let input = Proto::TxIn {
-        txid: txid.into(),
-        vout: 0,
-        sequence: u32::MAX,
-        sighash: Proto::SighashType::All,
-        signing_method: Proto::mod_TxIn::OneOfsigning_method::legacy(Proto::mod_TxIn::Legacy {
-            script_pubkey: script_pubkey.as_bytes().into(),
-        }),
-    };
+
+    let input = TxInBuilder::new()
+        .txid(&txid)
+        .vout(0)
+        .legacy_method()
+        .spending_condition(script_pubkey.as_bytes())
+        .build()
+        .unwrap();
 
     let pubkey_hash = PubkeyHash::from_byte_array(
         hex::decode("5eaaa4f458f9158f86afcba08dd7448d27045e3d")
