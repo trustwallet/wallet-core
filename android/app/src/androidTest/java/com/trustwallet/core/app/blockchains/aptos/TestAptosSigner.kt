@@ -103,4 +103,47 @@ class TestAptosSigner {
             "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c405707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01"
         )
     }
+
+    @Test
+    fun AptosTransferTokensCoins() {
+        // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x197d40ea12e2bfc65a0a913b9f4ca3b0b0208fe0c1514d3d55cef3d5bcf25211?network=mainnet
+        val key =
+            "e7f56c77189e03699a75d8ec5c090e41f3d9d4783bc49c33df8a93d915e10de8".toHexBytesInByteString()
+
+        val function = Aptos.StructTag.newBuilder()
+            .setAccountAddress("0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9")
+            .setModule("mee_coin")
+            .setName("MeeCoin")
+            .build()
+
+        val transfer = Aptos.TokenTransferCoinsMessage.newBuilder()
+            .setAmount(10000)
+            .setTo("0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c")
+            .setFunction(function)
+            .build()
+        val signingInput = Aptos.SigningInput.newBuilder()
+            .setChainId(1)
+            .setSender("0x1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf25")
+            .setSequenceNumber(2)
+            .setGasUnitPrice(100)
+            .setMaxGasAmount(2000)
+            .setExpirationTimestampSecs(3664390082)
+            .setTokenTransferCoins(transfer)
+            .setPrivateKey(key)
+            .build()
+
+        val result = AnySigner.sign(signingInput, CoinType.APTOS, Aptos.SigningOutput.parser())
+        assertEquals(
+            Numeric.cleanHexPrefix(Numeric.toHexString(result.rawTxn.toByteArray())),
+            "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001"
+        )
+        assertEquals(
+            Numeric.cleanHexPrefix(Numeric.toHexString(result.authenticator.signature.toByteArray())),
+            "30ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d"
+        )
+        assertEquals(
+            Numeric.cleanHexPrefix(Numeric.toHexString(result.encoded.toByteArray())),
+            "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001002062e7a6a486553b56a53e89dfae3f780693e537e5b0a7ed33290780e581ca83694030ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d"
+        )
+    }
 }
