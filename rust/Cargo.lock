@@ -1696,6 +1696,7 @@ dependencies = [
  "bitcoin",
  "secp256k1",
  "tw_coin_entry",
+ "tw_encoding",
  "tw_keypair",
  "tw_memory",
  "tw_proto",

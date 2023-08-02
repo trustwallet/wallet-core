@@ -10,7 +10,7 @@ use secp256k1::Secp256k1;
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
-use tw_proto::Utxo::Proto;
+use tw_proto::Utxo::Proto::{self, SighashType};
 
 pub mod compiler;
 pub mod entry;
@@ -56,20 +56,32 @@ impl Signer<StandardBitcoinContext> {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
                 ProtoSigningMethod::legacy(ref legacy) => {
                     let script_pubkey = Script::from_bytes(legacy.script_pubkey.as_ref());
-                    let sighash_type = input.sighash as u32;
+                    let sighash_type = if let SighashType::UseDefault = input.sighash {
+                        EcdsaSighashType::All
+                    } else {
+                        EcdsaSighashType::from_consensus(input.sighash as u32)
+                    };
 
                     let hash = cache
-                        .legacy_signature_hash(index, script_pubkey, sighash_type)
+                        .legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())
                         .unwrap();
 
                     let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
-                    let sig = secp.sign_ecdsa(&sighash, &keypair.secret_key());
-                    signatures.push(sig.serialize_der().to_vec());
+                    let sig = bitcoin::ecdsa::Signature {
+                        sig: secp.sign_ecdsa(&sighash, &keypair.secret_key()),
+                        hash_ty: sighash_type,
+                    };
+
+                    signatures.push(sig.serialize().to_vec());
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSigningMethod::segwit(ref segwit) => {
                     let script_pubkey = ScriptBuf::from_bytes(segwit.script_pubkey.to_vec());
-                    let sighash_type = EcdsaSighashType::from_consensus(input.sighash as u32);
+                    let sighash_type = if let SighashType::UseDefault = input.sighash {
+                        EcdsaSighashType::All
+                    } else {
+                        EcdsaSighashType::from_consensus(input.sighash as u32)
+                    };
                     let value = segwit.value;
 
                     let hash = cache
@@ -82,12 +94,17 @@ impl Signer<StandardBitcoinContext> {
                         .unwrap();
 
                     let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
-                    let sig = secp.sign_ecdsa(&sighash, &keypair.secret_key());
-                    signatures.push(sig.serialize_der().to_vec());
+                    let sig = bitcoin::ecdsa::Signature {
+                        sig: secp.sign_ecdsa(&sighash, &keypair.secret_key()),
+                        hash_ty: sighash_type,
+                    };
+
+                    signatures.push(sig.serialize().to_vec());
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::taproot(ref taproot) => {
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
+                    // Note that `input.sighash = 0` is handled by the underlying library.
                     let sighash_type =
                         TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
 
@@ -137,8 +154,12 @@ impl Signer<StandardBitcoinContext> {
                         .unwrap();
 
                     let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
-                    let sig = secp.sign_schnorr(&sighash, &keypair);
-                    signatures.push(sig.as_ref().to_vec());
+                    let sig = bitcoin::taproot::Signature {
+                        sig: secp.sign_schnorr(&sighash, &keypair),
+                        hash_ty: sighash_type,
+                    };
+
+                    signatures.push(sig.to_vec());
                 },
                 ProtoSigningMethod::None => panic!(),
             }
