@@ -18,7 +18,7 @@ use tw_number::{NumberError, U256};
 use tw_proto::EthereumRLP::Proto;
 
 /// cbindgen:ignore
-pub const RECURSION_LIMIT: usize = 5;
+pub const RECURSION_LIMIT: usize = 10;
 
 pub type RlpResult<T> = Result<T, RlpError>;
 
@@ -95,6 +95,8 @@ impl<Context: EvmContext> RlpEncoder<Context> {
                 }
                 rlp_nested_list.finish()
             },
+            // Pass the `raw_encoded` item as it is.
+            Item::raw_encoded(encoded) => encoded.to_vec(),
             Item::None => return Err(SigningError(SigningErrorType::Error_invalid_params)),
         };
         Ok(encoded_item)

@@ -13,13 +13,20 @@ message RlpList {
 // RLP item.
 message RlpItem {
     oneof item {
+        // A string to be encoded.
         string string_item = 1;
+        // A U64 number to be encoded.
         uint64 number_u64 = 2;
+        // A U256 number to be encoded.
         bytes number_u256 = 3;
+        // An address to be encoded.
         string address = 4;
+        // A data to be encoded.
         bytes data = 5;
+        // A list of items to be encoded.
         RlpList list = 6;
-//        bytes raw_list = 7;
+        // An RLP encoded item to be appended as it is.
+        bytes raw_encoded = 7;
     }
 }
 

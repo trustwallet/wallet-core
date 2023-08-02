@@ -6,68 +6,48 @@
 
 #include "RLP.h"
 
-#include "../BinaryCoding.h"
-#include "../Numeric.h"
+#include "BinaryCoding.h"
+#include "Numeric.h"
+#include "TrustWalletCore/TWCoinType.h"
+#include "rust/Wrapper.h"
 
 #include <tuple>
 
 namespace TW::Ethereum {
 
-Data RLP::encode(const uint256_t& value) noexcept {
-    using boost::multiprecision::cpp_int;
+Data RLP::encode(const EthereumRLP::Proto::EncodingInput& input) {
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_rlp_encode(TWCoinTypeEthereum, inputData.get());
 
-    Data bytes;
-    export_bits(value, std::back_inserter(bytes), 8);
-
-    if (bytes.empty() || (bytes.size() == 1 && bytes[0] == 0)) {
-        return {0x80};
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
+        return {};
     }
 
-    return encode(bytes);
+    EthereumRLP::Proto::EncodingOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+    return data(output.encoded());
 }
 
-Data RLP::encodeList(const Data& encoded) noexcept {
-    auto result = encodeHeader(encoded.size(), 0xc0, 0xf7);
-    result.reserve(result.size() + encoded.size());
-    result.insert(result.end(), encoded.begin(), encoded.end());
-    return result;
+Data RLP::encodeData(const Data& data) {
+    EthereumRLP::Proto::EncodingInput input;
+    input.mutable_item()->set_data(data.data(), data.size());
+    return encode(input);
 }
 
-Data RLP::encode(const Data& data) noexcept {
-    if (data.size() == 1 && data[0] <= 0x7f) {
-        // Fits in single byte, no header
-        return data;
-    }
-
-    auto encoded = encodeHeader(data.size(), 0x80, 0xb7);
-    encoded.insert(encoded.end(), data.begin(), data.end());
-    return encoded;
+Data RLP::encodeString(const std::string& s) {
+    EthereumRLP::Proto::EncodingInput input;
+    input.mutable_item()->set_string_item(s);
+    return encode(input);
 }
 
-Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexcept {
-    if (size < 56) {
-        return {static_cast<uint8_t>(smallTag + size)};
-    }
+Data RLP::encodeU256(const uint256_t & num) {
+    auto numData = store(num);
 
-    const auto sizeData = putVarInt(size);
-
-    auto header = Data();
-    header.reserve(1 + sizeData.size());
-    header.push_back(largeTag + static_cast<uint8_t>(sizeData.size()));
-    header.insert(header.end(), sizeData.begin(), sizeData.end());
-    return header;
-}
-
-Data RLP::putVarInt(uint64_t i) noexcept {
-    Data bytes; // accumulate bytes here, in reverse order
-    do {
-        // take LSB byte, append
-        bytes.push_back(i & 0xff);
-        i = i >> 8;
-    } while (i);
-    assert(bytes.size() >= 1 && bytes.size() <= 8);
-    std::reverse(bytes.begin(), bytes.end());
-    return bytes;
+    EthereumRLP::Proto::EncodingInput input;
+    input.mutable_item()->set_number_u256(numData.data(), numData.size());
+    return encode(input);
 }
 
 uint64_t RLP::parseVarInt(size_t size, const Data& data, size_t index) {
