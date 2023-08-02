@@ -106,7 +106,7 @@ class TestAptosSigner {
 
     @Test
     fun AptosTransferTokensCoins() {
-        // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x60f7f7999bccac148c8b41b25097274e914216a10dc64a40a36c1f34e915ec2a?network=testnet
+        // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x197d40ea12e2bfc65a0a913b9f4ca3b0b0208fe0c1514d3d55cef3d5bcf25211?network=mainnet
         val key =
             "e7f56c77189e03699a75d8ec5c090e41f3d9d4783bc49c33df8a93d915e10de8".toHexBytesInByteString()
 
