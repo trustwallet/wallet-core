@@ -681,4 +681,50 @@ TEST(AptosSigner, TokenTxSign) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, TokenTransferCoins) {
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x197d40ea12e2bfc65a0a913b9f4ca3b0b0208fe0c1514d3d55cef3d5bcf25211?network=mainnet
+    Proto::SigningInput input;
+    input.set_sender("0x1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf25");
+    input.set_sequence_number(2);
+    auto& tf = *input.mutable_token_transfer_coins();
+    tf.set_to("0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c");
+    tf.set_amount(10000);
+    tf.mutable_function()->set_account_address("0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9");
+    tf.mutable_function()->set_module("mee_coin");
+    tf.mutable_function()->set_name("MeeCoin");
+    input.set_max_gas_amount(2000);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(1);
+    auto privateKey = PrivateKey(parse_hex("e7f56c77189e03699a75d8ec5c090e41f3d9d4783bc49c33df8a93d915e10de8"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+
+    ASSERT_EQ(hex(result.raw_txn()), "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001");
+    ASSERT_EQ(hex(result.authenticator().signature()), "30ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d");
+    ASSERT_EQ(hex(result.encoded()), "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001002062e7a6a486553b56a53e89dfae3f780693e537e5b0a7ed33290780e581ca83694030ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d");
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "2000",
+                    "payload": {
+                        "arguments": ["0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c","10000"],
+                        "function": "0x1::aptos_account::transfer_coins",
+                        "type": "entry_function_payload",
+                        "type_arguments": ["0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9::mee_coin::MeeCoin"]
+                    },
+                    "sender": "0x1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf25",
+                    "sequence_number": "2",
+                    "signature": {
+                        "public_key": "0x62e7a6a486553b56a53e89dfae3f780693e537e5b0a7ed33290780e581ca8369",
+                        "signature": "0x30ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
 } // namespace TW::Aptos::tests
