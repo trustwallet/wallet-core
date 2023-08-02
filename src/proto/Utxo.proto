@@ -6,8 +6,6 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 
 message SigningInput {
-	bytes private_key = 1;
-
 	// The protocol version, is currently expected to be 1 or 2 (BIP68)
 	int32 version = 2;
 
@@ -26,9 +24,6 @@ message SigningInput {
 }
 
 message TxIn {
-	// Use this private key for this individual TxIn.
-	bytes private_key = 1;
-
 	// The referenced transaction hash.
 	bytes txid = 2;
 
