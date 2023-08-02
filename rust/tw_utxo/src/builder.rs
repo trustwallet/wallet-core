@@ -1,9 +1,7 @@
-pub struct SigningInputBuilder {
-
-}
+pub struct SigningInputBuilder {}
 
 impl SigningInputBuilder {
-	pub fn new() -> Self {
-		todo!()
-	}
+    pub fn new() -> Self {
+        todo!()
+    }
 }

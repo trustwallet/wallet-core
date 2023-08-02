@@ -1,20 +1,16 @@
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
 use bitcoin::hashes::Hash;
-use bitcoin::secp256k1::KeyPair;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
 use bitcoin::taproot::TapLeafHash;
-use bitcoin::{
-    secp256k1, OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
-};
-use secp256k1::Secp256k1;
+use bitcoin::{OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
+pub mod builder;
 pub mod compiler;
 pub mod entry;
-pub mod builder;
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
 type ProtoSigningMethod<'a> = Proto::mod_TxIn::OneOfsigning_method<'a>;
@@ -41,16 +37,13 @@ impl Signer<StandardBitcoinContext> {
     #[inline]
     pub fn sign_proto(
         proto: Proto::SigningInput<'_>,
-    ) -> SigningResult<Proto::SigningOutput<'static>> {
-        let secp = Secp256k1::new();
-        let keypair = KeyPair::from_seckey_slice(&secp, proto.private_key.as_ref()).unwrap();
-
+    ) -> SigningResult<Proto::PreSigningOutput<'static>> {
         // Convert Protobuf structure to `bitcoin` crate native transaction.
         // Prepare signing mechanism.
         let tx = convert_proto_to_tx(&proto).unwrap();
         let mut cache = SighashCache::new(&tx);
 
-        let mut signatures: Vec<Vec<u8>> = vec![];
+        let mut sighashes: Vec<Vec<u8>> = vec![];
 
         for (index, input) in proto.inputs.iter().enumerate() {
             match input.signing_method {
@@ -63,17 +56,11 @@ impl Signer<StandardBitcoinContext> {
                         EcdsaSighashType::from_consensus(input.sighash as u32)
                     };
 
-                    let hash = cache
+                    let sighash = cache
                         .legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())
                         .unwrap();
 
-                    let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
-                    let sig = bitcoin::ecdsa::Signature {
-                        sig: secp.sign_ecdsa(&sighash, &keypair.secret_key()),
-                        hash_ty: sighash_type,
-                    };
-
-                    signatures.push(sig.serialize().to_vec());
+                    sighashes.push(sighash.as_byte_array().to_vec());
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSigningMethod::segwit(ref segwit) => {
@@ -85,7 +72,7 @@ impl Signer<StandardBitcoinContext> {
                     };
                     let value = segwit.value;
 
-                    let hash = cache
+                    let sighash = cache
                         .segwit_signature_hash(
                             index,
                             script_pubkey.p2wpkh_script_code().as_ref().unwrap(),
@@ -94,13 +81,7 @@ impl Signer<StandardBitcoinContext> {
                         )
                         .unwrap();
 
-                    let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
-                    let sig = bitcoin::ecdsa::Signature {
-                        sig: secp.sign_ecdsa(&sighash, &keypair.secret_key()),
-                        hash_ty: sighash_type,
-                    };
-
-                    signatures.push(sig.serialize().to_vec());
+                    sighashes.push(sighash.as_byte_array().to_vec());
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::taproot(ref taproot) => {
@@ -144,7 +125,7 @@ impl Signer<StandardBitcoinContext> {
                         _ => panic!(),
                     };
 
-                    let hash = cache
+                    let sighash = cache
                         .taproot_signature_hash(
                             index,
                             &prevouts,
@@ -154,20 +135,14 @@ impl Signer<StandardBitcoinContext> {
                         )
                         .unwrap();
 
-                    let sighash = secp256k1::Message::from_slice(hash.as_byte_array()).unwrap();
-                    let sig = bitcoin::taproot::Signature {
-                        sig: secp.sign_schnorr(&sighash, &keypair),
-                        hash_ty: sighash_type,
-                    };
-
-                    signatures.push(sig.to_vec());
+                    sighashes.push(sighash.as_byte_array().to_vec());
                 },
                 ProtoSigningMethod::None => panic!(),
             }
         }
 
-        Ok(Proto::SigningOutput {
-            signatures: signatures.into_iter().map(|sig| Cow::Owned(sig)).collect(),
+        Ok(Proto::PreSigningOutput {
+            sighashes: sighashes.into_iter().map(Cow::Owned).collect(),
         })
     }
 }
