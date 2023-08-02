@@ -20,8 +20,8 @@ fn sign_p2pkh_emtpy() {
 
     let output = Signer::<StandardBitcoinContext>::sign_proto(input).unwrap();
 
-    let sigs = output.signatures;
-    assert!(sigs.is_empty());
+    let hashes = output.sighashes;
+    assert!(hashes.is_empty());
 }
 
 #[test]
@@ -75,7 +75,7 @@ fn sign_p2pkh_one_in_one_out() {
 
     let output = Signer::<StandardBitcoinContext>::sign_proto(signing).unwrap();
 
-    let sigs = output.signatures;
-    assert_eq!(sigs.len(), 1);
-    assert_eq!(hex::encode(sigs[0].as_ref(), false), "3044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd45901");
+    let hashes = output.sighashes;
+    assert_eq!(hashes.len(), 1);
+    assert_eq!(hex::encode(hashes[0].as_ref(), false), "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18");
 }
