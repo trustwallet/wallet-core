@@ -45,7 +45,7 @@ impl Compiler<StandardBitcoinContext> {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         // Convert Protobuf structure to `bitcoin` crate native transaction.
         // Prepare signing mechanism.
-        let tx = convert_proto_to_tx(&proto).unwrap();
+        let tx = convert_proto_to_tx(&proto)?;
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<Vec<u8>> = vec![];
@@ -61,9 +61,8 @@ impl Compiler<StandardBitcoinContext> {
                         EcdsaSighashType::from_consensus(input.sighash as u32)
                     };
 
-                    let sighash = cache
-                        .legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())
-                        .unwrap();
+                    let sighash =
+                        cache.legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())?;
 
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
@@ -77,23 +76,25 @@ impl Compiler<StandardBitcoinContext> {
                     };
                     let value = segwit.value;
 
-                    let sighash = cache
-                        .segwit_signature_hash(
-                            index,
-                            script_pubkey.p2wpkh_script_code().as_ref().unwrap(),
-                            value,
-                            sighash_type,
-                        )
-                        .unwrap();
+                    let sighash = cache.segwit_signature_hash(
+                        index,
+                        script_pubkey
+                            .p2wpkh_script_code()
+                            .as_ref()
+                            .ok_or(Error::InvalidWpkhScriptPubkey)?,
+                        value,
+                        sighash_type,
+                    )?;
 
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::taproot(ref taproot) => {
-                    let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref()).unwrap();
+                    let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref())
+                        .map_err(|_| Error::InvalidLeafHash)?;
                     // Note that `input.sighash = 0` is handled by the underlying library.
-                    let sighash_type =
-                        TapSighashType::from_consensus_u8(input.sighash as u8).unwrap();
+                    let sighash_type = TapSighashType::from_consensus_u8(input.sighash as u8)
+                        .map_err(|_| Error::InvalidSighashType)?;
 
                     // This owner only exists to avoid running into lifetime
                     // issues related to `Prevouts::All(&[T])`.
@@ -103,7 +104,7 @@ impl Compiler<StandardBitcoinContext> {
                         Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(index) => {
                             let index = index as usize;
 
-                            let txout = tx.output.get(index).unwrap();
+                            let txout = tx.output.get(index).ok_or(Error::OnePrevoutOutOfBound)?;
                             Prevouts::One(
                                 index,
                                 TxOut {
@@ -125,20 +126,18 @@ impl Compiler<StandardBitcoinContext> {
                                     .collect::<Vec<TxOut>>(),
                             );
 
-                            Prevouts::All(_owner.as_ref().unwrap())
+                            Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
                         },
                         _ => panic!(),
                     };
 
-                    let sighash = cache
-                        .taproot_signature_hash(
-                            index,
-                            &prevouts,
-                            None,
-                            Some((leaf_hash.into(), 0xFFFFFFFF)),
-                            sighash_type,
-                        )
-                        .unwrap();
+                    let sighash = cache.taproot_signature_hash(
+                        index,
+                        &prevouts,
+                        None,
+                        Some((leaf_hash.into(), 0xFFFFFFFF)),
+                        sighash_type,
+                    )?;
 
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
@@ -163,12 +162,14 @@ fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transactio
     // used (immediately spendable).
     let lock_time = match proto.lock_time {
         ProtoLockTimeVariant::blocks(block) => {
-            LockTime::Blocks(Height::from_consensus(block).unwrap())
+            LockTime::Blocks(Height::from_consensus(block).map_err(|_| Error::InvalidLockTime)?)
         },
         ProtoLockTimeVariant::seconds(secs) => {
-            LockTime::Seconds(Time::from_consensus(secs).unwrap())
+            LockTime::Seconds(Time::from_consensus(secs).map_err(|_| Error::InvalidLockTime)?)
         },
-        ProtoLockTimeVariant::None => LockTime::Blocks(Height::from_consensus(0).unwrap()),
+        ProtoLockTimeVariant::None => {
+            LockTime::Blocks(Height::from_consensus(0).map_err(|_| Error::InvalidLockTime)?)
+        },
     };
 
     let mut tx = Transaction {
@@ -179,7 +180,7 @@ fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transactio
     };
 
     for txin in &proto.inputs {
-        let txid = Txid::from_slice(txin.txid.as_ref()).unwrap();
+        let txid = Txid::from_slice(txin.txid.as_ref()).map_err(|_| Error::InvalidTxid)?;
         let vout = txin.vout;
 
         tx.input.push(TxIn {
