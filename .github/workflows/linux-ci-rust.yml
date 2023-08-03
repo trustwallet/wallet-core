@@ -55,7 +55,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info --all-features
+          cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
         working-directory: rust
 
       - name: Run tests in WASM
