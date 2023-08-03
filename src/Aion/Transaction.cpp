@@ -8,7 +8,7 @@
 
 #include "Ethereum/RLP.h"
 #include "RLP.h"
-#include "proto/EthereumRLP.pb.h"
+#include "proto/EthereumRlp.pb.h"
 #include "uint256.h"
 
 using namespace TW;
@@ -23,7 +23,7 @@ Data Transaction::encode() const noexcept {
     auto amountData = store(amount);
     auto timestampData = store(timestamp);
 
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     auto* rlpList = input.mutable_item()->mutable_list();
 
     rlpList->add_items()->set_number_u256(nonceData.data(), nonceData.size());

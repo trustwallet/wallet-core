@@ -12,10 +12,10 @@ namespace TW::VeChain {
 
 using RLP = Ethereum::RLP;
 
-EthereumRLP::Proto::RlpItem prepareClause(const Clause& clause) noexcept {
+EthereumRlp::Proto::RlpItem prepareClause(const Clause& clause) noexcept {
     auto value = store(clause.value);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(clause.to.bytes.data(), clause.to.bytes.size());
@@ -25,8 +25,8 @@ EthereumRLP::Proto::RlpItem prepareClause(const Clause& clause) noexcept {
     return item;
 }
 
-EthereumRLP::Proto::RlpItem prepareClauses(const std::vector<Clause>& clauses) noexcept {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem prepareClauses(const std::vector<Clause>& clauses) noexcept {
+    EthereumRlp::Proto::RlpItem item;
 
     auto* rlpList = item.mutable_list();
     for (const auto& clause : clauses) {
@@ -37,7 +37,7 @@ EthereumRLP::Proto::RlpItem prepareClauses(const std::vector<Clause>& clauses) n
 }
 
 Data Transaction::encode() const noexcept {
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     auto* rlpList = input.mutable_item()->mutable_list();
 
     rlpList->add_items()->set_number_u64(chainTag);

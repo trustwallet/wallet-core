@@ -49,7 +49,7 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey& privateKey, Transaction&
 }
 
 Data Signer::buildRlpTxRaw(const Data& txRaw, const Data& sigRaw) {
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     auto* rlpList = input.mutable_item()->mutable_list();
 
     rlpList->add_items()->set_number_u64(Identifiers::objectTagSignedTransaction);

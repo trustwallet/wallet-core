@@ -45,6 +45,7 @@ FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 #include "TWEthereumAbiFunction.h"
 #include "TWEthereumAbiValue.h"
 #include "TWEthereumChainID.h"
+#include "TWEthereumRlp.h"
 #include "TWEthereumMessageSigner.h"
 #include "TWFIOAccount.h"
 #include "TWFilecoinAddressConverter.h"

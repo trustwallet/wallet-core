@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Data.h"
-#include "proto/EthereumRLP.pb.h"
+#include "proto/EthereumRlp.pb.h"
 #include "uint256.h"
 
 #include <cstdint>
@@ -20,7 +20,7 @@ namespace TW::Ethereum {
 ///
 /// - SeeAlso: https://github.com/ethereum/wiki/wiki/RLP
 struct RLP {
-    static Data encode(const EthereumRLP::Proto::EncodingInput& input);
+    static Data encode(const EthereumRlp::Proto::EncodingInput& input);
 
     static Data encodeString(const std::string& s);
 

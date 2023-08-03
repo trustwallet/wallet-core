@@ -14,7 +14,7 @@ using boost::multiprecision::uint128_t;
 
 // Function helper over `RLP::prepareLong`.
 Data encodeLong(const uint128_t& l) {
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     *input.mutable_item() = RLP::prepareLong(l);
     return Ethereum::RLP::encode(input);
 }

@@ -12,11 +12,11 @@ namespace TW::Theta {
 
 using RLP = Ethereum::RLP;
 
-EthereumRLP::Proto::RlpItem prepare(const Coins& coins) noexcept {
+EthereumRlp::Proto::RlpItem prepare(const Coins& coins) noexcept {
     auto thetaWei = store(coins.thetaWei);
     auto tfuelWei = store(coins.tfuelWei);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_number_u256(thetaWei.data(), thetaWei.size());
@@ -25,8 +25,8 @@ EthereumRLP::Proto::RlpItem prepare(const Coins& coins) noexcept {
     return item;
 }
 
-EthereumRLP::Proto::RlpItem prepare(const TxInput& input) noexcept {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem prepare(const TxInput& input) noexcept {
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(input.address.bytes.data(), input.address.bytes.size());
@@ -37,8 +37,8 @@ EthereumRLP::Proto::RlpItem prepare(const TxInput& input) noexcept {
     return item;
 }
 
-EthereumRLP::Proto::RlpItem prepare(const std::vector<TxInput>& inputs) noexcept {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem prepare(const std::vector<TxInput>& inputs) noexcept {
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     for (const auto& input : inputs) {
@@ -48,8 +48,8 @@ EthereumRLP::Proto::RlpItem prepare(const std::vector<TxInput>& inputs) noexcept
     return item;
 }
 
-EthereumRLP::Proto::RlpItem prepare(const TxOutput& output) noexcept {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem prepare(const TxOutput& output) noexcept {
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(output.address.bytes.data(), output.address.bytes.size());
@@ -58,8 +58,8 @@ EthereumRLP::Proto::RlpItem prepare(const TxOutput& output) noexcept {
     return item;
 }
 
-EthereumRLP::Proto::RlpItem prepare(const std::vector<TxOutput>& outputs) noexcept {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem prepare(const std::vector<TxOutput>& outputs) noexcept {
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     for (const auto& output : outputs) {
@@ -86,7 +86,7 @@ Transaction::Transaction(Ethereum::Address from, Ethereum::Address to,
 Data Transaction::encodePayload() const noexcept {
     const uint64_t txType = 2; // TxSend
 
-    EthereumRLP::Proto::EncodingInput txInput;
+    EthereumRlp::Proto::EncodingInput txInput;
     auto* txPropertiesList = txInput.mutable_item()->mutable_list();
 
     *txPropertiesList->add_items() = prepare(_fee);

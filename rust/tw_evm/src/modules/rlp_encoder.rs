@@ -15,7 +15,7 @@ use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
 use tw_memory::Data;
 use tw_number::U256;
-use tw_proto::EthereumRLP::Proto;
+use tw_proto::EthereumRlp::Proto;
 
 /// cbindgen:ignore
 pub const RECURSION_LIMIT: usize = 10;

@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::ToHex;
 use tw_evm::evm_entry::EvmEntryExt;
-use tw_proto::EthereumRLP::Proto as RlpProto;
+use tw_proto::EthereumRlp::Proto as RlpProto;
 use tw_proto::{deserialize, serialize};
 use tw_ronin::entry::RoninEntry;
 use RlpProto::mod_RlpItem::OneOfitem as Item;

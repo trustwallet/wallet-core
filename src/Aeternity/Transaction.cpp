@@ -15,8 +15,8 @@ namespace TW::Aeternity {
 /// Aeternity network does not accept zero int values as rlp param,
 /// instead empty byte array should be encoded
 /// see https://forum.aeternity.com/t/invalid-tx-error-on-mainnet-goggle-says-it-looks-good/4118/5?u=defuera
-EthereumRLP::Proto::RlpItem prepareSafeZero(const uint256_t& value) {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem prepareSafeZero(const uint256_t& value) {
+    EthereumRlp::Proto::RlpItem item;
 
     if (value == 0) {
         Data zeroValue{0};
@@ -31,7 +31,7 @@ EthereumRLP::Proto::RlpItem prepareSafeZero(const uint256_t& value) {
 
 /// RLP returns a byte serialized representation
 Data Transaction::encode() {
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     auto* rlpList = input.mutable_item()->mutable_list();
 
     auto senderIdTag = buildTag(sender_id);

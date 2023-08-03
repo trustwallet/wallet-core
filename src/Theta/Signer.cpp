@@ -45,7 +45,7 @@ Data Signer::encode(const Transaction& transaction) const {
     const uint64_t amount = 0;
     auto txData = transaction.encode(chainID);
 
-    EthereumRLP::Proto::EncodingInput encodingInput;
+    EthereumRlp::Proto::EncodingInput encodingInput;
     auto* rlpList = encodingInput.mutable_item()->mutable_list();
 
     /// Need to add the following prefix to the tx signbytes to be compatible with

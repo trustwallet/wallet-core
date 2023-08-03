@@ -20,7 +20,7 @@ use tw_evm::modules::rlp_encoder::RlpEncoder;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
-use tw_proto::EthereumRLP::Proto as RlpProto;
+use tw_proto::EthereumRlp::Proto as RlpProto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
 pub struct EthereumEntry;

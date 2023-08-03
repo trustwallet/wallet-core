@@ -22,8 +22,8 @@ using boost::multiprecision::uint128_t;
 /// Aion's RLP encoding for long numbers
 /// https://github.com/aionnetwork/aion/issues/680
 struct RLP {
-    static EthereumRLP::Proto::RlpItem prepareLong(uint128_t l) {
-        EthereumRLP::Proto::RlpItem item;
+    static EthereumRlp::Proto::RlpItem prepareLong(uint128_t l) {
+        EthereumRlp::Proto::RlpItem item;
 
         if ((l & 0x00000000FFFFFFFFL) == l) {
             auto u256 = store(l);

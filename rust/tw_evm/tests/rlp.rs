@@ -11,7 +11,7 @@ use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::rlp_encoder::{RlpEncoder, RECURSION_LIMIT};
 use tw_number::U256;
-use tw_proto::EthereumRLP::Proto as RlpProto;
+use tw_proto::EthereumRlp::Proto as RlpProto;
 use RlpProto::mod_RlpItem::OneOfitem as Item;
 
 fn make_item(item: Item) -> RlpProto::RlpItem {

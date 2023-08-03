@@ -7,7 +7,7 @@
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::ToHex;
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
-use tw_proto::EthereumRLP::Proto as RlpProto;
+use tw_proto::EthereumRlp::Proto as RlpProto;
 use tw_proto::{deserialize, serialize};
 use wallet_core_rs::ffi::ethereum::rlp::tw_ethereum_rlp_encode;
 use RlpProto::mod_RlpItem::OneOfitem as Item;

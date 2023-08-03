@@ -329,7 +329,7 @@ Data Signer::rlpNoHash(const Transaction& transaction, const bool include_vrs) c
         s = store(0);
     }
 
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     auto* rlpList = input.mutable_item()->mutable_list();
 
     rlpList->add_items()->set_number_u256(nonce.data(), nonce.size());
@@ -367,7 +367,7 @@ Data Signer::rlpNoHash(const Staking<Directive>& transaction, const bool include
     auto gasPrice = store(transaction.gasPrice);
     auto gasLimit = store(transaction.gasLimit);
 
-    EthereumRLP::Proto::EncodingInput input;
+    EthereumRlp::Proto::EncodingInput input;
     auto* rlpList = input.mutable_item()->mutable_list();
 
     rlpList->add_items()->set_number_u64(transaction.directive);
@@ -385,8 +385,8 @@ Data Signer::rlpNoHash(const Staking<Directive>& transaction, const bool include
 }
 
 template <typename Directive>
-EthereumRLP::Proto::RlpItem Signer::rlpPrepareDescription(const Staking<Directive>& transaction) const noexcept {
-    EthereumRLP::Proto::RlpItem item;
+EthereumRlp::Proto::RlpItem Signer::rlpPrepareDescription(const Staking<Directive>& transaction) const noexcept {
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_string_item(transaction.stakeMsg.description.name);
@@ -398,12 +398,12 @@ EthereumRLP::Proto::RlpItem Signer::rlpPrepareDescription(const Staking<Directiv
     return item;
 }
 
-EthereumRLP::Proto::RlpItem Signer::rlpPrepareCommissionRates(const Staking<CreateValidator> &transaction) noexcept {
+EthereumRlp::Proto::RlpItem Signer::rlpPrepareCommissionRates(const Staking<CreateValidator> &transaction) noexcept {
     auto rateValue = store(transaction.stakeMsg.commissionRates.rate.value);
     auto maxRateValue = store(transaction.stakeMsg.commissionRates.maxRate.value);
     auto maxChangeRateValue = store(transaction.stakeMsg.commissionRates.maxChangeRate.value);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* commissionList = item.mutable_list();
 
     // Append `commission::rate` properties list with a single item.
@@ -421,13 +421,13 @@ EthereumRLP::Proto::RlpItem Signer::rlpPrepareCommissionRates(const Staking<Crea
     return item;
 }
 
-EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<CreateValidator>& transaction) const noexcept {
+EthereumRlp::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<CreateValidator>& transaction) const noexcept {
     auto validatorKeyHash = transaction.stakeMsg.validatorAddress.getKeyHash();
     auto minSelfDelegation = store(transaction.stakeMsg.minSelfDelegation);
     auto maxTotalDelegation = store(transaction.stakeMsg.maxTotalDelegation);
     auto amount = store(transaction.stakeMsg.amount);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(validatorKeyHash.data(), validatorKeyHash.size());
@@ -456,13 +456,13 @@ EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<CreateValid
     return item;
 }
 
-EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<EditValidator>& transaction) const noexcept {
+EthereumRlp::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<EditValidator>& transaction) const noexcept {
     auto validatorKeyHash = transaction.stakeMsg.validatorAddress.getKeyHash();
     auto minSelfDelegation = store(transaction.stakeMsg.minSelfDelegation);
     auto maxTotalDelegation = store(transaction.stakeMsg.maxTotalDelegation);
     auto active = store(transaction.stakeMsg.active);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(validatorKeyHash.data(), validatorKeyHash.size());
@@ -487,12 +487,12 @@ EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<EditValidat
     return item;
 }
 
-EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<Delegate>& transaction) const noexcept {
+EthereumRlp::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<Delegate>& transaction) const noexcept {
     auto delegatorKeyHash = transaction.stakeMsg.delegatorAddress.getKeyHash();
     auto validatorKeyHash = transaction.stakeMsg.validatorAddress.getKeyHash();
     auto amount = store(transaction.stakeMsg.amount);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(delegatorKeyHash.data(), delegatorKeyHash.size());
@@ -502,12 +502,12 @@ EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<Delegate>& 
     return item;
 }
 
-EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<Undelegate>& transaction) const noexcept {
+EthereumRlp::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<Undelegate>& transaction) const noexcept {
     auto delegatorKeyHash = transaction.stakeMsg.delegatorAddress.getKeyHash();
     auto validatorKeyHash = transaction.stakeMsg.validatorAddress.getKeyHash();
     auto amount = store(transaction.stakeMsg.amount);
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(delegatorKeyHash.data(), delegatorKeyHash.size());
@@ -517,10 +517,10 @@ EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<Undelegate>
     return item;
 }
 
-EthereumRLP::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<CollectRewards>& transaction) const noexcept {
+EthereumRlp::Proto::RlpItem Signer::rlpNoHashDirective(const Staking<CollectRewards>& transaction) const noexcept {
     auto delegatorKeyHash = transaction.stakeMsg.delegatorAddress.getKeyHash();
 
-    EthereumRLP::Proto::RlpItem item;
+    EthereumRlp::Proto::RlpItem item;
     auto* rlpList = item.mutable_list();
 
     rlpList->add_items()->set_data(delegatorKeyHash.data(), delegatorKeyHash.size());
