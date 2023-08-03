@@ -190,6 +190,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
+                    println!("TAPROOT KEY-SPEND SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
@@ -208,6 +210,8 @@ impl TransactionBuilder {
                             TapSighashType::Default,
                         )
                         .map_err(|_| Error::Todo)?;
+
+                    println!("TAPROOT SCRIPT-PATH SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
