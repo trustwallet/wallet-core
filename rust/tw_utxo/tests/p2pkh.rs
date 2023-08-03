@@ -3,7 +3,7 @@ use secp256k1::hashes::Hash;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
 use tw_utxo::builder::{SigningInputBuilder, TxInBuilder, TxOutBuilder};
-use tw_utxo::{Signer, StandardBitcoinContext};
+use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
 #[test]
 fn sign_p2pkh_emtpy() {
@@ -14,7 +14,7 @@ fn sign_p2pkh_emtpy() {
         lock_time: Proto::mod_SigningInput::OneOflock_time::None,
     };
 
-    let output = Signer::<StandardBitcoinContext>::sign_proto(signing).unwrap();
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 
     let hashes = output.sighashes;
     assert!(hashes.is_empty());
@@ -64,7 +64,7 @@ fn sign_p2pkh_one_in_one_out() {
         .build()
         .unwrap();
 
-    let output = Signer::<StandardBitcoinContext>::sign_proto(signing).unwrap();
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
