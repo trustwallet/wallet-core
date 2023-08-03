@@ -74,7 +74,11 @@ impl<'a> TxInBuilder<'a> {
         LegacyMethodBuilder { proto: self.proto }
     }
     pub fn segwit_method(self) -> SegwitMethodBuilder<'a> {
-        todo!()
+        SegwitMethodBuilder {
+            value: None,
+            script_pubkey: None,
+            proto: self.proto,
+        }
     }
 }
 
