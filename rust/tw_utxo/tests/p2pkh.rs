@@ -8,6 +8,8 @@ use tw_proto::Utxo::Proto;
 use tw_utxo::builder::{SigningInputBuilder, TxInBuilder, TxOutBuilder};
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
+use crate::common::txid_rev;
+
 #[test]
 fn sighash_emtpy() {
     let signing = Proto::SigningInput {
@@ -31,8 +33,7 @@ fn sighash_input_p2pkh_output_p2pkh() {
     let pubkey_hash = pubkey_hash_from_hex("5eaaa4f458f9158f86afcba08dd7448d27045e3d");
     let output_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
-    let txid =
-        hex::decode("7be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e").unwrap();
+    let txid = txid_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
 
     let signing = SigningInputBuilder::new()
         .version(2)

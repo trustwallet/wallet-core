@@ -8,6 +8,7 @@ use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::transaction::Transaction;
 use bitcoin::{secp256k1, Address, TxIn, TxOut};
+use secp256k1::hashes::Hash;
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
@@ -150,6 +151,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
+                    println!("LEGACY SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
@@ -170,6 +173,8 @@ impl TransactionBuilder {
                             EcdsaSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
+
+                    println!("SEGWIT SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
