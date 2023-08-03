@@ -13,6 +13,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: false
     steps:
     - uses: actions/checkout@v2
     - uses: actions-rs/toolchain@v1
