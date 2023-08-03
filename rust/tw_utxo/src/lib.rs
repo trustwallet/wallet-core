@@ -14,4 +14,18 @@ pub mod compiler;
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone)]
-pub enum Error {}
+pub enum Error {
+    SighashFailed(bitcoin::sighash::Error),
+    InvalidWpkhScriptPubkey,
+    InvalidLeafHash,
+    InvalidSighashType,
+    InvalidLockTime,
+    InvalidTxid,
+    OnePrevoutOutOfBound,
+}
+
+impl From<bitcoin::sighash::Error> for Error {
+    fn from(value: bitcoin::sighash::Error) -> Self {
+        Error::SighashFailed(value)
+    }
+}
