@@ -80,6 +80,9 @@ impl<'a> TxInBuilder<'a> {
             proto: self.proto,
         }
     }
+    pub fn taproot_method(self) -> TaprootMethodBuilder<'a> {
+        todo!()
+    }
 }
 
 pub struct LegacyMethodBuilder<'a> {
@@ -128,6 +131,29 @@ impl<'a> SegwitMethodBuilder<'a> {
             });
 
         Ok(self.proto)
+    }
+}
+
+pub struct TaprootMethodBuilder<'a> {
+    leaf_hash: Option<&'a [u8]>,
+    proto: Proto::TxIn<'a>,
+}
+
+impl<'a> TaprootMethodBuilder<'a> {
+    pub fn leaf_hash(mut self, leaf_hash: &'a [u8]) -> Self {
+        self.leaf_hash = Some(leaf_hash);
+        self
+    }
+    pub fn prevout(mut self) -> Self {
+        todo!()
+    }
+    pub fn build(mut self) -> Result<Proto::TxIn<'a>, ()> {
+        self.proto.sighash_method = Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
+            leaf_hash: self.leaf_hash.ok_or(())?.into(),
+            prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None // defaults to `All`.
+        });
+
+        todo!()
     }
 }
 

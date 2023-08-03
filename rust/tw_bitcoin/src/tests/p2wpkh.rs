@@ -30,7 +30,7 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     println!(">> W-ALICE: {}", hex::encode(alice_w_pubkey.as_byte_array(), false));
 
     let bob_pubkey = PublicKey::new(bob.public_key());
-    let hash: PubkeyHash = alice_pubkey.into();
+    let hash: PubkeyHash = bob_pubkey.into();
     println!(">> BOB PUBKEY_HASH: {}", hex::encode(hash.as_byte_array(), false));
 
     let bob_w_pubkey = bob_pubkey.wpubkey_hash().unwrap();
