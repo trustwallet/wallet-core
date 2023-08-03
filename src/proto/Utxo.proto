@@ -33,7 +33,7 @@ message TxIn {
 	// The sequence number (TODO).
 	uint32 sequence = 7;
 
-	oneof signing_method {
+	oneof sighash_method {
 		Legacy legacy = 8;
 		Segwit segwit = 9;
 		Taproot taproot = 10;
