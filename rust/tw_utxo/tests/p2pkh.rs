@@ -2,7 +2,7 @@ use bitcoin::{PubkeyHash, ScriptBuf};
 use secp256k1::hashes::Hash;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
-use tw_utxo::builder::{TxInBuilder, TxOutBuilder};
+use tw_utxo::builder::{SigningInputBuilder, TxInBuilder, TxOutBuilder};
 use tw_utxo::{Signer, StandardBitcoinContext};
 
 #[test]
@@ -29,18 +29,10 @@ fn sign_p2pkh_one_in_one_out() {
             .unwrap(),
     );
 
-    let script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
+    let input_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
     let txid =
         hex::decode("7be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e").unwrap();
-
-    let input = TxInBuilder::new()
-        .txid(&txid)
-        .vout(0)
-        .legacy_method()
-        .spending_condition(script_pubkey.as_bytes())
-        .build()
-        .unwrap();
 
     let pubkey_hash = PubkeyHash::from_byte_array(
         hex::decode("5eaaa4f458f9158f86afcba08dd7448d27045e3d")
@@ -49,20 +41,28 @@ fn sign_p2pkh_one_in_one_out() {
             .unwrap(),
     );
 
-    let script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
+    let output_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
-    let output = TxOutBuilder::new()
-        .value(50 * 100_000_000 - 1_000_000)
-        .spending_condition(script_pubkey.as_bytes())
+    let signing = SigningInputBuilder::new()
+        .version(2)
+        .input(|| {
+            TxInBuilder::new()
+                .txid(&txid)
+                .vout(0)
+                .legacy_method()
+                .spending_condition(input_script_pubkey.as_bytes())
+                .build()
+        })
+        .unwrap()
+        .output(|| {
+            TxOutBuilder::new()
+                .value(50 * 100_000_000 - 1_000_000)
+                .spending_condition(output_script_pubkey.as_bytes())
+                .build()
+        })
+        .unwrap()
         .build()
         .unwrap();
-
-    let signing = Proto::SigningInput {
-        version: 2,
-        inputs: vec![input],
-        outputs: vec![output],
-        lock_time: Proto::mod_SigningInput::OneOflock_time::None,
-    };
 
     let output = Signer::<StandardBitcoinContext>::sign_proto(signing).unwrap();
 

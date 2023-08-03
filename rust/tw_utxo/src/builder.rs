@@ -1,10 +1,10 @@
 use tw_proto::Utxo::Proto;
 
-pub struct SigningInputBuilder {
-    proto: Proto::SigningInput<'static>,
+pub struct SigningInputBuilder<'a> {
+    proto: Proto::SigningInput<'a>,
 }
 
-impl SigningInputBuilder {
+impl<'a> SigningInputBuilder<'a> {
     pub fn new() -> Self {
         SigningInputBuilder {
             proto: Proto::SigningInput {
@@ -18,6 +18,23 @@ impl SigningInputBuilder {
     pub fn version(mut self, version: usize) -> Self {
         self.proto.version = version as i32;
         self
+    }
+    pub fn input<F>(mut self, f: F) -> Result<Self, ()>
+    where
+        F: FnOnce() -> Result<Proto::TxIn<'a>, ()>,
+    {
+        self.proto.inputs.push(f()?);
+        Ok(self)
+    }
+    pub fn output<F>(mut self, f: F) -> Result<Self, ()>
+    where
+        F: FnOnce() -> Result<Proto::TxOut<'a>, ()>,
+    {
+        self.proto.outputs.push(f()?);
+        Ok(self)
+    }
+    pub fn build(self) -> Result<Proto::SigningInput<'a>, ()> {
+        Ok(self.proto)
     }
 }
 
