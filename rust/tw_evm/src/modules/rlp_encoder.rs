@@ -14,23 +14,11 @@ use std::str::FromStr;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
 use tw_memory::Data;
-use tw_number::{NumberError, U256};
+use tw_number::U256;
 use tw_proto::EthereumRLP::Proto;
 
 /// cbindgen:ignore
 pub const RECURSION_LIMIT: usize = 10;
-
-pub type RlpResult<T> = Result<T, RlpError>;
-
-pub enum RlpError {
-    ErrorDecodingNumber,
-}
-
-impl From<NumberError> for RlpError {
-    fn from(_: NumberError) -> Self {
-        RlpError::ErrorDecodingNumber
-    }
-}
 
 pub struct RlpEncoder<Context: EvmContext> {
     _phantom: PhantomData<Context>,

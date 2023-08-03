@@ -82,6 +82,20 @@ fn test_ethereum_rlp_number_u256() {
 }
 
 #[test]
+fn test_ethereum_rlp_raw_encoded() {
+    let raw_encoded = "946b175474e89094c44da98b954eedeac495271d0f"
+        .decode_hex()
+        .unwrap();
+    test_encode(
+        Item::raw_encoded(Cow::from(raw_encoded)),
+        "946b175474e89094c44da98b954eedeac495271d0f",
+    );
+
+    let empty: &[u8] = &[];
+    test_encode(Item::raw_encoded(Cow::from(empty)), "");
+}
+
+#[test]
 fn test_ethereum_rlp_list() {
     // Empty list.
     let list = RlpProto::RlpList {

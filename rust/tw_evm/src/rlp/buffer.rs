@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::rlp::RlpEncode;
 use tw_memory::Data;
 
 #[derive(Default)]
@@ -27,14 +26,6 @@ impl RlpBuffer {
     /// Please note that it should be finalized using [`RlpBuffer::finalize_list`].
     pub(crate) fn begin_list(&mut self) {
         self.stream.begin_unbounded_list();
-    }
-
-    /// Appends encodable `value`.
-    pub fn append<T>(&mut self, value: T)
-    where
-        T: RlpEncode,
-    {
-        value.rlp_append(self)
     }
 
     /// Appends an item by its `bytes` representation.

@@ -22,23 +22,9 @@ namespace TW::Ethereum {
 struct RLP {
     static Data encode(const EthereumRLP::Proto::EncodingInput& input);
 
-    static Data encodeData(const Data& data);
-
     static Data encodeString(const std::string& s);
 
     static Data encodeU256(const uint256_t& num);
-
-    struct DecodedItem {
-        std::vector<Data> decoded;
-        Data remainder;
-    };
-
-    static DecodedItem decodeList(const Data& input);
-    /// Decodes data, remainder from RLP encoded data
-    static DecodedItem decode(const Data& data);
-
-    /// Parses an integer of given size, between 1 and 8 bytes, big endian
-    static uint64_t parseVarInt(size_t size, const Data& data, size_t index);
 };
 
 } // namespace TW::Ethereum
