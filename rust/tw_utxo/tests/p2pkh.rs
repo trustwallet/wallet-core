@@ -1,3 +1,6 @@
+mod common;
+use common::pubkey_hash_from_hex;
+
 use bitcoin::{PubkeyHash, ScriptBuf};
 use secp256k1::hashes::Hash;
 use tw_encoding::hex;
@@ -22,26 +25,14 @@ fn sign_p2pkh_emtpy() {
 
 #[test]
 fn sign_p2pkh_one_in_one_out() {
-    let pubkey_hash = PubkeyHash::from_byte_array(
-        hex::decode("e4c1ea86373d554b8f4efff2cfb0001ea19124d2")
-            .unwrap()
-            .try_into()
-            .unwrap(),
-    );
-
+    let pubkey_hash = pubkey_hash_from_hex("e4c1ea86373d554b8f4efff2cfb0001ea19124d2");
     let input_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
+
+    let pubkey_hash = pubkey_hash_from_hex("5eaaa4f458f9158f86afcba08dd7448d27045e3d");
+    let output_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
     let txid =
         hex::decode("7be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e").unwrap();
-
-    let pubkey_hash = PubkeyHash::from_byte_array(
-        hex::decode("5eaaa4f458f9158f86afcba08dd7448d27045e3d")
-            .unwrap()
-            .try_into()
-            .unwrap(),
-    );
-
-    let output_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
     let signing = SigningInputBuilder::new()
         .version(2)
