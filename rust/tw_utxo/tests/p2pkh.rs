@@ -1,9 +1,8 @@
 use bitcoin::{PubkeyHash, ScriptBuf};
 use secp256k1::hashes::Hash;
-use std::borrow::Cow;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
-use tw_utxo::builder::TxInBuilder;
+use tw_utxo::builder::{TxInBuilder, TxOutBuilder};
 use tw_utxo::{Signer, StandardBitcoinContext};
 
 #[test]
@@ -52,10 +51,11 @@ fn sign_p2pkh_one_in_one_out() {
 
     let script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
-    let output = Proto::TxOut {
-        value: 50 * 100_000_000 - 1_000_000,
-        script_pubkey: script_pubkey.as_bytes().into(),
-    };
+    let output = TxOutBuilder::new()
+        .value(50 * 100_000_000 - 1_000_000)
+        .spending_condition(script_pubkey.as_bytes())
+        .build()
+        .unwrap();
 
     let signing = Proto::SigningInput {
         version: 2,

@@ -63,6 +63,7 @@ pub struct LegacyMethodBuilder<'a> {
 }
 
 impl<'a> LegacyMethodBuilder<'a> {
+    /// The spending condition of the transaction input (_scriptPubkey_).
     pub fn spending_condition(mut self, script_pubkey: &'a [u8]) -> Self {
         self.proto.signing_method =
             Proto::mod_TxIn::OneOfsigning_method::legacy(Proto::mod_TxIn::Legacy {
@@ -73,6 +74,36 @@ impl<'a> LegacyMethodBuilder<'a> {
     pub fn build(self) -> Result<Proto::TxIn<'a>, ()> {
         // TODO: Also check other fields.
         if self.proto.signing_method == Proto::mod_TxIn::OneOfsigning_method::None {
+            return Err(());
+        }
+
+        Ok(self.proto)
+    }
+}
+
+pub struct TxOutBuilder<'a> {
+    proto: Proto::TxOut<'a>,
+}
+
+impl<'a> TxOutBuilder<'a> {
+    pub fn new() -> Self {
+        TxOutBuilder {
+            proto: Proto::TxOut {
+                value: u64::MAX,
+                script_pubkey: Default::default(),
+            },
+        }
+    }
+    pub fn value(mut self, value: u64) -> Self {
+        self.proto.value = value;
+        self
+    }
+    pub fn spending_condition(mut self, script_pubkey: &'a [u8]) -> Self {
+        self.proto.script_pubkey = script_pubkey.into();
+        self
+    }
+    pub fn build(self) -> Result<Proto::TxOut<'a>, ()> {
+        if self.proto.value == u64::MAX || self.proto.script_pubkey.is_empty() {
             return Err(());
         }
 
