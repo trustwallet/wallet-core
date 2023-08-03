@@ -50,7 +50,7 @@ impl<'a> TxInBuilder<'a> {
                 vout: u32::MAX,
                 sequence: u32::MAX,
                 sighash: Proto::SighashType::All,
-                signing_method: Proto::mod_TxIn::OneOfsigning_method::None,
+                sighash_method: Proto::mod_TxIn::OneOfsighash_method::None,
             },
         }
     }
@@ -82,15 +82,15 @@ pub struct LegacyMethodBuilder<'a> {
 impl<'a> LegacyMethodBuilder<'a> {
     /// The spending condition of the transaction input (_scriptPubkey_).
     pub fn spending_condition(mut self, script_pubkey: &'a [u8]) -> Self {
-        self.proto.signing_method =
-            Proto::mod_TxIn::OneOfsigning_method::legacy(Proto::mod_TxIn::Legacy {
+        self.proto.sighash_method =
+            Proto::mod_TxIn::OneOfsighash_method::legacy(Proto::mod_TxIn::Legacy {
                 script_pubkey: script_pubkey.into(),
             });
         self
     }
     pub fn build(self) -> Result<Proto::TxIn<'a>, ()> {
         // TODO: Also check other fields.
-        if self.proto.signing_method == Proto::mod_TxIn::OneOfsigning_method::None {
+        if self.proto.sighash_method == Proto::mod_TxIn::OneOfsighash_method::None {
             return Err(());
         }
 

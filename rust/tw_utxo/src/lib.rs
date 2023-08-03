@@ -22,6 +22,7 @@ pub enum Error {
     InvalidLockTime,
     InvalidTxid,
     OnePrevoutOutOfBound,
+    MissingSighashMethod,
 }
 
 impl From<bitcoin::sighash::Error> for Error {

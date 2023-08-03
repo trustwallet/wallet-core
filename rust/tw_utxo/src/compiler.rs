@@ -9,7 +9,7 @@ use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
-type ProtoSigningMethod<'a> = Proto::mod_TxIn::OneOfsigning_method<'a>;
+type ProtoSigningMethod<'a> = Proto::mod_TxIn::OneOfsighash_method<'a>;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -51,7 +51,7 @@ impl Compiler<StandardBitcoinContext> {
         let mut sighashes: Vec<Vec<u8>> = vec![];
 
         for (index, input) in proto.inputs.iter().enumerate() {
-            match input.signing_method {
+            match input.sighash_method {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
                 ProtoSigningMethod::legacy(ref legacy) => {
                     let script_pubkey = Script::from_bytes(legacy.script_pubkey.as_ref());
@@ -114,7 +114,8 @@ impl Compiler<StandardBitcoinContext> {
                                 },
                             )
                         },
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(_) => {
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(_)
+                        | Proto::mod_TxIn::mod_Taproot::OneOfprevout::None => {
                             _owner = Some(
                                 tx.output
                                     .iter()
@@ -128,7 +129,6 @@ impl Compiler<StandardBitcoinContext> {
 
                             Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
                         },
-                        _ => panic!(),
                     };
 
                     let sighash = cache.taproot_signature_hash(
@@ -141,7 +141,7 @@ impl Compiler<StandardBitcoinContext> {
 
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
-                ProtoSigningMethod::None => panic!(),
+                ProtoSigningMethod::None => return Err(Error::MissingSighashMethod),
             }
         }
 
