@@ -1,6 +1,7 @@
 use super::*;
 use crate::{keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxInputP2WPKH, TxOutputP2WPKH};
-use bitcoin::Txid;
+use bitcoin::{Txid, PublicKey, PubkeyHash};
+use secp256k1::hashes::Hash;
 use std::str::FromStr;
 use tw_encoding::hex;
 
@@ -20,6 +21,20 @@ pub const TX_RAW: &str = "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32
 fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
+
+    let alice_pubkey = PublicKey::new(alice.public_key());
+    let hash: PubkeyHash = alice_pubkey.into();
+    println!(">> ALICE PUBKEY_HASH: {}", hex::encode(hash.as_byte_array(), false));
+
+    let alice_w_pubkey = alice_pubkey.wpubkey_hash().unwrap();
+    println!(">> W-ALICE: {}", hex::encode(alice_w_pubkey.as_byte_array(), false));
+
+    let bob_pubkey = PublicKey::new(bob.public_key());
+    let hash: PubkeyHash = alice_pubkey.into();
+    println!(">> BOB PUBKEY_HASH: {}", hex::encode(hash.as_byte_array(), false));
+
+    let bob_w_pubkey = bob_pubkey.wpubkey_hash().unwrap();
+    println!(">> W-BOB: {}", hex::encode(bob_w_pubkey.as_byte_array(), false));
 
     // # First transaction: Alice spends the P2PKH coinbase input and creates
     // # a P2WPKH output for Bob.

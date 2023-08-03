@@ -7,14 +7,7 @@ use bitcoin::consensus::Encodable;
 use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::{secp256k1, Address, TxIn, TxOut};
-use bitcoin::{Transaction, Weight};
-
-/// Determines the weight of the transaction and calculates the fee with the
-/// given satoshis per vbyte.
-pub fn calculate_fee(tx: &Transaction, sat_vb: u64) -> (Weight, u64) {
-    let weight = tx.weight();
-    (weight, weight.to_vbytes_ceil() * sat_vb)
-}
+use secp256k1::hashes::Hash;
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
@@ -157,6 +150,8 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
+                    println!("LEGACY SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
                     let updated = signer(input, message)?;
@@ -177,6 +172,8 @@ impl TransactionBuilder {
                             EcdsaSighashType::All,
                         )
                         .map_err(|_| Error::Todo)?;
+
+                    println!("SEGWIT SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
