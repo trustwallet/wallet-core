@@ -15,7 +15,7 @@ use RlpProto::mod_RlpItem::OneOfitem as Item;
 const ETHEREUM_COIN_TYPE: u32 = 60;
 
 #[test]
-fn test_ethereum_rlp_eip1559() {
+fn test_ethereum_rlp() {
     let item = RlpProto::RlpItem {
         item: Item::number_u64(128),
     };
