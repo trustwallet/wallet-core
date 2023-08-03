@@ -8,31 +8,17 @@ use tw_proto::Utxo::Proto;
 use tw_utxo::builder::{SigningInputBuilder, TxInBuilder, TxOutBuilder};
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
-#[test]
-fn sighash_emtpy() {
-    let signing = Proto::SigningInput {
-        version: 2,
-        inputs: vec![],
-        outputs: vec![],
-        lock_time: Proto::mod_SigningInput::OneOflock_time::None,
-    };
-
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
-
-    let hashes = output.sighashes;
-    assert!(hashes.is_empty());
-}
+use crate::common::{txid_rev, witness_pubkey_hash};
 
 #[test]
-fn sighash_input_p2pkh_output_p2pkh() {
-    let pubkey_hash = pubkey_hash_from_hex("e4c1ea86373d554b8f4efff2cfb0001ea19124d2");
+fn sighash_input_p2pkh_output_p2wpkh() {
+    let pubkey_hash = pubkey_hash_from_hex("60cda7b50f14c152d7401c28ae773c698db92373");
     let input_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
 
-    let pubkey_hash = pubkey_hash_from_hex("5eaaa4f458f9158f86afcba08dd7448d27045e3d");
-    let output_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
+    let wpubkey_hash = witness_pubkey_hash("0d0e1cec6c2babe8badde5e9b3dea667da90036d");
+    let output_script_pubkey = ScriptBuf::new_v0_p2wpkh(&wpubkey_hash);
 
-    let txid =
-        hex::decode("7be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e").unwrap();
+    let txid = txid_rev("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911");
 
     let signing = SigningInputBuilder::new()
         .version(2)
@@ -61,7 +47,7 @@ fn sighash_input_p2pkh_output_p2pkh() {
     assert_eq!(hashes.len(), 1);
     assert_eq!(
         hex::encode(hashes[0].as_ref(), false),
-        "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18"
+        "c4963ecd6c08be4c9dd66416349084a5b54318b3802370451d580210bc883463"
     );
 }
 

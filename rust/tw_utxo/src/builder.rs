@@ -73,6 +73,9 @@ impl<'a> TxInBuilder<'a> {
     pub fn legacy_method(self) -> LegacyMethodBuilder<'a> {
         LegacyMethodBuilder { proto: self.proto }
     }
+    pub fn segwit_method(self) -> SegwitMethodBuilder<'a> {
+        todo!()
+    }
 }
 
 pub struct LegacyMethodBuilder<'a> {
@@ -93,6 +96,32 @@ impl<'a> LegacyMethodBuilder<'a> {
         if self.proto.sighash_method == Proto::mod_TxIn::OneOfsighash_method::None {
             return Err(());
         }
+
+        Ok(self.proto)
+    }
+}
+
+pub struct SegwitMethodBuilder<'a> {
+    value: Option<u64>,
+    script_pubkey: Option<&'a [u8]>,
+    proto: Proto::TxIn<'a>,
+}
+
+impl<'a> SegwitMethodBuilder<'a> {
+    pub fn value(mut self, value: u64) -> Self {
+        self.value = Some(value);
+        self
+    }
+    pub fn spending_condition(mut self, script_pubkey: &'a [u8]) -> Self {
+        self.script_pubkey = Some(script_pubkey);
+        self
+    }
+    pub fn build(mut self) -> Result<Proto::TxIn<'a>, ()> {
+        self.proto.sighash_method =
+            Proto::mod_TxIn::OneOfsighash_method::segwit(Proto::mod_TxIn::Segwit {
+                value: self.value.ok_or(())?,
+                script_pubkey: self.script_pubkey.ok_or(())?.into(),
+            });
 
         Ok(self.proto)
     }
