@@ -32,7 +32,14 @@ pub struct Compiler<Context: UtxoContext> {
 impl Compiler<StandardBitcoinContext> {
     #[inline]
     pub fn preimage_hashes(proto: Proto::SigningInput<'_>) -> Proto::PreSigningOutput<'static> {
-        Self::preimage_hashes_impl(proto).unwrap()
+        Self::preimage_hashes_impl(proto)
+            .or_else(|err| {
+                std::result::Result::<_, ()>::Ok(Proto::PreSigningOutput {
+                    error: err.into(),
+                    sighashes: Default::default(),
+                })
+            })
+            .expect("did not convert error value into PreSigningOutput")
     }
 
     #[inline]
@@ -81,7 +88,7 @@ impl Compiler<StandardBitcoinContext> {
                         script_pubkey
                             .p2wpkh_script_code()
                             .as_ref()
-                            .ok_or(Error::InvalidWpkhScriptPubkey)?,
+                            .ok_or(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey))?,
                         value,
                         sighash_type,
                     )?;
@@ -91,10 +98,10 @@ impl Compiler<StandardBitcoinContext> {
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::taproot(ref taproot) => {
                     let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref())
-                        .map_err(|_| Error::InvalidLeafHash)?;
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_leaf_hash))?;
                     // Note that `input.sighash = 0` is handled by the underlying library.
                     let sighash_type = TapSighashType::from_consensus_u8(input.sighash as u8)
-                        .map_err(|_| Error::InvalidSighashType)?;
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash_type))?;
 
                     // This owner only exists to avoid running into lifetime
                     // issues related to `Prevouts::All(&[T])`.
@@ -104,7 +111,10 @@ impl Compiler<StandardBitcoinContext> {
                         Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(index) => {
                             let index = index as usize;
 
-                            let txout = tx.output.get(index).ok_or(Error::OnePrevoutOutOfBound)?;
+                            let txout = tx
+                                .output
+                                .get(index)
+                                .ok_or(Error::from(Proto::Error::Error_one_prevout_out_of_bound))?;
                             Prevouts::One(
                                 index,
                                 TxOut {
@@ -141,11 +151,14 @@ impl Compiler<StandardBitcoinContext> {
 
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
-                ProtoSigningMethod::None => return Err(Error::MissingSighashMethod),
+                ProtoSigningMethod::None => {
+                    return Err(Error::from(Proto::Error::Error_missing_sighash_method))
+                },
             }
         }
 
         Ok(Proto::PreSigningOutput {
+            error: Proto::Error::OK,
             sighashes: sighashes.into_iter().map(Cow::Owned).collect(),
         })
     }
@@ -161,15 +174,18 @@ fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transactio
     // Retreive the lock time. If none is provided, the default lock time is
     // used (immediately spendable).
     let lock_time = match proto.lock_time {
-        ProtoLockTimeVariant::blocks(block) => {
-            LockTime::Blocks(Height::from_consensus(block).map_err(|_| Error::InvalidLockTime)?)
-        },
-        ProtoLockTimeVariant::seconds(secs) => {
-            LockTime::Seconds(Time::from_consensus(secs).map_err(|_| Error::InvalidLockTime)?)
-        },
-        ProtoLockTimeVariant::None => {
-            LockTime::Blocks(Height::from_consensus(0).map_err(|_| Error::InvalidLockTime)?)
-        },
+        ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
+            Height::from_consensus(block)
+                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+        ),
+        ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
+            Time::from_consensus(secs)
+                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+        ),
+        ProtoLockTimeVariant::None => LockTime::Blocks(
+            Height::from_consensus(0)
+                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+        ),
     };
 
     let mut tx = Transaction {
@@ -180,7 +196,8 @@ fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transactio
     };
 
     for txin in &proto.inputs {
-        let txid = Txid::from_slice(txin.txid.as_ref()).map_err(|_| Error::InvalidTxid)?;
+        let txid = Txid::from_slice(txin.txid.as_ref())
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
         let vout = txin.vout;
 
         tx.input.push(TxIn {

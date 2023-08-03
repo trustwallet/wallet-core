@@ -5,6 +5,18 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
+enum Error {
+	OK = 0;
+    Error_sighash_failed = 1;
+    Error_invalid_wpkh_script_pubkey = 2;
+    Error_invalid_leaf_hash = 3;
+    Error_invalid_sighash_type = 4;
+    Error_invalid_lock_time = 5;
+    Error_invalid_txid = 6;
+    Error_one_prevout_out_of_bound = 7;
+    Error_missing_sighash_method = 8;
+}
+
 message SigningInput {
 	// The protocol version, is currently expected to be 1 or 2 (BIP68)
 	int32 version = 2;
@@ -89,8 +101,11 @@ message TxOut {
 }
 
 message PreSigningOutput {
+    // error code, 0 is ok, other codes will be treated as errors
+    Error error = 1;
+
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
-    repeated bytes sighashes = 1;
+    repeated bytes sighashes = 2;
 }
 
 message SigningOutput {
