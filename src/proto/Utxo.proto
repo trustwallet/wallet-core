@@ -90,7 +90,6 @@ enum SighashType {
     NonePlusAnyoneCanPay = 130; // 0x82
     // Sign one output and only this input.
     SinglePlusAnyoneCanPay = 131; // 0x83
->>>>>>> tw-utxo
 }
 
 // The output of a transaction.
