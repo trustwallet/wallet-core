@@ -21,12 +21,12 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input) {
     return TWStringCreateWithUTF8Bytes(TW::Barz::getCounterfactualAddress(inputProto).c_str());
 }
 
-TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet) {
+TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet, uint32_t salt) {
     const auto& factoryStr = *reinterpret_cast<const std::string*>(factory);
     const auto& publicKeyConverted = *reinterpret_cast<const TW::PublicKey*>(publicKey);
     const auto& verificationFacetStr = *reinterpret_cast<const std::string*>(verificationFacet);
 
-    const auto initCode = TW::Barz::getInitCode(factoryStr, publicKeyConverted, verificationFacetStr);
+    const auto initCode = TW::Barz::getInitCode(factoryStr, publicKeyConverted, verificationFacetStr, salt);
     return TWDataCreateWithData(&initCode);
 }
 
