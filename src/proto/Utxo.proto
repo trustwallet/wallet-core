@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package TW.Utxo.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+enum Error {
+	OK = 0;
+    Error_sighash_failed = 1;
+    Error_invalid_wpkh_script_pubkey = 2;
+    Error_invalid_leaf_hash = 3;
+    Error_invalid_sighash_type = 4;
+    Error_invalid_lock_time = 5;
+    Error_invalid_txid = 6;
+    Error_one_prevout_out_of_bound = 7;
+    Error_missing_sighash_method = 8;
+}
+
+message SigningInput {
+	// The protocol version, is currently expected to be 1 or 2 (BIP68)
+	int32 version = 2;
+
+	// Block height or timestamp indicating at what point transactions can be
+	// included in a block.
+	oneof lock_time {
+		uint32 blocks = 3;
+		uint32 seconds = 4;
+	}
+
+	// The inputs of the transaction to sign. If an individual input does not
+	// provide an index, then the index of the inserted order is used.
+	repeated TxIn inputs = 5;
+
+	repeated TxOut outputs = 6;
+}
+
+message TxIn {
+	// The referenced transaction hash.
+	bytes txid = 2;
+
+	// The index of the referenced output.
+	uint32 vout = 3;
+
+	// The sequence number (TODO).
+	uint32 sequence = 7;
+
+	oneof sighash_method {
+		Legacy legacy = 8;
+		Segwit segwit = 9;
+		Taproot taproot = 10;
+	}
+
+	// The sighash type.
+	SighashType sighash = 11;
+
+	message Legacy {
+		// The spending condition of the output.
+		bytes script_pubkey = 4;
+	}
+
+	message Segwit {
+		uint64 value = 1;
+
+		// The spending condition of the output.
+		bytes script_pubkey = 4;
+	}
+
+	message Taproot {
+		bytes leaf_hash = 1;
+
+		oneof prevout {
+			uint32 one = 2;
+			Common.Proto.None all = 3;
+		}
+	}
+}
+
+enum SighashType {
+	UseDefault = 0;
+	// Sign all outputs (default).
+	All = 1; // 0x01
+	// Sign no outputs, anyone can choose the destination.
+	None = 2; // 0x02
+	// Sign the output whose index matches this inputs index.
+	Single = 3; // 0x03
+	//Sign all outputs but only this input.
+	AllPlusAnyoneCanPay = 129; //  0x81
+	// Sign no outputs and only this input.
+	NonePlusAnyoneCanPay = 130; // 0x82
+	// Sign one output and only this input.
+	SinglePlusAnyoneCanPay = 131; // 0x83
+}
+
+// The output of a transaction.
+message TxOut {
+	// The value of the output (amount).
+	uint64 value = 1;
+	// The spending condition of the output.
+	bytes script_pubkey = 2;
+}
+
+message PreSigningOutput {
+    // error code, 0 is ok, other codes will be treated as errors
+    Error error = 1;
+
+    /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    repeated bytes sighashes = 2;
+}
+
+message SigningOutput {
+	repeated bytes signatures = 1;
+}
