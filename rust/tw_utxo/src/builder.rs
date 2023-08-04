@@ -81,7 +81,11 @@ impl<'a> TxInBuilder<'a> {
         }
     }
     pub fn taproot_method(self) -> TaprootMethodBuilder<'a> {
-        todo!()
+        TaprootMethodBuilder {
+            leaf_hash: None,
+            prevout: None,
+            proto: self.proto,
+        }
     }
 }
 
@@ -136,6 +140,8 @@ impl<'a> SegwitMethodBuilder<'a> {
 
 pub struct TaprootMethodBuilder<'a> {
     leaf_hash: Option<&'a [u8]>,
+    // `None` is interpreted as `Prevouts::All`.
+    prevout: Option<usize>,
     proto: Proto::TxIn<'a>,
 }
 
@@ -144,16 +150,28 @@ impl<'a> TaprootMethodBuilder<'a> {
         self.leaf_hash = Some(leaf_hash);
         self
     }
-    pub fn prevout(mut self) -> Self {
-        todo!()
+    pub fn prevout(mut self, one: usize) -> Self {
+        self.prevout = Some(one);
+        self
     }
     pub fn build(mut self) -> Result<Proto::TxIn<'a>, ()> {
-        self.proto.sighash_method = Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
-            leaf_hash: self.leaf_hash.ok_or(())?.into(),
-            prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None // defaults to `All`.
-        });
+        if self.leaf_hash.is_none() {
+            return Err(());
+        }
 
-        todo!()
+        let prevout = if let Some(one) = self.prevout {
+            Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(one as u32)
+        } else {
+            Proto::mod_TxIn::mod_Taproot::OneOfprevout::None // defaults to `All`.
+        };
+
+        self.proto.sighash_method =
+            Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
+                leaf_hash: self.leaf_hash.ok_or(())?.into(),
+                prevout,
+            });
+
+        Ok(self.proto)
     }
 }
 
