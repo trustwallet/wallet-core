@@ -6,7 +6,7 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 
 enum Error {
-	OK = 0;
+    OK = 0;
     Error_sighash_failed = 1;
     Error_invalid_wpkh_script_pubkey = 2;
     Error_invalid_leaf_hash = 3;
@@ -18,86 +18,86 @@ enum Error {
 }
 
 message SigningInput {
-	// The protocol version, is currently expected to be 1 or 2 (BIP68)
-	int32 version = 2;
+    // The protocol version, is currently expected to be 1 or 2 (BIP68)
+    int32 version = 2;
 
-	// Block height or timestamp indicating at what point transactions can be
-	// included in a block.
-	oneof lock_time {
-		uint32 blocks = 3;
-		uint32 seconds = 4;
-	}
+    // Block height or timestamp indicating at what point transactions can be
+    // included in a block.
+    oneof lock_time {
+        uint32 blocks = 3;
+        uint32 seconds = 4;
+    }
 
-	// The inputs of the transaction to sign. If an individual input does not
-	// provide an index, then the index of the inserted order is used.
-	repeated TxIn inputs = 5;
+    // The inputs of the transaction to sign. If an individual input does not
+    // provide an index, then the index of the inserted order is used.
+    repeated TxIn inputs = 5;
 
-	repeated TxOut outputs = 6;
+    repeated TxOut outputs = 6;
 }
 
 message TxIn {
-	// The referenced transaction hash.
-	bytes txid = 2;
+    // The referenced transaction hash.
+    bytes txid = 2;
 
-	// The index of the referenced output.
-	uint32 vout = 3;
+    // The index of the referenced output.
+    uint32 vout = 3;
 
-	// The sequence number (TODO).
-	uint32 sequence = 7;
+    // The sequence number (TODO).
+    uint32 sequence = 7;
 
-	oneof sighash_method {
-		Legacy legacy = 8;
-		Segwit segwit = 9;
-		Taproot taproot = 10;
-	}
+    oneof sighash_method {
+        Legacy legacy = 8;
+        Segwit segwit = 9;
+        Taproot taproot = 10;
+    }
 
-	// The sighash type.
-	SighashType sighash = 11;
+    // The sighash type.
+    SighashType sighash = 11;
 
-	message Legacy {
-		// The spending condition of the output.
-		bytes script_pubkey = 4;
-	}
+    message Legacy {
+        // The spending condition of the output.
+        bytes script_pubkey = 4;
+    }
 
-	message Segwit {
-		uint64 value = 1;
+    message Segwit {
+        uint64 value = 1;
 
-		// The spending condition of the output.
-		bytes script_pubkey = 4;
-	}
+        // The spending condition of the output.
+        bytes script_pubkey = 4;
+    }
 
-	message Taproot {
-		bytes leaf_hash = 1;
+    message Taproot {
+        bytes leaf_hash = 1;
 
-		oneof prevout {
-			uint32 one = 2;
-			Common.Proto.None all = 3;
-		}
-	}
+        oneof prevout {
+            uint32 one = 2;
+            Common.Proto.None all = 3;
+        }
+    }
 }
 
 enum SighashType {
-	UseDefault = 0;
-	// Sign all outputs (default).
-	All = 1; // 0x01
-	// Sign no outputs, anyone can choose the destination.
-	None = 2; // 0x02
-	// Sign the output whose index matches this inputs index.
-	Single = 3; // 0x03
-	//Sign all outputs but only this input.
-	AllPlusAnyoneCanPay = 129; //  0x81
-	// Sign no outputs and only this input.
-	NonePlusAnyoneCanPay = 130; // 0x82
-	// Sign one output and only this input.
-	SinglePlusAnyoneCanPay = 131; // 0x83
+    UseDefault = 0;
+    // Sign all outputs (default).
+    All = 1; // 0x01
+    // Sign no outputs, anyone can choose the destination.
+    None = 2; // 0x02
+    // Sign the output whose index matches this inputs index.
+    Single = 3; // 0x03
+    //Sign all outputs but only this input.
+    AllPlusAnyoneCanPay = 129; //  0x81
+    // Sign no outputs and only this input.
+    NonePlusAnyoneCanPay = 130; // 0x82
+    // Sign one output and only this input.
+    SinglePlusAnyoneCanPay = 131; // 0x83
 }
 
 // The output of a transaction.
 message TxOut {
-	// The value of the output (amount).
-	uint64 value = 1;
-	// The spending condition of the output.
-	bytes script_pubkey = 2;
+    // The value of the output (amount).
+    uint64 value = 1;
+    // The spending condition of the output.
+    bytes script_pubkey = 2;
 }
 
 message PreSigningOutput {
@@ -109,5 +109,5 @@ message PreSigningOutput {
 }
 
 message SigningOutput {
-	repeated bytes signatures = 1;
+    repeated bytes signatures = 1;
 }
