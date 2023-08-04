@@ -97,8 +97,17 @@ impl Compiler<StandardBitcoinContext> {
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::taproot(ref taproot) => {
-                    let leaf_hash = TapLeafHash::from_slice(taproot.leaf_hash.as_ref())
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_leaf_hash))?;
+                    let leaf_hash = if taproot.leaf_hash.is_empty() {
+                        None
+                    } else {
+                        Some((
+                            TapLeafHash::from_slice(taproot.leaf_hash.as_ref())
+                                .map_err(|_| Error::from(Proto::Error::Error_invalid_leaf_hash))?,
+                            // TODO: We might want to make this configurable.
+                            0xFFFFFFFF,
+                        ))
+                    };
+
                     // Note that `input.sighash = 0` is handled by the underlying library.
                     let sighash_type = TapSighashType::from_consensus_u8(input.sighash as u8)
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash_type))?;
@@ -145,7 +154,7 @@ impl Compiler<StandardBitcoinContext> {
                         index,
                         &prevouts,
                         None,
-                        Some((leaf_hash.into(), 0xFFFFFFFF)),
+                        leaf_hash,
                         sighash_type,
                     )?;
 

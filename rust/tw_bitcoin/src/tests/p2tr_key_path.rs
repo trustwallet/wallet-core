@@ -35,6 +35,7 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
     println!(">> ALICE TWEAKED: {}", hex::encode(tweaked.serialize(), false));
 
     let bob_pubkey = PublicKey::new(bob.public_key());
+    println!(">> BOB PUBKEY: {}", hex::encode(bob_pubkey.to_bytes(), false));
     let hash: PubkeyHash = bob_pubkey.into();
     println!(">> BOB PUBKEY_HASH: {}", hex::encode(hash.as_byte_array(), false));
     let tweaked = tweak_pubkey(bob_pubkey.clone());
