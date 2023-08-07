@@ -43,7 +43,7 @@ impl Compiler<StandardBitcoinContext> {
     }
 
     #[inline]
-    pub fn compile(input: ()) -> Proto::SigningOutput<'static> {
+    pub fn compile(input: ()) -> Proto::SerializedTransaction<'static> {
         todo!()
     }
 
@@ -172,7 +172,7 @@ impl Compiler<StandardBitcoinContext> {
         })
     }
 
-    fn compile_impl(input: ()) -> Result<Proto::SigningOutput<'static>> {
+    fn compile_impl(input: ()) -> Result<Proto::SerializedTransaction<'static>> {
         todo!()
     }
 }
