@@ -128,28 +128,37 @@ void ParamSet::encode(Data& data) const {
 }
 
 bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
+    size_t arrayOffset = offset_inout;
+
     // pass 1: small values
-    for (auto p : _params) {
+    for (const auto& p : _params) {
         if (p->isDynamic()) {
             uint256_t index;
             if (!ABI::decode(encoded, index, offset_inout)) {
                 return false;
             }
-            // index is read but not used
-        } else {
-            if (!p->decode(encoded, offset_inout)) {
+
+            // Check if length is in the size_t range.
+            auto indexSize = static_cast<size_t>(index);
+            if (indexSize != index) {
                 return false;
             }
-        }
-    }
-    // pass2: large values
-    for (auto p : _params) {
-        if (p->isDynamic()) {
-            if (!p->decode(encoded, offset_inout)) {
+
+            // Calculate an offset relative to the beginning of this array.
+            size_t newOffset = arrayOffset + indexSize;
+            if (!p->decode(encoded, newOffset)) {
                 return false;
             }
+
+            continue;
+        }
+
+        // Decode a static (e.g `!p->isDynamic()`) element.
+        if (!p->decode(encoded, offset_inout)) {
+            return false;
         }
     }
+
     return true;
 }
 
