@@ -109,6 +109,7 @@ message PreSigningOutput {
 }
 
 message PreSerialization {
+    // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;
 
     // Block height or timestamp indicating at what point transactions can be
@@ -118,8 +119,10 @@ message PreSerialization {
         uint32 seconds = 3;
     }
 
+    // The transaction inputs containing the serialized claim scripts.
     repeated TxInClaim inputs = 4;
 
+    // The transaction outputs.
     repeated TxOut outputs = 5;
 }
 
@@ -133,10 +136,13 @@ message TxInClaim {
     // The sequence number (TODO).
     uint32 sequence = 3;
 
+    // The script used for claiming an input.
     bytes script_sig = 4;
 
+    // The script used for claiming an input.
     Witness witness = 5;
 
+    // The witness items.
     message Witness {
         bytes item = 1;
     }
