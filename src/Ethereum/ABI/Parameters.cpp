@@ -130,8 +130,8 @@ void ParamSet::encode(Data& data) const {
 bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
     size_t arrayOffset = offset_inout;
 
-    // pass 1: small values
     for (const auto& p : _params) {
+        // Decode a dynamic element.
         if (p->isDynamic()) {
             uint256_t index;
             if (!ABI::decode(encoded, index, offset_inout)) {
@@ -153,7 +153,7 @@ bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
             continue;
         }
 
-        // Decode a static (e.g `!p->isDynamic()`) element.
+        // Otherwise decode a static element, e.g `p->isDynamic() == false`.
         if (!p->decode(encoded, offset_inout)) {
             return false;
         }
@@ -170,6 +170,15 @@ Data ParamSet::encodeHashes() const {
     return hashes;
 }
 
+ParamSet ParamSet::clone() const {
+    ParamSet newSet;
+    for (const auto& p : _params) {
+        newSet.addParam(p->clone());
+    }
+
+    return newSet;
+}
+
 Data Parameters::hashStruct() const {
     Data hash(32);
     Data hashes = _params.encodeHashes();
@@ -177,6 +186,12 @@ Data Parameters::hashStruct() const {
         hash = Hash::keccak256(hashes);
     }
     return hash;
+}
+
+std::shared_ptr<ParamBase> Parameters::clone() const {
+    auto newParams = std::make_shared<Parameters>();
+    newParams->_params = _params.clone();
+    return newParams;
 }
 
 } // namespace TW::Ethereum::ABI
