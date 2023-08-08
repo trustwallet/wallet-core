@@ -17,7 +17,6 @@ uint256_t ValueDecoder::decodeUInt256(const Data& data) {
     return load(data);
 }
 
-// TODO figure out how `ValueDecoder` is used.
 std::string ValueDecoder::decodeValue(const Data& data, const std::string& type) {
     auto param = ParamFactory::make(type);
     if (!param) {
