@@ -1,3 +1,4 @@
+use bitcoin::ScriptBuf;
 use tw_proto::Utxo::Proto;
 
 pub struct SigningInputBuilder<'a> {
@@ -133,10 +134,20 @@ impl<'a> SegwitMethodBuilder<'a> {
     }
 }
 
+pub enum PrevoutVariant {
+    One(Prevout),
+    All(Vec<Prevout>),
+}
+
+pub struct Prevout {
+    value: u64,
+    script_pubkey: ScriptBuf,
+}
+
 pub struct TaprootMethodBuilder<'a> {
     leaf_hash: Option<&'a [u8]>,
     // `None` is interpreted as `Prevouts::All`.
-    prevout: Option<usize>,
+    prevout: Option<PrevoutVariant>,
     proto: Proto::TxIn<'a>,
 }
 
@@ -145,8 +156,8 @@ impl<'a> TaprootMethodBuilder<'a> {
         self.leaf_hash = Some(leaf_hash);
         self
     }
-    pub fn prevout(mut self, one: usize) -> Self {
-        self.prevout = Some(one);
+    pub fn prevout(mut self, prevout: PrevoutVariant) -> Self {
+        self.prevout = Some(prevout);
         self
     }
     pub fn build(mut self) -> Result<Proto::TxIn<'a>, ()> {
@@ -154,10 +165,30 @@ impl<'a> TaprootMethodBuilder<'a> {
             return Err(());
         }
 
-        let prevout = if let Some(one) = self.prevout {
-            Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(one as u32)
-        } else {
-            Proto::mod_TxIn::mod_Taproot::OneOfprevout::None // defaults to `All`.
+        if self.prevout.is_none() {
+            return Err(());
+        }
+
+        let prevout = match self.prevout.unwrap() {
+            PrevoutVariant::One(one) => Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(
+                Proto::mod_TxIn::mod_Taproot::Prevout {
+                    value: one.value,
+                    script_pubkey: one.script_pubkey.to_bytes().into(),
+                },
+            ),
+            PrevoutVariant::All(all) => {
+                let prevouts = all
+                    .iter()
+                    .map(|one| Proto::mod_TxIn::mod_Taproot::Prevout {
+                        value: one.value,
+                        script_pubkey: one.script_pubkey.to_bytes().into(),
+                    })
+                    .collect();
+
+                Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(
+                    Proto::mod_TxIn::mod_Taproot::AllPrevouts { all: prevouts },
+                )
+            },
         };
 
         self.proto.sighash_method =
