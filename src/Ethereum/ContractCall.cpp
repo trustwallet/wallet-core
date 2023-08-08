@@ -31,15 +31,15 @@ static void fill(ParamSet& paramSet, const string& type) {
     }
 }
 
-static vector<string> getArrayValue(ParamSet& paramSet, const string& type, int idx) {
+static vector<string> getArrayValue(const ParamSet& paramSet, const string& type, int idx) {
     shared_ptr<ParamBase> param;
     paramSet.getParam(idx, param);
     return ParamFactory::getArrayValue(param, type);
 }
 
-static json buildInputs(ParamSet& paramSet, const json& registry); // forward
+static json buildInputs(const ParamSet& paramSet, const json& registry); // forward
 
-static json getTupleValue(ParamSet& paramSet, [[maybe_unused]] const string& type, int idx, const json& typeInfo) {
+static json getTupleValue(const ParamSet& paramSet, [[maybe_unused]] const string& type, int idx, const json& typeInfo) {
     shared_ptr<ParamBase> param;
     paramSet.getParam(idx, param);
     auto paramTuple = dynamic_pointer_cast<ParamTuple>(param);
@@ -49,13 +49,32 @@ static json getTupleValue(ParamSet& paramSet, [[maybe_unused]] const string& typ
     return buildInputs(paramTuple->_params, typeInfo["components"]);
 }
 
-static string getValue(ParamSet& paramSet, const string& type, int idx) {
+static vector<json> getArrayValueTuple(const ParamSet& paramSet, int idx, const json& typeInfo) {
+    shared_ptr<ParamBase> param;
+    paramSet.getParam(idx, param);
+
+    auto array = dynamic_pointer_cast<ParamArray>(param);
+    if (!array) {
+        return {};
+    }
+
+    std::vector<json> values;
+    for (const auto& tuple : array->getVal()) {
+        if (auto paramTuple = dynamic_pointer_cast<ParamTuple>(tuple); paramTuple) {
+            values.emplace_back(buildInputs(paramTuple->_params, typeInfo["components"]));
+        }
+    }
+
+    return values;
+}
+
+static string getValue(const ParamSet& paramSet, const string& type, int idx) {
     shared_ptr<ParamBase> param;
     paramSet.getParam(idx, param);
     return ParamFactory::getValue(param, type);
 }
 
-static json buildInputs(ParamSet& paramSet, const json& registry) {
+static json buildInputs(const ParamSet& paramSet, const json& registry) {
     auto inputs = json::array();
     for (auto i = 0ul; i < registry.size(); i++) {
         auto info = registry[i];
@@ -64,7 +83,9 @@ static json buildInputs(ParamSet& paramSet, const json& registry) {
             {"name", info["name"]},
             {"type", type}
         };
-        if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
+        if (type == "tuple[]") {
+            input["components"] = getArrayValueTuple(paramSet, static_cast<int>(i), info);
+        } else if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
             input["value"] = json(getArrayValue(paramSet, type, static_cast<int>(i)));
         } else if (type == "tuple") {
             input["components"] = getTupleValue(paramSet, type, static_cast<int>(i), info);
@@ -80,20 +101,32 @@ static json buildInputs(ParamSet& paramSet, const json& registry) {
 
 void fillTuple(ParamSet& paramSet, const json& jsonSet); // forward
 
+void fillTupleArray(ParamSet& paramSet, const json& jsonSet); // forward
+
 void decodeParamSet(ParamSet& paramSet, const json& jsonSet) {
     for (auto& comp : jsonSet) {
         if (comp["type"] == "tuple") {
             fillTuple(paramSet, comp["components"]);
-        } else {        
+        } else if (comp["type"] == "tuple[]") {
+            fillTupleArray(paramSet, comp["components"]);
+        } else {
             fill(paramSet, comp["type"]);
         }
-    }    
+    }
 }
 
 void fillTuple(ParamSet& paramSet, const json& jsonSet) {
     std::shared_ptr<ParamTuple> param = make_shared<ParamTuple>();
     decodeParamSet(param->_params, jsonSet);
     paramSet.addParam(param);
+}
+
+void fillTupleArray(ParamSet& paramSet, const json& jsonSet) {
+    std::shared_ptr<ParamTuple> tuple = make_shared<ParamTuple>();
+    decodeParamSet(tuple->_params, jsonSet);
+
+    auto tupleArray = make_shared<ParamArray>(tuple);
+    paramSet.addParam(tupleArray);
 }
 
 optional<string> decodeCall(const Data& call, const json& abi) {

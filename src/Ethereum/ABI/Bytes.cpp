@@ -56,6 +56,10 @@ Data ParamByteArray::hashStruct() const {
     return Hash::keccak256(_bytes);
 }
 
+std::shared_ptr<ParamBase> ParamByteArray::clone() const {
+    return std::make_shared<ParamByteArray>(_bytes);
+}
+
 void ParamByteArrayFix::setVal(const Data& val) {
     if (val.size() > _n) { // crop right
         _bytes = subData(val, 0, _n);
@@ -105,6 +109,10 @@ Data ParamByteArrayFix::hashStruct() const {
     return ParamBase::hashStruct();
 }
 
+std::shared_ptr<ParamBase> ParamByteArrayFix::clone() const {
+    return std::make_shared<ParamByteArrayFix>(_n, _bytes);
+}
+
 void ParamString::encodeString(const std::string& decoded, Data& data) {
     auto bytes = Data(decoded.begin(), decoded.end());
     ParamByteArray::encodeBytes(bytes, data);
@@ -124,6 +132,10 @@ Data ParamString::hashStruct() const {
     Data encoded = data(_str);
     hash = Hash::keccak256(encoded);
     return hash;
+}
+
+std::shared_ptr<ParamBase> ParamString::clone() const {
+    return std::make_shared<ParamString>(_str);
 }
 
 } // namespace TW::Ethereum::ABI

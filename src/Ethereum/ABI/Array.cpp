@@ -79,7 +79,7 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
         // pad with first type
         auto first = _params.getParamUnsafe(0);
         for (size_t i = 0; i < len - n; i++) {
-            _params.addParam(ParamFactory::make(first->getType()));
+            _params.addParam(first->clone());
         }
     }
 
@@ -105,7 +105,7 @@ bool ParamArray::setValueJson(const std::string& value) {
     }
     // make sure enough elements are in the array
     while (_params.getCount() < valuesJson.size()) {
-        addParam(ParamFactory::make(getProtoType()));
+        addParam(getProtoElem()->clone());
     }
     int cnt = 0;
     for (const auto& e : valuesJson) {
@@ -133,6 +133,13 @@ std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) cons
     return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
 }
 
+std::shared_ptr<ParamBase> ParamArray::clone() const {
+    auto newArray = std::make_shared<ParamArray>();
+    newArray->_params = _params.clone();
+    newArray->_proto = _proto->clone();
+    return newArray;
+}
+
 void ParamArrayFix::encode(Data& data) const {
     this->_params.encode(data);
 }
@@ -154,6 +161,12 @@ bool ParamArrayFix::setValueJson(const std::string& value) {
         ++idx;
     }
     return true;
+}
+
+std::shared_ptr<ParamBase> ParamArrayFix::clone() const {
+    auto newArray = std::make_shared<ParamArrayFix>();
+    newArray->_params = _params.clone();
+    return newArray;
 }
 
 void ParamArrayFix::addParams(const Params& params) {
