@@ -114,7 +114,7 @@ impl TransactionBuilder {
                         script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
                     }),
                 ),
-                TxInput::P2TRKeyPath(_) => {
+                TxInput::P2TRKeyPath(x) => {
                     (
                         SighashType::UseDefault,
                         Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {

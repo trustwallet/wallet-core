@@ -112,6 +112,9 @@ impl TransactionSigner for KeyPair {
             return Err(Error::Todo);
         }
 
+        let x = tw_encoding::hex::encode(sighash.as_ref(), false);
+        println!("{x}");
+
         let secp = Secp256k1::new();
 
         // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
