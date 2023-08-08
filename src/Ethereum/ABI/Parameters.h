@@ -40,13 +40,15 @@ public:
     virtual void encode(Data& data) const;
     virtual bool decode(const Data& encoded, size_t& offset_inout);
     Data encodeHashes() const;
+    /// Creates a copy of this set with exactly the same params.
+    ParamSet clone() const;
 
 private:
     size_t getHeadSize() const;
 };
 
 /// Collection of different parameters, dynamic length, "(<par1>,<par2>,...)".
-class Parameters: public ParamCollection
+class Parameters final : public ParamCollection
 {
 private:
     ParamSet _params;
@@ -57,14 +59,15 @@ public:
     void addParam(const std::shared_ptr<ParamBase>& param) { _params.addParam(param); }
     void addParams(const std::vector<std::shared_ptr<ParamBase>>& params) { _params.addParams(params); }
     std::shared_ptr<ParamBase> getParam(size_t paramIndex) const { return _params.getParamUnsafe(paramIndex); }
-    virtual std::string getType() const { return _params.getType(); }
-    virtual size_t getSize() const { return _params.getSize(); }
-    virtual bool isDynamic() const { return true; }
-    virtual size_t getCount() const { return _params.getCount(); }
-    virtual void encode(Data& data) const { _params.encode(data); }
-    virtual bool decode(const Data& encoded, size_t& offset_inout) { return _params.decode(encoded, offset_inout); }
-    virtual bool setValueJson([[maybe_unused]] const std::string& value) { return false; }
-    virtual Data hashStruct() const;
+    std::string getType() const override { return _params.getType(); }
+    size_t getSize() const override { return _params.getSize(); }
+    bool isDynamic() const override { return true; }
+    size_t getCount() const override { return _params.getCount(); }
+    void encode(Data& data) const override { _params.encode(data); }
+    bool decode(const Data& encoded, size_t& offset_inout) override { return _params.decode(encoded, offset_inout); }
+    bool setValueJson([[maybe_unused]] const std::string& value) override { return false; }
+    Data hashStruct() const override;
+    std::shared_ptr<ParamBase> clone() const override;
 };
 
 } // namespace TW::Ethereum::ABI

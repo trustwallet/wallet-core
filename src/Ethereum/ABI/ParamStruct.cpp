@@ -27,6 +27,10 @@ std::string ParamNamed::getType() const {
     return _param->getType() + " " + _name;
 }
 
+std::shared_ptr<ParamNamed> ParamNamed::cloneNamed() const {
+    return std::make_shared<ParamNamed>(_name, _param->clone());
+}
+
 ParamSetNamed::~ParamSetNamed() {
     _params.clear();
 }
@@ -104,6 +108,14 @@ std::shared_ptr<ParamNamed> ParamSetNamed::findParamByName(const std::string& na
     return nullptr;
 }
 
+ParamSetNamed ParamSetNamed::clone() const {
+    ParamSetNamed newSet;
+    for (const auto& p : _params) {
+        newSet.addParam(p->cloneNamed());
+    }
+    return newSet;
+}
+
 Data ParamStruct::hashType() const {
     return Hash::keccak256(TW::data(encodeType()));
 }
@@ -136,6 +148,10 @@ std::string ParamStruct::getExtraTypes(std::vector<std::string>& ignoreList) con
     }
     types += _params.getExtraTypes(ignoreList);
     return types;
+}
+
+std::shared_ptr<ParamBase> ParamStruct::clone() const {
+    return std::make_shared<ParamStruct>(_name, _params.clone());
 }
 
 Data ParamStruct::hashStructJson(const std::string& messageJson) {
