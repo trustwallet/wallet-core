@@ -39,12 +39,6 @@ impl RlpBuffer {
         self.stream.begin_list(Self::NO_ITEMS);
     }
 
-    // /// Appends the given `bytes` as an RLP list.
-    // pub(crate) fn append_raw_list(&mut self, bytes: &[u8]) {
-    //     self.stream.begin_list(Self::ONE_ITEM);
-    //     self.stream.append_raw(bytes, Self::ONE_ITEM);
-    // }
-
     /// Appends an already encoded with all required headers value.
     pub(crate) fn append_raw_encoded(&mut self, bytes: &[u8]) {
         self.stream.append_raw(bytes, Self::ONE_ITEM);
