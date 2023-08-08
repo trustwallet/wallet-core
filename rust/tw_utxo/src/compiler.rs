@@ -125,40 +125,38 @@ impl Compiler<StandardBitcoinContext> {
                     let _owner;
 
                     let prevouts: Prevouts<'_, TxOut> = match taproot.prevout {
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(index) => {
-                            let index = index as usize;
-
-                            let txout = tx
-                                .output
-                                .get(index)
-                                // TODO: Can this even occure?
-                                .ok_or(Error::from(Proto::Error::Error_one_prevout_out_of_bound))?;
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(one) => {
 
                             Prevouts::One(
                                 index,
                                 TxOut {
-                                    value: txout.value,
-                                    // TODO: Can we avoid cloning here?
-                                    script_pubkey: txout.script_pubkey.clone(),
+                                    value: one.value,
+                                    script_pubkey: ScriptBuf::from_bytes(one.script_pubkey.to_vec()),
                                 },
                             )
                         },
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(_)
-                        | Proto::mod_TxIn::mod_Taproot::OneOfprevout::None => {
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(prevouts) => {
                             _owner = Some(
-                                tx.output
+                                prevouts
+                                    .all
                                     .iter()
-                                    .map(|out| TxOut {
-                                        value: out.value,
-                                        // TODO: Can we avoid cloning here?
-                                        script_pubkey: out.script_pubkey.clone(),
+                                    .map(|p| {
+                                        TxOut {
+                                            value: p.value,
+                                            script_pubkey: ScriptBuf::from_bytes(p.script_pubkey.to_vec()),
+                                        }
                                     })
                                     .collect::<Vec<TxOut>>(),
                             );
 
                             Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
                         },
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::None => {
+                            panic!();
+                        }
                     };
+
+                    dbg!(&prevouts);
 
                     let sighash = cache.taproot_signature_hash(
                         index,
@@ -293,6 +291,7 @@ fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transactio
         tx.input.push(TxIn {
             previous_output: OutPoint { txid, vout },
             script_sig: ScriptBuf::new(),
+            // TODO: This is actually important for signing, add as field in Utxo.
             sequence: Sequence::default(),
             witness: Witness::new(),
         });
