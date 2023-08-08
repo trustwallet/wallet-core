@@ -41,7 +41,7 @@ fn sighash_input_p2pkh_output_p2wpkh() {
         .build()
         .unwrap();
 
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(&signing);
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
@@ -83,7 +83,7 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
         .build()
         .unwrap();
 
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(&signing);
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);

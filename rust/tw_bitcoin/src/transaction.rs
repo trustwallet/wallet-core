@@ -7,7 +7,7 @@ use bitcoin::consensus::Encodable;
 use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::transaction::Transaction;
-use bitcoin::{secp256k1, Address, TxIn, TxOut};
+use bitcoin::{secp256k1, Address, TxIn, TxOut, ScriptBuf, Witness};
 use secp256k1::hashes::Hash;
 use std::borrow::Cow;
 use tw_misc::traits::ToBytesVec;
@@ -79,22 +79,18 @@ impl TransactionBuilder {
     {
         self.sign_inputs_fn(|input, sighash| match input {
             TxInput::P2PKH(p) => signer
-                .claim_p2pkh(p, sighash, EcdsaSighashType::All)
-                .map(|claim| ClaimLocation::Script(claim.0)),
+                .claim_p2pkh(p, sighash, EcdsaSighashType::All),
             TxInput::P2WPKH(p) => signer
-                .claim_p2wpkh(p, sighash, EcdsaSighashType::All)
-                .map(|claim| ClaimLocation::Witness(claim.0)),
+                .claim_p2wpkh(p, sighash, EcdsaSighashType::All),
             TxInput::P2TRKeyPath(p) => signer
-                .claim_p2tr_key_path(p, sighash, TapSighashType::Default)
-                .map(|claim| ClaimLocation::Witness(claim.0)),
+                .claim_p2tr_key_path(p, sighash, TapSighashType::Default),
             TxInput::P2TRScriptPath(p) => signer
-                .claim_p2tr_script_path(p, sighash, TapSighashType::Default)
-                .map(|claim| ClaimLocation::Witness(claim.0)),
+                .claim_p2tr_script_path(p, sighash, TapSighashType::Default),
         })
     }
     pub fn sign_inputs_fn<F>(self, signer: F) -> Result<TransactionSigned>
     where
-        F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
+        F: Fn(&TxInput, secp256k1::Message) -> Result<(ScriptBuf, Witness)>,
     {
         let mut signing = Proto::SigningInput {
             version: self.version,
@@ -151,192 +147,55 @@ impl TransactionBuilder {
             });
         }
 
-        // Prepare boilerplate transaction for `bitcoin` crate.
-        let mut tx = Transaction {
-            version: self.version,
-            lock_time: self.lock_time,
-            input: vec![],
-            output: vec![],
-        };
-
-        // Prepare the inputs for `bitcoin` crate.
-        for input in self.inputs.iter().cloned() {
-            let btxin = TxIn::from(input);
-            tx.input.push(btxin);
-        }
-
-        // Prepare the outputs for `bitcoin` crate.
-        for output in self.outputs.iter().cloned() {
-            let btc_txout = TxOut::from(output);
-            tx.output.push(btc_txout);
-        }
-
-        let proto_output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+        let proto_output = Compiler::<StandardBitcoinContext>::preimage_hashes(&signing);
         assert_eq!(proto_output.error, Proto::Error::OK);
         let sighashes = proto_output.sighashes;
 
         let mut claims = vec![];
-        for (input, sighash) in self.inputs.iter().zip(sighashes.iter()) {
+        for (index, (input, sighash)) in self.inputs.iter().zip(sighashes.iter()).enumerate() {
             let message = secp256k1::Message::from_slice(sighash)
                 .expect("Sighash must always convert to secp256k1::Message");
 
             // TODO: This should call the methods directly.
-            let claim = signer(input, message)?;
-            claims.push(claim);
+            let (script_sig, witness) = signer(input, message)?;
+
+            // Prepare witness items.
+            let items = witness.into_iter().map(|item| Cow::Owned(item.to_vec())).collect();
+
+            claims.push(
+                Proto::TxInClaim {
+                    txid: input.ctx().previous_output.txid.to_vec().into(),
+                    vout: input.ctx().previous_output.vout,
+                    sequence: input.ctx().sequence.to_consensus_u32(),
+                    script_sig: script_sig.to_bytes().into(),
+                    witness: Some(Proto::mod_TxInClaim::Witness {
+                        items,
+                    }),
+                }
+            )
         }
 
-        // Satoshi output check
-        /*
-        // TODO: This should be enabled, eventually.
-        let miner_fee = self.miner_fee.ok_or(Error::Todo)?;
-        if total_satoshis_outputs + miner_fee > total_satoshi_inputs {
-            return Err(Error::Todo);
-        }
-        */
+        let signing = Proto::PreSerialization {
+            version: signing.version,
+            inputs: claims,
+            outputs: signing.outputs,
+            lock_time: Proto::mod_PreSerialization::OneOflock_time::blocks(0),
+        };
 
-        // If Taproot is enabled, we prepare the full `TxOuts` (value and
-        // scriptPubKey) for hashing, which will then be signed. What
-        // distinguishes this from legacy signing is that the output value in
-        // satoshis is actually part of the signature.
-        let mut prevouts = vec![];
-        if self.contains_taproot {
-            for input in &self.inputs {
-                prevouts.push(TxOut {
-                    value: input.ctx().value,
-                    script_pubkey: input.ctx().script_pubkey.clone(),
-                });
-            }
-        }
+        let proto_output = Compiler::<StandardBitcoinContext>::compile(&signing);
+        assert_eq!(proto_output.error, Proto::Error::OK);
 
-        let mut cache = SighashCache::new(tx);
-
-        let mut claims = vec![];
-
-        // For each input (index), we create a hash which is to be signed.
-        for (index, input) in self.inputs.iter().enumerate() {
-            match input {
-                TxInput::P2PKH(p2pkh) => {
-                    let hash = cache
-                        .legacy_signature_hash(
-                            index,
-                            &p2pkh.ctx().script_pubkey,
-                            EcdsaSighashType::All.to_u32(),
-                        )
-                        .map_err(|_| Error::Todo)?;
-
-                    println!(
-                        "LEGACY SIGHASH: {}",
-                        tw_encoding::hex::encode(hash.as_byte_array(), false)
-                    );
-
-                    let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Sighash must always convert to secp256k1::Message");
-                    let updated = signer(input, message)?;
-
-                    claims.push((index, updated));
-                },
-                TxInput::P2WPKH(p2wpkh) => {
-                    let hash = cache
-                        .segwit_signature_hash(
-                            index,
-                            p2wpkh
-                                .ctx()
-                                .script_pubkey
-                                .p2wpkh_script_code()
-                                .as_ref()
-                                .expect("P2WPKH builder must set the script code correctly"),
-                            p2wpkh.ctx().value,
-                            EcdsaSighashType::All,
-                        )
-                        .map_err(|_| Error::Todo)?;
-
-                    println!(
-                        "SEGWIT SIGHASH: {}",
-                        tw_encoding::hex::encode(hash.as_byte_array(), false)
-                    );
-
-                    let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Sighash must always convert to secp256k1::Message");
-                    let updated = signer(input, message)?;
-
-                    claims.push((index, updated));
-                },
-                TxInput::P2TRKeyPath(_) => {
-                    let hash = cache
-                        .taproot_key_spend_signature_hash(
-                            index,
-                            &bitcoin::sighash::Prevouts::All(&prevouts),
-                            TapSighashType::Default,
-                        )
-                        .map_err(|_| Error::Todo)?;
-
-                    println!(
-                        "TAPROOT KEY-SPEND SIGHASH: {}",
-                        tw_encoding::hex::encode(hash.as_byte_array(), false)
-                    );
-
-                    let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Sighash must always convert to secp256k1::Message");
-                    let updated = signer(input, message)?;
-
-                    claims.push((index, updated));
-                },
-                TxInput::P2TRScriptPath(p2trsp) => {
-                    let leaf_hash =
-                        TapLeafHash::from_script(p2trsp.witness(), LeafVersion::TapScript);
-
-                    let hash = cache
-                        .taproot_script_spend_signature_hash(
-                            index,
-                            &bitcoin::sighash::Prevouts::All(&prevouts),
-                            leaf_hash,
-                            TapSighashType::Default,
-                        )
-                        .map_err(|_| Error::Todo)?;
-
-                    println!(
-                        "TAPROOT SCRIPT-PATH SIGHASH: {}",
-                        tw_encoding::hex::encode(hash.as_byte_array(), false)
-                    );
-
-                    let message = secp256k1::Message::from_slice(hash.as_ref())
-                        .expect("Sighash must always convert to secp256k1::Message");
-                    let updated = signer(input, message)?;
-
-                    claims.push((index, updated));
-                },
-            };
-        }
-
-        let mut tx = cache.into_transaction();
-
-        // Update the transaction with the updated scriptSig/Witness.
-        for (index, claim_loc) in claims {
-            match claim_loc {
-                ClaimLocation::Script(script) => {
-                    tx.input[index].script_sig = script;
-                },
-                ClaimLocation::Witness(witness) => {
-                    tx.input[index].witness = witness;
-                },
-            }
-        }
-
-        Ok(TransactionSigned { inner: tx })
+        Ok(TransactionSigned { inner: proto_output.encoded.to_vec() })
     }
 }
 
+// TODO: Deprecate
 pub struct TransactionSigned {
-    pub inner: Transaction,
+    pub inner: Vec<u8>,
 }
 
 impl TransactionSigned {
     pub fn serialize(&self) -> Result<Vec<u8>> {
-        let mut buffer = vec![];
-        self.inner
-            .consensus_encode(&mut buffer)
-            .map_err(|_| Error::Todo)?;
-
-        Ok(buffer)
+        Ok(self.inner.to_vec())
     }
 }

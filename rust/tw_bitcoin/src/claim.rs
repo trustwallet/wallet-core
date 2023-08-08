@@ -21,45 +21,29 @@ pub trait TransactionSigner {
         input: &TxInputP2PKH,
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
-    ) -> Result<ClaimP2PKH>;
+    ) -> Result<(ScriptBuf, Witness)>;
     /// Claiming mechanism for SegWit P2WPKH outputs.
     fn claim_p2wpkh(
         &self,
         input: &TxInputP2WPKH,
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
-    ) -> Result<ClaimP2WPKH>;
+    ) -> Result<(ScriptBuf, Witness)>;
     /// Claiming mechanism for Taproot P2TR key-path outputs.
     fn claim_p2tr_key_path(
         &self,
         input: &TxInputP2TRKeyPath,
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
-    ) -> Result<ClaimP2TRKeyPath>;
+    ) -> Result<(ScriptBuf, Witness)>;
     /// Claiming mechanism for Taproot P2TR script-path outputs.
     fn claim_p2tr_script_path(
         &self,
         input: &TxInputP2TRScriptPath,
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
-    ) -> Result<ClaimP2TRScriptPath>;
+    ) -> Result<(ScriptBuf, Witness)>;
 }
-
-// Contains the `scriptBuf` that must be included in the transaction when
-// spending the P2PKH input.
-pub struct ClaimP2PKH(pub ScriptBuf);
-
-// Contains the Witness that must be included in the transaction when spending
-// the SegWit P2WPKH input.
-pub struct ClaimP2WPKH(pub Witness);
-
-// Contains the Witness that must be included in the transaction when spending
-// the Taproot P2TR key-path input.
-pub struct ClaimP2TRKeyPath(pub Witness);
-
-// Contains the Witness that must be included in the transaction when spending
-// the Taproot P2TR script-path input.
-pub struct ClaimP2TRScriptPath(pub Witness);
 
 impl TransactionSigner for KeyPair {
     fn claim_p2pkh(
@@ -67,7 +51,7 @@ impl TransactionSigner for KeyPair {
         input: &TxInputP2PKH,
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
-    ) -> Result<ClaimP2PKH> {
+    ) -> Result<(ScriptBuf, Witness)> {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
         // Check whether we can actually claim the input.
@@ -87,14 +71,14 @@ impl TransactionSigner for KeyPair {
             .push_key(&me.public_key())
             .into_script();
 
-        Ok(ClaimP2PKH(script))
+        Ok((script, Witness::new()))
     }
     fn claim_p2wpkh(
         &self,
         input: &TxInputP2WPKH,
         sighash: secp256k1::Message,
         sighash_type: EcdsaSighashType,
-    ) -> Result<ClaimP2WPKH> {
+    ) -> Result<(ScriptBuf, Witness)> {
         let me = Recipient::<PublicKey>::from_keypair(self);
 
         if input.recipient().wpubkey_hash() != &me.wpubkey_hash()? {
@@ -113,14 +97,14 @@ impl TransactionSigner for KeyPair {
         // Serialize public key.
         witness.push(me.public_key().to_bytes());
 
-        Ok(ClaimP2WPKH(witness))
+        Ok((ScriptBuf::new(), witness))
     }
     fn claim_p2tr_key_path(
         &self,
         input: &TxInputP2TRKeyPath,
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
-    ) -> Result<ClaimP2TRKeyPath> {
+    ) -> Result<(ScriptBuf, Witness)> {
         let me = Recipient::<TweakedPublicKey>::from(self);
 
         // Check whether we can actually claim the input.
@@ -152,14 +136,14 @@ impl TransactionSigner for KeyPair {
         let mut witness = Witness::new();
         witness.push(sig.to_vec());
 
-        Ok(ClaimP2TRKeyPath(witness))
+        Ok((ScriptBuf::new(), witness))
     }
     fn claim_p2tr_script_path(
         &self,
         input: &TxInputP2TRScriptPath,
         sighash: secp256k1::Message,
         sighash_type: TapSighashType,
-    ) -> Result<ClaimP2TRScriptPath> {
+    ) -> Result<(ScriptBuf, Witness)> {
         // Tweak our public key with the Merkle root of the Script to be claimed.
         let me = Recipient::<TaprootScript>::from_keypair(self, input.recipient().merkle_root());
 
@@ -189,6 +173,6 @@ impl TransactionSigner for KeyPair {
         witness.push(input.witness());
         witness.push(control_block.serialize());
 
-        Ok(ClaimP2TRScriptPath(witness))
+        Ok((ScriptBuf::new(), witness))
     }
 }
