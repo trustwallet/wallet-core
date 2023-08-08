@@ -19,7 +19,7 @@ fn sighash_emtpy() {
         lock_time: Proto::mod_SigningInput::OneOflock_time::None,
     };
 
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(&signing);
 
     let hashes = output.sighashes;
     assert!(hashes.is_empty());
@@ -56,7 +56,7 @@ fn sighash_input_p2pkh_output_p2pkh() {
         .build()
         .unwrap();
 
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(&signing);
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);

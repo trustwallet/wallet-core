@@ -201,6 +201,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
     let tx = builder.sign_inputs(keypair)?;
 
     // Create Protobuf structures of inputs.
+    /*
     let mut proto_inputs = vec![];
     for input in &tx.inner.input {
         let txid: Vec<u8> = input
@@ -242,6 +243,9 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             spendingScript: Cow::default(),
         })
     }
+    */
+    let proto_inputs = vec![];
+    let proto_outputs = vec![];
 
     // Create Protobuf structure of the full transaction.
     let mut signing = SigningOutput {
@@ -252,7 +256,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
             outputs: proto_outputs,
         }),
         encoded: Cow::default(),
-        transaction_id: Cow::from(tx.inner.txid().to_string()),
+        transaction_id: Cow::from("".to_string()),
         error: tw_proto::Common::Proto::SigningError::OK,
         error_message: Cow::default(),
     };
