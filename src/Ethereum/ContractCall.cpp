@@ -49,6 +49,25 @@ static json getTupleValue(const ParamSet& paramSet, [[maybe_unused]] const strin
     return buildInputs(paramTuple->_params, typeInfo["components"]);
 }
 
+static vector<json> getArrayValueTuple(const ParamSet& paramSet, int idx, const json& typeInfo) {
+    shared_ptr<ParamBase> param;
+    paramSet.getParam(idx, param);
+
+    auto array = dynamic_pointer_cast<ParamArray>(param);
+    if (!array) {
+        return {};
+    }
+
+    std::vector<json> values;
+    for (const auto& tuple : array->getVal()) {
+        if (auto paramTuple = dynamic_pointer_cast<ParamTuple>(tuple); paramTuple) {
+            values.emplace_back(buildInputs(paramTuple->_params, typeInfo["components"]));
+        }
+    }
+
+    return values;
+}
+
 static string getValue(const ParamSet& paramSet, const string& type, int idx) {
     shared_ptr<ParamBase> param;
     paramSet.getParam(idx, param);
@@ -64,7 +83,9 @@ static json buildInputs(const ParamSet& paramSet, const json& registry) {
             {"name", info["name"]},
             {"type", type}
         };
-        if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
+        if (type == "tuple[]") {
+            input["components"] = getArrayValueTuple(paramSet, static_cast<int>(i), info);
+        } else if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
             input["value"] = json(getArrayValue(paramSet, type, static_cast<int>(i)));
         } else if (type == "tuple") {
             input["components"] = getTupleValue(paramSet, type, static_cast<int>(i), info);
