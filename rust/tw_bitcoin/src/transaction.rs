@@ -114,15 +114,24 @@ impl TransactionBuilder {
                         script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
                     }),
                 ),
-                TxInput::P2TRKeyPath(x) => {
-                    (
-                        SighashType::UseDefault,
-                        Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
-                            leaf_hash: Cow::default(),
-                            prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
-                        }),
-                    )
-                },
+                TxInput::P2TRKeyPath(_) => (
+                    SighashType::UseDefault,
+                    Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
+                        leaf_hash: Cow::default(),
+                        prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(
+                            Proto::mod_TxIn::mod_Taproot::AllPrevouts {
+                                all: self
+                                    .inputs
+                                    .iter()
+                                    .map(|input| Proto::mod_TxIn::mod_Taproot::Prevout {
+                                        value: input.ctx().value,
+                                        script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
+                                    })
+                                    .collect(),
+                            },
+                        ),
+                    }),
+                ),
                 TxInput::P2TRScriptPath(p2tr) => {
                     (
                         SighashType::UseDefault,
@@ -133,7 +142,22 @@ impl TransactionBuilder {
                             Proto::mod_TxIn::Taproot {
                                 // TODO: Can `to_vec()` be avoided?
                                 leaf_hash: leaf_hash.as_byte_array().to_vec().into(),
-                                prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
+                                prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(
+                                    Proto::mod_TxIn::mod_Taproot::AllPrevouts {
+                                        all: self
+                                            .inputs
+                                            .iter()
+                                            .map(|input| Proto::mod_TxIn::mod_Taproot::Prevout {
+                                                value: input.ctx().value,
+                                                script_pubkey: input
+                                                    .ctx()
+                                                    .script_pubkey
+                                                    .as_bytes()
+                                                    .into(),
+                                            })
+                                            .collect(),
+                                    },
+                                ),
                             }
                         }),
                     )

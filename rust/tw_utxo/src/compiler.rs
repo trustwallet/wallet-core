@@ -124,27 +124,25 @@ impl Compiler<StandardBitcoinContext> {
                     // issues related to `Prevouts::All(&[T])`.
                     let _owner;
 
-                    let prevouts: Prevouts<'_, TxOut> = match taproot.prevout {
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(one) => {
-
-                            Prevouts::One(
-                                index,
-                                TxOut {
-                                    value: one.value,
-                                    script_pubkey: ScriptBuf::from_bytes(one.script_pubkey.to_vec()),
-                                },
-                            )
-                        },
+                    // TODO: Avoid cloning.
+                    let prevouts: Prevouts<'_, TxOut> = match taproot.prevout.clone() {
+                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(one) => Prevouts::One(
+                            index,
+                            TxOut {
+                                value: one.value,
+                                script_pubkey: ScriptBuf::from_bytes(one.script_pubkey.to_vec()),
+                            },
+                        ),
                         Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(prevouts) => {
                             _owner = Some(
                                 prevouts
                                     .all
                                     .iter()
-                                    .map(|p| {
-                                        TxOut {
-                                            value: p.value,
-                                            script_pubkey: ScriptBuf::from_bytes(p.script_pubkey.to_vec()),
-                                        }
+                                    .map(|p| TxOut {
+                                        value: p.value,
+                                        script_pubkey: ScriptBuf::from_bytes(
+                                            p.script_pubkey.to_vec(),
+                                        ),
                                     })
                                     .collect::<Vec<TxOut>>(),
                             );
@@ -153,7 +151,7 @@ impl Compiler<StandardBitcoinContext> {
                         },
                         Proto::mod_TxIn::mod_Taproot::OneOfprevout::None => {
                             panic!();
-                        }
+                        },
                     };
 
                     dbg!(&prevouts);
