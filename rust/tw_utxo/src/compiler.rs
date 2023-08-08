@@ -1,5 +1,6 @@
 use crate::{Error, Result};
 use bitcoin::blockdata::locktime::absolute::{Height, LockTime, Time};
+use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
 use bitcoin::taproot::TapLeafHash;
@@ -172,78 +173,83 @@ impl Compiler<StandardBitcoinContext> {
         })
     }
 
-    fn compile_impl(input: ()) -> Result<Proto::SerializedTransaction<'static>> {
-        todo!()
-    }
-}
+    fn compile_impl(
+        proto: Proto::PreSerialization<'_>,
+    ) -> Result<Proto::SerializedTransaction<'static>> {
+        type ProtoLockTimeVariant = Proto::mod_PreSerialization::OneOflock_time;
 
-fn convert_proto_2_to_tx<'a>(proto: &Proto::PreSerialization) -> Result<Transaction> {
-    type ProtoLockTimeVariant = Proto::mod_PreSerialization::OneOflock_time;
+        let version = proto.version;
 
-    let version = proto.version;
-
-    // Retreive the lock time. If none is provided, the default lock time is
-    // used (immediately spendable).
-    let lock_time = match proto.lock_time {
-        ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
-            Height::from_consensus(block)
-                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        ),
-        ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
-            Time::from_consensus(secs)
-                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        ),
-        ProtoLockTimeVariant::None => LockTime::Blocks(
-            Height::from_consensus(0)
-                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        ),
-    };
-
-    let mut tx = Transaction {
-        version,
-        lock_time,
-        input: vec![],
-        output: vec![],
-    };
-
-    for txin in &proto.inputs {
-        let txid = Txid::from_slice(txin.txid.as_ref())
-            .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
-
-        let vout = txin.vout;
-
-        let sequence = Sequence::from_consensus(txin.sequence);
-
-        let script_sig = ScriptBuf::from_bytes(txin.script_sig.to_vec());
-
-        let witness = if let Some(witness) = txin.witness.as_ref() {
-            Witness::from_slice(
-                &witness
-                    .items
-                    .iter()
-                    .map(|s| s.as_ref())
-                    .collect::<Vec<&[u8]>>(),
-            )
-        } else {
-            Witness::new()
+        // Retreive the lock time. If none is provided, the default lock time is
+        // used (immediately spendable).
+        let lock_time = match proto.lock_time {
+            ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
+                Height::from_consensus(block)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+            ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
+                Time::from_consensus(secs)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+            ProtoLockTimeVariant::None => LockTime::Blocks(
+                Height::from_consensus(0)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
         };
 
-        tx.input.push(TxIn {
-            previous_output: OutPoint { txid, vout },
-            script_sig,
-            sequence,
-            witness,
-        });
-    }
+        let mut tx = Transaction {
+            version,
+            lock_time,
+            input: vec![],
+            output: vec![],
+        };
 
-    for txout in &proto.outputs {
-        tx.output.push(TxOut {
-            value: txout.value,
-            script_pubkey: ScriptBuf::from_bytes(txout.script_pubkey.to_vec()),
-        });
-    }
+        for txin in &proto.inputs {
+            let txid = Txid::from_slice(txin.txid.as_ref())
+                .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
 
-    Ok(tx)
+            let vout = txin.vout;
+
+            let sequence = Sequence::from_consensus(txin.sequence);
+
+            let script_sig = ScriptBuf::from_bytes(txin.script_sig.to_vec());
+
+            let witness = if let Some(witness) = txin.witness.as_ref() {
+                Witness::from_slice(
+                    &witness
+                        .items
+                        .iter()
+                        .map(|s| s.as_ref())
+                        .collect::<Vec<&[u8]>>(),
+                )
+            } else {
+                Witness::new()
+            };
+
+            tx.input.push(TxIn {
+                previous_output: OutPoint { txid, vout },
+                script_sig,
+                sequence,
+                witness,
+            });
+        }
+
+        for txout in &proto.outputs {
+            tx.output.push(TxOut {
+                value: txout.value,
+                script_pubkey: ScriptBuf::from_bytes(txout.script_pubkey.to_vec()),
+            });
+        }
+
+        // Encode the transaction.
+        let mut buffer = vec![];
+        tx.consensus_encode(&mut buffer)
+            .map_err(|_| Error::from(Proto::Error::Error_failed_encoding))?;
+
+        Ok(Proto::SerializedTransaction {
+            encoded: buffer.into(),
+        })
+    }
 }
 
 fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transaction> {
