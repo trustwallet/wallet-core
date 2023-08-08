@@ -43,9 +43,6 @@ message TxIn {
     // The index of the referenced output.
     uint32 vout = 2;
 
-    // The sequence number (TODO).
-    uint32 sequence = 3;
-
     oneof sighash_method {
         Legacy legacy = 4;
         Segwit segwit = 5;
