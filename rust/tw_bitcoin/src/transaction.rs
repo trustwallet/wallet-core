@@ -8,6 +8,9 @@ use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::{secp256k1, Address, TxIn, TxOut};
 use secp256k1::hashes::Hash;
+use std::borrow::Cow;
+use tw_misc::traits::ToBytesVec;
+use tw_proto::Utxo::Proto;
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
@@ -91,6 +94,52 @@ impl TransactionBuilder {
     where
         F: Fn(&TxInput, secp256k1::Message) -> Result<ClaimLocation>,
     {
+        let mut signing = Proto::SigningInput {
+            version: self.version,
+            // TODO
+            lock_time: Proto::mod_SigningInput::OneOflock_time::blocks(0),
+            ..Default::default()
+        };
+
+        for input in &self.inputs {
+            let sighash_method = match input {
+                TxInput::P2PKH(_) => {
+                    Proto::mod_TxIn::OneOfsighash_method::legacy(Proto::mod_TxIn::Legacy {
+                        script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
+                    })
+                },
+                TxInput::P2WPKH(_) => {
+                    Proto::mod_TxIn::OneOfsighash_method::segwit(Proto::mod_TxIn::Segwit {
+                        value: input.ctx().value,
+                        script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
+                    })
+                },
+                TxInput::P2TRKeyPath(_) => {
+                    Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
+                        leaf_hash: Cow::default(),
+                        prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
+                    })
+                },
+                TxInput::P2TRScriptPath(p2tr) => Proto::mod_TxIn::OneOfsighash_method::taproot({
+                    let leaf_hash =
+                        TapLeafHash::from_script(p2tr.witness(), LeafVersion::TapScript);
+
+                    Proto::mod_TxIn::Taproot {
+                        leaf_hash: leaf_hash.as_byte_array().to_vec().into(),
+                        prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
+                    }
+                }),
+            };
+
+            signing.inputs.push(Proto::TxIn {
+                txid: input.ctx().previous_output.txid.to_vec().into(),
+                vout: input.ctx().previous_output.vout,
+                sequence: input.ctx().sequence.to_consensus_u32(),
+                sighash: Proto::SighashType::All,
+                sighash_method,
+            })
+        }
+
         // Prepare boilerplate transaction for `bitcoin` crate.
         let mut tx = Transaction {
             version: self.version,
@@ -150,7 +199,10 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    println!("LEGACY SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+                    println!(
+                        "LEGACY SIGHASH: {}",
+                        tw_encoding::hex::encode(hash.as_byte_array(), false)
+                    );
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
@@ -173,7 +225,10 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    println!("SEGWIT SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+                    println!(
+                        "SEGWIT SIGHASH: {}",
+                        tw_encoding::hex::encode(hash.as_byte_array(), false)
+                    );
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
@@ -190,7 +245,10 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    println!("TAPROOT KEY-SPEND SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+                    println!(
+                        "TAPROOT KEY-SPEND SIGHASH: {}",
+                        tw_encoding::hex::encode(hash.as_byte_array(), false)
+                    );
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
@@ -211,7 +269,10 @@ impl TransactionBuilder {
                         )
                         .map_err(|_| Error::Todo)?;
 
-                    println!("TAPROOT SCRIPT-PATH SIGHASH: {}", tw_encoding::hex::encode(hash.as_byte_array(), false));
+                    println!(
+                        "TAPROOT SCRIPT-PATH SIGHASH: {}",
+                        tw_encoding::hex::encode(hash.as_byte_array(), false)
+                    );
 
                     let message = secp256k1::Message::from_slice(hash.as_ref())
                         .expect("Sighash must always convert to secp256k1::Message");
