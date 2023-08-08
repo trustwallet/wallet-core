@@ -144,7 +144,7 @@ message TxInClaim {
 
     // The witness items.
     message Witness {
-        bytes item = 1;
+        repeated bytes items = 1;
     }
 }
 
