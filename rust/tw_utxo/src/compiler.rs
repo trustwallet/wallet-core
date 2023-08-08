@@ -131,7 +131,9 @@ impl Compiler<StandardBitcoinContext> {
                             let txout = tx
                                 .output
                                 .get(index)
+                                // TODO: Can this even occure?
                                 .ok_or(Error::from(Proto::Error::Error_one_prevout_out_of_bound))?;
+
                             Prevouts::One(
                                 index,
                                 TxOut {

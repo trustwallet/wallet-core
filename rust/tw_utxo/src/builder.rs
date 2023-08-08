@@ -48,7 +48,6 @@ impl<'a> TxInBuilder<'a> {
             proto: Proto::TxIn {
                 txid: Default::default(),
                 vout: u32::MAX,
-                sequence: u32::MAX,
                 sighash: Proto::SighashType::All,
                 sighash_method: Proto::mod_TxIn::OneOfsighash_method::None,
             },
@@ -60,10 +59,6 @@ impl<'a> TxInBuilder<'a> {
     }
     pub fn vout(mut self, vout: u32) -> Self {
         self.proto.vout = vout;
-        self
-    }
-    pub fn sequence(mut self, sequence: u32) -> Self {
-        self.proto.sequence = sequence;
         self
     }
     pub fn sighash(mut self, sighash: Proto::SighashType) -> Self {

@@ -7,11 +7,11 @@ use bitcoin::consensus::Encodable;
 use bitcoin::sighash::{EcdsaSighashType, SighashCache, TapSighashType};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::transaction::Transaction;
-use bitcoin::{secp256k1, Address, TxIn, TxOut, ScriptBuf, Witness};
+use bitcoin::{secp256k1, Address, ScriptBuf, TxIn, TxOut, Witness};
 use secp256k1::hashes::Hash;
 use std::borrow::Cow;
 use tw_misc::traits::ToBytesVec;
-use tw_proto::Utxo::Proto;
+use tw_proto::Utxo::Proto::{self, SighashType};
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
 #[derive(Debug, Clone)]
@@ -78,14 +78,14 @@ impl TransactionBuilder {
         S: TransactionSigner,
     {
         self.sign_inputs_fn(|input, sighash| match input {
-            TxInput::P2PKH(p) => signer
-                .claim_p2pkh(p, sighash, EcdsaSighashType::All),
-            TxInput::P2WPKH(p) => signer
-                .claim_p2wpkh(p, sighash, EcdsaSighashType::All),
-            TxInput::P2TRKeyPath(p) => signer
-                .claim_p2tr_key_path(p, sighash, TapSighashType::Default),
-            TxInput::P2TRScriptPath(p) => signer
-                .claim_p2tr_script_path(p, sighash, TapSighashType::Default),
+            TxInput::P2PKH(p) => signer.claim_p2pkh(p, sighash, EcdsaSighashType::All),
+            TxInput::P2WPKH(p) => signer.claim_p2wpkh(p, sighash, EcdsaSighashType::All),
+            TxInput::P2TRKeyPath(p) => {
+                signer.claim_p2tr_key_path(p, sighash, TapSighashType::Default)
+            },
+            TxInput::P2TRScriptPath(p) => {
+                signer.claim_p2tr_script_path(p, sighash, TapSighashType::Default)
+            },
         })
     }
     pub fn sign_inputs_fn<F>(self, signer: F) -> Result<TransactionSigned>
@@ -100,44 +100,53 @@ impl TransactionBuilder {
         };
 
         for input in &self.inputs {
-            let sighash_method = match input {
-                TxInput::P2PKH(_) => {
+            let (sighash, sighash_method) = match input {
+                TxInput::P2PKH(_) => (
+                    SighashType::All,
                     Proto::mod_TxIn::OneOfsighash_method::legacy(Proto::mod_TxIn::Legacy {
                         script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
-                    })
-                },
-                TxInput::P2WPKH(_) => {
+                    }),
+                ),
+                TxInput::P2WPKH(_) => (
+                    SighashType::All,
                     Proto::mod_TxIn::OneOfsighash_method::segwit(Proto::mod_TxIn::Segwit {
                         value: input.ctx().value,
                         script_pubkey: input.ctx().script_pubkey.as_bytes().into(),
-                    })
-                },
+                    }),
+                ),
                 TxInput::P2TRKeyPath(_) => {
-                    Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
-                        leaf_hash: Cow::default(),
-                        prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
-                    })
+                    (
+                        SighashType::UseDefault,
+                        Proto::mod_TxIn::OneOfsighash_method::taproot(Proto::mod_TxIn::Taproot {
+                            leaf_hash: Cow::default(),
+                            prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
+                        }),
+                    )
                 },
-                TxInput::P2TRScriptPath(p2tr) => Proto::mod_TxIn::OneOfsighash_method::taproot({
-                    let leaf_hash =
-                        TapLeafHash::from_script(p2tr.witness(), LeafVersion::TapScript);
+                TxInput::P2TRScriptPath(p2tr) => {
+                    (
+                        SighashType::UseDefault,
+                        Proto::mod_TxIn::OneOfsighash_method::taproot({
+                            let leaf_hash =
+                                TapLeafHash::from_script(p2tr.witness(), LeafVersion::TapScript);
 
-                    Proto::mod_TxIn::Taproot {
-                        // TODO: Can `to_vec()` be avoided?
-                        leaf_hash: leaf_hash.as_byte_array().to_vec().into(),
-                        prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
-                    }
-                }),
+                            Proto::mod_TxIn::Taproot {
+                                // TODO: Can `to_vec()` be avoided?
+                                leaf_hash: leaf_hash.as_byte_array().to_vec().into(),
+                                prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
+                            }
+                        }),
+                    )
+                },
             };
 
             signing.inputs.push(Proto::TxIn {
                 // TODO: Can `to_vec()` be avoided?
                 txid: input.ctx().previous_output.txid.to_vec().into(),
                 vout: input.ctx().previous_output.vout,
-                sequence: input.ctx().sequence.to_consensus_u32(),
-                sighash: Proto::SighashType::All,
+                sighash,
                 sighash_method,
-            })
+            });
         }
 
         for output in &self.outputs {
@@ -152,7 +161,7 @@ impl TransactionBuilder {
         let sighashes = proto_output.sighashes;
 
         let mut claims = vec![];
-        for (index, (input, sighash)) in self.inputs.iter().zip(sighashes.iter()).enumerate() {
+        for (input, sighash) in self.inputs.iter().zip(sighashes.iter()) {
             let message = secp256k1::Message::from_slice(sighash)
                 .expect("Sighash must always convert to secp256k1::Message");
 
@@ -160,19 +169,18 @@ impl TransactionBuilder {
             let (script_sig, witness) = signer(input, message)?;
 
             // Prepare witness items.
-            let items = witness.into_iter().map(|item| Cow::Owned(item.to_vec())).collect();
+            let items = witness
+                .into_iter()
+                .map(|item| Cow::Owned(item.to_vec()))
+                .collect();
 
-            claims.push(
-                Proto::TxInClaim {
-                    txid: input.ctx().previous_output.txid.to_vec().into(),
-                    vout: input.ctx().previous_output.vout,
-                    sequence: input.ctx().sequence.to_consensus_u32(),
-                    script_sig: script_sig.to_bytes().into(),
-                    witness: Some(Proto::mod_TxInClaim::Witness {
-                        items,
-                    }),
-                }
-            )
+            claims.push(Proto::TxInClaim {
+                txid: input.ctx().previous_output.txid.to_vec().into(),
+                vout: input.ctx().previous_output.vout,
+                sequence: input.ctx().sequence.to_consensus_u32(),
+                script_sig: script_sig.to_bytes().into(),
+                witness: Some(Proto::mod_TxInClaim::Witness { items }),
+            })
         }
 
         let signing = Proto::PreSerialization {
@@ -185,7 +193,9 @@ impl TransactionBuilder {
         let proto_output = Compiler::<StandardBitcoinContext>::compile(&signing);
         assert_eq!(proto_output.error, Proto::Error::OK);
 
-        Ok(TransactionSigned { inner: proto_output.encoded.to_vec() })
+        Ok(TransactionSigned {
+            inner: proto_output.encoded.to_vec(),
+        })
     }
 }
 
