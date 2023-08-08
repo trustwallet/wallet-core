@@ -3,6 +3,7 @@ mod p2tr_key_path;
 mod p2tr_script_path;
 mod p2wpkh;
 
+use bitcoin::ScriptBuf;
 pub use p2pkh::*;
 pub use p2tr_key_path::*;
 pub use p2tr_script_path::*;
@@ -23,6 +24,14 @@ impl TxOutput {
             TxOutput::P2WPKH(p) => p.satoshis,
             TxOutput::P2TRKeyPath(p) => p.satoshis,
             TxOutput::P2TRScriptPath(p) => p.satoshis,
+        }
+    }
+    pub fn script_pubkey(&self) -> &ScriptBuf {
+        match self {
+            TxOutput::P2PKH(p) => &p.script_pubkey,
+            TxOutput::P2WPKH(p) => &p.script_pubkey,
+            TxOutput::P2TRKeyPath(p) => &p.script_pubkey,
+            TxOutput::P2TRScriptPath(p) => &p.script_pubkey,
         }
     }
 }
