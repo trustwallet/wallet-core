@@ -150,5 +150,9 @@ message TxInClaim {
 }
 
 message SerializedTransaction {
+    // error code, 0 is ok, other codes will be treated as errors
+    Error error = 1;
+
+    // The encoded transaction, ready to be submitted to the network.
     bytes encoded = 1;
 }

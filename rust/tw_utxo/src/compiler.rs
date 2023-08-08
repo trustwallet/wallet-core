@@ -40,12 +40,19 @@ impl Compiler<StandardBitcoinContext> {
                     sighashes: Default::default(),
                 })
             })
-            .expect("did not convert error value into PreSigningOutput")
+            .expect("did not convert error value")
     }
 
     #[inline]
-    pub fn compile(input: ()) -> Proto::SerializedTransaction<'static> {
-        todo!()
+    pub fn compile(proto: Proto::PreSerialization<'_>) -> Proto::SerializedTransaction<'static> {
+        Self::compile_impl(proto)
+            .or_else(|err| {
+                std::result::Result::<_, ()>::Ok(Proto::SerializedTransaction {
+                    error: err.into(),
+                    encoded: Default::default(),
+                })
+            })
+            .expect("did not convert error value")
     }
 
     fn preimage_hashes_impl(
@@ -207,13 +214,9 @@ impl Compiler<StandardBitcoinContext> {
         for txin in &proto.inputs {
             let txid = Txid::from_slice(txin.txid.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
-
             let vout = txin.vout;
-
             let sequence = Sequence::from_consensus(txin.sequence);
-
             let script_sig = ScriptBuf::from_bytes(txin.script_sig.to_vec());
-
             let witness = if let Some(witness) = txin.witness.as_ref() {
                 Witness::from_slice(
                     &witness
@@ -247,6 +250,7 @@ impl Compiler<StandardBitcoinContext> {
             .map_err(|_| Error::from(Proto::Error::Error_failed_encoding))?;
 
         Ok(Proto::SerializedTransaction {
+            error: Proto::Error::OK,
             encoded: buffer.into(),
         })
     }
