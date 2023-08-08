@@ -17,7 +17,6 @@ pub struct InputContext {
     // The condition for claiming the output.
     pub script_pubkey: ScriptBuf,
     pub sequence: Sequence,
-    // Witness data for Segwit/Taproot transactions.
 }
 
 impl InputContext {

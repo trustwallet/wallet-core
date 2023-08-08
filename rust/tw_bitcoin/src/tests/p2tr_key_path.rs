@@ -1,8 +1,9 @@
 use super::ONE_BTC;
 use crate::{
-    keypair_from_wif, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath, TxOutputP2TRKeyPath, tweak_pubkey,
+    keypair_from_wif, tweak_pubkey, TransactionBuilder, TxInputP2PKH, TxInputP2TRKeyPath,
+    TxOutputP2TRKeyPath,
 };
-use bitcoin::{Txid, PublicKey, PubkeyHash};
+use bitcoin::{PubkeyHash, PublicKey, Txid};
 use secp256k1::hashes::Hash;
 use std::str::FromStr;
 use tw_encoding::hex;
@@ -30,16 +31,31 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     let alice_pubkey = PublicKey::new(alice.public_key());
     let hash: PubkeyHash = alice_pubkey.clone().into();
-    println!(">> ALICE PUBKEY_HASH: {}", hex::encode(hash.as_byte_array(), false));
+    println!(
+        ">> ALICE PUBKEY_HASH: {}",
+        hex::encode(hash.as_byte_array(), false)
+    );
     let tweaked = tweak_pubkey(alice_pubkey.clone());
-    println!(">> ALICE TWEAKED: {}", hex::encode(tweaked.serialize(), false));
+    println!(
+        ">> ALICE TWEAKED: {}",
+        hex::encode(tweaked.serialize(), false)
+    );
 
     let bob_pubkey = PublicKey::new(bob.public_key());
-    println!(">> BOB PUBKEY: {}", hex::encode(bob_pubkey.to_bytes(), false));
+    println!(
+        ">> BOB PUBKEY: {}",
+        hex::encode(bob_pubkey.to_bytes(), false)
+    );
     let hash: PubkeyHash = bob_pubkey.into();
-    println!(">> BOB PUBKEY_HASH: {}", hex::encode(hash.as_byte_array(), false));
+    println!(
+        ">> BOB PUBKEY_HASH: {}",
+        hex::encode(hash.as_byte_array(), false)
+    );
     let tweaked = tweak_pubkey(bob_pubkey.clone());
-    println!(">> BOB TWEAKED: {}", hex::encode(tweaked.serialize(), false));
+    println!(
+        ">> BOB TWEAKED: {}",
+        hex::encode(tweaked.serialize(), false)
+    );
 
     // # First transaction: Alice spends the P2PKH coinbase input and creates
     // # a P2WPKH output for Bob.
