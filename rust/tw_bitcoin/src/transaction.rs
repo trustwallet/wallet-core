@@ -12,6 +12,7 @@ use secp256k1::hashes::Hash;
 use std::borrow::Cow;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::Utxo::Proto;
+use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
 #[derive(Debug, Clone)]
 pub struct TransactionBuilder {
@@ -126,6 +127,7 @@ impl TransactionBuilder {
                         TapLeafHash::from_script(p2tr.witness(), LeafVersion::TapScript);
 
                     Proto::mod_TxIn::Taproot {
+                        // TODO: Can `to_vec()` be avoided?
                         leaf_hash: leaf_hash.as_byte_array().to_vec().into(),
                         prevout: Proto::mod_TxIn::mod_Taproot::OneOfprevout::None, // interpreted as `All`.
                     }
@@ -133,12 +135,20 @@ impl TransactionBuilder {
             };
 
             signing.inputs.push(Proto::TxIn {
+                // TODO: Can `to_vec()` be avoided?
                 txid: input.ctx().previous_output.txid.to_vec().into(),
                 vout: input.ctx().previous_output.vout,
                 sequence: input.ctx().sequence.to_consensus_u32(),
                 sighash: Proto::SighashType::All,
                 sighash_method,
             })
+        }
+
+        for output in &self.outputs {
+            signing.outputs.push(Proto::TxOut {
+                value: output.satoshis(),
+                script_pubkey: output.script_pubkey().as_bytes().into(),
+            });
         }
 
         // Prepare boilerplate transaction for `bitcoin` crate.
@@ -159,6 +169,20 @@ impl TransactionBuilder {
         for output in self.outputs.iter().cloned() {
             let btc_txout = TxOut::from(output);
             tx.output.push(btc_txout);
+        }
+
+        let proto_output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+        assert_eq!(proto_output.error, Proto::Error::OK);
+        let sighashes = proto_output.sighashes;
+
+        let mut claims = vec![];
+        for (input, sighash) in self.inputs.iter().zip(sighashes.iter()) {
+            let message = secp256k1::Message::from_slice(sighash)
+                .expect("Sighash must always convert to secp256k1::Message");
+
+            // TODO: This should call the methods directly.
+            let claim = signer(input, message)?;
+            claims.push(claim);
         }
 
         // Satoshi output check
