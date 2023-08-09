@@ -69,7 +69,7 @@ impl LegacyPlanBuilder {
         BitcoinProto::TransactionPlan {
             amount: proto.amount as i64,
             available_amount: total_selected_amount as i64,
-            fee: 0,
+            fee: fee as i64,
             change: change as i64,
             utxos: selected,
             // Used for Zcash
