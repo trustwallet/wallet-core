@@ -57,54 +57,13 @@ impl LegacyPlanBuilder {
             todo!()
         }
 
-		let mut outputs = vec![];
+        let mut outputs = vec![];
 
-		let main_output = convert_address_to_script_pubkey(&proto.to_address);
-		outputs.push(main_output);
+        let main_output = convert_address_to_script_pubkey(&proto.to_address);
+        outputs.push(main_output);
 
-		let mut weight =
-			// version
-			4
-			// lock time
-			+ 4
-			// inputs/outputs VarInts
-			+ VarInt(selected.len() as u64).len()
-			+ VarInt(outputs.len() as u64).len();
-
-        let scale_factor = 1;
-		let mut witness_count = 0;
-
-        for input in &selected {
-            weight += scale_factor
-                * (
-                    // Outpoint
-                    32 + 4
-                // Sequence
-                + 4
-                + VarInt(input.script.as_ref().len() as u64).len()
-                + input.script.len()
-                );
-
-            if !input.spendingScript.is_empty() {
-				witness_count += 1;
-                weight += input.spendingScript.len();
-            }
-        }
-
-		for output in &outputs {
-			weight +=
-			// value
-			8
-			+ VarInt(output.len() as u64).len()
-			+ output.len();
-		}
-
-		let full_weigth = if witness_count == 0 {
-			weight * scale_factor
-		} else {
-			weight * scale_factor + selected.len() - witness_count + 2
-		};
-
+        let weight = calculate_weight(&selected, &outputs);
+        let fee = (weight + 3) / 4 * proto.byte_fee as u64;
         let change = total_selected_amount - proto.amount as u64;
 
         BitcoinProto::TransactionPlan {
@@ -124,6 +83,54 @@ impl LegacyPlanBuilder {
             preblockheight: 0,
         }
     }
+}
+
+fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBuf]) -> u64 {
+    let mut weight =
+		// version
+		4
+		// lock time
+		+ 4
+		// inputs/outputs VarInts
+		+ VarInt(selected.len() as u64).len()
+		+ VarInt(outputs.len() as u64).len();
+
+    // The factor by which non-witness data is multiplied by.
+    let scale_factor = 4;
+    let mut witness_count = 0;
+
+    for input in selected {
+        weight += scale_factor
+            * (
+                // Outpoint
+                32 + 4
+				// Sequence
+				+ 4
+				+ VarInt(input.script.as_ref().len() as u64).len()
+				+ input.script.len()
+            );
+
+        if !input.spendingScript.is_empty() {
+            witness_count += 1;
+            weight += input.spendingScript.len();
+        }
+    }
+
+    for output in outputs {
+        weight +=
+			// value
+			8
+			+ VarInt(output.len() as u64).len()
+			+ output.len();
+    }
+
+    let weight = if witness_count == 0 {
+        weight * scale_factor
+    } else {
+        weight * scale_factor + selected.len() - witness_count + 2
+    };
+
+    weight as u64
 }
 
 fn convert_address_to_script_pubkey(address: &str) -> ScriptBuf {
