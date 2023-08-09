@@ -13,6 +13,7 @@ pub mod recipient;
 mod tests;
 pub mod transaction;
 pub mod utils;
+pub mod planner_legacy;
 
 // Reexports
 pub use input::*;
