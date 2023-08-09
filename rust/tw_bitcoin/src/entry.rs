@@ -1,4 +1,5 @@
 use crate::Result;
+use bitcoin::address::NetworkChecked;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -7,7 +8,6 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::JsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
-use bitcoin::address::NetworkChecked;
 use tw_keypair::tw::{PrivateKey, PublicKey};
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
@@ -44,7 +44,11 @@ pub struct Address(bitcoin::address::Address<NetworkChecked>);
 impl Address {
     // TODO: Implement `FromStr`
     pub fn from_str(string: &str) -> Result<Self> {
-        let addr: bitcoin::address::Address<NetworkChecked> = string.parse::<bitcoin::address::Address<_>>().unwrap().require_network(bitcoin::Network::Bitcoin).unwrap();
+        let addr: bitcoin::address::Address<NetworkChecked> = string
+            .parse::<bitcoin::address::Address<_>>()
+            .unwrap()
+            .require_network(bitcoin::Network::Bitcoin)
+            .unwrap();
         Ok(Address(addr))
     }
 }
