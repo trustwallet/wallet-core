@@ -1,7 +1,7 @@
 use crate::Result;
 use std::fmt::Display;
 use bitcoin::key::TweakedPublicKey;
-use bitcoin::{ScriptBuf, WPubkeyHash};
+use bitcoin::{ScriptBuf, WPubkeyHash, VarInt};
 use secp256k1::XOnlyPublicKey;
 use secp256k1::hashes::Hash;
 use tw_coin_entry::coin_context::CoinContext;
@@ -15,7 +15,7 @@ use tw_coin_entry::modules::plan_builder::PlanBuilder;
 use bitcoin::address::{NetworkUnchecked, NetworkChecked, Payload, WitnessVersion};
 use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_proto::Utxo::Proto as UtxoProto;
-use tw_proto::Bitcoin::Proto as BitcoinProto;
+use tw_proto::Bitcoin::Proto::{self as BitcoinProto, UnspentTransaction};
 use std::borrow::Cow;
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
@@ -56,7 +56,7 @@ impl LegacyPlanBuilder {
 
         let mut total_selected_amount = 0;
         let mut remaining = proto.amount as u64;
-        let selected = inputs.into_iter().take_while(|input| {
+        let selected: Vec<UnspentTransaction<'_>> = inputs.into_iter().take_while(|input| {
             remaining = remaining.saturating_sub(input.amount as u64);
             total_selected_amount += input.amount as u64;
 
@@ -66,6 +66,26 @@ impl LegacyPlanBuilder {
         if remaining != 0 {
             // Return error
             todo!()
+        }
+
+        let mut weight = 0;
+        let mut witness_weight = 0;
+
+        let scale_factor = 1;
+        for input in &selected {
+            weight += scale_factor*(
+                // Outpoint
+                32 + 4
+                // Sequence
+                + 4
+                + VarInt(input.script.as_ref().len() as u64).len()
+                + input.script.len()
+            );
+
+            if !input.spendingScript.is_empty() {
+                witness_weight += 1;
+                weight += input.spendingScript.len();
+            }
         }
 
         let change = total_selected_amount - proto.amount as u64;
