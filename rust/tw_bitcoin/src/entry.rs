@@ -16,6 +16,7 @@ use bitcoin::address::{NetworkUnchecked, NetworkChecked, Payload, WitnessVersion
 use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_proto::Utxo::Proto as UtxoProto;
 use tw_proto::Bitcoin::Proto as BitcoinProto;
+use std::borrow::Cow;
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
@@ -48,69 +49,43 @@ pub struct BitcoinEntry;
 
 pub struct LegacyPlanBuilder;
 
-impl PlanBuilder for LegacyPlanBuilder {
-    type SigningInput<'a> = BitcoinProto::SigningInput<'a>;
-    type Plan = BitcoinProto::TransactionPlan<'static>;
+impl LegacyPlanBuilder {
+    fn plan<'a>(&self, _coin: &dyn CoinContext, proto: BitcoinProto::SigningInput<'a>) -> BitcoinProto::TransactionPlan<'a> {
+        let mut inputs = proto.utxo.to_vec();
+        inputs.sort_by(|a, b| a.amount.partial_cmp(&b.amount).unwrap());
 
-    fn plan(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::Plan {
-        let address = Address::from_str(input.to_address.as_ref()).unwrap().0;
+        let mut total_selected_amount = 0;
+        let mut remaining = proto.amount as u64;
+        let selected = inputs.into_iter().take_while(|input| {
+            remaining = remaining.saturating_sub(input.amount as u64);
+            total_selected_amount += input.amount as u64;
 
-        let script_pubkey = match address.address_type().unwrap() {
-            bitcoin::AddressType::P2pkh => {
-                if let Payload::PubkeyHash(ref hash) = address.payload {
-                    ScriptBuf::new_p2pkh(hash)
-                } else {
-                    panic!()
-                }
-            },
-            bitcoin::AddressType::P2sh => {
-                if let Payload::ScriptHash(ref hash) = address.payload {
-                    ScriptBuf::new_p2sh(hash)
-                } else {
-                    panic!()
-                }
-            },
-            bitcoin::AddressType::P2wpkh => {
-                if let Payload::WitnessProgram(program) = address.payload {
-                    // TODO
-                    assert_eq!(program.version(), WitnessVersion::V0);
-                    let slice = program.program().as_bytes();
-                    let wpubkey_hash = WPubkeyHash::from_slice(slice);
-                    ScriptBuf::new_v0_p2wpkh(wpubkey_hash)
-                } else {
-                    panic!()
-                }
-            },
-            bitcoin::AddressType::P2wsh => todo!(),
-            bitcoin::AddressType::P2tr => {
-                if let Payload::WitnessProgram(program) = address.payload {
-                    // TODO
-                    assert_eq!(program.version(), WitnessVersion::V1);
-                    let slice = program.program().as_bytes();
-                    let xonly = XOnlyPublicKey::from_slice(slice).unwrap();
-                    // TODO: another way to do this?
-                    let output_key = TweakedPublicKey::dangerous_assume_tweaked(xonly);
-                    ScriptBuf::new_v1_p2tr_tweaked(output_key)
-                } else {
-                    panic!()
-                }
-            },
-            _ => todo!()
-        };
+            remaining != 0
+        }).collect();
 
-        let plan = BitcoinProto::TransactionPlan {
-            amount: ,
-            available_amount: ,
-            fee: ,
-            change: ,
-            utxos: ,
-            branch_id: ,
-            error: ,
-            output_op_return: ,
-            
-        };
+        if remaining != 0 {
+            // Return error
+            todo!()
+        }
 
-        todo!()
+        let change = total_selected_amount - proto.amount as u64;
+
+        BitcoinProto::TransactionPlan {
+            amount: proto.amount as i64,
+            available_amount: total_selected_amount as i64,
+            fee: 0,
+            change: change as i64,
+            utxos: selected,
+            // Used for Zcash
+            branch_id: Cow::default(),
+            error: tw_proto::Common::Proto::SigningError::OK,
+            // Used for other chain(s).
+            output_op_return: Cow::default(),
+            // Used for other chain(s).
+            preblockhash: Cow::default(),
+            // Used for other chain(s).
+            preblockheight: 0,
+        }
     }
 }
 
