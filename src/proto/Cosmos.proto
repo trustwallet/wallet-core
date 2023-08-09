@@ -39,6 +39,19 @@ enum BroadcastMode {
     ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
 }
 
+message THORChainAsset {
+    string chain = 1;
+    string symbol = 2;
+    string ticker = 3;
+    bool synth = 4;
+}
+
+message THORChainCoin {
+    THORChainAsset asset = 1;
+    string amount = 2;
+    int64 decimals = 3;
+}
+
 // A transaction payload message
 message Message {
     // cosmos-sdk/MsgSend
@@ -151,6 +164,13 @@ message Message {
         bytes from_address = 1;
         bytes to_address = 2;
         repeated Amount amounts = 3;
+    }
+
+    // thorchain/MsgDeposit
+    message THORChainDeposit {
+        repeated THORChainCoin coins = 1;
+        string memo = 2;
+        bytes signer = 3;
     }
 
     // execute within wasm/MsgExecuteContract, used by Terra Classic
@@ -345,6 +365,7 @@ message Message {
         MsgVote msg_vote = 20;
         MsgStrideLiquidStakingStake msg_stride_liquid_staking_stake = 21;
         MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 22;
+        THORChainDeposit thorchain_deposit_message = 23;
     }
 }
 
