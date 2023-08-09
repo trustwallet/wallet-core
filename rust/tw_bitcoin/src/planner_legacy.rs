@@ -57,10 +57,23 @@ impl LegacyPlanBuilder {
             todo!()
         }
 
-        let mut weight = 0;
-        let mut witness_weight = 0;
+		let mut outputs = vec![];
+
+		let main_output = convert_address_to_script_pubkey(&proto.to_address);
+		outputs.push(main_output);
+
+		let mut weight =
+			// version
+			4
+			// lock time
+			+ 4
+			// inputs/outputs VarInts
+			+ VarInt(selected.len() as u64).len()
+			+ VarInt(outputs.len() as u64).len();
 
         let scale_factor = 1;
+		let mut witness_count = 0;
+
         for input in &selected {
             weight += scale_factor
                 * (
@@ -73,10 +86,24 @@ impl LegacyPlanBuilder {
                 );
 
             if !input.spendingScript.is_empty() {
-                witness_weight += 1;
+				witness_count += 1;
                 weight += input.spendingScript.len();
             }
         }
+
+		for output in &outputs {
+			weight +=
+			// value
+			8
+			+ VarInt(output.len() as u64).len()
+			+ output.len();
+		}
+
+		let full_weigth = if witness_count == 0 {
+			weight * scale_factor
+		} else {
+			weight * scale_factor + selected.len() - witness_count + 2
+		};
 
         let change = total_selected_amount - proto.amount as u64;
 
