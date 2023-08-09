@@ -8,12 +8,12 @@ pub mod input;
 pub mod nft;
 pub mod ordinals;
 pub mod output;
+pub mod planner_legacy;
 pub mod recipient;
 #[cfg(test)]
 mod tests;
 pub mod transaction;
 pub mod utils;
-pub mod planner_legacy;
 
 // Reexports
 pub use input::*;
