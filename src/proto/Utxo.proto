@@ -159,5 +159,5 @@ message SerializedTransaction {
     Error error = 1;
 
     // The encoded transaction, ready to be submitted to the network.
-    bytes encoded = 1;
+    bytes encoded = 2;
 }

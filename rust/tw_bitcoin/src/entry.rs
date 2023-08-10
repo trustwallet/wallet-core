@@ -10,6 +10,7 @@ use tw_coin_entry::modules::json_signer::JsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
+use tw_proto::BitcoinV2::Proto;
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
@@ -52,7 +53,7 @@ impl CoinAddress for Address {
 impl CoinEntry for BitcoinEntry {
     type AddressPrefix = NoPrefix;
     type Address = Address;
-    type SigningInput<'a> = PlaceHolderProto<'a>;
+    type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = PlaceHolderProto<'static>;
     type PreSigningOutput = PlaceHolderProto<'static>;
 
