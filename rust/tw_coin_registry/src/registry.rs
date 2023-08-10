@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::blockchain_type::BlockchainType;
 use crate::coin_type::CoinType;
 use crate::error::{RegistryError, RegistryResult};
-use crate::BlockchainType;
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use std::collections::HashMap;

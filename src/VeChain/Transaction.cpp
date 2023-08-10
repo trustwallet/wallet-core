@@ -12,38 +12,50 @@ namespace TW::VeChain {
 
 using RLP = Ethereum::RLP;
 
-Data encode(const Clause& clause) noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(clause.to.bytes));
-    append(encoded, RLP::encode(clause.value));
-    append(encoded, RLP::encode(clause.data));
-    return RLP::encodeList(encoded);
+EthereumRlp::Proto::RlpItem prepareClause(const Clause& clause) noexcept {
+    auto value = store(clause.value);
+
+    EthereumRlp::Proto::RlpItem item;
+    auto* rlpList = item.mutable_list();
+
+    rlpList->add_items()->set_data(clause.to.bytes.data(), clause.to.bytes.size());
+    rlpList->add_items()->set_number_u256(value.data(), value.size());
+    rlpList->add_items()->set_data(clause.data.data(), clause.data.size());
+
+    return item;
 }
 
-Data encodeClauses(std::vector<Clause> clauses) noexcept {
-    auto encoded = Data();
+EthereumRlp::Proto::RlpItem prepareClauses(const std::vector<Clause>& clauses) noexcept {
+    EthereumRlp::Proto::RlpItem item;
+
+    auto* rlpList = item.mutable_list();
     for (const auto& clause : clauses) {
-        auto encodedClause = encode(clause);
-        append(encoded, encodedClause);
+        *rlpList->add_items() = prepareClause(clause);
     }
-    return RLP::encodeList(encoded);
+
+    return item;
 }
 
 Data Transaction::encode() const noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(chainTag));
-    append(encoded, RLP::encode(blockRef));
-    append(encoded, RLP::encode(expiration));
-    append(encoded, encodeClauses(clauses));
-    append(encoded, RLP::encode(gasPriceCoef));
-    append(encoded, RLP::encode(gas));
-    append(encoded, RLP::encode(dependsOn));
-    append(encoded, RLP::encode(nonce));
-    append(encoded, RLP::encodeList(reserved));
+    EthereumRlp::Proto::EncodingInput input;
+    auto* rlpList = input.mutable_item()->mutable_list();
+
+    rlpList->add_items()->set_number_u64(chainTag);
+    rlpList->add_items()->set_number_u64(blockRef);
+    rlpList->add_items()->set_number_u64(expiration);
+    *rlpList->add_items() = prepareClauses(clauses);
+    rlpList->add_items()->set_number_u64(gasPriceCoef);
+    rlpList->add_items()->set_number_u64(gas);
+    rlpList->add_items()->set_data(dependsOn.data(), dependsOn.size());
+    rlpList->add_items()->set_number_u64(nonce);
+    // Put an empty list - reserved field for backward compatibility.
+    rlpList->add_items()->mutable_list();
+
     if (!signature.empty()) {
-        append(encoded, RLP::encode(signature));
+        rlpList->add_items()->set_data(signature.data(), signature.size());
     }
-    return RLP::encodeList(encoded);
+
+    return RLP::encode(input);
 }
 
 } // namespace TW::VeChain
