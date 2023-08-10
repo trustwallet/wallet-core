@@ -112,28 +112,45 @@ impl CoinEntry for BitcoinEntry {
 
         let mut txins: Vec<TxIn> = vec![];
         for (index, input) in proto.inputs.iter().enumerate() {
-            // TODO: Fix index.
-            let sig = bitcoin::ecdsa::Signature::from_slice(signatures[index].as_slice()).unwrap();
             // TODO:
             let pubkey = bitcoin::PublicKey::from_slice(&[]).unwrap();
 
-            match input.variant {
+            let (script_sig, witness) = match input.variant {
                 Proto::mod_Input::Variant::P2Pkh => {
-                    ScriptBuf::builder()
-                        .push_slice(sig.serialize())
-                        .push_key(&pubkey);
+                    let sig = bitcoin::ecdsa::Signature::from_slice(signatures[index].as_slice())
+                        .unwrap();
+
+                    (
+                        ScriptBuf::builder()
+                            .push_slice(sig.serialize())
+                            .push_key(&pubkey)
+                            .into_script(),
+                        Witness::new(),
+                    )
+                },
+                Proto::mod_Input::Variant::P2Wpkh => {
+                    let sig = bitcoin::ecdsa::Signature::from_slice(signatures[index].as_slice())
+                        .unwrap();
+
+                    (ScriptBuf::new(), {
+                        let mut w = Witness::new();
+                        w.push(sig.serialize());
+                        w.push(pubkey.to_bytes());
+                        w
+                    })
                 },
                 _ => panic!(),
-            }
+            };
 
             txins.push(TxIn {
                 previous_output: OutPoint {
                     txid: Txid::from_slice(input.txid.as_ref()).unwrap(),
                     vout: input.vout,
                 },
-                script_sig: ScriptBuf::new(),
+                script_sig,
+                // TODO:
                 sequence: Sequence::default(),
-                witness: Witness::new(),
+                witness,
             })
         }
 
