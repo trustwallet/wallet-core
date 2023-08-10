@@ -1,7 +1,8 @@
 use crate::Result;
+use bitcoin::absolute::{LockTime, Height, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::taproot::ControlBlock;
-use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, Txid, Witness};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, TxOut, Txid, Witness, Transaction};
 use secp256k1::hashes::Hash;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -183,6 +184,40 @@ impl CoinEntry for BitcoinEntry {
                 witness,
             })
         }
+
+        let mut txouts: Vec<TxOut> = vec![];
+        for output in proto.outputs {
+            let script_pubkey = match output.to_recipient {
+                Proto::mod_Output::OneOfto_recipient::script_pubkey(script) => {
+                    ScriptBuf::from_bytes(script.to_vec())
+                },
+                _ => todo!(),
+            };
+
+            txouts.push(TxOut {
+                value: output.amount as u64,
+                script_pubkey,
+            });
+        }
+
+        let lock_time = match proto.lock_time {
+            Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
+                LockTime::Blocks(Height::from_consensus(blocks).unwrap())
+            }
+            Proto::mod_SigningInput::OneOflock_time::seconds(blocks) => {
+                LockTime::Seconds(Time::from_consensus(blocks).unwrap())
+            }
+            Proto::mod_SigningInput::OneOflock_time::None => {
+                LockTime::Blocks(Height::from_consensus(0).unwrap())
+            }
+        };
+
+        let tx = Transaction {
+            version: 2,
+            lock_time,
+            input: txins,
+            output: txouts,
+        };
 
         todo!()
     }
