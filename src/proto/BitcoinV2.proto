@@ -18,9 +18,9 @@ message SigningInput {
 
 	SelectorType input_selector = 4;
 
-	repeated Transaction inputs = 5;
+	repeated Input inputs = 5;
 
-    repeated Transaction outputs = 6;
+    repeated Output outputs = 6;
 
 	uint64 sat_vb = 7;
 
@@ -30,10 +30,24 @@ message SigningInput {
 enum SelectorType {
 	UseAll = 0;
 	AutomaticAscending = 1;
-	AutomaticDescending = 3;
 }
 
-message Transaction {
+message Input {
+	bytes txid = 1;
+	uint64 amount = 2;
+	uint32 vout = 3;
+	Variant variant = 4;
+
+	enum Variant {
+		P2sh = 0;
+		P2Pkh = 1;
+		P2Wsh = 2;
+		P2Wpkh = 3;
+		P2Tr = 4;
+	}
+}
+
+message Output {
 	uint64 amount = 1;
 
 	oneof to_recipient {
@@ -50,7 +64,7 @@ message Builder {
 		// Pay-to-Public-Key-Hash
 		ToPublicKeyOrHash p2pkh = 3;
 		// Pay-to-Witness-Script-Hash, specify the hash.
-		bytes w2sh = 4;
+		bytes p2wsh = 4;
 		// Pay-to-Public-Key-Hash
 		ToPublicKeyOrHash wp2pkh = 6;
 		// Pay-to-Taproot-key-path (balance transfers), specify the public key.

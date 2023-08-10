@@ -1,5 +1,6 @@
 use crate::Result;
 use bitcoin::address::{NetworkChecked, Payload};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, Txid, Witness};
 use secp256k1::hashes::Hash;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -100,10 +101,42 @@ impl CoinEntry for BitcoinEntry {
     fn compile(
         &self,
         _coin: &dyn CoinContext,
-        _input: Self::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
+        proto: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
+        if proto.inputs.len() != signatures.len() {
+            // Return error.
+            todo!()
+        }
+
+        let mut txins: Vec<TxIn> = vec![];
+        for (index, input) in proto.inputs.iter().enumerate() {
+            // TODO: Fix index.
+            let sig = bitcoin::ecdsa::Signature::from_slice(signatures[index].as_slice()).unwrap();
+            // TODO:
+            let pubkey = bitcoin::PublicKey::from_slice(&[]).unwrap();
+
+            match input.variant {
+                Proto::mod_Input::Variant::P2Pkh => {
+                    ScriptBuf::builder()
+                        .push_slice(sig.serialize())
+                        .push_key(&pubkey);
+                },
+                _ => panic!(),
+            }
+
+            txins.push(TxIn {
+                previous_output: OutPoint {
+                    txid: Txid::from_slice(input.txid.as_ref()).unwrap(),
+                    vout: input.vout,
+                },
+                script_sig: ScriptBuf::new(),
+                sequence: Sequence::default(),
+                witness: Witness::new(),
+            })
+        }
+
         todo!()
     }
 
