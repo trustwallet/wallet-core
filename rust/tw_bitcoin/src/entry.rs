@@ -1,5 +1,6 @@
 use crate::Result;
-use bitcoin::address::NetworkChecked;
+use bitcoin::address::{NetworkChecked, Payload};
+use secp256k1::hashes::Hash;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -14,19 +15,9 @@ pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
 pub struct PlaceHolder;
 
-impl Display for PlaceHolder {
-    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
-    }
-}
+pub struct NoJsonSigner;
 
-impl CoinAddress for PlaceHolder {
-    fn data(&self) -> tw_memory::Data {
-        todo!()
-    }
-}
-
-impl JsonSigner for PlaceHolder {
+impl JsonSigner for NoJsonSigner {
     fn sign_json(
         &self,
         _coin: &dyn tw_coin_entry::coin_context::CoinContext,
@@ -41,32 +32,32 @@ pub struct BitcoinEntry;
 
 pub struct Address(bitcoin::address::Address<NetworkChecked>);
 
-impl Address {
-    // TODO: Implement `FromStr`
-    pub fn from_str(string: &str) -> Result<Self> {
-        let addr: bitcoin::address::Address<NetworkChecked> = string
-            .parse::<bitcoin::address::Address<_>>()
-            .unwrap()
-            .require_network(bitcoin::Network::Bitcoin)
-            .unwrap();
-        Ok(Address(addr))
+impl Display for Address {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
-#[test]
-fn address() {
-    let x = Address::from_str("bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff");
+impl CoinAddress for Address {
+    fn data(&self) -> tw_memory::Data {
+        match &self.0.payload {
+            Payload::PubkeyHash(hash) => hash.to_byte_array().into(),
+            Payload::ScriptHash(hash) => hash.to_byte_array().into(),
+            Payload::WitnessProgram(wp) => wp.program().as_bytes().into(),
+            _ => todo!() // Payload is non-exhaustive
+        }
+    }
 }
 
 impl CoinEntry for BitcoinEntry {
     type AddressPrefix = NoPrefix;
-    type Address = PlaceHolder;
+    type Address = Address;
     type SigningInput<'a> = PlaceHolderProto<'a>;
     type SigningOutput = PlaceHolderProto<'static>;
     type PreSigningOutput = PlaceHolderProto<'static>;
 
     // Optional modules:
-    type JsonSigner = PlaceHolder;
+    type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
 
     #[inline]
