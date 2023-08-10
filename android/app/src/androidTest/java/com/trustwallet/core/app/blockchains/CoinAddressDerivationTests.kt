@@ -145,6 +145,6 @@ class CoinAddressDerivationTests {
         AKASH -> assertEquals("akash142j9u5eaduzd7faumygud6ruhdwme98qal870f", address)
         NOBLE -> assertEquals("noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa", address)
         ROOTSTOCK -> assertEquals("0xA2D7065F94F838a3aB9C04D67B312056846424Df", address)
-        MAYACHAIN -> assertEquals("maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65", address)
+        MAYACHAIN -> assertEquals("maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2knf5vy", address)
     }
 }
