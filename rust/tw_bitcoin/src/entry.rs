@@ -139,6 +139,15 @@ impl CoinEntry for BitcoinEntry {
                         w
                     })
                 },
+                Proto::mod_Input::Variant::P2TrKeyPath => {
+                    let sig = bitcoin::taproot::Signature::from_slice(signatures[index].as_slice()).unwrap();
+
+                    (ScriptBuf::new(), {
+                        let mut w = Witness::new();
+                        w.push(sig.to_vec());
+                        w
+                    })
+                }
                 _ => panic!(),
             };
 
