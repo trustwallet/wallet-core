@@ -38,7 +38,7 @@ message Input {
 	uint32 vout = 3;
 
 	oneof variant {
-		Variant build = 4;
+		InputVariant builder = 4;
 		ScriptWitness custom = 5;
 		TaprootScriptPath taproot_script = 6;
 	}
@@ -53,7 +53,7 @@ message Input {
 		bytes control_block = 6;
 	}
 
-	enum Variant {
+	enum InputVariant {
 		P2sh = 0;
 		P2Pkh = 1;
 		P2Wsh = 2;

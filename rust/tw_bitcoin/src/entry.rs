@@ -118,8 +118,8 @@ impl CoinEntry for BitcoinEntry {
             let sig_slice = &signatures[index];
 
             let (script_sig, witness) = match &input.variant {
-                Proto::mod_Input::OneOfvariant::build(variant) => match variant {
-                    Proto::mod_Input::Variant::P2Pkh => {
+                Proto::mod_Input::OneOfvariant::builder(variant) => match variant {
+                    Proto::mod_Input::InputVariant::P2Pkh => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
                         (
@@ -130,7 +130,7 @@ impl CoinEntry for BitcoinEntry {
                             Witness::new(),
                         )
                     },
-                    Proto::mod_Input::Variant::P2Wpkh => {
+                    Proto::mod_Input::InputVariant::P2Wpkh => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
                         (ScriptBuf::new(), {
@@ -140,7 +140,7 @@ impl CoinEntry for BitcoinEntry {
                             w
                         })
                     },
-                    Proto::mod_Input::Variant::P2TrKeyPath => {
+                    Proto::mod_Input::InputVariant::P2TrKeyPath => {
                         let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
 
                         (ScriptBuf::new(), {
