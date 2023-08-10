@@ -59,12 +59,18 @@ impl LegacyPlanBuilder {
 
         let mut outputs = vec![];
 
-        let main_output = convert_address_to_script_pubkey(&proto.to_address);
-        outputs.push(main_output);
+        // Primary send output (to target destination)
+        let send_output = convert_address_to_script_pubkey(&proto.to_address);
+        outputs.push(send_output);
+
+        // Change output (to oneself)
+        let change_output = convert_address_to_script_pubkey(&proto.change_address);
+        outputs.push(change_output);
+
+        let change = total_selected_amount - proto.amount as u64;
 
         let weight = calculate_weight(&selected, &outputs);
         let fee = (weight + 3) / 4 * proto.byte_fee as u64;
-        let change = total_selected_amount - proto.amount as u64;
 
         BitcoinProto::TransactionPlan {
             amount: proto.amount as i64,
@@ -86,6 +92,8 @@ impl LegacyPlanBuilder {
 }
 
 fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBuf]) -> u64 {
+    const SCALE_FACTOR: usize = 4;
+
     let mut weight =
 		// version
 		4
@@ -96,11 +104,10 @@ fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBu
 		+ VarInt(outputs.len() as u64).len();
 
     // The factor by which non-witness data is multiplied by.
-    let scale_factor = 4;
     let mut witness_count = 0;
 
     for input in selected {
-        weight += scale_factor
+        weight += SCALE_FACTOR
             * (
                 // Outpoint
                 32 + 4
@@ -125,15 +132,16 @@ fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBu
     }
 
     let weight = if witness_count == 0 {
-        weight * scale_factor
+        weight * SCALE_FACTOR
     } else {
-        weight * scale_factor + selected.len() - witness_count + 2
+        weight * SCALE_FACTOR + selected.len() - witness_count + 2
     };
 
     weight as u64
 }
 
 fn convert_address_to_script_pubkey(address: &str) -> ScriptBuf {
+    // Address type from `bitcoin` crate.
     let address = address
         .parse::<Address<_>>()
         .unwrap()
