@@ -37,13 +37,15 @@ message Input {
 	uint64 amount = 2;
 	uint32 vout = 3;
 	Variant variant = 4;
+	bytes leaf_hash = 5;
 
 	enum Variant {
 		P2sh = 0;
 		P2Pkh = 1;
 		P2Wsh = 2;
 		P2Wpkh = 3;
-		P2Tr = 4;
+		P2TrKeyPath = 4;
+		P2TrScriptPath = 5;
 	}
 }
 
