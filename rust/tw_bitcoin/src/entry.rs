@@ -117,50 +117,59 @@ impl CoinEntry for BitcoinEntry {
             let pubkey = bitcoin::PublicKey::from_slice(&[]).unwrap();
             let sig_slice = &signatures[index];
 
-            let (script_sig, witness) = match input.variant {
-                Proto::mod_Input::Variant::P2Pkh => {
-                    let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
+            let (script_sig, witness) = match &input.variant {
+                Proto::mod_Input::OneOfvariant::build(variant) => match variant {
+                    Proto::mod_Input::Variant::P2Pkh => {
+                        let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
-                    (
-                        ScriptBuf::builder()
-                            .push_slice(sig.serialize())
-                            .push_key(&pubkey)
-                            .into_script(),
-                        Witness::new(),
-                    )
-                },
-                Proto::mod_Input::Variant::P2Wpkh => {
-                    let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
+                        (
+                            ScriptBuf::builder()
+                                .push_slice(sig.serialize())
+                                .push_key(&pubkey)
+                                .into_script(),
+                            Witness::new(),
+                        )
+                    },
+                    Proto::mod_Input::Variant::P2Wpkh => {
+                        let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
-                    (ScriptBuf::new(), {
-                        let mut w = Witness::new();
-                        w.push(sig.serialize());
-                        w.push(pubkey.to_bytes());
-                        w
-                    })
+                        (ScriptBuf::new(), {
+                            let mut w = Witness::new();
+                            w.push(sig.serialize());
+                            w.push(pubkey.to_bytes());
+                            w
+                        })
+                    },
+                    Proto::mod_Input::Variant::P2TrKeyPath => {
+                        let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
+
+                        (ScriptBuf::new(), {
+                            let mut w = Witness::new();
+                            w.push(sig.to_vec());
+                            w
+                        })
+                    },
+                    _ => panic!(),
                 },
-                Proto::mod_Input::Variant::P2TrKeyPath => {
+                Proto::mod_Input::OneOfvariant::taproot_script(tr) => {
                     let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
+                    let control_block = ControlBlock::decode(tr.control_block.as_ref()).unwrap();
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(sig.to_vec());
-                        w
-                    })
-                },
-                Proto::mod_Input::Variant::P2TrScriptPath => {
-                    let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
-                    let control_block = ControlBlock::decode(input.control_block.as_ref()).unwrap();
-
-                    (ScriptBuf::new(), {
-                        let mut w = Witness::new();
-                        w.push(sig.to_vec());
-                        w.push(input.payload.as_ref());
+                        w.push(tr.payload.as_ref());
                         w.push(control_block.serialize());
                         w
                     })
                 },
-                _ => panic!(),
+                Proto::mod_Input::OneOfvariant::custom(custom) => (
+                    ScriptBuf::from_bytes(custom.script_sig.to_vec()),
+                    Witness::from_slice(&custom.witness_items),
+                ),
+                Proto::mod_Input::OneOfvariant::None => {
+                    todo!()
+                },
             };
 
             txins.push(TxIn {
