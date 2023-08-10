@@ -37,7 +37,10 @@ message Input {
 	uint64 amount = 2;
 	uint32 vout = 3;
 	Variant variant = 4;
-	bytes leaf_hash = 5;
+
+	// Only used if Variant::P2TrScriptPath.
+	bytes payload = 5;
+	bytes control_block = 6;
 
 	enum Variant {
 		P2sh = 0;
