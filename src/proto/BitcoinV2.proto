@@ -36,11 +36,22 @@ message Input {
 	bytes txid = 1;
 	uint64 amount = 2;
 	uint32 vout = 3;
-	Variant variant = 4;
 
-	// Only used if Variant::P2TrScriptPath.
-	bytes payload = 5;
-	bytes control_block = 6;
+	oneof variant {
+		Variant build = 4;
+		ScriptWitness custom = 5;
+		TaprootScriptPath taproot_script = 6;
+	}
+
+	message ScriptWitness {
+		bytes script_sig = 1;
+		repeated bytes witness_items = 2;
+	}
+
+	message TaprootScriptPath {
+		bytes payload = 5;
+		bytes control_block = 6;
+	}
 
 	enum Variant {
 		P2sh = 0;
@@ -48,7 +59,6 @@ message Input {
 		P2Wsh = 2;
 		P2Wpkh = 3;
 		P2TrKeyPath = 4;
-		P2TrScriptPath = 5;
 	}
 }
 
