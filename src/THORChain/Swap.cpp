@@ -389,7 +389,7 @@ SwapBundled SwapBuilder::buildRune(const uint256_t& amount, const std::string& m
     coin->set_decimals(0);
 
     auto* asset = coin->mutable_asset();
-    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain())));
+    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain()), mfromChain));
     asset->set_symbol(mFromAsset.symbol());
     asset->set_ticker(mFromAsset.symbol());
 

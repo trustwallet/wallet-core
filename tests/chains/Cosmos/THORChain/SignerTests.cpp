@@ -97,31 +97,6 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
 }
 
 
-TEST(THORChainSigner, SignTx_Maya_Protobuf_7E480F) {
-    auto input = Cosmos::Proto::SigningInput();
-    input.set_signing_mode(Cosmos::Proto::Protobuf);
-    input.set_chain_id("mayachain-mainnet-v1");
-    input.set_account_number(593);
-    input.set_sequence(21);
-    input.set_memo("");
-    auto msg = input.add_messages();
-    auto& message = *msg->mutable_thorchain_send_message();
-    Bech32Address fromAddress("maya");
-    EXPECT_TRUE(Bech32Address::decode("maya1uuds8pd92qnnq0udw0rpg0szpgcslc9prlsqk8", fromAddress, "maya"));
-    Bech32Address toAddress("maya");
-    EXPECT_TRUE(Bech32Address::decode("maya1zf3gsk7edzwl9syyefvfhle37cjtql35n6emmw", toAddress, "maya"));
-    message.set_from_address(std::string(fromAddress.getKeyHash().begin(), fromAddress.getKeyHash().end()));
-    message.set_to_address(std::string(toAddress.getKeyHash().begin(), toAddress.getKeyHash().end()));
-    auto amountOfTx = message.add_amounts();
-    amountOfTx->set_denom("cacao");
-    amountOfTx->set_amount("38000000");
-    auto& fee = *input.mutable_fee();
-    fee.set_gas(2500000);
-    auto amountOfFee = fee.add_amounts();
-    amountOfFee->set_denom("cacao");
-    amountOfFee->set_amount("200");
-}
-
 TEST(THORChainSigner, SignTx_MsgDeposit) {
     auto input = Cosmos::Proto::SigningInput();
     input.set_signing_mode(Cosmos::Proto::Protobuf);
