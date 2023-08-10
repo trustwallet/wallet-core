@@ -14,7 +14,7 @@
 
 
 TEST(TWOpBNBtestnetCoinType, TWCoinType) {
-    const auto coin = TWCoinTypeOpBNBtestnet;
+    const auto coin = TWCoinTypeOpBNB;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
@@ -25,8 +25,8 @@ TEST(TWOpBNBtestnetCoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "opbnb");
-    assertStringsEqual(name, "OpBNB testnet");
-    assertStringsEqual(symbol, "tBNB");
+    assertStringsEqual(name, "OpBNB");
+    assertStringsEqual(symbol, "BNB");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
