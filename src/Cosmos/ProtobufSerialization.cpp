@@ -353,6 +353,26 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 any.PackFrom(liquid_staking_msg, ProtobufAnyNamespacePrefix);
                 return any;
         }
+        case Proto::Message::kThorchainDepositMessage: {
+                assert(msg.has_thorchain_deposit_message());
+                const auto& deposit = msg.thorchain_deposit_message();
+                types::MsgDeposit msgDeposit;
+                msgDeposit.set_memo(deposit.memo());
+                msgDeposit.set_signer(deposit.signer());
+                for (auto i = 0; i < deposit.coins_size(); ++i) {
+                    auto* coin = msgDeposit.add_coins();
+                    auto originalAsset = deposit.coins(i).asset();
+                    coin->mutable_asset()->set_chain(originalAsset.chain());
+                    coin->mutable_asset()->set_symbol(originalAsset.symbol());
+                    coin->mutable_asset()->set_ticker(originalAsset.ticker());
+                    coin->mutable_asset()->set_synth(originalAsset.synth());
+                    coin->set_amount(deposit.coins(i).amount());
+                    coin->set_decimals(deposit.coins(i).decimals());
+                }
+                any.PackFrom(msgDeposit, ProtobufAnyNamespacePrefix);
+
+                return any;
+        }
 
         default:
             throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));

@@ -95,6 +95,83 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
     EXPECT_EQ(output.error_message(), "");
 }
 
+TEST(THORChainSigner, SignTx_MsgDeposit) {
+    auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id("thorchain-mainnet-v1");
+    input.set_account_number(75247);
+    input.set_sequence(7);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_thorchain_deposit_message();
+
+    message.set_memo("=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5::tr:0");
+    Bech32Address signerAddress("thor");
+    EXPECT_TRUE(Bech32Address::decode("thor14j5lwl8ulexrqp5x39kmkctv2937694z3jn2dz", signerAddress, "thor"));
+    message.set_signer(std::string(signerAddress.getKeyHash().begin(), signerAddress.getKeyHash().end()));
+
+    auto& coins = *message.add_coins();
+    coins.set_amount("150000000");
+    coins.set_decimals(0);
+
+    auto& asset = *coins.mutable_asset();
+    asset.set_chain("THOR");
+    asset.set_symbol("RUNE");
+    asset.set_ticker("RUNE");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(50000000);
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+
+    assertJSONEqual(json, R"(
+        {
+            "accountNumber": "75247",
+            "chainId": "thorchain-mainnet-v1",
+            "fee": {
+                "gas": "50000000"
+            },
+            "messages": [
+                {
+                    "thorchainDepositMessage": {
+                        "coins": [
+                            {
+                                "amount": "150000000",
+                                "asset": {
+                                    "chain": "THOR",
+                                    "symbol": "RUNE",
+                                    "ticker": "RUNE"
+                                }
+                            }
+                        ],
+                        "memo": "=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5::tr:0",
+                        "signer": "rKn3fPz+TDAGholtu2FsUWPtFqI="
+                    }
+                }
+            ],
+            "sequence": "7",
+            "signingMode": "Protobuf"
+        }
+    )");
+
+    auto privateKey = parse_hex("2659e41d54ebd449d68b9d58510d8eeeb837ee00d6ecc760b7a731238d8c3113");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = THORChain::Signer::sign(input);
+
+    // https://viewblock.io/thorchain/tx/0162213E7F9D85965B1C57FA3BF9603C655B542F358318303A7B00661AE42510
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CoUBCoIB..hiw="}' https://<thornode>/cosmos/tx/v1beta1/txs
+    assertJSONEqual(output.serialized(), R"(
+        {
+            "mode": "BROADCAST_MODE_BLOCK",
+            "tx_bytes": "CoUBCoIBChEvdHlwZXMuTXNnRGVwb3NpdBJtCh8KEgoEVEhPUhIEUlVORRoEUlVORRIJMTUwMDAwMDAwEjQ9OkRPR0UuRE9HRTpETmhSRjFoOEo0Wm5CMWJ4cDlrYXFoVkxZZXRreDFuU0o1Ojp0cjowGhSsqfd8/P5MMAaGiW27YWxRY+0WohJZClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDuZVDlIFW3DtSEBa6aUBJ0DrQHlQ+2g7lIt5ekAM25SkSBAoCCAEYBxIFEIDh6xcaQAxKMZMKbM8gdLwn23GDXfbwyCkgqWzFMFlnrqFm0u54F8T32wmsoJQAdoLIyOskYmi7nb1rhryfabeeULwRhiw="
+        }
+    )");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error_message(), "");
+}
+
 TEST(THORChainSigner, SignTx_Json_Deprecated) {
     auto input = Cosmos::Proto::SigningInput();
     input.set_memo("memo1234");
