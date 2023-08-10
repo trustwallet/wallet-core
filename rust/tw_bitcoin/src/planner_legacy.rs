@@ -1,5 +1,5 @@
-use crate::TransactionBuilder;
 use crate::entry::{BitcoinEntry, PlaceHolderProto};
+use crate::TransactionBuilder;
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{Payload, WitnessVersion};
 use bitcoin::key::TweakedPublicKey;
@@ -21,7 +21,7 @@ impl BitcoinEntry {
     fn compile_legacy<'a>(
         &self,
         coin: &dyn CoinContext,
-        mut proto: BitcoinProto::SigningInput::<'a>,
+        mut proto: BitcoinProto::SigningInput<'a>,
     ) -> PlaceHolderProto<'static> {
         let proto_amount = proto.amount as u64;
 
@@ -49,7 +49,8 @@ impl BitcoinEntry {
         });
 
         // Create inputs for the `bitcoin` crate.
-        let _txin: Vec<TxIn> = plan.utxos
+        let _txin: Vec<TxIn> = plan
+            .utxos
             .iter()
             .map(|input| {
                 let out_point = input.out_point.as_ref().unwrap();
