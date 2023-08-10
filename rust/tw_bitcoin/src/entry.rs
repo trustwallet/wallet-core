@@ -1,5 +1,6 @@
 use crate::Result;
 use bitcoin::address::{NetworkChecked, Payload};
+use bitcoin::taproot::ControlBlock;
 use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, Txid, Witness};
 use secp256k1::hashes::Hash;
 use std::fmt::Display;
@@ -114,11 +115,11 @@ impl CoinEntry for BitcoinEntry {
         for (index, input) in proto.inputs.iter().enumerate() {
             // TODO:
             let pubkey = bitcoin::PublicKey::from_slice(&[]).unwrap();
+            let sig_slice = &signatures[index];
 
             let (script_sig, witness) = match input.variant {
                 Proto::mod_Input::Variant::P2Pkh => {
-                    let sig = bitcoin::ecdsa::Signature::from_slice(signatures[index].as_slice())
-                        .unwrap();
+                    let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
                     (
                         ScriptBuf::builder()
@@ -129,8 +130,7 @@ impl CoinEntry for BitcoinEntry {
                     )
                 },
                 Proto::mod_Input::Variant::P2Wpkh => {
-                    let sig = bitcoin::ecdsa::Signature::from_slice(signatures[index].as_slice())
-                        .unwrap();
+                    let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
@@ -140,14 +140,26 @@ impl CoinEntry for BitcoinEntry {
                     })
                 },
                 Proto::mod_Input::Variant::P2TrKeyPath => {
-                    let sig = bitcoin::taproot::Signature::from_slice(signatures[index].as_slice()).unwrap();
+                    let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(sig.to_vec());
                         w
                     })
-                }
+                },
+                Proto::mod_Input::Variant::P2TrScriptPath => {
+                    let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
+                    let control_block = ControlBlock::decode(input.control_block.as_ref()).unwrap();
+
+                    (ScriptBuf::new(), {
+                        let mut w = Witness::new();
+                        w.push(sig.to_vec());
+                        w.push(input.payload.as_ref());
+                        w.push(control_block.serialize());
+                        w
+                    })
+                },
                 _ => panic!(),
             };
 
