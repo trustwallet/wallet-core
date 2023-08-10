@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package TW.EthereumAbi.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+//// Single types
+
+enum NumberType {
+  U8 = 0;
+  U16 = 1;
+  U32 = 2;
+  U64 = 3;
+  U256 = 4;
+  // Gap in numbering is intentional.
+  I8 = 7;
+  I16 = 8;
+  I32 = 9;
+  I64 = 10;
+  I256 = 11;
+}
+
+// Generic number parameter for all other bit sizes, like UInt24, 40, 48, ... 248.
+// For predefined sizes (8, 16, 32, 64, 256) use `NumberType`.
+message UIntNType {
+  uint32 bits = 1;
+}
+
+// Generic number parameter for all other bit sizes, like Int24, 40, 48, ... 248.
+// For predefined sizes (8, 16, 32, 64, 256) use the `NumberType`.
+// Stored on 256 bits.
+message IntNType {
+  uint32 bits = 1;
+}
+
+// Generic number parameter for all other bit sizes, like UInt24, 40, 48, ... 248.
+// For predefined sizes (8, 16, 32, 64, 256) use a special type like `AbiValue::number_u16`.
+// Stored on 256 bits.
+message NumberNValue {
+  uint32 bits = 1;
+  // Serialized big endian.
+  bytes value = 2;
+}
+
+message BoolType {}
+
+message ByteArrayType {}
+
+message ByteArrayFixType {
+  uint64 size = 1;
+}
+
+message ByteArrayFixValue {
+  uint64 size = 1;
+  bytes value = 2;
+}
+
+message StringType {}
+
+message AddressType {}
+
+//// Complex types (set or array of tokens).
+
+message ArrayType {
+  AbiType element_type = 1;
+}
+
+message ArrayValue {
+  repeated AbiValue values = 1;
+}
+
+message TupleType {
+  repeated AbiType params = 1;
+}
+
+message TupleValue {
+  repeated AbiValue params = 1;
+}
+
+//// An enumeration of possible tokens.
+
+message AbiType {
+  oneof token {
+    // Simple types.
+    BoolType boolean = 1;
+    NumberType number = 2;
+    UIntNType number_uint_n = 3;
+    IntNType number_int_n = 4;
+    StringType string_type = 5;
+    AddressType address = 6;
+    ByteArrayType byte_array = 7;
+    ByteArrayFixType byte_array_fix = 8;
+
+    // Nested types. Gap in field numbering is intentional.
+    ArrayType array = 11;
+    TupleType tuple = 12;
+  }
+}
+
+message AbiValue {
+  oneof token {
+    // Simple values.
+    bool boolean = 1;
+    uint32 number_u8 = 2;
+    uint32 number_u16 = 3;
+    uint32 number_u32 = 4;
+    uint64 number_u64 = 5;
+    bytes number_u256 = 6;
+    // Gap in field numbering is intentional.
+    NumberNValue number_uint = 9;
+    int32 number_i8 = 10;
+    int32 number_i16 = 11;
+    int32 number_i32 = 12;
+    int64 number_i64 = 13;
+    bytes number_i256 = 14;
+    // Gap in field numbering is intentional.
+    NumberNValue number_int = 17;
+    string string_value = 18;
+    string address = 19;
+    bytes byte_array = 20;
+    ByteArrayFixValue byte_array_fix = 21;
+
+    // Nested values. Gap in field numbering is intentional.
+    ArrayValue array = 24;
+    TupleValue tuple = 25;
+  }
+}
+
+// Decode function input or output from Eth ABI binary.
+message DecodingInput {
+  repeated AbiType params = 1;
+  // An encoded ABI.
+  bytes encoded = 2;
+}
+
+message DecodingOutput {
+  repeated AbiValue params = 2;
+  // error code, 0 is ok, other codes will be treated as errors
+  Common.Proto.SigningError error = 2;
+  // error code description
+  string error_message = 3;
+}
+
+// Decode function call data to human readable json format, according to input abi json.
+message CallDecodingInput {
+  string abi_json = 1;
+  // An encoded function call.
+  bytes encoded = 2;
+}
+
+message CallDecodingOutput {
+  // Human readable json format, according to the input `CallDecodingInput::abi_json`.
+  string call_json = 1;
+  // error code, 0 is ok, other codes will be treated as errors
+  Common.Proto.SigningError error = 2;
+  // error code description
+  string error_message = 3;
+}
