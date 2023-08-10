@@ -160,8 +160,8 @@ TEST(THORChainSigner, SignTx_MsgDeposit) {
 
     auto output = THORChain::Signer::sign(input);
 
-    // https://viewblock.io/thorchain/tx/7E480FA163F6C6AFA17593F214C7BBC218F69AE3BC72366E39042AF381BFE105
-    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClIKUAoO..89g="}' https://<thornode>/cosmos/tx/v1beta1/txs
+    // https://viewblock.io/thorchain/tx/0162213E7F9D85965B1C57FA3BF9603C655B542F358318303A7B00661AE42510
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CoUBCoIB..hiw="}' https://<thornode>/cosmos/tx/v1beta1/txs
     assertJSONEqual(output.serialized(), R"(
         {
             "mode": "BROADCAST_MODE_BLOCK",

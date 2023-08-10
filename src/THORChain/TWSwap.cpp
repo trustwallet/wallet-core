@@ -85,6 +85,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
             }
         } break;
 
+        case THORChainSwap::Proto::THOR:
         case THORChainSwap::Proto::ATOM: {
             Cosmos::Proto::SigningInput cosmosInput;
             if (!cosmosInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
