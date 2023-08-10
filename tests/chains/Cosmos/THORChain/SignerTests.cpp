@@ -96,6 +96,109 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
     EXPECT_EQ(output.error_message(), "");
 }
 
+
+TEST(THORChainSigner, SignTx_Maya_Protobuf_7E480F) {
+    auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id("mayachain-mainnet-v1");
+    input.set_account_number(593);
+    input.set_sequence(21);
+    input.set_memo("");
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_thorchain_send_message();
+    Bech32Address fromAddress("maya");
+    EXPECT_TRUE(Bech32Address::decode("maya1uuds8pd92qnnq0udw0rpg0szpgcslc9prlsqk8", fromAddress, "maya"));
+    Bech32Address toAddress("maya");
+    EXPECT_TRUE(Bech32Address::decode("maya1zf3gsk7edzwl9syyefvfhle37cjtql35n6emmw", toAddress, "maya"));
+    message.set_from_address(std::string(fromAddress.getKeyHash().begin(), fromAddress.getKeyHash().end()));
+    message.set_to_address(std::string(toAddress.getKeyHash().begin(), toAddress.getKeyHash().end()));
+    auto amountOfTx = message.add_amounts();
+    amountOfTx->set_denom("cacao");
+    amountOfTx->set_amount("38000000");
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(2500000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("cacao");
+    amountOfFee->set_amount("200");
+}
+
+TEST(THORChainSigner, SignTx_MsgDeposit) {
+    auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id("thorchain-mainnet-v1");
+    input.set_account_number(75247);
+    input.set_sequence(7);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_thorchain_deposit_message();
+
+    message.set_memo("=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5::tr:0");
+    Bech32Address signerAddress("thor");
+    EXPECT_TRUE(Bech32Address::decode("thor14j5lwl8ulexrqp5x39kmkctv2937694z3jn2dz", signerAddress, "thor"));
+    message.set_signer(std::string(signerAddress.getKeyHash().begin(), signerAddress.getKeyHash().end()));
+
+    auto& coins = *message.add_coins();
+    coins.set_amount("150000000");
+    coins.set_decimals(0);
+
+    auto& asset = *coins.mutable_asset();
+    asset.set_chain("THOR");
+    asset.set_symbol("RUNE");
+    asset.set_ticker("RUNE");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(50000000);
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+
+    assertJSONEqual(json, R"(
+        {
+            "accountNumber": "75247",
+            "chainId": "thorchain-mainnet-v1",
+            "fee": {
+                "gas": "50000000"
+            },
+            "messages": [
+                {
+                    "thorchainDepositMessage": {
+                        "coins": [
+                            {
+                                "amount": "150000000",
+                                "asset": {
+                                    "chain": "THOR",
+                                    "symbol": "RUNE",
+                                    "ticker": "RUNE"
+                                }
+                            }
+                        ],
+                        "memo": "=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5::tr:0",
+                        "signer": "rKn3fPz+TDAGholtu2FsUWPtFqI="
+                    }
+                }
+            ],
+            "sequence": "7",
+            "signingMode": "Protobuf"
+        }
+    )");
+
+    auto privateKey = parse_hex("2659e41d54ebd449d68b9d58510d8eeeb837ee00d6ecc760b7a731238d8c3113");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = THORChain::Signer::sign(input);
+
+    // https://viewblock.io/thorchain/tx/0162213E7F9D85965B1C57FA3BF9603C655B542F358318303A7B00661AE42510
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CoUBCoIB..hiw="}' https://<thornode>/cosmos/tx/v1beta1/txs
+    assertJSONEqual(output.serialized(), R"(
+        {
+            "mode": "BROADCAST_MODE_BLOCK",
+            "tx_bytes": "CoUBCoIBChEvdHlwZXMuTXNnRGVwb3NpdBJtCh8KEgoEVEhPUhIEUlVORRoEUlVORRIJMTUwMDAwMDAwEjQ9OkRPR0UuRE9HRTpETmhSRjFoOEo0Wm5CMWJ4cDlrYXFoVkxZZXRreDFuU0o1Ojp0cjowGhSsqfd8/P5MMAaGiW27YWxRY+0WohJZClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDuZVDlIFW3DtSEBa6aUBJ0DrQHlQ+2g7lIt5ekAM25SkSBAoCCAEYBxIFEIDh6xcaQAxKMZMKbM8gdLwn23GDXfbwyCkgqWzFMFlnrqFm0u54F8T32wmsoJQAdoLIyOskYmi7nb1rhryfabeeULwRhiw="
+        }
+    )");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error_message(), "");
+}
+
 TEST(THORChainSigner, SignTx_Maya_Protobuf_7E480F) {
     auto input = Cosmos::Proto::SigningInput();
     input.set_signing_mode(Cosmos::Proto::Protobuf);

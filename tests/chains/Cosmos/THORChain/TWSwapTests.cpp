@@ -283,6 +283,63 @@ TEST(TWTHORChainSwap, SwapAtomBnb) {
     // https://binance.mintscan.io/txs/2C97061737B16B234990B9B18A2BF65F7C7418FF9E39A68E634C832E4E4C59CE
 }
 
+TEST(TWTHORChainSwap, SwapRuneDoge) {
+    // prepare swap input
+    Proto::SwapInput input;
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(Proto::THOR);
+    fromAsset.set_symbol("RUNE");
+    *input.mutable_from_asset() = fromAsset;
+    input.set_from_address("thor14j5lwl8ulexrqp5x39kmkctv2937694z3jn2dz");
+    Proto::Asset toAsset;
+    toAsset.set_chain(Proto::DOGE);
+    toAsset.set_symbol("DOGE");
+    *input.mutable_to_asset() = toAsset;
+    input.set_to_address("DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5");
+    input.set_from_amount("150000000");
+    input.set_to_amount_limit("10000000");
+    input.set_affiliate_fee_address("tr");
+    input.set_affiliate_fee_rate_bp("0");
+
+    // serialize input
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0a06120452554e45122b74686f7231346a356c776c38756c6578727170357833396b6d6b637476323933373639347a336a6e32647a1a0808041204444f47452222444e6852463168384a345a6e4231627870396b617168564c5965746b78316e534a353a09313530303030303030420831303030303030304a027472520130");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
+
+    // invoke swap
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 153ul);
+    // parse result in proto
+    Proto::SwapOutput outputProto;
+    EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
+    EXPECT_EQ(outputProto.from_chain(), Proto::THOR);
+    EXPECT_EQ(outputProto.to_chain(), Proto::DOGE);
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
+    EXPECT_TRUE(outputProto.has_cosmos());
+    Cosmos::Proto::SigningInput txInput = outputProto.cosmos();
+
+    ASSERT_EQ(txInput.messages(0).thorchain_deposit_message().memo(), "=:DOGE.DOGE:DNhRF1h8J4ZnB1bxp9kaqhVLYetkx1nSJ5:10000000:tr:0");
+    auto& fee = *txInput.mutable_fee();
+    fee.set_gas(50000000);
+
+    txInput.set_account_number(75247);
+    txInput.set_sequence(8);
+
+    auto privKey = parse_hex("2659e41d54ebd449d68b9d58510d8eeeb837ee00d6ecc760b7a731238d8c3113");
+    txInput.set_private_key(privKey.data(), privKey.size());
+
+    // sign and encode resulting input
+    Cosmos::Proto::SigningOutput output;
+    ANY_SIGN(txInput, TWCoinTypeCosmos);
+    EXPECT_EQ(output.error_message(), "");
+    ASSERT_EQ(output.serialized(), "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"Co0BCooBChEvdHlwZXMuTXNnRGVwb3NpdBJ1Ch8KEgoEVEhPUhIEUlVORRoEUlVORRIJMTUwMDAwMDAwEjw9OkRPR0UuRE9HRTpETmhSRjFoOEo0Wm5CMWJ4cDlrYXFoVkxZZXRreDFuU0o1OjEwMDAwMDAwOnRyOjAaFKyp93z8/kwwBoaJbbthbFFj7RaiElkKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQO5lUOUgVbcO1IQFrppQEnQOtAeVD7aDuUi3l6QAzblKRIECgIIARgIEgUQgOHrFxpABOMrkMdq0FFNUEvjE7DDFpDW3EudV2qPhNCD4FrYtHsiBjMefdBaN8Ddp2Fucqs6OMkoXBEoW/u1msDqnvaXdA==\"}");
+
+    // https://viewblock.io/thorchain/tx/29C8B558051A0E0B1F44E4FFED034EDD204A7249A824DCE06C72C28D6114B5E3
+    // https://dogechain.info/tx/905ce02ec3397d6d4f2cbe63ebbff2ccf8b9f16d7ea136319be5ed543cdb66f3
+}
+
 TEST(TWTHORChainSwap, NegativeInvalidInput) {
     const auto inputData = parse_hex("00112233");
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
