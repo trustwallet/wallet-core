@@ -49,7 +49,7 @@ impl BitcoinEntry {
         });
 
         // Create inputs for the `bitcoin` crate.
-        let _txin = plan.utxos
+        let _txin: Vec<TxIn> = plan.utxos
             .iter()
             .map(|input| {
                 let out_point = input.out_point.as_ref().unwrap();
@@ -67,18 +67,7 @@ impl BitcoinEntry {
             })
             .collect();
 
-        // Create transaction from `bitcoin` crate, let it calculate the weight.
-        // After that it's no longer needed.
-        let tx = TransactionBuilder::new()
-            .version(2)
-            .lock_time_native({
-                // TODO: Double check this.
-                if proto.lock_time < 500_000_000 {
-                    LockTime::Blocks(Height::from_consensus(proto.lock_time).unwrap())
-                } else {
-                    LockTime::Seconds(Time::from_consensus(proto.lock_time).unwrap())
-                }
-            })
+        // TODO...
 
         todo!()
     }

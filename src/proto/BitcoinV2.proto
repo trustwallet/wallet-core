@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package TW.BitcoinV2.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+message SigningInput {
+    // The protocol version, is currently expected to be 1 or 2 (BIP68)
+    int32 version = 1;
+
+	repeated Transaction inputs = 2;
+
+    repeated Transaction outputs = 3;
+
+    // Block height or timestamp indicating at what point transactions can be
+    // included in a block.
+    oneof lock_time {
+        uint32 blocks = 2;
+        uint32 seconds = 3;
+    }
+}
+
+message Transaction {
+	uint64 amount = 1;
+
+	oneof to_recipient {
+		bytes script_pubkey = 2;
+		Builder builder = 3;
+		bytes from_address = 4;
+	}
+}
+
+message Builder {
+	oneof type {
+		// Pay-to-Script-Hash, specify the hash.
+		bytes p2sh = 1;
+		// Pay-to-Public-Key-Hash
+		ToPublicKeyOrHash p2pkh = 3;
+		// Pay-to-Witness-Script-Hash, specify the hash.
+		bytes w2sh = 4;
+		// Pay-to-Public-Key-Hash
+		ToPublicKeyOrHash wp2pkh = 6;
+		// Pay-to-Taproot-key-path (balance transfers), specify the public key.
+		bytes p2tr_key_path = 7;
+		// Pay-to-Taproot-script-path (complex transfers)
+		TaprootScriptPath p2tr_script_path = 8;
+	}
+
+	message ToPublicKeyOrHash {
+		oneof to_address {
+			bytes key = 1;
+			bytes hash = 2;
+		}
+	}
+
+	message TaprootScriptPath {
+		bytes public_key = 1;
+		bytes leaf_hash = 2;
+	}
+}
