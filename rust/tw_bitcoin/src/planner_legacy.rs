@@ -100,7 +100,7 @@ impl LegacyPlanBuilder {
                     // TODO: Note that UnspendTransaction has two "sequence" fields (for
                     // some reason)... not sure how to handle this yet.
                     sequence: Sequence::from_consensus(out_point.sequence),
-                    witness: Witness::new(),
+                    witness: Witness::from_slice(&[input.spendingScript.as_ref()]),
                 }
             })
             .collect();
