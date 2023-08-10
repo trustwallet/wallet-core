@@ -104,7 +104,7 @@ TEST(THORChainSigner, SignTx_Maya_Protobuf_7E480F) {
     input.set_sequence(21);
     input.set_memo("");
     auto msg = input.add_messages();
-    auto& message = *msg->mutable_mayachain_send_message();
+    auto& message = *msg->mutable_thorchain_send_message();
     Bech32Address fromAddress("maya");
     EXPECT_TRUE(Bech32Address::decode("maya1uuds8pd92qnnq0udw0rpg0szpgcslc9prlsqk8", fromAddress, "maya"));
     Bech32Address toAddress("maya");
@@ -137,7 +137,7 @@ TEST(THORChainSigner, SignTx_Maya_Protobuf_7E480F) {
             },
             "messages": [
                 {
-                    "mayachainSendMessage": {
+                    "thorchainSendMessage": {
                         "amounts": [
                             {
                                 "amount": "38000000",
