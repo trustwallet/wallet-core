@@ -44,7 +44,7 @@ impl CoinAddress for Address {
             Payload::PubkeyHash(hash) => hash.to_byte_array().into(),
             Payload::ScriptHash(hash) => hash.to_byte_array().into(),
             Payload::WitnessProgram(wp) => wp.program().as_bytes().into(),
-            _ => todo!() // Payload is non-exhaustive
+            _ => todo!(), // Payload is non-exhaustive
         }
     }
 }

@@ -37,16 +37,21 @@ impl LegacyPlanBuilder {
         _coin: &dyn CoinContext,
         proto: BitcoinProto::SigningInput<'a>,
     ) -> BitcoinProto::TransactionPlan<'a> {
+        let proto_amount = proto.amount as u64;
+
+        // Sort inputs by amount, ascending.
         let mut inputs = proto.utxo.to_vec();
         inputs.sort_by(|a, b| a.amount.partial_cmp(&b.amount).unwrap());
 
+        // Select a set of inputs sufficent enough to cover `proto_amount`.
         let mut total_selected_amount = 0;
-        let mut remaining = proto.amount as u64;
+        let mut remaining = proto_amount;
         let selected: Vec<UnspentTransaction<'_>> = inputs
             .into_iter()
             .take_while(|input| {
-                remaining = remaining.saturating_sub(input.amount as u64);
-                total_selected_amount += input.amount as u64;
+                let input_amount = input.amount as u64;
+                total_selected_amount += input_amount;
+                remaining = remaining.saturating_sub(input_amount);
 
                 remaining != 0
             })
@@ -57,23 +62,26 @@ impl LegacyPlanBuilder {
             todo!()
         }
 
+        // Calculate the change amount that should be returned.
+        let change = total_selected_amount - proto_amount;
+
         let mut outputs = vec![];
 
         // Primary send output (to target destination)
         let send_output = convert_address_to_script_pubkey(&proto.to_address);
         outputs.push(send_output);
 
-        // Change output (to oneself)
+        // Change output (to oneself).
         let change_output = convert_address_to_script_pubkey(&proto.change_address);
         outputs.push(change_output);
 
-        let change = total_selected_amount - proto.amount as u64;
+        // Calculate fee.
+        let _weight = calculate_weight(&selected, &outputs);
+        let fee = (_weight + 3) / 4 * proto.byte_fee as u64;
 
-        let weight = calculate_weight(&selected, &outputs);
-        let fee = (weight + 3) / 4 * proto.byte_fee as u64;
-
+        // The generated TransactionPlan
         BitcoinProto::TransactionPlan {
-            amount: proto.amount as i64,
+            amount: proto.amount,
             available_amount: total_selected_amount as i64,
             fee: fee as i64,
             change: change as i64,
@@ -92,20 +100,25 @@ impl LegacyPlanBuilder {
 }
 
 fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBuf]) -> u64 {
+    // Non-witness data gets multiplied by the scale factor.
     const SCALE_FACTOR: usize = 4;
 
-    let mut weight =
-		// version
-		4
-		// lock time
-		+ 4
-		// inputs/outputs VarInts
-		+ VarInt(selected.len() as u64).len()
-		+ VarInt(outputs.len() as u64).len();
+    // Base weight.
+    let mut weight = SCALE_FACTOR
+        * (
+            // version
+            4
+            // lock time
+            + 4
+            // inputs/outputs VarInts
+            + VarInt(selected.len() as u64).len()
+            + VarInt(outputs.len() as u64).len()
+        );
 
-    // The factor by which non-witness data is multiplied by.
+    // Witness item count.
     let mut witness_count = 0;
 
+    // Count weight of all inputs.
     for input in selected {
         weight += SCALE_FACTOR
             * (
@@ -117,12 +130,14 @@ fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBu
 				+ input.script.len()
             );
 
+        // Witness data weight is reduced (no scale factor).
         if !input.spendingScript.is_empty() {
             witness_count += 1;
             weight += input.spendingScript.len();
         }
     }
 
+    // Count weight of all outputs.
     for output in outputs {
         weight +=
 			// value
@@ -131,10 +146,8 @@ fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBu
 			+ output.len();
     }
 
-    let weight = if witness_count == 0 {
-        weight * SCALE_FACTOR
-    } else {
-        weight * SCALE_FACTOR + selected.len() - witness_count + 2
+    if witness_count != 0 {
+        weight += selected.len() - witness_count + 2
     };
 
     weight as u64
