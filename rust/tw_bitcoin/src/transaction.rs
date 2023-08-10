@@ -48,6 +48,10 @@ impl TransactionBuilder {
         self.version = version;
         self
     }
+    pub fn lock_time_native(mut self, lock_time: LockTime) -> Self {
+        self.lock_time = lock_time;
+        self
+    }
     pub fn lock_time_height(mut self, height: u32) -> Result<Self> {
         self.lock_time = LockTime::Blocks(Height::from_consensus(height).map_err(|_| Error::Todo)?);
         Ok(self)
