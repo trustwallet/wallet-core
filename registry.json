@@ -3194,8 +3194,8 @@
     "info": {
       "url": "https://arbitrum.io",
       "source": "https://github.com/OffchainLabs/arbitrum",
-      "rpc": "https://node.offchainlabs.com:8547",
-      "documentation": "https://developer.offchainlabs.com"
+      "rpc": "https://arb1.arbitrum.io/rpc",
+      "documentation": "https://docs.arbitrum.io/"
     }
   },
   {
