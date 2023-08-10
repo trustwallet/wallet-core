@@ -43,6 +43,14 @@ message Input {
 		TaprootScriptPath taproot_script = 6;
 	}
 
+	enum InputVariant {
+		P2sh = 0;
+		P2Pkh = 1;
+		P2Wsh = 2;
+		P2Wpkh = 3;
+		P2TrKeyPath = 4;
+	}
+
 	message ScriptWitness {
 		bytes script_sig = 1;
 		repeated bytes witness_items = 2;
@@ -51,14 +59,6 @@ message Input {
 	message TaprootScriptPath {
 		bytes payload = 5;
 		bytes control_block = 6;
-	}
-
-	enum InputVariant {
-		P2sh = 0;
-		P2Pkh = 1;
-		P2Wsh = 2;
-		P2Wpkh = 3;
-		P2TrKeyPath = 4;
 	}
 }
 
