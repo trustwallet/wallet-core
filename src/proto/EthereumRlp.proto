@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package TW.EthereumRlp.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// List of elements.
+message RlpList {
+    repeated RlpItem items = 1;
+}
+
+// RLP item.
+message RlpItem {
+    oneof item {
+        // A string to be encoded.
+        string string_item = 1;
+        // A U64 number to be encoded.
+        uint64 number_u64 = 2;
+        // A U256 number to be encoded.
+        bytes number_u256 = 3;
+        // An address to be encoded.
+        string address = 4;
+        // A data to be encoded.
+        bytes data = 5;
+        // A list of items to be encoded.
+        RlpList list = 6;
+        // An RLP encoded item to be appended as it is.
+        bytes raw_encoded = 7;
+    }
+}
+
+// RLP encoding input.
+message EncodingInput {
+    // An item or a list to encode.
+    RlpItem item = 1;
+}
+
+/// RLP encoding output.
+message EncodingOutput {
+    // An item RLP encoded.
+    bytes encoded = 1;
+
+    // Error code, 0 is ok, other codes will be treated as errors.
+    Common.Proto.SigningError error = 2;
+
+    // Error code description.
+    string error_message = 3;
+}

@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::RegistryError;
+use crate::error::RegistryError;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer};
 use std::str::FromStr;

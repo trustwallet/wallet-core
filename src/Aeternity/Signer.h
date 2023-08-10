@@ -23,9 +23,9 @@ public:
 private:
     static const uint8_t checkSumSize = 4;
 
-    static Data buildRlpTxRaw(Data& txRaw, Data& sigRaw);
+    static Data buildRlpTxRaw(const Data& txRaw, const Data& sigRaw);
 
-    static Data buildMessageToSign(Data& txRaw);
+    static Data buildMessageToSign(const Data& txRaw);
 
     static Proto::SigningOutput createProtoOutput(std::string& signature, const std::string& signedTx);
 

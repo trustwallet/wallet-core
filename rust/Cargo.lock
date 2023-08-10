@@ -1530,6 +1530,7 @@ dependencies = [
  "serde_json",
  "tw_coin_entry",
  "tw_ethereum",
+ "tw_evm",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
@@ -1573,6 +1574,7 @@ dependencies = [
  "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_misc",
  "tw_number",
  "tw_proto",
 ]
@@ -1738,13 +1740,16 @@ version = "0.1.0"
 dependencies = [
  "tw_any_coin",
  "tw_bitcoin",
+ "tw_coin_entry",
  "tw_coin_registry",
  "tw_encoding",
  "tw_ethereum",
  "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_misc",
  "tw_move_parser",
+ "tw_number",
  "tw_proto",
 ]
 
