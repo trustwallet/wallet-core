@@ -13,8 +13,8 @@
 
 using namespace TW;
 
-namespace TW::THORChain {
-const std::string TYPE_PREFIX_MSG_SEND = "thorchain/MsgSend";
+namespace TW::MAYAChain {
+const std::string TYPE_PREFIX_MSG_SEND = "mayachain/MsgSend";
 
 Cosmos::Proto::SigningOutput Signer::sign(Cosmos::Proto::SigningInput& input) noexcept {
     for (auto i = 0; i < input.messages_size(); ++i) {
@@ -22,7 +22,7 @@ Cosmos::Proto::SigningOutput Signer::sign(Cosmos::Proto::SigningInput& input) no
             input.mutable_messages(i)->mutable_send_coins_message()->set_type_prefix(TYPE_PREFIX_MSG_SEND);
         }
     }
-    return Cosmos::Signer::sign(input, TWCoinTypeTHORChain);
+    return Cosmos::Signer::sign(input, TWCoinTypeMAYAChain);
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {
@@ -33,4 +33,4 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.json();
 }
 
-} // namespace TW::THORChain
+} // namespace TW::MAYAChain

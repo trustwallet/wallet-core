@@ -6,6 +6,7 @@
 
 #include "proto/Cosmos.pb.h"
 #include "THORChain/Signer.h"
+#include "MAYAChain/Signer.h"
 #include "HexCoding.h"
 #include "Bech32Address.h"
 #include "TestUtilities.h"
@@ -322,7 +323,7 @@ TEST(MAYAChainSigner, SignTx_Maya_Json_Deprecated) {
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = THORChain::Signer::sign(input);
+    auto output = MAYAChain::Signer::sign(input);
 
     assertJSONEqual(output.json(), R"(
         {
@@ -381,7 +382,7 @@ TEST(THORChainSigner, SignJson_Maya) {
     auto inputJson = R"({"fee":{"amounts":[{"denom":"cacao","amount":"200"}],"gas":"2000000"},"memo":"memo1234","messages":[{"sendCoinsMessage":{"fromAddress":"maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","toAddress":"maya1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn","amounts":[{"denom":"cacao","amount":"50000000"}]}}]})";
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
 
-    auto outputJson = THORChain::Signer::signJSON(inputJson, privateKey);
+    auto outputJson = MAYAChain::Signer::signJSON(inputJson, privateKey);
 
-    EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"cacao"}],"gas":"2000000"},"memo":"memo1234","msg":[{"type":"mayachain/MsgSend","value":{"amount":[{"amount":"50000000","denom":"cacao"}],"from_address":"maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"maya1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"6HvrKL5Up8BzLomkIhSvzOSnRoYQZBSXgm+i+5xJHs0YZdr+n2V1BsUvn/gfCOERRX6bIrXcz+AYI1alfn7CKg=="}]}})", outputJson);
+    EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"cacao"}],"gas":"2000000"},"memo":"memo1234","msg":[{"type":"mayachain/MsgSend","value":{"amount":[{"amount":"50000000","denom":"cacao"}],"from_address":"maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"maya1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"CdNOWn9lMacKe9raiJdm2S/GjSNKG19NHUOLBrgJCf5b/RO3+6IHTFFWVQMAh5D3sKZUDA39ZWrCX8Pe1+UIVg=="}]}})", outputJson);
 }

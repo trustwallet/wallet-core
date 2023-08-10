@@ -10,9 +10,9 @@
 #include "../proto/Cosmos.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
-namespace TW::THORChain {
+namespace TW::MAYAChain {
 
-/// Helper class that performs THORChain transaction signing.
+/// Helper class that performs MAYAChain transaction signing.
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
@@ -21,4 +21,4 @@ class Signer {
     static std::string signJSON(const std::string& json, const Data& key);
 };
 
-} // namespace TW::THORChain
+} // namespace TW::MAYAChain
