@@ -1,7 +1,11 @@
 use crate::entry::{BitcoinEntry, PlaceHolderProto};
+use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{Payload, WitnessVersion};
 use bitcoin::key::TweakedPublicKey;
-use bitcoin::{Address, ScriptBuf, VarInt, WPubkeyHash};
+use bitcoin::{
+    Address, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, VarInt, WPubkeyHash,
+    Witness,
+};
 use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use std::borrow::Cow;
@@ -29,6 +33,7 @@ impl BitcoinEntry {
     }
 }
 
+// TODO: Should implement PlanBuilder.
 pub struct LegacyPlanBuilder;
 
 impl LegacyPlanBuilder {
@@ -63,20 +68,61 @@ impl LegacyPlanBuilder {
         }
 
         // Calculate the change amount that should be returned.
-        let change = total_selected_amount - proto_amount;
+        let change_amount = total_selected_amount - proto_amount;
 
-        let mut outputs = vec![];
+        let mut outputs: Vec<TxOut> = vec![];
 
         // Primary send output (to target destination)
         let send_output = convert_address_to_script_pubkey(&proto.to_address);
-        outputs.push(send_output);
+        outputs.push(TxOut {
+            value: proto_amount,
+            script_pubkey: send_output,
+        });
 
         // Change output (to oneself).
         let change_output = convert_address_to_script_pubkey(&proto.change_address);
-        outputs.push(change_output);
+        outputs.push(TxOut {
+            value: change_amount,
+            script_pubkey: change_output,
+        });
+
+        // Create inputs for the `bitcoin` crate.
+        let _txin = selected
+            .iter()
+            .map(|input| {
+                let out_point = input.out_point.as_ref().unwrap();
+                TxIn {
+                    previous_output: OutPoint {
+                        txid: Txid::from_slice(out_point.hash.as_ref()).unwrap(),
+                        vout: out_point.index,
+                    },
+                    script_sig: ScriptBuf::from_bytes(input.script.to_vec()),
+                    // TODO: Note that UnspendTransaction has two "sequence" fields (for
+                    // some reason)... not sure how to handle this yet.
+                    sequence: Sequence::from_consensus(out_point.sequence),
+                    witness: Witness::new(),
+                }
+            })
+            .collect();
+
+        // Create transaction from `bitcoin` crate, let it calculate the weight.
+        // After that it's no longer needed.
+        let tx = Transaction {
+            version: 2,
+            lock_time: {
+                // TODO: Double check this.
+                if proto.lock_time < 500_000_000 {
+                    LockTime::Blocks(Height::from_consensus(proto.lock_time).unwrap())
+                } else {
+                    LockTime::Seconds(Time::from_consensus(proto.lock_time).unwrap())
+                }
+            },
+            input: _txin,
+            output: outputs,
+        };
 
         // Calculate fee.
-        let _weight = calculate_weight(&selected, &outputs);
+        let _weight = tx.weight().to_wu();
         let fee = (_weight + 3) / 4 * proto.byte_fee as u64;
 
         // The generated TransactionPlan
@@ -84,73 +130,19 @@ impl LegacyPlanBuilder {
             amount: proto.amount,
             available_amount: total_selected_amount as i64,
             fee: fee as i64,
-            change: change as i64,
+            change: change_amount as i64,
             utxos: selected,
-            // Used for Zcash
+            // Empty, used for Zcash
             branch_id: Cow::default(),
             error: tw_proto::Common::Proto::SigningError::OK,
-            // Used for other chain(s).
+            // Empty, used for other chain(s).
             output_op_return: Cow::default(),
-            // Used for other chain(s).
+            // Empty, used for other chain(s).
             preblockhash: Cow::default(),
-            // Used for other chain(s).
+            // Empty, used for other chain(s).
             preblockheight: 0,
         }
     }
-}
-
-fn calculate_weight<'a>(selected: &[UnspentTransaction<'a>], outputs: &[ScriptBuf]) -> u64 {
-    // Non-witness data gets multiplied by the scale factor.
-    const SCALE_FACTOR: usize = 4;
-
-    // Base weight.
-    let mut weight = SCALE_FACTOR
-        * (
-            // version
-            4
-            // lock time
-            + 4
-            // inputs/outputs VarInts
-            + VarInt(selected.len() as u64).len()
-            + VarInt(outputs.len() as u64).len()
-        );
-
-    // Witness item count.
-    let mut witness_count = 0;
-
-    // Count weight of all inputs.
-    for input in selected {
-        weight += SCALE_FACTOR
-            * (
-                // Outpoint
-                32 + 4
-				// Sequence
-				+ 4
-				+ VarInt(input.script.as_ref().len() as u64).len()
-				+ input.script.len()
-            );
-
-        // Witness data weight is reduced (no scale factor).
-        if !input.spendingScript.is_empty() {
-            witness_count += 1;
-            weight += input.spendingScript.len();
-        }
-    }
-
-    // Count weight of all outputs.
-    for output in outputs {
-        weight +=
-			// value
-			8
-			+ VarInt(output.len() as u64).len()
-			+ output.len();
-    }
-
-    if witness_count != 0 {
-        weight += selected.len() - witness_count + 2
-    };
-
-    weight as u64
 }
 
 fn convert_address_to_script_pubkey(address: &str) -> ScriptBuf {
