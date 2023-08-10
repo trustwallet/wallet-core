@@ -351,6 +351,36 @@
     }
   },
   {
+    "id": "base",
+    "name": "Base",
+    "coinId": 8453,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "8453",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://basescan.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x4acb15506b7696a2dfac4258f3f86392b4b2b717a3f316a8aa78509b2c3b6ab4",
+      "sampleAccount": "0xb8ff877ed78ba520ece21b1de7843a8a57ca47cb"
+    },
+    "info": {
+      "url": "https://base.mirror.xyz/",
+      "source": "https://github.com/base-org",
+      "rpc": "https://mainnet.base.org",
+      "documentation": "https://docs.base.org/"
+    }
+  },
+  {
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,

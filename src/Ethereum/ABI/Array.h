@@ -15,7 +15,7 @@ namespace TW::Ethereum::ABI {
 /// Dynamic array of the same types, "<type>[]"
 /// Normally has at least one element.  Empty array can have prototype set so its type is known.
 /// Empty with no prototype is possible, but should be avoided.
-class ParamArray : public ParamCollection {
+class ParamArray final : public ParamCollection {
 private:
     ParamSet _params;
     std::shared_ptr<ParamBase> _proto; // an optional prototype element, determines the array type, useful in empty array case
@@ -36,15 +36,17 @@ public:
     void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
     void setProto(const std::shared_ptr<ParamBase>& proto) { _proto = proto; }
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
-    virtual std::string getType() const { return getProtoType() + "[]"; }
-    virtual size_t getSize() const;
-    virtual bool isDynamic() const { return true; }
-    virtual size_t getCount() const { return _params.getCount(); }
-    virtual void encode(Data& data) const;
-    virtual bool decode(const Data& encoded, size_t& offset_inout);
-    virtual bool setValueJson(const std::string& value);
-    virtual Data hashStruct() const;
-    virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
+
+    std::string getType() const override { return getProtoType() + "[]"; }
+    size_t getSize() const override;
+    bool isDynamic() const override { return true; }
+    size_t getCount() const override { return _params.getCount(); }
+    void encode(Data& data) const override;
+    bool decode(const Data& encoded, size_t& offset_inout) override;
+    bool setValueJson(const std::string& value) override;
+    Data hashStruct() const override;
+    std::string getExtraTypes(std::vector<std::string>& ignoreList) const override;
+    std::shared_ptr<ParamBase> clone() const override;
 };
 
 /// Fixed-size array of the same type e.g, "type[4]"
@@ -53,20 +55,23 @@ public:
     //! Public Definitions
     using Params = std::vector<std::shared_ptr<ParamBase>>;
 
-    //! Public constructor
+    //! Public constructors
+    ParamArrayFix() = default;
+
     explicit ParamArrayFix(const Params& params) noexcept(false)
         : ParamCollection() {
         this->addParams(params);
     }
 
     //! Public member methods
-    [[nodiscard]] std::size_t getCount() const final { return _params.getCount(); }
-    [[nodiscard]] size_t getSize() const final { return _params.getSize(); }
-    [[nodiscard]] bool isDynamic() const final { return false; }
-    [[nodiscard]] std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_params.getCount()) + "]"; }
-    void encode(Data& data) const final;
-    bool decode(const Data& encoded, size_t& offset_inout) final;
-    bool setValueJson(const std::string& value) final;
+    [[nodiscard]] std::size_t getCount() const override { return _params.getCount(); }
+    [[nodiscard]] size_t getSize() const override { return _params.getSize(); }
+    [[nodiscard]] bool isDynamic() const override { return false; }
+    [[nodiscard]] std::string getType() const override { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_params.getCount()) + "]"; }
+    void encode(Data& data) const override;
+    bool decode(const Data& encoded, size_t& offset_inout) override;
+    bool setValueJson(const std::string& value) override;
+    std::shared_ptr<ParamBase> clone() const override;
 
 private:
     //! Private member functions

@@ -15,25 +15,27 @@
 namespace TW::Ethereum::ABI {
 
 /// A named parameter.
-class ParamNamed: public ParamBase
+class ParamNamed final : public ParamBase
 {
 public:
     std::string _name;
     std::shared_ptr<ParamBase> _param;
 
 public:
-    ParamNamed(const std::string& name, std::shared_ptr<ParamBase> param): _name(name), _param(param) {}
+    explicit ParamNamed(const std::string& name, std::shared_ptr<ParamBase> param): _name(name), _param(param) {}
 
-    virtual std::string getName() const { return _name; }
-    virtual std::shared_ptr<ParamBase> getParam() const { return _param; }
-    virtual std::string getType() const;
-    virtual size_t getSize() const { return _param->getSize(); }
-    virtual bool isDynamic() const { return _param->isDynamic(); }
-    virtual void encode(Data& data) const { return _param->encode(data); }
-    virtual bool decode(const Data& encoded, size_t& offset_inout) { return _param->decode(encoded, offset_inout); }
-    virtual bool setValueJson(const std::string& value) { return _param->setValueJson(value); }
-    virtual Data hashStruct() const { return _param->hashStruct(); }
-    virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const { return _param->getExtraTypes(ignoreList); }
+    std::string getName() const { return _name; }
+    std::shared_ptr<ParamBase> getParam() const { return _param; }
+    std::string getType() const override;
+    size_t getSize() const override { return _param->getSize(); }
+    bool isDynamic() const override { return _param->isDynamic(); }
+    void encode(Data& data) const override { return _param->encode(data); }
+    bool decode(const Data& encoded, size_t& offset_inout) override { return _param->decode(encoded, offset_inout); }
+    bool setValueJson(const std::string& value) override { return _param->setValueJson(value); }
+    Data hashStruct() const override { return _param->hashStruct(); }
+    std::string getExtraTypes(std::vector<std::string>& ignoreList) const override { return _param->getExtraTypes(ignoreList); }
+    std::shared_ptr<ParamBase> clone() const override { return cloneNamed(); }
+    std::shared_ptr<ParamNamed> cloneNamed() const;
 };
 
 /// A collection of named parameters.  See also: ParamStruct
@@ -56,10 +58,11 @@ public:
     Data encodeHashes() const;
     std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const;
+    ParamSetNamed clone() const;
 };
 
 /// A named structure (set of parameters plus a type name).
-class ParamStruct: public ParamCollection
+class ParamStruct final : public ParamCollection
 {
 private:
     std::string _name;
@@ -68,12 +71,13 @@ private:
 public:
     ParamStruct() = default;
     ParamStruct(const std::string& name, const std::vector<std::shared_ptr<ParamNamed>>& params) : ParamCollection(), _name(name), _params(ParamSetNamed(params)) {}
+    ParamStruct(const std::string& name, ParamSetNamed&& params) : ParamCollection(), _name(name), _params(std::move(params)) {}
 
-    std::string getType() const { return _name; }
+    std::string getType() const override { return _name; }
     const ParamSetNamed& getParams() const { return _params; }
 
     /// Compute the hash of a struct, used for signing, according to EIP712
-    virtual Data hashStruct() const;
+    Data hashStruct() const override;
     /// Get full type, extended by used sub-types, of the form 'Mail(Person from,Person to,string contents)Person(string name,address wallet)'
     std::string encodeType() const {
         std::vector<std::string> ignoreList;
@@ -82,14 +86,15 @@ public:
     /// Get the hash of the full type.
     Data hashType() const;
 
-    virtual size_t getSize() const { return _params.getCount(); }
-    virtual bool isDynamic() const { return true; }
-    virtual size_t getCount() const { return _params.getCount(); }
-    virtual void encode([[maybe_unused]] Data& data) const {}
-    virtual bool decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) { return true; }
-    virtual bool setValueJson([[maybe_unused]] const std::string& value) { return false; } // see makeStruct
+    size_t getSize() const override { return _params.getCount(); }
+    bool isDynamic() const override { return true; }
+    size_t getCount() const override { return _params.getCount(); }
+    void encode([[maybe_unused]] Data& data) const override {}
+    bool decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) override { return true; }
+    bool setValueJson([[maybe_unused]] const std::string& value) override { return false; } // see makeStruct
     Data encodeHashes() const;
-    virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
+    std::string getExtraTypes(std::vector<std::string>& ignoreList) const override;
+    std::shared_ptr<ParamBase> clone() const override;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
 
     /// Compute the hash of a struct, used for signing, according to EIP712 ("v4").

@@ -6,14 +6,15 @@
 
 #include <TrustWalletCore/TWBitcoinFee.h>
 #include "Bitcoin/Transaction.h"
-#include "Data.h"
 
-uint64_t TWBitcoinFeeCalculateFee(TWData* _Nonnull data, uint64_t satVb) {
+TWString* _Nullable TWBitcoinFeeCalculateFee(TWData* _Nonnull data, TWString* _Nonnull satVb) {
     auto* encoded = reinterpret_cast<const TW::Data*>(data);
-    auto fee = TW::Bitcoin::Transaction::calculateFee(*encoded, satVb);
+    const std::string& satVbStr = *reinterpret_cast<const std::string*>(satVb);
+    uint64_t satVbInt = std::stoull(satVbStr);
+    auto fee = TW::Bitcoin::Transaction::calculateFee(*encoded, satVbInt);
     if (!fee) {
-        return 0;
+        return nullptr;
     }
 
-    return fee.value();
+    return TWStringCreateWithUTF8Bytes(std::to_string(*fee).c_str());
 }
