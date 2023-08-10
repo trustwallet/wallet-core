@@ -1,3 +1,4 @@
+use crate::TransactionBuilder;
 use crate::entry::{BitcoinEntry, PlaceHolderProto};
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{Payload, WitnessVersion};
@@ -17,19 +18,74 @@ use tw_proto::Bitcoin::Proto::{self as BitcoinProto, UnspentTransaction};
 // Legacy implementations used for `Bitcoin.proto` backwards-compatibility.
 impl BitcoinEntry {
     #[inline]
-    fn compile_legacy(
+    fn compile_legacy<'a>(
         &self,
-        _coin: &dyn CoinContext,
-        _input: PlaceHolderProto<'static>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        coin: &dyn CoinContext,
+        mut proto: BitcoinProto::SigningInput::<'a>,
     ) -> PlaceHolderProto<'static> {
+        let proto_amount = proto.amount as u64;
+
+        // If the TransactionPlan is missing, it will be computed.
+        let plan = if let Some(plan) = proto.plan {
+            plan
+        } else {
+            LegacyPlanBuilder.plan(coin, proto.clone())
+        };
+
+        let mut outputs: Vec<TxOut> = vec![];
+
+        // Primary send output (to target destination)
+        let send_output = convert_address_to_script_pubkey(&proto.to_address);
+        outputs.push(TxOut {
+            value: plan.amount as u64,
+            script_pubkey: send_output,
+        });
+
+        // Change output (to oneself).
+        let change_output = convert_address_to_script_pubkey(&proto.change_address);
+        outputs.push(TxOut {
+            value: plan.amount as u64,
+            script_pubkey: change_output,
+        });
+
+        // Create inputs for the `bitcoin` crate.
+        let _txin = plan.utxos
+            .iter()
+            .map(|input| {
+                let out_point = input.out_point.as_ref().unwrap();
+                TxIn {
+                    previous_output: OutPoint {
+                        txid: Txid::from_slice(out_point.hash.as_ref()).unwrap(),
+                        vout: out_point.index,
+                    },
+                    script_sig: ScriptBuf::from_bytes(input.script.to_vec()),
+                    // TODO: Note that UnspendTransaction has two "sequence" fields (for
+                    // some reason)... not sure how to handle this yet.
+                    sequence: Sequence::from_consensus(out_point.sequence),
+                    witness: Witness::from_slice(&[input.spendingScript.as_ref()]),
+                }
+            })
+            .collect();
+
+        // Create transaction from `bitcoin` crate, let it calculate the weight.
+        // After that it's no longer needed.
+        let tx = TransactionBuilder::new()
+            .version(2)
+            .lock_time_native({
+                // TODO: Double check this.
+                if proto.lock_time < 500_000_000 {
+                    LockTime::Blocks(Height::from_consensus(proto.lock_time).unwrap())
+                } else {
+                    LockTime::Seconds(Time::from_consensus(proto.lock_time).unwrap())
+                }
+            })
+
         todo!()
     }
 
     #[inline]
     fn plan_builder_legacy(&self) -> Option<LegacyPlanBuilder> {
-        None
+        Some(LegacyPlanBuilder)
     }
 }
 
