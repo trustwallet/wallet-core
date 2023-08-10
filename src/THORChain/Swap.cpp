@@ -338,7 +338,7 @@ SwapBundled SwapBuilder::buildRune(const uint256_t& amount, const std::string& m
     msg->set_memo(memo);
 
     auto* coin = msg->add_coins();
-    coin->set_amount(to_string(amount));
+    coin->set_amount(toString(amount));
     coin->set_decimals(0);
 
     auto* asset = coin->mutable_asset();
