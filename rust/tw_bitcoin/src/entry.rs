@@ -142,7 +142,7 @@ impl CoinEntry for BitcoinEntry {
                     ScriptBuf::from_bytes(script.to_vec())
                 },
                 ProtoOutputRecipient::builder(builder) => match &builder.type_pb {
-                    ProtoBuilderType::p2sh(hash) => {
+                    ProtoBuilderType::p2sh(_) => {
                         todo!()
                     },
                     ProtoBuilderType::p2pkh(pubkey_or_hash) => {
@@ -174,7 +174,7 @@ impl CoinEntry for BitcoinEntry {
                     },
                     ProtoBuilderType::None => todo!(),
                 },
-                ProtoOutputRecipient::from_address(address) => todo!(),
+                ProtoOutputRecipient::from_address(_) => todo!(),
                 ProtoOutputRecipient::None => todo!(),
             };
 
@@ -199,7 +199,16 @@ impl CoinEntry for BitcoinEntry {
                         )
                     },
                     ProtoInputBuilder::p2wsh(_) => todo!(),
-                    ProtoInputBuilder::p2wpkh(_) => todo!(),
+                    ProtoInputBuilder::p2wpkh(pubkey_or_hash) => {
+                        let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+
+                        UtxoProto::mod_TxIn::OneOfsighash_method::segwit(
+                            UtxoProto::mod_TxIn::Segwit {
+                                value: input.amount,
+                                script_pubkey: ScriptBuf::new_v0_p2wpkh(&wpubkey_hash).to_vec().into(),
+                            }
+                        )
+                    },
                     ProtoInputBuilder::p2tr_key_path(_) => todo!(),
                     ProtoInputBuilder::p2tr_script_path(_) => {
                         todo!()

@@ -95,6 +95,7 @@ message ToPublicKeyOrHash {
 	}
 }
 
+// TODO: move inside Output.
 message Builder {
 	oneof type {
 		// Pay-to-Script-Hash, specify the hash.
