@@ -1,9 +1,11 @@
 use crate::Result;
-use bitcoin::absolute::{LockTime, Height, Time};
+use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
+use bitcoin::consensus::encode::Encodable;
 use bitcoin::taproot::ControlBlock;
-use bitcoin::{OutPoint, ScriptBuf, Sequence, TxIn, TxOut, Txid, Witness, Transaction};
+use bitcoin::{OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
 use secp256k1::hashes::Hash;
+use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -203,13 +205,13 @@ impl CoinEntry for BitcoinEntry {
         let lock_time = match proto.lock_time {
             Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
                 LockTime::Blocks(Height::from_consensus(blocks).unwrap())
-            }
+            },
             Proto::mod_SigningInput::OneOflock_time::seconds(blocks) => {
                 LockTime::Seconds(Time::from_consensus(blocks).unwrap())
-            }
+            },
             Proto::mod_SigningInput::OneOflock_time::None => {
                 LockTime::Blocks(Height::from_consensus(0).unwrap())
-            }
+            },
         };
 
         let tx = Transaction {
@@ -217,6 +219,41 @@ impl CoinEntry for BitcoinEntry {
             lock_time,
             input: txins,
             output: txouts,
+        };
+
+        // Encode the transaction.
+        let mut encoded = vec![];
+        tx.consensus_encode(&mut encoded).unwrap();
+
+        let mut inputs = vec![];
+        for input in &tx.input {
+            inputs.push(Proto::TransactionInput {
+                txid: input.previous_output.txid.as_byte_array().as_slice().into(),
+                vout: input.previous_output.vout,
+                sequence: input.sequence.to_consensus_u32(),
+                script_sig: input.script_sig.as_bytes().into(),
+                witness_items: input
+                    .witness
+                    .to_vec()
+                    .into_iter()
+                    .map(Cow::Owned)
+                    .collect::<Vec<Cow<_>>>(),
+            });
+        }
+
+        let transaction = Proto::Transaction {
+            version: proto.version,
+            lock_time: tx.lock_time.to_consensus_u32(),
+            inputs,
+            outputs,
+        };
+
+        let out = Proto::SigningOutput {
+            transaction: Some(transaction),
+            encoded: encoded.into(),
+            transaction_id: tx.txid().to_byte_array().as_slice().into(),
+            error: 0,
+            fee: 0,
         };
 
         todo!()
