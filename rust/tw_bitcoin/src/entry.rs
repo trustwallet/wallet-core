@@ -120,7 +120,11 @@ impl CoinEntry for BitcoinEntry {
     }
 
     #[inline]
-    fn sign(&self, _coin: &dyn CoinContext, _input: Self::SigningInput<'_>) -> Self::SigningOutput {
+    fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
+
+        let pre_signed = self.preimage_hashes(_coin, input);
+        // TODO: Check error
+
         todo!()
     }
 
@@ -255,6 +259,8 @@ impl CoinEntry for BitcoinEntry {
         }
 
         let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
+
+        // Generate claims for all the inputs.
         for (index, input) in proto.inputs.iter().enumerate() {
             let sig_slice = &signatures[index];
 
@@ -330,6 +336,7 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
+        // Process all the outputs.
         let utxo_outputs = process_recipients(proto.outputs);
 
         let utxo_preserializtion = UtxoProto::PreSerialization {
