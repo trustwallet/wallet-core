@@ -157,5 +157,9 @@ message TransactionOutput {
 
 	// In case of P2TR script-path (complex scripts), this is the control block
 	// required for claiming.
-	bytes control_block = 4;
+	ControlBlock control_block = 4;
+
+	message ControlBlock {
+		bytes raw = 1;
+	}
 }
