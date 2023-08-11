@@ -83,7 +83,7 @@ message Builder {
 		// Pay-to-Witness-Script-Hash, specify the hash.
 		bytes p2wsh = 4;
 		// Pay-to-Public-Key-Hash
-		ToPublicKeyOrHash wp2pkh = 6;
+		ToPublicKeyOrHash p2wpkh = 6;
 		// Pay-to-Taproot-key-path (balance transfers), specify the public key.
 		bytes p2tr_key_path = 7;
 		// Pay-to-Taproot-script-path (complex transfers)
