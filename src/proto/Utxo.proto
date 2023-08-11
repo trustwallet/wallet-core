@@ -52,14 +52,14 @@ message TxIn {
 
     SighashMethod sighash_method = 8;
 
-    enum SighashMethod {
-        Legacy = 0;
-        Segwit = 1;
-        Taproot = 2;
-    }
-
     bytes leaf_hash = 10;
     bool one_prevout = 11;
+}
+
+enum SighashMethod {
+    Legacy = 0;
+    Segwit = 1;
+    Taproot = 2;
 }
 
 enum SighashType {
@@ -91,7 +91,12 @@ message PreSigningOutput {
     Error error = 1;
 
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
-    repeated bytes sighashes = 2;
+    repeated Sighash sighashes = 2;
+
+    message Sighash {
+        bytes sighash = 1;
+        SighashMethod signing_method = 2;
+    }
 }
 
 message PreSerialization {

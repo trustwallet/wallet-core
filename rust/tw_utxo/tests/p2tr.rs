@@ -49,7 +49,7 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
     assert_eq!(
-        hex::encode(hashes[0].as_ref(), false),
+        hex::encode(hashes[0].sighash.as_ref(), false),
         "c914fd08efdcc7f8007c75c39ab47e1ee736a6ce1e6363250fe88cda8fca04d1"
     );
 }

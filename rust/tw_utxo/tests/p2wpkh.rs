@@ -46,7 +46,7 @@ fn sighash_input_p2pkh_output_p2wpkh() {
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
     assert_eq!(
-        hex::encode(hashes[0].as_ref(), false),
+        hex::encode(hashes[0].sighash.as_ref(), false),
         "c4963ecd6c08be4c9dd66416349084a5b54318b3802370451d580210bc883463"
     );
 }
@@ -68,7 +68,7 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
                 .txid(&txid)
                 .vout(0)
                 .value(50 * 100_000_000 - 1_000_000)
-                .sighash_method(tw_proto::Utxo::Proto::mod_TxIn::SighashMethod::Segwit)
+                .sighash_method(tw_proto::Utxo::Proto::SighashMethod::Segwit)
                 .spending_condition(input_script_pubkey.as_bytes())
                 .build()
         })
@@ -88,7 +88,7 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
     assert_eq!(
-        hex::encode(hashes[0].as_ref(), false),
+        hex::encode(hashes[0].sighash.as_ref(), false),
         "6900ebbef74c938ec2310df10cd520b5e7c82c0fe1bb68c62c8fae7bf54e2092"
     );
 }
