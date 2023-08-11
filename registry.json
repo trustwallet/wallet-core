@@ -1047,6 +1047,36 @@
     }
   },
   {
+    "id": "sei",
+    "name": "Sei",
+    "displayName": "Sei",
+    "coinId": 19000118,
+    "symbol": "SEI",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "chainId": "pacific-1",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "sei",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/sei",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "4A2114EE45317439690F3BEA9C8B6CFA11D42CF978F9487754902D372EEB488C",
+      "sampleAccount": "sei155hqv2rsypqzq0zpjn72frsxx4l6tcmplw63m2"
+    },
+    "info": {
+      "url": "https://sei.io/",
+      "documentation": "https://docs.sei.io/"
+    }
+  },
+  {
     "id": "coreum",
     "name": "Coreum",
     "displayName": "Coreum",
