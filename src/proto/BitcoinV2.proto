@@ -65,6 +65,8 @@ message Input {
 		}
 	}
 
+	bool one_prevout = 99;
+
 	message ScriptWitness {
 		// TODO:
 		uint32 sighash_method = 1;
@@ -73,8 +75,8 @@ message Input {
 	}
 
 	message TaprootScriptPath {
-		bytes payload = 5;
-		bytes control_block = 6;
+		bytes payload = 2;
+		bytes control_block = 3;
 	}
 }
 

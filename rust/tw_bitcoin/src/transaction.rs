@@ -96,6 +96,8 @@ impl TransactionBuilder {
     where
         F: Fn(&TxInput, secp256k1::Message) -> Result<(ScriptBuf, Witness)>,
     {
+        todo!()
+        /*
         let mut signing = Proto::SigningInput {
             version: self.version,
             // TODO
@@ -225,6 +227,7 @@ impl TransactionBuilder {
         Ok(TransactionSigned {
             inner: proto_output.encoded.to_vec(),
         })
+        */
     }
 }
 
