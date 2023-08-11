@@ -2,14 +2,14 @@ use crate::Result;
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::consensus::encode::Encodable;
-use bitcoin::key::TapTweak;
+use bitcoin::key::{TapTweak, TweakedKeyPair};
 use bitcoin::taproot::{ControlBlock, TapLeafHash, TapNodeHash};
 use bitcoin::{
     OutPoint, PubkeyHash, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid,
     WPubkeyHash, Witness,
 };
 use secp256k1::hashes::Hash;
-use secp256k1::{Message, XOnlyPublicKey};
+use secp256k1::{KeyPair, Message, Secp256k1, XOnlyPublicKey};
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -125,25 +125,65 @@ impl CoinEntry for BitcoinEntry {
         let pre_signed = self.preimage_hashes(_coin, proto.clone());
         // TODO: Check error
 
-        let secret_key = secp256k1::SecretKey::from_slice(proto.private_key.as_ref()).unwrap();
+        let secp = Secp256k1::new();
+        let keypair = KeyPair::from_seckey_slice(&secp, proto.private_key.as_ref()).unwrap();
 
-        let mut signatures = vec![];
-        for entry in pre_signed.sighashes {
+        let mut signatures: Vec<SignatureBytes> = vec![];
+
+        for (entry, utxo_in) in pre_signed
+            .sighashes
+            .iter()
+            .zip(pre_signed.utxo_inputs.iter())
+        {
             let sighash = Message::from_slice(entry.sighash.as_ref()).unwrap();
 
             match entry.signing_method {
                 UtxoProto::SighashMethod::Legacy | UtxoProto::SighashMethod::Segwit => {
                     let sig = bitcoin::ecdsa::Signature {
-                        sig: secret_key.sign_ecdsa(sighash),
+                        sig: keypair.secret_key().sign_ecdsa(sighash),
                         // TODO
                         hash_ty: bitcoin::sighash::EcdsaSighashType::All,
                     };
 
-                    signatures.push(sig);
+                    signatures.push(sig.to_vec());
                 },
                 UtxoProto::SighashMethod::Taproot => {
-                    // TODO: need TapNodeHash...
-                    todo!()
+                    // Any empty leaf hash implies P2TR key-path (balance transfer)
+                    if utxo_in.leaf_hash.is_empty() {
+                        // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
+                        let tapped: TweakedKeyPair = keypair.tap_tweak(&secp, None);
+                        let tweaked = KeyPair::from(tapped);
+
+                        // Construct the Schnorr signature.
+                        #[cfg(not(test))]
+                        let schnorr = secp.sign_schnorr(&sighash, &tweaked);
+                        #[cfg(test)]
+                        // For tests, we disable the included randomness in order to create
+                        // reproducible signatures. Randomness should ALWAYS be used in
+                        // production.
+                        let schnorr = secp.sign_schnorr_no_aux_rand(&sighash, &tweaked);
+
+                        let sig = bitcoin::taproot::Signature {
+                            sig: schnorr,
+                            // TODO.
+                            hash_ty: bitcoin::sighash::TapSighashType::All,
+                        };
+
+                        signatures.push(sig.to_vec());
+                    }
+                    // If it has a leaf hash, then it's a P2TR script-path (complex transaction)
+                    else {
+                        // We do not tweak the key here since we're passing on
+                        // the "control block" when claiming, hence this signing
+                        // process is simpler that P2TR key-path.
+                        let sig = bitcoin::taproot::Signature {
+                            sig: keypair.sign_schnorr(sighash),
+                            // TODO.
+                            hash_ty: bitcoin::sighash::TapSighashType::All,
+                        };
+
+                        signatures.push(sig.to_vec());
+                    }
                 },
             }
         }
