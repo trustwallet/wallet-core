@@ -31,7 +31,7 @@ TEST(TWOpBNBtestnetCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "5611");
+    assertStringsEqual(chainId, "204");
     assertStringsEqual(txUrl, "https://opbnbscan.com/tx/0x788ea8fb4a82dae957f1d3b18af3cd0bbde55a276e66bd17af8c869f24c03a0f");
     assertStringsEqual(accUrl, "https://opbnbscan.com/address/0x4eaf936c172b5e5511959167e8ab4f7031113ca3");
 }
