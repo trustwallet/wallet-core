@@ -375,6 +375,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .noble:
                     let expectedResult = "noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .sei:
+                    let expectedResult = "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
