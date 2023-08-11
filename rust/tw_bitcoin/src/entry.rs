@@ -9,7 +9,7 @@ use bitcoin::{
     WPubkeyHash, Witness,
 };
 use secp256k1::hashes::Hash;
-use secp256k1::XOnlyPublicKey;
+use secp256k1::{Message, XOnlyPublicKey};
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -72,14 +72,14 @@ impl CoinAddress for Address {
 
 // Todo: type should be unified.
 fn convert_locktime(
-    val: Proto::mod_SigningInput::OneOflock_time,
+    val: &Proto::mod_SigningInput::OneOflock_time,
 ) -> UtxoProto::mod_SigningInput::OneOflock_time {
     match val {
         Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
-            UtxoProto::mod_SigningInput::OneOflock_time::blocks(blocks)
+            UtxoProto::mod_SigningInput::OneOflock_time::blocks(*blocks)
         },
         Proto::mod_SigningInput::OneOflock_time::seconds(seconds) => {
-            UtxoProto::mod_SigningInput::OneOflock_time::seconds(seconds)
+            UtxoProto::mod_SigningInput::OneOflock_time::seconds(*seconds)
         },
         Proto::mod_SigningInput::OneOflock_time::None => {
             UtxoProto::mod_SigningInput::OneOflock_time::None
@@ -121,8 +121,32 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        let pre_signed = self.preimage_hashes(_coin, proto);
+        // TODO: Can we avoid cloning here?
+        let pre_signed = self.preimage_hashes(_coin, proto.clone());
         // TODO: Check error
+
+        let secret_key = secp256k1::SecretKey::from_slice(proto.private_key.as_ref()).unwrap();
+
+        let mut signatures = vec![];
+        for entry in pre_signed.sighashes {
+            let sighash = Message::from_slice(entry.sighash.as_ref()).unwrap();
+
+            match entry.signing_method {
+                UtxoProto::SighashMethod::Legacy | UtxoProto::SighashMethod::Segwit => {
+                    let sig = bitcoin::ecdsa::Signature {
+                        sig: secret_key.sign_ecdsa(sighash),
+                        // TODO
+                        hash_ty: bitcoin::sighash::EcdsaSighashType::All,
+                    };
+
+                    signatures.push(sig);
+                },
+                UtxoProto::SighashMethod::Taproot => {
+                    // TODO: need TapNodeHash...
+                    todo!()
+                },
+            }
+        }
 
         todo!()
     }
@@ -133,13 +157,12 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let c = proto.outputs.clone();
-        let utxo_outputs = process_recipients(c);
+        let utxo_outputs = process_recipients(&proto.outputs.clone());
 
         let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
 
         let mut utxo_inputs = vec![];
-        for input in &proto.inputs {
+        for input in proto.inputs.clone() {
             let mut leaf_hash = None;
 
             let (sighash_method, script_pubkey) = match &input.variant {
@@ -149,7 +172,7 @@ impl CoinEntry for BitcoinEntry {
                         let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
                         (
-                            UtxoProto::mod_TxIn::SighashMethod::Legacy,
+                            UtxoProto::SighashMethod::Legacy,
                             ScriptBuf::new_p2pkh(&pubkey_hash),
                         )
                     },
@@ -158,7 +181,7 @@ impl CoinEntry for BitcoinEntry {
                         let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
                         (
-                            UtxoProto::mod_TxIn::SighashMethod::Segwit,
+                            UtxoProto::SighashMethod::Segwit,
                             ScriptBuf::new_v0_p2wpkh(&wpubkey_hash),
                         )
                     },
@@ -168,7 +191,7 @@ impl CoinEntry for BitcoinEntry {
                         let (output_key, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
 
                         (
-                            UtxoProto::mod_TxIn::SighashMethod::Taproot,
+                            UtxoProto::SighashMethod::Taproot,
                             ScriptBuf::new_v1_p2tr_tweaked(output_key),
                         )
                     },
@@ -179,7 +202,7 @@ impl CoinEntry for BitcoinEntry {
                             bitcoin::taproot::LeafVersion::TapScript,
                         ));
 
-                        (UtxoProto::mod_TxIn::SighashMethod::Taproot, script_buf)
+                        (UtxoProto::SighashMethod::Taproot, script_buf)
                     },
                     ProtoInputBuilder::None => todo!(),
                 },
@@ -190,7 +213,7 @@ impl CoinEntry for BitcoinEntry {
             };
 
             utxo_inputs.push(UtxoProto::TxIn {
-                txid: input.txid.clone(),
+                txid: input.txid.to_vec().into(),
                 vout: input.vout,
                 amount: input.amount,
                 script_pubkey: script_pubkey.to_vec().into(),
@@ -198,7 +221,7 @@ impl CoinEntry for BitcoinEntry {
                 // TODO
                 sighash: UtxoProto::SighashType::All,
                 leaf_hash: leaf_hash
-                    .map(|hash| Cow::Owned(hash.to_vec()))
+                    .map(|hash| hash.to_vec().into())
                     .unwrap_or_default(),
                 one_prevout: input.one_prevout,
             });
@@ -232,9 +255,9 @@ impl CoinEntry for BitcoinEntry {
 
         let utxo_signing = UtxoProto::SigningInput {
             version: proto.version,
-            lock_time: convert_locktime(proto.lock_time),
-            inputs: utxo_inputs,
-            outputs: utxo_outputs,
+            lock_time: convert_locktime(&proto.lock_time),
+            inputs: utxo_inputs.clone(),
+            outputs: utxo_outputs.clone(),
         };
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(&utxo_signing);
@@ -242,6 +265,10 @@ impl CoinEntry for BitcoinEntry {
         Proto::PreSigningOutput {
             error: 0,
             sighashes: utxo_presigning.sighashes,
+            utxo_inputs: utxo_inputs.clone(),
+            //utxo_inputs: Default::default(),
+            utxo_outputs: utxo_outputs.clone(),
+            //utxo_outputs: Default::default(),
         }
     }
 
@@ -337,7 +364,7 @@ impl CoinEntry for BitcoinEntry {
         }
 
         // Process all the outputs.
-        let utxo_outputs = process_recipients(proto.outputs);
+        let utxo_outputs = process_recipients(&proto.outputs);
 
         let utxo_preserializtion = UtxoProto::PreSerialization {
             version: proto.version,
@@ -433,7 +460,7 @@ fn witness_pubkey_hash_from_proto(
     Ok(wpubkey_hash)
 }
 
-fn process_recipients(outputs: Vec<Proto::Output>) -> Vec<UtxoProto::TxOut> {
+fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::TxOut<'static>> {
     let mut utxo_outputs = vec![];
 
     for output in outputs {
