@@ -208,7 +208,7 @@ impl TransactionBuilder {
                 vout: input.ctx().previous_output.vout,
                 sequence: input.ctx().sequence.to_consensus_u32(),
                 script_sig: script_sig.to_bytes().into(),
-                witness: Some(Proto::mod_TxInClaim::Witness { items }),
+                witness_items: items,
             })
         }
 

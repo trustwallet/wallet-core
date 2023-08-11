@@ -263,7 +263,7 @@ impl CoinEntry for BitcoinEntry {
             todo!()
         }
 
-        let mut native_txins: Vec<TxIn> = vec![];
+        let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
         for (index, input) in proto.inputs.iter().enumerate() {
             let sig_slice = &signatures[index];
 
@@ -325,16 +325,18 @@ impl CoinEntry for BitcoinEntry {
                 },
             };
 
-            native_txins.push(TxIn {
-                previous_output: OutPoint {
-                    txid: Txid::from_slice(input.txid.as_ref()).unwrap(),
-                    vout: input.vout,
-                },
-                script_sig,
-                // TODO:
-                sequence: Sequence::default(),
-                witness,
-            })
+            utxo_input_claims.push(UtxoProto::TxInClaim {
+                txid: input.txid.clone(),
+                vout: input.vout,
+                // TODO
+                sequence: 0,
+                script_sig: script_sig.to_vec().into(),
+                witness_items: witness
+                    .to_vec()
+                    .into_iter()
+                    .map(Cow::Owned)
+                    .collect::<Vec<Cow<_>>>(),
+            });
         }
 
         let mut native_txouts: Vec<TxOut> = vec![];
@@ -368,7 +370,7 @@ impl CoinEntry for BitcoinEntry {
         let native_tx = Transaction {
             version: 2,
             lock_time: native_lock_time,
-            input: native_txins,
+            input: vec![],
             output: native_txouts,
         };
 
