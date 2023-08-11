@@ -42,20 +42,30 @@ message Input {
 	oneof variant {
 		InputVariant builder = 4;
 		ScriptWitness custom = 5;
-		TaprootScriptPath taproot_script = 6;
 	}
 
-	enum InputVariant {
-		P2sh = 0;
-		P2Pkh = 1;
-		P2Wsh = 2;
-		P2Wpkh = 3;
-		P2TrKeyPath = 4;
+	message InputVariant {
+		oneof variant {
+			// Pay-to-Script-Hash, specify the hash.
+			bytes p2sh = 1;
+			// Pay-to-Public-Key-Hash
+			ToPublicKeyOrHash p2pkh = 3;
+			// Pay-to-Witness-Script-Hash, specify the hash.
+			bytes p2wsh = 4;
+			// Pay-to-Public-Key-Hash
+			ToPublicKeyOrHash p2wpkh = 6;
+			// Pay-to-Taproot-key-path (balance transfers), specify the public key.
+			bytes p2tr_key_path = 7;
+			// Pay-to-Taproot-script-path (complex transfers)
+			TaprootScriptPath p2tr_script_path = 8;
+		}
 	}
 
 	message ScriptWitness {
-		bytes script_sig = 1;
-		repeated bytes witness_items = 2;
+		// TODO:
+		uint32 sighash_method = 1;
+		bytes script_sig = 2;
+		repeated bytes witness_items = 3;
 	}
 
 	message TaprootScriptPath {
@@ -74,6 +84,13 @@ message Output {
 	}
 }
 
+message ToPublicKeyOrHash {
+	oneof to_address {
+		bytes pubkey = 1;
+		bytes hash = 2;
+	}
+}
+
 message Builder {
 	oneof type {
 		// Pay-to-Script-Hash, specify the hash.
@@ -88,13 +105,6 @@ message Builder {
 		bytes p2tr_key_path = 7;
 		// Pay-to-Taproot-script-path (complex transfers)
 		TaprootScriptPath p2tr_script_path = 8;
-	}
-
-	message ToPublicKeyOrHash {
-		oneof to_address {
-			bytes pubkey = 1;
-			bytes hash = 2;
-		}
 	}
 
 	message TaprootScriptPath {
