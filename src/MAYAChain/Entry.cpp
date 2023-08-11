@@ -18,12 +18,12 @@ namespace TW::MAYAChain {
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     auto input = Cosmos::Proto::SigningInput();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = MAYAChain::Signer::sign(input).SerializeAsString();
+    auto serializedOut = Signer::sign(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return MAYAChain::Signer::signJSON(json, key);
+    return Signer::signJSON(json, key);
 }
 
 } // namespace TW::MAYAChain
