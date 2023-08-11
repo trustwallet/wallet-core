@@ -106,7 +106,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .meter,
                      .okxchain,
                      .confluxeSpace,
-                     .opBNBtestnet,
+                     .opBNB,
                      .acalaEVM,
                      .neon,
                      .base:

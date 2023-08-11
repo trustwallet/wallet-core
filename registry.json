@@ -3992,10 +3992,10 @@
   },
   {
     "id": "opbnb",
-    "name": "OpBNB testnet",
-    "coinId": 5611,
-    "chainId": "5611",
-    "symbol": "tBNB",
+    "name": "OpBNB",
+    "coinId": 204,
+    "chainId": "204",
+    "symbol": "BNB",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -4016,7 +4016,7 @@
     "info": {
       "url": "https://opbnb.bnbchain.org/en",
       "source": "https://github.com/bnb-chain/opbnb",
-      "rpc": "https://opbnb-testnet-rpc.bnbchain.org",
+      "rpc": "https://opbnb-mainnet-rpc.bnbchain.org",
       "documentation": "https://docs.bnbchain.org/opbnb-docs"
     }
   },

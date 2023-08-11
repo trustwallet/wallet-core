@@ -35,6 +35,7 @@ This list is generated from [./registry.json](../registry.json)
 | 178     | POA Network      | POA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/poa/info/logo.png" width="32" />          | <https://poa.network>         |
 | 194     | EOS              | EOS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/eos/info/logo.png" width="32" />          | <http://eos.io>               |
 | 195     | Tron             | TRX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/info/logo.png" width="32" />         | <https://tron.network>        |
+| 204     | OpBNB            | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/opbnb/info/logo.png" width="32" />        | <https://opbnb.bnbchain.org/en> |
 | 235     | FIO              | FIO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fio/info/logo.png" width="32" />          | <https://fioprotocol.io>      |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
 | 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
@@ -84,7 +85,6 @@ This list is generated from [./registry.json](../registry.json)
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/qtum/info/logo.png" width="32" />         | <https://qtum.org>            |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
 | 3030    | Hedera           | HBAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hedera/info/logo.png" width="32" />       | <https://hedera.com/>         |
-| 5611    | OpBNB testnet    | tBNB   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/opbnb/info/logo.png" width="32" />        | <https://opbnb.bnbchain.org/en> |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 8453    | Base             | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png" width="32" />         | <https://base.mirror.xyz/>    |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nuls/info/logo.png" width="32" />         | <https://nuls.io>             |
