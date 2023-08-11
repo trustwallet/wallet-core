@@ -92,7 +92,7 @@ message Builder {
 
 	message ToPublicKeyOrHash {
 		oneof to_address {
-			bytes key = 1;
+			bytes pubkey = 1;
 			bytes hash = 2;
 		}
 	}
