@@ -3,9 +3,10 @@ use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::consensus::encode::Encodable;
 use bitcoin::taproot::ControlBlock;
-use bitcoin::{OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
+use bitcoin::{
+    OutPoint, PubkeyHash, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
+};
 use secp256k1::hashes::Hash;
-use tw_misc::traits::ToBytesVec;
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -16,7 +17,9 @@ use tw_coin_entry::modules::json_signer::JsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
+use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Utxo::Proto as UtxoProto;
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
@@ -53,6 +56,23 @@ impl CoinAddress for Address {
             Payload::WitnessProgram(wp) => wp.program().as_bytes().into(),
             _ => todo!(), // Payload is non-exhaustive
         }
+    }
+}
+
+// Todo: type should be unified.
+fn convert_locktime(
+    val: Proto::mod_SigningInput::OneOflock_time,
+) -> UtxoProto::mod_SigningInput::OneOflock_time {
+    match val {
+        Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
+            UtxoProto::mod_SigningInput::OneOflock_time::blocks(blocks)
+        },
+        Proto::mod_SigningInput::OneOflock_time::seconds(seconds) => {
+            UtxoProto::mod_SigningInput::OneOflock_time::seconds(seconds)
+        },
+        Proto::mod_SigningInput::OneOflock_time::None => {
+            UtxoProto::mod_SigningInput::OneOflock_time::None
+        },
     }
 }
 
@@ -97,8 +117,55 @@ impl CoinEntry for BitcoinEntry {
     fn preimage_hashes(
         &self,
         _coin: &dyn CoinContext,
-        _input: Self::SigningInput<'_>,
+        proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
+        let mut utxo_outputs = vec![];
+        let mut total_spend: u64 = 0;
+        for output in &proto.outputs {
+            let amount = output.amount as u64;
+
+            let script_pubkey = match output.to_recipient {
+                Proto::mod_Output::OneOfto_recipient::script_pubkey(script) => {
+                    ScriptBuf::from_bytes(script.to_vec())
+                },
+                Proto::mod_Output::OneOfto_recipient::builder(builder) => {
+                    match builder.type_pb {
+                        Proto::mod_Builder::OneOftype_pb::p2sh(hash) => {
+                            todo!()
+                        },
+                        Proto::mod_Builder::OneOftype_pb::p2pkh(pubkey_or_hash) => {
+                            let pubkey_hash = match pubkey_or_hash.to_address {
+                                Proto::mod_Builder::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash) => {
+                                    PubkeyHash::from_slice(hash.as_ref()).unwrap()
+                                }
+                                Proto::mod_Builder::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(pubkey) => {
+                                    bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap().pubkey_hash()
+                                }
+                                Proto::mod_Builder::mod_ToPublicKeyOrHash::OneOfto_address::None => todo!(),
+                            };
+
+                            ScriptBuf::new_p2pkh(&pubkey_hash)
+                        },
+                        _ => todo!(),
+                    }
+                },
+                Proto::mod_Output::OneOfto_recipient::from_address(address) => todo!(),
+                Proto::mod_Output::OneOfto_recipient::None => todo!(),
+            };
+
+            utxo_outputs.push(UtxoProto::TxOut {
+                value: amount,
+                script_pubkey: script_pubkey.as_bytes().into(),
+            });
+        }
+
+        let utxo_input = UtxoProto::SigningInput {
+            version: proto.version,
+            lock_time: convert_locktime(proto.lock_time),
+            inputs: vec![],
+            outputs: vec![],
+        };
+
         todo!()
     }
 
@@ -111,7 +178,7 @@ impl CoinEntry for BitcoinEntry {
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         if proto.inputs.len() != signatures.len() {
-            // Return error.
+            // Error
             todo!()
         }
 
@@ -215,6 +282,7 @@ impl CoinEntry for BitcoinEntry {
             },
         };
 
+        // Use native type from `bitcoin` crate for encoding.
         let native_tx = Transaction {
             version: 2,
             lock_time: native_lock_time,
@@ -226,6 +294,7 @@ impl CoinEntry for BitcoinEntry {
         let mut encoded = vec![];
         native_tx.consensus_encode(&mut encoded).unwrap();
 
+        // Prepare `Proto::TransactionInput` protobufs for signing output.
         let mut proto_inputs = vec![];
         for input in &native_tx.input {
             proto_inputs.push(Proto::TransactionInput {
@@ -242,6 +311,7 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
+        // Prepare `Proto::TransactionOutput` protobufs for output.
         let mut proto_outputs = vec![];
         for output in &native_tx.output {
             proto_outputs.push(Proto::TransactionOutput {
@@ -252,6 +322,7 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
+        // Prepare `Proto::Transaction` protobuf for output.
         let transaction = Proto::Transaction {
             version: proto.version,
             lock_time: native_tx.lock_time.to_consensus_u32(),
@@ -259,6 +330,7 @@ impl CoinEntry for BitcoinEntry {
             outputs: proto_outputs,
         };
 
+        // Return the full protobuf output.
         Proto::SigningOutput {
             transaction: Some(transaction),
             encoded: encoded.into(),
