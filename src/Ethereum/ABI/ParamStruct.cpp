@@ -143,6 +143,10 @@ std::shared_ptr<ParamBase> ParamStruct::clone() const {
     return std::make_shared<ParamStruct>(_name, _params.clone());
 }
 
+std::shared_ptr<ParamBase> ParamStruct::clone() const {
+    return std::make_shared<ParamStruct>(_name, _params.clone());
+}
+
 Data ParamStruct::hashStructJson(const std::string& messageJson) {
     auto message = json::parse(messageJson, nullptr, false);
     if (message.is_discarded()) {

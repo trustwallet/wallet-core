@@ -30,7 +30,7 @@ TWString *_Nonnull TWBarzGetCounterfactualAddress(TWData *_Nonnull input);
 /// \param verificationFacet Verification facet address
 /// \return The address.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet);
+TWData *_Nonnull TWBarzGetInitCode(TWString* _Nonnull factory, struct TWPublicKey* _Nonnull publicKey, TWString* _Nonnull verificationFacet, uint32_t salt);
 
 /// Converts the original ASN-encoded signature from webauthn to the format accepted by Barz
 ///

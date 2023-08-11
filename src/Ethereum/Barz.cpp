@@ -9,7 +9,6 @@
 #include "EIP1014.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include <WebAuthn.h>
 #include "../proto/Barz.pb.h"
 #include "AsnParser.h"
 #include "Base64.h"
@@ -35,15 +34,15 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
     append(initCode, encoded);
 
     const Data initCodeHash = Hash::keccak256(initCode);
-    const Data salt(32, 0);
+    Data salt = store(input.salt(), 32);
     return Ethereum::checksumed(Ethereum::Address(hexEncoded(Ethereum::create2Address(input.factory(), salt, initCodeHash))));
 }
 
-Data getInitCode(const std::string& factoryAddress, const PublicKey& publicKey, const std::string& verificationFacet) {
+Data getInitCode(const std::string& factoryAddress, const PublicKey& publicKey, const std::string& verificationFacet, const uint32_t salt) {
     auto createAccountFunc = Ethereum::ABI::Function("createAccount", ParamCollection{
                                                                 std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(verificationFacet)),
                                                                 std::make_shared<Ethereum::ABI::ParamByteArray>(publicKey.bytes),
-                                                                std::make_shared<Ethereum::ABI::ParamUInt256>(0)});
+                                                                std::make_shared<Ethereum::ABI::ParamUInt256>(salt)});
     Data createAccountFuncEncoded;
     createAccountFunc.encode(createAccountFuncEncoded);
 

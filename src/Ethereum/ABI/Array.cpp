@@ -141,6 +141,13 @@ std::shared_ptr<ParamBase> ParamArray::clone() const {
     return newArray;
 }
 
+std::shared_ptr<ParamBase> ParamArray::clone() const {
+    auto newArray = std::make_shared<ParamArray>();
+    newArray->_params = _params.clone();
+    newArray->_proto = _proto->clone();
+    return newArray;
+}
+
 void ParamArrayFix::encode(Data& data) const {
     this->_params.encode(data);
 }
