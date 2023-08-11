@@ -29,7 +29,7 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
             TxInBuilder::new()
                 .txid(&txid)
                 .vout(0)
-                .legacy_method()
+                .value(0)
                 .spending_condition(input_script_pubkey.as_bytes())
                 .build()
         })

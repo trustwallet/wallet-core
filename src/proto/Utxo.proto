@@ -44,44 +44,22 @@ message TxIn {
 
     uint64 amount = 3;
 
-    oneof sighash_method {
-        Legacy legacy = 4;
-        Segwit segwit = 5;
-        Taproot taproot = 6;
-    }
+    // The spending condition of the output.
+    bytes script_pubkey = 1;
 
     // The sighash type.
     SighashType sighash = 7;
 
-    message Legacy {
-        // The spending condition of the output.
-        bytes script_pubkey = 1;
+    SighashMethod sighash_method = 8;
+
+    enum SighashMethod {
+        Legacy = 0;
+        Segwit = 1;
+        Taproot = 2;
     }
 
-    message Segwit {
-        uint64 value = 1;
-
-        // The spending condition of the output.
-        bytes script_pubkey = 2;
-    }
-
-    message Taproot {
-        bytes leaf_hash = 1;
-
-        oneof prevout {
-            Prevout one = 2;
-            AllPrevouts all = 3;
-        }
-
-        message Prevout {
-            uint64 value = 1;
-            bytes script_pubkey = 2;
-        }
-
-        message AllPrevouts {
-            repeated Prevout all = 1;
-        }
-    }
+    bytes leaf_hash = 10;
+    bool one_prevout = 11;
 }
 
 enum SighashType {
