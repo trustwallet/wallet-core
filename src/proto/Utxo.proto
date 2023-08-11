@@ -42,6 +42,8 @@ message TxIn {
     // The index of the referenced output.
     uint32 vout = 2;
 
+    uint64 amount = 3;
+
     oneof sighash_method {
         Legacy legacy = 4;
         Segwit segwit = 5;

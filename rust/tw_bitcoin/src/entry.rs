@@ -228,17 +228,44 @@ impl CoinEntry for BitcoinEntry {
             utxo_inputs.push(UtxoProto::TxIn {
                 txid: input.txid.clone(),
                 vout: input.vout,
+                amount: input.amount,
                 sighash_method,
                 // TODO
                 sighash: UtxoProto::SighashType::All,
             });
         }
 
+        let mut remaining = total_spent;
+        // TODO: This logic can be combined with the processor above.
+        match proto.input_selector {
+            Proto::SelectorType::AutomaticAscending => {
+                utxo_inputs.sort_by(|a, b| a.amount.partial_cmp(&b.amount).unwrap());
+
+                let mut total_input_amount = 0;
+                utxo_inputs = utxo_inputs
+                    .into_iter()
+                    .take_while(|input| {
+                        total_input_amount += input.amount;
+                        remaining = remaining.saturating_sub(input.amount);
+
+                        remaining != 0
+                    })
+                    .collect();
+            },
+            // Do nothing.
+            Proto::SelectorType::UseAll => {},
+        }
+
+        if remaining != 0 {
+            // Error, insufficient funds.
+            todo!()
+        }
+
         let utxo_input = UtxoProto::SigningInput {
             version: proto.version,
             lock_time: convert_locktime(proto.lock_time),
-            inputs: vec![],
-            outputs: vec![],
+            inputs: utxo_inputs,
+            outputs: utxo_outputs,
         };
 
         todo!()
