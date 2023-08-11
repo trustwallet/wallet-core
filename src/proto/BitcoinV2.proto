@@ -10,6 +10,9 @@ message SigningInput {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;
 
+	// Only required if the `sign` method is called.
+	bytes private_key = 99;
+
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
     oneof lock_time {
@@ -125,7 +128,11 @@ message PreSigningOutput {
 	uint32 error = 1;
 
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
-    repeated bytes sighashes = 2;
+    repeated Utxo.Proto.Sighash sighashes = 2;
+
+	repeated Utxo.Proto.TxIn utxo_inputs = 3;
+
+	repeated Utxo.Proto.TxOut utxo_outputs = 3;
 }
 
 message SigningOutput {

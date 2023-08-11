@@ -93,10 +93,11 @@ message PreSigningOutput {
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 2;
 
-    message Sighash {
-        bytes sighash = 1;
-        SighashMethod signing_method = 2;
-    }
+}
+
+message Sighash {
+    bytes sighash = 1;
+    SighashMethod signing_method = 2;
 }
 
 message PreSerialization {

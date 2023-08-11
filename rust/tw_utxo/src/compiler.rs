@@ -166,7 +166,7 @@ impl Compiler<StandardBitcoinContext> {
             error: Proto::Error::OK,
             sighashes: sighashes
                 .into_iter()
-                .map(|(sighash, method)| Proto::mod_PreSigningOutput::Sighash {
+                .map(|(sighash, method)| Proto::Sighash {
                     sighash: sighash.into(),
                     signing_method: method.into(),
                 })
