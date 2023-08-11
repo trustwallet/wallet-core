@@ -5,6 +5,7 @@ use bitcoin::consensus::encode::Encodable;
 use bitcoin::taproot::ControlBlock;
 use bitcoin::{OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
 use secp256k1::hashes::Hash;
+use tw_misc::traits::ToBytesVec;
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -59,7 +60,7 @@ impl CoinEntry for BitcoinEntry {
     type AddressPrefix = NoPrefix;
     type Address = Address;
     type SigningInput<'a> = Proto::SigningInput<'a>;
-    type SigningOutput = PlaceHolderProto<'static>;
+    type SigningOutput = Proto::SigningOutput<'static>;
     type PreSigningOutput = PlaceHolderProto<'static>;
 
     // Optional modules:
@@ -114,7 +115,7 @@ impl CoinEntry for BitcoinEntry {
             todo!()
         }
 
-        let mut txins: Vec<TxIn> = vec![];
+        let mut native_txins: Vec<TxIn> = vec![];
         for (index, input) in proto.inputs.iter().enumerate() {
             // TODO:
             let pubkey = bitcoin::PublicKey::from_slice(&[]).unwrap();
@@ -175,7 +176,7 @@ impl CoinEntry for BitcoinEntry {
                 },
             };
 
-            txins.push(TxIn {
+            native_txins.push(TxIn {
                 previous_output: OutPoint {
                     txid: Txid::from_slice(input.txid.as_ref()).unwrap(),
                     vout: input.vout,
@@ -187,7 +188,7 @@ impl CoinEntry for BitcoinEntry {
             })
         }
 
-        let mut txouts: Vec<TxOut> = vec![];
+        let mut native_txouts: Vec<TxOut> = vec![];
         for output in proto.outputs {
             let script_pubkey = match output.to_recipient {
                 Proto::mod_Output::OneOfto_recipient::script_pubkey(script) => {
@@ -196,13 +197,13 @@ impl CoinEntry for BitcoinEntry {
                 _ => todo!(),
             };
 
-            txouts.push(TxOut {
+            native_txouts.push(TxOut {
                 value: output.amount as u64,
                 script_pubkey,
             });
         }
 
-        let lock_time = match proto.lock_time {
+        let native_lock_time = match proto.lock_time {
             Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
                 LockTime::Blocks(Height::from_consensus(blocks).unwrap())
             },
@@ -214,24 +215,24 @@ impl CoinEntry for BitcoinEntry {
             },
         };
 
-        let tx = Transaction {
+        let native_tx = Transaction {
             version: 2,
-            lock_time,
-            input: txins,
-            output: txouts,
+            lock_time: native_lock_time,
+            input: native_txins,
+            output: native_txouts,
         };
 
         // Encode the transaction.
         let mut encoded = vec![];
-        tx.consensus_encode(&mut encoded).unwrap();
+        native_tx.consensus_encode(&mut encoded).unwrap();
 
-        let mut inputs = vec![];
-        for input in &tx.input {
-            inputs.push(Proto::TransactionInput {
-                txid: input.previous_output.txid.as_byte_array().as_slice().into(),
+        let mut proto_inputs = vec![];
+        for input in &native_tx.input {
+            proto_inputs.push(Proto::TransactionInput {
+                txid: input.previous_output.txid.to_vec().into(),
                 vout: input.previous_output.vout,
                 sequence: input.sequence.to_consensus_u32(),
-                script_sig: input.script_sig.as_bytes().into(),
+                script_sig: input.script_sig.to_vec().into(),
                 witness_items: input
                     .witness
                     .to_vec()
@@ -241,11 +242,11 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
-        let mut outputs = vec![];
-        for output in &tx.output {
-            outputs.push(Proto::TransactionOutput {
+        let mut proto_outputs = vec![];
+        for output in &native_tx.output {
+            proto_outputs.push(Proto::TransactionOutput {
                 recipient: Cow::default(),
-                script_pubkey: output.script_pubkey.as_bytes().into(),
+                script_pubkey: output.script_pubkey.to_vec().into(),
                 amount: output.value,
                 control_block: None,
             });
@@ -253,20 +254,18 @@ impl CoinEntry for BitcoinEntry {
 
         let transaction = Proto::Transaction {
             version: proto.version,
-            lock_time: tx.lock_time.to_consensus_u32(),
-            inputs,
-            outputs,
+            lock_time: native_tx.lock_time.to_consensus_u32(),
+            inputs: proto_inputs,
+            outputs: proto_outputs,
         };
 
-        let out = Proto::SigningOutput {
+        Proto::SigningOutput {
             transaction: Some(transaction),
             encoded: encoded.into(),
-            transaction_id: tx.txid().to_byte_array().as_slice().into(),
+            transaction_id: native_tx.txid().to_vec().into(),
             error: 0,
             fee: 0,
-        };
-
-        todo!()
+        }
     }
 
     #[inline]
