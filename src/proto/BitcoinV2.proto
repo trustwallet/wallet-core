@@ -39,6 +39,9 @@ message Input {
 
 	uint64 amount = 2;
 
+	// TODO:
+	uint32 sighash = 3;
+
 	oneof variant {
 		InputVariant builder = 4;
 		ScriptWitness custom = 5;
