@@ -116,6 +116,14 @@ message Builder {
 	}
 }
 
+message PreSigningOutput {
+	// TODO
+	uint32 error = 1;
+
+    /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    repeated bytes sighashes = 2;
+}
+
 message SigningOutput {
 	Transaction transaction = 1;
 
