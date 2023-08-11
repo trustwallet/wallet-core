@@ -4,6 +4,7 @@ package TW.BitcoinV2.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
+import "Utxo.proto";
 
 message SigningInput {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
@@ -35,16 +36,16 @@ enum SelectorType {
 message Input {
 	bytes txid = 1;
 
-	uint32 vout = 3;
+	uint32 vout = 2;
 
-	uint64 amount = 2;
+	uint64 amount = 3;
 
 	// TODO:
-	uint32 sighash = 3;
+	uint32 sighash = 4;
 
 	oneof variant {
-		InputVariant builder = 4;
-		ScriptWitness custom = 5;
+		InputVariant builder = 5;
+		ScriptWitness custom = 6;
 	}
 
 	message InputVariant {
@@ -52,9 +53,9 @@ message Input {
 			// Pay-to-Script-Hash, specify the hash.
 			bytes p2sh = 1;
 			// Pay-to-Public-Key-Hash
-			ToPublicKeyOrHash p2pkh = 3;
+			ToPublicKeyOrHash p2pkh = 2;
 			// Pay-to-Witness-Script-Hash, specify the hash.
-			bytes p2wsh = 4;
+			bytes p2wsh = 3;
 			// Pay-to-Public-Key-Hash
 			ToPublicKeyOrHash p2wpkh = 6;
 			// Pay-to-Taproot-key-path (balance transfers), specify the public key.
@@ -112,7 +113,7 @@ message Builder {
 
 	message TaprootScriptPath {
 		bytes public_key = 1;
-		bytes leaf_hash = 2;
+		bytes node_hash = 2;
 	}
 }
 
