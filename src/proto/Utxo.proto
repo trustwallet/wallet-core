@@ -148,12 +148,7 @@ message TxInClaim {
     bytes script_sig = 4;
 
     // The script used for claiming an input.
-    Witness witness = 5;
-
-    // The witness items.
-    message Witness {
-        repeated bytes items = 1;
-    }
+    repeated bytes witness_items = 5;
 }
 
 message SerializedTransaction {

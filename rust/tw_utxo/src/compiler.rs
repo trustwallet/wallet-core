@@ -215,17 +215,13 @@ impl Compiler<StandardBitcoinContext> {
             let vout = txin.vout;
             let sequence = Sequence::from_consensus(txin.sequence);
             let script_sig = ScriptBuf::from_bytes(txin.script_sig.to_vec());
-            let witness = if let Some(witness) = txin.witness.as_ref() {
-                Witness::from_slice(
-                    &witness
-                        .items
-                        .iter()
-                        .map(|s| s.as_ref())
-                        .collect::<Vec<&[u8]>>(),
-                )
-            } else {
-                Witness::new()
-            };
+            let witness = Witness::from_slice(
+                &txin
+                    .witness_items
+                    .iter()
+                    .map(|s| s.as_ref())
+                    .collect::<Vec<&[u8]>>(),
+            );
 
             tx.input.push(TxIn {
                 previous_output: OutPoint { txid, vout },
