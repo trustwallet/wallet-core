@@ -2,14 +2,14 @@ use crate::Result;
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::consensus::encode::Encodable;
-use bitcoin::taproot::{ControlBlock, TapNodeHash};
 use bitcoin::key::TapTweak;
+use bitcoin::taproot::{ControlBlock, TapLeafHash, TapNodeHash};
 use bitcoin::{
     OutPoint, PubkeyHash, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid,
     WPubkeyHash, Witness,
 };
-use secp256k1::XOnlyPublicKey;
 use secp256k1::hashes::Hash;
+use secp256k1::XOnlyPublicKey;
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -164,13 +164,16 @@ impl CoinEntry for BitcoinEntry {
                         ScriptBuf::new_v1_p2tr_tweaked(outputkey)
                     },
                     ProtoBuilderType::p2tr_script_path(complex) => {
-                        let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
+                        let node_hash =
+                            TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
 
-                        let pubkey = bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
+                        let pubkey =
+                            bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
                         let xonly = XOnlyPublicKey::from(pubkey.inner);
-                        let (outputkey, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), Some(node_hash));
+                        let (output_key, _) =
+                            xonly.tap_tweak(&secp256k1::Secp256k1::new(), Some(node_hash));
 
-                        ScriptBuf::new_v1_p2tr_tweaked(outputkey)
+                        ScriptBuf::new_v1_p2tr_tweaked(output_key)
                     },
                     ProtoBuilderType::None => todo!(),
                 },
@@ -205,11 +208,36 @@ impl CoinEntry for BitcoinEntry {
                         UtxoProto::mod_TxIn::OneOfsighash_method::segwit(
                             UtxoProto::mod_TxIn::Segwit {
                                 value: input.amount,
-                                script_pubkey: ScriptBuf::new_v0_p2wpkh(&wpubkey_hash).to_vec().into(),
-                            }
+                                script_pubkey: ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
+                                    .to_vec()
+                                    .into(),
+                            },
                         )
                     },
-                    ProtoInputBuilder::p2tr_key_path(_) => todo!(),
+                    ProtoInputBuilder::p2tr_key_path(pubkey) => {
+                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                        let xonly = XOnlyPublicKey::from(pubkey.inner);
+                        let (output_key, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
+
+                        let script_buf = ScriptBuf::new_v1_p2tr_tweaked(output_key);
+                        let leaf_hash = TapLeafHash::from_script(
+                            script_buf.as_script(),
+                            bitcoin::taproot::LeafVersion::TapScript,
+                        );
+
+                        UtxoProto::mod_TxIn::OneOfsighash_method::taproot(
+                            UtxoProto::mod_TxIn::Taproot {
+                                leaf_hash: leaf_hash.to_vec().into(),
+                                // TODO: 
+                                prevout: UtxoProto::mod_TxIn::mod_Taproot::OneOfprevout::one(
+                                    UtxoProto::mod_TxIn::mod_Taproot::Prevout {
+                                        value: 0,
+                                        script_pubkey: Cow::default(),
+                                    },
+                                ),
+                            },
+                        )
+                    },
                     ProtoInputBuilder::p2tr_script_path(_) => {
                         todo!()
                     },
