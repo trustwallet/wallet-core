@@ -124,17 +124,17 @@ impl CoinEntry for BitcoinEntry {
         for output in &proto.outputs {
             let amount = output.amount as u64;
 
-            let script_pubkey = match output.to_recipient {
+            let script_pubkey = match &output.to_recipient {
                 Proto::mod_Output::OneOfto_recipient::script_pubkey(script) => {
                     ScriptBuf::from_bytes(script.to_vec())
                 },
                 Proto::mod_Output::OneOfto_recipient::builder(builder) => {
-                    match builder.type_pb {
+                    match &builder.type_pb {
                         Proto::mod_Builder::OneOftype_pb::p2sh(hash) => {
                             todo!()
                         },
                         Proto::mod_Builder::OneOftype_pb::p2pkh(pubkey_or_hash) => {
-                            let pubkey_hash = match pubkey_or_hash.to_address {
+                            let pubkey_hash = match &pubkey_or_hash.to_address {
                                 Proto::mod_Builder::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash) => {
                                     PubkeyHash::from_slice(hash.as_ref()).unwrap()
                                 }
@@ -155,7 +155,7 @@ impl CoinEntry for BitcoinEntry {
 
             utxo_outputs.push(UtxoProto::TxOut {
                 value: amount,
-                script_pubkey: script_pubkey.as_bytes().into(),
+                script_pubkey: script_pubkey.to_vec().into(),
             });
         }
 
