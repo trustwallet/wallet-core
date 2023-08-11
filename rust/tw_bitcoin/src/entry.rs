@@ -162,7 +162,13 @@ impl CoinEntry for BitcoinEntry {
 
                             ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
                         },
-                        _ => todo!(),
+                        Proto::mod_Builder::OneOftype_pb::p2tr_key_path(pubkey) => {
+                            todo!()
+                        },
+                        Proto::mod_Builder::OneOftype_pb::p2tr_script_path(pubkey) => {
+                            todo!()
+                        },
+                        Proto::mod_Builder::OneOftype_pb::None => todo!(),
                     }
                 },
                 Proto::mod_Output::OneOfto_recipient::from_address(address) => todo!(),
