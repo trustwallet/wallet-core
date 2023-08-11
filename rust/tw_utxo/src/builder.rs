@@ -49,6 +49,7 @@ impl<'a> TxInBuilder<'a> {
             proto: Proto::TxIn {
                 txid: Default::default(),
                 vout: u32::MAX,
+                amount: u64::MAX,
                 sighash: Proto::SighashType::All,
                 sighash_method: Proto::mod_TxIn::OneOfsighash_method::None,
             },

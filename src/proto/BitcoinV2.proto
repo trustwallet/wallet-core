@@ -81,8 +81,8 @@ message Output {
 	uint64 amount = 1;
 
 	oneof to_recipient {
-		bytes script_pubkey = 2;
-		Builder builder = 3;
+		Builder builder = 2;
+		bytes script_pubkey = 3;
 		bytes from_address = 4;
 	}
 }

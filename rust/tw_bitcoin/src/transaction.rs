@@ -172,6 +172,7 @@ impl TransactionBuilder {
                 // TODO: Can `to_vec()` be avoided?
                 txid: input.ctx().previous_output.txid.to_vec().into(),
                 vout: input.ctx().previous_output.vout,
+                amount: input.ctx().value,
                 sighash,
                 sighash_method,
             });
