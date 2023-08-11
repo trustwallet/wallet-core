@@ -89,7 +89,7 @@ impl CoinEntry for BitcoinEntry {
     type Address = Address;
     type SigningInput<'a> = Proto::SigningInput<'a>;
     type SigningOutput = Proto::SigningOutput<'static>;
-    type PreSigningOutput = PlaceHolderProto<'static>;
+    type PreSigningOutput = Proto::PreSigningOutput<'static>;
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
@@ -275,9 +275,12 @@ impl CoinEntry for BitcoinEntry {
             outputs: utxo_outputs,
         };
 
-        let presigning = tw_utxo::compiler::Compiler::preimage_hashes(&utxo_signing);
+        let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(&utxo_signing);
 
-        todo!()
+        Proto::PreSigningOutput {
+            error: 0,
+            sighashes: utxo_presigning.sighashes,
+        }
     }
 
     #[inline]
