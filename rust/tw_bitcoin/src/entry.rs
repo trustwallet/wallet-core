@@ -22,6 +22,13 @@ use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
+// Convenience aliases.
+type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
+type ProtoBuilderType<'a> = Proto::mod_Builder::OneOftype_pb<'a>;
+type ProtoPubkeyOrHash<'a> = Proto::mod_ToPublicKeyOrHash::OneOfto_address<'a>;
+type ProtoInputVariant<'a> = Proto::mod_Input::OneOfvariant<'a>;
+type ProtoInputBuilder<'a> = Proto::mod_Input::mod_InputVariant::OneOfvariant<'a>;
+
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
 pub struct PlaceHolder;
@@ -128,57 +135,57 @@ impl CoinEntry for BitcoinEntry {
             total_spent += amount;
 
             let script_pubkey = match &output.to_recipient {
-                Proto::mod_Output::OneOfto_recipient::script_pubkey(script) => {
+                ProtoOutputRecipient::script_pubkey(script) => {
                     ScriptBuf::from_bytes(script.to_vec())
                 },
-                Proto::mod_Output::OneOfto_recipient::builder(builder) => match &builder.type_pb {
-                    Proto::mod_Builder::OneOftype_pb::p2sh(hash) => {
+                ProtoOutputRecipient::builder(builder) => match &builder.type_pb {
+                    ProtoBuilderType::p2sh(hash) => {
                         todo!()
                     },
-                    Proto::mod_Builder::OneOftype_pb::p2pkh(pubkey_or_hash) => {
+                    ProtoBuilderType::p2pkh(pubkey_or_hash) => {
                         let pubkey_hash = match &pubkey_or_hash.to_address {
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash) => {
+                            ProtoPubkeyOrHash::hash(hash) => {
                                 PubkeyHash::from_slice(hash.as_ref()).unwrap()
                             },
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(pubkey) => {
+                            ProtoPubkeyOrHash::pubkey(pubkey) => {
                                 bitcoin::PublicKey::from_slice(pubkey.as_ref())
                                     .unwrap()
                                     .pubkey_hash()
                             },
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::None => todo!(),
+                            ProtoPubkeyOrHash::None => todo!(),
                         };
 
                         ScriptBuf::new_p2pkh(&pubkey_hash)
                     },
-                    Proto::mod_Builder::OneOftype_pb::p2wsh(_) => {
+                    ProtoBuilderType::p2wsh(_) => {
                         todo!()
                     },
-                    Proto::mod_Builder::OneOftype_pb::p2wpkh(pubkey_or_hash) => {
+                    ProtoBuilderType::p2wpkh(pubkey_or_hash) => {
                         let wpubkey_hash = match &pubkey_or_hash.to_address {
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash) => {
+                            ProtoPubkeyOrHash::hash(hash) => {
                                 WPubkeyHash::from_slice(hash.as_ref()).unwrap()
                             },
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(pubkey) => {
+                            ProtoPubkeyOrHash::pubkey(pubkey) => {
                                 bitcoin::PublicKey::from_slice(pubkey.as_ref())
                                     .unwrap()
                                     .wpubkey_hash()
                                     .unwrap()
                             },
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::None => todo!(),
+                            ProtoPubkeyOrHash::None => todo!(),
                         };
 
                         ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
                     },
-                    Proto::mod_Builder::OneOftype_pb::p2tr_key_path(pubkey) => {
+                    ProtoBuilderType::p2tr_key_path(pubkey) => {
                         todo!()
                     },
-                    Proto::mod_Builder::OneOftype_pb::p2tr_script_path(pubkey) => {
+                    ProtoBuilderType::p2tr_script_path(pubkey) => {
                         todo!()
                     },
-                    Proto::mod_Builder::OneOftype_pb::None => todo!(),
+                    ProtoBuilderType::None => todo!(),
                 },
-                Proto::mod_Output::OneOfto_recipient::from_address(address) => todo!(),
-                Proto::mod_Output::OneOfto_recipient::None => todo!(),
+                ProtoOutputRecipient::from_address(address) => todo!(),
+                ProtoOutputRecipient::None => todo!(),
             };
 
             utxo_outputs.push(UtxoProto::TxOut {
@@ -190,19 +197,19 @@ impl CoinEntry for BitcoinEntry {
         let mut utxo_inputs = vec![];
         for input in &proto.inputs {
             let sighash_method = match &input.variant {
-                Proto::mod_Input::OneOfvariant::builder(builder) => match &builder.variant {
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2sh(_) => todo!(),
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2pkh(pubkey_or_hash) => {
+                ProtoInputVariant::builder(builder) => match &builder.variant {
+                    ProtoInputBuilder::p2sh(_) => todo!(),
+                    ProtoInputBuilder::p2pkh(pubkey_or_hash) => {
                         let pubkey_hash = match &pubkey_or_hash.to_address {
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash) => {
+                            ProtoPubkeyOrHash::hash(hash) => {
                                 PubkeyHash::from_slice(hash.as_ref()).unwrap()
                             },
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(pubkey) => {
+                            ProtoPubkeyOrHash::pubkey(pubkey) => {
                                 bitcoin::PublicKey::from_slice(pubkey.as_ref())
                                     .unwrap()
                                     .pubkey_hash()
                             },
-                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::None => todo!(),
+                            ProtoPubkeyOrHash::None => todo!(),
                         };
 
                         UtxoProto::mod_TxIn::OneOfsighash_method::legacy(
@@ -211,18 +218,18 @@ impl CoinEntry for BitcoinEntry {
                             },
                         )
                     },
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2wsh(_) => todo!(),
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2wpkh(_) => todo!(),
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2tr_key_path(_) => todo!(),
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2tr_script_path(_) => {
+                    ProtoInputBuilder::p2wsh(_) => todo!(),
+                    ProtoInputBuilder::p2wpkh(_) => todo!(),
+                    ProtoInputBuilder::p2tr_key_path(_) => todo!(),
+                    ProtoInputBuilder::p2tr_script_path(_) => {
                         todo!()
                     },
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::None => todo!(),
+                    ProtoInputBuilder::None => todo!(),
                 },
-                Proto::mod_Input::OneOfvariant::custom(custom) => {
+                ProtoInputVariant::custom(custom) => {
                     todo!()
                 },
-                Proto::mod_Input::OneOfvariant::None => todo!(),
+                ProtoInputVariant::None => todo!(),
             };
 
             utxo_inputs.push(UtxoProto::TxIn {
@@ -293,8 +300,8 @@ impl CoinEntry for BitcoinEntry {
             let sig_slice = &signatures[index];
 
             let (script_sig, witness) = match &input.variant {
-                Proto::mod_Input::OneOfvariant::builder(variant) => match &variant.variant {
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2pkh(_) => {
+                ProtoInputVariant::builder(variant) => match &variant.variant {
+                    ProtoInputBuilder::p2pkh(_) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
                         (
@@ -305,7 +312,7 @@ impl CoinEntry for BitcoinEntry {
                             Witness::new(),
                         )
                     },
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2wpkh(_) => {
+                    ProtoInputBuilder::p2wpkh(_) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
 
                         (ScriptBuf::new(), {
@@ -315,7 +322,7 @@ impl CoinEntry for BitcoinEntry {
                             w
                         })
                     },
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2tr_key_path(_) => {
+                    ProtoInputBuilder::p2tr_key_path(_) => {
                         let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
 
                         (ScriptBuf::new(), {
@@ -324,7 +331,7 @@ impl CoinEntry for BitcoinEntry {
                             w
                         })
                     },
-                    Proto::mod_Input::mod_InputVariant::OneOfvariant::p2tr_script_path(taproot) => {
+                    ProtoInputBuilder::p2tr_script_path(taproot) => {
                         let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
                         let control_block =
                             ControlBlock::decode(taproot.control_block.as_ref()).unwrap();
@@ -339,11 +346,11 @@ impl CoinEntry for BitcoinEntry {
                     },
                     _ => panic!(),
                 },
-                Proto::mod_Input::OneOfvariant::custom(custom) => (
+                ProtoInputVariant::custom(custom) => (
                     ScriptBuf::from_bytes(custom.script_sig.to_vec()),
                     Witness::from_slice(&custom.witness_items),
                 ),
-                Proto::mod_Input::OneOfvariant::None => {
+                ProtoInputVariant::None => {
                     todo!()
                 },
             };
@@ -363,7 +370,7 @@ impl CoinEntry for BitcoinEntry {
         let mut native_txouts: Vec<TxOut> = vec![];
         for output in proto.outputs {
             let script_pubkey = match output.to_recipient {
-                Proto::mod_Output::OneOfto_recipient::script_pubkey(script) => {
+                ProtoOutputRecipient::script_pubkey(script) => {
                     ScriptBuf::from_bytes(script.to_vec())
                 },
                 _ => todo!(),
