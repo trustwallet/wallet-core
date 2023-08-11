@@ -10,7 +10,7 @@ use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
-type ProtoSigningMethod = Proto::mod_TxIn::SighashMethod;
+type ProtoSigningMethod = Proto::SighashMethod;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -63,7 +63,7 @@ impl Compiler<StandardBitcoinContext> {
         let tx = convert_proto_to_tx(&proto)?;
         let mut cache = SighashCache::new(&tx);
 
-        let mut sighashes: Vec<Vec<u8>> = vec![];
+        let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
 
         for (index, input) in proto.inputs.iter().enumerate() {
             match input.sighash_method {
@@ -79,7 +79,7 @@ impl Compiler<StandardBitcoinContext> {
                     let sighash =
                         cache.legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())?;
 
-                    sighashes.push(sighash.as_byte_array().to_vec());
+                    sighashes.push((sighash.as_byte_array().to_vec(), ProtoSigningMethod::Legacy));
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSigningMethod::Segwit => {
@@ -100,7 +100,7 @@ impl Compiler<StandardBitcoinContext> {
                         sighash_type,
                     )?;
 
-                    sighashes.push(sighash.as_byte_array().to_vec());
+                    sighashes.push((sighash.as_byte_array().to_vec(), ProtoSigningMethod::Segwit));
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::Taproot => {
@@ -154,14 +154,23 @@ impl Compiler<StandardBitcoinContext> {
                         sighash_type,
                     )?;
 
-                    sighashes.push(sighash.as_byte_array().to_vec());
+                    sighashes.push((
+                        sighash.as_byte_array().to_vec(),
+                        ProtoSigningMethod::Taproot,
+                    ));
                 },
             }
         }
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
-            sighashes: sighashes.into_iter().map(Cow::Owned).collect(),
+            sighashes: sighashes
+                .into_iter()
+                .map(|(sighash, method)| Proto::mod_PreSigningOutput::Sighash {
+                    sighash: sighash.into(),
+                    signing_method: method.into(),
+                })
+                .collect(),
         })
     }
 

@@ -61,7 +61,7 @@ fn sighash_input_p2pkh_output_p2pkh() {
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
     assert_eq!(
-        hex::encode(hashes[0].as_ref(), false),
+        hex::encode(hashes[0].sighash.as_ref(), false),
         "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18"
     );
 }

@@ -52,7 +52,7 @@ impl<'a> TxInBuilder<'a> {
                 amount: u64::MAX,
                 script_pubkey: Default::default(),
                 sighash: Proto::SighashType::All,
-                sighash_method: Proto::mod_TxIn::SighashMethod::Legacy,
+                sighash_method: Proto::SighashMethod::Legacy,
                 leaf_hash: Default::default(),
                 one_prevout: false,
             },
@@ -78,7 +78,7 @@ impl<'a> TxInBuilder<'a> {
         self.proto.sighash = sighash;
         self
     }
-    pub fn sighash_method(mut self, method: Proto::mod_TxIn::SighashMethod) -> Self {
+    pub fn sighash_method(mut self, method: Proto::SighashMethod) -> Self {
         self.proto.sighash_method = method;
         self
     }

@@ -120,9 +120,8 @@ impl CoinEntry for BitcoinEntry {
     }
 
     #[inline]
-    fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-
-        let pre_signed = self.preimage_hashes(_coin, input);
+    fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
+        let pre_signed = self.preimage_hashes(_coin, proto);
         // TODO: Check error
 
         todo!()
@@ -134,7 +133,8 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let utxo_outputs = process_recipients(proto.outputs);
+        let c = proto.outputs.clone();
+        let utxo_outputs = process_recipients(c);
 
         let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
 
