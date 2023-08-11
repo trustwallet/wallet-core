@@ -143,37 +143,14 @@ impl CoinEntry for BitcoinEntry {
                         todo!()
                     },
                     ProtoBuilderType::p2pkh(pubkey_or_hash) => {
-                        let pubkey_hash = match &pubkey_or_hash.to_address {
-                            ProtoPubkeyOrHash::hash(hash) => {
-                                PubkeyHash::from_slice(hash.as_ref()).unwrap()
-                            },
-                            ProtoPubkeyOrHash::pubkey(pubkey) => {
-                                bitcoin::PublicKey::from_slice(pubkey.as_ref())
-                                    .unwrap()
-                                    .pubkey_hash()
-                            },
-                            ProtoPubkeyOrHash::None => todo!(),
-                        };
-
+                        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
                         ScriptBuf::new_p2pkh(&pubkey_hash)
                     },
                     ProtoBuilderType::p2wsh(_) => {
                         todo!()
                     },
                     ProtoBuilderType::p2wpkh(pubkey_or_hash) => {
-                        let wpubkey_hash = match &pubkey_or_hash.to_address {
-                            ProtoPubkeyOrHash::hash(hash) => {
-                                WPubkeyHash::from_slice(hash.as_ref()).unwrap()
-                            },
-                            ProtoPubkeyOrHash::pubkey(pubkey) => {
-                                bitcoin::PublicKey::from_slice(pubkey.as_ref())
-                                    .unwrap()
-                                    .wpubkey_hash()
-                                    .unwrap()
-                            },
-                            ProtoPubkeyOrHash::None => todo!(),
-                        };
-
+                        let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
                         ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
                     },
                     ProtoBuilderType::p2tr_key_path(pubkey) => {
@@ -200,17 +177,7 @@ impl CoinEntry for BitcoinEntry {
                 ProtoInputVariant::builder(builder) => match &builder.variant {
                     ProtoInputBuilder::p2sh(_) => todo!(),
                     ProtoInputBuilder::p2pkh(pubkey_or_hash) => {
-                        let pubkey_hash = match &pubkey_or_hash.to_address {
-                            ProtoPubkeyOrHash::hash(hash) => {
-                                PubkeyHash::from_slice(hash.as_ref()).unwrap()
-                            },
-                            ProtoPubkeyOrHash::pubkey(pubkey) => {
-                                bitcoin::PublicKey::from_slice(pubkey.as_ref())
-                                    .unwrap()
-                                    .pubkey_hash()
-                            },
-                            ProtoPubkeyOrHash::None => todo!(),
-                        };
+                        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
                         UtxoProto::mod_TxIn::OneOfsighash_method::legacy(
                             UtxoProto::mod_TxIn::Legacy {
@@ -298,30 +265,30 @@ impl CoinEntry for BitcoinEntry {
 
         let mut native_txins: Vec<TxIn> = vec![];
         for (index, input) in proto.inputs.iter().enumerate() {
-            // TODO:
-            let pubkey = bitcoin::PublicKey::from_slice(&[]).unwrap();
             let sig_slice = &signatures[index];
 
             let (script_sig, witness) = match &input.variant {
                 ProtoInputVariant::builder(variant) => match &variant.variant {
-                    ProtoInputBuilder::p2pkh(_) => {
+                    ProtoInputBuilder::p2pkh(pubkey_or_hash) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
+                        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
                         (
                             ScriptBuf::builder()
                                 .push_slice(sig.serialize())
-                                .push_key(&pubkey)
+                                .push_slice(pubkey_hash)
                                 .into_script(),
                             Witness::new(),
                         )
                     },
-                    ProtoInputBuilder::p2wpkh(_) => {
+                    ProtoInputBuilder::p2wpkh(pubkey_or_hash) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
+                        let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
                         (ScriptBuf::new(), {
                             let mut w = Witness::new();
                             w.push(sig.serialize());
-                            w.push(pubkey.to_bytes());
+                            w.push(wpubkey_hash.as_byte_array());
                             w
                         })
                     },
@@ -464,4 +431,31 @@ impl CoinEntry for BitcoinEntry {
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         None
     }
+}
+
+fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<PubkeyHash> {
+    let pubkey_hash = match &pubkey_or_hash.to_address {
+        ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref()).unwrap(),
+        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
+            .unwrap()
+            .pubkey_hash(),
+        ProtoPubkeyOrHash::None => return Err(crate::Error::Todo),
+    };
+
+    Ok(pubkey_hash)
+}
+
+fn witness_pubkey_hash_from_proto(
+    pubkey_or_hash: &Proto::ToPublicKeyOrHash,
+) -> Result<WPubkeyHash> {
+    let wpubkey_hash = match &pubkey_or_hash.to_address {
+        ProtoPubkeyOrHash::hash(hash) => WPubkeyHash::from_slice(hash.as_ref()).unwrap(),
+        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
+            .unwrap()
+            .wpubkey_hash()
+            .unwrap(),
+        ProtoPubkeyOrHash::None => todo!(),
+    };
+
+    Ok(wpubkey_hash)
 }
