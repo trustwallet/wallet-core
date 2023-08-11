@@ -2,11 +2,13 @@ use crate::Result;
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::consensus::encode::Encodable;
-use bitcoin::taproot::ControlBlock;
+use bitcoin::taproot::{ControlBlock, TapNodeHash};
+use bitcoin::key::TapTweak;
 use bitcoin::{
     OutPoint, PubkeyHash, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid,
     WPubkeyHash, Witness,
 };
+use secp256k1::XOnlyPublicKey;
 use secp256k1::hashes::Hash;
 use std::borrow::Cow;
 use std::fmt::Display;
@@ -155,10 +157,20 @@ impl CoinEntry for BitcoinEntry {
                         ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
                     },
                     ProtoBuilderType::p2tr_key_path(pubkey) => {
-                        todo!()
+                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                        let xonly = XOnlyPublicKey::from(pubkey.inner);
+                        let (outputkey, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
+
+                        ScriptBuf::new_v1_p2tr_tweaked(outputkey)
                     },
-                    ProtoBuilderType::p2tr_script_path(pubkey) => {
-                        todo!()
+                    ProtoBuilderType::p2tr_script_path(complex) => {
+                        let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
+
+                        let pubkey = bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
+                        let xonly = XOnlyPublicKey::from(pubkey.inner);
+                        let (outputkey, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), Some(node_hash));
+
+                        ScriptBuf::new_v1_p2tr_tweaked(outputkey)
                     },
                     ProtoBuilderType::None => todo!(),
                 },
