@@ -241,6 +241,16 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
+        let mut outputs = vec![];
+        for output in &tx.output {
+            outputs.push(Proto::TransactionOutput {
+                recipient: Cow::default(),
+                script_pubkey: output.script_pubkey.as_bytes().into(),
+                amount: output.value,
+                control_block: None,
+            });
+        }
+
         let transaction = Proto::Transaction {
             version: proto.version,
             lock_time: tx.lock_time.to_consensus_u32(),
