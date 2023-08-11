@@ -10,7 +10,7 @@ use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
-type ProtoSigningMethod<'a> = Proto::mod_TxIn::OneOfsighash_method<'a>;
+type ProtoSigningMethod = Proto::mod_TxIn::SighashMethod;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -68,8 +68,8 @@ impl Compiler<StandardBitcoinContext> {
         for (index, input) in proto.inputs.iter().enumerate() {
             match input.sighash_method {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
-                ProtoSigningMethod::legacy(ref legacy) => {
-                    let script_pubkey = Script::from_bytes(legacy.script_pubkey.as_ref());
+                ProtoSigningMethod::Legacy => {
+                    let script_pubkey = Script::from_bytes(input.script_pubkey.as_ref());
                     let sighash_type = if let SighashType::UseDefault = input.sighash {
                         EcdsaSighashType::All
                     } else {
@@ -82,14 +82,13 @@ impl Compiler<StandardBitcoinContext> {
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
-                ProtoSigningMethod::segwit(ref segwit) => {
-                    let script_pubkey = ScriptBuf::from_bytes(segwit.script_pubkey.to_vec());
+                ProtoSigningMethod::Segwit => {
+                    let script_pubkey = ScriptBuf::from_bytes(input.script_pubkey.to_vec());
                     let sighash_type = if let SighashType::UseDefault = input.sighash {
                         EcdsaSighashType::All
                     } else {
                         EcdsaSighashType::from_consensus(input.sighash as u32)
                     };
-                    let value = segwit.value;
 
                     let sighash = cache.segwit_signature_hash(
                         index,
@@ -97,19 +96,19 @@ impl Compiler<StandardBitcoinContext> {
                             .p2wpkh_script_code()
                             .as_ref()
                             .ok_or(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey))?,
-                        value,
+                        input.amount,
                         sighash_type,
                     )?;
 
                     sighashes.push(sighash.as_byte_array().to_vec());
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
-                ProtoSigningMethod::taproot(ref taproot) => {
-                    let leaf_hash = if taproot.leaf_hash.is_empty() {
+                ProtoSigningMethod::Taproot => {
+                    let leaf_hash = if input.leaf_hash.is_empty() {
                         None
                     } else {
                         Some((
-                            TapLeafHash::from_slice(taproot.leaf_hash.as_ref())
+                            TapLeafHash::from_slice(input.leaf_hash.as_ref())
                                 .map_err(|_| Error::from(Proto::Error::Error_invalid_leaf_hash))?,
                             // TODO: We might want to make this configurable.
                             0xFFFFFFFF,
@@ -124,37 +123,28 @@ impl Compiler<StandardBitcoinContext> {
                     // issues related to `Prevouts::All(&[T])`.
                     let _owner;
 
-                    // TODO: Avoid cloning.
-                    let prevouts: Prevouts<'_, TxOut> = match taproot.prevout.clone() {
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::one(one) => Prevouts::One(
+                    let prevouts = if input.one_prevout {
+                        Prevouts::One(
                             index,
                             TxOut {
-                                value: one.value,
-                                script_pubkey: ScriptBuf::from_bytes(one.script_pubkey.to_vec()),
+                                value: input.amount,
+                                script_pubkey: ScriptBuf::from_bytes(input.script_pubkey.to_vec()),
                             },
-                        ),
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::all(prevouts) => {
-                            _owner = Some(
-                                prevouts
-                                    .all
-                                    .iter()
-                                    .map(|p| TxOut {
-                                        value: p.value,
-                                        script_pubkey: ScriptBuf::from_bytes(
-                                            p.script_pubkey.to_vec(),
-                                        ),
-                                    })
-                                    .collect::<Vec<TxOut>>(),
-                            );
+                        )
+                    } else {
+                        _owner = Some(
+                            proto
+                                .inputs
+                                .iter()
+                                .map(|i| TxOut {
+                                    value: i.amount,
+                                    script_pubkey: ScriptBuf::from_bytes(i.script_pubkey.to_vec()),
+                                })
+                                .collect::<Vec<TxOut>>(),
+                        );
 
-                            Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
-                        },
-                        Proto::mod_TxIn::mod_Taproot::OneOfprevout::None => {
-                            panic!();
-                        },
+                        Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
                     };
-
-                    dbg!(&prevouts);
 
                     let sighash = cache.taproot_signature_hash(
                         index,
@@ -165,9 +155,6 @@ impl Compiler<StandardBitcoinContext> {
                     )?;
 
                     sighashes.push(sighash.as_byte_array().to_vec());
-                },
-                ProtoSigningMethod::None => {
-                    return Err(Error::from(Proto::Error::Error_missing_sighash_method))
                 },
             }
         }
@@ -215,12 +202,13 @@ impl Compiler<StandardBitcoinContext> {
             let vout = txin.vout;
             let sequence = Sequence::from_consensus(txin.sequence);
             let script_sig = ScriptBuf::from_bytes(txin.script_sig.to_vec());
-            let witness =
-                Witness::from_slice(
-                    &txin.witness_items
-                        .iter()
-                        .map(|s| s.as_ref())
-                        .collect::<Vec<&[u8]>>());
+            let witness = Witness::from_slice(
+                &txin
+                    .witness_items
+                    .iter()
+                    .map(|s| s.as_ref())
+                    .collect::<Vec<&[u8]>>(),
+            );
 
             tx.input.push(TxIn {
                 previous_output: OutPoint { txid, vout },
