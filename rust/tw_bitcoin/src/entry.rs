@@ -261,12 +261,14 @@ impl CoinEntry for BitcoinEntry {
             todo!()
         }
 
-        let utxo_input = UtxoProto::SigningInput {
+        let utxo_signing = UtxoProto::SigningInput {
             version: proto.version,
             lock_time: convert_locktime(proto.lock_time),
             inputs: utxo_inputs,
             outputs: utxo_outputs,
         };
+
+        let presigning = tw_utxo::compiler::Compiler::preimage_hashes(&utxo_signing);
 
         todo!()
     }
