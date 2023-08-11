@@ -130,62 +130,9 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let mut total_spent: u64 = 0;
+        let utxo_outputs = process_recipients(proto.outputs);
 
-        let mut utxo_outputs = vec![];
-        for output in &proto.outputs {
-            let amount = output.amount as u64;
-            total_spent += amount;
-
-            let script_pubkey = match &output.to_recipient {
-                ProtoOutputRecipient::script_pubkey(script) => {
-                    ScriptBuf::from_bytes(script.to_vec())
-                },
-                ProtoOutputRecipient::builder(builder) => match &builder.type_pb {
-                    ProtoBuilderType::p2sh(_) => {
-                        todo!()
-                    },
-                    ProtoBuilderType::p2pkh(pubkey_or_hash) => {
-                        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
-                        ScriptBuf::new_p2pkh(&pubkey_hash)
-                    },
-                    ProtoBuilderType::p2wsh(_) => {
-                        todo!()
-                    },
-                    ProtoBuilderType::p2wpkh(pubkey_or_hash) => {
-                        let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
-                        ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
-                    },
-                    ProtoBuilderType::p2tr_key_path(pubkey) => {
-                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
-                        let xonly = XOnlyPublicKey::from(pubkey.inner);
-                        let (outputkey, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
-
-                        ScriptBuf::new_v1_p2tr_tweaked(outputkey)
-                    },
-                    ProtoBuilderType::p2tr_script_path(complex) => {
-                        let node_hash =
-                            TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
-
-                        let pubkey =
-                            bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
-                        let xonly = XOnlyPublicKey::from(pubkey.inner);
-                        let (output_key, _) =
-                            xonly.tap_tweak(&secp256k1::Secp256k1::new(), Some(node_hash));
-
-                        ScriptBuf::new_v1_p2tr_tweaked(output_key)
-                    },
-                    ProtoBuilderType::None => todo!(),
-                },
-                ProtoOutputRecipient::from_address(_) => todo!(),
-                ProtoOutputRecipient::None => todo!(),
-            };
-
-            utxo_outputs.push(UtxoProto::TxOut {
-                value: amount,
-                script_pubkey: script_pubkey.to_vec().into(),
-            });
-        }
+        let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
 
         let mut utxo_inputs = vec![];
         for input in &proto.inputs {
@@ -383,20 +330,7 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
-        let mut utxo_outputs = vec![];
-        for output in proto.outputs {
-            let script_pubkey = match output.to_recipient {
-                ProtoOutputRecipient::script_pubkey(script) => {
-                    ScriptBuf::from_bytes(script.to_vec())
-                },
-                _ => todo!(),
-            };
-
-            utxo_outputs.push(UtxoProto::TxOut {
-                value: output.amount as u64,
-                script_pubkey: script_pubkey.to_vec().into(),
-            })
-        }
+        let utxo_outputs = process_recipients(proto.outputs);
 
         let utxo_preserializtion = UtxoProto::PreSerialization {
             version: proto.version,
@@ -490,4 +424,62 @@ fn witness_pubkey_hash_from_proto(
     };
 
     Ok(wpubkey_hash)
+}
+
+fn process_recipients(outputs: Vec<Proto::Output>) -> Vec<UtxoProto::TxOut> {
+    let mut utxo_outputs = vec![];
+
+    for output in outputs {
+        let script_pubkey = match &output.to_recipient {
+            // Script spending condition was passed on directly.
+            ProtoOutputRecipient::script_pubkey(script) => ScriptBuf::from_bytes(script.to_vec()),
+            // Process builder methods. We construct the Script spending
+            // conditions by using the specified parameters.
+            ProtoOutputRecipient::builder(builder) => match &builder.type_pb {
+                ProtoBuilderType::p2sh(_) => {
+                    todo!()
+                },
+                ProtoBuilderType::p2pkh(pubkey_or_hash) => {
+                    let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                    ScriptBuf::new_p2pkh(&pubkey_hash)
+                },
+                ProtoBuilderType::p2wsh(_) => {
+                    todo!()
+                },
+                ProtoBuilderType::p2wpkh(pubkey_or_hash) => {
+                    let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                    ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
+                },
+                ProtoBuilderType::p2tr_key_path(pubkey) => {
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let xonly = XOnlyPublicKey::from(pubkey.inner);
+                    let (outputkey, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
+
+                    ScriptBuf::new_v1_p2tr_tweaked(outputkey)
+                },
+                ProtoBuilderType::p2tr_script_path(complex) => {
+                    let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
+
+                    let pubkey =
+                        bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
+                    let xonly = XOnlyPublicKey::from(pubkey.inner);
+                    let (output_key, _) =
+                        xonly.tap_tweak(&secp256k1::Secp256k1::new(), Some(node_hash));
+
+                    ScriptBuf::new_v1_p2tr_tweaked(output_key)
+                },
+                ProtoBuilderType::None => todo!(),
+            },
+            // We derive the spending condition for the address.
+            ProtoOutputRecipient::from_address(_) => todo!(),
+            ProtoOutputRecipient::None => todo!(),
+        };
+
+        utxo_outputs.push(UtxoProto::TxOut {
+            value: output.amount,
+            script_pubkey: script_pubkey.to_vec().into(),
+        });
+    }
+
+    utxo_outputs
 }
