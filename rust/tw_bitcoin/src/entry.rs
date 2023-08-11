@@ -21,6 +21,7 @@ use tw_keypair::tw::{PrivateKey, PublicKey};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use tw_utxo::compiler::StandardBitcoinContext;
 
 // Convenience aliases.
 type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
@@ -339,7 +340,7 @@ impl CoinEntry for BitcoinEntry {
             });
         }
 
-        let mut native_txouts: Vec<TxOut> = vec![];
+        let mut utxo_outputs = vec![];
         for output in proto.outputs {
             let script_pubkey = match output.to_recipient {
                 ProtoOutputRecipient::script_pubkey(script) => {
@@ -348,77 +349,63 @@ impl CoinEntry for BitcoinEntry {
                 _ => todo!(),
             };
 
-            native_txouts.push(TxOut {
+            utxo_outputs.push(UtxoProto::TxOut {
                 value: output.amount as u64,
-                script_pubkey,
-            });
+                script_pubkey: script_pubkey.to_vec().into(),
+            })
         }
 
-        let native_lock_time = match proto.lock_time {
-            Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
-                LockTime::Blocks(Height::from_consensus(blocks).unwrap())
-            },
-            Proto::mod_SigningInput::OneOflock_time::seconds(blocks) => {
-                LockTime::Seconds(Time::from_consensus(blocks).unwrap())
-            },
-            Proto::mod_SigningInput::OneOflock_time::None => {
-                LockTime::Blocks(Height::from_consensus(0).unwrap())
-            },
+        let utxo_preserializtion = UtxoProto::PreSerialization {
+            version: proto.version,
+            // TODO:
+            lock_time: UtxoProto::mod_PreSerialization::OneOflock_time::blocks(0),
+            inputs: utxo_input_claims.clone(),
+            outputs: utxo_outputs.clone(),
         };
 
-        // Use native type from `bitcoin` crate for encoding.
-        let native_tx = Transaction {
-            version: 2,
-            lock_time: native_lock_time,
-            input: vec![],
-            output: native_txouts,
-        };
-
-        // Encode the transaction.
-        let mut encoded = vec![];
-        native_tx.consensus_encode(&mut encoded).unwrap();
+        let utxo_serialized = tw_utxo::compiler::Compiler::compile(&utxo_preserializtion);
 
         // Prepare `Proto::TransactionInput` protobufs for signing output.
         let mut proto_inputs = vec![];
-        for input in &native_tx.input {
+        for input in utxo_input_claims {
             proto_inputs.push(Proto::TransactionInput {
-                txid: input.previous_output.txid.to_vec().into(),
-                vout: input.previous_output.vout,
-                sequence: input.sequence.to_consensus_u32(),
-                script_sig: input.script_sig.to_vec().into(),
-                witness_items: input
-                    .witness
-                    .to_vec()
-                    .into_iter()
-                    .map(Cow::Owned)
-                    .collect::<Vec<Cow<_>>>(),
+                txid: input.txid.to_vec().into(),
+                vout: input.vout,
+                sequence: input.sequence,
+                script_sig: input.script_sig,
+                witness_items: input.witness_items,
             });
         }
 
         // Prepare `Proto::TransactionOutput` protobufs for output.
         let mut proto_outputs = vec![];
-        for output in &native_tx.output {
+        for output in utxo_outputs {
             proto_outputs.push(Proto::TransactionOutput {
                 recipient: Cow::default(),
-                script_pubkey: output.script_pubkey.to_vec().into(),
+                script_pubkey: output.script_pubkey,
                 amount: output.value,
+                // TODO:
                 control_block: None,
             });
         }
 
         // Prepare `Proto::Transaction` protobuf for output.
         let transaction = Proto::Transaction {
-            version: proto.version,
-            lock_time: native_tx.lock_time.to_consensus_u32(),
+            version: utxo_preserializtion.version,
+            // TODO
+            lock_time: 0,
             inputs: proto_inputs,
             outputs: proto_outputs,
         };
 
         // Return the full protobuf output.
         Proto::SigningOutput {
-            transaction: Some(transaction),
-            encoded: encoded.into(),
-            transaction_id: native_tx.txid().to_vec().into(),
+            // TODO: This should be returned by tw_utxo.
+            //transaction: Some(transaction),
+            transaction: None,
+            encoded: utxo_serialized.encoded,
+            // TODO: Should be returned by `tw_utxo`.
+            transaction_id: Cow::default(),
             error: 0,
             fee: 0,
         }
