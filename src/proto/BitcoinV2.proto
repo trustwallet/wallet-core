@@ -120,18 +120,13 @@ message Transaction {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;
 
-    // Block height or timestamp indicating at what point transactions can be
-    // included in a block.
-    oneof lock_time {
-        uint32 blocks = 2;
-        uint32 seconds = 3;
-    }
+    uint32 lock_time = 2;
 
 	// The transaction inputs.
-	repeated TransactionInput inputs = 4;
+	repeated TransactionInput inputs = 3;
 	
 	// The transaction outputs.
-	repeated TransactionOutput outputs = 5;
+	repeated TransactionOutput outputs = 4;
 }
 
 message TransactionInput {
@@ -141,7 +136,7 @@ message TransactionInput {
 	// The referenced input by transaction index.
 	uint32 vout = 3;
 
-	bytes sequence = 4;
+	uint32 sequence = 4;
 
 	// The script for claiming the input (non-Segwit/non-Taproot).
 	bytes script_sig = 5;
@@ -152,7 +147,7 @@ message TransactionInput {
 
 message TransactionOutput {
 	// Public key or hash.
-	bytes destination = 1;
+	bytes recipient = 1;
 
 	// The condition for claiming the output.
 	bytes script_pubkey = 2;
