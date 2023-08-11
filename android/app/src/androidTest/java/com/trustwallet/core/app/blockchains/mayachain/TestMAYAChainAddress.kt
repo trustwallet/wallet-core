@@ -22,8 +22,8 @@ class TestMAYAChainAddress {
     @Test
     fun testAddressValidation() {
         var addr = listOf(
-            "maya1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r",
-            "maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2knf5vy"
+            "maya1uuds8pd92qnnq0udw0rpg0szpgcslc9prlsqk8",
+            "maya1zf3gsk7edzwl9syyefvfhle37cjtql35n6emmw"
         )
         addr.forEach {
             assert(CoinType.MAYACHAIN.validate(it))
