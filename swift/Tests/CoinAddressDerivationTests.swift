@@ -106,7 +106,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .meter,
                      .okxchain,
                      .confluxeSpace,
-                     .opBNBtestnet,
+                     .opBNB,
                      .acalaEVM,
                      .neon,
                      .base:
@@ -377,6 +377,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .mayachain:
                     let expectedResult = "maya1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2knf5vy"
+                case .sei:
+                    let expectedResult = "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
