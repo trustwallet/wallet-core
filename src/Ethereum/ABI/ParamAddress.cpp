@@ -11,13 +11,17 @@
 namespace TW::Ethereum::ABI {
 
 Data ParamAddress::getData() const {
-    Data data = store(getVal(), bytes);
+    Data data = store(_val.getVal(), bytes);
     return data;
 }
 
 bool ParamAddress::setValueJson(const std::string& value) {
-    setVal(load(parse_hex(value)));
+    _val.setVal(load(parse_hex(value)));
     return true;
+}
+
+std::shared_ptr<ParamBase> ParamAddress::clone() const {
+    return std::make_shared<ParamAddress>(getData());
 }
 
 } // namespace TW::Ethereum::ABI

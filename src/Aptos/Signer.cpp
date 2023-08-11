@@ -162,6 +162,15 @@ TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
+TransactionPayload tokenTransferCoinsPayload(const Proto::SigningInput& input) {
+    auto&& [args, argsJson] = commonTransferPayload(input.token_transfer_coins());
+    auto& function = input.token_transfer_coins().function();
+    TypeTag tokenTransferTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(Address(function.account_address()),
+                                                                                   function.module(), function.name(), {})})};
+    TransactionPayload payload = EntryFunction(gAptosAccountModule, "transfer_coins", {tokenTransferTag}, args, argsJson);
+    return payload;
+}
+
 TransactionPayload registerTokenPayload(const Proto::SigningInput& input) {
 
     auto& function = input.register_token().function();
@@ -256,6 +265,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         }
         case Proto::SigningInput::kLiquidStakingMessage: {
             return liquidStakingFunctor(input.liquid_staking_message());
+        }
+        case Proto::SigningInput::kTokenTransferCoins: {
+            return tokenTransferCoinsPayload(input);
         }
         case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Transaction payload should be set");

@@ -856,7 +856,8 @@ TEST(EthereumAbi, DecodeArrayOfByteArray) {
     bool res = param.decode(encoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(2ul, param.getCount());
-    EXPECT_EQ(7 * 32ul, offset);
+    // `size_of(array.len())` + `size_of(byte_array[0].len())` + `size_of(byte_array[1].len())
+    EXPECT_EQ(3 * 32ul, offset);
     EXPECT_EQ(2ul, param.getVal().size());
 }
 
@@ -986,7 +987,8 @@ TEST(EthereumAbi, DecodeParamsMixed) {
     EXPECT_EQ(3, (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(p.getParam(1)))->getParam(2)))->getVal());
     EXPECT_EQ(true, (std::dynamic_pointer_cast<ParamBool>(p.getParam(2)))->getVal());
     EXPECT_EQ("Hello", (std::dynamic_pointer_cast<ParamString>(p.getParam(3)))->getVal());
-    EXPECT_EQ(13 * 32ul, offset);
+    // Offset of `ParamUInt256`, `ParamBool` static elements and sizes of `ParamArray`, `ParamBool`, `ParamByteArray`.
+    EXPECT_EQ(5 * 32ul, offset);
 }
 
 ///// Function encode & decode
@@ -1113,7 +1115,8 @@ TEST(EthereumAbi, DecodeFunctionOutputCase2) {
     size_t offset = 0;
     bool res = func.decodeOutput(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(128ul, offset);
+    // The offset should only be shifted by the size of the array.
+    EXPECT_EQ(32ul, offset);
 
     // new output values
     std::shared_ptr<ParamBase> param;
@@ -1185,7 +1188,8 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase1) {
     EXPECT_EQ(3ul, (std::dynamic_pointer_cast<ParamArray>(param))->getCount());
     EXPECT_EQ(uint256_t(1), (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(param))->getVal()[0]))->getVal());
     EXPECT_EQ(uint256_t(3), (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(param))->getVal()[2]))->getVal());
-    EXPECT_EQ(4 + 9 * 32ul, offset);
+    // Offset of `ParamBool` static element and sizes of `ParamByteArray`, `ParamArray` arrays.
+    EXPECT_EQ(4 + 3 * 32ul, offset);
 }
 
 TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase2) {
@@ -1228,7 +1232,8 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase2) {
     EXPECT_EQ("31323334353637383930", hex((std::dynamic_pointer_cast<ParamByteArrayFix>(param))->getVal()));
     EXPECT_TRUE(func.getInParam(3, param));
     EXPECT_EQ(std::string("Hello, world!"), (std::dynamic_pointer_cast<ParamString>(param))->getVal());
-    EXPECT_EQ(4 + 9 * 32ul, offset);
+    // Offset of `ParamUInt256` static element and sizes of `ParamArray`, `ParamByteArrayFix`, `ParamString` dynamic arrays.
+    EXPECT_EQ(4 + 4 * 32ul, offset);
 }
 
 TEST(EthereumAbi, DecodeFunctionContractMulticall) {
@@ -1271,7 +1276,8 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
     size_t offset = 0;
     bool res = func.decodeInput(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(4 + 29 * 32ul, offset);
+    // The offset should only be shifted by the size of the array.
+    EXPECT_EQ(4 + 32ul, offset);
 }
 
 TEST(EthereumAbi, ParamFactoryMake) {

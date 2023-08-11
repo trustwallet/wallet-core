@@ -26,4 +26,7 @@ message ContractAddressInput {
   string bytecode = 7;
   // PublicKey of the wallet
   string public_key = 8;
+
+  // Salt is used to derive multiple account from the same public key
+  uint32 salt = 9;
 }

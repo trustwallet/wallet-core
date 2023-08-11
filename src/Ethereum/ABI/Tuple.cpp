@@ -14,4 +14,10 @@ int ParamTuple::addParam(std::shared_ptr<ParamBase> param) {
     return _params.addParam(param);
 }
 
+std::shared_ptr<ParamBase> ParamTuple::clone() const {
+    auto newTuple = std::make_shared<ParamTuple>();
+    newTuple->_params = _params.clone();
+    return newTuple;
+}
+
 } // namespace TW::Ethereum::ABI
