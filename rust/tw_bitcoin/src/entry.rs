@@ -189,29 +189,26 @@ impl CoinEntry for BitcoinEntry {
 
         let mut utxo_inputs = vec![];
         for input in &proto.inputs {
-            let sighash_method = match &input.variant {
+            let mut leaf_hash = None;
+
+            let (sighash_method, script_pubkey) = match &input.variant {
                 ProtoInputVariant::builder(builder) => match &builder.variant {
                     ProtoInputBuilder::p2sh(_) => todo!(),
                     ProtoInputBuilder::p2pkh(pubkey_or_hash) => {
                         let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
-                        UtxoProto::mod_TxIn::OneOfsighash_method::legacy(
-                            UtxoProto::mod_TxIn::Legacy {
-                                script_pubkey: ScriptBuf::new_p2pkh(&pubkey_hash).to_vec().into(),
-                            },
+                        (
+                            UtxoProto::mod_TxIn::SighashMethod::Legacy,
+                            ScriptBuf::new_p2pkh(&pubkey_hash),
                         )
                     },
                     ProtoInputBuilder::p2wsh(_) => todo!(),
                     ProtoInputBuilder::p2wpkh(pubkey_or_hash) => {
                         let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
 
-                        UtxoProto::mod_TxIn::OneOfsighash_method::segwit(
-                            UtxoProto::mod_TxIn::Segwit {
-                                value: input.amount,
-                                script_pubkey: ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
-                                    .to_vec()
-                                    .into(),
-                            },
+                        (
+                            UtxoProto::mod_TxIn::SighashMethod::Segwit,
+                            ScriptBuf::new_v0_p2wpkh(&wpubkey_hash),
                         )
                     },
                     ProtoInputBuilder::p2tr_key_path(pubkey) => {
@@ -219,27 +216,19 @@ impl CoinEntry for BitcoinEntry {
                         let xonly = XOnlyPublicKey::from(pubkey.inner);
                         let (output_key, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
 
-                        let script_buf = ScriptBuf::new_v1_p2tr_tweaked(output_key);
-                        let leaf_hash = TapLeafHash::from_script(
-                            script_buf.as_script(),
-                            bitcoin::taproot::LeafVersion::TapScript,
-                        );
-
-                        UtxoProto::mod_TxIn::OneOfsighash_method::taproot(
-                            UtxoProto::mod_TxIn::Taproot {
-                                leaf_hash: leaf_hash.to_vec().into(),
-                                // TODO: 
-                                prevout: UtxoProto::mod_TxIn::mod_Taproot::OneOfprevout::one(
-                                    UtxoProto::mod_TxIn::mod_Taproot::Prevout {
-                                        value: 0,
-                                        script_pubkey: Cow::default(),
-                                    },
-                                ),
-                            },
+                        (
+                            UtxoProto::mod_TxIn::SighashMethod::Taproot,
+                            ScriptBuf::new_v1_p2tr_tweaked(output_key),
                         )
                     },
-                    ProtoInputBuilder::p2tr_script_path(_) => {
-                        todo!()
+                    ProtoInputBuilder::p2tr_script_path(complex) => {
+                        let script_buf = ScriptBuf::from_bytes(complex.payload.to_vec());
+                        leaf_hash = Some(TapLeafHash::from_script(
+                            script_buf.as_script(),
+                            bitcoin::taproot::LeafVersion::TapScript,
+                        ));
+
+                        (UtxoProto::mod_TxIn::SighashMethod::Taproot, script_buf)
                     },
                     ProtoInputBuilder::None => todo!(),
                 },
@@ -253,9 +242,14 @@ impl CoinEntry for BitcoinEntry {
                 txid: input.txid.clone(),
                 vout: input.vout,
                 amount: input.amount,
+                script_pubkey: script_pubkey.to_vec().into(),
                 sighash_method,
                 // TODO
                 sighash: UtxoProto::SighashType::All,
+                leaf_hash: leaf_hash
+                    .map(|hash| Cow::Owned(hash.to_vec()))
+                    .unwrap_or_default(),
+                one_prevout: input.one_prevout,
             });
         }
 
