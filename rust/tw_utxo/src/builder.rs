@@ -51,7 +51,7 @@ impl<'a> TxInBuilder<'a> {
                 vout: u32::MAX,
                 amount: u64::MAX,
                 script_pubkey: Default::default(),
-                sighash: Proto::SighashType::All,
+                sighash_type: Proto::SighashType::All,
                 signing_method: Proto::SigningMethod::Legacy,
                 leaf_hash: Default::default(),
                 one_prevout: false,
@@ -74,8 +74,8 @@ impl<'a> TxInBuilder<'a> {
         self.proto.script_pubkey = script_pubkey.into();
         self
     }
-    pub fn sighash(mut self, sighash: Proto::SighashType) -> Self {
-        self.proto.sighash = sighash;
+    pub fn sighash(mut self, sighash_type: Proto::SighashType) -> Self {
+        self.proto.sighash_type = sighash_type;
         self
     }
     pub fn signing_method(mut self, method: Proto::SigningMethod) -> Self {
