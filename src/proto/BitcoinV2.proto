@@ -138,7 +138,7 @@ message PreSigningOutput {
 
 	repeated Utxo.Proto.TxIn utxo_inputs = 3;
 
-	repeated TxOut utxo_outputs = 3;
+	repeated TxOut txouts = 3;
 }
 
 // The output of a transaction.
