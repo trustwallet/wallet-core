@@ -1,10 +1,10 @@
-use crate::Result;
 use crate::brc20::{BRC20TransferInscription, Ticker};
+use crate::Result;
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::consensus::encode::Encodable;
 use bitcoin::key::{TapTweak, TweakedKeyPair};
-use bitcoin::taproot::{ControlBlock, TapLeafHash, TapNodeHash};
+use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash, TapNodeHash};
 use bitcoin::{
     OutPoint, PubkeyHash, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid,
     WPubkeyHash, Witness,
@@ -309,7 +309,13 @@ impl CoinEntry for BitcoinEntry {
             version: proto.version,
             lock_time: convert_locktime(&proto.lock_time),
             inputs: utxo_inputs.clone(),
-            outputs: utxo_outputs.clone(),
+            outputs: utxo_outputs
+                .iter()
+                .map(|out| UtxoProto::TxOut {
+                    value: out.value,
+                    script_pubkey: Cow::Borrowed(&out.script_pubkey),
+                })
+                .collect(),
         };
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(&utxo_signing);
@@ -425,7 +431,13 @@ impl CoinEntry for BitcoinEntry {
             // TODO:
             lock_time: UtxoProto::mod_PreSerialization::OneOflock_time::blocks(0),
             inputs: utxo_input_claims.clone(),
-            outputs: utxo_outputs.clone(),
+            outputs: utxo_outputs
+                .iter()
+                .map(|out| UtxoProto::TxOut {
+                    value: out.value,
+                    script_pubkey: Cow::Borrowed(&out.script_pubkey),
+                })
+                .collect(),
         };
 
         let utxo_serialized = tw_utxo::compiler::Compiler::compile(&utxo_preserializtion);
@@ -444,10 +456,10 @@ impl CoinEntry for BitcoinEntry {
 
         // Prepare `Proto::TransactionOutput` protobufs for output.
         let mut proto_outputs = vec![];
-        for output in utxo_outputs {
+        for output in &utxo_outputs {
             proto_outputs.push(Proto::TransactionOutput {
                 recipient: Cow::default(),
-                script_pubkey: output.script_pubkey,
+                script_pubkey: Cow::Borrowed(&output.script_pubkey),
                 amount: output.value,
                 // TODO:
                 control_block: None,
@@ -514,15 +526,17 @@ fn witness_pubkey_hash_from_proto(
     Ok(wpubkey_hash)
 }
 
-fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::TxOut<'static>> {
+fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<Proto::TxOut<'static>> {
     let mut utxo_outputs = vec![];
 
     let secp = secp256k1::Secp256k1::new();
 
     for output in outputs {
-        let script_pubkey = match &output.to_recipient {
+        let (script_pubkey, control_block) = match &output.to_recipient {
             // Script spending condition was passed on directly.
-            ProtoOutputRecipient::script_pubkey(script) => ScriptBuf::from_bytes(script.to_vec()),
+            ProtoOutputRecipient::script_pubkey(script) => {
+                (ScriptBuf::from_bytes(script.to_vec()), None)
+            },
             // Process builder methods. We construct the Script spending
             // conditions by using the specified parameters.
             ProtoOutputRecipient::builder(builder) => match &builder.type_pb {
@@ -531,19 +545,19 @@ fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::Tx
                 },
                 ProtoBuilderType::p2pkh(pubkey_or_hash) => {
                     let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
-                    ScriptBuf::new_p2pkh(&pubkey_hash)
+                    (ScriptBuf::new_p2pkh(&pubkey_hash), None)
                 },
                 ProtoBuilderType::p2wsh(_) => {
                     todo!()
                 },
                 ProtoBuilderType::p2wpkh(pubkey_or_hash) => {
                     let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
-                    ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
+                    (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None)
                 },
                 ProtoBuilderType::p2tr_key_path(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
-                    ScriptBuf::new_v1_p2tr(&secp, xonly, None)
+                    (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None)
                 },
                 ProtoBuilderType::p2tr_script_path(complex) => {
                     let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
@@ -552,19 +566,35 @@ fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::Tx
                         bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
-                    ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash))
+                    (ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)), None)
                 },
                 ProtoBuilderType::brc20_inscribe(brc20) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
+                    let pubkey =
+                        bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                     let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
-                    let brc20 = BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount).unwrap();
+                    let brc20 =
+                        BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
+                            .unwrap();
 
                     // Explicit check
+                    let control_block = brc20
+                        .inscription()
+                        .spend_info()
+                        .control_block(&(
+                            brc20.inscription().taproot_program().to_owned(),
+                            LeafVersion::TapScript,
+                        ))
+                        .unwrap();
                     let merkle_root = brc20.inscription().spend_info().merkle_root().unwrap();
-                    ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root))
-                }
+                    (
+                        ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
+                        Some(Proto::ControlBlock {
+                            raw: control_block.serialize().into(),
+                        }),
+                    )
+                },
                 ProtoBuilderType::None => todo!(),
             },
             // We derive the spending condition for the address.
@@ -572,9 +602,10 @@ fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::Tx
             ProtoOutputRecipient::None => todo!(),
         };
 
-        utxo_outputs.push(UtxoProto::TxOut {
+        utxo_outputs.push(Proto::TxOut {
             value: output.amount,
             script_pubkey: script_pubkey.to_vec().into(),
+            control_block,
         });
     }
 
