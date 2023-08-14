@@ -152,3 +152,57 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
 
     assert_eq!(&encoded, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000");
 }
+
+#[test]
+fn coin_entry_sign_brc20_commit_reveal_transfer() {
+    let coin = PlaceHolder;
+
+    let alice_private_key = hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    let alice_pubkey = hex("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb");
+    let bob_private_key = hex("ec89317796fbeb04fe73f9342c75226aed3c2a9e96f7da4e9011b349227bb43b");
+    let bob_pubkey = hex("02f453bb46e7afc8796a9629e89e07b5cb0867e9ca340b571e7bcc63fc20c43f2e");
+    let txid: Vec<u8> = hex("8ec895b4d30adb01e38471ca1019bfc8c3e5fbd1f28d9e7b5653260d89989008")
+        .into_iter()
+        .rev()
+        .collect();
+
+    let mut signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Proto::mod_SigningInput::OneOflock_time::blocks(0),
+        input_selector: Proto::SelectorType::UseAll,
+        inputs: vec![],
+        outputs: vec![],
+        sat_vb: 0,
+        create_change: false,
+    };
+
+    signing.inputs.push(Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        amount: 100_000_000 * 50,
+        sighash_type: UtxoProto::SighashType::All,
+        one_prevout: false,
+        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
+            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2wpkh(
+                alice_pubkey.as_slice().into(),
+            ),
+        }),
+    });
+
+    signing.outputs.push(Proto::Output {
+        amount: 100_000_000 * 50 - 1_000_000,
+        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
+            type_pb: Proto::mod_Builder::OneOftype_pb::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
+                    bob_pubkey.as_slice().into(),
+                ),
+            }),
+        }),
+    });
+
+    let output = BitcoinEntry.sign(&coin, signing);
+    let encoded = tw_encoding::hex::encode(output.encoded, false);
+
+    assert_eq!(&encoded, "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000");
+}
