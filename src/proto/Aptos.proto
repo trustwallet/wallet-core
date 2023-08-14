@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.Aptos.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Necessary fields to process a TransferMessage
 message TransferMessage {
   // Destination Account address (string)
@@ -189,4 +191,10 @@ message SigningOutput {
 
   // Transaction json format for api broadcasting (string)
   string json = 4;
+
+  // Error code, 0 is ok, other codes will be treated as errors.
+  Common.Proto.SigningError error = 5;
+
+  // Error description.
+  string error_message = 6;
 }
