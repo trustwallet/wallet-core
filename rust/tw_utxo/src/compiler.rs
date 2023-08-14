@@ -32,7 +32,7 @@ pub struct Compiler<Context: UtxoContext> {
 
 impl Compiler<StandardBitcoinContext> {
     #[inline]
-    pub fn preimage_hashes(proto: &Proto::SigningInput<'_>) -> Proto::PreSigningOutput<'static> {
+    pub fn preimage_hashes(proto: Proto::SigningInput<'_>) -> Proto::PreSigningOutput<'static> {
         Self::preimage_hashes_impl(proto)
             .or_else(|err| {
                 std::result::Result::<_, ()>::Ok(Proto::PreSigningOutput {
@@ -44,7 +44,7 @@ impl Compiler<StandardBitcoinContext> {
     }
 
     #[inline]
-    pub fn compile(proto: &Proto::PreSerialization<'_>) -> Proto::SerializedTransaction<'static> {
+    pub fn compile(proto: Proto::PreSerialization<'_>) -> Proto::SerializedTransaction<'static> {
         Self::compile_impl(proto)
             .or_else(|err| {
                 std::result::Result::<_, ()>::Ok(Proto::SerializedTransaction {
@@ -56,11 +56,11 @@ impl Compiler<StandardBitcoinContext> {
     }
 
     fn preimage_hashes_impl(
-        proto: &Proto::SigningInput<'_>,
+        proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
         // Convert Protobuf structure to `bitcoin` crate native transaction.
         // Prepare signing mechanism.
-        let tx = convert_proto_to_tx(&proto)?;
+        let tx = convert_proto_to_tx(proto.clone())?;
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
@@ -177,7 +177,7 @@ impl Compiler<StandardBitcoinContext> {
     }
 
     fn compile_impl(
-        proto: &Proto::PreSerialization<'_>,
+        proto: Proto::PreSerialization<'_>,
     ) -> Result<Proto::SerializedTransaction<'static>> {
         type ProtoLockTimeVariant = Proto::mod_PreSerialization::OneOflock_time;
 
@@ -248,7 +248,7 @@ impl Compiler<StandardBitcoinContext> {
     }
 }
 
-fn convert_proto_to_tx<'a>(proto: &Proto::SigningInput<'a>) -> Result<Transaction> {
+fn convert_proto_to_tx<'a>(proto: Proto::SigningInput<'a>) -> Result<Transaction> {
     let version = proto.version;
 
     // Retreive the lock time. If none is provided, the default lock time is
