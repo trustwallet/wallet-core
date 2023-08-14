@@ -136,8 +136,6 @@ impl CoinEntry for BitcoinEntry {
 
         let mut signatures: Vec<SignatureBytes> = vec![];
 
-        dbg!(&pre_signed.sighashes);
-
         for (entry, utxo_in) in pre_signed
             .sighashes
             .iter()
@@ -152,8 +150,6 @@ impl CoinEntry for BitcoinEntry {
                         // TODO
                         hash_ty: bitcoin::sighash::EcdsaSighashType::All,
                     };
-
-                    dbg!(&sig.serialize());
 
                     signatures.push(sig.serialize().to_vec());
                 },
@@ -208,6 +204,7 @@ impl CoinEntry for BitcoinEntry {
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
         let utxo_outputs = process_recipients(&proto.outputs.clone());
+        dbg!(&utxo_outputs);
 
         let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
 
@@ -346,8 +343,6 @@ impl CoinEntry for BitcoinEntry {
                     ProtoInputBuilder::p2pkh(pubkey) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
                         let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
-
-                        dbg!(&sig);
 
                         (
                             ScriptBuf::builder()
