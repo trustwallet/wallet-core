@@ -10,7 +10,7 @@ use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
 type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
-type ProtoSigningMethod = Proto::SighashMethod;
+type ProtoSigningMethod = Proto::SigningMethod;
 
 pub trait UtxoContext {
     type SigningInput<'a>;
@@ -66,7 +66,7 @@ impl Compiler<StandardBitcoinContext> {
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
 
         for (index, input) in proto.inputs.iter().enumerate() {
-            match input.sighash_method {
+            match input.signing_method {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
                 ProtoSigningMethod::Legacy => {
                     let script_pubkey = Script::from_bytes(input.script_pubkey.as_ref());

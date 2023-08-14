@@ -43,8 +43,7 @@ message Input {
 
 	uint64 amount = 3;
 
-	// TODO:
-	uint32 sighash = 4;
+	Utxo.Proto.SighashType sighash_type = 4;
 
 	oneof variant {
 		InputVariant builder = 5;
@@ -71,8 +70,6 @@ message Input {
 	}
 
 	message ScriptWitness {
-		// TODO:
-		uint32 sighash_method = 1;
 		bytes script_sig = 2;
 		repeated bytes witness_items = 3;
 	}
@@ -128,7 +125,7 @@ message PreSigningOutput {
 	// TODO
 	uint32 error = 1;
 
-    /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    /// SighashMethodSighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Utxo.Proto.Sighash sighashes = 2;
 
 	repeated Utxo.Proto.TxIn utxo_inputs = 3;

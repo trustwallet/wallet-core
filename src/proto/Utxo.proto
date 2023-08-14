@@ -50,32 +50,33 @@ message TxIn {
     // The sighash type.
     SighashType sighash = 7;
 
-    SighashMethod sighash_method = 8;
+    SigningMethod signing_method = 8;
 
     bytes leaf_hash = 10;
     bool one_prevout = 11;
 }
 
-enum SighashMethod {
+enum SigningMethod {
     Legacy = 0;
     Segwit = 1;
     Taproot = 2;
 }
 
 enum SighashType {
+    // Use default (sign all, 0x00)
     UseDefault = 0;
-    // Sign all outputs (default).
-    All = 1; // 0x01
-    // Sign no outputs, anyone can choose the destination.
-    None = 2; // 0x02
-    // Sign the output whose index matches this inputs index.
-    Single = 3; // 0x03
-    //Sign all outputs but only this input.
-    AllPlusAnyoneCanPay = 129; //  0x81
-    // Sign no outputs and only this input.
-    NonePlusAnyoneCanPay = 130; // 0x82
-    // Sign one output and only this input.
-    SinglePlusAnyoneCanPay = 131; // 0x83
+    // Sign all outputs (0x01).
+    All = 1;
+    // Sign no outputs, anyone can choose the destination (0x02).
+    None = 2;
+    // Sign the output whose index matches this inputs index (0x03).
+    Single = 3;
+    //Sign all outputs but only this input (0x81).
+    AllPlusAnyoneCanPay = 4;
+    // Sign no outputs and only this input (0x82).
+    NonePlusAnyoneCanPay = 5;
+    // Sign one output and only this input (0x83).
+    SinglePlusAnyoneCanPay = 6;
 }
 
 // The output of a transaction.
@@ -97,7 +98,7 @@ message PreSigningOutput {
 
 message Sighash {
     bytes sighash = 1;
-    SighashMethod signing_method = 2;
+    SigningMethod signing_method = 2;
 }
 
 message PreSerialization {
