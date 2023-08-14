@@ -60,7 +60,7 @@ impl Compiler<StandardBitcoinContext> {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         // Convert Protobuf structure to `bitcoin` crate native transaction.
         // Prepare signing mechanism.
-        let tx = convert_proto_to_tx(proto.clone())?;
+        let tx = convert_proto_to_tx(&proto)?;
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
@@ -248,7 +248,7 @@ impl Compiler<StandardBitcoinContext> {
     }
 }
 
-fn convert_proto_to_tx<'a>(proto: Proto::SigningInput<'a>) -> Result<Transaction> {
+fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transaction> {
     let version = proto.version;
 
     // Retreive the lock time. If none is provided, the default lock time is
