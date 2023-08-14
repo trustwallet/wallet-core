@@ -19,7 +19,7 @@ use tw_coin_entry::error::AddressResult;
 use tw_coin_entry::modules::json_signer::JsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::tw::{PrivateKey, PublicKey};
+use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
@@ -35,6 +35,12 @@ type ProtoInputBuilder<'a> = Proto::mod_Input::mod_InputVariant::OneOfvariant<'a
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
 pub struct PlaceHolder;
+
+impl CoinContext for PlaceHolder {
+    fn public_key_type(&self) -> PublicKeyType {
+        todo!()
+    }
+}
 
 pub struct NoJsonSigner;
 
@@ -130,6 +136,8 @@ impl CoinEntry for BitcoinEntry {
 
         let mut signatures: Vec<SignatureBytes> = vec![];
 
+        dbg!(&pre_signed.sighashes);
+
         for (entry, utxo_in) in pre_signed
             .sighashes
             .iter()
@@ -145,7 +153,9 @@ impl CoinEntry for BitcoinEntry {
                         hash_ty: bitcoin::sighash::EcdsaSighashType::All,
                     };
 
-                    signatures.push(sig.to_vec());
+                    dbg!(&sig.serialize());
+
+                    signatures.push(sig.serialize().to_vec());
                 },
                 UtxoProto::SighashMethod::Taproot => {
                     // Any empty leaf hash implies P2TR key-path (balance transfer)
@@ -208,21 +218,21 @@ impl CoinEntry for BitcoinEntry {
             let (sighash_method, script_pubkey) = match &input.variant {
                 ProtoInputVariant::builder(builder) => match &builder.variant {
                     ProtoInputBuilder::p2sh(_) => todo!(),
-                    ProtoInputBuilder::p2pkh(pubkey_or_hash) => {
-                        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                    ProtoInputBuilder::p2pkh(pubkey) => {
+                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
 
                         (
                             UtxoProto::SighashMethod::Legacy,
-                            ScriptBuf::new_p2pkh(&pubkey_hash),
+                            ScriptBuf::new_p2pkh(&pubkey.pubkey_hash()),
                         )
                     },
                     ProtoInputBuilder::p2wsh(_) => todo!(),
-                    ProtoInputBuilder::p2wpkh(pubkey_or_hash) => {
-                        let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                    ProtoInputBuilder::p2wpkh(pubkey) => {
+                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
 
                         (
                             UtxoProto::SighashMethod::Segwit,
-                            ScriptBuf::new_v0_p2wpkh(&wpubkey_hash),
+                            ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap()),
                         )
                     },
                     ProtoInputBuilder::p2tr_key_path(pubkey) => {
@@ -290,7 +300,7 @@ impl CoinEntry for BitcoinEntry {
 
         if remaining != 0 {
             // Error, insufficient funds.
-            todo!()
+            //todo!()
         }
 
         let utxo_signing = UtxoProto::SigningInput {
@@ -333,26 +343,28 @@ impl CoinEntry for BitcoinEntry {
 
             let (script_sig, witness) = match &input.variant {
                 ProtoInputVariant::builder(variant) => match &variant.variant {
-                    ProtoInputBuilder::p2pkh(pubkey_or_hash) => {
+                    ProtoInputBuilder::p2pkh(pubkey) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
-                        let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+
+                        dbg!(&sig);
 
                         (
                             ScriptBuf::builder()
                                 .push_slice(sig.serialize())
-                                .push_slice(pubkey_hash)
+                                .push_key(&pubkey)
                                 .into_script(),
                             Witness::new(),
                         )
                     },
-                    ProtoInputBuilder::p2wpkh(pubkey_or_hash) => {
+                    ProtoInputBuilder::p2wpkh(pubkey) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
-                        let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
 
                         (ScriptBuf::new(), {
                             let mut w = Witness::new();
                             w.push(sig.serialize());
-                            w.push(wpubkey_hash.as_byte_array());
+                            w.push(pubkey.to_bytes());
                             w
                         })
                     },
@@ -393,7 +405,7 @@ impl CoinEntry for BitcoinEntry {
                 txid: input.txid.clone(),
                 vout: input.vout,
                 // TODO
-                sequence: 0,
+                sequence: u32::MAX,
                 script_sig: script_sig.to_vec().into(),
                 witness_items: witness
                     .to_vec()

@@ -234,6 +234,8 @@ impl Compiler<StandardBitcoinContext> {
             });
         }
 
+        dbg!(&tx);
+
         // Encode the transaction.
         let mut buffer = vec![];
         tx.consensus_encode(&mut buffer)
