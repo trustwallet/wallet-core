@@ -68,7 +68,7 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
                 .txid(&txid)
                 .vout(0)
                 .value(50 * 100_000_000 - 1_000_000)
-                .sighash_method(tw_proto::Utxo::Proto::SighashMethod::Segwit)
+                .signing_method(tw_proto::Utxo::Proto::SigningMethod::Segwit)
                 .spending_condition(input_script_pubkey.as_bytes())
                 .build()
         })

@@ -146,7 +146,7 @@ impl CoinEntry for BitcoinEntry {
             let sighash = Message::from_slice(entry.sighash.as_ref()).unwrap();
 
             match entry.signing_method {
-                UtxoProto::SighashMethod::Legacy | UtxoProto::SighashMethod::Segwit => {
+                UtxoProto::SigningMethod::Legacy | UtxoProto::SigningMethod::Segwit => {
                     let sig = bitcoin::ecdsa::Signature {
                         sig: keypair.secret_key().sign_ecdsa(sighash),
                         // TODO
@@ -155,7 +155,7 @@ impl CoinEntry for BitcoinEntry {
 
                     signatures.push(sig.serialize().to_vec());
                 },
-                UtxoProto::SighashMethod::Taproot => {
+                UtxoProto::SigningMethod::Taproot => {
                     // Any empty leaf hash implies P2TR key-path (balance transfer)
                     if utxo_in.leaf_hash.is_empty() {
                         // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
@@ -218,14 +218,14 @@ impl CoinEntry for BitcoinEntry {
         for input in proto.inputs.clone() {
             let mut leaf_hash = None;
 
-            let (sighash_method, script_pubkey) = match &input.variant {
+            let (signing_method, script_pubkey) = match &input.variant {
                 ProtoInputVariant::builder(builder) => match &builder.variant {
                     ProtoInputBuilder::p2sh(_) => todo!(),
                     ProtoInputBuilder::p2pkh(pubkey) => {
                         let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
 
                         (
-                            UtxoProto::SighashMethod::Legacy,
+                            UtxoProto::SigningMethod::Legacy,
                             ScriptBuf::new_p2pkh(&pubkey.pubkey_hash()),
                         )
                     },
@@ -234,7 +234,7 @@ impl CoinEntry for BitcoinEntry {
                         let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
 
                         (
-                            UtxoProto::SighashMethod::Segwit,
+                            UtxoProto::SigningMethod::Segwit,
                             ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap()),
                         )
                     },
@@ -243,7 +243,7 @@ impl CoinEntry for BitcoinEntry {
                         let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                         (
-                            UtxoProto::SighashMethod::Taproot,
+                            UtxoProto::SigningMethod::Taproot,
                             ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None),
                         )
                     },
@@ -254,7 +254,7 @@ impl CoinEntry for BitcoinEntry {
                             bitcoin::taproot::LeafVersion::TapScript,
                         ));
 
-                        (UtxoProto::SighashMethod::Taproot, script_buf)
+                        (UtxoProto::SigningMethod::Taproot, script_buf)
                     },
                     ProtoInputBuilder::None => todo!(),
                 },
@@ -269,7 +269,7 @@ impl CoinEntry for BitcoinEntry {
                 vout: input.vout,
                 amount: input.amount,
                 script_pubkey: script_pubkey.to_vec().into(),
-                sighash_method,
+                signing_method,
                 // TODO
                 sighash: UtxoProto::SighashType::UseDefault,
                 leaf_hash: leaf_hash

@@ -35,7 +35,7 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         txid: txid.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50,
-        sighash: 0,
+        sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
         variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
             variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2pkh(
@@ -93,7 +93,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         txid: txid.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50,
-        sighash: 0,
+        sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
         variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
             variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2pkh(
@@ -129,7 +129,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         txid: txid2.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50 - 1_000_000,
-        sighash: 0,
+        sighash_type: UtxoProto::SighashType::UseDefault,
         one_prevout: false,
         variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
             variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2tr_key_path(
