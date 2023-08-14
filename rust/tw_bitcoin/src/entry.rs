@@ -317,7 +317,7 @@ impl CoinEntry for BitcoinEntry {
                 .collect(),
         };
 
-        let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(&utxo_signing);
+        let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
 
         Proto::PreSigningOutput {
             error: 0,
@@ -437,26 +437,30 @@ impl CoinEntry for BitcoinEntry {
                 .collect(),
         };
 
-        let utxo_serialized = tw_utxo::compiler::Compiler::compile(&utxo_preserializtion);
+        let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);
 
         // Prepare `Proto::TransactionInput` protobufs for signing output.
         let mut proto_inputs = vec![];
         for input in utxo_input_claims {
             proto_inputs.push(Proto::TransactionInput {
-                txid: input.txid.to_vec().into(),
+                txid: Cow::Owned(input.txid.to_vec()),
                 vout: input.vout,
                 sequence: input.sequence,
-                script_sig: input.script_sig,
-                witness_items: input.witness_items,
+                script_sig: Cow::Owned(input.script_sig.into_owned()),
+                witness_items: input
+                    .witness_items
+                    .into_iter()
+                    .map(|item| Cow::Owned(item.into_owned()))
+                    .collect(),
             });
         }
 
         // Prepare `Proto::TransactionOutput` protobufs for output.
         let mut proto_outputs = vec![];
-        for output in &utxo_outputs {
+        for output in utxo_outputs {
             proto_outputs.push(Proto::TransactionOutput {
                 recipient: Cow::default(),
-                script_pubkey: Cow::Borrowed(&output.script_pubkey),
+                script_pubkey: output.script_pubkey,
                 amount: output.value,
                 // TODO:
                 control_block: None,
@@ -465,7 +469,7 @@ impl CoinEntry for BitcoinEntry {
 
         // Prepare `Proto::Transaction` protobuf for output.
         let transaction = Proto::Transaction {
-            version: utxo_preserializtion.version,
+            version: proto.version,
             // TODO
             lock_time: 0,
             inputs: proto_inputs,
@@ -474,9 +478,7 @@ impl CoinEntry for BitcoinEntry {
 
         // Return the full protobuf output.
         Proto::SigningOutput {
-            // TODO: This should be returned by tw_utxo.
-            //transaction: Some(transaction),
-            transaction: None,
+            transaction: Some(transaction),
             encoded: utxo_serialized.encoded,
             // TODO: Should be returned by `tw_utxo`.
             transaction_id: Cow::default(),
