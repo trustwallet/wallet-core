@@ -210,10 +210,9 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let utxo_outputs = process_recipients(&proto.outputs.clone());
-        dbg!(&utxo_outputs);
+        let txouts = process_recipients(&proto.outputs.clone());
 
-        let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
+        let total_spent: u64 = txouts.iter().map(|output| output.value).sum();
 
         let mut utxo_inputs = vec![];
         for input in proto.inputs.clone() {
@@ -309,7 +308,7 @@ impl CoinEntry for BitcoinEntry {
             version: proto.version,
             lock_time: convert_locktime(&proto.lock_time),
             inputs: utxo_inputs.clone(),
-            outputs: utxo_outputs
+            outputs: txouts
                 .iter()
                 .map(|out| UtxoProto::TxOut {
                     value: out.value,
@@ -324,9 +323,7 @@ impl CoinEntry for BitcoinEntry {
             error: 0,
             sighashes: utxo_presigning.sighashes,
             utxo_inputs: utxo_inputs.clone(),
-            //utxo_inputs: Default::default(),
-            utxo_outputs: utxo_outputs.clone(),
-            //utxo_outputs: Default::default(),
+            txouts,
         }
     }
 
