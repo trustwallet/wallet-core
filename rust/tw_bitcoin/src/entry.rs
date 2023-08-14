@@ -270,8 +270,7 @@ impl CoinEntry for BitcoinEntry {
                 amount: input.amount,
                 script_pubkey: script_pubkey.to_vec().into(),
                 signing_method,
-                // TODO
-                sighash: UtxoProto::SighashType::UseDefault,
+                sighash_type: input.sighash_type,
                 leaf_hash: leaf_hash
                     .map(|hash| hash.to_vec().into())
                     .unwrap_or_default(),

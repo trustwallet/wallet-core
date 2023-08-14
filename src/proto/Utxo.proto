@@ -48,7 +48,7 @@ message TxIn {
     bytes script_pubkey = 1;
 
     // The sighash type.
-    SighashType sighash = 7;
+    SighashType sighash_type = 7;
 
     SigningMethod signing_method = 8;
 

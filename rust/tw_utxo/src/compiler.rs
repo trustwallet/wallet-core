@@ -70,10 +70,10 @@ impl Compiler<StandardBitcoinContext> {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
                 ProtoSigningMethod::Legacy => {
                     let script_pubkey = Script::from_bytes(input.script_pubkey.as_ref());
-                    let sighash_type = if let SighashType::UseDefault = input.sighash {
+                    let sighash_type = if let SighashType::UseDefault = input.sighash_type {
                         EcdsaSighashType::All
                     } else {
-                        EcdsaSighashType::from_consensus(input.sighash as u32)
+                        EcdsaSighashType::from_consensus(input.sighash_type as u32)
                     };
 
                     let sighash =
@@ -84,10 +84,10 @@ impl Compiler<StandardBitcoinContext> {
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSigningMethod::Segwit => {
                     let script_pubkey = ScriptBuf::from_bytes(input.script_pubkey.to_vec());
-                    let sighash_type = if let SighashType::UseDefault = input.sighash {
+                    let sighash_type = if let SighashType::UseDefault = input.sighash_type {
                         EcdsaSighashType::All
                     } else {
-                        EcdsaSighashType::from_consensus(input.sighash as u32)
+                        EcdsaSighashType::from_consensus(input.sighash_type as u32)
                     };
 
                     let sighash = cache.segwit_signature_hash(
@@ -115,8 +115,8 @@ impl Compiler<StandardBitcoinContext> {
                         ))
                     };
 
-                    // Note that `input.sighash = 0` is handled by the underlying library.
-                    let sighash_type = TapSighashType::from_consensus_u8(input.sighash as u8)
+                    // Note that `input.sighash_type = 0` is handled by the underlying library.
+                    let sighash_type = TapSighashType::from_consensus_u8(input.sighash_type as u8)
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash_type))?;
 
                     // This owner only exists to avoid running into lifetime
