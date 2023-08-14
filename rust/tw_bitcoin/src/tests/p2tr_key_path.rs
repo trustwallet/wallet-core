@@ -31,6 +31,27 @@ fn sign_input_p2pkh_output_p2tr_key_path() {
 
     let alice_pubkey = PublicKey::new(alice.public_key());
     let hash: PubkeyHash = alice_pubkey.clone().into();
+
+    println!(
+        "ALICE PRIVATE: {}",
+        tw_encoding::hex::encode(alice.secret_bytes(), false)
+    );
+
+    println!(
+        "ALICE PUBLIC: {}",
+        tw_encoding::hex::encode(alice.public_key().serialize(), false)
+    );
+
+    println!(
+        "BOB PRIVATE: {}",
+        tw_encoding::hex::encode(bob.secret_bytes(), false)
+    );
+
+    println!(
+        "BOB PUBLIC: {}",
+        tw_encoding::hex::encode(bob.public_key().serialize(), false)
+    );
+
     println!(
         ">> ALICE PUBKEY_HASH: {}",
         hex::encode(hash.as_byte_array(), false)
