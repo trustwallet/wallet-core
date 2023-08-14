@@ -153,7 +153,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     assert_eq!(&encoded, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000");
 }
 
-//#[test]
+#[test]
 fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let coin = PlaceHolder;
 
@@ -179,8 +179,8 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
 
     signing.inputs.push(Proto::Input {
         txid: txid.as_slice().into(),
-        vout: 0,
-        amount: 100_000_000 * 50,
+        vout: 1,
+        amount: 26_400,
         sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
         variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
@@ -191,11 +191,25 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     });
 
     signing.outputs.push(Proto::Output {
-        amount: 100_000_000 * 50 - 1_000_000,
+        amount: 7_000,
+        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
+            type_pb: Proto::mod_Builder::OneOftype_pb::brc20_inscribe(
+                Proto::mod_Builder::Brc20Inscription {
+                    inscribe_to: alice_pubkey.as_slice().into(),
+                    ticker: "oadf".into(),
+                    transfer_amount: 20,
+                },
+            ),
+        }),
+    });
+
+    // Change/return transaction.
+    signing.outputs.push(Proto::Output {
+        amount: 16_400,
         to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
             type_pb: Proto::mod_Builder::OneOftype_pb::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    bob_pubkey.as_slice().into(),
+                    alice_pubkey.as_slice().into(),
                 ),
             }),
         }),
@@ -204,5 +218,5 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
 
-    assert_eq!(&encoded, "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000");
+    assert_eq!(&encoded, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
 }
