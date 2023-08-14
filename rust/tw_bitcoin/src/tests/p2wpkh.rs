@@ -22,6 +22,21 @@ fn sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
+    println!(
+        "ALICE PRIVATE: {}",
+        tw_encoding::hex::encode(alice.secret_bytes(), false)
+    );
+
+    println!(
+        "ALICE PUBLIC: {}",
+        tw_encoding::hex::encode(alice.public_key().serialize(), false)
+    );
+
+    println!(
+        "BOB PUBLIC: {}",
+        tw_encoding::hex::encode(bob.public_key().serialize(), false)
+    );
+
     let alice_pubkey = PublicKey::new(alice.public_key());
     let hash: PubkeyHash = alice_pubkey.into();
     println!(

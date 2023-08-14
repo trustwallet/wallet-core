@@ -51,24 +51,24 @@ message Input {
 		ScriptWitness custom = 6;
 	}
 
+	bool one_prevout = 99;
+
 	message InputVariant {
 		oneof variant {
 			// Pay-to-Script-Hash, specify the hash.
 			bytes p2sh = 1;
 			// Pay-to-Public-Key-Hash
-			ToPublicKeyOrHash p2pkh = 2;
+			bytes p2pkh = 2;
 			// Pay-to-Witness-Script-Hash, specify the hash.
 			bytes p2wsh = 3;
 			// Pay-to-Public-Key-Hash
-			ToPublicKeyOrHash p2wpkh = 6;
+			bytes p2wpkh = 6;
 			// Pay-to-Taproot-key-path (balance transfers), specify the public key.
 			bytes p2tr_key_path = 7;
 			// Pay-to-Taproot-script-path (complex transfers)
 			TaprootScriptPath p2tr_script_path = 8;
 		}
 	}
-
-	bool one_prevout = 99;
 
 	message ScriptWitness {
 		// TODO:
