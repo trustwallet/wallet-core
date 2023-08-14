@@ -138,7 +138,17 @@ message PreSigningOutput {
 
 	repeated Utxo.Proto.TxIn utxo_inputs = 3;
 
-	repeated Utxo.Proto.TxOut utxo_outputs = 3;
+	repeated TxOut utxo_outputs = 3;
+}
+
+// The output of a transaction.
+message TxOut {
+    // The value of the output (amount).
+    uint64 value = 1;
+    // The spending condition of the output.
+    bytes script_pubkey = 2;
+
+	ControlBlock control_block = 3;
 }
 
 message SigningOutput {
@@ -197,8 +207,8 @@ message TransactionOutput {
 	// required for claiming.
 	// TODO: Required?
 	ControlBlock control_block = 4;
+}
 
-	message ControlBlock {
-		bytes raw = 1;
-	}
+message ControlBlock {
+	bytes raw = 1;
 }
