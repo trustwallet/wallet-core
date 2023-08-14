@@ -50,6 +50,26 @@ fn brc20_transfer() {
     let alice = keypair_from_wif(ALICE_WIF).unwrap();
     let bob = keypair_from_wif(BOB_WIF).unwrap();
 
+    println!(
+        "ALICE PRIVATE: {}",
+        tw_encoding::hex::encode(alice.secret_bytes(), false)
+    );
+
+    println!(
+        "ALICE PUBLIC: {}",
+        tw_encoding::hex::encode(alice.public_key().serialize(), false)
+    );
+
+    println!(
+        "BOB PRIVATE: {}",
+        tw_encoding::hex::encode(bob.secret_bytes(), false)
+    );
+
+    println!(
+        "BOB PUBLIC: {}",
+        tw_encoding::hex::encode(bob.public_key().serialize(), false)
+    );
+
     let txid = Txid::from_str(COMMIT_TXID).unwrap();
 
     // # Make "available" tokens "transferable".

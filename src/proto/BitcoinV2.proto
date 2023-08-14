@@ -113,11 +113,19 @@ message Builder {
 		bytes p2tr_key_path = 7;
 		// Pay-to-Taproot-script-path (complex transfers)
 		TaprootScriptPath p2tr_script_path = 8;
+		Brc20Inscription brc20_inscribe = 9;
 	}
 
 	message TaprootScriptPath {
 		bytes public_key = 1;
 		bytes node_hash = 2;
+	}
+
+	message Brc20Inscription {
+		// TODO: This is dangeours, could be misinterpreted.
+		bytes inscribe_to = 1;
+		string ticker = 2;
+		uint64 transfer_amount = 3;
 	}
 }
 

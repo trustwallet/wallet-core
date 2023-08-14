@@ -1,4 +1,5 @@
 use crate::Result;
+use crate::brc20::{BRC20TransferInscription, Ticker};
 use bitcoin::absolute::{Height, LockTime, Time};
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::consensus::encode::Encodable;
@@ -553,6 +554,17 @@ fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::Tx
 
                     ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash))
                 },
+                ProtoBuilderType::brc20_inscribe(brc20) => {
+                    let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
+                    let xonly = XOnlyPublicKey::from(pubkey.inner);
+
+                    let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
+                    let brc20 = BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount).unwrap();
+
+                    // Explicit check
+                    let merkle_root = brc20.inscription().spend_info().merkle_root().unwrap();
+                    ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root))
+                }
                 ProtoBuilderType::None => todo!(),
             },
             // We derive the spending condition for the address.
