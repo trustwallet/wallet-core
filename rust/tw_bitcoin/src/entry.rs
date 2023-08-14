@@ -188,7 +188,7 @@ impl CoinEntry for BitcoinEntry {
             }
         }
 
-        todo!()
+        self.compile(_coin, proto, signatures, vec![])
     }
 
     #[inline]
@@ -503,6 +503,8 @@ fn witness_pubkey_hash_from_proto(
 fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::TxOut<'static>> {
     let mut utxo_outputs = vec![];
 
+    let secp = secp256k1::Secp256k1::new();
+
     for output in outputs {
         let script_pubkey = match &output.to_recipient {
             // Script spending condition was passed on directly.
@@ -527,9 +529,7 @@ fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::Tx
                 ProtoBuilderType::p2tr_key_path(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
-                    let (outputkey, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
-
-                    ScriptBuf::new_v1_p2tr_tweaked(outputkey)
+                    ScriptBuf::new_v1_p2tr(&secp, xonly, None)
                 },
                 ProtoBuilderType::p2tr_script_path(complex) => {
                     let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
@@ -537,10 +537,8 @@ fn process_recipients<'a>(outputs: &Vec<Proto::Output<'a>>) -> Vec<UtxoProto::Tx
                     let pubkey =
                         bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
-                    let (output_key, _) =
-                        xonly.tap_tweak(&secp256k1::Secp256k1::new(), Some(node_hash));
 
-                    ScriptBuf::new_v1_p2tr_tweaked(output_key)
+                    ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash))
                 },
                 ProtoBuilderType::None => todo!(),
             },
