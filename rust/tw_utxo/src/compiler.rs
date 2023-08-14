@@ -146,6 +146,8 @@ impl Compiler<StandardBitcoinContext> {
                         Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
                     };
 
+                    dbg!(&prevouts);
+
                     let sighash = cache.taproot_signature_hash(
                         index,
                         &prevouts,

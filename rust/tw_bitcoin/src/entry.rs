@@ -131,6 +131,8 @@ impl CoinEntry for BitcoinEntry {
         let pre_signed = self.preimage_hashes(_coin, proto.clone());
         // TODO: Check error
 
+        dbg!(&pre_signed);
+
         let secp = Secp256k1::new();
         let keypair = KeyPair::from_seckey_slice(&secp, proto.private_key.as_ref()).unwrap();
 
@@ -160,6 +162,8 @@ impl CoinEntry for BitcoinEntry {
                         let tapped: TweakedKeyPair = keypair.tap_tweak(&secp, None);
                         let tweaked = KeyPair::from(tapped);
 
+                        dbg!(&sighash);
+
                         // Construct the Schnorr signature.
                         #[cfg(not(test))]
                         let schnorr = secp.sign_schnorr(&sighash, &tweaked);
@@ -172,8 +176,10 @@ impl CoinEntry for BitcoinEntry {
                         let sig = bitcoin::taproot::Signature {
                             sig: schnorr,
                             // TODO.
-                            hash_ty: bitcoin::sighash::TapSighashType::All,
+                            hash_ty: bitcoin::sighash::TapSighashType::Default,
                         };
+
+                        dbg!(&sig);
 
                         signatures.push(sig.to_vec());
                     }
@@ -185,7 +191,7 @@ impl CoinEntry for BitcoinEntry {
                         let sig = bitcoin::taproot::Signature {
                             sig: keypair.sign_schnorr(sighash),
                             // TODO.
-                            hash_ty: bitcoin::sighash::TapSighashType::All,
+                            hash_ty: bitcoin::sighash::TapSighashType::Default,
                         };
 
                         signatures.push(sig.to_vec());
@@ -235,11 +241,10 @@ impl CoinEntry for BitcoinEntry {
                     ProtoInputBuilder::p2tr_key_path(pubkey) => {
                         let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
                         let xonly = XOnlyPublicKey::from(pubkey.inner);
-                        let (output_key, _) = xonly.tap_tweak(&secp256k1::Secp256k1::new(), None);
 
                         (
                             UtxoProto::SighashMethod::Taproot,
-                            ScriptBuf::new_v1_p2tr_tweaked(output_key),
+                            ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None),
                         )
                     },
                     ProtoInputBuilder::p2tr_script_path(complex) => {
@@ -266,7 +271,7 @@ impl CoinEntry for BitcoinEntry {
                 script_pubkey: script_pubkey.to_vec().into(),
                 sighash_method,
                 // TODO
-                sighash: UtxoProto::SighashType::All,
+                sighash: UtxoProto::SighashType::UseDefault,
                 leaf_hash: leaf_hash
                     .map(|hash| hash.to_vec().into())
                     .unwrap_or_default(),
@@ -365,6 +370,8 @@ impl CoinEntry for BitcoinEntry {
                     },
                     ProtoInputBuilder::p2tr_key_path(_) => {
                         let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
+
+                        dbg!(&sig);
 
                         (ScriptBuf::new(), {
                             let mut w = Witness::new();
