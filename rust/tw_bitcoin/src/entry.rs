@@ -210,12 +210,12 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let txouts = process_recipients(&proto.outputs.clone());
+        let txouts = process_recipients(&proto.outputs);
 
         let total_spent: u64 = txouts.iter().map(|output| output.value).sum();
 
         let mut utxo_inputs = vec![];
-        for input in proto.inputs.clone() {
+        for input in proto.inputs {
             let mut leaf_hash = None;
 
             let (signing_method, script_pubkey) = match &input.variant {
@@ -322,7 +322,7 @@ impl CoinEntry for BitcoinEntry {
         Proto::PreSigningOutput {
             error: 0,
             sighashes: utxo_presigning.sighashes,
-            utxo_inputs: utxo_inputs.clone(),
+            utxo_inputs,
             txouts,
         }
     }
