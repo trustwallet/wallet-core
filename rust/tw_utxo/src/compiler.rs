@@ -37,7 +37,7 @@ impl Compiler<StandardBitcoinContext> {
             .or_else(|err| {
                 std::result::Result::<_, ()>::Ok(Proto::PreSigningOutput {
                     error: err.into(),
-                    sighashes: Default::default(),
+                    ..Default::default()
                 })
             })
             .expect("did not convert error value")
@@ -56,10 +56,60 @@ impl Compiler<StandardBitcoinContext> {
     }
 
     fn preimage_hashes_impl(
-        proto: Proto::SigningInput<'_>,
+        mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
+        // Calculate total outputs amount, based on it we can determine how many inputs to select.
+        let mut total_input = 0;
+        let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
+
+        let mut remaining = total_output;
+
+        // Only use the necessariy amount of inputs to cover `total_output`, any
+        // other input gets dropped.
+        let proto_inputs = std::mem::take(&mut proto.inputs);
+        let selected: Vec<Proto::TxIn> = proto_inputs
+            .into_iter()
+            .take_while(|input| {
+                total_input += input.amount;
+                remaining = remaining.saturating_sub(input.amount);
+
+                remaining != 0
+            })
+            .collect();
+
+        // Insufficient input amount.
+        if remaining != 0 {
+            // Return error.
+            todo!()
+        }
+
+        // Calculate the total input weight projection.
+        let input_weight: u64 = proto
+            .inputs
+            .iter()
+            .map(|input| input.weight_projection)
+            .sum();
+
         // Convert Protobuf structure to `bitcoin` crate native transaction.
-        // Prepare signing mechanism.
+        let tx = convert_proto_to_tx(&proto)?;
+
+        // Calculate the full weight projection (base weight + input & output weight).
+        let weight_projection = tx.weight().to_wu() + input_weight;
+        let fee_projection = weight_projection * proto.weight_base;
+
+        // The amount to be returned.
+        let change_amount = total_input - fee_projection;
+
+        // Update the passed on protobuf structure; we're only using the
+        // selected inputs and we add the change output (return to sender)
+        proto.inputs = selected;
+        proto.outputs.push(Proto::TxOut {
+            value: change_amount,
+            script_pubkey: proto.change_script_pubkey.clone(),
+        });
+
+        // Convert *updated* Protobuf structure to `bitcoin` crate native
+        // transaction.
         let tx = convert_proto_to_tx(&proto)?;
         let mut cache = SighashCache::new(&tx);
 
@@ -110,7 +160,7 @@ impl Compiler<StandardBitcoinContext> {
                         Some((
                             TapLeafHash::from_slice(input.leaf_hash.as_ref())
                                 .map_err(|_| Error::from(Proto::Error::Error_invalid_leaf_hash))?,
-                            // TODO: We might want to make this configurable.
+                            // TODO: We might want to make this configurable?.
                             0xFFFFFFFF,
                         ))
                     };
@@ -173,6 +223,7 @@ impl Compiler<StandardBitcoinContext> {
                     signing_method: method.into(),
                 })
                 .collect(),
+            weight_projection,
         })
     }
 

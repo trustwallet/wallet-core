@@ -26,8 +26,6 @@ impl InputBuilder {
                         None,
                         // scale factor applied to non-witness bytes
                         4 * (
-                            // script length
-                            1 + 
                             // length + ECDSA signature
                             1 + 72 +
                             // length + public key
