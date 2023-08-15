@@ -1,12 +1,10 @@
-use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::Result;
-use bitcoin::absolute::{Height, LockTime, Time};
+use crate::brc20::{BRC20TransferInscription, Ticker};
 use bitcoin::address::{NetworkChecked, Payload};
-use bitcoin::consensus::encode::Encodable;
 use bitcoin::key::{TapTweak, TweakedKeyPair};
 use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash, TapNodeHash};
 use bitcoin::{
-    OutPoint, PubkeyHash, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid,
+    PubkeyHash, ScriptBuf,
     WPubkeyHash, Witness,
 };
 use secp256k1::hashes::Hash;
@@ -24,7 +22,6 @@ use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-use tw_utxo::compiler::StandardBitcoinContext;
 
 // Convenience aliases.
 pub type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
@@ -279,7 +276,7 @@ impl CoinEntry for BitcoinEntry {
                     },
                     ProtoInputBuilder::None => todo!(),
                 },
-                ProtoInputRecipient::custom(custom) => {
+                ProtoInputRecipient::custom(_custom) => {
                     todo!()
                 },
                 ProtoInputRecipient::None => todo!(),
