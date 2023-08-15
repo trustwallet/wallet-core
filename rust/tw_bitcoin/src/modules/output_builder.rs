@@ -1,26 +1,12 @@
+use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::Result;
-use tw_proto::BitcoinV2::Proto;
-use tw_proto::Utxo::Proto as UtxoProto;
-
-use crate::brc20::{BRC20TransferInscription, Ticker};
-use bitcoin::address::{NetworkChecked, Payload};
-use bitcoin::key::{TapTweak, TweakedKeyPair};
-use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash, TapNodeHash};
-use bitcoin::{PubkeyHash, ScriptBuf, WPubkeyHash, Witness};
+use bitcoin::taproot::{LeafVersion, TapNodeHash};
+use bitcoin::{PubkeyHash, ScriptBuf, WPubkeyHash};
 use secp256k1::hashes::Hash;
-use secp256k1::{KeyPair, Message, Secp256k1, XOnlyPublicKey};
-use std::borrow::Cow;
-use std::fmt::Display;
-use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
-use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
-use tw_coin_entry::modules::json_signer::JsonSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
+use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
+use tw_proto::BitcoinV2::Proto;
 
 pub struct OutputBuilder {}
 
@@ -107,6 +93,7 @@ impl OutputBuilder {
     }
 }
 
+// Conenience helper function.
 fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<PubkeyHash> {
     let pubkey_hash = match &pubkey_or_hash.to_address {
         ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref()).unwrap(),
@@ -119,6 +106,7 @@ fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<P
     Ok(pubkey_hash)
 }
 
+// Conenience helper function.
 fn witness_pubkey_hash_from_proto(
     pubkey_or_hash: &Proto::ToPublicKeyOrHash,
 ) -> Result<WPubkeyHash> {

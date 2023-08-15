@@ -1,11 +1,7 @@
-use crate::brc20::{BRC20TransferInscription, Ticker};
-use crate::Result;
 use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::key::{TapTweak, TweakedKeyPair};
-use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash, TapNodeHash};
-use bitcoin::{PubkeyHash, ScriptBuf, WPubkeyHash, Witness};
 use secp256k1::hashes::Hash;
-use secp256k1::{KeyPair, Message, Secp256k1, XOnlyPublicKey};
+use secp256k1::{KeyPair, Message, Secp256k1};
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;

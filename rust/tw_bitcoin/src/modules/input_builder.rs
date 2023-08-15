@@ -1,26 +1,14 @@
+use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::Result;
+use bitcoin::taproot::{ControlBlock, TapLeafHash};
+use bitcoin::{ScriptBuf, Witness};
+use secp256k1::XOnlyPublicKey;
+use std::borrow::Cow;
+use tw_coin_entry::coin_entry::SignatureBytes;
+use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-
-use crate::brc20::{BRC20TransferInscription, Ticker};
-use bitcoin::address::{NetworkChecked, Payload};
-use bitcoin::key::{TapTweak, TweakedKeyPair};
-use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash, TapNodeHash};
-use bitcoin::{PubkeyHash, ScriptBuf, WPubkeyHash, Witness};
-use secp256k1::hashes::Hash;
-use secp256k1::{KeyPair, Message, Secp256k1, XOnlyPublicKey};
-use std::borrow::Cow;
-use std::fmt::Display;
-use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
-use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
-use tw_coin_entry::modules::json_signer::JsonSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
-use tw_misc::traits::ToBytesVec;
 
 pub struct InputBuilder {}
 
