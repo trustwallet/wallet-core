@@ -66,6 +66,7 @@ message Input {
 			bytes p2tr_key_path = 7;
 			// Pay-to-Taproot-script-path (complex transfers)
 			TaprootScriptPath p2tr_script_path = 8;
+			Brc20Inscription brc20_inscribe = 9;
 		}
 	}
 
@@ -77,6 +78,14 @@ message Input {
 	message TaprootScriptPath {
 		bytes payload = 2;
 		// TODO: Control block needed? Can technically be derived from the payload.
+		bytes control_block = 3;
+	}
+
+	message Brc20Inscription {
+		// TODO: This is dangeours, could be misinterpreted.
+		bytes inscribe_to = 1;
+		string ticker = 2;
+		uint64 transfer_amount = 3;
 		bytes control_block = 3;
 	}
 }
