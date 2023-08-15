@@ -256,8 +256,26 @@ impl CoinEntry for BitcoinEntry {
 
                         (UtxoProto::SigningMethod::Taproot, script_buf)
                     },
-                    ProtoInputBuilder::brc20_inscribe(complex) => {
-                        todo!()
+                    ProtoInputBuilder::brc20_inscribe(brc20) => {
+                        let pubkey =
+                            bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
+                        let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
+
+                        let brc20 = BRC20TransferInscription::new(
+                            pubkey.into(),
+                            ticker,
+                            brc20.transfer_amount,
+                        )
+                        .unwrap();
+                        leaf_hash = Some(TapLeafHash::from_script(
+                            brc20.inscription().taproot_program(),
+                            bitcoin::taproot::LeafVersion::TapScript,
+                        ));
+
+                        (
+                            UtxoProto::SigningMethod::Taproot,
+                            ScriptBuf::from(brc20.inscription().taproot_program()),
+                        )
                     },
                     ProtoInputBuilder::None => todo!(),
                 },
@@ -401,8 +419,29 @@ impl CoinEntry for BitcoinEntry {
                             w
                         })
                     },
-                    ProtoInputBuilder::brc20_inscribe(_) => {
-                        todo!()
+                    ProtoInputBuilder::brc20_inscribe(brc20) => {
+                        let pubkey =
+                            bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
+                        let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
+                        let control_block =
+                            ControlBlock::decode(brc20.control_block.as_ref()).unwrap();
+
+                        let brc20 = BRC20TransferInscription::new(
+                            pubkey.into(),
+                            ticker,
+                            brc20.transfer_amount,
+                        )
+                        .unwrap();
+
+                        let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
+
+                        (ScriptBuf::new(), {
+                            let mut w = Witness::new();
+                            w.push(sig.to_vec());
+                            w.push(brc20.inscription().taproot_program());
+                            w.push(control_block.serialize());
+                            w
+                        })
                     },
                 },
                 ProtoInputVariant::custom(custom) => (
@@ -470,8 +509,7 @@ impl CoinEntry for BitcoinEntry {
                 recipient: Cow::default(),
                 script_pubkey: output.script_pubkey,
                 amount: output.value,
-                // TODO:
-                control_block: None,
+                control_block: output.control_block,
             });
         }
 

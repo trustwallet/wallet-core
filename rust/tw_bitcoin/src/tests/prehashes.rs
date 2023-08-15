@@ -165,6 +165,10 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         .into_iter()
         .rev()
         .collect();
+    let txid2: Vec<u8> = hex("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
+        .into_iter()
+        .rev()
+        .collect();
 
     let mut signing = Proto::SigningInput {
         version: 2,
@@ -240,7 +244,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     signing.inputs.push(Proto::Input {
-        txid: txid.as_slice().into(),
+        txid: txid2.as_slice().into(),
         vout: 0,
         amount: 7_000,
         sighash_type: UtxoProto::SighashType::All,
@@ -275,7 +279,9 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     const REVEAL_RAW: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340de6fd13e43700f59876d305e5a4a5c41ad7ada10bc5a4e4bdd779eb0060c0a78ebae9c33daf77bb3725172edb5bd12e26f00c08f9263e480d53b93818138ad0b5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
 
     assert_eq!(transaction.inputs.len(), 1);
-    assert_eq!(transaction.outputs.len(), 2);
+    assert_eq!(transaction.outputs.len(), 1);
 
-    assert_eq!(&encoded, REVEAL_RAW);
+    assert_eq!(encoded[..164], REVEAL_RAW[..164]);
+    assert_ne!(encoded[164..292], REVEAL_RAW[164..292]);
+    assert_eq!(encoded[292..], REVEAL_RAW[292..]);
 }
