@@ -9,7 +9,7 @@ use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
-type ProtoLockTimeVariant = Proto::mod_SigningInput::OneOflock_time;
+type ProtoLockTimeVariant = Proto::mod_LockTime::OneOfvariant;
 type ProtoSigningMethod = Proto::SigningMethod;
 
 pub trait UtxoContext {
@@ -179,25 +179,30 @@ impl Compiler<StandardBitcoinContext> {
     fn compile_impl(
         proto: Proto::PreSerialization<'_>,
     ) -> Result<Proto::SerializedTransaction<'static>> {
-        type ProtoLockTimeVariant = Proto::mod_PreSerialization::OneOflock_time;
-
         let version = proto.version;
 
         // Retreive the lock time. If none is provided, the default lock time is
         // used (immediately spendable).
-        let lock_time = match proto.lock_time {
-            ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
-                Height::from_consensus(block)
-                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            ),
-            ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
-                Time::from_consensus(secs)
-                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            ),
-            ProtoLockTimeVariant::None => LockTime::Blocks(
+        let lock_time = if let Some(lock_time) = proto.lock_time {
+            match lock_time.variant {
+                ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
+                    Height::from_consensus(block)
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+                ),
+                ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
+                    Time::from_consensus(secs)
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+                ),
+                ProtoLockTimeVariant::None => LockTime::Blocks(
+                    Height::from_consensus(0)
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+                ),
+            }
+        } else {
+            LockTime::Blocks(
                 Height::from_consensus(0)
                     .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            ),
+            )
         };
 
         let mut tx = Transaction {
@@ -253,19 +258,26 @@ fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transac
 
     // Retreive the lock time. If none is provided, the default lock time is
     // used (immediately spendable).
-    let lock_time = match proto.lock_time {
-        ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
-            Height::from_consensus(block)
-                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        ),
-        ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
-            Time::from_consensus(secs)
-                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        ),
-        ProtoLockTimeVariant::None => LockTime::Blocks(
+    let lock_time = if let Some(ref lock_time) = proto.lock_time {
+        match lock_time.variant {
+            ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
+                Height::from_consensus(block)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+            ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
+                Time::from_consensus(secs)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+            ProtoLockTimeVariant::None => LockTime::Blocks(
+                Height::from_consensus(0)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+        }
+    } else {
+        LockTime::Blocks(
             Height::from_consensus(0)
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        ),
+        )
     };
 
     let mut tx = Transaction {

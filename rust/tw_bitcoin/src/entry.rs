@@ -70,23 +70,6 @@ impl CoinAddress for Address {
     }
 }
 
-// Todo: type should be unified.
-fn convert_locktime(
-    val: &Proto::mod_SigningInput::OneOflock_time,
-) -> UtxoProto::mod_SigningInput::OneOflock_time {
-    match val {
-        Proto::mod_SigningInput::OneOflock_time::blocks(blocks) => {
-            UtxoProto::mod_SigningInput::OneOflock_time::blocks(*blocks)
-        },
-        Proto::mod_SigningInput::OneOflock_time::seconds(seconds) => {
-            UtxoProto::mod_SigningInput::OneOflock_time::seconds(*seconds)
-        },
-        Proto::mod_SigningInput::OneOflock_time::None => {
-            UtxoProto::mod_SigningInput::OneOflock_time::None
-        },
-    }
-}
-
 impl CoinEntry for BitcoinEntry {
     type AddressPrefix = NoPrefix;
     type Address = Address;
@@ -181,7 +164,7 @@ impl CoinEntry for BitcoinEntry {
 
         let utxo_signing = UtxoProto::SigningInput {
             version: proto.version,
-            lock_time: convert_locktime(&proto.lock_time),
+            lock_time: proto.lock_time,
             inputs: utxo_inputs.clone(),
             outputs: utxo_outputs
                 .iter()
@@ -234,8 +217,7 @@ impl CoinEntry for BitcoinEntry {
 
         let utxo_preserializtion = UtxoProto::PreSerialization {
             version: proto.version,
-            // TODO:
-            lock_time: UtxoProto::mod_PreSerialization::OneOflock_time::blocks(0),
+            lock_time: proto.lock_time.clone(),
             inputs: utxo_input_claims.clone(),
             outputs: utxo_outputs
                 .iter()
@@ -278,8 +260,7 @@ impl CoinEntry for BitcoinEntry {
         // Prepare `Proto::Transaction` protobuf for output.
         let transaction = Proto::Transaction {
             version: proto.version,
-            // TODO
-            lock_time: 0,
+            lock_time: proto.lock_time,
             inputs: proto_inputs,
             outputs: proto_outputs,
         };
