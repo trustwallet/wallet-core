@@ -209,9 +209,14 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let txouts = process_recipients(&proto.outputs);
+        let mut utxo_outputs = vec![];
+        for output in proto.outputs {
+            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
 
-        let total_spent: u64 = txouts.iter().map(|output| output.value).sum();
+            utxo_outputs.push(utxo);
+        }
+
+        let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
 
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
@@ -249,7 +254,7 @@ impl CoinEntry for BitcoinEntry {
             version: proto.version,
             lock_time: convert_locktime(&proto.lock_time),
             inputs: utxo_inputs.clone(),
-            outputs: txouts
+            outputs: utxo_outputs
                 .iter()
                 .map(|out| UtxoProto::TxOut {
                     value: out.value,
@@ -264,7 +269,7 @@ impl CoinEntry for BitcoinEntry {
             error: 0,
             sighashes: utxo_presigning.sighashes,
             utxo_inputs,
-            txouts,
+            utxo_outputs,
         }
     }
 
@@ -285,12 +290,18 @@ impl CoinEntry for BitcoinEntry {
 
         // Generate claims for all the inputs.
         for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
-            let utxo_claim = crate::modules::InputBuilder::utxo_claim_from_proto(input, signature).unwrap();
+            let utxo_claim =
+                crate::modules::InputBuilder::utxo_claim_from_proto(input, signature).unwrap();
             utxo_input_claims.push(utxo_claim);
         }
 
         // Process all the outputs.
-        let utxo_outputs = process_recipients(&proto.outputs);
+        let mut utxo_outputs = vec![];
+        for output in proto.outputs {
+            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
+
+            utxo_outputs.push(utxo);
+        }
 
         let utxo_preserializtion = UtxoProto::PreSerialization {
             version: proto.version,
@@ -364,117 +375,4 @@ impl CoinEntry for BitcoinEntry {
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
         None
     }
-}
-
-fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<PubkeyHash> {
-    let pubkey_hash = match &pubkey_or_hash.to_address {
-        ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref()).unwrap(),
-        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
-            .unwrap()
-            .pubkey_hash(),
-        ProtoPubkeyOrHash::None => return Err(crate::Error::Todo),
-    };
-
-    Ok(pubkey_hash)
-}
-
-fn witness_pubkey_hash_from_proto(
-    pubkey_or_hash: &Proto::ToPublicKeyOrHash,
-) -> Result<WPubkeyHash> {
-    let wpubkey_hash = match &pubkey_or_hash.to_address {
-        ProtoPubkeyOrHash::hash(hash) => WPubkeyHash::from_slice(hash.as_ref()).unwrap(),
-        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
-            .unwrap()
-            .wpubkey_hash()
-            .unwrap(),
-        ProtoPubkeyOrHash::None => todo!(),
-    };
-
-    Ok(wpubkey_hash)
-}
-
-fn process_recipients<'a>(
-    outputs: &Vec<Proto::Output<'a>>,
-) -> Vec<Proto::mod_PreSigningOutput::TxOut<'static>> {
-    let mut utxo_outputs = vec![];
-
-    let secp = secp256k1::Secp256k1::new();
-
-    for output in outputs {
-        let (script_pubkey, control_block) = match &output.to_recipient {
-            // Script spending condition was passed on directly.
-            ProtoOutputRecipient::script_pubkey(script) => {
-                (ScriptBuf::from_bytes(script.to_vec()), None)
-            },
-            // Process builder methods. We construct the Script spending
-            // conditions by using the specified parameters.
-            ProtoOutputRecipient::builder(builder) => match &builder.variant {
-                ProtoOutputBuilder::p2sh(_) => {
-                    todo!()
-                },
-                ProtoOutputBuilder::p2pkh(pubkey_or_hash) => {
-                    let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
-                    (ScriptBuf::new_p2pkh(&pubkey_hash), None)
-                },
-                ProtoOutputBuilder::p2wsh(_) => {
-                    todo!()
-                },
-                ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => {
-                    let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
-                    (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None)
-                },
-                ProtoOutputBuilder::p2tr_key_path(pubkey) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
-                    let xonly = XOnlyPublicKey::from(pubkey.inner);
-                    (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None)
-                },
-                ProtoOutputBuilder::p2tr_script_path(complex) => {
-                    let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
-
-                    let pubkey =
-                        bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
-                    let xonly = XOnlyPublicKey::from(pubkey.inner);
-
-                    (ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)), None)
-                },
-                ProtoOutputBuilder::brc20_inscribe(brc20) => {
-                    let pubkey =
-                        bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
-                    let xonly = XOnlyPublicKey::from(pubkey.inner);
-
-                    let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
-                    let brc20 =
-                        BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
-                            .unwrap();
-
-                    // Explicit check
-                    let control_block = brc20
-                        .inscription()
-                        .spend_info()
-                        .control_block(&(
-                            brc20.inscription().taproot_program().to_owned(),
-                            LeafVersion::TapScript,
-                        ))
-                        .unwrap();
-                    let merkle_root = brc20.inscription().spend_info().merkle_root().unwrap();
-                    (
-                        ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
-                        Some(control_block.serialize()),
-                    )
-                },
-                ProtoOutputBuilder::None => todo!(),
-            },
-            // We derive the spending condition for the address.
-            ProtoOutputRecipient::from_address(_) => todo!(),
-            ProtoOutputRecipient::None => todo!(),
-        };
-
-        utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
-            value: output.amount,
-            script_pubkey: script_pubkey.to_vec().into(),
-            control_block: control_block.map(|cb| cb.into()).unwrap_or_default(),
-        });
-    }
-
-    utxo_outputs
 }
