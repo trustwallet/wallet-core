@@ -26,7 +26,6 @@
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <gtest/gtest.h>
-#include <iostream>
 
 namespace TW::THORChainSwap {
 
