@@ -226,6 +226,7 @@ impl CoinEntry for BitcoinEntry {
                     script_pubkey: Cow::Borrowed(&out.script_pubkey),
                 })
                 .collect(),
+            weight_base: proto.sat_vb,
         };
 
         let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);

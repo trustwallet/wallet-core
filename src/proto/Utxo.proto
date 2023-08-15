@@ -118,6 +118,10 @@ message PreSerialization {
 
     // The transaction outputs.
     repeated TxOut outputs = 4;
+
+    // The base unit per weight. In the case of Bitcoin, that would refer to
+    // satoshis ("satVb").
+    uint64 weight_base = 5;
 }
 
 message TxInClaim {
@@ -143,4 +147,8 @@ message SerializedTransaction {
 
     // The encoded transaction, ready to be submitted to the network.
     bytes encoded = 2;
+
+    uint64 weight = 3;
+
+    uint64 fee = 4;
 }
