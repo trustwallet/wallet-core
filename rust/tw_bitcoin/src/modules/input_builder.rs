@@ -10,7 +10,7 @@ use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
-pub struct InputBuilder {}
+pub struct InputBuilder;
 
 impl InputBuilder {
     pub fn utxo_from_proto(input: &Proto::Input<'_>) -> Result<UtxoProto::TxIn<'static>> {
