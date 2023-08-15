@@ -173,6 +173,7 @@ enum TWCoinType {
     TWCoinTypeBase = 8453,
     TWCoinTypeSei = 19000118,
     TWCoinTypeArbitrumNova = 10042170,
+    TWCoinTypeLinea = 59144,
 };
 
 /// Returns the blockchain for a coin type.
@@ -307,7 +308,7 @@ uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSS58Prefix(enum TWCoinType coin);
 
-/// public key type for this coin type
+/// public key type for this coin typeUpdate CoinAddressDerivationTests.swift
 ///
 /// \param coin A coin type
 /// \return public key type for the given coin type

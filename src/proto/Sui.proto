@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.Sui.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Base64 encoded msg to sign (string)
 message SignDirect {
     // Obtain by calling any write RpcJson on SUI
@@ -29,6 +31,13 @@ message SigningInput {
 message SigningOutput {
     /// The raw transaction without indent in base64
     string unsigned_tx = 1;
+
     /// The signature encoded in base64
     string signature = 2;
+
+    // Error code, 0 is ok, other codes will be treated as errors.
+    Common.Proto.SigningError error = 3;
+
+    // Error description.
+    string error_message = 4;
 }
