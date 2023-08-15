@@ -17,20 +17,18 @@ message SigningInput {
     // included in a block.
 	Utxo.Proto.LockTime lock_time = 3;
 
-	SelectorType input_selector = 4;
-
 	repeated Input inputs = 5;
 
     repeated Output outputs = 6;
 
 	uint64 sat_vb = 7;
 
-	bool create_change = 8;
-}
+	// The change output to be added (return to sender).
+	// The `amount` can be left at 0.
+    Output change_output = 6;
 
-enum SelectorType {
-	UseAll = 0;
-	AutomaticAscending = 1;
+    // Explicility disable change output creation.
+    bool disable_change_output = 7;
 }
 
 message Input {

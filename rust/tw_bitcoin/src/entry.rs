@@ -121,46 +121,25 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        let mut utxo_outputs = vec![];
-        for output in proto.outputs {
-            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
-
-            utxo_outputs.push(utxo);
-        }
-
-        let total_spent: u64 = utxo_outputs.iter().map(|output| output.value).sum();
-
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
             let txin = crate::modules::InputBuilder::utxo_from_proto(&input).unwrap();
             utxo_inputs.push(txin);
         }
 
-        let mut remaining = total_spent;
-        // TODO: This logic can be combined with the processor above.
-        match proto.input_selector {
-            Proto::SelectorType::AutomaticAscending => {
-                utxo_inputs.sort_by(|a, b| a.amount.partial_cmp(&b.amount).unwrap());
-
-                let mut total_input_amount = 0;
-                utxo_inputs = utxo_inputs
-                    .into_iter()
-                    .take_while(|input| {
-                        total_input_amount += input.amount;
-                        remaining = remaining.saturating_sub(input.amount);
-
-                        remaining != 0
-                    })
-                    .collect();
-            },
-            // Do nothing.
-            Proto::SelectorType::UseAll => {},
+        let mut utxo_outputs = vec![];
+        for output in proto.outputs {
+            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
+            utxo_outputs.push(utxo);
         }
 
-        if remaining != 0 {
-            // Error, insufficient funds.
-            //todo!()
-        }
+        let change_output = if proto.disable_change_output {
+            Cow::default()
+        } else {
+            crate::modules::OutputBuilder::utxo_from_proto(&proto.change_output.unwrap())
+                .unwrap()
+                .script_pubkey
+        };
 
         let utxo_signing = UtxoProto::SigningInput {
             version: proto.version,
@@ -168,11 +147,14 @@ impl CoinEntry for BitcoinEntry {
             inputs: utxo_inputs.clone(),
             outputs: utxo_outputs
                 .iter()
-                .map(|out| UtxoProto::TxOut {
-                    value: out.value,
-                    script_pubkey: Cow::Borrowed(&out.script_pubkey),
+                .map(|output| UtxoProto::TxOut {
+                    value: output.value,
+                    script_pubkey: Cow::Borrowed(&output.script_pubkey),
                 })
                 .collect(),
+            weight_base: proto.sat_vb,
+            change_script_pubkey: change_output,
+            disable_change_output: proto.disable_change_output,
         };
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
@@ -180,7 +162,8 @@ impl CoinEntry for BitcoinEntry {
         Proto::PreSigningOutput {
             error: 0,
             sighashes: utxo_presigning.sighashes,
-            utxo_inputs,
+            // Update selected inputs.
+            utxo_inputs: utxo_presigning.inputs,
             utxo_outputs,
         }
     }
@@ -195,7 +178,7 @@ impl CoinEntry for BitcoinEntry {
     ) -> Self::SigningOutput {
         if proto.inputs.len() != signatures.len() {
             // Error
-            todo!()
+            //todo!()
         }
 
         let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
