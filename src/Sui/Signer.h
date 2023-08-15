@@ -24,7 +24,7 @@ public:
 
     static TxCompiler::Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input);
 
-    /// Get transaction data to be signed (with the type tag).
+    /// Get transaction data to be signed (with a type tag).
     static Data transactionPreimage(const Proto::SigningInput& input);
 
     static std::string signatureScheme(const Data& signature, const PublicKey& publicKey);

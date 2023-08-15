@@ -32,8 +32,6 @@ class BlindBuilder final : public TransactionBase {
 public:
     BlindBuilder() noexcept = default;
 
-    static BlindBuilder builder() noexcept { return {}; }
-
     BlindBuilder& encodedCallHex(const std::string& encodedCallHex) {
         mEncodedCall = parse_hex(encodedCallHex);
         return *this;
@@ -86,8 +84,6 @@ private:
 class TransactionBuilder final : public TransactionBase {
 public:
     TransactionBuilder() noexcept = default;
-
-    static TransactionBuilder builder() noexcept { return {}; }
 
     TransactionBuilder& sender(Address sender) noexcept {
         mSender = sender;
