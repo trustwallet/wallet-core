@@ -1,21 +1,7 @@
 use crate::Result;
-use bitcoin::address::{NetworkChecked, Payload};
 use bitcoin::key::{TapTweak, TweakedKeyPair};
-use secp256k1::hashes::Hash;
 use secp256k1::{KeyPair, Message, Secp256k1};
-use std::borrow::Cow;
-use std::fmt::Display;
-use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::{
-    CoinAddress, CoinEntry, PrivateKeyBytes, PublicKeyBytes, SignatureBytes,
-};
-use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
-use tw_coin_entry::modules::json_signer::JsonSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
-use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::ffi::privkey;
-use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
+use tw_coin_entry::coin_entry::{PrivateKeyBytes, SignatureBytes};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
@@ -27,16 +13,12 @@ impl Signer {
         input: &Proto::PreSigningOutput<'_>,
         private_key: PrivateKeyBytes,
     ) -> Result<Vec<SignatureBytes>> {
-		let secp = Secp256k1::new();
-		let keypair = KeyPair::from_seckey_slice(&secp, private_key.as_ref()).unwrap();
+        let secp = Secp256k1::new();
+        let keypair = KeyPair::from_seckey_slice(&secp, private_key.as_ref()).unwrap();
 
         let mut signatures = vec![];
 
-        for (entry, utxo) in input
-            .sighashes
-            .iter()
-            .zip(input.utxo_inputs.iter())
-        {
+        for (entry, utxo) in input.sighashes.iter().zip(input.utxo_inputs.iter()) {
             let sighash = Message::from_slice(entry.sighash.as_ref()).unwrap();
 
             match entry.signing_method {
