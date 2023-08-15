@@ -23,16 +23,20 @@ message SigningInput {
 
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
-    oneof lock_time {
-        uint32 blocks = 2;
-        uint32 seconds = 3;
-    }
+    LockTime lock_time = 2;
 
     // The inputs of the transaction to sign. If an individual input does not
     // provide an index, then the index of the inserted order is used.
-    repeated TxIn inputs = 4;
+    repeated TxIn inputs = 3;
 
-    repeated TxOut outputs = 5;
+    repeated TxOut outputs = 4;
+}
+
+message LockTime {
+    oneof variant {
+        uint32 blocks = 1;
+        uint32 seconds = 2;
+    }
 }
 
 message TxIn {
@@ -45,15 +49,15 @@ message TxIn {
     uint64 amount = 3;
 
     // The spending condition of the output.
-    bytes script_pubkey = 1;
+    bytes script_pubkey = 4;
 
     // The sighash type.
-    SighashType sighash_type = 7;
+    SighashType sighash_type = 5;
 
-    SigningMethod signing_method = 8;
+    SigningMethod signing_method = 6;
 
-    bytes leaf_hash = 10;
-    bool one_prevout = 11;
+    bytes leaf_hash = 7;
+    bool one_prevout = 8;
 }
 
 enum SigningMethod {
@@ -107,16 +111,13 @@ message PreSerialization {
 
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
-    oneof lock_time {
-        uint32 blocks = 2;
-        uint32 seconds = 3;
-    }
+    LockTime lock_time = 2;
 
     // The transaction inputs containing the serialized claim scripts.
-    repeated TxInClaim inputs = 4;
+    repeated TxInClaim inputs = 3;
 
     // The transaction outputs.
-    repeated TxOut outputs = 5;
+    repeated TxOut outputs = 4;
 }
 
 message TxInClaim {

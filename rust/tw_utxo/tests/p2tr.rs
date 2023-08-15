@@ -44,7 +44,7 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
         .build()
         .unwrap();
 
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(&signing);
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);

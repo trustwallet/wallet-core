@@ -12,7 +12,9 @@ impl<'a> SigningInputBuilder<'a> {
                 version: 2,
                 inputs: vec![],
                 outputs: vec![],
-                lock_time: Proto::mod_SigningInput::OneOflock_time::None,
+                lock_time: Some(Proto::LockTime {
+                    variant: Proto::mod_LockTime::OneOfvariant::None,
+                }),
             },
         }
     }

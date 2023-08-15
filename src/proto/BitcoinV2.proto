@@ -15,20 +15,17 @@ message SigningInput {
 
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
-    oneof lock_time {
-        uint32 blocks = 3;
-        uint32 seconds = 4;
-    }
+	Utxo.Proto.LockTime lock_time = 3;
 
-	SelectorType input_selector = 5;
+	SelectorType input_selector = 4;
 
-	repeated Input inputs = 6;
+	repeated Input inputs = 5;
 
-    repeated Output outputs = 7;
+    repeated Output outputs = 6;
 
-	uint64 sat_vb = 8;
+	uint64 sat_vb = 7;
 
-	bool create_change = 9;
+	bool create_change = 8;
 }
 
 enum SelectorType {
@@ -175,7 +172,7 @@ message Transaction {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;
 
-    uint32 lock_time = 2;
+    Utxo.Proto.LockTime lock_time = 2;
 
 	// The transaction inputs.
 	repeated TransactionInput inputs = 3;
