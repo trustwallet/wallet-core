@@ -9,6 +9,7 @@
 #include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Aptos.pb.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 namespace TW::Aptos {
 
@@ -22,6 +23,10 @@ public:
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input);
+
+    static TxCompiler::Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input);
+
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey);
 };
 
 } // namespace TW::Aptos
