@@ -179,35 +179,9 @@ impl Compiler<StandardBitcoinContext> {
     fn compile_impl(
         proto: Proto::PreSerialization<'_>,
     ) -> Result<Proto::SerializedTransaction<'static>> {
-        let version = proto.version;
-
-        // Retreive the lock time. If none is provided, the default lock time is
-        // used (immediately spendable).
-        let lock_time = if let Some(lock_time) = proto.lock_time {
-            match lock_time.variant {
-                ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
-                    Height::from_consensus(block)
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-                ),
-                ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
-                    Time::from_consensus(secs)
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-                ),
-                ProtoLockTimeVariant::None => LockTime::Blocks(
-                    Height::from_consensus(0)
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-                ),
-            }
-        } else {
-            LockTime::Blocks(
-                Height::from_consensus(0)
-                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            )
-        };
-
         let mut tx = Transaction {
-            version,
-            lock_time,
+            version: proto.version,
+            lock_time: lock_time_from_proto(&proto.lock_time)?,
             input: vec![],
             output: vec![],
         };
@@ -256,35 +230,9 @@ impl Compiler<StandardBitcoinContext> {
 }
 
 fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transaction> {
-    let version = proto.version;
-
-    // Retreive the lock time. If none is provided, the default lock time is
-    // used (immediately spendable).
-    let lock_time = if let Some(ref lock_time) = proto.lock_time {
-        match lock_time.variant {
-            ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
-                Height::from_consensus(block)
-                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            ),
-            ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
-                Time::from_consensus(secs)
-                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            ),
-            ProtoLockTimeVariant::None => LockTime::Blocks(
-                Height::from_consensus(0)
-                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-            ),
-        }
-    } else {
-        LockTime::Blocks(
-            Height::from_consensus(0)
-                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
-        )
-    };
-
     let mut tx = Transaction {
-        version,
-        lock_time,
+        version: proto.version,
+        lock_time: lock_time_from_proto(&proto.lock_time)?,
         input: vec![],
         output: vec![],
     };
@@ -311,4 +259,32 @@ fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transac
     }
 
     Ok(tx)
+}
+
+// Convenience function to retreive the lock time. If none is provided, the
+// default lock time is used (immediately spendable).
+fn lock_time_from_proto(proto: &Option<Proto::LockTime>) -> Result<LockTime> {
+    let lock_time = if let Some(lock_time) = proto {
+        match lock_time.variant {
+            ProtoLockTimeVariant::blocks(block) => LockTime::Blocks(
+                Height::from_consensus(block)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+            ProtoLockTimeVariant::seconds(secs) => LockTime::Seconds(
+                Time::from_consensus(secs)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+            ProtoLockTimeVariant::None => LockTime::Blocks(
+                Height::from_consensus(0)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+            ),
+        }
+    } else {
+        LockTime::Blocks(
+            Height::from_consensus(0)
+                .map_err(|_| Error::from(Proto::Error::Error_invalid_lock_time))?,
+        )
+    };
+
+    Ok(lock_time)
 }
