@@ -215,7 +215,7 @@ impl CoinEntry for BitcoinEntry {
 
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
-            let txin = crate::modules::InputBuilder::txin_from_proto(&input).unwrap();
+            let txin = crate::modules::InputBuilder::utxo_from_proto(&input).unwrap();
             utxo_inputs.push(txin);
         }
 
@@ -284,107 +284,9 @@ impl CoinEntry for BitcoinEntry {
         let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
 
         // Generate claims for all the inputs.
-        for (index, input) in proto.inputs.iter().enumerate() {
-            let sig_slice = &signatures[index];
-
-            let (script_sig, witness) = match &input.to_recipient {
-                ProtoInputRecipient::builder(variant) => match &variant.variant {
-                    ProtoInputBuilder::None => panic!(),
-                    ProtoInputBuilder::p2sh(_) => todo!(),
-                    ProtoInputBuilder::p2pkh(pubkey) => {
-                        let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
-                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
-
-                        (
-                            ScriptBuf::builder()
-                                .push_slice(sig.serialize())
-                                .push_key(&pubkey)
-                                .into_script(),
-                            Witness::new(),
-                        )
-                    },
-                    ProtoInputBuilder::p2wsh(_) => todo!(),
-                    ProtoInputBuilder::p2wpkh(pubkey) => {
-                        let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
-                        let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
-
-                        (ScriptBuf::new(), {
-                            let mut w = Witness::new();
-                            w.push(sig.serialize());
-                            w.push(pubkey.to_bytes());
-                            w
-                        })
-                    },
-                    ProtoInputBuilder::p2tr_key_path(_) => {
-                        let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
-
-                        dbg!(&sig);
-
-                        (ScriptBuf::new(), {
-                            let mut w = Witness::new();
-                            w.push(sig.to_vec());
-                            w
-                        })
-                    },
-                    ProtoInputBuilder::p2tr_script_path(taproot) => {
-                        let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
-                        let control_block =
-                            ControlBlock::decode(taproot.control_block.as_ref()).unwrap();
-
-                        (ScriptBuf::new(), {
-                            let mut w = Witness::new();
-                            w.push(sig.to_vec());
-                            w.push(taproot.payload.as_ref());
-                            w.push(control_block.serialize());
-                            w
-                        })
-                    },
-                    ProtoInputBuilder::brc20_inscribe(brc20) => {
-                        let pubkey =
-                            bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
-                        let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
-                        let control_block =
-                            ControlBlock::decode(brc20.control_block.as_ref()).unwrap();
-
-                        let brc20 = BRC20TransferInscription::new(
-                            pubkey.into(),
-                            ticker,
-                            brc20.transfer_amount,
-                        )
-                        .unwrap();
-
-                        let sig = bitcoin::taproot::Signature::from_slice(sig_slice).unwrap();
-
-                        (ScriptBuf::new(), {
-                            let mut w = Witness::new();
-                            w.push(sig.to_vec());
-                            w.push(brc20.inscription().taproot_program());
-                            w.push(control_block.serialize());
-                            w
-                        })
-                    },
-                },
-                ProtoInputRecipient::custom(custom) => (
-                    ScriptBuf::from_bytes(custom.script_sig.to_vec()),
-                    Witness::from_slice(&custom.witness_items),
-                ),
-                ProtoInputRecipient::None => {
-                    todo!()
-                },
-            };
-
-            utxo_input_claims.push(UtxoProto::TxInClaim {
-                txid: input.txid.clone(),
-                vout: input.vout,
-                // TODO
-                sequence: u32::MAX,
-                script_sig: script_sig.to_vec().into(),
-                witness_items: witness
-                    .to_vec()
-                    .into_iter()
-                    .map(Cow::Owned)
-                    .collect::<Vec<Cow<_>>>(),
-            });
+        for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
+            let utxo_claim = crate::modules::InputBuilder::utxo_claim_from_proto(input, signature).unwrap();
+            utxo_input_claims.push(utxo_claim);
         }
 
         // Process all the outputs.
