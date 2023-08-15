@@ -41,6 +41,7 @@ public:
 
     TxCompiler::Proto::PreSigningOutput preImage() noexcept override {
         TxCompiler::Proto::PreSigningOutput output;
+        // Aptos has no preImageHash.
         output.set_data(mEncodedCall.data(), mEncodedCall.size());
         return output;
     }
@@ -139,6 +140,7 @@ public:
     TxCompiler::Proto::PreSigningOutput preImage() noexcept override {
         TxCompiler::Proto::PreSigningOutput output;
         auto signingMsg = msgToSign();
+        // Aptos has no preImageHash.
         output.set_data(signingMsg.data(), signingMsg.size());
         return output;
     }
