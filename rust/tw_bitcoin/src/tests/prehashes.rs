@@ -2,7 +2,10 @@ use tw_coin_entry::coin_entry::CoinEntry;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
-use crate::entry::{BitcoinEntry, PlaceHolder};
+use crate::entry::{
+    BitcoinEntry, PlaceHolder, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder,
+    ProtoOutputRecipient,
+};
 
 fn hex(string: &str) -> Vec<u8> {
     tw_encoding::hex::decode(string).unwrap()
@@ -37,17 +40,15 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         amount: 100_000_000 * 50,
         sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
-        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
-            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2pkh(
-                alice_pubkey.as_slice().into(),
-            ),
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+            variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         amount: 100_000_000 * 50 - 1_000_000,
-        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
-            type_pb: Proto::mod_Builder::OneOftype_pb::p2wpkh(Proto::ToPublicKeyOrHash {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     bob_pubkey.as_slice().into(),
                 ),
@@ -95,17 +96,15 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         amount: 100_000_000 * 50,
         sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
-        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
-            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2pkh(
-                alice_pubkey.as_slice().into(),
-            ),
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+            variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         amount: 100_000_000 * 50 - 1_000_000,
-        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
-            type_pb: Proto::mod_Builder::OneOftype_pb::p2tr_key_path(bob_pubkey.as_slice().into()),
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2tr_key_path(bob_pubkey.as_slice().into()),
         }),
     });
 
@@ -131,19 +130,15 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         amount: 100_000_000 * 50 - 1_000_000,
         sighash_type: UtxoProto::SighashType::UseDefault,
         one_prevout: false,
-        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
-            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2tr_key_path(
-                bob_pubkey.as_slice().into(),
-            ),
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+            variant: ProtoInputBuilder::p2tr_key_path(bob_pubkey.as_slice().into()),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         amount: 100_000_000 * 50 - 1_000_000 - 1_000_000,
-        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
-            type_pb: Proto::mod_Builder::OneOftype_pb::p2tr_key_path(
-                alice_pubkey.as_slice().into(),
-            ),
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2tr_key_path(alice_pubkey.as_slice().into()),
         }),
     });
 
@@ -187,31 +182,27 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         amount: 26_400,
         sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
-        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
-            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::p2wpkh(
-                alice_pubkey.as_slice().into(),
-            ),
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+            variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         amount: 7_000,
-        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
-            type_pb: Proto::mod_Builder::OneOftype_pb::brc20_inscribe(
-                Proto::mod_Builder::Brc20Inscription {
-                    inscribe_to: alice_pubkey.as_slice().into(),
-                    ticker: "oadf".into(),
-                    transfer_amount: 20,
-                },
-            ),
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
+                inscribe_to: alice_pubkey.as_slice().into(),
+                ticker: "oadf".into(),
+                transfer_amount: 20,
+            }),
         }),
     });
 
     // Change/return transaction.
     signing.outputs.push(Proto::Output {
         amount: 16_400,
-        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
-            type_pb: Proto::mod_Builder::OneOftype_pb::p2wpkh(Proto::ToPublicKeyOrHash {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     alice_pubkey.as_slice().into(),
                 ),
@@ -222,11 +213,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
     let transaction = output.transaction.unwrap();
-    let control_block = transaction.outputs[0]
-        .control_block
-        .as_ref()
-        .unwrap()
-        .clone();
+    let control_block = transaction.outputs[0].control_block.as_ref();
 
     assert_eq!(transaction.inputs.len(), 1);
     assert_eq!(transaction.outputs.len(), 2);
@@ -249,22 +236,20 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         amount: 7_000,
         sighash_type: UtxoProto::SighashType::All,
         one_prevout: false,
-        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
-            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::brc20_inscribe(
-                Proto::mod_Input::Brc20Inscription {
-                    inscribe_to: alice_pubkey.as_slice().into(),
-                    ticker: "oadf".into(),
-                    transfer_amount: 20,
-                    control_block: control_block.raw.into(),
-                },
-            ),
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+            variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::Brc20Inscription {
+                inscribe_to: alice_pubkey.as_slice().into(),
+                ticker: "oadf".into(),
+                transfer_amount: 20,
+                control_block: control_block.into(),
+            }),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         amount: 546,
-        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
-            type_pb: Proto::mod_Builder::OneOftype_pb::p2wpkh(Proto::ToPublicKeyOrHash {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     alice_pubkey.as_slice().into(),
                 ),
