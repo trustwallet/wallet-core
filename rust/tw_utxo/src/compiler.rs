@@ -70,10 +70,20 @@ impl Compiler<StandardBitcoinContext> {
         let selected: Vec<Proto::TxIn> = proto_inputs
             .into_iter()
             .take_while(|input| {
+                if remaining == 0 {
+                    return false;
+                }
+
                 total_input += input.amount;
                 remaining = remaining.saturating_sub(input.amount);
 
-                remaining != 0
+                true
+            })
+            .map(|input| Proto::TxIn {
+                txid: input.txid.to_vec().into(),
+                script_pubkey: input.script_pubkey.to_vec().into(),
+                leaf_hash: input.leaf_hash.to_vec().into(),
+                ..input
             })
             .collect();
 
@@ -82,6 +92,9 @@ impl Compiler<StandardBitcoinContext> {
             // Return error.
             todo!()
         }
+
+        // Update protobuf structure with selected inputs.
+        proto.inputs = selected.clone();
 
         // Calculate the total input weight projection.
         let input_weight: u64 = proto
@@ -100,13 +113,14 @@ impl Compiler<StandardBitcoinContext> {
         // The amount to be returned.
         let change_amount = total_input - fee_projection;
 
-        // Update the passed on protobuf structure; we're only using the
-        // selected inputs and we add the change output (return to sender)
-        proto.inputs = selected;
+        // Update the passed on protobuf structure by adding a change output
+        // (return to sender)
+        /*
         proto.outputs.push(Proto::TxOut {
             value: change_amount,
             script_pubkey: proto.change_script_pubkey.clone(),
         });
+        */
 
         // Convert *updated* Protobuf structure to `bitcoin` crate native
         // transaction.
@@ -216,6 +230,7 @@ impl Compiler<StandardBitcoinContext> {
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
+            inputs: selected,
             sighashes: sighashes
                 .into_iter()
                 .map(|(sighash, method)| Proto::Sighash {

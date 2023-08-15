@@ -37,6 +37,7 @@ message SigningInput {
 
     bytes change_script_pubkey = 6;
 
+    // Explicility disable change output creation.
     bool disable_change_output = 7;
 }
 
@@ -104,6 +105,8 @@ message TxOut {
 message PreSigningOutput {
     // error code, 0 is ok, other codes will be treated as errors
     Error error = 1;
+
+    repeated TxIn inputs = 3;
 
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 2;
