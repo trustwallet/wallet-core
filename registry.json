@@ -3261,7 +3261,6 @@
   {
     "id": "arbitrumnova",
     "name": "Arbitrum Nova",
-    "displayName": "Arbitrum Nova",
     "coinId": 10042170,
     "slip44": 60,
     "symbol": "ETH",
