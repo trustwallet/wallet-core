@@ -49,7 +49,7 @@ impl Compiler<StandardBitcoinContext> {
             .or_else(|err| {
                 std::result::Result::<_, ()>::Ok(Proto::SerializedTransaction {
                     error: err.into(),
-                    encoded: Default::default(),
+                    ..Default::default()
                 })
             })
             .expect("did not convert error value")
@@ -249,6 +249,8 @@ impl Compiler<StandardBitcoinContext> {
         Ok(Proto::SerializedTransaction {
             error: Proto::Error::OK,
             encoded: buffer.into(),
+            weight: tx.weight().to_wu(),
+            fee: tx.weight().to_vbytes_ceil() * proto.weight_base,
         })
     }
 }
