@@ -256,6 +256,9 @@ impl CoinEntry for BitcoinEntry {
 
                         (UtxoProto::SigningMethod::Taproot, script_buf)
                     },
+                    ProtoInputBuilder::brc20_inscribe(complex) => {
+                        todo!()
+                    },
                     ProtoInputBuilder::None => todo!(),
                 },
                 ProtoInputVariant::custom(custom) => {
@@ -348,6 +351,8 @@ impl CoinEntry for BitcoinEntry {
 
             let (script_sig, witness) = match &input.variant {
                 ProtoInputVariant::builder(variant) => match &variant.variant {
+                    ProtoInputBuilder::None => panic!(),
+                    ProtoInputBuilder::p2sh(_) => todo!(),
                     ProtoInputBuilder::p2pkh(pubkey) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
                         let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
@@ -360,6 +365,7 @@ impl CoinEntry for BitcoinEntry {
                             Witness::new(),
                         )
                     },
+                    ProtoInputBuilder::p2wsh(_) => todo!(),
                     ProtoInputBuilder::p2wpkh(pubkey) => {
                         let sig = bitcoin::ecdsa::Signature::from_slice(sig_slice).unwrap();
                         let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
@@ -395,7 +401,9 @@ impl CoinEntry for BitcoinEntry {
                             w
                         })
                     },
-                    _ => panic!(),
+                    ProtoInputBuilder::brc20_inscribe(_) => {
+                        todo!()
+                    },
                 },
                 ProtoInputVariant::custom(custom) => (
                     ScriptBuf::from_bytes(custom.script_sig.to_vec()),

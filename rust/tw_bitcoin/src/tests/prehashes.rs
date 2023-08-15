@@ -217,6 +217,65 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
 
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
+    let transaction = output.transaction.unwrap();
+    let control_block = transaction.outputs[0]
+        .control_block
+        .as_ref()
+        .unwrap()
+        .clone();
 
+    assert_eq!(transaction.inputs.len(), 1);
+    assert_eq!(transaction.outputs.len(), 2);
     assert_eq!(&encoded, "02000000000101089098890d2653567b9e8df2d1fbe5c3c8bf1910ca7184e301db0ad3b495c88e0100000000ffffffff02581b000000000000225120e8b706a97732e705e22ae7710703e7f589ed13c636324461afa443016134cc051040000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d02483045022100a44aa28446a9a886b378a4a65e32ad9a3108870bd725dc6105160bed4f317097022069e9de36422e4ce2e42b39884aa5f626f8f94194d1013007d5a1ea9220a06dce0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+
+    let mut signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Proto::mod_SigningInput::OneOflock_time::blocks(0),
+        input_selector: Proto::SelectorType::UseAll,
+        inputs: vec![],
+        outputs: vec![],
+        sat_vb: 0,
+        create_change: false,
+    };
+
+    signing.inputs.push(Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        amount: 7_000,
+        sighash_type: UtxoProto::SighashType::All,
+        one_prevout: false,
+        variant: Proto::mod_Input::OneOfvariant::builder(Proto::mod_Input::InputVariant {
+            variant: Proto::mod_Input::mod_InputVariant::OneOfvariant::brc20_inscribe(
+                Proto::mod_Input::Brc20Inscription {
+                    inscribe_to: alice_pubkey.as_slice().into(),
+                    ticker: "oadf".into(),
+                    transfer_amount: 20,
+                    control_block: control_block.raw.into(),
+                },
+            ),
+        }),
+    });
+
+    signing.outputs.push(Proto::Output {
+        amount: 546,
+        to_recipient: Proto::mod_Output::OneOfto_recipient::builder(Proto::Builder {
+            type_pb: Proto::mod_Builder::OneOftype_pb::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
+                    alice_pubkey.as_slice().into(),
+                ),
+            }),
+        }),
+    });
+
+    let output = BitcoinEntry.sign(&coin, signing);
+    let encoded = tw_encoding::hex::encode(output.encoded, false);
+    let transaction = output.transaction.unwrap();
+
+    const REVEAL_RAW: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d0340de6fd13e43700f59876d305e5a4a5c41ad7ada10bc5a4e4bdd779eb0060c0a78ebae9c33daf77bb3725172edb5bd12e26f00c08f9263e480d53b93818138ad0b5b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
+
+    assert_eq!(transaction.inputs.len(), 1);
+    assert_eq!(transaction.outputs.len(), 2);
+
+    assert_eq!(&encoded, REVEAL_RAW);
 }
