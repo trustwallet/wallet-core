@@ -30,6 +30,14 @@ message SigningInput {
     repeated TxIn inputs = 3;
 
     repeated TxOut outputs = 4;
+
+    // The base unit per weight. In the case of Bitcoin, that would refer to
+    // satoshis ("satVb").
+    uint64 weight_base = 5;
+
+    bytes change_script_pubkey = 6;
+
+    bool disable_change_output = 7;
 }
 
 message LockTime {
@@ -100,6 +108,7 @@ message PreSigningOutput {
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 2;
 
+    uint64 weight_projection = 5;
 }
 
 message Sighash {
