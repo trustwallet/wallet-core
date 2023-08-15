@@ -55,6 +55,7 @@ impl<'a> TxInBuilder<'a> {
                 script_pubkey: Default::default(),
                 sighash_type: Proto::SighashType::All,
                 signing_method: Proto::SigningMethod::Legacy,
+                weight_projection: 0,
                 leaf_hash: Default::default(),
                 one_prevout: false,
             },

@@ -52,12 +52,14 @@ message TxIn {
     bytes script_pubkey = 4;
 
     // The sighash type.
-    SighashType sighash_type = 5;
+    SighashType sighash_type = 6;
 
-    SigningMethod signing_method = 6;
+    SigningMethod signing_method = 7;
 
-    bytes leaf_hash = 7;
-    bool one_prevout = 8;
+    uint64 weight_projection = 5;
+
+    bytes leaf_hash = 8;
+    bool one_prevout = 9;
 }
 
 enum SigningMethod {

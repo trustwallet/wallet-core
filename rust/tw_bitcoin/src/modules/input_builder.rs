@@ -14,9 +14,7 @@ pub struct InputBuilder;
 
 impl InputBuilder {
     pub fn utxo_from_proto(input: &Proto::Input<'_>) -> Result<UtxoProto::TxIn<'static>> {
-        let mut leaf_hash = None;
-
-        let (signing_method, script_pubkey) = match &input.to_recipient {
+        let (signing_method, script_pubkey, leaf_hash, weight) = match &input.to_recipient {
             ProtoInputRecipient::builder(builder) => match &builder.variant {
                 ProtoInputBuilder::p2sh(_) => todo!(),
                 ProtoInputBuilder::p2pkh(pubkey) => {
@@ -25,6 +23,22 @@ impl InputBuilder {
                     (
                         UtxoProto::SigningMethod::Legacy,
                         ScriptBuf::new_p2pkh(&pubkey.pubkey_hash()),
+                        None,
+                        // scale factor applied to non-witness bytes
+                        4 * (
+                            // script length
+                            1 + 
+                            // length + ECDSA signature
+                            1 + 72 +
+                            // length + public key
+                            1 + {
+                                if pubkey.compressed {
+                                    33
+                                } else {
+                                    65
+                                }
+                            }
+                        ),
                     )
                 },
                 ProtoInputBuilder::p2wsh(_) => todo!(),
@@ -34,6 +48,22 @@ impl InputBuilder {
                     (
                         UtxoProto::SigningMethod::Segwit,
                         ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap()),
+                        None,
+                        // witness bytes, scale factor NOT applied.
+                        (
+                            // indicator of witness item (2)
+                            1 +
+                            // length + ECDSA signature (can be 71 or 72)
+                            1 + 72 +
+                            // length + public key
+                            1 + {
+                                if pubkey.compressed {
+                                    33
+                                } else {
+                                    65
+                                }
+                            }
+                        ),
                     )
                 },
                 ProtoInputBuilder::p2tr_key_path(pubkey) => {
@@ -43,16 +73,38 @@ impl InputBuilder {
                     (
                         UtxoProto::SigningMethod::Taproot,
                         ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None),
+                        None,
+                        // witness bytes, scale factor NOT applied.
+                        (
+                            // indicator of witness item (1)
+                            1 +
+                            // length + Schnorr signature (can be 71 or 72)
+                            1 + 72
+                            // NO public key
+                        ),
                     )
                 },
                 ProtoInputBuilder::p2tr_script_path(complex) => {
                     let script_buf = ScriptBuf::from_bytes(complex.payload.to_vec());
-                    leaf_hash = Some(TapLeafHash::from_script(
+                    let leaf_hash = Some(TapLeafHash::from_script(
                         script_buf.as_script(),
                         bitcoin::taproot::LeafVersion::TapScript,
                     ));
 
-                    (UtxoProto::SigningMethod::Taproot, script_buf)
+                    (
+                        UtxoProto::SigningMethod::Taproot,
+                        script_buf,
+                        leaf_hash,
+                        // witness bytes, scale factor NOT applied.
+                        (
+                            // indicator of witness item
+                            1 +
+                            // the payload (TODO: should this be `repeated bytes`?)
+                            complex.payload.len() as u64 +
+                            // length + control block (pubkey + Merkle path), roughly
+                            1 + 64
+                        ),
+                    )
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey =
@@ -63,7 +115,7 @@ impl InputBuilder {
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .unwrap();
 
-                    leaf_hash = Some(TapLeafHash::from_script(
+                    let leaf_hash = Some(TapLeafHash::from_script(
                         brc20.inscription().taproot_program(),
                         bitcoin::taproot::LeafVersion::TapScript,
                     ));
@@ -71,6 +123,16 @@ impl InputBuilder {
                     (
                         UtxoProto::SigningMethod::Taproot,
                         ScriptBuf::from(brc20.inscription().taproot_program()),
+                        leaf_hash,
+                        // witness bytes, scale factor NOT applied.
+                        (
+                            // indicator of witness item (?)
+                            1 +
+                            // the payload (TODO: should this be `repeated bytes`?)
+                            brc20.inscription().taproot_program().len() as u64 +
+                            // length + control block (pubkey + Merkle path), roughly
+                            1 + 64
+                        ),
                     )
                 },
                 ProtoInputBuilder::None => todo!(),
@@ -88,6 +150,7 @@ impl InputBuilder {
             script_pubkey: script_pubkey.to_vec().into(),
             signing_method,
             sighash_type: input.sighash_type,
+            weight_projection: weight,
             leaf_hash: leaf_hash
                 .map(|hash| hash.to_vec().into())
                 .unwrap_or_default(),
@@ -138,13 +201,11 @@ impl InputBuilder {
                     })
                 },
                 ProtoInputBuilder::p2tr_script_path(taproot) => {
-                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref()).unwrap();
                     let control_block =
                         ControlBlock::decode(taproot.control_block.as_ref()).unwrap();
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
-                        w.push(sig.to_vec());
                         w.push(taproot.payload.as_ref());
                         w.push(control_block.serialize());
                         w
