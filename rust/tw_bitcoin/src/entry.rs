@@ -1,7 +1,5 @@
 use bitcoin::address::{NetworkChecked, Payload};
-use bitcoin::key::{TapTweak, TweakedKeyPair};
 use secp256k1::hashes::Hash;
-use secp256k1::{KeyPair, Message, Secp256k1};
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;
@@ -127,7 +125,9 @@ impl CoinEntry for BitcoinEntry {
         let pre_signed = self.preimage_hashes(_coin, proto.clone());
         // TODO: Check error
 
-        let signatures = crate::modules::Signer::signatures_from_proto(&pre_signed, proto.private_key.to_vec()).unwrap();
+        let signatures =
+            crate::modules::Signer::signatures_from_proto(&pre_signed, proto.private_key.to_vec())
+                .unwrap();
 
         self.compile(_coin, proto, signatures, vec![])
     }
