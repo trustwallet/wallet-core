@@ -5,9 +5,7 @@ use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
 use tw_misc::try_or_else;
-use tw_proto::Bitcoin::Proto::{
-    SigningInput, SigningOutput,
-};
+use tw_proto::Bitcoin::Proto::{SigningInput, SigningOutput};
 
 pub mod address;
 pub mod scripts;
@@ -28,7 +26,8 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     let proto: SigningInput = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
     let signing = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
-    let _serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
+    let _serialized =
+        tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
 
     todo!()
 }
