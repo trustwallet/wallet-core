@@ -11,24 +11,24 @@ message SigningInput {
     int32 version = 1;
 
 	// Only required if the `sign` method is called.
-	bytes private_key = 99;
+	bytes private_key = 2;
 
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
     oneof lock_time {
-        uint32 blocks = 2;
-        uint32 seconds = 3;
+        uint32 blocks = 3;
+        uint32 seconds = 4;
     }
 
-	SelectorType input_selector = 4;
+	SelectorType input_selector = 5;
 
-	repeated Input inputs = 5;
+	repeated Input inputs = 6;
 
-    repeated Output outputs = 6;
+    repeated Output outputs = 7;
 
-	uint64 sat_vb = 7;
+	uint64 sat_vb = 8;
 
-	bool create_change = 8;
+	bool create_change = 9;
 }
 
 enum SelectorType {
@@ -45,14 +45,14 @@ message Input {
 
 	Utxo.Proto.SighashType sighash_type = 4;
 
-	oneof variant {
-		InputVariant builder = 5;
+	oneof to_recipient {
+		Builder builder = 5;
 		ScriptWitness custom = 6;
 	}
 
-	bool one_prevout = 99;
+	bool one_prevout = 7;
 
-	message InputVariant {
+	message Builder {
 		oneof variant {
 			// Pay-to-Script-Hash, specify the hash.
 			bytes p2sh = 1;
@@ -71,14 +71,13 @@ message Input {
 	}
 
 	message ScriptWitness {
-		bytes script_sig = 2;
-		repeated bytes witness_items = 3;
+		bytes script_sig = 1;
+		repeated bytes witness_items = 2;
 	}
 
 	message TaprootScriptPath {
-		bytes payload = 2;
-		// TODO: Control block needed? Can technically be derived from the payload.
-		bytes control_block = 3;
+		bytes payload = 1;
+		bytes control_block = 2;
 	}
 
 	message Brc20Inscription {
@@ -86,7 +85,7 @@ message Input {
 		bytes inscribe_to = 1;
 		string ticker = 2;
 		uint64 transfer_amount = 3;
-		bytes control_block = 3;
+		bytes control_block = 4;
 	}
 }
 
@@ -98,31 +97,23 @@ message Output {
 		bytes script_pubkey = 3;
 		bytes from_address = 4;
 	}
-}
 
-message ToPublicKeyOrHash {
-	oneof to_address {
-		bytes pubkey = 1;
-		bytes hash = 2;
-	}
-}
-
-// TODO: move inside Output.
-message Builder {
-	oneof type {
-		// Pay-to-Script-Hash, specify the hash.
-		bytes p2sh = 1;
-		// Pay-to-Public-Key-Hash
-		ToPublicKeyOrHash p2pkh = 3;
-		// Pay-to-Witness-Script-Hash, specify the hash.
-		bytes p2wsh = 4;
-		// Pay-to-Public-Key-Hash
-		ToPublicKeyOrHash p2wpkh = 6;
-		// Pay-to-Taproot-key-path (balance transfers), specify the public key.
-		bytes p2tr_key_path = 7;
-		// Pay-to-Taproot-script-path (complex transfers)
-		TaprootScriptPath p2tr_script_path = 8;
-		Brc20Inscription brc20_inscribe = 9;
+	message Builder {
+		oneof variant {
+			// Pay-to-Script-Hash, specify the hash.
+			bytes p2sh = 1;
+			// Pay-to-Public-Key-Hash
+			ToPublicKeyOrHash p2pkh = 2;
+			// Pay-to-Witness-Script-Hash, specify the hash.
+			bytes p2wsh = 3;
+			// Pay-to-Public-Key-Hash
+			ToPublicKeyOrHash p2wpkh = 4;
+			// Pay-to-Taproot-key-path (balance transfers), specify the public key.
+			bytes p2tr_key_path = 5;
+			// Pay-to-Taproot-script-path (complex transfers)
+			TaprootScriptPath p2tr_script_path = 6;
+			Brc20Inscription brc20_inscribe = 7;
+		}
 	}
 
 	message TaprootScriptPath {
@@ -138,6 +129,13 @@ message Builder {
 	}
 }
 
+message ToPublicKeyOrHash {
+	oneof to_address {
+		bytes pubkey = 1;
+		bytes hash = 2;
+	}
+}
+
 message PreSigningOutput {
 	// TODO
 	uint32 error = 1;
@@ -147,17 +145,17 @@ message PreSigningOutput {
 
 	repeated Utxo.Proto.TxIn utxo_inputs = 3;
 
-	repeated TxOut txouts = 3;
-}
+	repeated TxOut txouts = 4;
 
-// The output of a transaction.
-message TxOut {
-    // The value of the output (amount).
-    uint64 value = 1;
-    // The spending condition of the output.
-    bytes script_pubkey = 2;
+	// The output of a transaction.
+	message TxOut {
+		// The value of the output (amount).
+		uint64 value = 1;
+		// The spending condition of the output.
+		bytes script_pubkey = 2;
 
-	ControlBlock control_block = 3;
+		bytes control_block = 3;
+	}
 }
 
 message SigningOutput {
@@ -215,9 +213,5 @@ message TransactionOutput {
 	// In case of P2TR script-path (complex scripts), this is the control block
 	// required for claiming.
 	// TODO: Required?
-	ControlBlock control_block = 4;
-}
-
-message ControlBlock {
-	bytes raw = 1;
+	bytes control_block = 4;
 }
