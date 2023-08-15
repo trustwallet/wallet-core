@@ -381,6 +381,36 @@
     }
   },
   {
+    "id": "linea",
+    "name": "Linea",
+    "coinId": 59144,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "59144",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://lineascan.build",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x0c7086f96865f4fcad58d7f3449db7baab9fce2625bcb79e7ea26676aa0d3420",
+      "sampleAccount": "0xbf71018f716ca6c64b0b12622f87a26b3b86100f"
+    },
+    "info": {
+      "url": "https://linea.build",
+      "source": "https://github.com/LineaLabs",
+      "rpc": "https://rpc.linea.build",
+      "documentation": "https://docs.linea.build"
+    }
+  },
+  {
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,
