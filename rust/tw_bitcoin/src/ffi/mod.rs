@@ -1,24 +1,13 @@
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{
-    calculate_fee, Error, Result, TXOutputP2TRScriptPath, TaprootScript, TxInputP2TRScriptPath,
-};
-use bitcoin::{
-    consensus::Decodable,
-    taproot::{NodeInfo, TapNodeHash, TaprootSpendInfo},
-    PublicKey, ScriptBuf, Transaction, Txid,
-};
-use secp256k1::hashes::Hash;
-use secp256k1::KeyPair;
-use std::borrow::Cow;
+use crate::Result;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::CUInt64Result;
 use tw_memory::ffi::c_result::ErrorCode;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto::{
-    OutPoint, SigningInput, SigningOutput, Transaction as ProtoTransaction, TransactionInput,
-    TransactionOutput, TransactionVariant as TrVariant,
+    SigningInput, SigningOutput,
 };
 
 pub mod address;
@@ -27,11 +16,6 @@ pub mod scripts;
 // Re-exports
 pub use address::*;
 pub use scripts::*;
-
-use crate::{
-    Recipient, TransactionBuilder, TxInput, TxInputP2PKH, TxInputP2TRKeyPath, TxInputP2WPKH,
-    TxOutput, TxOutputP2PKH, TxOutputP2TRKeyPath, TxOutputP2WPKH,
-};
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
@@ -66,9 +50,9 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     let proto: SigningInput = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
     let signing = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
-    let serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
+    let _serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
 
-    CByteArray::from(serialized)
+    todo!()
 }
 
 /// Note: many of the fields used in the `SigningInput` are currently unused. We
@@ -83,6 +67,7 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
 /// construct the outputs, which must include the return/change transaction and
 /// how much goes to the miner as fee (<total-satoshi-inputs> minus
 /// <total-satoshi-outputs>).
+<<<<<<< HEAD
 pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<SigningOutput> {
     let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
 
@@ -266,6 +251,10 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
     signing.encoded = Cow::from(signed);
 
     Ok(signing)
+=======
+pub(crate) fn taproot_build_and_sign_transaction(_proto: SigningInput) -> Result<SigningOutput> {
+    todo!()
+>>>>>>> c90e6617 (remove many deprecated structures)
 }
 
 #[repr(C)]

@@ -1,4 +1,5 @@
 mod address;
+<<<<<<< HEAD
 mod brc20_transfer;
 mod data;
 mod fee;
@@ -10,3 +11,7 @@ mod p2wpkh;
 mod prehashes;
 
 pub const ONE_BTC: u64 = 100_000_000;
+=======
+//mod data;
+mod coin_entry_sign;
+>>>>>>> c90e6617 (remove many deprecated structures)
