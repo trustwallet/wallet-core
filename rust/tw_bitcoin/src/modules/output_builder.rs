@@ -8,7 +8,7 @@ use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 
-pub struct OutputBuilder {}
+pub struct OutputBuilder;
 
 impl OutputBuilder {
     pub fn utxo_from_proto(

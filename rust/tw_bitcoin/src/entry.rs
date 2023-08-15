@@ -127,74 +127,7 @@ impl CoinEntry for BitcoinEntry {
         let pre_signed = self.preimage_hashes(_coin, proto.clone());
         // TODO: Check error
 
-        dbg!(&pre_signed);
-
-        let secp = Secp256k1::new();
-        let keypair = KeyPair::from_seckey_slice(&secp, proto.private_key.as_ref()).unwrap();
-
-        let mut signatures: Vec<SignatureBytes> = vec![];
-
-        for (entry, utxo_in) in pre_signed
-            .sighashes
-            .iter()
-            .zip(pre_signed.utxo_inputs.iter())
-        {
-            let sighash = Message::from_slice(entry.sighash.as_ref()).unwrap();
-
-            match entry.signing_method {
-                UtxoProto::SigningMethod::Legacy | UtxoProto::SigningMethod::Segwit => {
-                    let sig = bitcoin::ecdsa::Signature {
-                        sig: keypair.secret_key().sign_ecdsa(sighash),
-                        // TODO
-                        hash_ty: bitcoin::sighash::EcdsaSighashType::All,
-                    };
-
-                    signatures.push(sig.serialize().to_vec());
-                },
-                UtxoProto::SigningMethod::Taproot => {
-                    // Any empty leaf hash implies P2TR key-path (balance transfer)
-                    if utxo_in.leaf_hash.is_empty() {
-                        // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
-                        let tapped: TweakedKeyPair = keypair.tap_tweak(&secp, None);
-                        let tweaked = KeyPair::from(tapped);
-
-                        dbg!(&sighash);
-
-                        // Construct the Schnorr signature.
-                        #[cfg(not(test))]
-                        let schnorr = secp.sign_schnorr(&sighash, &tweaked);
-                        #[cfg(test)]
-                        // For tests, we disable the included randomness in order to create
-                        // reproducible signatures. Randomness should ALWAYS be used in
-                        // production.
-                        let schnorr = secp.sign_schnorr_no_aux_rand(&sighash, &tweaked);
-
-                        let sig = bitcoin::taproot::Signature {
-                            sig: schnorr,
-                            // TODO.
-                            hash_ty: bitcoin::sighash::TapSighashType::Default,
-                        };
-
-                        dbg!(&sig);
-
-                        signatures.push(sig.to_vec());
-                    }
-                    // If it has a leaf hash, then it's a P2TR script-path (complex transaction)
-                    else {
-                        // We do not tweak the key here since we're passing on
-                        // the "control block" when claiming, hence this signing
-                        // process is simpler that P2TR key-path.
-                        let sig = bitcoin::taproot::Signature {
-                            sig: keypair.sign_schnorr(sighash),
-                            // TODO.
-                            hash_ty: bitcoin::sighash::TapSighashType::Default,
-                        };
-
-                        signatures.push(sig.to_vec());
-                    }
-                },
-            }
-        }
+        let signatures = crate::modules::Signer::signatures_from_proto(&pre_signed, proto.private_key.to_vec()).unwrap();
 
         self.compile(_coin, proto, signatures, vec![])
     }
