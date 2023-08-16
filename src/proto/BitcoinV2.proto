@@ -17,6 +17,7 @@ enum Error {
     Error_invalid_schnorr_signature = 14;
     Error_invalid_control_block = 12;
     Error_invalid_pubkey_hash = 13;
+	Error_invalid_taproot_root = 15;
 }
 
 message SigningInput {
