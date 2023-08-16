@@ -58,7 +58,7 @@ message AbiParam {
 
 //// TWEthereumAbiDecodeContractCall
 
-// Decode a contract call (function input) according to the input ABI json.
+// Decode a contract call (function input) according to the given ABI json.
 message ContractCallDecodingInput {
     // An encoded smart contract call with a prefixed function signature (4 bytes).
     bytes encoded = 1;
@@ -100,7 +100,7 @@ message ContractCallDecodingOutput {
 
 //// TWEthereumAbiDecodeParams
 
-// Decode a function input or output data to the human readable json format, according to input abi json.
+// Decode a function input or output data according to the given ABI json.
 message ParamsDecodingInput {
     // An encoded ABI.
     bytes encoded = 1;
@@ -136,7 +136,7 @@ message ParamsDecodingOutput {
 
 //// TWEthereumAbiDecodeValue
 
-// Decode a function input or output data to the human readable json format, according to input abi json.
+// Decode an Eth ABI value.
 message ValueDecodingInput {
     // An encoded value to be decoded.
     bytes encoded = 1;
@@ -158,6 +158,7 @@ message ValueDecodingOutput {
 
 //// TWEthereumAbiEncodeFunction
 
+// Encode a function call to Eth ABI binary.
 message FunctionEncodingInput {
     string function_name = 1;
 
