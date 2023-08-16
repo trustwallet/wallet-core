@@ -20,7 +20,8 @@ impl Signer {
         let mut signatures = vec![];
 
         for (entry, utxo) in input.sighashes.iter().zip(input.utxo_inputs.iter()) {
-            let sighash = Message::from_slice(entry.sighash.as_ref()).unwrap();
+            let sighash = Message::from_slice(entry.sighash.as_ref())
+                .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash))?;
 
             match entry.signing_method {
                 UtxoProto::SigningMethod::Legacy | UtxoProto::SigningMethod::Segwit => {

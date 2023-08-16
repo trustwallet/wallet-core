@@ -105,15 +105,14 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        // TODO: Can we avoid cloning here?
-        let pre_signed = self.preimage_hashes(_coin, proto.clone());
-        // TODO: Check error
-
-        let signatures =
-            crate::modules::Signer::signatures_from_proto(&pre_signed, proto.private_key.to_vec())
-                .unwrap();
-
-        self.compile(_coin, proto, signatures, vec![])
+        self.sign_impl(_coin, proto)
+            .or_else(|err| {
+                std::result::Result::<_, ()>::Ok(Proto::SigningOutput {
+                    error: err.into(),
+                    ..Default::default()
+                })
+            })
+            .expect("did not convert error value")
     }
 
     #[inline]
@@ -122,15 +121,75 @@ impl CoinEntry for BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
+        self.preimage_hashes_impl(_coin, proto)
+            .or_else(|err| {
+                std::result::Result::<_, ()>::Ok(Proto::PreSigningOutput {
+                    error: err.into(),
+                    ..Default::default()
+                })
+            })
+            .expect("did not convert error value")
+    }
+
+    #[inline]
+    fn compile(
+        &self,
+        _coin: &dyn CoinContext,
+        proto: Proto::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        _public_keys: Vec<PublicKeyBytes>,
+    ) -> Self::SigningOutput {
+        self.compile_impl(_coin, proto, signatures, _public_keys)
+            .or_else(|err| {
+                std::result::Result::<_, ()>::Ok(Proto::SigningOutput {
+                    error: err.into(),
+                    ..Default::default()
+                })
+            })
+            .expect("did not convert error value")
+    }
+
+    #[inline]
+    fn json_signer(&self) -> Option<Self::JsonSigner> {
+        None
+    }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        None
+    }
+}
+
+impl BitcoinEntry {
+    fn sign_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        proto: Proto::SigningInput<'_>,
+    ) -> Result<Proto::SigningOutput<'static>> {
+        // TODO: Can we avoid cloning here?
+        let pre_signed = self.preimage_hashes(_coin, proto.clone());
+        // TODO: Check error
+
+        let signatures =
+            crate::modules::Signer::signatures_from_proto(&pre_signed, proto.private_key.to_vec())?;
+
+        self.compile_impl(_coin, proto, signatures, vec![])
+    }
+
+    fn preimage_hashes_impl(
+        &self,
+        _coin: &dyn CoinContext,
+        proto: Proto::SigningInput<'_>,
+    ) -> Result<Proto::PreSigningOutput<'static>> {
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
-            let txin = crate::modules::InputBuilder::utxo_from_proto(&input).unwrap();
+            let txin = crate::modules::InputBuilder::utxo_from_proto(&input)?;
             utxo_inputs.push(txin);
         }
 
         let mut utxo_outputs = vec![];
         for output in proto.outputs {
-            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
+            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output)?;
             utxo_outputs.push(utxo);
         }
 
@@ -161,23 +220,22 @@ impl CoinEntry for BitcoinEntry {
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
 
-        Proto::PreSigningOutput {
-            error: 0,
+        Ok(Proto::PreSigningOutput {
+            error: Proto::Error::OK,
             sighashes: utxo_presigning.sighashes,
             // Update selected inputs.
             utxo_inputs: utxo_presigning.inputs,
             utxo_outputs,
-        }
+        })
     }
 
-    #[inline]
-    fn compile(
+    fn compile_impl(
         &self,
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
-    ) -> Self::SigningOutput {
+    ) -> Result<Proto::SigningOutput<'static>> {
         if proto.inputs.len() != signatures.len() {
             // Error
             //todo!()
@@ -252,23 +310,13 @@ impl CoinEntry for BitcoinEntry {
         };
 
         // Return the full protobuf output.
-        Proto::SigningOutput {
+        Ok(Proto::SigningOutput {
+            error: Proto::Error::OK,
             transaction: Some(transaction),
             encoded: utxo_serialized.encoded,
             // TODO: Should be returned by `tw_utxo`.
             transaction_id: Cow::default(),
-            error: 0,
             fee: 0,
-        }
-    }
-
-    #[inline]
-    fn json_signer(&self) -> Option<Self::JsonSigner> {
-        None
-    }
-
-    #[inline]
-    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
-        None
+        })
     }
 }
