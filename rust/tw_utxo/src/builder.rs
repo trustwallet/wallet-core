@@ -10,14 +10,7 @@ impl<'a> SigningInputBuilder<'a> {
         SigningInputBuilder {
             proto: Proto::SigningInput {
                 version: 2,
-                inputs: vec![],
-                outputs: vec![],
-                lock_time: Some(Proto::LockTime {
-                    variant: Proto::mod_LockTime::OneOfvariant::None,
-                }),
-                weight_base: 1,
-                change_script_pubkey: Default::default(),
-                disable_change_output: false,
+                ..Default::default()
             },
         }
     }

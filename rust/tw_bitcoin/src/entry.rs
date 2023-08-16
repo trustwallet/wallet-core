@@ -152,6 +152,7 @@ impl CoinEntry for BitcoinEntry {
                     script_pubkey: Cow::Borrowed(&output.script_pubkey),
                 })
                 .collect(),
+            input_selector: proto.input_selector,
             weight_base: proto.sat_vb,
             change_script_pubkey: change_output,
             disable_change_output: proto.disable_change_output,

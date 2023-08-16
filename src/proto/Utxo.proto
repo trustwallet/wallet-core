@@ -31,14 +31,21 @@ message SigningInput {
 
     repeated TxOut outputs = 4;
 
+    InputSelector input_selector = 5;
+
     // The base unit per weight. In the case of Bitcoin, that would refer to
     // satoshis ("satVb").
-    uint64 weight_base = 5;
+    uint64 weight_base = 6;
 
-    bytes change_script_pubkey = 6;
+    bytes change_script_pubkey = 7;
 
     // Explicility disable change output creation.
-    bool disable_change_output = 7;
+    bool disable_change_output = 8;
+}
+
+enum InputSelector {
+    UseAll = 0;
+    SelectAscending = 1;
 }
 
 message LockTime {

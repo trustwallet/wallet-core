@@ -21,14 +21,16 @@ message SigningInput {
 
     repeated Output outputs = 6;
 
-	uint64 sat_vb = 7;
+	Utxo.Proto.InputSelector input_selector = 7;
+
+	uint64 sat_vb = 8;
 
 	// The change output to be added (return to sender).
 	// The `amount` can be left at 0.
-    Output change_output = 6;
+    Output change_output = 9;
 
     // Explicility disable change output creation.
-    bool disable_change_output = 7;
+    bool disable_change_output = 10;
 }
 
 message Input {
