@@ -59,39 +59,55 @@ impl Compiler<StandardBitcoinContext> {
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
-        let mut total_input = 0;
+        let mut total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
-        let mut remaining = total_output;
+        // Insufficient input amount.
+        if total_output > total_input {
+            // Return error.
+            todo!()
+        }
 
         // Only use the necessariy amount of inputs to cover `total_output`, any
         // other input gets dropped.
         let proto_inputs = std::mem::take(&mut proto.inputs);
-        let selected: Vec<Proto::TxIn> = proto_inputs
-            .into_iter()
-            .take_while(|input| {
-                if remaining == 0 {
-                    return false;
-                }
 
-                total_input += input.amount;
-                remaining = remaining.saturating_sub(input.amount);
+        let selected = if let Proto::InputSelector::SelectAscending = proto.input_selector {
+            let mut remaining = total_output;
 
-                true
-            })
-            .map(|input| Proto::TxIn {
-                txid: input.txid.to_vec().into(),
-                script_pubkey: input.script_pubkey.to_vec().into(),
-                leaf_hash: input.leaf_hash.to_vec().into(),
-                ..input
-            })
-            .collect();
+            let selected: Vec<Proto::TxIn> = proto_inputs
+                .into_iter()
+                .take_while(|input| {
+                    if remaining == 0 {
+                        return false;
+                    }
 
-        // Insufficient input amount.
-        if remaining != 0 {
-            // Return error.
-            todo!()
-        }
+                    total_input += input.amount;
+                    remaining = remaining.saturating_sub(input.amount);
+
+                    true
+                })
+                .map(|input| Proto::TxIn {
+                    txid: input.txid.to_vec().into(),
+                    script_pubkey: input.script_pubkey.to_vec().into(),
+                    leaf_hash: input.leaf_hash.to_vec().into(),
+                    ..input
+                })
+                .collect();
+
+            selected
+        } else {
+            // TODO: Write a function for this
+            proto_inputs
+                .into_iter()
+                .map(|input| Proto::TxIn {
+                    txid: input.txid.to_vec().into(),
+                    script_pubkey: input.script_pubkey.to_vec().into(),
+                    leaf_hash: input.leaf_hash.to_vec().into(),
+                    ..input
+                })
+                .collect()
+        };
 
         // Update protobuf structure with selected inputs.
         proto.inputs = selected.clone();
@@ -110,17 +126,17 @@ impl Compiler<StandardBitcoinContext> {
         let weight_projection = tx.weight().to_wu() + input_weight;
         let fee_projection = weight_projection * proto.weight_base;
 
-        // The amount to be returned.
-        let change_amount = total_input - fee_projection;
+        if !proto.disable_change_output {
+            // The amount to be returned.
+            let change_amount = total_input - fee_projection;
 
-        // Update the passed on protobuf structure by adding a change output
-        // (return to sender)
-        /*
-        proto.outputs.push(Proto::TxOut {
-            value: change_amount,
-            script_pubkey: proto.change_script_pubkey.clone(),
-        });
-        */
+            // Update the passed on protobuf structure by adding a change output
+            // (return to sender)
+            proto.outputs.push(Proto::TxOut {
+                value: change_amount,
+                script_pubkey: proto.change_script_pubkey.clone(),
+            });
+        }
 
         // Convert *updated* Protobuf structure to `bitcoin` crate native
         // transaction.
