@@ -20,26 +20,33 @@ fn sighash_input_p2pkh_output_p2wpkh() {
 
     let txid = txid_rev("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911");
 
-    let signing = SigningInputBuilder::new()
-        .version(2)
-        .input(|| {
-            TxInBuilder::new()
-                .txid(&txid)
-                .vout(0)
-                .value(0)
-                .spending_condition(input_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .output(|| {
-            TxOutBuilder::new()
-                .value(50 * 100_000_000 - 1_000_000)
-                .spending_condition(output_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .build()
-        .unwrap();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![
+            Proto::TxIn {
+                txid: txid.into(),
+                vout: 0,
+                amount: 0,
+                script_pubkey: input_script_pubkey.as_bytes().into(),
+                sighash_type: Proto::SighashType::All,
+                signing_method: Proto::SigningMethod::Legacy,
+                weight_projection: 1,
+                leaf_hash: Default::default(),
+                one_prevout: false,
+            }
+        ],
+        outputs: vec![
+            Proto::TxOut {
+                value: 50 * 100_000_000 - 1_000_000,
+                script_pubkey: output_script_pubkey.as_bytes().into(),
+            }
+        ],
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: 1,
+        change_script_pubkey: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 
@@ -61,27 +68,33 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
 
     let txid = txid_rev("858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e");
 
-    let signing = SigningInputBuilder::new()
-        .version(2)
-        .input(|| {
-            TxInBuilder::new()
-                .txid(&txid)
-                .vout(0)
-                .value(50 * 100_000_000 - 1_000_000)
-                .signing_method(tw_proto::Utxo::Proto::SigningMethod::Segwit)
-                .spending_condition(input_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .output(|| {
-            TxOutBuilder::new()
-                .value(50 * 100_000_000 - 1_000_000 * 2)
-                .spending_condition(output_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .build()
-        .unwrap();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![
+            Proto::TxIn {
+                txid: txid.into(),
+                vout: 0,
+                amount: 50 * 100_000_000 - 1_000_000,
+                script_pubkey: input_script_pubkey.as_bytes().into(),
+                sighash_type: Proto::SighashType::All,
+                signing_method: Proto::SigningMethod::Segwit,
+                weight_projection: 1,
+                leaf_hash: Default::default(),
+                one_prevout: false,
+            }
+        ],
+        outputs: vec![
+            Proto::TxOut {
+                value: 50 * 100_000_000 - 1_000_000 * 2,
+                script_pubkey: output_script_pubkey.as_bytes().into(),
+            }
+        ],
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: 1,
+        change_script_pubkey: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 

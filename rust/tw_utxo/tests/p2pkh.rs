@@ -71,6 +71,3 @@ fn sighash_input_p2pkh_output_p2pkh() {
         "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18"
     );
 }
-
-#[test]
-fn sign_p2pkh_two_in_one_out() {}
