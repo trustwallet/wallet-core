@@ -87,6 +87,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .polygonzkEVM,
                      .scroll,
                      .arbitrum,
+                     .arbitrumnova,
                      .ecochain,
                      .avalancheCChain,
                      .xdai,
