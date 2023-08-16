@@ -110,8 +110,7 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
-                    let ticker = Ticker::new(brc20.ticker.to_string())
-                        .map_err(|_| Error::from(Proto::Error::Error_brc20_invalid_ticker))?;
+                    let ticker = Ticker::new(brc20.ticker.to_string())?;
 
                     let brc20 =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
@@ -215,8 +214,7 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
-                    let ticker = Ticker::new(brc20.ticker.to_string())
-                        .map_err(|_| Error::from(Proto::Error::Error_brc20_invalid_ticker))?;
+                    let ticker = Ticker::new(brc20.ticker.to_string())?;
                     let control_block = ControlBlock::decode(brc20.control_block.as_ref())
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_control_block))?;
 

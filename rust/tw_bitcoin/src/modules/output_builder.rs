@@ -27,14 +27,14 @@ impl OutputBuilder {
                     todo!()
                 },
                 ProtoOutputBuilder::p2pkh(pubkey_or_hash) => {
-                    let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                    let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash)?;
                     (ScriptBuf::new_p2pkh(&pubkey_hash), None)
                 },
                 ProtoOutputBuilder::p2wsh(_) => {
                     todo!()
                 },
                 ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => {
-                    let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash).unwrap();
+                    let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash)?;
                     (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None)
                 },
                 ProtoOutputBuilder::p2tr_key_path(pubkey) => {
@@ -43,23 +43,22 @@ impl OutputBuilder {
                     (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None)
                 },
                 ProtoOutputBuilder::p2tr_script_path(complex) => {
-                    let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref()).unwrap();
+                    let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_taproot_root))?;
 
-                    let pubkey =
-                        bitcoin::PublicKey::from_slice(complex.public_key.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(complex.public_key.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                     (ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)), None)
                 },
                 ProtoOutputBuilder::brc20_inscribe(brc20) => {
-                    let pubkey =
-                        bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
-                    let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
+                    let ticker = Ticker::new(brc20.ticker.to_string())?;
                     let brc20 =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
-                            .unwrap();
+                            .expect("invalid BRC20 transfer construction");
 
                     // Explicit check
                     let control_block = brc20
@@ -69,8 +68,13 @@ impl OutputBuilder {
                             brc20.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .unwrap();
-                    let merkle_root = brc20.inscription().spend_info().merkle_root().unwrap();
+                        .expect("incorrectly constructed control block");
+
+                    let merkle_root = brc20
+                        .inscription()
+                        .spend_info()
+                        .merkle_root()
+                        .expect("incorrectly constructed Taproot merkle root");
                     (
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
                         Some(control_block.serialize()),
@@ -98,9 +102,9 @@ fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<P
     let pubkey_hash = match &pubkey_or_hash.to_address {
         ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref())
             .map_err(|_| Error::from(Proto::Error::Error_invalid_pubkey_hash))?,
-        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
-            .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?
-            .pubkey_hash(),
+        ProtoPubkeyOrHash::pubkey(pubkey) => {
+            bitcoin::PublicKey::from_slice(pubkey.as_ref())?.pubkey_hash()
+        },
         ProtoPubkeyOrHash::None => todo!(),
     };
 
@@ -114,10 +118,9 @@ fn witness_pubkey_hash_from_proto(
     let wpubkey_hash = match &pubkey_or_hash.to_address {
         ProtoPubkeyOrHash::hash(hash) => WPubkeyHash::from_slice(hash.as_ref())
             .map_err(|_| Error::from(Proto::Error::Error_invalid_witness_pubkey_hash))?,
-        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
-            .unwrap()
+        ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())?
             .wpubkey_hash()
-            .unwrap(),
+            .ok_or_else(|| Error::from(Proto::Error::Error_invalid_witness_pubkey_hash))?,
         ProtoPubkeyOrHash::None => todo!(),
     };
 
