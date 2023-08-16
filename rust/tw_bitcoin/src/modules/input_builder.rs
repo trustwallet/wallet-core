@@ -174,8 +174,10 @@ impl InputBuilder {
                 ProtoInputBuilder::None => panic!(),
                 ProtoInputBuilder::p2sh(_) => todo!(),
                 ProtoInputBuilder::p2pkh(pubkey) => {
-                    let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref()).unwrap();
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_signature))?;
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
 
                     (
                         ScriptBuf::builder()
@@ -187,8 +189,10 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::p2wsh(_) => todo!(),
                 ProtoInputBuilder::p2wpkh(pubkey) => {
-                    let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref()).unwrap();
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_signature))?;
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
@@ -198,7 +202,8 @@ impl InputBuilder {
                     })
                 },
                 ProtoInputBuilder::p2tr_key_path(_) => {
-                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref()).unwrap();
+                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_signature))?;
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
@@ -207,8 +212,8 @@ impl InputBuilder {
                     })
                 },
                 ProtoInputBuilder::p2tr_script_path(taproot) => {
-                    let control_block =
-                        ControlBlock::decode(taproot.control_block.as_ref()).unwrap();
+                    let control_block = ControlBlock::decode(taproot.control_block.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_control_block))?;
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
@@ -218,16 +223,19 @@ impl InputBuilder {
                     })
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
-                    let pubkey =
-                        bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
-                    let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
-                    let control_block = ControlBlock::decode(brc20.control_block.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
+                    let ticker = Ticker::new(brc20.ticker.to_string())
+                        .map_err(|_| Error::from(Proto::Error::Error_brc20_invalid_ticker))?;
+                    let control_block = ControlBlock::decode(brc20.control_block.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_control_block))?;
 
                     let brc20 =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
-                            .unwrap();
+                            .expect("invalid BRC20 transfer construction");
 
-                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref()).unwrap();
+                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_signature))?;
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();

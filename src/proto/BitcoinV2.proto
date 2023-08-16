@@ -13,6 +13,8 @@ enum Error {
 	Error_invalid_sighash = 3;
 	Error_failed_witness_pubkey_hash = 4;
 	Error_brc20_invalid_ticker = 5;
+    Error_invalid_signature = 11;
+    Error_invalid_control_block = 12;
 }
 
 message SigningInput {

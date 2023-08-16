@@ -16,6 +16,7 @@ enum Error {
     Error_missing_sighash_method = 7;
     Error_failed_encoding = 8;
     Error_insufficient_inputs = 9;
+    Error_missing_change_output = 10;
 }
 
 message SigningInput {
