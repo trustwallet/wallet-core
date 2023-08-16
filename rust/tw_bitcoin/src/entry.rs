@@ -1,3 +1,4 @@
+use crate::{Error, Result};
 use bitcoin::address::{NetworkChecked, Payload};
 use secp256k1::hashes::Hash;
 use std::borrow::Cow;

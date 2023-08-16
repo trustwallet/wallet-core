@@ -39,7 +39,7 @@ impl Recipient<PublicKey> {
         PubkeyHash::from(self.inner)
     }
     pub fn wpubkey_hash(&self) -> Result<WPubkeyHash> {
-        self.inner.wpubkey_hash().ok_or(Error::Todo)
+        Ok(self.inner.wpubkey_hash().unwrap())
     }
     pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
         tweak_pubkey(self.inner)
@@ -51,7 +51,7 @@ impl Recipient<PublicKey> {
         Address::p2pkh(&self.inner, network)
     }
     pub fn segwit_address(&self, network: Network) -> Result<Address> {
-        Address::p2wpkh(&self.inner, network).map_err(|_| Error::Todo)
+        Ok(Address::p2wpkh(&self.inner, network).unwrap())
     }
     pub fn taproot_address(&self, network: Network) -> Address {
         let untweaked = UntweakedPublicKey::from(self.inner.inner);
@@ -78,9 +78,9 @@ impl Recipient<WPubkeyHash> {
     pub fn from_slice(slice: &[u8]) -> Result<Self> {
         Ok(Recipient {
             inner: PublicKey::from_slice(slice)
-                .map_err(|_| Error::Todo)?
+                .unwrap()
                 .wpubkey_hash()
-                .ok_or(Error::Todo)?,
+                .unwrap(),
         })
     }
     pub fn wpubkey_hash(&self) -> &WPubkeyHash {
@@ -91,7 +91,7 @@ impl Recipient<WPubkeyHash> {
 impl Recipient<PublicKey> {
     pub fn from_slice(slice: &[u8]) -> Result<Self> {
         Ok(Recipient {
-            inner: PublicKey::from_slice(slice).map_err(|_| Error::Todo)?,
+            inner: PublicKey::from_slice(slice).unwrap(),
         })
     }
 }

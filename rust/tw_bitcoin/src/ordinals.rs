@@ -63,7 +63,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
 
     // Create MIME buffer.
     let mut mime_buf = PushBytesBuf::new();
-    mime_buf.extend_from_slice(mime).map_err(|_| Error::Todo)?;
+    mime_buf.extend_from_slice(mime).unwrap();
 
     // Create an Ordinals Inscription.
     let mut builder = ScriptBuf::builder()
@@ -89,7 +89,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     for chunk in data.chunks(520) {
         // Create data buffer.
         let mut data_buf = PushBytesBuf::new();
-        data_buf.extend_from_slice(chunk).map_err(|_| Error::Todo)?;
+        data_buf.extend_from_slice(chunk).unwrap();
 
         // Push buffer
         builder = builder.push_slice(data_buf);

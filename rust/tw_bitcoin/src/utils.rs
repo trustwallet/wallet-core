@@ -3,7 +3,7 @@ use bitcoin::key::{KeyPair, PrivateKey, PublicKey, TapTweak, TweakedPublicKey};
 use bitcoin::secp256k1::{self, XOnlyPublicKey};
 
 pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
-    let pk = PrivateKey::from_wif(string).map_err(|_| Error::Todo)?;
+    let pk = PrivateKey::from_wif(string).unwrap();
     let keypair = KeyPair::from_secret_key(&secp256k1::Secp256k1::new(), &pk.inner);
     Ok(keypair)
 }

@@ -100,7 +100,7 @@ fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<P
         ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
             .unwrap()
             .pubkey_hash(),
-        ProtoPubkeyOrHash::None => return Err(crate::Error::Todo),
+        ProtoPubkeyOrHash::None => todo!(),
     };
 
     Ok(pubkey_hash)

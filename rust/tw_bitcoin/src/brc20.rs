@@ -30,7 +30,7 @@ impl Ticker {
     pub fn new(string: String) -> Result<Self> {
         // Ticker must be a 4-letter identifier.
         if string.len() != 4 {
-            return Err(Error::Todo);
+            todo!()
         }
 
         Ok(Ticker(string))
