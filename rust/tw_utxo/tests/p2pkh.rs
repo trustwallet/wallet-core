@@ -1,11 +1,9 @@
 mod common;
 use common::pubkey_hash_from_hex;
 
-use bitcoin::{PubkeyHash, ScriptBuf};
-use secp256k1::hashes::Hash;
+use bitcoin::ScriptBuf;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
-use tw_utxo::builder::{SigningInputBuilder, TxInBuilder, TxOutBuilder};
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
 use crate::common::txid_rev;
@@ -36,26 +34,22 @@ fn sighash_input_p2pkh_output_p2pkh() {
     let signing = Proto::SigningInput {
         version: 2,
         lock_time: Default::default(),
-        inputs: vec![
-            Proto::TxIn {
-                txid: txid.into(),
-                vout: 0,
-                // Amount is not part of sighash for `Legacy`.
-                amount: u64::MAX,
-                script_pubkey: input_script_pubkey.as_bytes().into(),
-                sighash_type: Proto::SighashType::All,
-                signing_method: Proto::SigningMethod::Legacy,
-                weight_projection: 1,
-                leaf_hash: Default::default(),
-                one_prevout: false,
-            }
-        ],
-        outputs: vec![
-            Proto::TxOut {
-                value: 50 * 100_000_000 - 1_000_000,
-                script_pubkey: output_script_pubkey.as_bytes().into(),
-            }
-        ],
+        inputs: vec![Proto::TxIn {
+            txid: txid.into(),
+            vout: 0,
+            // Amount is not part of sighash for `Legacy`.
+            amount: u64::MAX,
+            script_pubkey: input_script_pubkey.as_bytes().into(),
+            sighash_type: Proto::SighashType::All,
+            signing_method: Proto::SigningMethod::Legacy,
+            weight_projection: 1,
+            leaf_hash: Default::default(),
+            one_prevout: false,
+        }],
+        outputs: vec![Proto::TxOut {
+            value: 50 * 100_000_000 - 1_000_000,
+            script_pubkey: output_script_pubkey.as_bytes().into(),
+        }],
         input_selector: Proto::InputSelector::UseAll,
         weight_base: 1,
         change_script_pubkey: Default::default(),
