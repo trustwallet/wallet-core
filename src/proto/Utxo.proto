@@ -7,14 +7,15 @@ import "Common.proto";
 
 enum Error {
     OK = 0;
-    Error_sighash_failed = 1;
-    Error_invalid_wpkh_script_pubkey = 2;
-    Error_invalid_leaf_hash = 3;
-    Error_invalid_sighash_type = 4;
-    Error_invalid_lock_time = 5;
-    Error_invalid_txid = 6;
+    Error_invalid_wpkh_script_pubkey = 1;
+    Error_invalid_leaf_hash = 2;
+    Error_invalid_sighash_type = 3;
+    Error_invalid_lock_time = 4;
+    Error_invalid_txid = 5;
+    Error_sighash_failed = 6;
     Error_missing_sighash_method = 7;
     Error_failed_encoding = 8;
+    Error_insufficient_inputs = 9;
 }
 
 message SigningInput {

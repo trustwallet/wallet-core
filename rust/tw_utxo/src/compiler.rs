@@ -66,7 +66,7 @@ impl Compiler<StandardBitcoinContext> {
         dbg!(total_output);
         if total_output > total_input {
             // Return error.
-            todo!()
+            return Err(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey));
         }
 
         // Only use the necessariy amount of inputs to cover `total_output`, any
