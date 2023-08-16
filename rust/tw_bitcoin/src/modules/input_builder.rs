@@ -48,7 +48,7 @@ impl InputBuilder {
                         ScriptBuf::new_v0_p2wpkh(
                             &pubkey
                                 .wpubkey_hash()
-                                .ok_or(Error::from(Proto::Error::Error_invalid_public_key))?,
+                                .ok_or_else(|| Error::from(Proto::Error::Error_invalid_witness_pubkey_hash))?,
                         ),
                         None,
                         // witness bytes, scale factor NOT applied.
