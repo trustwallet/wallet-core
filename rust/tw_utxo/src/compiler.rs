@@ -5,7 +5,6 @@ use bitcoin::hashes::Hash;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
 use bitcoin::taproot::TapLeafHash;
 use bitcoin::{OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
-use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
@@ -59,20 +58,24 @@ impl Compiler<StandardBitcoinContext> {
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
-        let mut total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
+        let total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
         // Insufficient input amount.
+        dbg!(total_input);
+        dbg!(total_output);
         if total_output > total_input {
             // Return error.
-            todo!()
+            //todo!()
         }
 
         // Only use the necessariy amount of inputs to cover `total_output`, any
         // other input gets dropped.
         let proto_inputs = std::mem::take(&mut proto.inputs);
 
+        dbg!(&proto.input_selector);
         let selected = if let Proto::InputSelector::SelectAscending = proto.input_selector {
+            let mut total_input = total_input;
             let mut remaining = total_output;
 
             let selected: Vec<Proto::TxIn> = proto_inputs
@@ -146,6 +149,7 @@ impl Compiler<StandardBitcoinContext> {
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
 
         for (index, input) in proto.inputs.iter().enumerate() {
+            dbg!(&input.signing_method);
             match input.signing_method {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
                 ProtoSigningMethod::Legacy => {
