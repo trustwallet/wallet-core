@@ -78,15 +78,15 @@ fn input_selector_less_than_output() {
         lock_time: Default::default(),
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![
-			Proto::TxOut {
-				value: 1_000,
-				script_pubkey: Default::default(),
-			},
-			Proto::TxOut {
-				value: 1_000,
-				script_pubkey: Default::default(),
-			}
-		],
+            Proto::TxOut {
+                value: 1_000,
+                script_pubkey: Default::default(),
+            },
+            Proto::TxOut {
+                value: 1_000,
+                script_pubkey: Default::default(),
+            },
+        ],
         input_selector: Proto::InputSelector::SelectAscending,
         weight_base: 1,
         change_script_pubkey: Default::default(),
@@ -96,7 +96,7 @@ fn input_selector_less_than_output() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
 
-	// inputs (1_000 + 2_000) > outputs (1_000 + 1_000)
+    // inputs (1_000 + 2_000) > outputs (1_000 + 1_000)
     assert_eq!(output.inputs.len(), 2);
     assert_eq!(output.inputs[0], tx1);
     assert_eq!(output.inputs[1], tx2);
@@ -131,15 +131,15 @@ fn input_selector_more_than_output() {
         lock_time: Default::default(),
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![
-			Proto::TxOut {
-				value: 500,
-				script_pubkey: Default::default(),
-			},
-			Proto::TxOut {
-				value: 500,
-				script_pubkey: Default::default(),
-			}
-		],
+            Proto::TxOut {
+                value: 500,
+                script_pubkey: Default::default(),
+            },
+            Proto::TxOut {
+                value: 500,
+                script_pubkey: Default::default(),
+            },
+        ],
         input_selector: Proto::InputSelector::SelectAscending,
         weight_base: 1,
         change_script_pubkey: Default::default(),
@@ -149,7 +149,7 @@ fn input_selector_more_than_output() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
 
-	// inputs (1_000) > outputs (500 + 300)
+    // inputs (1_000) > outputs (500 + 300)
     assert_eq!(output.inputs.len(), 1);
     assert_eq!(output.inputs[0], tx1);
 
@@ -158,10 +158,10 @@ fn input_selector_more_than_output() {
 
 #[test]
 fn input_selector_insufficient_inputs() {
-	todo!()
+    // TODO
 }
 
 #[test]
 fn input_selector_empty_script_bufs() {
-	todo!()
+    // TODO
 }
