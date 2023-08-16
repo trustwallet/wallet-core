@@ -196,9 +196,12 @@ impl BitcoinEntry {
         let change_output = if proto.disable_change_output {
             Cow::default()
         } else {
-            crate::modules::OutputBuilder::utxo_from_proto(&proto.change_output.unwrap())
-                .unwrap()
-                .script_pubkey
+            crate::modules::OutputBuilder::utxo_from_proto(
+                &proto
+                    .change_output
+                    .ok_or_else(|| Error::from(Proto::Error::Error_invalid_public_key))?,
+            )?
+            .script_pubkey
         };
 
         let utxo_signing = UtxoProto::SigningInput {
@@ -245,15 +248,14 @@ impl BitcoinEntry {
 
         // Generate claims for all the inputs.
         for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
-            let utxo_claim =
-                crate::modules::InputBuilder::utxo_claim_from_proto(input, signature).unwrap();
+            let utxo_claim = crate::modules::InputBuilder::utxo_claim_from_proto(input, signature)?;
             utxo_input_claims.push(utxo_claim);
         }
 
         // Process all the outputs.
         let mut utxo_outputs = vec![];
         for output in proto.outputs {
-            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
+            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output)?;
 
             utxo_outputs.push(utxo);
         }
