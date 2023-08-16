@@ -1,6 +1,6 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
-use crate::Result;
+use crate::{Error, Result};
 use bitcoin::taproot::{LeafVersion, TapNodeHash};
 use bitcoin::{PubkeyHash, ScriptBuf, WPubkeyHash};
 use secp256k1::hashes::Hash;
@@ -38,7 +38,7 @@ impl OutputBuilder {
                     (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None)
                 },
                 ProtoOutputBuilder::p2tr_key_path(pubkey) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
                     (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None)
                 },
@@ -96,9 +96,10 @@ impl OutputBuilder {
 // Conenience helper function.
 fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<PubkeyHash> {
     let pubkey_hash = match &pubkey_or_hash.to_address {
-        ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref()).unwrap(),
+        ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref())
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_pubkey_hash))?,
         ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
-            .unwrap()
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?
             .pubkey_hash(),
         ProtoPubkeyOrHash::None => todo!(),
     };
@@ -111,7 +112,8 @@ fn witness_pubkey_hash_from_proto(
     pubkey_or_hash: &Proto::ToPublicKeyOrHash,
 ) -> Result<WPubkeyHash> {
     let wpubkey_hash = match &pubkey_or_hash.to_address {
-        ProtoPubkeyOrHash::hash(hash) => WPubkeyHash::from_slice(hash.as_ref()).unwrap(),
+        ProtoPubkeyOrHash::hash(hash) => WPubkeyHash::from_slice(hash.as_ref())
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_witness_pubkey_hash))?,
         ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())
             .unwrap()
             .wpubkey_hash()
