@@ -66,7 +66,7 @@ impl Compiler<StandardBitcoinContext> {
         dbg!(total_output);
         if total_output > total_input {
             // Return error.
-            //todo!()
+            todo!()
         }
 
         // Only use the necessariy amount of inputs to cover `total_output`, any
@@ -147,6 +147,8 @@ impl Compiler<StandardBitcoinContext> {
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
+
+        dbg!(&proto.inputs);
 
         for (index, input) in proto.inputs.iter().enumerate() {
             dbg!(&input.signing_method);

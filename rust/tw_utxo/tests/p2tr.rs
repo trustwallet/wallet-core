@@ -28,7 +28,7 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
             txid: txid.into(),
             vout: 0,
             // Amount is not part of sighash for `Legacy`.
-            amount: 0,
+            amount: u64::MAX,
             script_pubkey: input_script_pubkey.as_bytes().into(),
             sighash_type: Proto::SighashType::All,
             signing_method: Proto::SigningMethod::Legacy,
