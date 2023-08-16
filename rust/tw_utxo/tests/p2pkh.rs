@@ -14,9 +14,7 @@ use crate::common::txid_rev;
 fn sighash_emtpy() {
     let signing = Proto::SigningInput {
         version: 2,
-        inputs: vec![],
-        outputs: vec![],
-        lock_time: Default::default(),
+        ..Default::default()
     };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
@@ -35,26 +33,34 @@ fn sighash_input_p2pkh_output_p2pkh() {
 
     let txid = txid_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
 
-    let signing = SigningInputBuilder::new()
-        .version(2)
-        .input(|| {
-            TxInBuilder::new()
-                .txid(&txid)
-                .vout(0)
-                .value(0)
-                .spending_condition(input_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .output(|| {
-            TxOutBuilder::new()
-                .value(50 * 100_000_000 - 1_000_000)
-                .spending_condition(output_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .build()
-        .unwrap();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![
+            Proto::TxIn {
+                txid: txid.into(),
+                vout: 0,
+                // Amount is not part of sighash for `Legacy`.
+                amount: u64::MAX,
+                script_pubkey: input_script_pubkey.as_bytes().into(),
+                sighash_type: Proto::SighashType::All,
+                signing_method: Proto::SigningMethod::Legacy,
+                weight_projection: 1,
+                leaf_hash: Default::default(),
+                one_prevout: false,
+            }
+        ],
+        outputs: vec![
+            Proto::TxOut {
+                value: 50 * 100_000_000 - 1_000_000,
+                script_pubkey: output_script_pubkey.as_bytes().into(),
+            }
+        ],
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: 1,
+        change_script_pubkey: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 

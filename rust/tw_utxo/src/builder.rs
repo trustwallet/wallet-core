@@ -10,6 +10,7 @@ impl<'a> SigningInputBuilder<'a> {
         SigningInputBuilder {
             proto: Proto::SigningInput {
                 version: 2,
+                disable_change_output: true,
                 ..Default::default()
             },
         }
