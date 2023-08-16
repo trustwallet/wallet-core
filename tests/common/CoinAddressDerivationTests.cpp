@@ -39,6 +39,7 @@ TEST(Coin, DeriveAddress) {
         // ... clones:
         case TWCoinTypeAcalaEVM:
         case TWCoinTypeArbitrum:
+        case TWCoinTypeArbitrumNova:
         case TWCoinTypeAurora:
         case TWCoinTypeAvalancheCChain:
         case TWCoinTypeBoba:
