@@ -3259,6 +3259,37 @@
     }
   },
   {
+    "id": "arbitrumnova",
+    "name": "Arbitrum Nova",
+    "coinId": 10042170,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "42170",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://nova.arbiscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xfdfee13848c2d21813c82c53afc9925f31770564c3117477960a81055702c1be",
+      "sampleAccount": "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    },
+    "info": {
+      "url": "https://nova.arbitrum.io",
+      "source": "https://github.com/OffchainLabs/arbitrum",
+      "rpc": "https://nova.arbitrum.io/rpc",
+      "documentation": "https://docs.arbitrum.io/"
+    }
+  },
+  {
     "id": "heco",
     "name": "ECO Chain",
     "displayName": "Huobi ECO Chain",

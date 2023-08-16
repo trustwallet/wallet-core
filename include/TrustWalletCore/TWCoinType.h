@@ -172,6 +172,7 @@ enum TWCoinType {
     TWCoinTypeNeon = 245022934,
     TWCoinTypeBase = 8453,
     TWCoinTypeSei = 19000118,
+    TWCoinTypeArbitrumNova = 10042170,
     TWCoinTypeLinea = 59144,
 };
 
