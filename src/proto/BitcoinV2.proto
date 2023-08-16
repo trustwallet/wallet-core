@@ -9,6 +9,10 @@ import "Utxo.proto";
 enum Error {
     OK = 0;
 	Error_invalid_private_key = 1;
+	Error_invalid_public_key = 2;
+	Error_invalid_sighash = 3;
+	Error_failed_witness_pubkey_hash = 4;
+	Error_brc20_invalid_ticker = 5;
 }
 
 message SigningInput {
@@ -139,8 +143,7 @@ message ToPublicKeyOrHash {
 }
 
 message PreSigningOutput {
-	// TODO
-	uint32 error = 1;
+	Error error = 1;
 
     /// SighashMethodSighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Utxo.Proto.Sighash sighashes = 2;
@@ -161,14 +164,14 @@ message PreSigningOutput {
 }
 
 message SigningOutput {
+    Error error = 4;
+
 	Transaction transaction = 1;
 
 	// The encoded transaction that submitted to the network.
 	bytes encoded = 2;
 
 	bytes transaction_id = 3;
-
-    uint32 error = 4;
 
 	uint64 fee = 5;
 }

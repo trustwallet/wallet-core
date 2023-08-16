@@ -1,6 +1,6 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
-use crate::Result;
+use crate::{Error, Result};
 use bitcoin::taproot::{ControlBlock, TapLeafHash};
 use bitcoin::{ScriptBuf, Witness};
 use secp256k1::XOnlyPublicKey;
@@ -18,7 +18,8 @@ impl InputBuilder {
             ProtoInputRecipient::builder(builder) => match &builder.variant {
                 ProtoInputBuilder::p2sh(_) => todo!(),
                 ProtoInputBuilder::p2pkh(pubkey) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
 
                     (
                         UtxoProto::SigningMethod::Legacy,
@@ -41,11 +42,16 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::p2wsh(_) => todo!(),
                 ProtoInputBuilder::p2wpkh(pubkey) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
 
                     (
                         UtxoProto::SigningMethod::Segwit,
-                        ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().unwrap()),
+                        ScriptBuf::new_v0_p2wpkh(
+                            &pubkey
+                                .wpubkey_hash()
+                                .ok_or(Error::from(Proto::Error::Error_invalid_public_key))?,
+                        ),
                         None,
                         // witness bytes, scale factor NOT applied.
                         (
@@ -65,7 +71,8 @@ impl InputBuilder {
                     )
                 },
                 ProtoInputBuilder::p2tr_key_path(pubkey) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                     (
@@ -105,13 +112,14 @@ impl InputBuilder {
                     )
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
-                    let pubkey =
-                        bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref()).unwrap();
-                    let ticker = Ticker::new(brc20.ticker.to_string()).unwrap();
+                    let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_public_key))?;
+                    let ticker = Ticker::new(brc20.ticker.to_string())
+                        .map_err(|_| Error::from(Proto::Error::Error_brc20_invalid_ticker))?;
 
                     let brc20 =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
-                            .unwrap();
+                            .expect("invalid BRC20 transfer construction");
 
                     let leaf_hash = Some(TapLeafHash::from_script(
                         brc20.inscription().taproot_program(),
