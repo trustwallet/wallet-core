@@ -1,4 +1,5 @@
 use crate::brc20::Ticker;
+use crate::entry::aliases::*;
 use crate::nft::OrdinalNftInscription;
 use crate::Recipient;
 use bitcoin::{PublicKey, WPubkeyHash};
@@ -6,6 +7,8 @@ use std::ffi::{c_char, CStr};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_misc::try_or_else;
+use tw_proto::Bitcoin::Proto as LegacyProto;
+use tw_proto::BitcoinV2::Proto;
 
 #[no_mangle]
 // Builds the P2PKH scriptPubkey.
@@ -19,24 +22,31 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         CByteArray::null
     );
-    let _recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
+    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
 
-    /*
-    let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
+    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
+    let output = Proto::Output {
+        amount: _satoshis as u64,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
+                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
+                    recipient.public_key().to_bytes().into(),
+                ),
+            }),
+        }),
+    };
+
+    let res = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
 
     // Prepare and serialize protobuf structure.
-    let proto = TransactionOutput {
-        value: satoshis,
-        script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        spendingScript: Cow::default(),
+    let proto = LegacyProto::TransactionOutput {
+        value: res.value as i64,
+        script: res.script_pubkey,
+        spendingScript: Default::default(),
     };
 
     let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
-
     CByteArray::from(serialized)
-    */
-
-    todo!()
 }
 
 #[no_mangle]
