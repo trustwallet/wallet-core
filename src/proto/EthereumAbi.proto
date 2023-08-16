@@ -6,28 +6,37 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 
 // Generic number parameter for all other bit sizes, like UInt24, 40, 48, ... 248.
-// For predefined sizes (8, 16, 32, 64, 256) use a special type like `AbiParam::number_u16`.
+// For predefined sizes (8, 16, 32, 64, 256) use a special type like `ParamValue::number_u16`.
 message NumberNParam {
+    // Count of bits of the number.
+    // 0 < bits <= 256, bits % 8 == 0
     uint32 bits = 1;
+
     // Serialized big endian.
     bytes value = 2;
 }
 
+// A fixed-size byte array.
 message ByteArrayFixParam {
+    // Size of the fixed array in bytes.
     uint64 size = 1;
+
+    // Raw bytes.
     bytes value = 2;
 }
 
+// A byte array of arbitrary size.
 message ArrayParam {
-    repeated AbiParam values = 1;
+    repeated ParamValue values = 1;
 }
 
+// A tuple with various parameters similar to a structure.
 message TupleParam {
-    repeated AbiParam params = 1;
+    repeated ParamValue params = 1;
 }
 
 // An enumeration of possible parameters.
-message AbiParam {
+message ParamValue {
     oneof param {
         // Simple values.
         bool boolean = 1;
@@ -54,6 +63,15 @@ message AbiParam {
         ArrayParam array = 24;
         TupleParam tuple = 25;
     }
+}
+
+// A named parameter.
+message NamedParam {
+    // Name of the parameter.
+    string name = 1;
+
+    // Value of the parameter.
+    ParamValue value = 2;
 }
 
 //// TWEthereumAbiDecodeContractCall
@@ -89,7 +107,7 @@ message ContractCallDecodingOutput {
     string decoded_json = 1;
 
     // Decoded parameters.
-    repeated AbiParam params = 2;
+    repeated NamedParam params = 2;
 
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 3;
@@ -125,7 +143,7 @@ message ParamsDecodingInput {
 
 message ParamsDecodingOutput {
     // Decoded parameters.
-    repeated AbiParam params = 1;
+    repeated NamedParam params = 1;
 
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 2;
@@ -147,7 +165,7 @@ message ValueDecodingInput {
 
 message ValueDecodingOutput {
     // Decoded parameters.
-    AbiParam param = 1;
+    ParamValue param = 1;
 
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 2;
@@ -163,7 +181,7 @@ message FunctionEncodingInput {
     string function_name = 1;
 
     // Parameters to be encoded.
-    repeated AbiParam params = 2;
+    repeated ParamValue params = 2;
 }
 
 message FunctionEncodingOutput {
