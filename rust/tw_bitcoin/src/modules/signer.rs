@@ -1,4 +1,4 @@
-use crate::Result;
+use crate::{Error, Result};
 use bitcoin::key::{TapTweak, TweakedKeyPair};
 use secp256k1::{KeyPair, Message, Secp256k1};
 use tw_coin_entry::coin_entry::{PrivateKeyBytes, SignatureBytes};
@@ -14,7 +14,8 @@ impl Signer {
         private_key: PrivateKeyBytes,
     ) -> Result<Vec<SignatureBytes>> {
         let secp = Secp256k1::new();
-        let keypair = KeyPair::from_seckey_slice(&secp, private_key.as_ref()).unwrap();
+        let keypair = KeyPair::from_seckey_slice(&secp, private_key.as_ref())
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?;
 
         let mut signatures = vec![];
 

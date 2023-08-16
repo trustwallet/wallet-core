@@ -6,6 +6,11 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 import "Utxo.proto";
 
+enum Error {
+    OK = 0;
+	Error_invalid_private_key = 1;
+}
+
 message SigningInput {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;

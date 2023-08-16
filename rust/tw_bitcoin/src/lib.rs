@@ -15,11 +15,23 @@ pub mod utils;
 pub use recipient::Recipient;
 pub use utils::*;
 
+use tw_proto::BitcoinV2::Proto;
+
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Clone)]
-pub enum Error {
-    Todo,
+#[derive(Debug)]
+pub struct Error(Proto::Error);
+
+impl From<Proto::Error> for Error {
+    fn from(value: Proto::Error) -> Self {
+        Error(value)
+    }
+}
+
+impl From<Error> for Proto::Error {
+    fn from(value: Error) -> Self {
+        value.0
+    }
 }
 
 use bitcoin::key::PublicKey;
