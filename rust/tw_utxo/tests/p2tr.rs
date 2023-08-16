@@ -1,11 +1,9 @@
 mod common;
 use common::pubkey_hash_from_hex;
 
-use bitcoin::{PubkeyHash, ScriptBuf};
-use secp256k1::hashes::Hash;
+use bitcoin::ScriptBuf;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
-use tw_utxo::builder::{SigningInputBuilder, TxInBuilder, TxOutBuilder};
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
 use crate::common::{txid_rev, untweaked_pubkey};
@@ -23,26 +21,30 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
 
     let txid = txid_rev("c50563913e5a838f937c94232f5a8fc74e58b629fae41dfdffcc9a70f833b53a");
 
-    let signing = SigningInputBuilder::new()
-        .version(2)
-        .input(|| {
-            TxInBuilder::new()
-                .txid(&txid)
-                .vout(0)
-                .value(0)
-                .spending_condition(input_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .output(|| {
-            TxOutBuilder::new()
-                .value(50 * 100_000_000 - 1_000_000)
-                .spending_condition(output_script_pubkey.as_bytes())
-                .build()
-        })
-        .unwrap()
-        .build()
-        .unwrap();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![Proto::TxIn {
+            txid: txid.into(),
+            vout: 0,
+            // Amount is not part of sighash for `Legacy`.
+            amount: 0,
+            script_pubkey: input_script_pubkey.as_bytes().into(),
+            sighash_type: Proto::SighashType::All,
+            signing_method: Proto::SigningMethod::Legacy,
+            weight_projection: 1,
+            leaf_hash: Default::default(),
+            one_prevout: false,
+        }],
+        outputs: vec![Proto::TxOut {
+            value: 50 * 100_000_000 - 1_000_000,
+            script_pubkey: output_script_pubkey.as_bytes().into(),
+        }],
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: 1,
+        change_script_pubkey: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
 
@@ -53,6 +55,3 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
         "c914fd08efdcc7f8007c75c39ab47e1ee736a6ce1e6363250fe88cda8fca04d1"
     );
 }
-
-#[test]
-fn sign_p2pkh_two_in_one_out() {}

@@ -1,6 +1,5 @@
 use tw_proto::Utxo::Proto;
 
-pub mod builder;
 pub mod compiler;
 
 pub type Result<T> = std::result::Result<T, Error>;
