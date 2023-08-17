@@ -187,6 +187,7 @@ impl InputBuilder {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
 
+                    // The spending script itself.
                     (
                         ScriptBuf::builder()
                             .push_slice(sig.serialize())
@@ -200,6 +201,7 @@ impl InputBuilder {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
 
+                    // The spending script itself.
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(sig.serialize());
@@ -210,6 +212,7 @@ impl InputBuilder {
                 ProtoInputBuilder::p2tr_key_path(_) => {
                     let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
 
+                    // The spending script itself.
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(sig.to_vec());
@@ -220,6 +223,7 @@ impl InputBuilder {
                     let control_block = ControlBlock::decode(taproot.control_block.as_ref())
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_control_block))?;
 
+                    // The spending script itself.
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(taproot.payload.as_ref());
@@ -231,10 +235,12 @@ impl InputBuilder {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let ticker = Ticker::new(brc20.ticker.to_string())?;
 
+                    // Construct the BRC20 transfer inscription.
                     let transfer =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
+                    // Create a control block for that inscription.
                     let control_block = transfer
                         .inscription()
                         .spend_info()
@@ -246,6 +252,7 @@ impl InputBuilder {
 
                     let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
 
+                    // The spending script itself.
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(sig.to_vec());
