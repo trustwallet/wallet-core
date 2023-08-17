@@ -89,10 +89,10 @@ message Input {
 	}
 
 	message ScriptWitness {
-		bytes script_sig = 1;
-		repeated bytes witness_items = 2;
-		bytes leaf_hash = 3;
-		Utxo.Proto.SigningMethod signing_method = 4;
+		bytes script_pubkey = 1;
+		bytes script_sig = 2;
+		repeated bytes witness_items = 3;
+		Utxo.Proto.SigningMethod signing_method = 5;
 	}
 
 	message TaprootKeyPath {

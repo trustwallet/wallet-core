@@ -143,7 +143,7 @@ impl InputBuilder {
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
                         (
-                            // indicator of witness item (?)
+                            // indicator of witness item count.
                             1 +
                             // the payload (TODO: should this be `repeated bytes`?)
                             transfer.inscription().taproot_program().len() as u64 +
@@ -156,8 +156,38 @@ impl InputBuilder {
                     return Err(Error::from(Proto::Error::Error_missing_input_builder))
                 },
             },
-            ProtoInputRecipient::custom(_custom) => {
-                todo!()
+            ProtoInputRecipient::custom(custom) => {
+                let script_pubkey = ScriptBuf::from_bytes(custom.script_pubkey.to_vec());
+
+                let leaf_hash = if let UtxoProto::SigningMethod::TaprootAll
+                | UtxoProto::SigningMethod::TaprootOnePrevout =
+                    custom.signing_method
+                {
+                    Some(TapLeafHash::from_script(
+                        &script_pubkey,
+                        bitcoin::taproot::LeafVersion::TapScript,
+                    ))
+                } else {
+                    None
+                };
+
+                (
+                    custom.signing_method,
+                    script_pubkey,
+                    leaf_hash,
+                    (
+                        // scale factor applied to non-witness bytes
+                        4 * custom.script_sig.len() as u64
+                        // indicator of witness item count.
+                        + 1
+                        // witness bytes, scale factor NOT applied.
+                        + custom
+                            .witness_items
+                            .iter()
+                            .map(|item| item.len() as u64)
+                            .sum::<u64>()
+                    ),
+                )
             },
             ProtoInputRecipient::None => {
                 return Err(Error::from(Proto::Error::Error_missing_input_builder))
