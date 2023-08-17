@@ -15,6 +15,7 @@ use tw_proto::Common::Proto as CommonProto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[no_mangle]
+#[deprecated]
 pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     input: *const u8,
     input_len: usize,
@@ -34,7 +35,7 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     todo!()
 }
 
-pub(crate) fn taproot_build_and_sign_transaction(
+pub fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
     // Convert the appropriate lock time.
