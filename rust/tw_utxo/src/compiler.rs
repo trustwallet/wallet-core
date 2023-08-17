@@ -189,7 +189,7 @@ impl Compiler<StandardBitcoinContext> {
                     sighashes.push((sighash.as_byte_array().to_vec(), ProtoSigningMethod::Segwit));
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
-                ProtoSigningMethod::Taproot => {
+                ProtoSigningMethod::TaprootAll => {
                     let leaf_hash = if input.leaf_hash.is_empty() {
                         None
                     } else {
@@ -205,34 +205,51 @@ impl Compiler<StandardBitcoinContext> {
                     let sighash_type = TapSighashType::from_consensus_u8(input.sighash_type as u8)
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash_type))?;
 
-                    // This owner only exists to avoid running into lifetime
-                    // issues related to `Prevouts::All(&[T])`.
-                    let _owner;
+                    let prevouts = proto
+                        .inputs
+                        .iter()
+                        .map(|i| TxOut {
+                            value: i.amount,
+                            script_pubkey: ScriptBuf::from_bytes(i.script_pubkey.to_vec()),
+                        })
+                        .collect::<Vec<TxOut>>();
 
-                    let prevouts = if input.one_prevout {
-                        Prevouts::One(
-                            index,
-                            TxOut {
-                                value: input.amount,
-                                script_pubkey: ScriptBuf::from_bytes(input.script_pubkey.to_vec()),
-                            },
-                        )
+                    let sighash = cache.taproot_signature_hash(
+                        index,
+                        &Prevouts::All(&prevouts),
+                        None,
+                        leaf_hash,
+                        sighash_type,
+                    )?;
+
+                    sighashes.push((
+                        sighash.as_byte_array().to_vec(),
+                        ProtoSigningMethod::TaprootAll,
+                    ));
+                },
+                ProtoSigningMethod::TaprootOnePrevout => {
+                    let leaf_hash = if input.leaf_hash.is_empty() {
+                        None
                     } else {
-                        _owner = Some(
-                            proto
-                                .inputs
-                                .iter()
-                                .map(|i| TxOut {
-                                    value: i.amount,
-                                    script_pubkey: ScriptBuf::from_bytes(i.script_pubkey.to_vec()),
-                                })
-                                .collect::<Vec<TxOut>>(),
-                        );
-
-                        Prevouts::All(_owner.as_ref().expect("_owner not initialized"))
+                        Some((
+                            TapLeafHash::from_slice(input.leaf_hash.as_ref())
+                                .map_err(|_| Error::from(Proto::Error::Error_invalid_leaf_hash))?,
+                            // TODO: We might want to make this configurable?.
+                            0xFFFFFFFF,
+                        ))
                     };
 
-                    dbg!(&prevouts);
+                    // Note that `input.sighash_type = 0` is handled by the underlying library.
+                    let sighash_type = TapSighashType::from_consensus_u8(input.sighash_type as u8)
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash_type))?;
+
+                    let prevouts = Prevouts::One(
+                        index,
+                        TxOut {
+                            value: input.amount,
+                            script_pubkey: ScriptBuf::from_bytes(input.script_pubkey.to_vec()),
+                        },
+                    );
 
                     let sighash = cache.taproot_signature_hash(
                         index,
@@ -244,7 +261,7 @@ impl Compiler<StandardBitcoinContext> {
 
                     sighashes.push((
                         sighash.as_byte_array().to_vec(),
-                        ProtoSigningMethod::Taproot,
+                        ProtoSigningMethod::TaprootOnePrevout,
                     ));
                 },
             }

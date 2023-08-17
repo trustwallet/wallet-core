@@ -31,7 +31,6 @@ fn sighash_input_p2pkh_output_p2wpkh() {
             signing_method: Proto::SigningMethod::Legacy,
             weight_projection: 1,
             leaf_hash: Default::default(),
-            one_prevout: false,
         }],
         outputs: vec![Proto::TxOut {
             value: 50 * 100_000_000 - 1_000_000,
@@ -75,7 +74,6 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
             signing_method: Proto::SigningMethod::Segwit,
             weight_projection: 1,
             leaf_hash: Default::default(),
-            one_prevout: false,
         }],
         outputs: vec![Proto::TxOut {
             value: 50 * 100_000_000 - 1_000_000 * 2,

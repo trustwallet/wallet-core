@@ -33,7 +33,8 @@ impl Signer {
 
                     signatures.push(sig.serialize().to_vec());
                 },
-                UtxoProto::SigningMethod::Taproot => {
+                UtxoProto::SigningMethod::TaprootAll
+                | UtxoProto::SigningMethod::TaprootOnePrevout => {
                     // Any empty leaf hash implies P2TR key-path (balance transfer)
                     if utxo.leaf_hash.is_empty() {
                         // Tweak keypair for P2TR key-path (ie. zeroed Merkle root).
