@@ -1,5 +1,5 @@
-use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::modules::legacy::*;
+use crate::modules::{BRC20TransferInscription, Ticker};
 use bitcoin::{PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use std::ffi::CString;
