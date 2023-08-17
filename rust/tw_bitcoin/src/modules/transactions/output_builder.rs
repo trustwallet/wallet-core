@@ -116,9 +116,9 @@ impl OutputBuilder {
             // We derive the transaction type from the address.
             ProtoOutputRecipient::from_address(addr) => {
                 let string = String::from_utf8(addr.to_vec()).unwrap();
-                // TODO: Network.
                 let addr = Address::from_str(&string)
                     .unwrap()
+                    // TODO: Network.
                     .require_network(bitcoin::Network::Bitcoin)
                     .unwrap();
 

@@ -62,12 +62,7 @@ impl Display for Address {
 
 impl CoinAddress for Address {
     fn data(&self) -> tw_memory::Data {
-        match &self.0.payload {
-            Payload::PubkeyHash(hash) => hash.to_byte_array().into(),
-            Payload::ScriptHash(hash) => hash.to_byte_array().into(),
-            Payload::WitnessProgram(wp) => wp.program().as_bytes().into(),
-            _ => todo!(), // Payload is non-exhaustive
-        }
+        todo!()
     }
 }
 
@@ -255,7 +250,7 @@ impl BitcoinEntry {
 
         // Generate claims for all the inputs.
         for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
-            let utxo_claim = crate::modules::transactions::InputBuilder::utxo_claim_from_proto(
+            let utxo_claim = crate::modules::transactions::InputClaimBuilder::utxo_claim_from_proto(
                 input, signature,
             )?;
             utxo_input_claims.push(utxo_claim);

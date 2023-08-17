@@ -163,13 +163,23 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
 
     let witness = Witness::consensus_decode(&mut utxo.spendingScript.as_ref()).unwrap();
 
-    // TODO: `utxo.variant` important here?
+    // TODO: Must be constructed manually.
+    let leaf_hash = vec![];
+
+    let signing_method = match utxo.variant {
+        LegacyProto::TransactionVariant::P2PKH => UtxoProto::SigningMethod::Legacy,
+        LegacyProto::TransactionVariant::P2WPKH => UtxoProto::SigningMethod::Segwit,
+        LegacyProto::TransactionVariant::P2TRKEYPATH
+        | LegacyProto::TransactionVariant::BRC20TRANSFER
+        | LegacyProto::TransactionVariant::NFTINSCRIPTION => UtxoProto::SigningMethod::TaprootAll,
+    };
+
     Proto::Input {
         txid: out_point.hash.clone(),
         vout: out_point.index,
         amount: utxo.amount as u64,
         sequence: out_point.sequence,
-        // TODO:
+        // TODO: pass `sighash_type` as parameter.
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::custom(Proto::mod_Input::ScriptWitness {
             script_sig: utxo.script,
@@ -178,6 +188,8 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
                 .into_iter()
                 .map(Cow::Owned)
                 .collect::<Vec<Cow<_>>>(),
+            signing_method,
+            leaf_hash: leaf_hash.into(),
         }),
     }
 }
