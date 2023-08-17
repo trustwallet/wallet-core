@@ -39,6 +39,7 @@ TEST(Coin, DeriveAddress) {
         // ... clones:
         case TWCoinTypeAcalaEVM:
         case TWCoinTypeArbitrum:
+        case TWCoinTypeArbitrumNova:
         case TWCoinTypeAurora:
         case TWCoinTypeAvalancheCChain:
         case TWCoinTypeBoba:
@@ -76,9 +77,10 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeXDai:
         case TWCoinTypeIoTeXEVM:
         case TWCoinTypeScroll:
-        case TWCoinTypeOpBNBtestnet:
+        case TWCoinTypeOpBNB:
         case TWCoinTypeNeon:
         case TWCoinTypeBase:
+        case TWCoinTypeLinea:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 
@@ -369,7 +371,10 @@ TEST(Coin, DeriveAddress) {
             break;
         case TWCoinTypeRootstock:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
-            break;    
+            break;
+        case TWCoinTypeSei:
+            EXPECT_EQ(address, "sei1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z05hw42q");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

@@ -1138,24 +1138,6 @@ TEST(THORChainSwap, WrongToAddress) {
     }
 }
 
-TEST(THORChainSwap, FromRuneNotSupported) {
-    Proto::Asset fromAsset;
-    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::THOR));
-    Proto::Asset toAsset;
-    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
-    toAsset.set_symbol("BNB");
-    auto&& [_, errorCode, error] = SwapBuilder::builder()
-                                       .from(fromAsset)
-                                       .to(toAsset)
-                                       .fromAddress(Address1Thor)
-                                       .toAddress(Address1Bnb)
-                                       .fromAmount("1000")
-                                       .toAmountLimit("1000")
-                                       .build();
-    EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Unsupported_from_chain);
-    EXPECT_EQ(error, "Unsupported from chain: 0");
-}
-
 TEST(THORChainSwap, EthInvalidVault) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));

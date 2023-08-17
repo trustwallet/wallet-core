@@ -9,6 +9,7 @@
 #include "Coin.h"
 #include "HexCoding.h"
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWHRP.h>
 
 // ATOM
 #include "Cosmos/Address.h"
@@ -113,6 +114,8 @@ SwapBundled SwapBuilder::build(bool shortened) {
     const auto memo = this->buildMemo(shortened);
 
     switch (fromChain) {
+    case Chain::THOR:
+        return buildRune(fromAmountNum, memo);
     case Chain::BTC:
     case Chain::DOGE:
     case Chain::BCH:
@@ -164,7 +167,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     return memo.str();
 }
 
-SwapBundled SwapBuilder::buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain) {
+SwapBundled SwapBuilder::buildBitcoin(const uint256_t& amount, const std::string& memo, Chain fromChain) {
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
@@ -187,7 +190,7 @@ SwapBundled SwapBuilder::buildBitcoin(uint256_t amount, const std::string& memo,
     out.insert(out.end(), serialized.begin(), serialized.end());
     return {.out = std::move(out)};
 }
-SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, const uint256_t& amount, const std::string& memo) {
     auto input = Binance::Proto::SigningInput();
     Data out;
 
@@ -226,7 +229,7 @@ SwapBundled SwapBuilder::buildBinance(Proto::Asset fromAsset, uint256_t amount, 
     return {.out = std::move(out)};
 }
 
-SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildEth(const uint256_t& amount, const std::string& memo) {
     Data out;
     auto input = Ethereum::Proto::SigningInput();
     // EIP-1559
@@ -290,7 +293,7 @@ SwapBundled SwapBuilder::buildEth(uint256_t amount, const std::string& memo) {
     return {.out = std::move(out)};
 }
 
-SwapBundled SwapBuilder::buildAtom(uint256_t amount, const std::string& memo) {
+SwapBundled SwapBuilder::buildAtom(const uint256_t& amount, const std::string& memo) {
     if (!Cosmos::Address::isValid(mVaultAddress, "cosmos")) {
         return {.status_code = static_cast<int>(Proto::ErrorCode::Error_Invalid_vault_address), .error = "Invalid vault address: " + mVaultAddress};
     }
@@ -301,15 +304,47 @@ SwapBundled SwapBuilder::buildAtom(uint256_t amount, const std::string& memo) {
     input.set_chain_id("cosmoshub-4");
     input.set_memo(memo);
 
-    auto msg = input.add_messages();
+    auto* msg = input.add_messages();
     auto& message = *msg->mutable_send_coins_message();
 
     message.set_from_address(mFromAddress);
     message.set_to_address(mVaultAddress);
 
-    auto amountOfTx = message.add_amounts();
+    auto* amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uatom");
     amountOfTx->set_amount(amount.str());
+
+    auto serialized = input.SerializeAsString();
+    out.insert(out.end(), serialized.begin(), serialized.end());
+
+    return {.out = std::move(out)};
+}
+
+SwapBundled SwapBuilder::buildRune(const uint256_t& amount, const std::string& memo) {
+    auto* hrp = stringForHRP(TW::hrp(TWCoinTypeTHORChain));
+    auto* chainId = TW::chainId(TWCoinTypeTHORChain);
+
+    Bech32Address fromAddress(hrp);
+    Bech32Address::decode(mFromAddress, fromAddress, hrp);
+
+    Data out;
+
+    Cosmos::Proto::SigningInput input;
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id(chainId);
+
+    auto* msg = input.add_messages()->mutable_thorchain_deposit_message();
+    msg->set_signer(fromAddress.getKeyHash().data(), fromAddress.getKeyHash().size());
+    msg->set_memo(memo);
+
+    auto* coin = msg->add_coins();
+    coin->set_amount(toString(amount));
+    coin->set_decimals(0);
+
+    auto* asset = coin->mutable_asset();
+    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain())));
+    asset->set_symbol(mFromAsset.symbol());
+    asset->set_ticker(mFromAsset.symbol());
 
     auto serialized = input.SerializeAsString();
     out.insert(out.end(), serialized.begin(), serialized.end());

@@ -52,10 +52,11 @@ class SwapBuilder {
     std::optional<std::string> mExtraMemo{std::nullopt};
     std::optional<std::size_t> mExpirationPolicy{std::nullopt};
 
-    SwapBundled buildBitcoin(uint256_t amount, const std::string& memo, Chain fromChain);
-    SwapBundled buildBinance(Proto::Asset fromAsset, uint256_t amount, const std::string& memo);
-    SwapBundled buildEth(uint256_t amount, const std::string& memo);
-    SwapBundled buildAtom(uint256_t amount, const std::string& memo);
+    SwapBundled buildBitcoin(const uint256_t& amount, const std::string& memo, Chain fromChain);
+    SwapBundled buildBinance(Proto::Asset fromAsset, const uint256_t& amount, const std::string& memo);
+    SwapBundled buildEth(const uint256_t& amount, const std::string& memo);
+    SwapBundled buildAtom(const uint256_t& amount, const std::string& memo);
+    SwapBundled buildRune(const uint256_t& amount, const std::string& memo);
 
 public:
     SwapBuilder() noexcept = default;

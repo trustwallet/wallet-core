@@ -381,6 +381,36 @@
     }
   },
   {
+    "id": "linea",
+    "name": "Linea",
+    "coinId": 59144,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "59144",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://lineascan.build",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x0c7086f96865f4fcad58d7f3449db7baab9fce2625bcb79e7ea26676aa0d3420",
+      "sampleAccount": "0xbf71018f716ca6c64b0b12622f87a26b3b86100f"
+    },
+    "info": {
+      "url": "https://linea.build",
+      "source": "https://github.com/LineaLabs",
+      "rpc": "https://rpc.linea.build",
+      "documentation": "https://docs.linea.build"
+    }
+  },
+  {
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,
@@ -1044,6 +1074,36 @@
     },
     "info": {
       "url": "https://nobleassets.xyz/"
+    }
+  },
+  {
+    "id": "sei",
+    "name": "Sei",
+    "displayName": "Sei",
+    "coinId": 19000118,
+    "symbol": "SEI",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "chainId": "pacific-1",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "sei",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/sei",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "4A2114EE45317439690F3BEA9C8B6CFA11D42CF978F9487754902D372EEB488C",
+      "sampleAccount": "sei155hqv2rsypqzq0zpjn72frsxx4l6tcmplw63m2"
+    },
+    "info": {
+      "url": "https://sei.io/",
+      "documentation": "https://docs.sei.io/"
     }
   },
   {
@@ -3194,8 +3254,39 @@
     "info": {
       "url": "https://arbitrum.io",
       "source": "https://github.com/OffchainLabs/arbitrum",
-      "rpc": "https://node.offchainlabs.com:8547",
-      "documentation": "https://developer.offchainlabs.com"
+      "rpc": "https://arb1.arbitrum.io/rpc",
+      "documentation": "https://docs.arbitrum.io/"
+    }
+  },
+  {
+    "id": "arbitrumnova",
+    "name": "Arbitrum Nova",
+    "coinId": 10042170,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "42170",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://nova.arbiscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xfdfee13848c2d21813c82c53afc9925f31770564c3117477960a81055702c1be",
+      "sampleAccount": "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    },
+    "info": {
+      "url": "https://nova.arbitrum.io",
+      "source": "https://github.com/OffchainLabs/arbitrum",
+      "rpc": "https://nova.arbitrum.io/rpc",
+      "documentation": "https://docs.arbitrum.io/"
     }
   },
   {
@@ -3992,10 +4083,10 @@
   },
   {
     "id": "opbnb",
-    "name": "OpBNB testnet",
-    "coinId": 5611,
-    "chainId": "5611",
-    "symbol": "tBNB",
+    "name": "OpBNB",
+    "coinId": 204,
+    "chainId": "204",
+    "symbol": "BNB",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -4016,7 +4107,7 @@
     "info": {
       "url": "https://opbnb.bnbchain.org/en",
       "source": "https://github.com/bnb-chain/opbnb",
-      "rpc": "https://opbnb-testnet-rpc.bnbchain.org",
+      "rpc": "https://opbnb-mainnet-rpc.bnbchain.org",
       "documentation": "https://docs.bnbchain.org/opbnb-docs"
     }
   },

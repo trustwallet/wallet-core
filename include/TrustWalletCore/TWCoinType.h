@@ -168,9 +168,12 @@ enum TWCoinType {
     TWCoinTypeConfluxeSpace = 1030,
     TWCoinTypeAcala = 787,
     TWCoinTypeAcalaEVM = 10000787,
-    TWCoinTypeOpBNBtestnet = 5611,
+    TWCoinTypeOpBNB = 204,
     TWCoinTypeNeon = 245022934,
     TWCoinTypeBase = 8453,
+    TWCoinTypeSei = 19000118,
+    TWCoinTypeArbitrumNova = 10042170,
+    TWCoinTypeLinea = 59144,
 };
 
 /// Returns the blockchain for a coin type.
