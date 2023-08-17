@@ -6,48 +6,49 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 import "Utxo.proto";
 
+// TODO: Update numbers/sorting.
 enum Error {
     OK = 0;
-	Error_invalid_private_key = 1;
-	Error_invalid_public_key = 2;
-	Error_invalid_sighash = 3;
-	Error_invalid_sighash_type = 16;
-	Error_invalid_witness_pubkey_hash = 4;
-	Error_brc20_invalid_ticker = 5;
+    Error_invalid_private_key = 1;
+    Error_invalid_public_key = 2;
+    Error_invalid_sighash = 3;
+    Error_invalid_sighash_type = 16;
+    Error_invalid_witness_pubkey_hash = 4;
+    Error_brc20_invalid_ticker = 5;
     Error_invalid_ecdsa_signature = 11;
     Error_invalid_schnorr_signature = 14;
     Error_invalid_control_block = 12;
     Error_invalid_pubkey_hash = 13;
-	Error_invalid_taproot_root = 15;
-	Error_unmatched_input_signature_count = 17;
-	Error_missing_input_builder = 18;
-	Error_missing_output_builder = 20;
-	Error_missing_recipient = 19;
-	Error_unsupported_address_recipient = 21;
-	Error_bad_address_recipient = 22;
+    Error_invalid_taproot_root = 15;
+    Error_unmatched_input_signature_count = 17;
+    Error_missing_input_builder = 18;
+    Error_missing_output_builder = 20;
+    Error_missing_recipient = 19;
+    Error_unsupported_address_recipient = 21;
+    Error_bad_address_recipient = 22;
 }
 
 message SigningInput {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;
 
-	// Only required if the `sign` method is called.
-	bytes private_key = 2;
+    // Only required if the `sign` method is called.
+    bytes private_key = 2;
 
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
-	Utxo.Proto.LockTime lock_time = 3;
+    Utxo.Proto.LockTime lock_time = 3;
 
-	repeated Input inputs = 5;
+    repeated Input inputs = 5;
 
     repeated Output outputs = 6;
 
-	Utxo.Proto.InputSelector input_selector = 7;
+    Utxo.Proto.InputSelector input_selector = 7;
 
-	uint64 sat_vb = 8;
+    uint64 sat_vb = 8;
 
-	// The change output to be added (return to sender).
-	// The `amount` can be left at 0.
+    // The change output to be added (return to sender).
+    // The `amount` can be left at 0.
     Output change_output = 9;
 
     // Explicility disable change output creation.
@@ -55,148 +56,148 @@ message SigningInput {
 }
 
 message Input {
-	bytes txid = 1;
+    bytes txid = 1;
 
-	uint32 vout = 2;
+    uint32 vout = 2;
 
-	uint32 sequence = 3;
+    uint32 sequence = 3;
 
-	uint64 amount = 4;
+    uint64 amount = 4;
 
-	Utxo.Proto.SighashType sighash_type = 5;
+    Utxo.Proto.SighashType sighash_type = 5;
 
-	oneof to_recipient {
-		Builder builder = 6;
-		ScriptWitness custom = 7;
-	}
+    oneof to_recipient {
+        Builder builder = 6;
+        ScriptWitness custom = 7;
+    }
 
-	message Builder {
-		oneof variant {
-			// Pay-to-Script-Hash, specify the redeem script.
-			bytes p2sh = 1;
-			// Pay-to-Public-Key-Hash, specify the public key.
-			bytes p2pkh = 2;
-			// Pay-to-Witness-Script-Hash, specify the redeem script.
-			bytes p2wsh = 3;
-			// Pay-to-Public-Key-Hash, specify the public key.
-			bytes p2wpkh = 6;
-			// Pay-to-Taproot-key-path (balance transfers).
-			TaprootKeyPath p2tr_key_path = 7;
-			// Pay-to-Taproot-script-path (complex transfers)
-			TaprootScriptPath p2tr_script_path = 8;
-			Brc20Inscription brc20_inscribe = 9;
-		}
-	}
+    message Builder {
+        oneof variant {
+            // Pay-to-Script-Hash, specify the redeem script.
+            bytes p2sh = 1;
+            // Pay-to-Public-Key-Hash, specify the public key.
+            bytes p2pkh = 2;
+            // Pay-to-Witness-Script-Hash, specify the redeem script.
+            bytes p2wsh = 3;
+            // Pay-to-Public-Key-Hash, specify the public key.
+            bytes p2wpkh = 6;
+            // Pay-to-Taproot-key-path (balance transfers).
+            TaprootKeyPath p2tr_key_path = 7;
+            // Pay-to-Taproot-script-path (complex transfers)
+            TaprootScriptPath p2tr_script_path = 8;
+            Brc20Inscription brc20_inscribe = 9;
+        }
+    }
 
-	message ScriptWitness {
-		bytes script_pubkey = 1;
-		bytes script_sig = 2;
-		repeated bytes witness_items = 3;
-		Utxo.Proto.SigningMethod signing_method = 5;
-	}
+    message ScriptWitness {
+        bytes script_pubkey = 1;
+        bytes script_sig = 2;
+        repeated bytes witness_items = 3;
+        Utxo.Proto.SigningMethod signing_method = 5;
+    }
 
-	message TaprootKeyPath {
-		bool one_prevout = 1;
-		bytes public_key = 2;
-	}
+    message TaprootKeyPath {
+        bool one_prevout = 1;
+        bytes public_key = 2;
+    }
 
-	message TaprootScriptPath {
-		bool one_prevout = 1;
-		bytes payload = 2;
-		bytes control_block = 3;
-	}
+    message TaprootScriptPath {
+        bool one_prevout = 1;
+        bytes payload = 2;
+        bytes control_block = 3;
+    }
 
-	message Brc20Inscription {
-		bool one_prevout = 1;
-		// TODO: This is dangeours, could be misinterpreted.
-		bytes inscribe_to = 2;
-		string ticker = 3;
-		uint64 transfer_amount = 4;
-	}
+    message Brc20Inscription {
+        bool one_prevout = 1;
+        // TODO: This is dangeours, could be misinterpreted.
+        bytes inscribe_to = 2;
+        string ticker = 3;
+        uint64 transfer_amount = 4;
+    }
 }
 
 message Output {
-	uint64 amount = 1;
+    uint64 amount = 1;
 
-	oneof to_recipient {
-		Builder builder = 2;
-		// TODO: Rename to `custom`?
-		bytes script_pubkey = 3;
-		bytes from_address = 4;
-	}
+    oneof to_recipient {
+        Builder builder = 2;
+        // TODO: Rename to `custom`?
+        bytes script_pubkey = 3;
+        bytes from_address = 4;
+    }
 
-	message Builder {
-		oneof variant {
-			// Pay-to-Script-Hash, specify the hash.
-			bytes p2sh = 1;
-			// Pay-to-Public-Key-Hash
-			ToPublicKeyOrHash p2pkh = 2;
-			// Pay-to-Witness-Script-Hash, specify the hash.
-			bytes p2wsh = 3;
-			// Pay-to-Public-Key-Hash
-			ToPublicKeyOrHash p2wpkh = 4;
-			// Pay-to-Taproot-key-path (balance transfers), specify the public key.
-			bytes p2tr_key_path = 5;
-			// Pay-to-Taproot-script-path (complex transfers)
-			TaprootScriptPath p2tr_script_path = 6;
-			Brc20Inscription brc20_inscribe = 7;
-		}
-	}
+    message Builder {
+        oneof variant {
+            // Pay-to-Script-Hash, specify the hash.
+            bytes p2sh = 1;
+            // Pay-to-Public-Key-Hash
+            ToPublicKeyOrHash p2pkh = 2;
+            // Pay-to-Witness-Script-Hash, specify the hash.
+            bytes p2wsh = 3;
+            // Pay-to-Public-Key-Hash
+            ToPublicKeyOrHash p2wpkh = 4;
+            // Pay-to-Taproot-key-path (balance transfers), specify the public key.
+            bytes p2tr_key_path = 5;
+            // Pay-to-Taproot-script-path (complex transfers)
+            TaprootScriptPath p2tr_script_path = 6;
+            Brc20Inscription brc20_inscribe = 7;
+        }
+    }
 
-	message TaprootScriptPath {
-		bytes public_key = 1;
-		bytes node_hash = 2;
-	}
+    message TaprootScriptPath {
+        bytes public_key = 1;
+        bytes node_hash = 2;
+    }
 
-	message Brc20Inscription {
-		// TODO: This is dangeours, could be misinterpreted.
-		bytes inscribe_to = 1;
-		string ticker = 2;
-		uint64 transfer_amount = 3;
-	}
+    message Brc20Inscription {
+        // TODO: This is dangeours, could be misinterpreted.
+        bytes inscribe_to = 1;
+        string ticker = 2;
+        uint64 transfer_amount = 3;
+    }
 }
 
 message ToPublicKeyOrHash {
-	oneof to_address {
-		bytes pubkey = 1;
-		bytes hash = 2;
-	}
+    oneof to_address {
+        bytes pubkey = 1;
+        bytes hash = 2;
+    }
 }
 
 message PreSigningOutput {
-	Error error = 1;
+    Error error = 1;
 
     /// SighashMethodSighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Utxo.Proto.Sighash sighashes = 2;
 
-	repeated Utxo.Proto.TxIn utxo_inputs = 3;
+    repeated Utxo.Proto.TxIn utxo_inputs = 3;
 
-	// TODO: Rename field.
-	repeated TxOut utxo_outputs = 4;
+    // TODO: Rename field.
+    repeated TxOut utxo_outputs = 4;
 
-	// The output of a transaction.
-	message TxOut {
-		// The value of the output (amount).
-		uint64 value = 1;
-		// The spending condition of the output.
-		bytes script_pubkey = 2;
-		bytes taproot_payload = 3;
-		// The optional control block for an output (P2TR script-path).
-		bytes control_block = 4;
-	}
+    // The output of a transaction.
+    message TxOut {
+        // The value of the output (amount).
+        uint64 value = 1;
+        // The spending condition of the output.
+        bytes script_pubkey = 2;
+        bytes taproot_payload = 3;
+        // The optional control block for an output (P2TR script-path).
+        bytes control_block = 4;
+    }
 }
 
 message SigningOutput {
     Error error = 4;
 
-	Transaction transaction = 1;
+    Transaction transaction = 1;
 
-	// The encoded transaction that submitted to the network.
-	bytes encoded = 2;
+    // The encoded transaction that submitted to the network.
+    bytes encoded = 2;
 
-	bytes transaction_id = 3;
+    bytes transaction_id = 3;
 
-	uint64 fee = 5;
+    uint64 fee = 5;
 }
 
 message Transaction {
@@ -205,44 +206,44 @@ message Transaction {
 
     Utxo.Proto.LockTime lock_time = 2;
 
-	// The transaction inputs.
-	repeated TransactionInput inputs = 3;
-	
-	// The transaction outputs.
-	repeated TransactionOutput outputs = 4;
+    // The transaction inputs.
+    repeated TransactionInput inputs = 3;
+    
+    // The transaction outputs.
+    repeated TransactionOutput outputs = 4;
 }
 
 message TransactionInput {
-	// The referenced input by transaction hash.
-	bytes txid = 1;
+    // The referenced input by transaction hash.
+    bytes txid = 1;
 
-	// The referenced input by transaction index.
-	uint32 vout = 3;
+    // The referenced input by transaction index.
+    uint32 vout = 3;
 
-	uint32 sequence = 4;
+    uint32 sequence = 4;
 
-	// The script for claiming the input (non-Segwit/non-Taproot).
-	bytes script_sig = 5;
+    // The script for claiming the input (non-Segwit/non-Taproot).
+    bytes script_sig = 5;
 
-	// The script for claiming the input (Segit/Taproot).
-	repeated bytes witness_items = 6;
+    // The script for claiming the input (Segit/Taproot).
+    repeated bytes witness_items = 6;
 }
 
 message TransactionOutput {
-	// Public key or hash.
-	bytes recipient = 1;
+    // Public key or hash.
+    bytes recipient = 1;
 
-	// The condition for claiming the output.
-	bytes script_pubkey = 2;
+    // The condition for claiming the output.
+    bytes script_pubkey = 2;
 
-	// The amount sent.
-	uint64 amount = 3;
+    // The amount sent.
+    uint64 amount = 3;
 
-	// In case of P2TR script-path (complex scripts), this is the payload that
-	// must later be revealed and is required for claiming.
-	bytes taproot_payload = 2;
+    // In case of P2TR script-path (complex scripts), this is the payload that
+    // must later be revealed and is required for claiming.
+    bytes taproot_payload = 2;
 
-	// In case of P2TR script-path (complex scripts), this is the control block
-	// required for claiming.
-	bytes control_block = 4;
+    // In case of P2TR script-path (complex scripts), this is the control block
+    // required for claiming.
+    bytes control_block = 4;
 }
