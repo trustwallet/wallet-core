@@ -16,10 +16,10 @@ impl OutputBuilder {
         output: &Proto::Output<'_>,
     ) -> Result<Proto::mod_PreSigningOutput::TxOut<'static>> {
         let secp = secp256k1::Secp256k1::new();
-        let (script_pubkey, control_block) = match &output.to_recipient {
+        let (script_pubkey, control_block, taproot_payload) = match &output.to_recipient {
             // Script spending condition was passed on directly.
             ProtoOutputRecipient::script_pubkey(script) => {
-                (ScriptBuf::from_bytes(script.to_vec()), None)
+                (ScriptBuf::from_bytes(script.to_vec()), None, None)
             },
             // Process builder methods. We construct the Script spending
             // conditions by using the specified parameters.
@@ -29,19 +29,19 @@ impl OutputBuilder {
                 },
                 ProtoOutputBuilder::p2pkh(pubkey_or_hash) => {
                     let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash)?;
-                    (ScriptBuf::new_p2pkh(&pubkey_hash), None)
+                    (ScriptBuf::new_p2pkh(&pubkey_hash), None, None)
                 },
                 ProtoOutputBuilder::p2wsh(_) => {
                     todo!()
                 },
                 ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => {
                     let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash)?;
-                    (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None)
+                    (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None, None)
                 },
                 ProtoOutputBuilder::p2tr_key_path(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
-                    (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None)
+                    (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None, None)
                 },
                 ProtoOutputBuilder::p2tr_script_path(complex) => {
                     let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref())
@@ -50,7 +50,11 @@ impl OutputBuilder {
                     let pubkey = bitcoin::PublicKey::from_slice(complex.public_key.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
-                    (ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)), None)
+                    (
+                        ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)),
+                        None,
+                        None,
+                    )
                 },
                 ProtoOutputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
@@ -76,9 +80,11 @@ impl OutputBuilder {
                         .spend_info()
                         .merkle_root()
                         .expect("incorrectly constructed Taproot merkle root");
+
                     (
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
                         Some(control_block.serialize()),
+                        Some(transfer.inscription().taproot_program().to_vec()),
                     )
                 },
                 ProtoOutputBuilder::None => todo!(),
@@ -92,6 +98,7 @@ impl OutputBuilder {
             value: output.amount,
             script_pubkey: script_pubkey.to_vec().into(),
             control_block: control_block.map(|cb| cb.into()).unwrap_or_default(),
+            taproot_payload: taproot_payload.map(|cb| cb.into()).unwrap_or_default(),
         };
 
         Ok(utxo)
