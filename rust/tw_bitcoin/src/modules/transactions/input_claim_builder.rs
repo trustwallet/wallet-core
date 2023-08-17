@@ -113,8 +113,7 @@ impl InputClaimBuilder {
         let claim = UtxoProto::TxInClaim {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
-            // TODO
-            sequence: u32::MAX,
+            sequence: input.sequence,
             script_sig: script_sig.to_vec().into(),
             witness_items: witness
                 .to_vec()

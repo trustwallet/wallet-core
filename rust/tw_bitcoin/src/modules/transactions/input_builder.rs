@@ -168,6 +168,7 @@ impl InputBuilder {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
             amount: input.amount,
+            sequence: input.sequence,
             script_pubkey: script_pubkey.to_vec().into(),
             signing_method,
             sighash_type: input.sighash_type,
@@ -280,8 +281,7 @@ impl InputBuilder {
         let claim = UtxoProto::TxInClaim {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
-            // TODO
-            sequence: u32::MAX,
+            sequence: input.sequence,
             script_sig: script_sig.to_vec().into(),
             witness_items: witness
                 .to_vec()

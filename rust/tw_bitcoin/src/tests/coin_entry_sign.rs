@@ -39,6 +39,7 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         txid: txid.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50,
+        sequence: u32::MAX,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
@@ -95,6 +96,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         txid: txid.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50,
+        sequence: u32::MAX,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
@@ -129,6 +131,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         txid: txid2.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50 - 1_000_000,
+        sequence: u32::MAX,
         sighash_type: UtxoProto::SighashType::UseDefault,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::TaprootKeyPath {
@@ -182,6 +185,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         txid: txid.as_slice().into(),
         vout: 1,
         amount: 26_400,
+        sequence: u32::MAX,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
@@ -235,7 +239,8 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         txid: txid2.as_slice().into(),
         vout: 0,
         amount: 7_000,
-        sighash_type: UtxoProto::SighashType::All,
+        sequence: u32::MAX,
+        sighash_type: UtxoProto::SighashType::UseDefault,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::Brc20Inscription {
                 one_prevout: false,

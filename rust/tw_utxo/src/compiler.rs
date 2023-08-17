@@ -62,8 +62,6 @@ impl Compiler<StandardBitcoinContext> {
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
         // Insufficient input amount.
-        dbg!(total_input);
-        dbg!(total_output);
         if total_output > total_input {
             // Return error.
             return Err(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey));
@@ -73,7 +71,6 @@ impl Compiler<StandardBitcoinContext> {
         // other input gets dropped.
         let proto_inputs = std::mem::take(&mut proto.inputs);
 
-        dbg!(&proto.input_selector);
         let selected = if let Proto::InputSelector::SelectAscending = proto.input_selector {
             let mut total_input = total_input;
             let mut remaining = total_output;
@@ -148,10 +145,7 @@ impl Compiler<StandardBitcoinContext> {
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
 
-        dbg!(&proto.inputs);
-
         for (index, input) in proto.inputs.iter().enumerate() {
-            dbg!(&input.signing_method);
             match input.signing_method {
                 // Use the legacy hashing mechanism (e.g. P2SH, P2PK, P2PKH).
                 ProtoSigningMethod::Legacy => {
@@ -361,8 +355,7 @@ fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transac
         tx.input.push(TxIn {
             previous_output: OutPoint { txid, vout },
             script_sig: ScriptBuf::new(),
-            // TODO: This is actually important for signing, add as field in Utxo.
-            sequence: Sequence::default(),
+            sequence: Sequence(txin.sequence),
             witness: Witness::new(),
         });
     }
