@@ -1,9 +1,8 @@
 use super::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
-use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash};
+use bitcoin::taproot::{ControlBlock, LeafVersion};
 use bitcoin::{ScriptBuf, Witness};
-use secp256k1::XOnlyPublicKey;
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry::SignatureBytes;
 use tw_misc::traits::ToBytesVec;
