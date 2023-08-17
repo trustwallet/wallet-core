@@ -278,6 +278,7 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
 pub(crate) fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
+    // Convert the appropriate lock time.
     let lock_time = match LockTime::from_consensus(legacy.lock_time) {
         LockTime::Blocks(blocks) => UtxoProto::LockTime {
             variant: UtxoProto::mod_LockTime::OneOfvariant::blocks(blocks.to_consensus_u32()),
@@ -287,12 +288,18 @@ pub(crate) fn taproot_build_and_sign_transaction(
         },
     };
 
+    // Prepare the inputs.
     let mut inputs = vec![];
+    // If a plan exists, we will use the provided one and interpret it as
+    // `InputSelector::UseAll`.
     if let Some(plan) = legacy.plan {
         for utxo in plan.utxos {
             inputs.push(input_from_legacy_utxo(utxo))
         }
-    } else {
+    }
+    // If there is no plan, we will construct it for the user and therefore
+    // interpret it as `InputSelector::SelectAscending`.
+    else {
         for utxo in legacy.utxo {
             inputs.push(input_from_legacy_utxo(utxo))
         }
