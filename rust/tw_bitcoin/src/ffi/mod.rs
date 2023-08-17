@@ -9,26 +9,12 @@ use std::borrow::Cow;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::c_result::ErrorCode;
 use tw_misc::try_or_else;
+use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-
-// TODO: Should be deprecated.
-#[repr(C)]
-pub enum CTaprootError {
-    Ok = 0,
-    InvalidSlice = 1,
-    InvalidPubkey = 2,
-    InvalidSegwitPukey = 3,
-}
-
-impl From<CTaprootError> for ErrorCode {
-    fn from(error: CTaprootError) -> Self {
-        error as ErrorCode
-    }
-}
+use tw_proto::Common::Proto as CommonProto;
 
 pub mod address;
 pub mod scripts;
@@ -61,7 +47,8 @@ pub(crate) fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
     // Convert the appropriate lock time.
-    let lock_time = match LockTime::from_consensus(legacy.lock_time) {
+    let native_lock_time = LockTime::from_consensus(legacy.lock_time);
+    let lock_time = match native_lock_time {
         LockTime::Blocks(blocks) => UtxoProto::LockTime {
             variant: UtxoProto::mod_LockTime::OneOfvariant::blocks(blocks.to_consensus_u32()),
         },
@@ -92,7 +79,8 @@ pub(crate) fn taproot_build_and_sign_transaction(
         UtxoProto::InputSelector::SelectAscending
     };
 
-    let signing = Proto::SigningInput {
+    // The primary payload.
+    let signing_input = Proto::SigningInput {
         version: 2,
         // TODO: each input should have an individual field for this.
         private_key: legacy.private_key[0].to_vec().into(),
@@ -135,9 +123,32 @@ pub(crate) fn taproot_build_and_sign_transaction(
     // * time (for XVG)
     // * is_it_brc_operation
 
-    let signed_output = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing);
+    let signed = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing_input);
 
-    todo!()
+    let legacy_transaction = LegacyProto::Transaction {
+        version: 2,
+        lockTime: native_lock_time.to_consensus_u32(),
+        inputs: Default::default(),
+        outputs: Default::default(),
+    };
+
+    let error = if signed.error == Proto::Error::OK {
+        CommonProto::SigningError::OK
+    } else {
+        CommonProto::SigningError::Error_internal
+    };
+
+    let transaction_id_hex = hex::encode(signed.transaction_id.as_ref(), false);
+
+    let legacy_output = LegacyProto::SigningOutput {
+        transaction: Some(legacy_transaction),
+        encoded: signed.encoded,
+        transaction_id: transaction_id_hex.into(),
+        error,
+        error_message: Default::default(),
+    };
+
+    Ok(legacy_output)
 }
 
 /// Convenience function.
