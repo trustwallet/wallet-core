@@ -36,7 +36,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
     };
 
     let res = try_or_else!(
-        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        crate::modules::transactions::OutputBuilder::utxo_from_proto(&output),
         CByteArray::null
     );
 
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
     };
 
     let res = try_or_else!(
-        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        crate::modules::transactions::OutputBuilder::utxo_from_proto(&output),
         CByteArray::null
     );
 
@@ -117,7 +117,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
     };
 
     let res = try_or_else!(
-        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        crate::modules::transactions::OutputBuilder::utxo_from_proto(&output),
         CByteArray::null
     );
 
@@ -169,7 +169,7 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
     };
 
     let res = try_or_else!(
-        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        crate::modules::transactions::OutputBuilder::utxo_from_proto(&output),
         CByteArray::null
     );
 

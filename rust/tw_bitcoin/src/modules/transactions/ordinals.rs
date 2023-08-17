@@ -1,4 +1,5 @@
-use crate::{Recipient, Result, TaprootProgram, TaprootScript};
+use super::{TaprootProgram, TaprootScript};
+use crate::{Recipient, Result};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};

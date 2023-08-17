@@ -46,19 +46,3 @@ impl From<bitcoin::taproot::Error> for Error {
         Error::from(Proto::Error::Error_invalid_schnorr_signature)
     }
 }
-
-use bitcoin::key::PublicKey;
-use bitcoin::script::ScriptBuf;
-use bitcoin::taproot::{TapNodeHash, TaprootSpendInfo};
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct TaprootScript {
-    pub pubkey: PublicKey,
-    pub merkle_root: TapNodeHash,
-}
-
-#[derive(Debug, Clone)]
-pub struct TaprootProgram {
-    pub script: ScriptBuf,
-    pub spend_info: TaprootSpendInfo,
-}
