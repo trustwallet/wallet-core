@@ -1,8 +1,7 @@
-use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::nft::OrdinalNftInscription;
 use crate::Recipient;
-use bitcoin::{PublicKey, WPubkeyHash};
+use bitcoin::PublicKey;
 use std::ffi::{c_char, CStr};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
