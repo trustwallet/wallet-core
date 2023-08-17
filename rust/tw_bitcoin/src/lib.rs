@@ -2,6 +2,7 @@ extern crate serde;
 
 pub mod entry;
 pub mod modules;
+// TODO: `recipient` and `utils` should be deprecated entirely.
 pub mod recipient;
 #[cfg(test)]
 mod tests;
