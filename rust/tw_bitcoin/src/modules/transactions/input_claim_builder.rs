@@ -106,7 +106,7 @@ impl InputClaimBuilder {
                 Witness::from_slice(&custom.witness_items),
             ),
             ProtoInputRecipient::None => {
-                todo!()
+                return Err(Error::from(Proto::Error::Error_missing_recipient))
             },
         };
 

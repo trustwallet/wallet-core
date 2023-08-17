@@ -152,12 +152,16 @@ impl InputBuilder {
                         ),
                     )
                 },
-                ProtoInputBuilder::None => todo!(),
+                ProtoInputBuilder::None => {
+                    return Err(Error::from(Proto::Error::Error_missing_input_builder))
+                },
             },
             ProtoInputRecipient::custom(_custom) => {
                 todo!()
             },
-            ProtoInputRecipient::None => todo!(),
+            ProtoInputRecipient::None => {
+                return Err(Error::from(Proto::Error::Error_missing_input_builder))
+            },
         };
 
         let utxo = UtxoProto::TxIn {
