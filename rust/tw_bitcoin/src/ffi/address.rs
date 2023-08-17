@@ -1,9 +1,23 @@
-use super::CTaprootError;
 use crate::Recipient;
 use bitcoin::PublicKey;
 use std::ffi::CString;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_memory::ffi::c_result::CStrMutResult;
+use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
+
+// TODO: Should be deprecated.
+#[repr(C)]
+pub enum CTaprootError {
+    Ok = 0,
+    InvalidSlice = 1,
+    InvalidPubkey = 2,
+    InvalidSegwitPukey = 3,
+}
+
+impl From<CTaprootError> for ErrorCode {
+    fn from(error: CTaprootError) -> Self {
+        error as ErrorCode
+    }
+}
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_legacy_address_string(
