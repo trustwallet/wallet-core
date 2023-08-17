@@ -104,7 +104,7 @@ impl OutputBuilder {
                 let proto = match addr.payload {
                     // Identified a "PubkeyHash" address (i.e. P2PKH).
                     Payload::PubkeyHash(pubkey_hash) => Proto::Output {
-                        amount: 0,
+                        amount: output.amount,
                         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
                             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
@@ -123,7 +123,7 @@ impl OutputBuilder {
                                 assert_eq!(wpubkey_hash.len(), 20);
 
                                 Proto::Output {
-                                    amount: 0,
+                                    amount: output.amount,
                                     to_recipient: ProtoOutputRecipient::builder(
                                         Proto::mod_Output::Builder {
                                             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -143,7 +143,7 @@ impl OutputBuilder {
                                 assert_eq!(pubkey.len(), 32);
 
                                 Proto::Output {
-                                    amount: 0,
+                                    amount: output.amount,
                                     to_recipient: ProtoOutputRecipient::builder(
                                         Proto::mod_Output::Builder {
                                             variant: ProtoOutputBuilder::p2tr_key_path(

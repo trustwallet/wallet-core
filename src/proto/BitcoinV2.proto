@@ -53,6 +53,8 @@ message Input {
 
 	uint32 vout = 2;
 
+	// TODO: Sequence
+
 	uint64 amount = 3;
 
 	Utxo.Proto.SighashType sighash_type = 4;
