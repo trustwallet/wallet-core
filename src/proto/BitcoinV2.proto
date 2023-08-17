@@ -91,6 +91,8 @@ message Input {
 	message ScriptWitness {
 		bytes script_sig = 1;
 		repeated bytes witness_items = 2;
+		bytes leaf_hash = 3;
+		Utxo.Proto.SigningMethod signing_method = 4;
 	}
 
 	message TaprootKeyPath {
@@ -118,6 +120,7 @@ message Output {
 
 	oneof to_recipient {
 		Builder builder = 2;
+		// TODO: Rename to `custom`?
 		bytes script_pubkey = 3;
 		bytes from_address = 4;
 	}
