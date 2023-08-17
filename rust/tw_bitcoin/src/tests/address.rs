@@ -1,5 +1,13 @@
-use crate::{keypair_from_wif, Recipient};
-use bitcoin::{Network, PublicKey};
+use crate::{Result, Recipient};
+use bitcoin::key::KeyPair;
+use bitcoin::{Network, PublicKey, PrivateKey};
+
+pub fn keypair_from_wif(string: &str) -> Result<KeyPair> {
+    let pk = PrivateKey::from_wif(string).unwrap();
+    let keypair = KeyPair::from_secret_key(&secp256k1::Secp256k1::new(), &pk.inner);
+    Ok(keypair)
+}
+
 
 // This private key was used in a Bitcoin regtest environment.
 pub const ALICE_WIF: &str = "cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1";

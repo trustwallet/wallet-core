@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
+use crate::{Error, Result};
 use crate::TaprootScript;
-use crate::{tweak_pubkey, Error, Result};
+use crate::utils::tweak_pubkey;
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::taproot::TapNodeHash;
 use bitcoin::{

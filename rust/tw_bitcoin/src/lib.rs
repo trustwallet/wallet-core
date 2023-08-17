@@ -9,7 +9,6 @@ pub mod utils;
 
 // Reexports
 pub use recipient::Recipient;
-pub use utils::*;
 
 use tw_proto::BitcoinV2::Proto;
 
