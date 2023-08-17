@@ -250,9 +250,10 @@ impl BitcoinEntry {
 
         // Generate claims for all the inputs.
         for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
-            let utxo_claim = crate::modules::transactions::InputClaimBuilder::utxo_claim_from_proto(
-                input, signature,
-            )?;
+            let utxo_claim =
+                crate::modules::transactions::InputClaimBuilder::utxo_claim_from_proto(
+                    input, signature,
+                )?;
             utxo_input_claims.push(utxo_claim);
         }
 

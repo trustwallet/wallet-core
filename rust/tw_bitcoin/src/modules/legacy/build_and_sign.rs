@@ -2,12 +2,13 @@ use crate::entry::{ProtoInputRecipient, ProtoOutputRecipient};
 use crate::Result;
 use bitcoin::absolute::LockTime;
 use bitcoin::consensus::Decodable;
-use bitcoin::Witness;
+use bitcoin::{ScriptBuf, Witness};
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
+use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
@@ -163,9 +164,8 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
 
     let witness = Witness::consensus_decode(&mut utxo.spendingScript.as_ref()).unwrap();
 
-    // TODO: Must be constructed manually.
-    let leaf_hash = vec![];
-
+    // TODO:
+    let script_pubkey = ScriptBuf::new();
     let signing_method = match utxo.variant {
         LegacyProto::TransactionVariant::P2PKH => UtxoProto::SigningMethod::Legacy,
         LegacyProto::TransactionVariant::P2WPKH => UtxoProto::SigningMethod::Segwit,
@@ -182,6 +182,7 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
         // TODO: pass `sighash_type` as parameter.
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::custom(Proto::mod_Input::ScriptWitness {
+            script_pubkey: script_pubkey.to_vec().into(),
             script_sig: utxo.script,
             witness_items: witness
                 .to_vec()
@@ -189,7 +190,6 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
                 .map(Cow::Owned)
                 .collect::<Vec<Cow<_>>>(),
             signing_method,
-            leaf_hash: leaf_hash.into(),
         }),
     }
 }
