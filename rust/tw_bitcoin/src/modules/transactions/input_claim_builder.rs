@@ -1,13 +1,13 @@
-use super::brc20::{BRC20TransferInscription, Brc20Ticker};
-use crate::entry::aliases::*;
 use crate::{Error, Result};
+use crate::entry::aliases::*;
+use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use bitcoin::taproot::{ControlBlock, LeafVersion};
 use bitcoin::{ScriptBuf, Witness};
-use std::borrow::Cow;
 use tw_coin_entry::coin_entry::SignatureBytes;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use std::borrow::Cow;
 
 pub struct InputClaimBuilder;
 
@@ -110,6 +110,7 @@ impl InputClaimBuilder {
             },
         };
 
+        // Create Utxo.proto structure.
         let claim = UtxoProto::TxInClaim {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
