@@ -1,7 +1,7 @@
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
-use bitcoin::taproot::{ControlBlock, TapLeafHash};
+use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash};
 use bitcoin::{ScriptBuf, Witness};
 use secp256k1::XOnlyPublicKey;
 use std::borrow::Cow;
@@ -230,19 +230,26 @@ impl InputBuilder {
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let ticker = Ticker::new(brc20.ticker.to_string())?;
-                    let control_block = ControlBlock::decode(brc20.control_block.as_ref())
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_control_block))?;
 
-                    let brc20 =
+                    let transfer =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
+
+                    let control_block = transfer
+                        .inscription()
+                        .spend_info()
+                        .control_block(&(
+                            transfer.inscription().taproot_program().to_owned(),
+                            LeafVersion::TapScript,
+                        ))
+                        .expect("incorrectly constructed control block");
 
                     let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
 
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
                         w.push(sig.to_vec());
-                        w.push(brc20.inscription().taproot_program());
+                        w.push(transfer.inscription().taproot_program());
                         w.push(control_block.serialize());
                         w
                     })
