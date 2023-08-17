@@ -24,7 +24,6 @@ pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
 pub type BRC20MintPayload = BRC20Payload<MintPayload>;
 pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
-// TODO: Deprecate this type?
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Brc20Ticker(String);
 

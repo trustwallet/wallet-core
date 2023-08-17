@@ -4,7 +4,6 @@ use std::ffi::CString;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
 
-// TODO: Should be deprecated.
 #[repr(C)]
 pub enum CTaprootError {
     Ok = 0,

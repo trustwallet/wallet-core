@@ -78,8 +78,7 @@ impl Signer {
                         // process is simpler than for P2TR key-path.
                         let sig = bitcoin::taproot::Signature {
                             sig: keypair.sign_schnorr(sighash),
-                            // TODO.
-                            hash_ty: bitcoin::sighash::TapSighashType::Default,
+                            hash_ty: sighash_type,
                         };
 
                         signatures.push(sig.to_vec());

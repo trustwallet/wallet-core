@@ -140,8 +140,11 @@ impl OutputBuilder {
                             // Identified version 0, i.e. Segwit
                             WitnessVersion::V0 => {
                                 let wpubkey_hash = progam.program().as_bytes().to_vec();
-                                // TODO:
-                                assert_eq!(wpubkey_hash.len(), 20);
+                                if wpubkey_hash.len() != 20 {
+                                    return Err(Error::from(
+                                        Proto::Error::Error_bad_address_recipient,
+                                    ));
+                                }
 
                                 Proto::Output {
                                     amount: output.amount,
@@ -160,8 +163,11 @@ impl OutputBuilder {
                             // Identified version 1, i.e P2TR key-path (Taproot)
                             WitnessVersion::V1 => {
                                 let pubkey = progam.program().as_bytes().to_vec();
-                                // TODO:
-                                assert_eq!(pubkey.len(), 32);
+                                if pubkey.len() != 32 {
+                                    return Err(Error::from(
+                                        Proto::Error::Error_bad_address_recipient,
+                                    ));
+                                }
 
                                 Proto::Output {
                                     amount: output.amount,
