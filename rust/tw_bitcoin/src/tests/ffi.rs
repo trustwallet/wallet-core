@@ -110,3 +110,8 @@ fn ffi_tw_build_brc20_transfer_inscription() {
         transfer.inscription().taproot_program().as_bytes()
     );
 }
+
+#[test]
+fn ffi_tw_bitcoin_build_nft_inscription() {
+    //TODO...
+}
