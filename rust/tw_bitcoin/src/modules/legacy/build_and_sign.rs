@@ -1,5 +1,3 @@
-#![allow(clippy::missing_safety_doc)]
-
 use crate::entry::{ProtoInputRecipient, ProtoOutputRecipient};
 use crate::Result;
 use bitcoin::absolute::LockTime;
@@ -15,13 +13,6 @@ use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto as CommonProto;
 use tw_proto::Utxo::Proto as UtxoProto;
-
-pub mod address;
-pub mod scripts;
-
-// Re-exports
-pub use address::*;
-pub use scripts::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
@@ -156,7 +147,7 @@ pub(crate) fn taproot_build_and_sign_transaction(
         outputs: transaction
             .outputs
             .iter()
-            .map(|output| {
+            .map(|_output| {
                 //TODO:
                 LegacyProto::TransactionOutput {
                     value: Default::default(),

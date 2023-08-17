@@ -2,7 +2,6 @@ extern crate serde;
 
 pub mod brc20;
 pub mod entry;
-pub mod ffi;
 pub mod modules;
 pub mod nft;
 pub mod ordinals;
