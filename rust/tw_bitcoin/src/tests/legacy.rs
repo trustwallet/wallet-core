@@ -6,10 +6,13 @@ use std::ffi::CString;
 use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 
+// When building the spending conditions of inputs (scriptPubkey), then the
+// actual amount is not important. We can just use 0 here.
 const SATOSHIS: i64 = 0;
 const PUBKEY: &str = "028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f";
 
 #[test]
+#[allow(deprecated)]
 fn ffi_tw_build_p2pkh_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -28,6 +31,7 @@ fn ffi_tw_build_p2pkh_script() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn ffi_tw_build_p2wpkh_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -46,6 +50,7 @@ fn ffi_tw_build_p2wpkh_script() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn ffi_tw_build_p2tr_key_path_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -66,6 +71,7 @@ fn ffi_tw_build_p2tr_key_path_script() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn ffi_tw_build_brc20_transfer_inscription() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();

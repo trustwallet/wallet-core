@@ -9,7 +9,9 @@ mod ordinals;
 mod output_builder;
 
 // Re-exports
-pub use brc20::{BRC20DeployInscription, BRC20MintInscription, BRC20TransferInscription, Brc20Ticker};
+pub use brc20::{
+    BRC20DeployInscription, BRC20MintInscription, BRC20TransferInscription, Brc20Ticker,
+};
 pub use input_builder::InputBuilder;
 pub use input_claim_builder::InputClaimBuilder;
 pub use ordinals::{OrdinalNftInscription, OrdinalsInscription};

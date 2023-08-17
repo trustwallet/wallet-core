@@ -20,6 +20,7 @@ impl From<CTaprootError> for ErrorCode {
 }
 
 #[no_mangle]
+#[deprecated]
 pub unsafe extern "C" fn tw_legacy_address_string(
     pubkey: *const u8,
     pubkey_len: usize,
@@ -43,6 +44,7 @@ pub unsafe extern "C" fn tw_legacy_address_string(
 }
 
 #[no_mangle]
+#[deprecated]
 pub unsafe extern "C" fn tw_segwit_address_string(
     pubkey: *const u8,
     pubkey_len: usize,
@@ -69,6 +71,7 @@ pub unsafe extern "C" fn tw_segwit_address_string(
 }
 
 #[no_mangle]
+#[deprecated]
 pub unsafe extern "C" fn tw_taproot_address_string(
     pubkey: *const u8,
     pubkey_len: usize,

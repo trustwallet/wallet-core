@@ -10,6 +10,7 @@ use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
 
 #[no_mangle]
+#[deprecated]
 // Builds the P2PKH scriptPubkey.
 pub unsafe extern "C" fn tw_build_p2pkh_script(
     _satoshis: i64,
@@ -52,6 +53,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
 }
 
 #[no_mangle]
+#[deprecated]
 // Builds the P2WPKH scriptPubkey.
 pub unsafe extern "C" fn tw_build_p2wpkh_script(
     _satoshis: i64,
@@ -95,6 +97,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
 }
 
 #[no_mangle]
+#[deprecated]
 // Builds the P2TR key-path scriptPubkey.
 pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
     _satoshis: i64,
@@ -133,6 +136,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 }
 
 #[no_mangle]
+#[deprecated]
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
     // The 4-byte ticker.
@@ -185,6 +189,7 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 }
 
 #[no_mangle]
+#[deprecated]
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     mime_type: *const c_char,

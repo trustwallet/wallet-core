@@ -55,7 +55,12 @@ impl TryFrom<String> for Brc20Ticker {
 impl BRC20DeployPayload {
     const OPERATION: &str = "deploy";
 
-    pub fn new(ticker: Brc20Ticker, max: usize, limit: Option<usize>, decimals: Option<usize>) -> Self {
+    pub fn new(
+        ticker: Brc20Ticker,
+        max: usize,
+        limit: Option<usize>,
+        decimals: Option<usize>,
+    ) -> Self {
         BRC20Payload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),

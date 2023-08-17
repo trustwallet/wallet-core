@@ -15,27 +15,6 @@ use tw_proto::Common::Proto as CommonProto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[no_mangle]
-pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
-    input: *const u8,
-    input_len: usize,
-    sat_vb: u64,
-) -> CUInt64Result {
-    let Some(mut encoded) = CByteArrayRef::new(input, input_len).as_slice() else {
-        return CUInt64Result::error(1);
-    };
-
-    // Decode transaction.
-    let Ok(tx) = Transaction::consensus_decode(&mut encoded) else {
-        return CUInt64Result::error(1);
-    };
-
-    // Calculate fee.
-    let (_weight, fee) = calculate_fee(&tx, sat_vb);
-
-    CUInt64Result::ok(fee)
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     input: *const u8,
     input_len: usize,
@@ -55,7 +34,7 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     todo!()
 }
 
-pub(crate) fn taproot_build_and_sign_transaction(
+pub fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
     // Convert the appropriate lock time.
