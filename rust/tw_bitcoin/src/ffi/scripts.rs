@@ -22,7 +22,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         CByteArray::null
     );
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
+    let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
     //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    recipient.public_key().to_bytes().into(),
+                    recipient.to_bytes().into(),
                 ),
             }),
         }),
@@ -64,12 +64,38 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         CByteArray::null
     );
-    let _recipient = try_or_else!(
-        Recipient::<WPubkeyHash>::from_slice(slice),
+
+    let recipient = try_or_else!(
+        PublicKey::from_slice(slice),
         CByteArray::null
     );
 
-    todo!()
+    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
+    let output = Proto::Output {
+        amount: _satoshis as u64,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
+                    recipient.to_bytes().into(),
+                ),
+            }),
+        }),
+    };
+
+    let res = try_or_else!(
+        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        CByteArray::null
+    );
+
+    // Prepare and serialize protobuf structure.
+    let proto = LegacyProto::TransactionOutput {
+        value: res.value as i64,
+        script: res.script_pubkey,
+        spendingScript: Default::default(),
+    };
+
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
+    CByteArray::from(serialized)
 }
 
 #[no_mangle]
@@ -84,9 +110,35 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         CByteArray::null
     );
-    let _recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
+    let recipient = try_or_else!(
+        PublicKey::from_slice(slice),
+        CByteArray::null
+    );
 
-    todo!()
+    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
+    let output = Proto::Output {
+        amount: _satoshis as u64,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::p2tr_key_path(
+                    recipient.to_bytes().into(),
+        ),
+        }),
+    };
+
+    let res = try_or_else!(
+        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        CByteArray::null
+    );
+
+    // Prepare and serialize protobuf structure.
+    let proto = LegacyProto::TransactionOutput {
+        value: res.value as i64,
+        script: res.script_pubkey,
+        spendingScript: Default::default(),
+    };
+
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
+    CByteArray::from(serialized)
 }
 
 #[no_mangle]
