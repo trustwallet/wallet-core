@@ -126,6 +126,7 @@ message PreSigningOutput {
 message Sighash {
     bytes sighash = 1;
     SigningMethod signing_method = 2;
+    SighashType sighash_type = 2;
 }
 
 message PreSerialization {
