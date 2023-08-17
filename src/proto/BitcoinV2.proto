@@ -168,7 +168,7 @@ message PreSigningOutput {
 		uint64 value = 1;
 		// The spending condition of the output.
 		bytes script_pubkey = 2;
-
+		// The optional control block for an output (P2TR script-path).
 		bytes control_block = 3;
 	}
 }
