@@ -170,8 +170,10 @@ impl BitcoinEntry {
         let pre_signed = self.preimage_hashes(_coin, proto.clone());
         // TODO: Check error
 
-        let signatures =
-            crate::modules::Signer::signatures_from_proto(&pre_signed, proto.private_key.to_vec())?;
+        let signatures = crate::modules::signer::Signer::signatures_from_proto(
+            &pre_signed,
+            proto.private_key.to_vec(),
+        )?;
 
         self.compile_impl(_coin, proto, signatures, vec![])
     }
@@ -183,20 +185,20 @@ impl BitcoinEntry {
     ) -> Result<Proto::PreSigningOutput<'static>> {
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
-            let txin = crate::modules::InputBuilder::utxo_from_proto(&input)?;
+            let txin = crate::modules::transactions::InputBuilder::utxo_from_proto(&input)?;
             utxo_inputs.push(txin);
         }
 
         let mut utxo_outputs = vec![];
         for output in proto.outputs {
-            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output)?;
+            let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(&output)?;
             utxo_outputs.push(utxo);
         }
 
         let change_script_pubkey = if proto.disable_change_output {
             Cow::default()
         } else {
-            let output = crate::modules::OutputBuilder::utxo_from_proto(
+            let output = crate::modules::transactions::OutputBuilder::utxo_from_proto(
                 &proto
                     .change_output
                     .ok_or_else(|| Error::from(Proto::Error::Error_invalid_public_key))?,
@@ -249,14 +251,16 @@ impl BitcoinEntry {
 
         // Generate claims for all the inputs.
         for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
-            let utxo_claim = crate::modules::InputBuilder::utxo_claim_from_proto(input, signature)?;
+            let utxo_claim = crate::modules::transactions::InputBuilder::utxo_claim_from_proto(
+                input, signature,
+            )?;
             utxo_input_claims.push(utxo_claim);
         }
 
         // Process all the outputs.
         let mut utxo_outputs = vec![];
         for output in proto.outputs {
-            let utxo = crate::modules::OutputBuilder::utxo_from_proto(&output)?;
+            let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(&output)?;
 
             utxo_outputs.push(utxo);
         }
