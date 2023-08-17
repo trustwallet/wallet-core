@@ -85,24 +85,22 @@ message Input {
 	}
 
 	message TaprootKeyPath {
-		bytes public_key = 1;
-		bool one_prevout = 7;
+		bool one_prevout = 1;
+		bytes public_key = 2;
 	}
 
 	message TaprootScriptPath {
-		bytes payload = 1;
-		bytes control_block = 2;
-		bool one_prevout = 7;
+		bool one_prevout = 1;
+		bytes payload = 2;
+		bytes control_block = 3;
 	}
 
 	message Brc20Inscription {
+		bool one_prevout = 1;
 		// TODO: This is dangeours, could be misinterpreted.
-		bytes inscribe_to = 1;
-		string ticker = 2;
-		uint64 transfer_amount = 3;
-		// TODO: This should not be necessary
-		bytes control_block = 4;
-		bool one_prevout = 7;
+		bytes inscribe_to = 2;
+		string ticker = 3;
+		uint64 transfer_amount = 4;
 	}
 }
 
