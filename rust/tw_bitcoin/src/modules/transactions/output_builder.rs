@@ -109,7 +109,9 @@ impl OutputBuilder {
                         Some(transfer.inscription().taproot_program().to_vec()),
                     )
                 },
-                ProtoOutputBuilder::None => todo!(),
+                ProtoOutputBuilder::None => {
+                    return Err(Error::from(Proto::Error::Error_missing_output_builder))
+                },
             },
             // We derive the transaction type from the address.
             ProtoOutputRecipient::from_address(addr) => {
@@ -172,17 +174,27 @@ impl OutputBuilder {
                                     ),
                                 }
                             },
-                            _ => todo!(),
+                            _ => {
+                                return Err(Error::from(
+                                    Proto::Error::Error_unsupported_address_recipient,
+                                ))
+                            },
                         }
                     },
                     Payload::ScriptHash(_hash) => todo!(),
-                    _ => todo!(),
+                    _ => {
+                        return Err(Error::from(
+                            Proto::Error::Error_unsupported_address_recipient,
+                        ))
+                    },
                 };
 
                 // Recursive call, will initiate the appropraite builder.
                 return Self::utxo_from_proto(&proto);
             },
-            ProtoOutputRecipient::None => todo!(),
+            ProtoOutputRecipient::None => {
+                return Err(Error::from(Proto::Error::Error_missing_recipient))
+            },
         };
 
         let utxo = Proto::mod_PreSigningOutput::TxOut {
@@ -204,7 +216,7 @@ fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<P
         ProtoPubkeyOrHash::pubkey(pubkey) => {
             bitcoin::PublicKey::from_slice(pubkey.as_ref())?.pubkey_hash()
         },
-        ProtoPubkeyOrHash::None => todo!(),
+        ProtoPubkeyOrHash::None => return Err(Error::from(Proto::Error::Error_missing_recipient)),
     };
 
     Ok(pubkey_hash)
@@ -220,7 +232,7 @@ fn witness_pubkey_hash_from_proto(
         ProtoPubkeyOrHash::pubkey(pubkey) => bitcoin::PublicKey::from_slice(pubkey.as_ref())?
             .wpubkey_hash()
             .ok_or_else(|| Error::from(Proto::Error::Error_invalid_witness_pubkey_hash))?,
-        ProtoPubkeyOrHash::None => todo!(),
+        ProtoPubkeyOrHash::None => return Err(Error::from(Proto::Error::Error_missing_recipient)),
     };
 
     Ok(wpubkey_hash)

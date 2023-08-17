@@ -243,8 +243,7 @@ impl BitcoinEntry {
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Result<Proto::SigningOutput<'static>> {
         if proto.inputs.len() != signatures.len() {
-            // Error
-            //todo!()
+            return Err(Error::from(Proto::Error::Error_unmatched_input_signature_count))
         }
 
         let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];

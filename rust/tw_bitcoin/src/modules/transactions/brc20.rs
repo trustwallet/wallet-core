@@ -2,6 +2,7 @@ use super::ordinals::OrdinalsInscription;
 use crate::{Error, Recipient, Result};
 use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
+use tw_proto::BitcoinV2::Proto;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BRC20Payload<T> {
@@ -31,7 +32,7 @@ impl Brc20Ticker {
     pub fn new(string: String) -> Result<Self> {
         // Brc20Ticker must be a 4-letter identifier.
         if string.len() != 4 {
-            todo!()
+            return Err(Error::from(Proto::Error::Error_brc20_invalid_ticker));
         }
 
         Ok(Brc20Ticker(string))

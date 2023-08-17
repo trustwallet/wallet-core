@@ -19,6 +19,11 @@ enum Error {
     Error_invalid_control_block = 12;
     Error_invalid_pubkey_hash = 13;
 	Error_invalid_taproot_root = 15;
+	Error_unmatched_input_signature_count = 17;
+	Error_missing_input_builder = 18;
+	Error_missing_output_builder = 20;
+	Error_missing_recipient = 19;
+	Error_unsupported_address_recipient = 21;
 }
 
 message SigningInput {
