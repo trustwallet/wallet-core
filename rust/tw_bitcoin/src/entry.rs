@@ -166,9 +166,12 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::SigningOutput<'static>> {
-        // TODO: Can we avoid cloning here?
         let pre_signed = self.preimage_hashes(_coin, proto.clone());
-        // TODO: Check error
+
+        // Check for error.
+        if pre_signed.error != Proto::Error::OK {
+            return Err(Error::from(pre_signed.error));
+        }
 
         let signatures = crate::modules::signer::Signer::signatures_from_proto(
             &pre_signed,
@@ -243,7 +246,9 @@ impl BitcoinEntry {
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Result<Proto::SigningOutput<'static>> {
         if proto.inputs.len() != signatures.len() {
-            return Err(Error::from(Proto::Error::Error_unmatched_input_signature_count))
+            return Err(Error::from(
+                Proto::Error::Error_unmatched_input_signature_count,
+            ));
         }
 
         let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
