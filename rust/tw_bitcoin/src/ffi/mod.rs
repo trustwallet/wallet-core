@@ -85,10 +85,12 @@ pub(crate) fn taproot_build_and_sign_transaction(
     let mut inputs = vec![];
     // If a plan exists, we will use the provided one and interpret it as
     // `InputSelector::UseAll`.
-    if let Some(plan) = legacy.plan {
+    let input_selector = if let Some(plan) = legacy.plan {
         for utxo in plan.utxos {
             inputs.push(input_from_legacy_utxo(utxo))
         }
+
+        UtxoProto::InputSelector::UseAll
     }
     // If there is no plan, we will construct it for the user and therefore
     // interpret it as `InputSelector::SelectAscending`.
@@ -96,34 +98,36 @@ pub(crate) fn taproot_build_and_sign_transaction(
         for utxo in legacy.utxo {
             inputs.push(input_from_legacy_utxo(utxo))
         }
-    }
 
-    // Prepare outputs.
-    let outputs = vec![
-        // The target output (main recipient).
-        Proto::Output {
-            amount: 0,
-            to_recipient: ProtoOutputRecipient::from_address(legacy.to_address.as_bytes().into()),
-        },
-        // The change output (return to myself).
-        Proto::Output {
-            amount: 0,
-            to_recipient: ProtoOutputRecipient::from_address(
-                legacy.change_address.as_bytes().into(),
-            ),
-        },
-    ];
+        UtxoProto::InputSelector::SelectAscending
+    };
 
     let proto = Proto::SigningInput {
         version: 2,
         private_key: legacy.private_key[0].to_vec().into(),
         lock_time: Some(lock_time),
         inputs,
-        outputs,
-        input_selector: Default::default(),
+        outputs: vec![
+            // The target output (main recipient).
+            Proto::Output {
+                amount: legacy.amount as u64,
+                to_recipient: ProtoOutputRecipient::from_address(
+                    legacy.to_address.as_bytes().into(),
+                ),
+            },
+        ],
+        input_selector,
         sat_vb: legacy.byte_fee as u64,
-        change_output: Default::default(),
-        disable_change_output: Default::default(),
+        change_output: Some(
+            // The change output (return to myself).
+            Proto::Output {
+                amount: legacy.amount as u64,
+                to_recipient: ProtoOutputRecipient::from_address(
+                    legacy.change_address.as_bytes().into(),
+                ),
+            },
+        ),
+        disable_change_output: false,
     };
 
     todo!()
