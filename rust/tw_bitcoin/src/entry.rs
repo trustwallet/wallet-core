@@ -193,15 +193,16 @@ impl BitcoinEntry {
             utxo_outputs.push(utxo);
         }
 
-        let change_output = if proto.disable_change_output {
+        let change_script_pubkey = if proto.disable_change_output {
             Cow::default()
         } else {
-            crate::modules::OutputBuilder::utxo_from_proto(
+            let output = crate::modules::OutputBuilder::utxo_from_proto(
                 &proto
                     .change_output
                     .ok_or_else(|| Error::from(Proto::Error::Error_invalid_public_key))?,
-            )?
-            .script_pubkey
+            )?;
+
+            output.script_pubkey
         };
 
         let utxo_signing = UtxoProto::SigningInput {
@@ -217,7 +218,7 @@ impl BitcoinEntry {
                 .collect(),
             input_selector: proto.input_selector,
             weight_base: proto.sat_vb,
-            change_script_pubkey: change_output,
+            change_script_pubkey,
             disable_change_output: proto.disable_change_output,
         };
 

@@ -6,6 +6,7 @@ use bitcoin::absolute::LockTime;
 use bitcoin::consensus::Decodable;
 use bitcoin::Witness;
 use std::borrow::Cow;
+use tw_coin_entry::coin_entry::CoinEntry;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::ErrorCode;
@@ -56,18 +57,6 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     todo!()
 }
 
-/// Note: many of the fields used in the `SigningInput` are currently unused. We
-/// can later easily replicate the funcationlity and behavior of the C++
-/// implemenation.
-///
-/// Additionally, the `SigningInput` supports two ways of operating (which
-/// should probably be separated anyway): one way where the `TransactionPlan` is
-/// skipped (and hence automatically constructed) and the other way where the
-/// `TransactionPlan` is created manually. As of now, it's expected that the
-/// `TransactionPlan` is created manually, meaning that the caller must careful
-/// construct the outputs, which must include the return/change transaction and
-/// how much goes to the miner as fee (<total-satoshi-inputs> minus
-/// <total-satoshi-outputs>).
 pub(crate) fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
@@ -83,6 +72,7 @@ pub(crate) fn taproot_build_and_sign_transaction(
 
     // Prepare the inputs.
     let mut inputs = vec![];
+
     // If a plan exists, we will use the provided one and interpret it as
     // `InputSelector::UseAll`.
     let input_selector = if let Some(plan) = legacy.plan {
@@ -102,8 +92,9 @@ pub(crate) fn taproot_build_and_sign_transaction(
         UtxoProto::InputSelector::SelectAscending
     };
 
-    let proto = Proto::SigningInput {
+    let signing = Proto::SigningInput {
         version: 2,
+        // TODO: each input should have an individual field for this.
         private_key: legacy.private_key[0].to_vec().into(),
         lock_time: Some(lock_time),
         inputs,
@@ -116,6 +107,8 @@ pub(crate) fn taproot_build_and_sign_transaction(
                 ),
             },
         ],
+        // The input selector, as dictated by the `TransactionPlan` of the
+        // legacy protobuf structure.
         input_selector,
         sat_vb: legacy.byte_fee as u64,
         change_output: Some(
@@ -129,6 +122,20 @@ pub(crate) fn taproot_build_and_sign_transaction(
         ),
         disable_change_output: false,
     };
+
+    // NOTE, unhandled legacy fields:
+    // * hash_type
+    // * scripts
+    // * use_max_amount
+    // * coin_type
+    // * output_op_return
+    // * extra_outputs
+    // * use_max_utxo
+    // * disable_dust_filter
+    // * time (for XVG)
+    // * is_it_brc_operation
+
+    let signed_output = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing);
 
     todo!()
 }
