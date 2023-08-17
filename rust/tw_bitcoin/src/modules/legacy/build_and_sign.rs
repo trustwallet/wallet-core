@@ -162,11 +162,12 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
 
     let witness = Witness::consensus_decode(&mut utxo.spendingScript.as_ref()).unwrap();
 
+    // TODO: `utxo.variant` important here?
     Proto::Input {
         txid: out_point.hash.clone(),
         vout: out_point.index,
         amount: utxo.amount as u64,
-        // TODO: `utxo.variant` important here?
+        sequence: out_point.sequence,
         // TODO:
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::custom(Proto::mod_Input::ScriptWitness {

@@ -59,15 +59,15 @@ message Input {
 
 	uint32 vout = 2;
 
-	// TODO: Sequence
+	uint32 sequence = 3;
 
-	uint64 amount = 3;
+	uint64 amount = 4;
 
-	Utxo.Proto.SighashType sighash_type = 4;
+	Utxo.Proto.SighashType sighash_type = 5;
 
 	oneof to_recipient {
-		Builder builder = 5;
-		ScriptWitness custom = 6;
+		Builder builder = 6;
+		ScriptWitness custom = 7;
 	}
 
 	message Builder {

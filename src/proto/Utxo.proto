@@ -66,17 +66,19 @@ message TxIn {
 
     uint64 amount = 3;
 
+    uint32 sequence = 4;
+
     // The spending condition of the output.
-    bytes script_pubkey = 4;
+    bytes script_pubkey = 5;
 
     // The sighash type.
     SighashType sighash_type = 6;
 
     SigningMethod signing_method = 7;
 
-    uint64 weight_projection = 5;
+    uint64 weight_projection = 8;
 
-    bytes leaf_hash = 8;
+    bytes leaf_hash = 9;
 }
 
 enum SigningMethod {
