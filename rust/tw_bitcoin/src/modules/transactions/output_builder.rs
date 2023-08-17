@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use super::brc20::{BRC20TransferInscription, Ticker};
+use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::address::{Payload, WitnessVersion};
@@ -13,17 +13,24 @@ use tw_proto::BitcoinV2::Proto;
 
 pub struct OutputBuilder;
 
+// Convenience varibles used solely for readability.
+const NO_CONTROL_BLOCK: Option<Vec<u8>> = None;
+const NO_TAPROOT_PAYLOAD: Option<Vec<u8>> = None;
+
 impl OutputBuilder {
     /// Creates the spending condition (_scriptPubkey_) for a given output.
     pub fn utxo_from_proto(
         output: &Proto::Output<'_>,
     ) -> Result<Proto::mod_PreSigningOutput::TxOut<'static>> {
         let secp = secp256k1::Secp256k1::new();
+
         let (script_pubkey, control_block, taproot_payload) = match &output.to_recipient {
             // Script spending condition was passed on directly.
-            ProtoOutputRecipient::script_pubkey(script) => {
-                (ScriptBuf::from_bytes(script.to_vec()), None, None)
-            },
+            ProtoOutputRecipient::script_pubkey(script) => (
+                ScriptBuf::from_bytes(script.to_vec()),
+                NO_CONTROL_BLOCK,
+                NO_TAPROOT_PAYLOAD,
+            ),
             // Process builder methods. We construct the Script spending
             // conditions by using the specified parameters.
             ProtoOutputRecipient::builder(builder) => match &builder.variant {
@@ -32,19 +39,31 @@ impl OutputBuilder {
                 },
                 ProtoOutputBuilder::p2pkh(pubkey_or_hash) => {
                     let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash)?;
-                    (ScriptBuf::new_p2pkh(&pubkey_hash), None, None)
+                    (
+                        ScriptBuf::new_p2pkh(&pubkey_hash),
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
+                    )
                 },
                 ProtoOutputBuilder::p2wsh(_) => {
                     todo!()
                 },
                 ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => {
                     let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash)?;
-                    (ScriptBuf::new_v0_p2wpkh(&wpubkey_hash), None, None)
+                    (
+                        ScriptBuf::new_v0_p2wpkh(&wpubkey_hash),
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
+                    )
                 },
                 ProtoOutputBuilder::p2tr_key_path(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
-                    (ScriptBuf::new_v1_p2tr(&secp, xonly, None), None, None)
+                    (
+                        ScriptBuf::new_v1_p2tr(&secp, xonly, None),
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
+                    )
                 },
                 ProtoOutputBuilder::p2tr_script_path(complex) => {
                     let node_hash = TapNodeHash::from_slice(complex.node_hash.as_ref())
@@ -55,15 +74,15 @@ impl OutputBuilder {
 
                     (
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)),
-                        None,
-                        None,
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
                     )
                 },
                 ProtoOutputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
-                    let ticker = Ticker::new(brc20.ticker.to_string())?;
+                    let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
                     let transfer =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");

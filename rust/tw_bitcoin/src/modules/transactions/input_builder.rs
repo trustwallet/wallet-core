@@ -1,4 +1,4 @@
-use super::brc20::{BRC20TransferInscription, Ticker};
+use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash};
@@ -120,7 +120,7 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
-                    let ticker = Ticker::new(brc20.ticker.to_string())?;
+                    let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
 
                     let transfer =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
@@ -235,7 +235,7 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
-                    let ticker = Ticker::new(brc20.ticker.to_string())?;
+                    let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
 
                     // Construct the BRC20 transfer inscription.
                     let transfer =

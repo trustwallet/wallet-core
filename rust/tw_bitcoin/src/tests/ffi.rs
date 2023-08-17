@@ -1,5 +1,5 @@
 use crate::modules::legacy::*;
-use crate::modules::transactions::{BRC20TransferInscription, Ticker};
+use crate::modules::transactions::{BRC20TransferInscription, Brc20Ticker};
 use bitcoin::{PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use std::ffi::CString;
@@ -87,7 +87,7 @@ fn ffi_tw_build_brc20_transfer_inscription() {
     };
 
     // Prepare the BRC20 payload + merkle root.
-    let ticker = Ticker::new(ticker_str.to_string()).unwrap();
+    let ticker = Brc20Ticker::new(ticker_str.to_string()).unwrap();
     let transfer = BRC20TransferInscription::new(pubkey.into(), ticker, brc20_amount).unwrap();
 
     let merkle_root = transfer
