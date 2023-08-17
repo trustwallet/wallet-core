@@ -61,8 +61,6 @@ message Input {
 		ScriptWitness custom = 6;
 	}
 
-	bool one_prevout = 7;
-
 	message Builder {
 		oneof variant {
 			// Pay-to-Script-Hash, specify the redeem script.
@@ -73,8 +71,8 @@ message Input {
 			bytes p2wsh = 3;
 			// Pay-to-Public-Key-Hash, specify the public key.
 			bytes p2wpkh = 6;
-			// Pay-to-Taproot-key-path (balance transfers), specify the public key.
-			bytes p2tr_key_path = 7;
+			// Pay-to-Taproot-key-path (balance transfers).
+			TaprootKeyPath p2tr_key_path = 7;
 			// Pay-to-Taproot-script-path (complex transfers)
 			TaprootScriptPath p2tr_script_path = 8;
 			Brc20Inscription brc20_inscribe = 9;
@@ -86,9 +84,15 @@ message Input {
 		repeated bytes witness_items = 2;
 	}
 
+	message TaprootKeyPath {
+		bytes public_key = 1;
+		bool one_prevout = 7;
+	}
+
 	message TaprootScriptPath {
 		bytes payload = 1;
 		bytes control_block = 2;
+		bool one_prevout = 7;
 	}
 
 	message Brc20Inscription {
@@ -96,7 +100,9 @@ message Input {
 		bytes inscribe_to = 1;
 		string ticker = 2;
 		uint64 transfer_amount = 3;
+		// TODO: This should not be necessary
 		bytes control_block = 4;
+		bool one_prevout = 7;
 	}
 }
 

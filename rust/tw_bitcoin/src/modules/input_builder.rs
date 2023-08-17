@@ -66,12 +66,18 @@ impl InputBuilder {
                         ),
                     )
                 },
-                ProtoInputBuilder::p2tr_key_path(pubkey) => {
-                    let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
+                ProtoInputBuilder::p2tr_key_path(key_path) => {
+                    let pubkey = bitcoin::PublicKey::from_slice(key_path.public_key.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
+                    let signing_method = if key_path.one_prevout {
+                        UtxoProto::SigningMethod::TaprootOnePrevout
+                    } else {
+                        UtxoProto::SigningMethod::TaprootAll
+                    };
+
                     (
-                        UtxoProto::SigningMethod::Taproot,
+                        signing_method,
                         ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None),
                         None,
                         // witness bytes, scale factor NOT applied.
@@ -91,8 +97,14 @@ impl InputBuilder {
                         bitcoin::taproot::LeafVersion::TapScript,
                     ));
 
+                    let signing_method = if complex.one_prevout {
+                        UtxoProto::SigningMethod::TaprootOnePrevout
+                    } else {
+                        UtxoProto::SigningMethod::TaprootAll
+                    };
+
                     (
-                        UtxoProto::SigningMethod::Taproot,
+                        signing_method,
                         script_buf,
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
@@ -110,25 +122,31 @@ impl InputBuilder {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let ticker = Ticker::new(brc20.ticker.to_string())?;
 
-                    let brc20 =
+                    let transfer =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
                     let leaf_hash = Some(TapLeafHash::from_script(
-                        brc20.inscription().taproot_program(),
+                        transfer.inscription().taproot_program(),
                         bitcoin::taproot::LeafVersion::TapScript,
                     ));
 
+                    let signing_method = if brc20.one_prevout {
+                        UtxoProto::SigningMethod::TaprootOnePrevout
+                    } else {
+                        UtxoProto::SigningMethod::TaprootAll
+                    };
+
                     (
-                        UtxoProto::SigningMethod::Taproot,
-                        ScriptBuf::from(brc20.inscription().taproot_program()),
+                        signing_method,
+                        ScriptBuf::from(transfer.inscription().taproot_program()),
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
                         (
                             // indicator of witness item (?)
                             1 +
                             // the payload (TODO: should this be `repeated bytes`?)
-                            brc20.inscription().taproot_program().len() as u64 +
+                            transfer.inscription().taproot_program().len() as u64 +
                             // length + control block (pubkey + Merkle path), roughly
                             1 + 64
                         ),
@@ -153,7 +171,6 @@ impl InputBuilder {
             leaf_hash: leaf_hash
                 .map(|hash| hash.to_vec().into())
                 .unwrap_or_default(),
-            one_prevout: input.one_prevout,
         };
 
         Ok(utxo)

@@ -36,7 +36,10 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
         }),
     };
 
-    let res = crate::modules::OutputBuilder::utxo_from_proto(&output).unwrap();
+    let res = try_or_else!(
+        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        CByteArray::null
+    );
 
     // Prepare and serialize protobuf structure.
     let proto = LegacyProto::TransactionOutput {

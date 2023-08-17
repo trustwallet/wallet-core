@@ -77,13 +77,13 @@ message TxIn {
     uint64 weight_projection = 5;
 
     bytes leaf_hash = 8;
-    bool one_prevout = 9;
 }
 
 enum SigningMethod {
     Legacy = 0;
     Segwit = 1;
-    Taproot = 2;
+    TaprootAll = 2;
+    TaprootOnePrevout = 3;
 }
 
 enum SighashType {
