@@ -300,6 +300,7 @@ impl BitcoinEntry {
                 recipient: Cow::default(),
                 script_pubkey: output.script_pubkey,
                 amount: output.value,
+                taproot_payload: output.taproot_payload,
                 control_block: output.control_block,
             });
         }
