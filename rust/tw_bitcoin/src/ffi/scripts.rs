@@ -1,4 +1,4 @@
-use crate::brc20::Ticker;
+use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::nft::OrdinalNftInscription;
 use crate::Recipient;
@@ -65,10 +65,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
         CByteArray::null
     );
 
-    let recipient = try_or_else!(
-        PublicKey::from_slice(slice),
-        CByteArray::null
-    );
+    let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
     //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
@@ -110,18 +107,13 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         CByteArray::null
     );
-    let recipient = try_or_else!(
-        PublicKey::from_slice(slice),
-        CByteArray::null
-    );
+    let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
     //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         amount: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-            variant: ProtoOutputBuilder::p2tr_key_path(
-                    recipient.to_bytes().into(),
-        ),
+            variant: ProtoOutputBuilder::p2tr_key_path(recipient.to_bytes().into()),
         }),
     };
 
@@ -146,43 +138,51 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
 pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
     // The 4-byte ticker.
     ticker: *const c_char,
-    _amount: u64,
+    amount: u64,
     _satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
 ) -> CByteArray {
-    // Convert ticket.
-    let ticker = match CStr::from_ptr(ticker).to_str() {
-        Ok(input) => input,
-        Err(_) => return CByteArray::null(),
-    };
-
-    if ticker.len() != 4 {
-        return CByteArray::null();
-    }
-
-    let _ticker = Ticker::new(ticker.to_string()).expect("ticker must be 4 bytes");
-
     // Convert Recipient
     let slice = try_or_else!(
         CByteArrayRef::new(pubkey, pubkey_len).as_slice(),
         CByteArray::null
     );
 
-    let _recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
+    let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
+
+    // Convert ticket.
+    let ticker = match CStr::from_ptr(ticker).to_str() {
+        Ok(input) => input,
+        Err(_) => return CByteArray::null(),
+    };
+
+    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
+    let output = Proto::Output {
+        amount: _satoshis as u64,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
+                inscribe_to: recipient.to_bytes().into(),
+                ticker: ticker.into(),
+                transfer_amount: amount,
+            }),
+        }),
+    };
+
+    let res = try_or_else!(
+        crate::modules::OutputBuilder::utxo_from_proto(&output),
+        CByteArray::null
+    );
 
     // Prepare and serialize protobuf structure.
-    /*
-    let spending_script = transfer.inscription().taproot_program();
-
-    let proto = TransactionOutput {
-        value: satoshis,
-        script: Cow::from(tx_out.script_pubkey.as_bytes()),
-        spendingScript: Cow::from(spending_script.as_bytes()),
+    let proto = LegacyProto::TransactionOutput {
+        value: res.value as i64,
+        script: res.script_pubkey,
+        spendingScript: res.taproot_payload,
     };
-    */
 
-    todo!()
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
+    CByteArray::from(serialized)
 }
 
 #[no_mangle]
