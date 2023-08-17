@@ -162,6 +162,7 @@ message PreSigningOutput {
 
 	repeated Utxo.Proto.TxIn utxo_inputs = 3;
 
+	// TODO: Rename field.
 	repeated TxOut utxo_outputs = 4;
 
 	// The output of a transaction.
@@ -227,6 +228,8 @@ message TransactionOutput {
 
 	// The amount sent.
 	uint64 amount = 3;
+
+	bytes taproot_payload = 2;
 
 	// In case of P2TR script-path (complex scripts), this is the control block
 	// required for claiming.

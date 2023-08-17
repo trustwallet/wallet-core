@@ -7,14 +7,14 @@ use bitcoin::consensus::Decodable;
 use bitcoin::Witness;
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry::CoinEntry;
+use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_misc::try_or_else;
-use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
-use tw_proto::Utxo::Proto as UtxoProto;
 use tw_proto::Common::Proto as CommonProto;
+use tw_proto::Utxo::Proto as UtxoProto;
 
 pub mod address;
 pub mod scripts;
@@ -134,7 +134,7 @@ pub(crate) fn taproot_build_and_sign_transaction(
 
     // NOTE, unhandled legacy fields:
     // * hash_type
-    // * scripts
+    // * scripts (for P2SH)
     // * use_max_amount
     // * coin_type
     // * output_op_return
@@ -145,12 +145,26 @@ pub(crate) fn taproot_build_and_sign_transaction(
     // * is_it_brc_operation
 
     let signed = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing_input);
+    let transaction = signed
+        .transaction
+        .expect("transactio not returned from signer");
 
     let legacy_transaction = LegacyProto::Transaction {
         version: 2,
         lockTime: native_lock_time.to_consensus_u32(),
         inputs: Default::default(),
-        outputs: Default::default(),
+        outputs: transaction
+            .outputs
+            .iter()
+            .map(|output| {
+                //TODO:
+                LegacyProto::TransactionOutput {
+                    value: Default::default(),
+                    script: Default::default(),
+                    spendingScript: Default::default(),
+                }
+            })
+            .collect(),
     };
 
     let error = if signed.error == Proto::Error::OK {
