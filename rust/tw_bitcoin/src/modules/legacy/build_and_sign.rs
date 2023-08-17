@@ -120,6 +120,7 @@ pub fn taproot_build_and_sign_transaction(
         .transaction
         .expect("transactio not returned from signer");
 
+    // TODO:
     let legacy_transaction = LegacyProto::Transaction {
         version: 2,
         lockTime: native_lock_time.to_consensus_u32(),

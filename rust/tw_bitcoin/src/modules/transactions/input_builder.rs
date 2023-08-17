@@ -164,6 +164,7 @@ impl InputBuilder {
             },
         };
 
+        // Create Utxo.proto structure.
         let utxo = UtxoProto::TxIn {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
@@ -278,6 +279,7 @@ impl InputBuilder {
             },
         };
 
+        // Create Utxo.proto structure.
         let claim = UtxoProto::TxInClaim {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
