@@ -1,4 +1,4 @@
-use crate::ordinals::OrdinalsInscription;
+use super::ordinals::OrdinalsInscription;
 use crate::{Error, Recipient, Result};
 use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
@@ -23,6 +23,7 @@ pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
 pub type BRC20MintPayload = BRC20Payload<MintPayload>;
 pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
+// TODO: Deprecate this type?
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ticker(String);
 

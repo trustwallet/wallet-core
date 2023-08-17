@@ -1,8 +1,7 @@
-mod input_builder;
 pub mod legacy;
-mod output_builder;
 mod signer;
+mod transactions;
 
-pub use input_builder::InputBuilder;
-pub use output_builder::OutputBuilder;
+// Re-exports
 pub use signer::Signer;
+pub use transactions::*;

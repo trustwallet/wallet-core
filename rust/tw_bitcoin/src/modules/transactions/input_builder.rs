@@ -1,4 +1,4 @@
-use crate::brc20::{BRC20TransferInscription, Ticker};
+use super::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash};

@@ -1,5 +1,5 @@
 use crate::entry::aliases::*;
-use crate::nft::OrdinalNftInscription;
+use crate::modules::transactions::OrdinalNftInscription;
 use crate::Recipient;
 use bitcoin::PublicKey;
 use std::ffi::{c_char, CStr};
