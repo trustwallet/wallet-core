@@ -175,6 +175,8 @@ impl InputBuilder {
 
         Ok(utxo)
     }
+    /// Creates the claim script (_scriptSig_ or _Witness_) to be revealed
+    /// on-chain for a given input.
     pub fn utxo_claim_from_proto(
         input: &Proto::Input<'_>,
         signature: SignatureBytes,

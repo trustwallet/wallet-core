@@ -11,6 +11,7 @@ use tw_proto::BitcoinV2::Proto;
 pub struct OutputBuilder;
 
 impl OutputBuilder {
+    /// Creates the spending condition (_scriptPubkey_) for a given output.
     pub fn utxo_from_proto(
         output: &Proto::Output<'_>,
     ) -> Result<Proto::mod_PreSigningOutput::TxOut<'static>> {
@@ -56,21 +57,21 @@ impl OutputBuilder {
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                     let ticker = Ticker::new(brc20.ticker.to_string())?;
-                    let brc20 =
+                    let transfer =
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
                     // Explicit check
-                    let control_block = brc20
+                    let control_block = transfer
                         .inscription()
                         .spend_info()
                         .control_block(&(
-                            brc20.inscription().taproot_program().to_owned(),
+                            transfer.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
                         .expect("incorrectly constructed control block");
 
-                    let merkle_root = brc20
+                    let merkle_root = transfer
                         .inscription()
                         .spend_info()
                         .merkle_root()
