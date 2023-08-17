@@ -11,6 +11,7 @@ enum Error {
 	Error_invalid_private_key = 1;
 	Error_invalid_public_key = 2;
 	Error_invalid_sighash = 3;
+	Error_invalid_sighash_type = 16;
 	Error_invalid_witness_pubkey_hash = 4;
 	Error_brc20_invalid_ticker = 5;
     Error_invalid_ecdsa_signature = 11;

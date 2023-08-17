@@ -146,7 +146,7 @@ impl Compiler<StandardBitcoinContext> {
         let tx = convert_proto_to_tx(&proto)?;
         let mut cache = SighashCache::new(&tx);
 
-        let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod)> = vec![];
+        let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
 
         dbg!(&proto.inputs);
 
@@ -165,7 +165,11 @@ impl Compiler<StandardBitcoinContext> {
                     let sighash =
                         cache.legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())?;
 
-                    sighashes.push((sighash.as_byte_array().to_vec(), ProtoSigningMethod::Legacy));
+                    sighashes.push((
+                        sighash.as_byte_array().to_vec(),
+                        ProtoSigningMethod::Legacy,
+                        input.sighash_type,
+                    ));
                 },
                 // Use the Segwit hashing mechanism (e.g. P2WSH, P2WPKH).
                 ProtoSigningMethod::Segwit => {
@@ -186,7 +190,11 @@ impl Compiler<StandardBitcoinContext> {
                         sighash_type,
                     )?;
 
-                    sighashes.push((sighash.as_byte_array().to_vec(), ProtoSigningMethod::Segwit));
+                    sighashes.push((
+                        sighash.as_byte_array().to_vec(),
+                        ProtoSigningMethod::Segwit,
+                        input.sighash_type,
+                    ));
                 },
                 // Use the Taproot hashing mechanism (e.g. P2TR key-path/script-path)
                 ProtoSigningMethod::TaprootAll => {
@@ -225,6 +233,7 @@ impl Compiler<StandardBitcoinContext> {
                     sighashes.push((
                         sighash.as_byte_array().to_vec(),
                         ProtoSigningMethod::TaprootAll,
+                        input.sighash_type,
                     ));
                 },
                 ProtoSigningMethod::TaprootOnePrevout => {
@@ -262,6 +271,7 @@ impl Compiler<StandardBitcoinContext> {
                     sighashes.push((
                         sighash.as_byte_array().to_vec(),
                         ProtoSigningMethod::TaprootOnePrevout,
+                        input.sighash_type,
                     ));
                 },
             }
@@ -272,9 +282,10 @@ impl Compiler<StandardBitcoinContext> {
             inputs: selected,
             sighashes: sighashes
                 .into_iter()
-                .map(|(sighash, method)| Proto::Sighash {
+                .map(|(sighash, method, sighash_type)| Proto::Sighash {
                     sighash: sighash.into(),
-                    signing_method: method.into(),
+                    signing_method: method,
+                    sighash_type,
                 })
                 .collect(),
             weight_projection,
