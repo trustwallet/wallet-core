@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
-use bitcoin::address::Payload;
+use bitcoin::address::{Payload, WitnessVersion};
 use bitcoin::taproot::{LeafVersion, TapNodeHash};
 use bitcoin::{Address, PubkeyHash, ScriptBuf, WPubkeyHash};
 use secp256k1::hashes::Hash;
@@ -92,7 +92,7 @@ impl OutputBuilder {
                 },
                 ProtoOutputBuilder::None => todo!(),
             },
-            // We derive the spending condition for the address.
+            // We derive the transaction type from the address.
             ProtoOutputRecipient::from_address(addr) => {
                 let string = String::from_utf8(addr.to_vec()).unwrap();
                 // TODO: Network.
@@ -101,26 +101,67 @@ impl OutputBuilder {
                     .require_network(bitcoin::Network::Bitcoin)
                     .unwrap();
 
-                match addr.payload {
-                    Payload::PubkeyHash(pubkey_hash) => {
-                        let proto = Proto::Output {
-                            amount: 0,
-                            to_recipient: ProtoOutputRecipient::builder(
-                                Proto::mod_Output::Builder {
-                                    variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
-                                        to_address:
-                                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
-                                                pubkey_hash.to_vec().into(),
-                                            ),
-                                    }),
-                                },
-                            ),
-                        };
-
-                        return Self::utxo_from_proto(&proto);
+                let proto = match addr.payload {
+                    // Identified a "PubkeyHash" address (i.e. P2PKH).
+                    Payload::PubkeyHash(pubkey_hash) => Proto::Output {
+                        amount: 0,
+                        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+                            variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
+                                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
+                                    pubkey_hash.to_vec().into(),
+                                ),
+                            }),
+                        }),
                     },
+                    // Identified a witness program (i.e. Segwit or Taproot).
+                    Payload::WitnessProgram(progam) => {
+                        match progam.version() {
+                            // Identified version 0, i.e. Segwit
+                            WitnessVersion::V0 => {
+                                let wpubkey_hash = progam.program().as_bytes().to_vec();
+                                // TODO:
+                                assert_eq!(wpubkey_hash.len(), 20);
+
+                                Proto::Output {
+                                    amount: 0,
+                                    to_recipient: ProtoOutputRecipient::builder(
+                                        Proto::mod_Output::Builder {
+                                            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                                                to_address:
+                                                    Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
+                                                        wpubkey_hash.into(),
+                                                    ),
+                                            }),
+                                        },
+                                    ),
+                                }
+                            },
+                            // Identified version 1, i.e P2TR key-path (Taproot)
+                            WitnessVersion::V1 => {
+                                let pubkey = progam.program().as_bytes().to_vec();
+                                // TODO:
+                                assert_eq!(pubkey.len(), 32);
+
+                                Proto::Output {
+                                    amount: 0,
+                                    to_recipient: ProtoOutputRecipient::builder(
+                                        Proto::mod_Output::Builder {
+                                            variant: ProtoOutputBuilder::p2tr_key_path(
+                                                pubkey.into(),
+                                            ),
+                                        },
+                                    ),
+                                }
+                            },
+                            _ => todo!(),
+                        }
+                    },
+                    Payload::ScriptHash(_hash) => todo!(),
                     _ => todo!(),
-                }
+                };
+
+                // Recursive call, will initiate the appropraite builder.
+                return Self::utxo_from_proto(&proto);
             },
             ProtoOutputRecipient::None => todo!(),
         };
