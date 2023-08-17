@@ -83,37 +83,36 @@ pub(crate) fn taproot_build_and_sign_transaction(
     let mut inputs = vec![];
     if let Some(plan) = legacy.plan {
         for utxo in plan.utxos {
-            let out_point = utxo.out_point.as_ref().unwrap();
-
-            let mut buffer = utxo.spendingScript.to_vec();
-            let witness = Witness::consensus_decode(&mut buffer.as_slice()).unwrap();
-
-            inputs.push(Proto::Input {
-                txid: out_point.hash,
-                vout: out_point.index,
-                amount: utxo.amount as u64,
-                // TODO: `utxo.variant` important here?
-                // TODO:
-                sighash_type: UtxoProto::SighashType::All,
-                to_recipient: ProtoInputRecipient::custom(Proto::mod_Input::ScriptWitness {
-                    script_sig: utxo.script,
-                    witness_items: witness
-                        .to_vec()
-                        .into_iter()
-                        .map(Cow::Owned)
-                        .collect::<Vec<Cow<_>>>(),
-                }),
-            })
+            inputs.push(input_from_legacy_utxo(utxo))
         }
     } else {
+        for utxo in legacy.utxo {
+            inputs.push(input_from_legacy_utxo(utxo))
+        }
     }
+
+    // Prepare outputs.
+    let outputs = vec![
+        // The target output (main recipient).
+        Proto::Output {
+            amount: 0,
+            to_recipient: ProtoOutputRecipient::from_address(legacy.to_address.as_bytes().into()),
+        },
+        // The change output (return to myself).
+        Proto::Output {
+            amount: 0,
+            to_recipient: ProtoOutputRecipient::from_address(
+                legacy.change_address.as_bytes().into(),
+            ),
+        },
+    ];
 
     let proto = Proto::SigningInput {
         version: 2,
         private_key: legacy.private_key[0].to_vec().into(),
         lock_time: Some(lock_time),
-        inputs: Default::default(),
-        outputs: Default::default(),
+        inputs,
+        outputs,
         input_selector: Default::default(),
         sat_vb: legacy.byte_fee as u64,
         change_output: Default::default(),
@@ -121,4 +120,28 @@ pub(crate) fn taproot_build_and_sign_transaction(
     };
 
     todo!()
+}
+
+/// Convenience function.
+fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input {
+    let out_point = utxo.out_point.as_ref().unwrap();
+
+    let witness = Witness::consensus_decode(&mut utxo.spendingScript.as_ref()).unwrap();
+
+    Proto::Input {
+        txid: out_point.hash.clone(),
+        vout: out_point.index,
+        amount: utxo.amount as u64,
+        // TODO: `utxo.variant` important here?
+        // TODO:
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::custom(Proto::mod_Input::ScriptWitness {
+            script_sig: utxo.script,
+            witness_items: witness
+                .to_vec()
+                .into_iter()
+                .map(Cow::Owned)
+                .collect::<Vec<Cow<_>>>(),
+        }),
+    }
 }
