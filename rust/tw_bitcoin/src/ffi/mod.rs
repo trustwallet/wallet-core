@@ -6,7 +6,23 @@ use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
 use tw_memory::ffi::c_result::CUInt64Result;
 use tw_memory::ffi::c_result::ErrorCode;
 use tw_misc::try_or_else;
-use tw_proto::Bitcoin::Proto::{SigningInput, SigningOutput};
+use tw_proto::Bitcoin::Proto as LegacyProto;
+use tw_proto::BitcoinV2::Proto;
+
+// TODO: Should be deprecated.
+#[repr(C)]
+pub enum CTaprootError {
+    Ok = 0,
+    InvalidSlice = 1,
+    InvalidPubkey = 2,
+    InvalidSegwitPukey = 3,
+}
+
+impl From<CTaprootError> for ErrorCode {
+    fn from(error: CTaprootError) -> Self {
+        error as ErrorCode
+    }
+}
 
 pub mod address;
 pub mod scripts;
@@ -45,8 +61,10 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
         .to_vec()
         .unwrap_or_default();
 
-    let proto: SigningInput = try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
-    let signing = try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
+    let proto: LegacyProto::SigningInput =
+        try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
+    let signing: LegacyProto::SigningOutput =
+        try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
     let _serialized =
         tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
@@ -66,7 +84,6 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
 /// construct the outputs, which must include the return/change transaction and
 /// how much goes to the miner as fee (<total-satoshi-inputs> minus
 /// <total-satoshi-outputs>).
-<<<<<<< HEAD
 pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<SigningOutput> {
     let privkey = proto.private_key.get(0).ok_or(Error::Todo)?;
 
@@ -250,22 +267,24 @@ pub(crate) fn taproot_build_and_sign_transaction(proto: SigningInput) -> Result<
     signing.encoded = Cow::from(signed);
 
     Ok(signing)
-=======
-pub(crate) fn taproot_build_and_sign_transaction(_proto: SigningInput) -> Result<SigningOutput> {
+}
+
+pub(crate) fn taproot_build_and_sign_transaction(
+    _proto: LegacyProto::SigningInput,
+) -> Result<LegacyProto::SigningOutput> {
+    /*
+    let proto = Proto::SigningInput {
+        version: ,
+        private_key: ,
+        lock_time: ,
+        inputs: ,
+        outputs: ,
+        input_selector: ,
+        sat_vb: ,
+        change_output: ,
+        disable_change_output: ,
+    };
+    */
+
     todo!()
->>>>>>> c90e6617 (remove many deprecated structures)
-}
-
-#[repr(C)]
-pub enum CTaprootError {
-    Ok = 0,
-    InvalidSlice = 1,
-    InvalidPubkey = 2,
-    InvalidSegwitPukey = 3,
-}
-
-impl From<CTaprootError> for ErrorCode {
-    fn from(error: CTaprootError) -> Self {
-        error as ErrorCode
-    }
 }
