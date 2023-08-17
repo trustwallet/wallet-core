@@ -1,8 +1,11 @@
+use std::str::FromStr;
+
 use crate::brc20::{BRC20TransferInscription, Ticker};
 use crate::entry::aliases::*;
 use crate::{Error, Result};
+use bitcoin::address::Payload;
 use bitcoin::taproot::{LeafVersion, TapNodeHash};
-use bitcoin::{PubkeyHash, ScriptBuf, WPubkeyHash};
+use bitcoin::{Address, PubkeyHash, ScriptBuf, WPubkeyHash};
 use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
@@ -90,7 +93,35 @@ impl OutputBuilder {
                 ProtoOutputBuilder::None => todo!(),
             },
             // We derive the spending condition for the address.
-            ProtoOutputRecipient::from_address(_) => todo!(),
+            ProtoOutputRecipient::from_address(addr) => {
+                let string = String::from_utf8(addr.to_vec()).unwrap();
+                // TODO: Network.
+                let addr = Address::from_str(&string)
+                    .unwrap()
+                    .require_network(bitcoin::Network::Bitcoin)
+                    .unwrap();
+
+                match addr.payload {
+                    Payload::PubkeyHash(pubkey_hash) => {
+                        let proto = Proto::Output {
+                            amount: 0,
+                            to_recipient: ProtoOutputRecipient::builder(
+                                Proto::mod_Output::Builder {
+                                    variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
+                                        to_address:
+                                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
+                                                pubkey_hash.to_vec().into(),
+                                            ),
+                                    }),
+                                },
+                            ),
+                        };
+
+                        return Self::utxo_from_proto(&proto);
+                    },
+                    _ => todo!(),
+                }
+            },
             ProtoOutputRecipient::None => todo!(),
         };
 
