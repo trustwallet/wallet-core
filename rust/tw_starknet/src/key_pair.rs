@@ -8,8 +8,13 @@ use starknet_crypto::{get_public_key, rfc6979_generate_k, sign, verify, SignErro
 use starknet_ff::{FieldElement, FromByteArrayError};
 use tw_encoding::hex::{self as tw_hex, FromHexError};
 
+/// The maximum number of attempts to sign a message.
+/// As the number is coming from `rfc6979_generate_k` so the probability is lower.
+const SIGN_RETRIES: usize = 5;
+
 pub type Result<T> = std::result::Result<T, StarknetKeyPairError>;
 
+#[derive(Debug)]
 pub enum StarknetKeyPairError {
     HexError(FromHexError),
     ByteArrayError(FromByteArrayError),
@@ -68,7 +73,7 @@ fn field_element_from_be_hex(hex: &str) -> Result<FieldElement> {
 pub fn ecdsa_sign(private_key: &FieldElement, message_hash: &FieldElement) -> Result<Signature> {
     // Seed-retry logic ported from `cairo-lang`
     let mut seed = None;
-    loop {
+    for _ in 0..SIGN_RETRIES {
         let k = rfc6979_generate_k(message_hash, private_key, seed.as_ref());
 
         match sign(private_key, message_hash, &k) {
@@ -84,5 +89,19 @@ pub fn ecdsa_sign(private_key: &FieldElement, message_hash: &FieldElement) -> Re
                 };
             },
         };
+    }
+    Err(StarknetKeyPairError::ErrorSigning)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_starknet_sign_invalid_k() {
+        let private = "0000000000000000000000000000000000000000000000000000000000000000";
+        let hash = "0000000000000000000000000000000000000000000000000000000000000000";
+        let err = starknet_sign(private, hash).expect_err("Retry limit expected");
+        assert!(matches!(err, StarknetKeyPairError::ErrorSigning));
     }
 }
