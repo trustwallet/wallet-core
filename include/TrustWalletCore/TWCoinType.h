@@ -308,7 +308,7 @@ uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSS58Prefix(enum TWCoinType coin);
 
-/// public key type for this coin typeUpdate CoinAddressDerivationTests.swift
+/// public key type for this coin type
 ///
 /// \param coin A coin type
 /// \return public key type for the given coin type
