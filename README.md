@@ -107,6 +107,7 @@ Projects using Trust Wallet Core. Add yours too!
 | [MemesWallet](https://planetmemes.com/)
 | [xPortal](https://xportal.com/)
 | [Slingshot](https://slingshot.finance/)
+| [GetPayedCryptoOnline](https://getpayedcrypto.online/)
 
 # Community
 
