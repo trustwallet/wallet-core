@@ -1,8 +1,17 @@
 mod common;
-use common::txid_rev;
+use common::{pubkey_hash_from_hex, txid_rev};
 
+use bitcoin::ScriptBuf;
 use tw_proto::Utxo::Proto;
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
+
+const WEIGHT_BASE: u64 = 2;
+
+// Convenience function, creates the change output script.
+fn change_output() -> ScriptBuf {
+    let pubkey_hash = pubkey_hash_from_hex("aabbccddeeff00112233445566778899aabbccdd");
+    ScriptBuf::new_p2pkh(&pubkey_hash)
+}
 
 #[test]
 fn input_selector_all() {
@@ -21,12 +30,12 @@ fn input_selector_all() {
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
-        amount: 3_000,
+        amount: 4_000,
         ..Default::default()
     };
 
     let out1 = Proto::TxOut {
-        value: 5_00,
+        value: 5_000,
         script_pubkey: Default::default(),
     };
 
@@ -37,8 +46,9 @@ fn input_selector_all() {
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![out1.clone()],
         input_selector: Proto::InputSelector::UseAll,
-        weight_base: 1,
+        weight_base: WEIGHT_BASE,
         change_script_pubkey: Default::default(),
+        // DISABLE change output.
         disable_change_output: true,
     };
 
@@ -53,6 +63,46 @@ fn input_selector_all() {
 
     assert_eq!(output.outputs.len(), 1);
     assert_eq!(output.outputs[0], out1);
+
+    let change_script = change_output();
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
+        outputs: vec![out1.clone()],
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: WEIGHT_BASE,
+        change_script_pubkey: change_script.as_bytes().into(),
+        // ENABLE change output.
+        disable_change_output: false,
+    };
+
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(output.sighashes.len(), 3);
+    assert_eq!(output.weight_projection, 568);
+    assert_eq!(output.fee_projection, 568 * WEIGHT_BASE);
+
+    assert_eq!(output.inputs.len(), 3);
+    assert_eq!(output.inputs[0], tx1);
+    assert_eq!(output.inputs[1], tx2);
+    assert_eq!(output.inputs[2], tx3);
+
+    // Inputs:
+    // * 1_000 (= 1_000)
+    // * 2_000 (= 3_000)
+    // * 4_000 (= 7_000)
+    // Outputs:
+    // * 5_000
+    let change_out = Proto::TxOut {
+        value: 7_000 - 5_000 - output.fee_projection,
+        script_pubkey: change_script.as_bytes().into(),
+    };
+
+    assert_eq!(output.outputs.len(), 2);
+    assert_eq!(output.outputs[0], out1);
+    assert_eq!(output.outputs[1], change_out);
 }
 
 #[test]
