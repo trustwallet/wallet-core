@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use bitcoin::{PubkeyHash, PublicKey, WPubkeyHash};
 use bitcoin::key::UntweakedPublicKey;
+use bitcoin::{PubkeyHash, PublicKey, WPubkeyHash};
 use secp256k1::{hashes::Hash, XOnlyPublicKey};
 use tw_encoding::hex;
 
