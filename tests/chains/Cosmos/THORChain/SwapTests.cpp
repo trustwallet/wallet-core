@@ -1068,6 +1068,18 @@ TEST(THORChainSwap, Memo) {
     EXPECT_EQ(builder.to(toAssetBNB).buildMemo(), "=:BNB.BNB:bnb123:1234");
     toAssetBNB.set_token_id("TWT-8C2");
     EXPECT_EQ(builder.to(toAssetBNB).buildMemo(), "=:BNB.TWT-8C2:bnb123:1234");
+
+    // Check streaming parameters.
+    EXPECT_EQ(builder.streamInterval("").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/1/0");
+    EXPECT_EQ(builder.streamQuantity("").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/1/0");
+    EXPECT_EQ(builder.streamQuantity("30").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/1/30");
+    EXPECT_EQ(builder.streamInterval("7").streamQuantity("15").buildMemo(), "=:BNB.TWT-8C2:bnb123:1234/7/15");
+
+    // Check the default `toAmountLimit` and streaming parameters.
+    builder = SwapBuilder::builder().to(toAssetETH).toAddress("bnb123");
+    builder.to(toAssetBNB);
+    EXPECT_EQ(builder.buildMemo(), "=:BNB.TWT-8C2:bnb123:0");
+    EXPECT_EQ(builder.streamQuantity("").buildMemo(), "=:BNB.TWT-8C2:bnb123:0/1/0");
 }
 
 TEST(THORChainSwap, WrongFromAddress) {
