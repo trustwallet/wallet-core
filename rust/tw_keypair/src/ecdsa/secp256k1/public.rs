@@ -9,6 +9,7 @@ use crate::traits::VerifyingKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
+use k256::pkcs8::EncodePublicKey;
 use tw_encoding::hex;
 use tw_hash::{Hash, H256, H264, H512, H520};
 use tw_misc::traits::ToBytesVec;
@@ -56,6 +57,14 @@ impl PublicKey {
     pub fn uncompressed_without_prefix(&self) -> H512 {
         let (_prefix, public): (Hash<1>, H512) = self.uncompressed().split();
         public
+    }
+
+    /// Returns the public key as DER-encoded bytes.
+    pub fn der_encoded(&self) -> Vec<u8> {
+        self.public
+            .to_public_key_der()
+            .expect("Failed to DER encode public key.")
+            .into_vec()
     }
 }
 

@@ -1978,6 +1978,7 @@ dependencies = [
  "sha2 0.10.6",
  "tw_encoding",
  "tw_hash",
+ "tw_keypair",
  "tw_memory",
 ]
 
