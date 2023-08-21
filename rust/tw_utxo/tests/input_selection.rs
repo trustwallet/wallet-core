@@ -141,7 +141,7 @@ fn input_selector_one_input_required() {
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![out1.clone(), out2.clone()],
         input_selector: Proto::InputSelector::SelectAscending,
-        weight_base: 1,
+        weight_base: WEIGHT_BASE,
         change_script_pubkey: Default::default(),
         // DISABLE change output.
         disable_change_output: true,
@@ -326,7 +326,7 @@ fn input_selector_one_input_cannot_cover_fees() {
     };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
-    // While the input of 2_000 covers both outputs (2* 1_000), it does not
+    // While the input of 2_000 covers both outputs (2 * 1_000), it does not
     // cover the projected fee.
     assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
     assert_eq!(output.sighashes.len(), 0);
@@ -352,11 +352,6 @@ fn input_selector_one_input_cannot_cover_fees() {
     assert_eq!(output.sighashes.len(), 0);
     assert_eq!(output.inputs.len(), 0);
     assert_eq!(output.outputs.len(), 0);
-}
-
-#[test]
-fn input_selector_insufficient_inputs() {
-    // TODO
 }
 
 #[test]
