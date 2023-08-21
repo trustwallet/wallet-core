@@ -61,9 +61,17 @@ impl Compiler<StandardBitcoinContext> {
         let total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
+        // Do some easy checks now.
         // Insufficient input amount.
         if total_output > total_input {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
+        // Change scriptPubkey must be set if change output is enabled.
+        if !proto.disable_change_output && proto.change_script_pubkey.is_empty() {
+            return Err(Error::from(
+                Proto::Error::Error_missing_change_script_pubkey,
+            ));
         }
 
         // Only use the necessariy amount of inputs to cover `total_output`, any
@@ -125,20 +133,15 @@ impl Compiler<StandardBitcoinContext> {
         // used for weight/fee calculation.
         let tx = convert_proto_to_tx(&proto)?;
 
-        // Calculate the full weight projection (base weight + input & output weight).
+        // Estimate of the change output weight.
         let output_weight = if proto.disable_change_output {
             0
         } else {
-            if proto.change_script_pubkey.is_empty() {
-                return Err(Error::from(
-                    Proto::Error::Error_missing_change_script_pubkey,
-                ));
-            }
-
             // VarInt + script_pubkey size, rough estimate.
             1 + proto.change_script_pubkey.len() as u64
         };
 
+        // Calculate the full weight projection (base weight + input & output weight).
         let weight_projection = tx.weight().to_wu() + input_weight + output_weight;
         let fee_projection = weight_projection * proto.weight_base;
 
