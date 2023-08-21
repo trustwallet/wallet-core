@@ -111,6 +111,9 @@ impl Compiler<StandardBitcoinContext> {
         // Update protobuf structure with selected inputs.
         proto.inputs = selected.clone();
 
+        // Update the `total_input` amount based on the selected inputs.
+        let total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
+
         // Calculate the total input weight projection.
         let input_weight: u64 = proto
             .inputs
@@ -127,7 +130,12 @@ impl Compiler<StandardBitcoinContext> {
 
         if !proto.disable_change_output {
             // The amount to be returned.
-            let change_amount = total_input - total_output - fee_projection;
+            let change_amount = (total_input - total_output).saturating_sub(fee_projection);
+
+            // Insufficient input amount, cannot cover fee payment.
+            if total_output + change_amount > total_input {
+                return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+            }
 
             // Update the passed on protobuf structure by adding a change output
             // (return to sender)

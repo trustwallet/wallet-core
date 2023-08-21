@@ -30,21 +30,22 @@ fn input_selector_all() {
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
-        amount: 4_000,
+        amount: 3_000,
         ..Default::default()
     };
 
     let out1 = Proto::TxOut {
-        value: 5_000,
+        value: 500,
         script_pubkey: Default::default(),
     };
 
-    // We explicitly select all inputs.
+    // Generate prehashes without change output.
     let signing = Proto::SigningInput {
         version: 2,
         lock_time: Default::default(),
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![out1.clone()],
+        // Explicitly select all inputs.
         input_selector: Proto::InputSelector::UseAll,
         weight_base: WEIGHT_BASE,
         change_script_pubkey: Default::default(),
@@ -56,6 +57,8 @@ fn input_selector_all() {
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 3);
 
+    // All inputs are used as mandated by the `input_selector`. Technically only
+    // one input is needed.
     assert_eq!(output.inputs.len(), 3);
     assert_eq!(output.inputs[0], tx1);
     assert_eq!(output.inputs[1], tx2);
@@ -64,13 +67,14 @@ fn input_selector_all() {
     assert_eq!(output.outputs.len(), 1);
     assert_eq!(output.outputs[0], out1);
 
+    // Generate prehashes WITH change output.
     let change_script = change_output();
-
     let signing = Proto::SigningInput {
         version: 2,
         lock_time: Default::default(),
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![out1.clone()],
+        // Explicitly select all inputs.
         input_selector: Proto::InputSelector::UseAll,
         weight_base: WEIGHT_BASE,
         change_script_pubkey: change_script.as_bytes().into(),
@@ -89,14 +93,9 @@ fn input_selector_all() {
     assert_eq!(output.inputs[1], tx2);
     assert_eq!(output.inputs[2], tx3);
 
-    // Inputs:
-    // * 1_000 (= 1_000)
-    // * 2_000 (= 3_000)
-    // * 4_000 (= 7_000)
-    // Outputs:
-    // * 5_000
+    // All inputs: 6_000, all outputs: 500
     let change_out = Proto::TxOut {
-        value: 7_000 - 5_000 - output.fee_projection,
+        value: 6_000 - 500 - output.fee_projection,
         script_pubkey: change_script.as_bytes().into(),
     };
 
@@ -117,12 +116,12 @@ fn input_selector_less_than_output() {
     };
     let tx2 = Proto::TxIn {
         txid: txid.as_slice().into(),
-        amount: 2_000,
+        amount: 3_000,
         ..Default::default()
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
-        amount: 3_000,
+        amount: 5_000,
         ..Default::default()
     };
 
@@ -135,15 +134,18 @@ fn input_selector_less_than_output() {
         script_pubkey: Default::default(),
     };
 
-    // We explicitly select all inputs.
+    // Generate sighashes without change output.
     let signing = Proto::SigningInput {
         version: 2,
         lock_time: Default::default(),
         inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
         outputs: vec![out1.clone(), out2.clone()],
+        // We only select the necessary amount of inputs to cover the output
+        // amount.
         input_selector: Proto::InputSelector::SelectAscending,
-        weight_base: 1,
+        weight_base: WEIGHT_BASE,
         change_script_pubkey: Default::default(),
+        // DISABLE change output.
         disable_change_output: true,
     };
 
@@ -151,7 +153,7 @@ fn input_selector_less_than_output() {
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 2);
 
-    // inputs (1_000 + 2_000) > outputs (1_000 + 1_000)
+    // Only two inputs are needed to cover outputs.
     assert_eq!(output.inputs.len(), 2);
     assert_eq!(output.inputs[0], tx1);
     assert_eq!(output.inputs[1], tx2);
@@ -159,6 +161,44 @@ fn input_selector_less_than_output() {
     assert_eq!(output.outputs.len(), 2);
     assert_eq!(output.outputs[0], out1);
     assert_eq!(output.outputs[1], out2);
+
+    // Generate sighashes WITH change output.
+    let change_script = change_output();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
+        outputs: vec![out1.clone(), out2.clone()],
+        // We only select the necessary amount of inputs to cover the output
+        // amount.
+        input_selector: Proto::InputSelector::SelectAscending,
+        weight_base: WEIGHT_BASE,
+        change_script_pubkey: change_script.as_bytes().into(),
+        // ENABLE change output.
+        disable_change_output: false,
+    };
+
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(output.sighashes.len(), 2);
+    assert_eq!(output.weight_projection, 440);
+    assert_eq!(output.fee_projection, 440 * WEIGHT_BASE);
+
+    // Only two inputs are needed to cover outputs.
+    assert_eq!(output.inputs.len(), 2);
+    assert_eq!(output.inputs[0], tx1);
+    assert_eq!(output.inputs[1], tx2);
+
+    // All inputs: 4_000, all outputs: 2_000
+    let change_out = Proto::TxOut {
+        value: 4_000 - 2_000 - output.fee_projection,
+        script_pubkey: change_script.as_bytes().into(),
+    };
+
+    assert_eq!(output.outputs.len(), 3);
+    assert_eq!(output.outputs[0], out1);
+    assert_eq!(output.outputs[1], out2);
+    assert_eq!(output.outputs[2], change_out);
 }
 
 #[test]
