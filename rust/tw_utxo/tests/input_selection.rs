@@ -85,8 +85,8 @@ fn input_selector_all() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 3);
-    assert_eq!(output.weight_projection, 568);
-    assert_eq!(output.fee_projection, 568 * WEIGHT_BASE);
+    assert_eq!(output.weight_projection, 594);
+    assert_eq!(output.fee_projection, 594 * WEIGHT_BASE);
 
     assert_eq!(output.inputs.len(), 3);
     assert_eq!(output.inputs[0], tx1);
@@ -102,6 +102,76 @@ fn input_selector_all() {
     assert_eq!(output.outputs.len(), 2);
     assert_eq!(output.outputs[0], out1);
     assert_eq!(output.outputs[1], change_out);
+}
+
+#[test]
+fn input_selector_all_insufficient_inputs() {
+    // Reusing the txid is fine here, although in production this would mark the transaction invalid.
+    let txid = txid_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
+
+    let tx1 = Proto::TxIn {
+        txid: txid.as_slice().into(),
+        amount: 1_000,
+        ..Default::default()
+    };
+    let tx2 = Proto::TxIn {
+        txid: txid.as_slice().into(),
+        amount: 2_000,
+        ..Default::default()
+    };
+    let tx3 = Proto::TxIn {
+        txid: txid.as_slice().into(),
+        amount: 3_000,
+        ..Default::default()
+    };
+
+    let out1 = Proto::TxOut {
+        value: 6_000,
+        script_pubkey: Default::default(),
+    };
+
+    // Generate prehashes without change output.
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
+        outputs: vec![out1.clone()],
+        // Explicitly select all inputs.
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: WEIGHT_BASE,
+        change_script_pubkey: Default::default(),
+        // DISABLE change output.
+        disable_change_output: true,
+    };
+
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    // While the input covers all outputs, it does not
+    // cover the projected fee.
+    assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
+    assert_eq!(output.sighashes.len(), 0);
+    assert_eq!(output.inputs.len(), 0);
+    assert_eq!(output.outputs.len(), 0);
+
+    // Generate prehashes WITH change output (same outcome).
+    let change_script = change_output();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![tx1.clone(), tx2.clone(), tx3.clone()],
+        outputs: vec![out1.clone()],
+        // Explicitly select all inputs.
+        input_selector: Proto::InputSelector::UseAll,
+        weight_base: WEIGHT_BASE,
+        change_script_pubkey: change_script.as_bytes().into(),
+        // ENABLE change output.
+        disable_change_output: false,
+    };
+
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
+    assert_eq!(output.sighashes.len(), 0);
+    assert_eq!(output.inputs.len(), 0);
+    assert_eq!(output.outputs.len(), 0);
 }
 
 #[test]
@@ -176,8 +246,8 @@ fn input_selector_one_input_required() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 1);
-    assert_eq!(output.weight_projection, 276);
-    assert_eq!(output.fee_projection, 276 * WEIGHT_BASE);
+    assert_eq!(output.weight_projection, 302);
+    assert_eq!(output.fee_projection, 302 * WEIGHT_BASE);
 
     // One inputs covers the full output.
     assert_eq!(output.inputs.len(), 1);
@@ -272,8 +342,8 @@ fn input_selector_two_inputs_required() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 2);
-    assert_eq!(output.weight_projection, 440);
-    assert_eq!(output.fee_projection, 440 * WEIGHT_BASE);
+    assert_eq!(output.weight_projection, 466);
+    assert_eq!(output.fee_projection, 466 * WEIGHT_BASE);
 
     // Only two inputs are needed to cover outputs.
     assert_eq!(output.inputs.len(), 2);
@@ -326,9 +396,11 @@ fn input_selector_one_input_cannot_cover_fees() {
     };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
-    // While the input of 2_000 covers both outputs (2 * 1_000), it does not
+    // While the input covers all outputs, it does not
     // cover the projected fee.
     assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
+    assert_eq!(output.weight_projection, 0);
+    assert_eq!(output.fee_projection, 0);
     assert_eq!(output.sighashes.len(), 0);
     assert_eq!(output.inputs.len(), 0);
     assert_eq!(output.outputs.len(), 0);
@@ -350,11 +422,100 @@ fn input_selector_one_input_cannot_cover_fees() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
     assert_eq!(output.sighashes.len(), 0);
+    assert_eq!(output.weight_projection, 0);
+    assert_eq!(output.fee_projection, 0);
     assert_eq!(output.inputs.len(), 0);
     assert_eq!(output.outputs.len(), 0);
 }
 
 #[test]
+fn input_selector_exact_balance_no_change() {
+    // Reusing the txid is fine here, although in production this would mark the transaction invalid.
+    let txid = txid_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
+
+    let tx1 = Proto::TxIn {
+        txid: txid.as_slice().into(),
+        // Covers the exact output amount + projected fee.
+        amount: 2_000 + 302 * WEIGHT_BASE,
+        ..Default::default()
+    };
+
+    let out1 = Proto::TxOut {
+        value: 1_000,
+        script_pubkey: Default::default(),
+    };
+    let out2 = Proto::TxOut {
+        value: 1_000,
+        script_pubkey: Default::default(),
+    };
+
+    let change_script = change_output();
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![tx1.clone()],
+        outputs: vec![out1.clone(), out2.clone()],
+        input_selector: Proto::InputSelector::SelectAscending,
+        weight_base: WEIGHT_BASE,
+        change_script_pubkey: change_script.as_bytes().into(),
+        // ENABLE change output.
+        disable_change_output: false,
+    };
+
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(output.sighashes.len(), 1);
+    assert_eq!(output.weight_projection, 302);
+    assert_eq!(output.fee_projection, 302 * WEIGHT_BASE);
+
+    // One inputs covers the full output.
+    assert_eq!(output.inputs.len(), 1);
+    assert_eq!(output.inputs[0], tx1);
+
+    // NO change output
+    assert_eq!(output.outputs.len(), 2);
+    assert_eq!(output.outputs[0], out1);
+    assert_eq!(output.outputs[1], out2);
+}
+
+#[test]
 fn input_selector_empty_script_bufs() {
-    // TODO
+    // Reusing the txid is fine here, although in production this would mark the transaction invalid.
+    let txid = txid_rev("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
+
+    let tx1 = Proto::TxIn {
+        txid: txid.as_slice().into(),
+        amount: 4_000,
+        ..Default::default()
+    };
+
+    let out1 = Proto::TxOut {
+        value: 1_000,
+        script_pubkey: Default::default(),
+    };
+    let out2 = Proto::TxOut {
+        value: 1_000,
+        script_pubkey: Default::default(),
+    };
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        lock_time: Default::default(),
+        inputs: vec![tx1.clone()],
+        outputs: vec![out1.clone(), out2.clone()],
+        input_selector: Proto::InputSelector::SelectAscending,
+        weight_base: WEIGHT_BASE,
+        // NO change script_pubkey specified, results in an error.
+        change_script_pubkey: Default::default(),
+        // ENABLE change output.
+        disable_change_output: false,
+    };
+
+    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    assert_eq!(output.error, Proto::Error::Error_missing_change_script_pubkey);
+    assert_eq!(output.sighashes.len(), 0);
+    assert_eq!(output.weight_projection, 0);
+    assert_eq!(output.fee_projection, 0);
+    assert_eq!(output.inputs.len(), 0);
+    assert_eq!(output.outputs.len(), 0);
 }
