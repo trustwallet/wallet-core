@@ -1,4 +1,4 @@
-use super::interface_spec::envelope::{Envelope, EnvelopeContent};
+use crate::interface_spec::envelope::{Envelope, EnvelopeContent};
 use serde::{Deserialize, Serialize};
 
 /// `RequestType` contains all supported values of `Operation.type`.

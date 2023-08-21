@@ -2,13 +2,14 @@ use std::time::Duration;
 
 use ic_ledger_types::{AccountIdentifier, Memo, Timestamp, Tokens};
 
+use crate::interface_spec::{
+    envelope::{Envelope, EnvelopeContent},
+    get_ingress_expiry,
+    request_id::{self, RequestId},
+};
+
 use super::{
     identity::{Identity, IdentityError},
-    interface_spec::{
-        envelope::{Envelope, EnvelopeContent},
-        get_ingress_expiry,
-        request_id::{self, RequestId},
-    },
     proto, rosetta,
 };
 

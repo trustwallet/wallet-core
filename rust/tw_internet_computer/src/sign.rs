@@ -1,5 +1,4 @@
 mod identity;
-mod interface_spec;
 mod proto;
 mod rosetta;
 mod transfer;
