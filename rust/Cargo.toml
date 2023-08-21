@@ -8,6 +8,7 @@ members = [
     "tw_ethereum",
     "tw_evm",
     "tw_hash",
+    "tw_internet_computer",
     "tw_keypair",
     "tw_memory",
     "tw_misc",
