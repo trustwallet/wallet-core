@@ -5,6 +5,7 @@ use bitcoin::hashes::Hash;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
 use bitcoin::taproot::TapLeafHash;
 use bitcoin::{OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
+use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
@@ -127,14 +128,16 @@ impl Compiler<StandardBitcoinContext> {
 
         if !proto.disable_change_output {
             // The amount to be returned.
-            let change_amount = total_input - fee_projection;
+            let change_amount = total_input - total_output - fee_projection;
 
             // Update the passed on protobuf structure by adding a change output
             // (return to sender)
-            proto.outputs.push(Proto::TxOut {
-                value: change_amount,
-                script_pubkey: proto.change_script_pubkey.clone(),
-            });
+            if change_amount != 0 {
+                proto.outputs.push(Proto::TxOut {
+                    value: change_amount,
+                    script_pubkey: proto.change_script_pubkey.clone(),
+                });
+            }
         }
 
         // Convert *updated* Protobuf structure to `bitcoin` crate native
@@ -272,7 +275,6 @@ impl Compiler<StandardBitcoinContext> {
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
-            inputs: selected,
             sighashes: sighashes
                 .into_iter()
                 .map(|(sighash, method, sighash_type)| Proto::Sighash {
@@ -281,7 +283,17 @@ impl Compiler<StandardBitcoinContext> {
                     sighash_type,
                 })
                 .collect(),
+            inputs: selected,
+            outputs: proto
+                .outputs
+                .into_iter()
+                .map(|output| Proto::TxOut {
+                    value: output.value,
+                    script_pubkey: output.script_pubkey.to_vec().into(),
+                })
+                .collect(),
             weight_projection,
+            fee_projection,
         })
     }
 

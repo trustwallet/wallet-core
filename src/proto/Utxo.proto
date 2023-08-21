@@ -117,12 +117,16 @@ message PreSigningOutput {
     // error code, 0 is ok, other codes will be treated as errors
     Error error = 1;
 
-    repeated TxIn inputs = 3;
-
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 2;
 
+    repeated TxIn inputs = 3;
+
+    repeated TxOut outputs = 4;
+
     uint64 weight_projection = 5;
+
+    uint64 fee_projection = 6;
 }
 
 message Sighash {
