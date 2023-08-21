@@ -56,6 +56,16 @@ message Asset {
     string token_id = 3;
 }
 
+message StreamParams {
+    // Optional Swap Interval ncy in blocks.
+    // The default is 1 - time-optimised means getting the trade done quickly, regardless of the cost.
+    string interval = 1;
+
+    // Optional Swap Quantity. Swap interval times every Interval blocks.
+    // The default is 0 - network will determine the number of swaps.
+    string quantity = 2;
+}
+
 // Input for a swap between source and destination chains; for creating a TX on the source chain.
 message SwapInput {
     // Source chain
@@ -79,7 +89,8 @@ message SwapInput {
     // The source amount, integer as string, in the smallest native unit of the chain
     string from_amount = 7;
 
-    // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
+    // Optional minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
+    // The default is 0 - no price limit.
     string to_amount_limit = 8;
 
     // Optional affiliate fee destination address.  A Rune address.
@@ -93,6 +104,10 @@ message SwapInput {
 
     // Optional expirationTime, will be now() + 15 min if not set
     uint64 expiration_time = 12;
+
+    // Optional streaming parameters. Use Streaming Swaps and Swap Optimisation strategy if set.
+    // https://docs.thorchain.org/thorchain-finance/continuous-liquidity-pools#streaming-swaps-and-swap-optimisation
+    StreamParams stream_params = 13;
 }
 
 // Result of the swap, a SigningInput struct for the specific chain
