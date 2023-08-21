@@ -1,12 +1,10 @@
 mod common;
-use common::pubkey_hash_from_hex;
+use common::{pubkey_hash_from_hex, txid_rev, witness_pubkey_hash};
 
 use bitcoin::ScriptBuf;
 use tw_encoding::hex;
 use tw_proto::Utxo::Proto;
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
-
-use crate::common::{txid_rev, witness_pubkey_hash};
 
 #[test]
 fn sighash_input_p2pkh_output_p2wpkh() {

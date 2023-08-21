@@ -1,8 +1,8 @@
 mod common;
+use common::txid_rev;
+
 use tw_proto::Utxo::Proto;
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
-
-use crate::common::txid_rev;
 
 #[test]
 fn input_selector_all() {

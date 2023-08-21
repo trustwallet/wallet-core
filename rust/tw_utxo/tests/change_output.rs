@@ -1,12 +1,9 @@
 mod common;
-use common::pubkey_hash_from_hex;
+use common::{pubkey_hash_from_hex, txid_rev};
 
-use bitcoin::{PrivateKey, ScriptBuf};
-use tw_encoding::hex;
+use bitcoin::ScriptBuf;
 use tw_proto::Utxo::Proto;
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
-
-use crate::common::txid_rev;
 
 #[test]
 fn no_change_output() {
