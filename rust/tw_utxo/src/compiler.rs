@@ -128,15 +128,23 @@ impl Compiler<StandardBitcoinContext> {
         let weight_projection = tx.weight().to_wu() + input_weight;
         let fee_projection = weight_projection * proto.weight_base;
 
+        // Check if the fee projection would make the change amount negative
+        // (implying insufficient input amount).
+        let change_amount_before_fee = total_input - total_output;
+        if change_amount_before_fee < fee_projection {
+            return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
+        // The amount to be returned (if enabled).
+        let change_amount = change_amount_before_fee - fee_projection;
+
+        // Insufficient input amount, cannot cover fee payment.
+        dbg!(total_output, total_input, change_amount);
+        if total_output + change_amount > total_input {
+            return Err(Error::from(Proto::Error::Error_insufficient_inputs));
+        }
+
         if !proto.disable_change_output {
-            // The amount to be returned.
-            let change_amount = (total_input - total_output).saturating_sub(fee_projection);
-
-            // Insufficient input amount, cannot cover fee payment.
-            if total_output + change_amount > total_input {
-                return Err(Error::from(Proto::Error::Error_insufficient_inputs));
-            }
-
             // Update the passed on protobuf structure by adding a change output
             // (return to sender)
             if change_amount != 0 {
