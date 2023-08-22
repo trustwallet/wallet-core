@@ -1,4 +1,5 @@
 use super::brc20::{BRC20TransferInscription, Brc20Ticker};
+use super::OrdinalNftInscription;
 use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::taproot::{ControlBlock, LeafVersion};
@@ -71,7 +72,33 @@ impl InputClaimBuilder {
                     })
                 },
                 ProtoInputBuilder::ordinal_inscribe(ordinal) => {
-                    todo!()
+                    let pubkey = bitcoin::PublicKey::from_slice(ordinal.inscribe_to.as_ref())?;
+                    let mime_type = ordinal.mime_type.as_ref();
+                    let data = ordinal.payload.as_ref();
+
+                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
+                        .unwrap();
+
+                    // Create a control block for that inscription.
+                    let control_block = nft
+                        .inscription()
+                        .spend_info()
+                        .control_block(&(
+                            nft.inscription().taproot_program().to_owned(),
+                            LeafVersion::TapScript,
+                        ))
+                        .expect("incorrectly constructed control block");
+
+                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
+
+                    // The spending script itself.
+                    (ScriptBuf::new(), {
+                        let mut w = Witness::new();
+                        w.push(sig.to_vec());
+                        w.push(nft.inscription().taproot_program());
+                        w.push(control_block.serialize());
+                        w
+                    })
                 },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
