@@ -1,8 +1,9 @@
+use std::collections::BTreeMap;
+
 use ic_certification::Label;
 use maplit::btreemap;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::collections::BTreeMap;
 use tw_hash::{sha2::sha256, H256};
 
 use super::envelope::EnvelopeContent;
@@ -13,11 +14,10 @@ pub struct RequestId(pub [u8; 32]);
 
 impl RequestId {
     pub fn sig_data(&self) -> H256 {
-        // Lifted from canister_client::agent::sign_message_id
         let mut sig_data = vec![];
         sig_data.extend_from_slice(DOMAIN_IC_REQUEST);
         sig_data.extend_from_slice(self.0.as_slice());
-        H256::try_from(sha256(&sig_data).as_slice()).expect("Failed to make request signature data")
+        H256::try_from(sha256(&sig_data).as_slice()).unwrap_or_else(|_| H256::new())
     }
 }
 
@@ -85,17 +85,11 @@ enum RawHttpRequestVal {
 }
 
 fn hash_string(value: String) -> Vec<u8> {
-    let mut hasher = Sha256::new();
-    hasher.update(value.as_bytes());
-    let result = &hasher.finalize()[..];
-    result.to_vec()
+    sha256(value.as_bytes())
 }
 
 fn hash_bytes(value: Vec<u8>) -> Vec<u8> {
-    let mut hasher = Sha256::new();
-    hasher.update(value.as_slice());
-    let result = &hasher.finalize()[..];
-    result.to_vec()
+    sha256(value.as_slice())
 }
 
 fn hash_u64(value: u64) -> Vec<u8> {

@@ -25,6 +25,7 @@ use self::proto::ic_ledger::pb::v1::{
 pub struct TransferArgs {
     pub memo: u64,
     pub amount: u64,
+    pub fee: u64,
     pub to: String,
     pub current_timestamp_secs: u64,
 }
@@ -40,7 +41,7 @@ impl From<TransferArgs> for SendRequest<'_> {
             payment: Some(Payment {
                 receiver_gets: Some(Tokens { e8s: args.amount }),
             }),
-            max_fee: Some(Tokens { e8s: FEE }),
+            max_fee: Some(Tokens { e8s: args.fee }),
             from_subaccount: None,
             to: Some(ProtoAccountIdentifier {
                 hash: to_hash.into(),
@@ -60,9 +61,6 @@ pub enum SignTransferError {
 
 /// The endpoint on the ledger canister that is used to make transfers.
 const METHOD_NAME: &str = "send_pb";
-
-/// The fee for a transfer is always 10_000 e8s.
-const FEE: u64 = 10_000;
 
 pub fn transfer(
     private_key: PrivateKey,
@@ -185,6 +183,7 @@ mod test {
             TransferArgs {
                 memo: 0,
                 amount: 100000000,
+                fee: 10_000,
                 to: to_account_identifier.to_hex(),
                 current_timestamp_secs: 1_691_709_940,
             },

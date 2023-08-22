@@ -2,8 +2,6 @@ use candid::Principal;
 use ic_certification::Label;
 use serde::{Deserialize, Serialize};
 
-use super::request_id::{self, RequestId};
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Envelope {
     pub content: EnvelopeContent,
