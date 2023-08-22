@@ -214,7 +214,7 @@ impl InputBuilder {
             script_pubkey: script_pubkey.to_vec().into(),
             signing_method,
             sighash_type: input.sighash_type,
-            weight_projection: weight,
+            weight_estimate: weight,
             leaf_hash: leaf_hash
                 .map(|hash| hash.to_vec().into())
                 .unwrap_or_default(),

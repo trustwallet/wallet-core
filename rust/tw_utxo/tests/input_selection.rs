@@ -85,8 +85,8 @@ fn input_selector_all() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 3);
-    assert_eq!(output.weight_projection, 594);
-    assert_eq!(output.fee_projection, 594 * WEIGHT_BASE);
+    assert_eq!(output.weight_estimate, 594);
+    assert_eq!(output.fee_estimate, 594 * WEIGHT_BASE);
 
     assert_eq!(output.inputs.len(), 3);
     assert_eq!(output.inputs[0], tx1);
@@ -95,7 +95,7 @@ fn input_selector_all() {
 
     // All inputs: 6_000, all outputs: 500
     let change_out = Proto::TxOut {
-        value: 6_000 - 500 - output.fee_projection,
+        value: 6_000 - 500 - output.fee_estimate,
         script_pubkey: change_script.as_bytes().into(),
     };
 
@@ -246,8 +246,8 @@ fn input_selector_one_input_required() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 1);
-    assert_eq!(output.weight_projection, 302);
-    assert_eq!(output.fee_projection, 302 * WEIGHT_BASE);
+    assert_eq!(output.weight_estimate, 302);
+    assert_eq!(output.fee_estimate, 302 * WEIGHT_BASE);
 
     // One inputs covers the full output.
     assert_eq!(output.inputs.len(), 1);
@@ -255,7 +255,7 @@ fn input_selector_one_input_required() {
 
     // All inputs: 4_000, all outputs: 2_000
     let change_out = Proto::TxOut {
-        value: 4_000 - 1_000 - output.fee_projection,
+        value: 4_000 - 1_000 - output.fee_estimate,
         script_pubkey: change_script.as_bytes().into(),
     };
 
@@ -342,8 +342,8 @@ fn input_selector_two_inputs_required() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 2);
-    assert_eq!(output.weight_projection, 466);
-    assert_eq!(output.fee_projection, 466 * WEIGHT_BASE);
+    assert_eq!(output.weight_estimate, 466);
+    assert_eq!(output.fee_estimate, 466 * WEIGHT_BASE);
 
     // Only two inputs are needed to cover outputs.
     assert_eq!(output.inputs.len(), 2);
@@ -352,7 +352,7 @@ fn input_selector_two_inputs_required() {
 
     // All inputs: 4_000, all outputs: 2_000
     let change_out = Proto::TxOut {
-        value: 4_000 - 2_000 - output.fee_projection,
+        value: 4_000 - 2_000 - output.fee_estimate,
         script_pubkey: change_script.as_bytes().into(),
     };
 
@@ -399,8 +399,8 @@ fn input_selector_one_input_cannot_cover_fees() {
     // While the input covers all outputs, it does not
     // cover the projected fee.
     assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
-    assert_eq!(output.weight_projection, 0);
-    assert_eq!(output.fee_projection, 0);
+    assert_eq!(output.weight_estimate, 0);
+    assert_eq!(output.fee_estimate, 0);
     assert_eq!(output.sighashes.len(), 0);
     assert_eq!(output.inputs.len(), 0);
     assert_eq!(output.outputs.len(), 0);
@@ -422,8 +422,8 @@ fn input_selector_one_input_cannot_cover_fees() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::Error_insufficient_inputs);
     assert_eq!(output.sighashes.len(), 0);
-    assert_eq!(output.weight_projection, 0);
-    assert_eq!(output.fee_projection, 0);
+    assert_eq!(output.weight_estimate, 0);
+    assert_eq!(output.fee_estimate, 0);
     assert_eq!(output.inputs.len(), 0);
     assert_eq!(output.outputs.len(), 0);
 }
@@ -465,8 +465,8 @@ fn input_selector_exact_balance_no_change() {
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(output.sighashes.len(), 1);
-    assert_eq!(output.weight_projection, 302);
-    assert_eq!(output.fee_projection, 302 * WEIGHT_BASE);
+    assert_eq!(output.weight_estimate, 302);
+    assert_eq!(output.fee_estimate, 302 * WEIGHT_BASE);
 
     // One inputs covers the full output.
     assert_eq!(output.inputs.len(), 1);
@@ -517,8 +517,8 @@ fn input_selector_empty_script_bufs() {
         Proto::Error::Error_missing_change_script_pubkey
     );
     assert_eq!(output.sighashes.len(), 0);
-    assert_eq!(output.weight_projection, 0);
-    assert_eq!(output.fee_projection, 0);
+    assert_eq!(output.weight_estimate, 0);
+    assert_eq!(output.fee_estimate, 0);
     assert_eq!(output.inputs.len(), 0);
     assert_eq!(output.outputs.len(), 0);
 }

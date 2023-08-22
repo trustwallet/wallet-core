@@ -2,4 +2,4 @@ mod address;
 mod legacy;
 //mod data;
 mod coin_entry_sign;
-mod free_projection;
+mod free_estimate;

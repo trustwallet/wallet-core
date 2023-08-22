@@ -176,9 +176,9 @@ message PreSigningOutput {
     // TODO: Rename field.
     repeated TxOut utxo_outputs = 4;
 
-    uint64 weight_projection = 5;
+    uint64 weight_estimate = 5;
 
-    uint64 fee_projection = 6;
+    uint64 fee_estimate = 6;
 
     // The output of a transaction.
     message TxOut {

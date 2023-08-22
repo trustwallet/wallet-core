@@ -76,7 +76,7 @@ message TxIn {
 
     SigningMethod signing_method = 7;
 
-    uint64 weight_projection = 8;
+    uint64 weight_estimate = 8;
 
     bytes leaf_hash = 9;
 }
@@ -124,9 +124,9 @@ message PreSigningOutput {
 
     repeated TxOut outputs = 4;
 
-    uint64 weight_projection = 5;
+    uint64 weight_estimate = 5;
 
-    uint64 fee_projection = 6;
+    uint64 fee_estimate = 6;
 }
 
 message Sighash {

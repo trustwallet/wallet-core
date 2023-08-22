@@ -15,7 +15,7 @@ const ONE_BTC: u64 = 100_000_000;
 const SAT_VB: u64 = 20;
 
 #[test]
-fn p2pkh_fee_projection() {
+fn p2pkh_fee_estimate() {
     let coin = PlaceHolder;
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
@@ -63,8 +63,8 @@ fn p2pkh_fee_projection() {
 
     let prehashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
     assert_eq!(prehashes.error, Proto::Error::OK);
-    assert_eq!(prehashes.weight_projection, 768);
-    assert_eq!(prehashes.fee_projection, (768 + 3) / 4 * SAT_VB);
+    assert_eq!(prehashes.weight_estimate, 768);
+    assert_eq!(prehashes.fee_estimate, (768 + 3) / 4 * SAT_VB);
 
     let output = BitcoinEntry.sign(&coin, signing);
     assert_eq!(output.error, Proto::Error::OK);
@@ -73,7 +73,7 @@ fn p2pkh_fee_projection() {
 }
 
 #[test]
-fn p2wpkh_fee_projection() {
+fn p2wpkh_fee_estimate() {
     let coin = PlaceHolder;
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
@@ -124,8 +124,8 @@ fn p2wpkh_fee_projection() {
     // TODO: The estimated weight/fee is slightly off from the finalized
     // weight/fee. This is probably good enough, but we can probably improve
     // this.
-    assert_eq!(prehashes.weight_projection, 436);
-    assert_eq!(prehashes.fee_projection, (436 + 3) / 4 * SAT_VB);
+    assert_eq!(prehashes.weight_estimate, 436);
+    assert_eq!(prehashes.fee_estimate, (436 + 3) / 4 * SAT_VB);
 
     let output = BitcoinEntry.sign(&coin, signing);
     assert_eq!(output.error, Proto::Error::OK);
@@ -134,7 +134,7 @@ fn p2wpkh_fee_projection() {
 }
 
 #[test]
-fn p2tr_key_path_fee_projection() {
+fn p2tr_key_path_fee_estimate() {
     let coin = PlaceHolder;
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
@@ -184,8 +184,8 @@ fn p2tr_key_path_fee_projection() {
     // TODO: The estimated weight/fee is slightly off from the finalized
     // weight/fee. This is probably good enough, but we can probably improve
     // this.
-    assert_eq!(prehashes.weight_projection, 450);
-    assert_eq!(prehashes.fee_projection, (450 + 3) / 4 * SAT_VB);
+    assert_eq!(prehashes.weight_estimate, 450);
+    assert_eq!(prehashes.fee_estimate, (450 + 3) / 4 * SAT_VB);
 
     let output = BitcoinEntry.sign(&coin, signing);
     assert_eq!(output.error, Proto::Error::OK);
@@ -194,7 +194,7 @@ fn p2tr_key_path_fee_projection() {
 }
 
 #[test]
-fn brc20_inscribe_fee_projection() {
+fn brc20_inscribe_fee_estimate() {
     let coin = PlaceHolder;
 
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
@@ -250,8 +250,8 @@ fn brc20_inscribe_fee_projection() {
     // TODO: The estimated weight/fee is slightly off from the finalized
     // weight/fee. This is probably good enough, but we can probably improve
     // this.
-    assert_eq!(prehashes.weight_projection, 575);
-    assert_eq!(prehashes.fee_projection, (575 + 3) / 4 * SAT_VB);
+    assert_eq!(prehashes.weight_estimate, 575);
+    assert_eq!(prehashes.fee_estimate, (575 + 3) / 4 * SAT_VB);
 
     let output = BitcoinEntry.sign(&coin, signing);
     assert_eq!(output.error, Proto::Error::OK);

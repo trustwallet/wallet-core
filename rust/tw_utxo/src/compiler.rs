@@ -128,7 +128,7 @@ impl Compiler<StandardBitcoinContext> {
         let input_weight: u64 = proto
             .inputs
             .iter()
-            .map(|input| input.weight_projection)
+            .map(|input| input.weight_estimate)
             .sum();
 
         // Convert Protobuf structure to `bitcoin` crate native transaction,
@@ -144,18 +144,18 @@ impl Compiler<StandardBitcoinContext> {
         };
 
         // Calculate the full weight projection (base weight + input & output weight).
-        let weight_projection = tx.weight().to_wu() + input_weight + output_weight;
-        let fee_projection = (weight_projection + 3) / 4 * proto.weight_base;
+        let weight_estimate = tx.weight().to_wu() + input_weight + output_weight;
+        let fee_estimate = (weight_estimate + 3) / 4 * proto.weight_base;
 
         // Check if the fee projection would make the change amount negative
         // (implying insufficient input amount).
         let change_amount_before_fee = total_input - total_output;
-        if change_amount_before_fee < fee_projection {
+        if change_amount_before_fee < fee_estimate {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
         }
 
         // The amount to be returned (if enabled).
-        let change_amount = change_amount_before_fee - fee_projection;
+        let change_amount = change_amount_before_fee - fee_estimate;
 
         if !proto.disable_change_output {
             // Update the passed on protobuf structure by adding a change output
@@ -320,8 +320,8 @@ impl Compiler<StandardBitcoinContext> {
                     script_pubkey: output.script_pubkey.to_vec().into(),
                 })
                 .collect(),
-            weight_projection,
-            fee_projection,
+            weight_estimate,
+            fee_estimate,
         })
     }
 

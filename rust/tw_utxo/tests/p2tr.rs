@@ -31,7 +31,7 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
             script_pubkey: input_script_pubkey.as_bytes().into(),
             sighash_type: Proto::SighashType::All,
             signing_method: Proto::SigningMethod::Legacy,
-            weight_projection: 1,
+            weight_estimate: 1,
             leaf_hash: Default::default(),
         }],
         outputs: vec![Proto::TxOut {

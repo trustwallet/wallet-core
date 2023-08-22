@@ -230,8 +230,8 @@ impl BitcoinEntry {
             // Update selected inputs.
             utxo_inputs: utxo_presigning.inputs,
             utxo_outputs,
-            weight_projection: utxo_presigning.weight_projection,
-            fee_projection: utxo_presigning.fee_projection,
+            weight_estimate: utxo_presigning.weight_estimate,
+            fee_estimate: utxo_presigning.fee_estimate,
         })
     }
 
