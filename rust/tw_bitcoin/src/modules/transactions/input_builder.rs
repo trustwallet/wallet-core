@@ -58,7 +58,21 @@ impl InputBuilder {
                         ),
                     )
                 },
-                ProtoInputBuilder::p2wsh(_) => todo!(),
+                ProtoInputBuilder::p2wsh(redeem_script) => {
+                    let redeem_script = ScriptBuf::from_bytes(redeem_script.to_vec());
+                    let wscript_hash = redeem_script.wscript_hash();
+
+                    (
+                        UtxoProto::SigningMethod::Segwit,
+                        ScriptBuf::new_v0_p2wsh(&wscript_hash),
+                        NO_LEAF_HASH,
+                        // witness bytes, scale factor NOT applied.
+                        (
+                            // length + redeem script.
+                            1 + redeem_script.len() as u64
+                        ),
+                    )
+                },
                 ProtoInputBuilder::p2wpkh(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
 
