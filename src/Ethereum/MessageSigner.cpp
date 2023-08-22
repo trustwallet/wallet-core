@@ -49,7 +49,14 @@ std::string MessageSigner::signTypedData(const PrivateKey& privateKey, const std
     if (msgType == MessageType::Eip155 && nlohmann::json::accept(data)) {
         auto json = nlohmann::json::parse(data);
         if (json.contains("types") && json.at("types").contains("EIP712Domain")) {
-            if (json.at("domain").at("chainId").get<std::size_t>() != *chainId) {
+            const auto& chainIdValue = json.at("domain").at("chainId");
+            std::size_t actualChainId{0};
+            if (chainIdValue.is_string()) {
+                actualChainId = std::stoull(chainIdValue.get<std::string>());
+            } else {
+                actualChainId = chainIdValue.get<std::size_t>();
+            }
+            if (actualChainId != *chainId) {
                 return "EIP712 chainId is different than the current chainID.";
             }
         }
