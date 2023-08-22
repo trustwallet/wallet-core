@@ -125,11 +125,7 @@ impl Compiler<StandardBitcoinContext> {
         let total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
 
         // Calculate the total input weight projection.
-        let input_weight: u64 = proto
-            .inputs
-            .iter()
-            .map(|input| input.weight_estimate)
-            .sum();
+        let input_weight: u64 = proto.inputs.iter().map(|input| input.weight_estimate).sum();
 
         // Convert Protobuf structure to `bitcoin` crate native transaction,
         // used for weight/fee calculation.
