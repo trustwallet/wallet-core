@@ -7,5 +7,8 @@
 pub mod encode;
 pub mod ffi;
 pub mod icp;
+pub mod identity;
 pub mod interface_spec;
+pub mod principal;
+pub mod rosetta;
 pub mod sign;

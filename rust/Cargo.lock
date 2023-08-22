@@ -1968,9 +1968,11 @@ dependencies = [
  "ic-ledger-types",
  "k256",
  "maplit",
+ "pb-rs",
  "pkcs8",
  "prost",
  "prost-types",
+ "quick-protobuf",
  "serde",
  "serde_bytes",
  "serde_cbor",
@@ -1980,6 +1982,7 @@ dependencies = [
  "tw_hash",
  "tw_keypair",
  "tw_memory",
+ "tw_proto",
 ]
 
 [[package]]

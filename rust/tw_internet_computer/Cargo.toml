@@ -14,6 +14,7 @@ der = { version = "0.7.3", features = ["alloc"] }
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
+tw_proto = { path = "../tw_proto" }
 tw_keypair = { path = "../tw_keypair" }
 pkcs8 = { version = "0.10.2", features = ["alloc"] }
 k256 = { version = "0.13.0", features = [
@@ -33,6 +34,10 @@ comparable = { version = "0.5.1", features = ["derive"] }
 sha2 = "0.10.6"
 maplit = "1.0.2"
 serde_bytes = "0.11.2"
+quick-protobuf = "0.8.1"
 
 [dev-dependencies]
 k256 = { version = "0.13.0", features = ["pem"], default-features = false }
+
+[build-dependencies]
+pb-rs = "0.10.0"
