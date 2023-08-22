@@ -11,4 +11,3 @@ pub mod identity;
 pub mod interface_spec;
 pub mod principal;
 pub mod rosetta;
-pub mod sign;
