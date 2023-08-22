@@ -40,16 +40,14 @@ impl Identity {
         Principal::self_authenticating(&self.der_encoded_public_key)
     }
 
-    pub fn sign(&self, content: &[u8]) -> Result<Signature, IdentityError> {
+    pub fn sign(&self, content: H256) -> Result<Signature, IdentityError> {
         let signature = self
             .private_key
-            .sign_blob(content)
+            .sign(content)
             .map_err(IdentityError::FailedSignature)?;
 
         let r = signature.r();
-        println!("r value: {}", tw_encoding::hex::encode(r, false));
         let s = signature.s();
-        println!("s value: {}", tw_encoding::hex::encode(s, false));
         let mut bytes = [0u8; 64];
         if r.len() > 32 || s.len() > 32 {
             return Err(IdentityError::MalformedSignature);
