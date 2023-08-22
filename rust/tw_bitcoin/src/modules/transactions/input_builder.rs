@@ -21,9 +21,9 @@ impl InputBuilder {
     pub fn utxo_from_proto(input: &Proto::Input<'_>) -> Result<UtxoProto::TxIn<'static>> {
         let (signing_method, script_pubkey, leaf_hash, weight) = match &input.to_recipient {
             ProtoInputRecipient::builder(builder) => match &builder.variant {
-                ProtoInputBuilder::p2sh(script_hash) => {
-                    let script_hash = ScriptHash::from_slice(script_hash.as_ref())
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_script_hash))?;
+                ProtoInputBuilder::p2sh(redeem_script) => {
+                    let redeem_script = ScriptBuf::from_bytes(redeem_script.to_vec());
+                    let script_hash = redeem_script.script_hash();
 
                     (
                         UtxoProto::SigningMethod::Legacy,
@@ -31,8 +31,8 @@ impl InputBuilder {
                         NO_LEAF_HASH,
                         // scale factor applied to non-witness bytes
                         4 * (
-                            // length + script hash
-                            1 + 72
+                            // length + redeem script.
+                            1 + redeem_script.len() as u64
                         ),
                     )
                 },
