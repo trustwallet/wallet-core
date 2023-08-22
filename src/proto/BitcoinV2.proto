@@ -7,6 +7,7 @@ import "Common.proto";
 import "Utxo.proto";
 
 // TODO: Update numbers/sorting.
+// TODO: This should also include all UTXO errors.
 enum Error {
     OK = 0;
     Error_invalid_private_key = 1;
@@ -175,6 +176,10 @@ message PreSigningOutput {
     // TODO: Rename field.
     repeated TxOut utxo_outputs = 4;
 
+    uint64 weight_projection = 5;
+
+    uint64 fee_projection = 6;
+
     // The output of a transaction.
     message TxOut {
         // The value of the output (amount).
@@ -196,6 +201,8 @@ message SigningOutput {
     bytes encoded = 2;
 
     bytes transaction_id = 3;
+
+    uint64 weight = 5;
 
     uint64 fee = 5;
 }

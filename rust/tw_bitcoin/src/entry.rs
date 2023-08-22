@@ -230,6 +230,8 @@ impl BitcoinEntry {
             // Update selected inputs.
             utxo_inputs: utxo_presigning.inputs,
             utxo_outputs,
+            weight_projection: utxo_presigning.weight_projection,
+            fee_projection: utxo_presigning.fee_projection,
         })
     }
 
@@ -324,7 +326,8 @@ impl BitcoinEntry {
             encoded: utxo_serialized.encoded,
             // TODO: Should be returned by `tw_utxo`.
             transaction_id: Cow::default(),
-            fee: 0,
+            weight: utxo_serialized.weight,
+            fee: utxo_serialized.fee,
         })
     }
 }

@@ -512,7 +512,10 @@ fn input_selector_empty_script_bufs() {
     };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
-    assert_eq!(output.error, Proto::Error::Error_missing_change_script_pubkey);
+    assert_eq!(
+        output.error,
+        Proto::Error::Error_missing_change_script_pubkey
+    );
     assert_eq!(output.sighashes.len(), 0);
     assert_eq!(output.weight_projection, 0);
     assert_eq!(output.fee_projection, 0);

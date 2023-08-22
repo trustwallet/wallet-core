@@ -4,7 +4,9 @@ use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
 use bitcoin::taproot::TapLeafHash;
-use bitcoin::{OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
+use bitcoin::{
+    OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Weight, Witness,
+};
 use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 
@@ -143,7 +145,7 @@ impl Compiler<StandardBitcoinContext> {
 
         // Calculate the full weight projection (base weight + input & output weight).
         let weight_projection = tx.weight().to_wu() + input_weight + output_weight;
-        let fee_projection = weight_projection * proto.weight_base;
+        let fee_projection = (weight_projection + 3) / 4 * proto.weight_base;
 
         // Check if the fee projection would make the change amount negative
         // (implying insufficient input amount).
