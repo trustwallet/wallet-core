@@ -25,7 +25,7 @@ use self::proto::ic_ledger::pb::v1::{
 pub struct TransferArgs {
     pub memo: u64,
     pub amount: u64,
-    pub fee: u64,
+    pub fee: Option<u64>,
     pub to: String,
     pub current_timestamp_secs: u64,
 }
@@ -41,7 +41,7 @@ impl From<TransferArgs> for SendRequest<'_> {
             payment: Some(Payment {
                 receiver_gets: Some(Tokens { e8s: args.amount }),
             }),
-            max_fee: Some(Tokens { e8s: args.fee }),
+            max_fee: args.fee.map(|fee| Tokens { e8s: fee }),
             from_subaccount: None,
             to: Some(ProtoAccountIdentifier {
                 hash: to_hash.into(),
@@ -183,7 +183,7 @@ mod test {
             TransferArgs {
                 memo: 0,
                 amount: 100000000,
-                fee: 10_000,
+                fee: Some(10_000),
                 to: to_account_identifier.to_hex(),
                 current_timestamp_secs: 1_691_709_940,
             },
