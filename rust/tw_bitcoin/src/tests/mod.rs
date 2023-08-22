@@ -1,5 +1,12 @@
 mod address;
-mod coin_entry_sign;
+mod brc20;
 mod data;
 mod free_estimate;
 mod legacy;
+mod ordinal_nft;
+mod p2tr_key_path;
+mod p2wpkh;
+
+fn hex(string: &str) -> Vec<u8> {
+    tw_encoding::hex::decode(string).unwrap()
+}
