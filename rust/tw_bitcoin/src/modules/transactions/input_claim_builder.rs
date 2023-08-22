@@ -70,6 +70,9 @@ impl InputClaimBuilder {
                         w
                     })
                 },
+                ProtoInputBuilder::ordinal_inscribe(ordinal) => {
+                    todo!()
+                },
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;

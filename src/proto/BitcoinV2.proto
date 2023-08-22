@@ -87,6 +87,7 @@ message Input {
             // Pay-to-Taproot-script-path (complex transfers)
             TaprootScriptPath p2tr_script_path = 8;
             Brc20Inscription brc20_inscribe = 9;
+            OrdinalInscription ordinal_inscribe = 10;
         }
     }
 
@@ -106,6 +107,14 @@ message Input {
         bool one_prevout = 1;
         bytes payload = 2;
         bytes control_block = 3;
+    }
+
+    message OrdinalInscription {
+        bool one_prevout = 1;
+        // TODO: This is dangeours, could be misinterpreted.
+        bytes inscribe_to = 2;
+        string mime_type = 3;
+        bytes payload = 4;
     }
 
     message Brc20Inscription {

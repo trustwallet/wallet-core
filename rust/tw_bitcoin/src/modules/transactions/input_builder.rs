@@ -1,5 +1,6 @@
 use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use crate::entry::aliases::*;
+use crate::modules::transactions::OrdinalNftInscription;
 use crate::{Error, Result};
 use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash};
 use bitcoin::{ScriptBuf, Witness};
@@ -112,12 +113,58 @@ impl InputBuilder {
                             // indicator of witness item
                             1 +
                             // the payload (TODO: should this be `repeated bytes`?)
-                            complex.payload.len() as u64 +
-                            // length + control block (pubkey + Merkle path), roughly
-                            1 + 64
+                            complex.payload.len() as u64
                         ),
                     )
                 },
+                ProtoInputBuilder::ordinal_inscribe(ordinal) => {
+                    let pubkey = bitcoin::PublicKey::from_slice(ordinal.inscribe_to.as_ref())?;
+                    let mime_type = ordinal.mime_type.as_ref();
+                    let data = ordinal.payload.as_ref();
+
+                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
+                        .unwrap();
+
+                    // We construct a control block to estimate the fee,
+                    // otherwise we do not need it here.
+                    let control_block = nft
+                        .inscription()
+                        .spend_info()
+                        .control_block(&(
+                            nft.inscription().taproot_program().to_owned(),
+                            LeafVersion::TapScript,
+                        ))
+                        .expect("incorrectly constructed control block");
+
+                    let leaf_hash = Some(TapLeafHash::from_script(
+                        nft.inscription().taproot_program(),
+                        bitcoin::taproot::LeafVersion::TapScript,
+                    ));
+
+                    let signing_method = if ordinal.one_prevout {
+                        UtxoProto::SigningMethod::TaprootOnePrevout
+                    } else {
+                        UtxoProto::SigningMethod::TaprootAll
+                    };
+
+                    (
+                        signing_method,
+                        ScriptBuf::from(nft.inscription().taproot_program()),
+                        leaf_hash,
+                        // witness bytes, scale factor NOT applied.
+                        (
+                            // indicator of witness item (1)
+                            1 +
+                            // length + Schnorr signature (can be 71 or 72)
+                            1 + 72 +
+                            // the payload (TODO: should this be `repeated bytes`?)
+                            nft.inscription().taproot_program().len() as u64 +
+                            // length + control block
+                            1 + control_block.size() as u64
+                        ),
+                    )
+                },
+                // TODO: Unify this and `ordinal_inscribe` somehow
                 ProtoInputBuilder::brc20_inscribe(brc20) => {
                     let pubkey = bitcoin::PublicKey::from_slice(brc20.inscribe_to.as_ref())?;
                     let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
@@ -126,6 +173,8 @@ impl InputBuilder {
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
+                    // We construct a control block to estimate the fee,
+                    // otherwise we do not need it here.
                     let control_block = transfer
                         .inscription()
                         .spend_info()
