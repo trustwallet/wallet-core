@@ -28,6 +28,7 @@ enum Error {
     Error_unsupported_address_recipient = 21;
     Error_bad_address_recipient = 22;
     Error_invalid_redeem_script = 23;
+    Error_invalid_witness_redeem_script = 24;
 }
 
 message SigningInput {
@@ -144,7 +145,7 @@ message Output {
             // Pay-to-Public-Key-Hash
             ToPublicKeyOrHash p2pkh = 2;
             // Pay-to-Witness-Script-Hash, specify the hash.
-            bytes p2wsh = 3;
+            RedeemScriptOrHash p2wsh = 3;
             // Pay-to-Public-Key-Hash
             ToPublicKeyOrHash p2wpkh = 4;
             // Pay-to-Taproot-key-path (balance transfers), specify the public key.

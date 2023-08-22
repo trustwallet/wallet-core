@@ -6,7 +6,7 @@ use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::address::{Payload, WitnessVersion};
 use bitcoin::taproot::{LeafVersion, TapNodeHash};
-use bitcoin::{Address, PubkeyHash, ScriptBuf, ScriptHash, WPubkeyHash};
+use bitcoin::{Address, PubkeyHash, ScriptBuf, ScriptHash, WPubkeyHash, WScriptHash};
 use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
@@ -51,8 +51,13 @@ impl OutputBuilder {
                         NO_TAPROOT_PAYLOAD,
                     )
                 },
-                ProtoOutputBuilder::p2wsh(_) => {
-                    todo!()
+                ProtoOutputBuilder::p2wsh(script_or_hash) => {
+                    let wscript_hash = witness_redeem_script_or_hash(script_or_hash)?;
+                    (
+                        ScriptBuf::new_v0_p2wsh(&wscript_hash),
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
+                    )
                 },
                 ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => {
                     let wpubkey_hash = witness_pubkey_hash_from_proto(pubkey_or_hash)?;
@@ -260,6 +265,24 @@ fn redeem_script_or_hash(
             .map_err(|_| Error::from(Proto::Error::Error_invalid_redeem_script))?,
         ProtoRedeemScriptOrHash::redeem_script(script) => {
             ScriptBuf::from_bytes(script.to_vec()).script_hash()
+        },
+        ProtoRedeemScriptOrHash::None => {
+            return Err(Error::from(Proto::Error::Error_missing_recipient))
+        },
+    };
+
+    Ok(pubkey_hash)
+}
+
+// Conenience helper function.
+fn witness_redeem_script_or_hash(
+    script_or_hash: &Proto::mod_Output::RedeemScriptOrHash,
+) -> Result<WScriptHash> {
+    let pubkey_hash = match &script_or_hash.variant {
+        ProtoRedeemScriptOrHash::hash(hash) => WScriptHash::from_slice(hash)
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_witness_redeem_script))?,
+        ProtoRedeemScriptOrHash::redeem_script(script) => {
+            ScriptBuf::from_bytes(script.to_vec()).wscript_hash()
         },
         ProtoRedeemScriptOrHash::None => {
             return Err(Error::from(Proto::Error::Error_missing_recipient))
