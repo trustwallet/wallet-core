@@ -27,6 +27,7 @@ enum Error {
     Error_missing_recipient = 19;
     Error_unsupported_address_recipient = 21;
     Error_bad_address_recipient = 22;
+    Error_invalid_script_hash = 23;
 }
 
 message SigningInput {

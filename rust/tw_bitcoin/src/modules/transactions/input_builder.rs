@@ -3,7 +3,8 @@ use crate::entry::aliases::*;
 use crate::modules::transactions::OrdinalNftInscription;
 use crate::{Error, Result};
 use bitcoin::taproot::{ControlBlock, LeafVersion, TapLeafHash};
-use bitcoin::{ScriptBuf, Witness};
+use bitcoin::{ScriptBuf, ScriptHash, Witness};
+use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry::SignatureBytes;
@@ -11,20 +12,37 @@ use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
+// Convenience varibles used solely for readability.
+const NO_LEAF_HASH: Option<TapLeafHash> = None;
+
 pub struct InputBuilder;
 
 impl InputBuilder {
     pub fn utxo_from_proto(input: &Proto::Input<'_>) -> Result<UtxoProto::TxIn<'static>> {
         let (signing_method, script_pubkey, leaf_hash, weight) = match &input.to_recipient {
             ProtoInputRecipient::builder(builder) => match &builder.variant {
-                ProtoInputBuilder::p2sh(_) => todo!(),
+                ProtoInputBuilder::p2sh(script_hash) => {
+                    let script_hash = ScriptHash::from_slice(script_hash.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_script_hash))?;
+
+                    (
+                        UtxoProto::SigningMethod::Legacy,
+                        ScriptBuf::new_p2sh(&script_hash),
+                        NO_LEAF_HASH,
+                        // scale factor applied to non-witness bytes
+                        4 * (
+                            // length + script hash
+                            1 + 72
+                        ),
+                    )
+                },
                 ProtoInputBuilder::p2pkh(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
 
                     (
                         UtxoProto::SigningMethod::Legacy,
                         ScriptBuf::new_p2pkh(&pubkey.pubkey_hash()),
-                        None,
+                        NO_LEAF_HASH,
                         // scale factor applied to non-witness bytes
                         4 * (
                             // length + ECDSA signature
@@ -49,7 +67,7 @@ impl InputBuilder {
                         ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().ok_or_else(|| {
                             Error::from(Proto::Error::Error_invalid_witness_pubkey_hash)
                         })?),
-                        None,
+                        NO_LEAF_HASH,
                         // witness bytes, scale factor NOT applied.
                         (
                             // indicator of witness item (2)
@@ -80,7 +98,7 @@ impl InputBuilder {
                     (
                         signing_method,
                         ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None),
-                        None,
+                        NO_LEAF_HASH,
                         // witness bytes, scale factor NOT applied.
                         (
                             // indicator of witness item (1)
