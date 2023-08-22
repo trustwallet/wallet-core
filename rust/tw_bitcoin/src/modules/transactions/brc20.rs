@@ -160,7 +160,7 @@ impl BRC20TransferInscription {
         ticker: Brc20Ticker,
         amount: u64,
     ) -> Result<BRC20TransferInscription> {
-        let data = BRC20TransferPayload::new(ticker, amount);
+        let data: BRC20Payload<TransferPayload> = BRC20TransferPayload::new(ticker, amount);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(

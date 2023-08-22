@@ -126,6 +126,15 @@ impl InputBuilder {
                         BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
+                    let control_block = transfer
+                        .inscription()
+                        .spend_info()
+                        .control_block(&(
+                            transfer.inscription().taproot_program().to_owned(),
+                            LeafVersion::TapScript,
+                        ))
+                        .expect("incorrectly constructed control block");
+
                     let leaf_hash = Some(TapLeafHash::from_script(
                         transfer.inscription().taproot_program(),
                         bitcoin::taproot::LeafVersion::TapScript,
@@ -143,12 +152,14 @@ impl InputBuilder {
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
                         (
-                            // indicator of witness item count.
+                            // indicator of witness item (1)
                             1 +
+                            // length + Schnorr signature (can be 71 or 72)
+                            1 + 72 +
                             // the payload (TODO: should this be `repeated bytes`?)
                             transfer.inscription().taproot_program().len() as u64 +
-                            // length + control block (pubkey + Merkle path), roughly
-                            1 + 64
+                            // length + control block
+                            1 + control_block.size() as u64
                         ),
                     )
                 },
