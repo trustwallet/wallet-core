@@ -49,9 +49,7 @@ impl Identity {
             .try_sign(&content)
             .map_err(|e| IdentityError::FailedSignature(e.to_string()))?;
         let r = ecdsa_sig.r().as_ref().to_bytes();
-        println!("r value: {}", tw_encoding::hex::encode(r, false));
         let s = ecdsa_sig.s().as_ref().to_bytes();
-        println!("s value: {}", tw_encoding::hex::encode(s, false));
         let mut bytes = [0u8; 64];
         if r.len() > 32 || s.len() > 32 {
             return Err(IdentityError::MalformedSignature);

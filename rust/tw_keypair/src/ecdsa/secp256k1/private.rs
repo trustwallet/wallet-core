@@ -39,14 +39,6 @@ impl PrivateKey {
         let shared_secret_hash = tw_hash::sha2::sha256(shared_secret_compressed.as_bytes());
         H256::try_from(shared_secret_hash.as_slice()).expect("Expected 32 byte array sha256 hash")
     }
-
-    pub fn sign_blob(&self, message: &[u8]) -> KeyPairResult<Signature> {
-        let (signature, recovery_id) = self
-            .secret
-            .sign_prehash_recoverable(message)
-            .map_err(|_| KeyPairError::SigningError)?;
-        Ok(Signature::new(signature, recovery_id))
-    }
 }
 
 /// This method is inspired by [elliptic_curve::ecdh::diffie_hellman](https://github.com/RustCrypto/traits/blob/f0dbe44fea56d4c17e625ababacb580fec842137/elliptic-curve/src/ecdh.rs#L60-L70)

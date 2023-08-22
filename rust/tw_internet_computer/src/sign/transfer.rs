@@ -97,16 +97,9 @@ fn create_update_envelope(
     };
 
     let request_id = content.to_request_id();
-    println!("update request id: {}", hex::encode(request_id.0, false));
-
     let signature = identity
         .sign(request_id::make_sig_data(&request_id))
         .map_err(SignTransferError::Identity)?;
-
-    println!(
-        "update signature: {}",
-        hex::encode(&signature.signature, false)
-    );
 
     let env = Envelope {
         content,
@@ -165,8 +158,6 @@ oUQDQgAEPas6Iag4TUx+Uop+3NhE6s3FlayFtbwdhRVjvOar0kPTfE/N8N6btRnd
     #[test]
     fn transfer_signature() {
         let secret_key = SecretKey::from_sec1_pem(ECDSA_SECP256K1).unwrap();
-        let k = hex::encode(secret_key.to_bytes(), false);
-        println!("{}", k);
 
         let identity = crate::sign::identity::Identity::new(secret_key).unwrap();
         let to_account_identifier = AccountIdentifier::new(
