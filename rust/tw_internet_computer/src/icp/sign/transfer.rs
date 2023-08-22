@@ -4,7 +4,6 @@ mod proto {
 
 use std::time::Duration;
 use tw_encoding::hex;
-use tw_hash::{sha2, H256};
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 
 use crate::{
@@ -12,7 +11,7 @@ use crate::{
     interface_spec::{
         envelope::{Envelope, EnvelopeContent},
         get_ingress_expiry,
-        request_id::{self, RequestId},
+        request_id::RequestId,
     },
     principal::Principal,
     rosetta,
@@ -79,11 +78,12 @@ pub fn transfer(
     let arg =
         tw_proto::serialize(&send_request).map_err(|_| SignTransferError::EncodingArgsFailed)?;
     // Create the update envelope.
-    let update_envelope = create_update_envelope(&identity, canister_id, arg, ingress_expiry)?;
-    let request_id = update_envelope.content.to_request_id();
+    let (request_id, update_envelope) =
+        create_update_envelope(&identity, canister_id, arg, ingress_expiry)?;
 
     // Create the read state envelope.
-    let read_state_envelope = create_read_state_envelope(&identity, request_id, ingress_expiry)?;
+    let (_, read_state_envelope) =
+        create_read_state_envelope(&identity, request_id, ingress_expiry)?;
 
     // Create a new EnvelopePair with the update call and read_state envelopes.
     let envelope_pair = rosetta::EnvelopePair::new(update_envelope, read_state_envelope);
@@ -103,7 +103,7 @@ fn create_update_envelope(
     canister_id: Principal,
     arg: Vec<u8>,
     ingress_expiry: u64,
-) -> Result<Envelope, SignTransferError> {
+) -> Result<(RequestId, Envelope), SignTransferError> {
     let sender = identity.sender();
     let content = EnvelopeContent::Call {
         nonce: None, //TODO: do we need the nonce?
@@ -114,12 +114,9 @@ fn create_update_envelope(
         arg,
     };
 
-    let request_id = content.to_request_id();
-    let value = request_id::make_sig_data(&request_id);
-    let hashed_sig_data = H256::try_from(sha2::sha256(&value).as_slice())
-        .map_err(|_| SignTransferError::EncodingSignedTransactionFailed)?;
+    let request_id = RequestId::from(&content);
     let signature = identity
-        .sign(hashed_sig_data)
+        .sign(request_id.sig_data())
         .map_err(SignTransferError::Identity)?;
 
     let env = Envelope {
@@ -127,14 +124,14 @@ fn create_update_envelope(
         sender_pubkey: Some(signature.public_key),
         sender_sig: Some(signature.signature),
     };
-    Ok(env)
+    Ok((request_id, env))
 }
 
 fn create_read_state_envelope(
     identity: &Identity,
-    request_id: RequestId,
+    update_request_id: RequestId,
     ingress_expiry: u64,
-) -> Result<Envelope, SignTransferError> {
+) -> Result<(RequestId, Envelope), SignTransferError> {
     let sender = identity.sender();
 
     let content = EnvelopeContent::ReadState {
@@ -142,16 +139,13 @@ fn create_read_state_envelope(
         sender: sender.0,
         paths: vec![vec![
             "request_status".into(),
-            request_id.0.as_slice().into(),
+            update_request_id.0.as_slice().into(),
         ]],
     };
 
-    let request_id = content.to_request_id();
-    let value = request_id::make_sig_data(&request_id);
-    let hashed_sig_data = H256::try_from(sha2::sha256(&value).as_slice())
-        .map_err(|_| SignTransferError::EncodingSignedTransactionFailed)?;
+    let request_id = RequestId::from(&content);
     let signature = identity
-        .sign(hashed_sig_data)
+        .sign(request_id.sig_data())
         .map_err(SignTransferError::Identity)?;
 
     let env = Envelope {
@@ -159,7 +153,7 @@ fn create_read_state_envelope(
         sender_pubkey: Some(signature.public_key),
         sender_sig: Some(signature.signature),
     };
-    Ok(env)
+    Ok((request_id, env))
 }
 
 #[cfg(test)]

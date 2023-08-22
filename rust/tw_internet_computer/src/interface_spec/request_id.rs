@@ -3,20 +3,81 @@ use maplit::btreemap;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
+use tw_hash::{sha2::sha256, H256};
 
-pub const DOMAIN_IC_REQUEST: &[u8; 11] = b"\x0Aic-request";
+use super::envelope::EnvelopeContent;
+
+const DOMAIN_IC_REQUEST: &[u8; 11] = b"\x0Aic-request";
 
 pub struct RequestId(pub [u8; 32]);
 
+impl RequestId {
+    pub fn sig_data(&self) -> H256 {
+        // Lifted from canister_client::agent::sign_message_id
+        let mut sig_data = vec![];
+        sig_data.extend_from_slice(DOMAIN_IC_REQUEST);
+        sig_data.extend_from_slice(self.0.as_slice());
+        H256::try_from(sha256(&sig_data).as_slice()).expect("Failed to make request signature data")
+    }
+}
+
+impl From<&EnvelopeContent> for RequestId {
+    fn from(value: &EnvelopeContent) -> Self {
+        match value {
+            EnvelopeContent::Call {
+                nonce,
+                ingress_expiry,
+                sender,
+                canister_id,
+                method_name,
+                arg,
+            } => representation_independent_hash_call_or_query(
+                CallOrQuery::Call,
+                canister_id.as_slice().to_vec(),
+                method_name,
+                arg.clone(),
+                *ingress_expiry,
+                sender.as_slice().to_vec(),
+                nonce.as_deref(),
+            ),
+            EnvelopeContent::Query {
+                ingress_expiry,
+                sender,
+                canister_id,
+                method_name,
+                arg,
+            } => representation_independent_hash_call_or_query(
+                CallOrQuery::Query,
+                canister_id.as_slice().to_vec(),
+                method_name,
+                arg.clone(),
+                *ingress_expiry,
+                sender.as_slice().to_vec(),
+                None,
+            ),
+            EnvelopeContent::ReadState {
+                ingress_expiry,
+                sender,
+                paths,
+            } => representation_independent_hash_read_state(
+                *ingress_expiry,
+                paths,
+                sender.as_slice().to_vec(),
+                None,
+            ),
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
-pub enum CallOrQuery {
+enum CallOrQuery {
     Call,
     Query,
 }
 
 /// The different types of values supported in `RawHttpRequest`.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub enum RawHttpRequestVal {
+enum RawHttpRequestVal {
     Bytes(#[serde(with = "serde_bytes")] Vec<u8>),
     String(String),
     U64(u64),
@@ -31,9 +92,6 @@ fn hash_string(value: String) -> Vec<u8> {
 }
 
 fn hash_bytes(value: Vec<u8>) -> Vec<u8> {
-    /*let mut hasher = Sha256::new();
-    hasher.update(&value);
-    hasher.finish().to_vec()*/
     let mut hasher = Sha256::new();
     hasher.update(value.as_slice());
     let result = &hasher.finalize()[..];
@@ -71,7 +129,6 @@ fn hash_array(elements: Vec<RawHttpRequestVal>) -> Vec<u8> {
         .into_iter()
         // Hash the encoding of all the array elements.
         .for_each(|e| hasher.update(hash_val(e).as_slice()));
-    //hasher.finish().to_vec() // hash the concatenation of the hashes.
     let result = &hasher.finalize()[..];
     result.to_vec()
 }
@@ -114,7 +171,7 @@ fn hash_of_map<S: ToString>(map: &BTreeMap<S, RawHttpRequestVal>) -> [u8; 32] {
     <[u8; 32]>::try_from(result).unwrap_or([0; 32])
 }
 
-pub fn representation_independent_hash_call_or_query(
+fn representation_independent_hash_call_or_query(
     request_type: CallOrQuery,
     canister_id: Vec<u8>,
     method_name: &str,
@@ -141,7 +198,7 @@ pub fn representation_independent_hash_call_or_query(
     RequestId(hash_of_map(&map))
 }
 
-pub fn representation_independent_hash_read_state(
+fn representation_independent_hash_read_state(
     ingress_expiry: u64,
     paths: &[Vec<Label>],
     sender: Vec<u8>,
@@ -168,12 +225,4 @@ pub fn representation_independent_hash_read_state(
         map.insert("nonce".to_string(), Bytes(some_nonce.to_vec()));
     }
     RequestId(hash_of_map(&map))
-}
-
-pub fn make_sig_data(message_id: &RequestId) -> Vec<u8> {
-    // Lifted from canister_client::agent::sign_message_id
-    let mut sig_data = vec![];
-    sig_data.extend_from_slice(DOMAIN_IC_REQUEST);
-    sig_data.extend_from_slice(message_id.0.as_slice());
-    sig_data
 }
