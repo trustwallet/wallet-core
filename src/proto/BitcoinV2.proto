@@ -150,13 +150,20 @@ message Output {
             bytes p2tr_key_path = 5;
             // Pay-to-Taproot-script-path (complex transfers)
             TaprootScriptPath p2tr_script_path = 6;
-            Brc20Inscription brc20_inscribe = 7;
+            OrdinalInscription ordinal_inscribe = 7;
+            Brc20Inscription brc20_inscribe = 8;
         }
     }
 
     message TaprootScriptPath {
         bytes public_key = 1;
         bytes node_hash = 2;
+    }
+
+    message OrdinalInscription {
+        bytes inscribe_to = 2;
+        string mime_type = 3;
+        bytes payload = 4;
     }
 
     message Brc20Inscription {

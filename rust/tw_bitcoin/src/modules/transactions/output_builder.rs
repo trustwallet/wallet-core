@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use super::brc20::{BRC20TransferInscription, Brc20Ticker};
+use super::OrdinalNftInscription;
 use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::address::{Payload, WitnessVersion};
@@ -76,6 +77,37 @@ impl OutputBuilder {
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)),
                         NO_CONTROL_BLOCK,
                         NO_TAPROOT_PAYLOAD,
+                    )
+                },
+                ProtoOutputBuilder::ordinal_inscribe(ordinal) => {
+                    let pubkey = bitcoin::PublicKey::from_slice(ordinal.inscribe_to.as_ref())?;
+                    let xonly = XOnlyPublicKey::from(pubkey.inner);
+                    let mime_type = ordinal.mime_type.as_ref();
+                    let data = ordinal.payload.as_ref();
+
+                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
+                        .unwrap();
+
+                    // Explicit check
+                    let control_block = nft
+                        .inscription()
+                        .spend_info()
+                        .control_block(&(
+                            nft.inscription().taproot_program().to_owned(),
+                            LeafVersion::TapScript,
+                        ))
+                        .expect("incorrectly constructed control block");
+
+                    let merkle_root = nft
+                        .inscription()
+                        .spend_info()
+                        .merkle_root()
+                        .expect("incorrectly constructed Taproot merkle root");
+
+                    (
+                        ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
+                        Some(control_block.serialize()),
+                        Some(nft.inscription().taproot_program().to_vec()),
                     )
                 },
                 ProtoOutputBuilder::brc20_inscribe(brc20) => {
