@@ -14,24 +14,13 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
     let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
     let txid: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
         .into_iter()
         .rev()
         .collect();
 
-    let mut signing = Proto::SigningInput {
-        version: 2,
-        private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
-        inputs: vec![],
-        outputs: vec![],
-        input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
-        change_output: Default::default(),
-        disable_change_output: true,
-    };
-
-    signing.inputs.push(Proto::Input {
+    let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
         amount: 100_000_000 * 50,
@@ -40,9 +29,9 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
-    });
+    };
 
-    signing.outputs.push(Proto::Output {
+    let out1 = Proto::Output {
         amount: 100_000_000 * 50 - 1_000_000,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -51,7 +40,19 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
                 ),
             }),
         }),
-    });
+    };
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Default::default(),
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        input_selector: UtxoProto::InputSelector::UseAll,
+        sat_vb: 0,
+        change_output: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);

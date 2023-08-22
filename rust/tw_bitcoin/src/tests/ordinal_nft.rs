@@ -19,24 +19,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         .rev()
         .collect();
 
-    let txid2: Vec<u8> = hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")
-        .into_iter()
-        .rev()
-        .collect();
-
-    let mut signing = Proto::SigningInput {
-        version: 2,
-        private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
-        inputs: vec![],
-        outputs: vec![],
-        input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
-        change_output: Default::default(),
-        disable_change_output: true,
-    };
-
-    signing.inputs.push(Proto::Input {
+    let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
         amount: 32_400,
@@ -45,9 +28,9 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
         }),
-    });
+    };
 
-    signing.outputs.push(Proto::Output {
+    let out1 = Proto::Output {
         amount: 31_100,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OrdinalInscription {
@@ -56,7 +39,19 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
                 payload: hex(super::data::NFT_INSCRIPTION_IMAGE_DATA).into(),
             }),
         }),
-    });
+    };
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Default::default(),
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        input_selector: UtxoProto::InputSelector::UseAll,
+        sat_vb: 0,
+        change_output: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
@@ -66,20 +61,13 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     assert_eq!(transaction.outputs.len(), 1);
     assert_eq!(&encoded, "02000000000101992faa0d60f29d77cdae687c300d288a3b075b3c7e1e3b42ad537222c39095570000000000ffffffff017c790000000000002251202ac69a7e9dba801e9fcba826055917b84ca6fba4d51a29e47d478de603eedab602473044022054212984443ed4c66fc103d825bfd2da7baf2ab65d286e3c629b36b98cd7debd022050214cfe5d3b12a17aaaf1a196bfeb2f0ad15ffb320c4717eb7614162453e4fe0121030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
 
-    let mut signing = Proto::SigningInput {
-        version: 2,
-        private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
-        inputs: vec![],
-        outputs: vec![],
-        input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
-        change_output: Default::default(),
-        disable_change_output: true,
-    };
+    let txid: Vec<u8> = hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")
+        .into_iter()
+        .rev()
+        .collect();
 
-    signing.inputs.push(Proto::Input {
-        txid: txid2.as_slice().into(),
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
         vout: 0,
         amount: 31_100,
         sequence: u32::MAX,
@@ -92,9 +80,9 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
                 payload: hex(super::data::NFT_INSCRIPTION_IMAGE_DATA).into(),
             }),
         }),
-    });
+    };
 
-    signing.outputs.push(Proto::Output {
+    let out1 = Proto::Output {
         amount: 546,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
@@ -103,7 +91,19 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
                 ),
             }),
         }),
-    });
+    };
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Default::default(),
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        input_selector: UtxoProto::InputSelector::UseAll,
+        sat_vb: 0,
+        change_output: Default::default(),
+        disable_change_output: true,
+    };
 
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
