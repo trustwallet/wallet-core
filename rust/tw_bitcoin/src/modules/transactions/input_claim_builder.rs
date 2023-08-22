@@ -22,7 +22,10 @@ impl InputClaimBuilder {
         let (script_sig, witness) = match &input.to_recipient {
             ProtoInputRecipient::builder(variant) => match &variant.variant {
                 ProtoInputBuilder::None => panic!(),
-                ProtoInputBuilder::p2sh(_) => todo!(),
+                ProtoInputBuilder::p2sh(redeem_script) => (
+                    ScriptBuf::from_bytes(redeem_script.to_vec()),
+                    Witness::new(),
+                ),
                 ProtoInputBuilder::p2pkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
@@ -36,10 +39,9 @@ impl InputClaimBuilder {
                         Witness::new(),
                     )
                 },
-                ProtoInputBuilder::p2wsh(redeem_script) => (
-                    ScriptBuf::from_bytes(redeem_script.to_vec()),
-                    Witness::new(),
-                ),
+                ProtoInputBuilder::p2wsh(redeem_script) => {
+                    (ScriptBuf::new(), Witness::from_slice(&[redeem_script]))
+                },
                 ProtoInputBuilder::p2wpkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
