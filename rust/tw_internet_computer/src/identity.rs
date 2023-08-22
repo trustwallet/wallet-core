@@ -1,8 +1,3 @@
-use k256::{
-    ecdsa::{signature::Signer, SigningKey},
-    SecretKey,
-};
-use pkcs8::EncodePublicKey;
 use tw_hash::H256;
 use tw_keypair::{ecdsa::secp256k1::PrivateKey, traits::SigningKeyTrait, KeyPairError};
 

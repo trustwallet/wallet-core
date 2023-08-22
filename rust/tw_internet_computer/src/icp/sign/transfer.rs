@@ -79,7 +79,7 @@ pub fn transfer(
     let arg =
         tw_proto::serialize(&send_request).map_err(|_| SignTransferError::EncodingArgsFailed)?;
     // Create the update envelope.
-    let update_envelope = create_update_envelope(&identity, arg, ingress_expiry)?;
+    let update_envelope = create_update_envelope(&identity, canister_id, arg, ingress_expiry)?;
     let request_id = update_envelope.content.to_request_id();
 
     // Create the read state envelope.
@@ -100,6 +100,7 @@ pub fn transfer(
 
 fn create_update_envelope(
     identity: &Identity,
+    canister_id: Principal,
     arg: Vec<u8>,
     ingress_expiry: u64,
 ) -> Result<Envelope, SignTransferError> {
@@ -108,7 +109,7 @@ fn create_update_envelope(
         nonce: None, //TODO: do we need the nonce?
         ingress_expiry,
         sender: sender.0,
-        canister_id: ic_ledger_types::MAINNET_LEDGER_CANISTER_ID,
+        canister_id: canister_id.0,
         method_name: METHOD_NAME.to_string(),
         arg,
     };
