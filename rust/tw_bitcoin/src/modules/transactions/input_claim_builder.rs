@@ -36,7 +36,10 @@ impl InputClaimBuilder {
                         Witness::new(),
                     )
                 },
-                ProtoInputBuilder::p2wsh(_) => todo!(),
+                ProtoInputBuilder::p2wsh(redeem_script) => (
+                    ScriptBuf::from_bytes(redeem_script.to_vec()),
+                    Witness::new(),
+                ),
                 ProtoInputBuilder::p2wpkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;

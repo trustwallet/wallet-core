@@ -27,6 +27,7 @@ enum Error {
     Error_missing_recipient = 19;
     Error_unsupported_address_recipient = 21;
     Error_bad_address_recipient = 22;
+    Error_invalid_redeem_script = 23;
 }
 
 message SigningInput {
@@ -139,7 +140,7 @@ message Output {
     message Builder {
         oneof variant {
             // Pay-to-Script-Hash, specify the hash.
-            bytes p2sh = 1;
+            RedeemScriptOrHash p2sh = 1;
             // Pay-to-Public-Key-Hash
             ToPublicKeyOrHash p2pkh = 2;
             // Pay-to-Witness-Script-Hash, specify the hash.
@@ -152,6 +153,13 @@ message Output {
             TaprootScriptPath p2tr_script_path = 6;
             OrdinalInscription ordinal_inscribe = 7;
             Brc20Inscription brc20_inscribe = 8;
+        }
+    }
+
+    message RedeemScriptOrHash {
+        oneof variant {
+            bytes redeem_script = 1;
+            bytes hash = 2;
         }
     }
 

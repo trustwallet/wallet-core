@@ -6,7 +6,7 @@ use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::address::{Payload, WitnessVersion};
 use bitcoin::taproot::{LeafVersion, TapNodeHash};
-use bitcoin::{Address, PubkeyHash, ScriptBuf, WPubkeyHash};
+use bitcoin::{Address, PubkeyHash, ScriptBuf, ScriptHash, WPubkeyHash};
 use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
@@ -35,8 +35,13 @@ impl OutputBuilder {
             // Process builder methods. We construct the Script spending
             // conditions by using the specified parameters.
             ProtoOutputRecipient::builder(builder) => match &builder.variant {
-                ProtoOutputBuilder::p2sh(_) => {
-                    todo!()
+                ProtoOutputBuilder::p2sh(script_or_hash) => {
+                    let script_hash = redeem_script_or_hash(script_or_hash)?;
+                    (
+                        ScriptBuf::new_p2sh(&script_hash),
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
+                    )
                 },
                 ProtoOutputBuilder::p2pkh(pubkey_or_hash) => {
                     let pubkey_hash = pubkey_hash_from_proto(pubkey_or_hash)?;
@@ -244,6 +249,24 @@ impl OutputBuilder {
 
         Ok(utxo)
     }
+}
+
+// Conenience helper function.
+fn redeem_script_or_hash(
+    script_or_hash: &Proto::mod_Output::RedeemScriptOrHash,
+) -> Result<ScriptHash> {
+    let pubkey_hash = match &script_or_hash.variant {
+        ProtoRedeemScriptOrHash::hash(hash) => ScriptHash::from_slice(hash.as_ref())
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_redeem_script))?,
+        ProtoRedeemScriptOrHash::redeem_script(script) => {
+            ScriptBuf::from_bytes(script.to_vec()).script_hash()
+        },
+        ProtoRedeemScriptOrHash::None => {
+            return Err(Error::from(Proto::Error::Error_missing_recipient))
+        },
+    };
+
+    Ok(pubkey_hash)
 }
 
 // Conenience helper function.

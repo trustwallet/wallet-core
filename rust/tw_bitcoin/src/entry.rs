@@ -23,6 +23,8 @@ pub mod aliases {
     pub type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
     pub type ProtoOutputBuilder<'a> = Proto::mod_Output::mod_Builder::OneOfvariant<'a>;
     pub type ProtoPubkeyOrHash<'a> = Proto::mod_ToPublicKeyOrHash::OneOfto_address<'a>;
+    pub type ProtoRedeemScriptOrHash<'a> =
+        Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant<'a>;
     pub type ProtoInputRecipient<'a> = Proto::mod_Input::OneOfto_recipient<'a>;
     pub type ProtoInputBuilder<'a> = Proto::mod_Input::mod_Builder::OneOfvariant<'a>;
 }
