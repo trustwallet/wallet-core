@@ -1,14 +1,17 @@
-use candid::Principal;
 use k256::{
     ecdsa::{signature::Signer, SigningKey},
     SecretKey,
 };
 use pkcs8::EncodePublicKey;
+use tw_hash::H256;
+use tw_keypair::{ecdsa::secp256k1::PrivateKey, traits::SigningKeyTrait, KeyPairError};
+
+use crate::principal::Principal;
 
 #[derive(Debug)]
 pub enum IdentityError {
     FailedPublicKeyDerEncoding,
-    FailedSignature(String),
+    FailedSignature(KeyPairError),
     MalformedSignature,
 }
 
@@ -18,46 +21,41 @@ pub struct Signature {
 }
 
 pub struct Identity {
-    private_key: SigningKey,
+    private_key: PrivateKey,
     der_encoded_public_key: Vec<u8>,
 }
 
 impl Identity {
-    pub fn new(secret_key: SecretKey) -> Result<Self, IdentityError> {
-        let public_key = secret_key.public_key();
-        let der_encoded_public_key = public_key
-            .to_public_key_der()
-            .map_err(|_| IdentityError::FailedPublicKeyDerEncoding)?
-            .as_bytes()
-            .to_vec();
+    pub fn new(private_key: PrivateKey) -> Self {
+        let public_key = private_key.public();
+        let der_encoded_public_key = public_key.der_encoded();
 
-        let identity = Self {
-            private_key: secret_key.into(),
+        Self {
+            private_key,
             der_encoded_public_key,
-        };
-
-        Ok(identity)
+        }
     }
 
     pub fn sender(&self) -> Principal {
         Principal::self_authenticating(&self.der_encoded_public_key)
     }
 
-    pub fn sign(&self, content: Vec<u8>) -> Result<Signature, IdentityError> {
-        let (ecdsa_sig, _recovery_id) = self
+    pub fn sign(&self, content: &[u8]) -> Result<Signature, IdentityError> {
+        let signature = self
             .private_key
-            .try_sign(&content)
-            .map_err(|e| IdentityError::FailedSignature(e.to_string()))?;
-        let r = ecdsa_sig.r().as_ref().to_bytes();
+            .sign_blob(content)
+            .map_err(IdentityError::FailedSignature)?;
+
+        let r = signature.r();
         println!("r value: {}", tw_encoding::hex::encode(r, false));
-        let s = ecdsa_sig.s().as_ref().to_bytes();
+        let s = signature.s();
         println!("s value: {}", tw_encoding::hex::encode(s, false));
         let mut bytes = [0u8; 64];
         if r.len() > 32 || s.len() > 32 {
             return Err(IdentityError::MalformedSignature);
         }
-        bytes[(32 - r.len())..32].clone_from_slice(&r);
-        bytes[32 + (32 - s.len())..].clone_from_slice(&s);
+        bytes[(32 - r.len())..32].clone_from_slice(r.as_slice());
+        bytes[32 + (32 - s.len())..].clone_from_slice(s.as_slice());
 
         let signature = Signature {
             public_key: self.der_encoded_public_key.clone(),
