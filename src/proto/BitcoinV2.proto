@@ -155,7 +155,7 @@ message Output {
             bytes p2tr_key_path = 5;
             // Pay-to-Taproot-script-path (complex transfers)
             TaprootScriptPath p2tr_script_path = 6;
-            bytes p2tr_tweaked = 7;
+            bytes p2tr_dangerous_assume_tweaked = 7;
             OrdinalInscription ordinal_inscribe = 8;
             Brc20Inscription brc20_inscribe = 9;
         }
