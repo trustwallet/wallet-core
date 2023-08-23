@@ -17,6 +17,7 @@ enum Error {
     Error_failed_encoding = 8;
     Error_insufficient_inputs = 9;
     Error_missing_change_script_pubkey = 10;
+    Error_zero_sequence_not_enabled = 11;
 }
 
 message SigningInput {
@@ -67,6 +68,9 @@ message TxIn {
     uint64 amount = 3;
 
     uint32 sequence = 4;
+
+    // Explicitly allow a `sequence` of zero.
+    bool enable_zero_sequence = 5;
 
     // The spending condition of the output.
     bytes script_pubkey = 5;

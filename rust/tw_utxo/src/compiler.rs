@@ -76,6 +76,16 @@ impl Compiler<StandardBitcoinContext> {
             ));
         }
 
+        // If a `sequence` of zero is specified, the `enable_zero_sequence` must
+        // be explicitly set to true.
+        if proto
+            .inputs
+            .iter()
+            .any(|input| input.sequence == 0 && !input.enable_zero_sequence)
+        {
+            return Err(Error::from(Proto::Error::Error_zero_sequence_not_enabled));
+        }
+
         // Only use the necessariy amount of inputs to cover `total_output`, any
         // other input gets dropped.
         let proto_inputs = std::mem::take(&mut proto.inputs);

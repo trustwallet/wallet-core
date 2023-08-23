@@ -21,16 +21,19 @@ fn input_selector_all() {
     let tx1 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 1_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx2 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 2_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 3_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
@@ -112,16 +115,19 @@ fn input_selector_all_insufficient_inputs() {
     let tx1 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 1_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx2 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 2_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 3_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
@@ -182,16 +188,19 @@ fn input_selector_one_input_required() {
     let tx1 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 4_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx2 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 4_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 4_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
@@ -273,16 +282,19 @@ fn input_selector_two_inputs_required() {
     let tx1 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 1_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx2 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 3_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
     let tx3 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 4_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
@@ -370,6 +382,7 @@ fn input_selector_one_input_cannot_cover_fees() {
     let tx1 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 2_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
@@ -437,6 +450,7 @@ fn input_selector_exact_balance_no_change() {
         txid: txid.as_slice().into(),
         // Covers the exact output amount + projected fee.
         amount: 2_000 + (302 + 3) / 4 * WEIGHT_BASE,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
@@ -486,6 +500,7 @@ fn input_selector_empty_script_bufs() {
     let tx1 = Proto::TxIn {
         txid: txid.as_slice().into(),
         amount: 4_000,
+        sequence: u32::MAX,
         ..Default::default()
     };
 
