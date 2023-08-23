@@ -6,7 +6,7 @@
 
 pub mod ffi;
 pub mod icp;
-pub mod identity;
-pub mod interface_spec;
-pub mod principal;
-pub mod rosetta;
+pub(crate) mod identity;
+pub(crate) mod interface_spec;
+pub(crate) mod principal;
+pub(crate) mod rosetta;

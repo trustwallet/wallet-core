@@ -1,9 +1,9 @@
 use crate::interface_spec::envelope::{Envelope, EnvelopeContent};
 use serde::{Deserialize, Serialize};
 
-/// `RequestType` contains all supported values of `Operation.type`.
-/// Extra information, such as `neuron_index` should only be included
-/// if it cannot be parsed from the submit payload.
+/// The types of requests that are available from the Rosetta node.
+/// This enum is truncated to include support only for the
+/// operations that this crate can currently perform.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub enum RequestType {
     // Aliases for backwards compatibility
@@ -12,7 +12,8 @@ pub enum RequestType {
     Send,
 }
 
-/// The type (encoded as CBOR) returned by /construction/combine, containing the
+/// The type (encoded as CBOR) returned by the Rosetta node's
+/// /construction/combine endpoint. It contains the
 /// IC calls to submit the transaction and to check the result.
 pub type SignedTransaction = Vec<Request>;
 

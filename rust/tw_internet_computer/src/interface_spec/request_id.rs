@@ -10,6 +10,11 @@ use super::envelope::EnvelopeContent;
 
 const DOMAIN_IC_REQUEST: &[u8; 11] = b"\x0Aic-request";
 
+/// When signing requests or querying the status of a request
+/// (see Request status) in the state tree, the user identifies
+/// the request using a request id, which is the
+/// representation-independent hash of the content map of the
+/// original request. A request id must have length of 32 bytes.
 pub struct RequestId(pub [u8; 32]);
 
 impl RequestId {
@@ -144,6 +149,7 @@ fn hash_key_val(key: String, val: RawHttpRequestVal) -> Vec<u8> {
 }
 
 /// Describes `hash_of_map` as specified in the public spec.
+/// See: https://internetcomputer.org/docs/current/references/ic-interface-spec#hash-of-map
 fn hash_of_map<S: ToString>(map: &BTreeMap<S, RawHttpRequestVal>) -> [u8; 32] {
     let mut hashes: Vec<Vec<u8>> = Vec::new();
     for (key, val) in map.iter() {
@@ -219,4 +225,30 @@ fn representation_independent_hash_read_state(
         map.insert("nonce".to_string(), Bytes(some_nonce.to_vec()));
     }
     RequestId(hash_of_map(&map))
+}
+
+#[cfg(test)]
+mod test {
+
+    use candid::Principal;
+
+    use super::*;
+
+    #[test]
+    fn representation_independent_hash_call_or_query() {
+        let map = btreemap! {
+            "request_type".to_string() => RawHttpRequestVal::String("call".to_string()),
+            "sender".to_string() => RawHttpRequestVal::Bytes(Principal::anonymous().as_slice().to_vec()),
+            "ingress_expiry".to_string() => RawHttpRequestVal::U64(1685570400000000000),
+            "method_name".to_string() => RawHttpRequestVal::String("hello".to_string()),
+            "canister_id".to_string() => RawHttpRequestVal::Bytes(vec![0, 0, 0, 0, 0, 0, 4, 210]),
+            "arg".to_string() =>  RawHttpRequestVal::Bytes(b"DIDL\x00\xFD*".to_vec())
+        };
+
+        let hash = hash_of_map(&map);
+        assert_eq!(
+            tw_encoding::hex::encode(hash, false),
+            "1d1091364d6bb8a6c16b203ee75467d59ead468f523eb058880ae8ec80e2b101"
+        );
+    }
 }

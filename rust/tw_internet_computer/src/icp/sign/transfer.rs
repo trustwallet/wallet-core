@@ -1,8 +1,12 @@
 use std::time::Duration;
+
 use tw_encoding::hex;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 
 use crate::{
+    icp::proto::ic_ledger::pb::v1::{
+        AccountIdentifier as ProtoAccountIdentifier, Memo, Payment, SendRequest, TimeStamp, Tokens,
+    },
     identity::{Identity, SigningError},
     interface_spec::{
         envelope::{Envelope, EnvelopeContent},
@@ -11,10 +15,6 @@ use crate::{
     },
     principal::Principal,
     rosetta,
-};
-
-use crate::icp::proto::ic_ledger::pb::v1::{
-    AccountIdentifier as ProtoAccountIdentifier, Memo, Payment, SendRequest, TimeStamp, Tokens,
 };
 
 #[derive(Clone, Debug)]
@@ -178,7 +178,7 @@ mod test {
             canister_id,
             TransferArgs {
                 memo: 0,
-                amount: 100000000,
+                amount: 100_000_000,
                 max_fee: Some(10_000),
                 to: to_account_identifier.to_hex(),
                 current_timestamp_secs: 1_691_709_940,
