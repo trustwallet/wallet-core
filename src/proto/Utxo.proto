@@ -89,20 +89,20 @@ enum SigningMethod {
 }
 
 enum SighashType {
-    // Use default (sign all, 0x00)
-    UseDefault = 0;
-    // Sign all outputs (0x01).
-    All = 1;
-    // Sign no outputs, anyone can choose the destination (0x02).
-    None = 2;
-    // Sign the output whose index matches this inputs index (0x03).
-    Single = 3;
-    //Sign all outputs but only this input (0x81).
-    AllPlusAnyoneCanPay = 4;
-    // Sign no outputs and only this input (0x82).
-    NonePlusAnyoneCanPay = 5;
-    // Sign one output and only this input (0x83).
-    SinglePlusAnyoneCanPay = 6;
+    // Use default (All)
+    UseDefault = 0; // 0x00
+    // Sign all outputs.
+    All = 1; // 0x01
+    // Sign no outputs, anyone can choose the destination.
+    None = 2; // 0x02
+    // Sign the output whose index matches this inputs index.
+    Single = 3; // 0x03
+    //Sign all outputs but only this input.
+    AllPlusAnyoneCanPay = 129; // 0x81
+    // Sign no outputs and only this input.
+    NonePlusAnyoneCanPay = 130; // 0x82
+    // Sign one output and only this input.
+    SinglePlusAnyoneCanPay = 131; // 0x83
 }
 
 // The output of a transaction.
