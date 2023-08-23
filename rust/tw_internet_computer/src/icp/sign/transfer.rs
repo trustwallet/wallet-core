@@ -1,7 +1,3 @@
-mod proto {
-    include!(concat!(env!("OUT_DIR"), "/proto/mod.rs"));
-}
-
 use std::time::Duration;
 use tw_encoding::hex;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
@@ -17,7 +13,7 @@ use crate::{
     rosetta,
 };
 
-use self::proto::ic_ledger::pb::v1::{
+use crate::icp::proto::ic_ledger::pb::v1::{
     AccountIdentifier as ProtoAccountIdentifier, Memo, Payment, SendRequest, TimeStamp, Tokens,
 };
 
