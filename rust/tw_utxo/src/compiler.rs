@@ -4,9 +4,7 @@ use bitcoin::consensus::Encodable;
 use bitcoin::hashes::Hash;
 use bitcoin::sighash::{EcdsaSighashType, Prevouts, SighashCache, TapSighashType};
 use bitcoin::taproot::TapLeafHash;
-use bitcoin::{
-    OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Weight, Witness,
-};
+use bitcoin::{OutPoint, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness};
 use std::marker::PhantomData;
 use tw_proto::Utxo::Proto::{self, SighashType};
 

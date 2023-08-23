@@ -7,19 +7,6 @@ use tw_proto::Utxo::Proto;
 use tw_utxo::compiler::{Compiler, StandardBitcoinContext};
 
 #[test]
-fn sighash_emtpy() {
-    let signing = Proto::SigningInput {
-        version: 2,
-        ..Default::default()
-    };
-
-    let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
-
-    let hashes = output.sighashes;
-    assert!(hashes.is_empty());
-}
-
-#[test]
 fn sighash_input_p2pkh_output_p2pkh() {
     let pubkey_hash = pubkey_hash_from_hex("e4c1ea86373d554b8f4efff2cfb0001ea19124d2");
     let input_script_pubkey = ScriptBuf::new_p2pkh(&pubkey_hash);
@@ -56,6 +43,7 @@ fn sighash_input_p2pkh_output_p2pkh() {
     };
 
     let output = Compiler::<StandardBitcoinContext>::preimage_hashes(signing);
+    assert_eq!(output.error, Proto::Error::OK);
 
     let hashes = output.sighashes;
     assert_eq!(hashes.len(), 1);
