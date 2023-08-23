@@ -83,7 +83,7 @@ pub fn taproot_build_and_sign_transaction(
             Proto::Output {
                 amount: legacy.amount as u64,
                 to_recipient: ProtoOutputRecipient::from_address(
-                    legacy.to_address.as_bytes().into(),
+                    legacy.to_address,
                 ),
             },
         ],
@@ -96,7 +96,7 @@ pub fn taproot_build_and_sign_transaction(
             Proto::Output {
                 amount: legacy.amount as u64,
                 to_recipient: ProtoOutputRecipient::from_address(
-                    legacy.change_address.as_bytes().into(),
+                    legacy.change_address,
                 ),
             },
         ),

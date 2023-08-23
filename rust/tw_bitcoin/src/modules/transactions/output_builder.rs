@@ -28,7 +28,7 @@ impl OutputBuilder {
 
         let (script_pubkey, control_block, taproot_payload) = match &output.to_recipient {
             // Script spending condition was passed on directly.
-            ProtoOutputRecipient::script_pubkey(script) => (
+            ProtoOutputRecipient::custom_script_pubkey(script) => (
                 ScriptBuf::from_bytes(script.to_vec()),
                 NO_CONTROL_BLOCK,
                 NO_TAPROOT_PAYLOAD,
@@ -258,7 +258,8 @@ fn witness_pubkey_hash_from_proto(
     Ok(wpubkey_hash)
 }
 
-pub fn output_from_address(amount: u64, addr: &[u8]) -> Result<Proto::Output<'static>> {
+// Derives the P2* output from the given address.
+pub fn output_from_address(amount: u64, addr: &str) -> Result<Proto::Output<'static>> {
     let string = String::from_utf8(addr.to_vec()).unwrap();
     let addr = Address::from_str(&string)
         .unwrap()

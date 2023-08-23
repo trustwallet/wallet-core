@@ -136,9 +136,8 @@ message Output {
 
     oneof to_recipient {
         Builder builder = 2;
-        // TODO: Rename to `custom`?
-        bytes script_pubkey = 3;
-        bytes from_address = 4;
+        bytes custom_script_pubkey = 3;
+        string from_address = 4;
     }
 
     message Builder {

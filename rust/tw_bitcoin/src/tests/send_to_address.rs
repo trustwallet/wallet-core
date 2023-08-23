@@ -40,7 +40,7 @@ fn send_to_p2pkh_address() {
 
     let out1 = Proto::Output {
         amount: 1_000,
-        to_recipient: ProtoOutputRecipient::from_address(address_string.as_bytes().into()),
+        to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
     };
 
     let signing = Proto::SigningInput {
@@ -104,7 +104,7 @@ fn send_to_p2wpkh_address() {
 
     let out1 = Proto::Output {
         amount: 1_000,
-        to_recipient: ProtoOutputRecipient::from_address(address_string.as_bytes().into()),
+        to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
     };
 
     let signing = Proto::SigningInput {
@@ -171,7 +171,7 @@ fn send_to_p2tr_key_path_address() {
 
     let out1 = Proto::Output {
         amount: 1_000,
-        to_recipient: ProtoOutputRecipient::from_address(address_string.as_bytes().into()),
+        to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
     };
 
     let signing = Proto::SigningInput {
