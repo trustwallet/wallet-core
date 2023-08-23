@@ -29,6 +29,7 @@ enum Error {
     Error_bad_address_recipient = 22;
     Error_invalid_redeem_script = 23;
     Error_invalid_witness_redeem_script = 24;
+    Error_invalid_taproot_tweaked_pubkey = 25;
 }
 
 message SigningInput {
@@ -154,8 +155,9 @@ message Output {
             bytes p2tr_key_path = 5;
             // Pay-to-Taproot-script-path (complex transfers)
             TaprootScriptPath p2tr_script_path = 6;
-            OrdinalInscription ordinal_inscribe = 7;
-            Brc20Inscription brc20_inscribe = 8;
+            bytes p2tr_tweaked = 7;
+            OrdinalInscription ordinal_inscribe = 8;
+            Brc20Inscription brc20_inscribe = 9;
         }
     }
 

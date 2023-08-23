@@ -5,6 +5,7 @@ use super::OrdinalNftInscription;
 use crate::entry::aliases::*;
 use crate::{Error, Result};
 use bitcoin::address::{Payload, WitnessVersion};
+use bitcoin::key::TweakedPublicKey;
 use bitcoin::taproot::{LeafVersion, TapNodeHash};
 use bitcoin::{Address, PubkeyHash, ScriptBuf, ScriptHash, WPubkeyHash, WScriptHash};
 use secp256k1::hashes::Hash;
@@ -85,6 +86,19 @@ impl OutputBuilder {
 
                     (
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(node_hash)),
+                        NO_CONTROL_BLOCK,
+                        NO_TAPROOT_PAYLOAD,
+                    )
+                },
+                ProtoOutputBuilder::p2tr_tweaked(tweaked_pubkey) => {
+                    let xonly = XOnlyPublicKey::from_slice(tweaked_pubkey).map_err(|_| {
+                        Error::from(Proto::Error::Error_invalid_taproot_tweaked_pubkey)
+                    })?;
+                    // TODO: Can we do some extra checks here?
+                    let tweaked = TweakedPublicKey::dangerous_assume_tweaked(xonly);
+
+                    (
+                        ScriptBuf::new_v1_p2tr_tweaked(tweaked),
                         NO_CONTROL_BLOCK,
                         NO_TAPROOT_PAYLOAD,
                     )
@@ -295,7 +309,7 @@ pub fn output_from_address(amount: u64, addr: &[u8]) -> Result<Proto::Output<'st
                     Proto::Output {
                         amount,
                         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-                            variant: ProtoOutputBuilder::p2tr_key_path(pubkey.into()),
+                            variant: ProtoOutputBuilder::p2tr_tweaked(pubkey.into()),
                         }),
                     }
                 },
