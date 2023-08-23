@@ -3,7 +3,7 @@ use tw_encoding::hex;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 
 use crate::{
-    identity::{Identity, IdentityError},
+    identity::{Identity, SigningError},
     interface_spec::{
         envelope::{Envelope, EnvelopeContent},
         get_ingress_expiry,
@@ -50,7 +50,7 @@ impl From<TransferArgs> for SendRequest<'_> {
 
 #[derive(Debug)]
 pub enum SignTransferError {
-    Identity(IdentityError),
+    Identity(SigningError),
     EncodingArgsFailed,
     EncodingSignedTransactionFailed,
 }
