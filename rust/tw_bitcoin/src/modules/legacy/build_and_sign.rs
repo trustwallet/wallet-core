@@ -82,9 +82,7 @@ pub fn taproot_build_and_sign_transaction(
             // The target output (main recipient).
             Proto::Output {
                 amount: legacy.amount as u64,
-                to_recipient: ProtoOutputRecipient::from_address(
-                    legacy.to_address,
-                ),
+                to_recipient: ProtoOutputRecipient::from_address(legacy.to_address),
             },
         ],
         // The input selector, as dictated by the `TransactionPlan` of the
@@ -95,9 +93,7 @@ pub fn taproot_build_and_sign_transaction(
             // The change output (return to myself).
             Proto::Output {
                 amount: legacy.amount as u64,
-                to_recipient: ProtoOutputRecipient::from_address(
-                    legacy.change_address,
-                ),
+                to_recipient: ProtoOutputRecipient::from_address(legacy.change_address),
             },
         ),
         disable_change_output: false,
@@ -124,17 +120,29 @@ pub fn taproot_build_and_sign_transaction(
     let legacy_transaction = LegacyProto::Transaction {
         version: 2,
         lockTime: native_lock_time.to_consensus_u32(),
-        inputs: Default::default(),
+        inputs: transaction
+            .inputs
+            .iter()
+            .map(|input| LegacyProto::TransactionInput {
+                previousOutput: Some(LegacyProto::OutPoint {
+                    hash: input.txid.clone(),
+                    index: input.vout,
+                    sequence: input.sequence,
+                    // Unused for Bitcoin
+                    tree: Default::default(),
+                }),
+                // TODO: Why does this exist twice?
+                sequence: input.sequence,
+                script: input.script_sig.clone(),
+            })
+            .collect(),
         outputs: transaction
             .outputs
             .iter()
-            .map(|_output| {
-                //TODO:
-                LegacyProto::TransactionOutput {
-                    value: Default::default(),
-                    script: Default::default(),
-                    spendingScript: Default::default(),
-                }
+            .map(|output| LegacyProto::TransactionOutput {
+                value: output.amount as i64,
+                script: output.script_pubkey.clone(),
+                spendingScript: output.taproot_payload.clone(),
             })
             .collect(),
     };
