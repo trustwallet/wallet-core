@@ -305,7 +305,6 @@ impl BitcoinEntry {
         let mut proto_outputs = vec![];
         for output in utxo_outputs {
             proto_outputs.push(Proto::TransactionOutput {
-                recipient: Cow::default(),
                 script_pubkey: output.script_pubkey,
                 amount: output.value,
                 taproot_payload: output.taproot_payload,

@@ -264,18 +264,15 @@ message TransactionInput {
 }
 
 message TransactionOutput {
-    // Public key or hash.
-    bytes recipient = 1;
-
     // The condition for claiming the output.
-    bytes script_pubkey = 2;
+    bytes script_pubkey = 1;
 
     // The amount sent.
-    uint64 amount = 3;
+    uint64 amount = 2;
 
     // In case of P2TR script-path (complex scripts), this is the payload that
     // must later be revealed and is required for claiming.
-    bytes taproot_payload = 2;
+    bytes taproot_payload = 3;
 
     // In case of P2TR script-path (complex scripts), this is the control block
     // required for claiming.
