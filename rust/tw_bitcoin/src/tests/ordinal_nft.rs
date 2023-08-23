@@ -24,6 +24,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         vout: 0,
         amount: 32_400,
         sequence: u32::MAX,
+        enable_zero_sequence: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
@@ -71,6 +72,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         vout: 0,
         amount: 31_100,
         sequence: u32::MAX,
+        enable_zero_sequence: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::ordinal_inscribe(Proto::mod_Input::OrdinalInscription {

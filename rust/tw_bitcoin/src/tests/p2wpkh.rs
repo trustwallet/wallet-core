@@ -25,6 +25,7 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         vout: 0,
         amount: 100_000_000 * 50,
         sequence: u32::MAX,
+        enable_zero_sequence: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
