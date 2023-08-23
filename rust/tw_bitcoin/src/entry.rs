@@ -1,6 +1,5 @@
 use crate::{Error, Result};
-use bitcoin::address::{NetworkChecked, Payload};
-use secp256k1::hashes::Hash;
+use bitcoin::address::NetworkChecked;
 use std::borrow::Cow;
 use std::fmt::Display;
 use tw_coin_entry::coin_context::CoinContext;

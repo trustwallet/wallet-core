@@ -1,7 +1,6 @@
 use super::hex;
 use crate::entry::{
-    BitcoinEntry, PlaceHolder, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder,
-    ProtoOutputRecipient,
+    BitcoinEntry, PlaceHolder, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputRecipient,
 };
 use bitcoin::{Address, PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
