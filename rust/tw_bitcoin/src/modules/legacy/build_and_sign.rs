@@ -1,12 +1,9 @@
 use crate::entry::{ProtoInputRecipient, ProtoOutputRecipient};
-use crate::Result;
+use crate::{Error, Result};
 use bitcoin::absolute::LockTime;
-use bitcoin::consensus::Decodable;
-use bitcoin::key::TapTweak;
-use bitcoin::taproot::{LeafVersion, NodeInfo, TapNodeHash, TaprootSpendInfo};
-use bitcoin::{Network, PrivateKey, PublicKey, ScriptBuf, Witness};
+use bitcoin::taproot::{LeafVersion, NodeInfo, TaprootSpendInfo};
+use bitcoin::{Network, PrivateKey, PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
-use std::borrow::Cow;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
@@ -29,13 +26,13 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
 
     let proto: LegacyProto::SigningInput =
         try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
+
     let signing: LegacyProto::SigningOutput =
         try_or_else!(taproot_build_and_sign_transaction(proto), CByteArray::null);
 
-    let _serialized =
-        tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
+    let serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
 
-    todo!()
+    CByteArray::from(serialized)
 }
 
 pub fn taproot_build_and_sign_transaction(
@@ -68,7 +65,7 @@ pub fn taproot_build_and_sign_transaction(
                 }),
                 Network::Bitcoin,
             )
-            .unwrap();
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?;
 
             let my_pubkey = private_key.public_key(&secp256k1::Secp256k1::new());
 
@@ -78,7 +75,12 @@ pub fn taproot_build_and_sign_transaction(
                 None
             };
 
-            inputs.push(input_from_legacy_utxo(my_pubkey, redeem_script_hash, utxo))
+            inputs.push(input_from_legacy_utxo(
+                my_pubkey,
+                redeem_script_hash,
+                utxo,
+                legacy.hash_type,
+            )?)
         }
 
         UtxoProto::InputSelector::UseAll
@@ -96,7 +98,7 @@ pub fn taproot_build_and_sign_transaction(
                 }),
                 Network::Bitcoin,
             )
-            .unwrap();
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?;
 
             let my_pubkey = private_key.public_key(&secp256k1::Secp256k1::new());
 
@@ -106,7 +108,12 @@ pub fn taproot_build_and_sign_transaction(
                 None
             };
 
-            inputs.push(input_from_legacy_utxo(my_pubkey, redeem_script_hash, utxo))
+            inputs.push(input_from_legacy_utxo(
+                my_pubkey,
+                redeem_script_hash,
+                utxo,
+                legacy.hash_type,
+            )?)
         }
 
         UtxoProto::InputSelector::SelectAscending
@@ -211,7 +218,8 @@ fn input_from_legacy_utxo(
     my_pubkey: PublicKey,
     redeem_script: Option<&[u8]>,
     utxo: &LegacyProto::UnspentTransaction,
-) -> Proto::Input<'static> {
+    hash_type: u32,
+) -> Result<Proto::Input<'static>> {
     use LegacyProto::TransactionVariant as Ty;
 
     // Split the spending script into individual items, accordingly.
@@ -219,7 +227,12 @@ fn input_from_legacy_utxo(
     let input_builder = if script_pubkey.is_p2sh() {
         Proto::mod_Input::Builder {
             variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2sh(
-                redeem_script.unwrap().to_vec().into(),
+                redeem_script
+                    .ok_or_else(|| {
+                        Error::from(Proto::Error::Error_legacy_unsupported_script_pubkey)
+                    })?
+                    .to_vec()
+                    .into(),
             ),
         }
     } else if script_pubkey.is_p2pkh() {
@@ -256,7 +269,7 @@ fn input_from_legacy_utxo(
 
                 let control_block = spend_info
                     .control_block(&(spending_script, LeafVersion::TapScript))
-                    .unwrap();
+                    .expect("failed to construct control block");
 
                 Proto::mod_Input::Builder {
                     variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2tr_script_path(
@@ -268,16 +281,31 @@ fn input_from_legacy_utxo(
                     ),
                 }
             },
-            // TODO: Error
-            _ => panic!(),
+            _ => return Err(Error::from(Proto::Error::Error_legacy_p2tr_invalid_variant)),
         }
     } else {
-        todo!()
+        return Err(Error::from(
+            Proto::Error::Error_legacy_unsupported_script_pubkey,
+        ));
     };
 
-    let out_point = utxo.out_point.as_ref().unwrap();
+    let sighash_type = match hash_type {
+        0 => UtxoProto::SighashType::UseDefault,
+        1 => UtxoProto::SighashType::All,
+        2 => UtxoProto::SighashType::None_pb,
+        3 => UtxoProto::SighashType::Single,
+        129 => UtxoProto::SighashType::AllPlusAnyoneCanPay,
+        130 => UtxoProto::SighashType::NonePlusAnyoneCanPay,
+        131 => UtxoProto::SighashType::SinglePlusAnyoneCanPay,
+        _ => return Err(Error::from(Proto::Error::Error_invalid_sighash_type)),
+    };
 
-    Proto::Input {
+    let out_point = utxo
+        .out_point
+        .as_ref()
+        .ok_or_else(|| Error::from(Proto::Error::Error_legacy_outpoint_not_set))?;
+
+    Ok(Proto::Input {
         txid: out_point.hash.to_vec().into(),
         vout: out_point.index,
         amount: utxo.amount as u64,
@@ -285,8 +313,7 @@ fn input_from_legacy_utxo(
         sequence: out_point.sequence,
         // TODO: Is this okay?
         sequence_enable_zero: true,
-        // TODO: pass `sighash_type` as parameter.
-        sighash_type: UtxoProto::SighashType::All,
+        sighash_type,
         to_recipient: ProtoInputRecipient::builder(input_builder),
-    }
+    })
 }

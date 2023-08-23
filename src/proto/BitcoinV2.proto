@@ -30,6 +30,10 @@ enum Error {
     Error_invalid_redeem_script = 23;
     Error_invalid_witness_redeem_script = 24;
     Error_invalid_taproot_tweaked_pubkey = 25;
+    Error_legacy_p2tr_invalid_variant = 26;
+    Error_legacy_unsupported_script_pubkey = 27;
+    Error_legacy_expected_redeem_script = 28;
+    Error_legacy_outpoint_not_set = 29;
 }
 
 message SigningInput {
