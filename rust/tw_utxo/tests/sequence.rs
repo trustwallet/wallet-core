@@ -22,7 +22,7 @@ fn zero_sequence_disabled() {
         // We use a sequence of zero,
         sequence: 0,
         // ...but it's not explicitly enabled.
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         script_pubkey: input_script_pubkey.as_bytes().into(),
         sighash_type: Proto::SighashType::All,
         signing_method: Proto::SigningMethod::Legacy,

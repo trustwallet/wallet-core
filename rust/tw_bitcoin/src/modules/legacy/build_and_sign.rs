@@ -179,7 +179,7 @@ fn input_from_legacy_utxo(utxo: LegacyProto::UnspentTransaction) -> Proto::Input
         vout: out_point.index,
         amount: utxo.amount as u64,
         sequence: out_point.sequence,
-        enable_zero_sequence: true,
+        sequence_enable_zero: true,
         // TODO: pass `sighash_type` as parameter.
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::custom(Proto::mod_Input::ScriptWitness {

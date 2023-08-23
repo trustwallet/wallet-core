@@ -74,12 +74,12 @@ impl Compiler<StandardBitcoinContext> {
             ));
         }
 
-        // If a `sequence` of zero is specified, the `enable_zero_sequence` must
+        // If a `sequence` of zero is specified, the `sequence_enable_zero` must
         // be explicitly set to true.
         if proto
             .inputs
             .iter()
-            .any(|input| input.sequence == 0 && !input.enable_zero_sequence)
+            .any(|input| input.sequence == 0 && !input.sequence_enable_zero)
         {
             return Err(Error::from(Proto::Error::Error_zero_sequence_not_enabled));
         }

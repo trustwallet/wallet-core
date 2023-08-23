@@ -65,7 +65,7 @@ message Input {
 
     uint32 sequence = 3;
 
-    bool enable_zero_sequence = 4;
+    bool sequence_enable_zero = 4;
 
     uint64 amount = 5;
 

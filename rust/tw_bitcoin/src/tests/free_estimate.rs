@@ -43,7 +43,7 @@ fn p2pkh_fee_estimate() {
         vout: 0,
         amount: 2 * ONE_BTC,
         sequence: u32::MAX,
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
@@ -102,7 +102,7 @@ fn p2wpkh_fee_estimate() {
         vout: 0,
         amount: 2 * ONE_BTC,
         sequence: u32::MAX,
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
@@ -152,7 +152,7 @@ fn p2tr_key_path_fee_estimate() {
         vout: 0,
         amount: 2 * ONE_BTC,
         sequence: u32::MAX,
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::TaprootKeyPath {
@@ -212,7 +212,7 @@ fn brc20_inscribe_fee_estimate() {
         vout: 0,
         amount: 2 * ONE_BTC,
         sequence: u32::MAX,
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::Brc20Inscription {

@@ -24,7 +24,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         vout: 1,
         amount: 26_400,
         sequence: u32::MAX,
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
@@ -84,7 +84,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         vout: 0,
         amount: 7_000,
         sequence: u32::MAX,
-        enable_zero_sequence: false,
+        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
             variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::Brc20Inscription {

@@ -292,7 +292,7 @@ impl InputBuilder {
             vout: input.vout,
             amount: input.amount,
             sequence: input.sequence,
-            enable_zero_sequence: input.enable_zero_sequence,
+            sequence_enable_zero: input.sequence_enable_zero,
             script_pubkey: script_pubkey.to_vec().into(),
             signing_method,
             sighash_type: input.sighash_type,
