@@ -1,6 +1,4 @@
 use crate::entry::aliases::*;
-use crate::modules::transactions::OrdinalNftInscription;
-use crate::Recipient;
 use bitcoin::PublicKey;
 use std::ffi::{c_char, CStr};
 use tw_memory::ffi::c_byte_array::CByteArray;
@@ -160,7 +158,6 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
         Err(_) => return CByteArray::null(),
     };
 
-    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         amount: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
@@ -193,8 +190,8 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 // Builds the Ordinals inscripton for BRC20 transfer.
 pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     mime_type: *const c_char,
-    data: *const u8,
-    data_len: usize,
+    payload: *const u8,
+    payload_len: usize,
     _satoshis: i64,
     pubkey: *const u8,
     pubkey_len: usize,
@@ -206,8 +203,8 @@ pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     };
 
     // Convert data to inscribe.
-    let data = try_or_else!(
-        CByteArrayRef::new(data, data_len).as_slice(),
+    let payload = try_or_else!(
+        CByteArrayRef::new(payload, payload_len).as_slice(),
         CByteArray::null
     );
 
@@ -217,11 +214,32 @@ pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
         CByteArray::null
     );
 
-    let recipient = try_or_else!(Recipient::<PublicKey>::from_slice(slice), CByteArray::null);
+    let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
     // Inscribe NFT data.
-    let _nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, recipient)
-        .expect("Ordinal NFT inscription incorrectly constructed");
+    let output = Proto::Output {
+        amount: _satoshis as u64,
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OrdinalInscription {
+                inscribe_to: recipient.to_bytes().into(),
+                mime_type: mime_type.into(),
+                payload: payload.into(),
+            }),
+        }),
+    };
 
-    todo!()
+    let res = try_or_else!(
+        crate::modules::transactions::OutputBuilder::utxo_from_proto(&output),
+        CByteArray::null
+    );
+
+    // Prepare and serialize protobuf structure.
+    let proto = LegacyProto::TransactionOutput {
+        value: res.value as i64,
+        script: res.script_pubkey,
+        spendingScript: res.taproot_payload,
+    };
+
+    let serialized = tw_proto::serialize(&proto).expect("failed to serialized transaction output");
+    CByteArray::from(serialized)
 }
