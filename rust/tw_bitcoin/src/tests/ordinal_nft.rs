@@ -113,10 +113,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
 
     const REVEAL_RAW: &str = super::data::NFT_INSCRIPTION_RAW_HEX;
 
+    assert_eq!(encoded, REVEAL_RAW);
     assert_eq!(transaction.inputs.len(), 1);
     assert_eq!(transaction.outputs.len(), 1);
-
-    assert_eq!(encoded[..164], REVEAL_RAW[..164]);
-    assert_ne!(encoded[164..292], REVEAL_RAW[164..292]);
-    assert_eq!(encoded[292..], REVEAL_RAW[292..]);
 }
