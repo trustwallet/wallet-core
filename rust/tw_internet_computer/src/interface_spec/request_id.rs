@@ -234,22 +234,20 @@ mod test {
 
     use candid::Principal;
 
-    use super::*;
-
     #[test]
     fn representation_independent_hash_call_or_query() {
-        let map = btreemap! {
-            "request_type".to_string() => RawHttpRequestVal::String("call".to_string()),
-            "sender".to_string() => RawHttpRequestVal::Bytes(Principal::anonymous().as_slice().to_vec()),
-            "ingress_expiry".to_string() => RawHttpRequestVal::U64(1685570400000000000),
-            "method_name".to_string() => RawHttpRequestVal::String("hello".to_string()),
-            "canister_id".to_string() => RawHttpRequestVal::Bytes(vec![0, 0, 0, 0, 0, 0, 4, 210]),
-            "arg".to_string() =>  RawHttpRequestVal::Bytes(b"DIDL\x00\xFD*".to_vec())
-        };
+        let hash = super::representation_independent_hash_call_or_query(
+            super::CallOrQuery::Call,
+            vec![0, 0, 0, 0, 0, 0, 4, 210],
+            "hello",
+            b"DIDL\x00\xFD*".to_vec(),
+            1685570400000000000,
+            Principal::anonymous().as_slice().to_vec(),
+            None,
+        );
 
-        let hash = hash_of_map(&map);
         assert_eq!(
-            tw_encoding::hex::encode(hash, false),
+            tw_encoding::hex::encode(hash.0, false),
             "1d1091364d6bb8a6c16b203ee75467d59ead468f523eb058880ae8ec80e2b101"
         );
     }
