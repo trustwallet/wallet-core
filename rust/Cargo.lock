@@ -1863,7 +1863,6 @@ dependencies = [
  "serde",
  "serde_bytes",
  "serde_cbor",
- "sha2 0.10.6",
  "tw_encoding",
  "tw_hash",
  "tw_keypair",

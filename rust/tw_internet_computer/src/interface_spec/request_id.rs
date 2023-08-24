@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 
 use ic_certification::Label;
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use tw_hash::{sha2::sha256, H256};
 
 use super::envelope::EnvelopeContent;
@@ -14,7 +13,7 @@ const DOMAIN_IC_REQUEST: &[u8; 11] = b"\x0Aic-request";
 /// the request using a request id, which is the
 /// representation-independent hash of the content map of the
 /// original request. A request id must have length of 32 bytes.
-pub struct RequestId(pub [u8; 32]);
+pub struct RequestId(pub(crate) H256);
 
 impl RequestId {
     /// Create the prehash from the request ID.
@@ -124,13 +123,15 @@ fn hash_u64(value: u64) -> Vec<u8> {
 // arrays, encoded as the concatenation of the hashes of the encodings of the
 // array elements.
 fn hash_array(elements: Vec<RawHttpRequestVal>) -> Vec<u8> {
-    let mut hasher = Sha256::new();
+    let mut buffer = vec![];
     elements
         .into_iter()
         // Hash the encoding of all the array elements.
-        .for_each(|e| hasher.update(hash_val(e).as_slice()));
-    let result = &hasher.finalize()[..];
-    result.to_vec()
+        .for_each(|e| {
+            let mut hashed_val = hash_val(e);
+            buffer.append(&mut hashed_val);
+        });
+    sha256(&buffer)
 }
 
 fn hash_val(val: RawHttpRequestVal) -> Vec<u8> {
@@ -151,7 +152,7 @@ fn hash_key_val(key: String, val: RawHttpRequestVal) -> Vec<u8> {
 
 /// Describes `hash_of_map` as specified in the public spec.
 /// See: https://internetcomputer.org/docs/current/references/ic-interface-spec#hash-of-map
-fn hash_of_map<S: ToString>(map: &BTreeMap<S, RawHttpRequestVal>) -> [u8; 32] {
+fn hash_of_map<S: ToString>(map: &BTreeMap<S, RawHttpRequestVal>) -> H256 {
     let mut hashes: Vec<Vec<u8>> = Vec::new();
     for (key, val) in map.iter() {
         hashes.push(hash_key_val(key.to_string(), val.clone()));
@@ -163,13 +164,10 @@ fn hash_of_map<S: ToString>(map: &BTreeMap<S, RawHttpRequestVal>) -> [u8; 32] {
     // duplicated field names).  Then concatenate all the hashes.
     hashes.sort();
 
-    let mut hasher = Sha256::new();
-    for hash in hashes {
-        hasher.update(hash.as_slice());
-    }
+    let buffer = hashes.into_iter().flatten().collect::<Vec<_>>();
+    let hash = sha256(&buffer);
 
-    let result = &hasher.finalize()[..];
-    <[u8; 32]>::try_from(result).unwrap_or([0; 32])
+    H256::try_from(hash.as_slice()).unwrap_or_else(|_| H256::new())
 }
 
 fn representation_independent_hash_call_or_query(
