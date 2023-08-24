@@ -1,5 +1,7 @@
+#![allow(deprecated)]
+
 use crate::modules::legacy::*;
-use crate::modules::transactions::{BRC20TransferInscription, Brc20Ticker};
+use crate::modules::transactions::{BRC20TransferInscription, Brc20Ticker, OrdinalNftInscription};
 use bitcoin::{PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use std::ffi::CString;
@@ -12,7 +14,6 @@ const SATOSHIS: i64 = 0;
 const PUBKEY: &str = "028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f";
 
 #[test]
-#[allow(deprecated)]
 fn ffi_tw_build_p2pkh_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -31,7 +32,6 @@ fn ffi_tw_build_p2pkh_script() {
 }
 
 #[test]
-#[allow(deprecated)]
 fn ffi_tw_build_p2wpkh_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -50,7 +50,6 @@ fn ffi_tw_build_p2wpkh_script() {
 }
 
 #[test]
-#[allow(deprecated)]
 fn ffi_tw_build_p2tr_key_path_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -71,7 +70,6 @@ fn ffi_tw_build_p2tr_key_path_script() {
 }
 
 #[test]
-#[allow(deprecated)]
 fn ffi_tw_build_brc20_transfer_inscription() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
@@ -117,5 +115,45 @@ fn ffi_tw_build_brc20_transfer_inscription() {
 
 #[test]
 fn ffi_tw_bitcoin_build_nft_inscription() {
-    //TODO...
+    let pubkey_slice = hex::decode(PUBKEY).unwrap();
+    let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
+
+    let mime_type = "image/png";
+    let c_mime_type = CString::new(mime_type).unwrap();
+    let payload_hex = super::data::NFT_INSCRIPTION_IMAGE_DATA;
+    let payload = tw_encoding::hex::decode(payload_hex).unwrap();
+
+    // Call the FFI function.
+    let raw = unsafe {
+        tw_bitcoin_build_nft_inscription(
+            c_mime_type.as_ptr(),
+            payload.as_ptr(),
+            payload.len(),
+            SATOSHIS,
+            pubkey_slice.as_ptr(),
+            pubkey_slice.len(),
+        )
+        .into_vec()
+    };
+
+    // Prepare the NFT inscription + merkle root.
+    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), &payload, pubkey.into()).unwrap();
+
+    let merkle_root = nft 
+        .inscription()
+        .spend_info()
+        .merkle_root()
+        .expect("incorrectly constructed Taproot merkle root");
+
+    // The expected script.
+    let xonly = XOnlyPublicKey::from(pubkey.inner);
+    let expected = ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, Some(merkle_root));
+
+    let proto: LegacyProto::TransactionOutput = tw_proto::deserialize(&raw).unwrap();
+    assert_eq!(proto.value, SATOSHIS);
+    assert_eq!(proto.script, expected.as_bytes());
+    assert_eq!(
+        proto.spendingScript,
+        nft.inscription().taproot_program().as_bytes()
+    );
 }

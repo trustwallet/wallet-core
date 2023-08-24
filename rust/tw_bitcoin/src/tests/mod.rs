@@ -2,7 +2,7 @@ mod address;
 mod brc20;
 mod data;
 mod free_estimate;
-mod legacy;
+mod legacy_scripts;
 mod ordinal_nft;
 mod p2tr_key_path;
 mod p2wpkh;
