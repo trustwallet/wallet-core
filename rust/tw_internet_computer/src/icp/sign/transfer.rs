@@ -86,7 +86,8 @@ pub fn transfer(
     let request: rosetta::Request = (rosetta::RequestType::Send, vec![envelope_pair]);
     let signed_transaction: rosetta::SignedTransaction = vec![request];
     // Encode the signed transaction.
-    let cbor_encoded_signed_transaction = serde_cbor::to_vec(&signed_transaction)
+    let mut cbor_encoded_signed_transaction = vec![];
+    ciborium::ser::into_writer(&signed_transaction, &mut cbor_encoded_signed_transaction)
         .map_err(|_| SignTransferError::EncodingSignedTransactionFailed)?;
 
     Ok(cbor_encoded_signed_transaction)
