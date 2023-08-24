@@ -72,12 +72,22 @@ impl Signer {
                     }
                     // If it has a leaf hash, then it's a P2TR script-path (complex transaction)
                     else {
-                        // We do not tweak the key here since the complex
+                        // NOTE: We do not tweak the key here since the complex
                         // spending condition(s) must take into account on who
                         // is allowed to spend the input, hence this signing
                         // process is simpler than for P2TR key-path.
+
+                        // Construct the Schnorr signature.
+                        #[cfg(not(test))]
+                        let schnorr = secp.sign_schnorr(&sighash, &keypair);
+                        #[cfg(test)]
+                        // For tests, we disable the included randomness in order to create
+                        // reproducible signatures. Randomness should ALWAYS be used in
+                        // production.
+                        let schnorr = secp.sign_schnorr_no_aux_rand(&sighash, &keypair);
+
                         let sig = bitcoin::taproot::Signature {
-                            sig: keypair.sign_schnorr(sighash),
+                            sig: schnorr,
                             hash_ty: sighash_type,
                         };
 
