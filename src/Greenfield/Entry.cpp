@@ -32,7 +32,7 @@ Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& a
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Cosmos::Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
 TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {

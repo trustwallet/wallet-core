@@ -6,23 +6,14 @@
 
 #include "Signer.h"
 #include "../PublicKey.h"
+#include "../proto/Common.pb.h"
 
 namespace TW::Greenfield {
 
-Cosmos::Proto::SigningOutput Signer::sign(const Cosmos::Proto::SigningInput &input) {
-    // TODO: Check and finalize implementation
-
-    auto protoOutput = Cosmos::Proto::SigningOutput();
-    Data encoded;
-    // auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    // auto signature = privateKey.sign(payload, TWCurveED25519);
-    // encoded = encodeSignature(signature);
-
-    // protoOutput.set_encoded(encoded.data(), encoded.size());
-    return protoOutput;
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
 }
 
-TxCompiler::Proto::PreSigningOutput Signer::preImageHashes(const Cosmos::Proto::SigningInput& input) {
+TxCompiler::Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input) {
 }
 
 } // namespace TW::Greenfield

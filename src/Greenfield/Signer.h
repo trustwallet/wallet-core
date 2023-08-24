@@ -8,7 +8,7 @@
 
 #include "Data.h"
 #include "PrivateKey.h"
-#include "proto/Cosmos.pb.h"
+#include "proto/Greenfield.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 
 namespace TW::Greenfield {
@@ -20,10 +20,10 @@ public:
     Signer() = delete;
 
     /// Signs a Proto::SigningInput transaction
-    static Cosmos::Proto::SigningOutput sign(const Cosmos::Proto::SigningInput& input);
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
     /// Collect pre-image hashes to be signed
-    static TxCompiler::Proto::PreSigningOutput preImageHashes(const Cosmos::Proto::SigningInput& input);
+    static TxCompiler::Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Greenfield
