@@ -46,7 +46,7 @@ impl Signer {
                 | UtxoProto::SigningMethod::TaprootOnePrevout => {
                     // Note that `input.sighash_type = 0` is handled by the underlying library.
                     let sighash_type = TapSighashType::from_consensus_u8(entry.sighash_type as u8)
-                        .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash_type))?;
+                        .map_err(|_| Error::from(Proto::Error::Error_utxo_invalid_sighash_type))?;
 
                     // Any empty leaf hash implies P2TR key-path (balance transfer)
                     if utxo.leaf_hash.is_empty() {

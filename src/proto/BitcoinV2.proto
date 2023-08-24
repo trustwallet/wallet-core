@@ -9,17 +9,17 @@ import "Utxo.proto";
 enum Error {
     OK = 0;
     // `tx_utxo` related errors.
-    Error_invalid_wpkh_script_pubkey = 1;
-    Error_invalid_leaf_hash = 2;
-    Error_invalid_sighash_type = 3;
-    Error_invalid_lock_time = 4;
-    Error_invalid_txid = 5;
-    Error_sighash_failed = 6;
-    Error_missing_sighash_method = 7;
-    Error_failed_encoding = 8;
-    Error_insufficient_inputs = 9;
-    Error_missing_change_script_pubkey = 10;
-    Error_zero_sequence_not_enabled = 11;
+    Error_utxo_invalid_wpkh_script_pubkey = 1;
+    Error_utxo_invalid_leaf_hash = 2;
+    Error_utxo_invalid_sighash_type = 3;
+    Error_utxo_invalid_lock_time = 4;
+    Error_utxo_invalid_txid = 5;
+    Error_utxo_sighash_failed = 6;
+    Error_utxo_missing_sighash_method = 7;
+    Error_utxo_failed_encoding = 8;
+    Error_utxo_insufficient_inputs = 9;
+    Error_utxo_missing_change_script_pubkey = 10;
+    Error_utxo_zero_sequence_not_enabled = 11;
     // `tw_bitcoin` related errors.
     Error_unmatched_input_signature_count = 12;
     Error_missing_input_builder = 13;

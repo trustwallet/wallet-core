@@ -139,7 +139,7 @@ fn ffi_tw_bitcoin_build_nft_inscription() {
     // Prepare the NFT inscription + merkle root.
     let nft = OrdinalNftInscription::new(mime_type.as_bytes(), &payload, pubkey.into()).unwrap();
 
-    let merkle_root = nft 
+    let merkle_root = nft
         .inscription()
         .spend_info()
         .merkle_root()

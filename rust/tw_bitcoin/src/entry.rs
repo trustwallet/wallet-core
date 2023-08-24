@@ -28,23 +28,25 @@ pub mod aliases {
     pub type ProtoInputBuilder<'a> = Proto::mod_Input::mod_Builder::OneOfvariant<'a>;
 }
 
-fn handle_utxo_error(err: &UtxoProto::Error) -> Result<()> {
-    let err = match err {
+#[rustfmt::skip]
+/// Convert `Utxo.proto` error type to `BitcoinV2.proto` error type.
+fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
+    let bitcoin_err = match utxo_err {
         UtxoProto::Error::OK => return Ok(()),
-        UtxoProto::Error::Error_invalid_wpkh_script_pubkey => Proto::Error::Error_invalid_wpkh_script_pubkey,
-        UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_invalid_leaf_hash,
-        UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_invalid_sighash_type,
-        UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_invalid_lock_time,
-        UtxoProto::Error::Error_invalid_txid => Proto::Error::Error_invalid_txid,
-        UtxoProto::Error::Error_sighash_failed => Proto::Error::Error_sighash_failed,
-        UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_missing_sighash_method,
-        UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_failed_encoding,
-        UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_insufficient_inputs,
-        UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_missing_change_script_pubkey,
-        UtxoProto::Error::Error_zero_sequence_not_enabled => Proto::Error::Error_zero_sequence_not_enabled,
+        UtxoProto::Error::Error_invalid_wpkh_script_pubkey => Proto::Error::Error_utxo_invalid_wpkh_script_pubkey,
+        UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_utxo_invalid_leaf_hash,
+        UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_utxo_invalid_sighash_type,
+        UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_utxo_invalid_lock_time,
+        UtxoProto::Error::Error_invalid_txid => Proto::Error::Error_utxo_invalid_txid,
+        UtxoProto::Error::Error_sighash_failed => Proto::Error::Error_utxo_sighash_failed,
+        UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_utxo_missing_sighash_method,
+        UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_utxo_failed_encoding,
+        UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
+        UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
+        UtxoProto::Error::Error_zero_sequence_not_enabled => Proto::Error::Error_utxo_zero_sequence_not_enabled,
     };
 
-    Err(Error::from(err))
+    Err(Error::from(bitcoin_err))
 }
 
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;

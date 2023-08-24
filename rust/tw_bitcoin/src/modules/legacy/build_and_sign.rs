@@ -298,7 +298,7 @@ fn input_from_legacy_utxo(
         129 => UtxoProto::SighashType::AllPlusAnyoneCanPay,
         130 => UtxoProto::SighashType::NonePlusAnyoneCanPay,
         131 => UtxoProto::SighashType::SinglePlusAnyoneCanPay,
-        _ => return Err(Error::from(Proto::Error::Error_invalid_sighash_type)),
+        _ => return Err(Error::from(Proto::Error::Error_utxo_invalid_sighash_type)),
     };
 
     let out_point = utxo
