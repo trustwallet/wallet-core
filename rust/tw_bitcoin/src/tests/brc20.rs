@@ -67,6 +67,15 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(
+        output.txid,
+        hex("797d17d47ae66e598341f9dfdea020b04d4017dcf9cc33f0e51f7a6082171fb1")
+            .into_iter()
+            .rev()
+            .collect::<Vec<u8>>()
+    );
+
     let encoded = tw_encoding::hex::encode(output.encoded, false);
     let transaction = output.transaction.unwrap();
 
@@ -120,6 +129,15 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(
+        output.txid,
+        hex("7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca")
+            .into_iter()
+            .rev()
+            .collect::<Vec<u8>>()
+    );
+
     let encoded = tw_encoding::hex::encode(output.encoded, false);
     let transaction = output.transaction.unwrap();
 

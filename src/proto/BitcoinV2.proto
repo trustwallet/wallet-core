@@ -74,6 +74,7 @@ message SigningInput {
 }
 
 message Input {
+    // The referenced transaction ID in REVERSED order.
     bytes txid = 1;
 
     uint32 vout = 2;
@@ -242,7 +243,7 @@ message SigningOutput {
     // The encoded transaction that submitted to the network.
     bytes encoded = 2;
 
-    // The transaction ID.
+    // The transaction ID in REVERSED order.
     bytes txid = 3;
 
     uint64 weight = 5;
@@ -264,7 +265,7 @@ message Transaction {
 }
 
 message TransactionInput {
-    // The referenced input by transaction hash.
+    // The referenced transaction ID in REVERSED order.
     bytes txid = 1;
 
     // The referenced input by transaction index.
