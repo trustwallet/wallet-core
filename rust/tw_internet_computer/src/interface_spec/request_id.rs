@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 
 use ic_certification::Label;
-use maplit::btreemap;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use tw_hash::{sha2::sha256, H256};
@@ -182,20 +181,37 @@ fn representation_independent_hash_call_or_query(
     sender: Vec<u8>,
     nonce: Option<&[u8]>,
 ) -> RequestId {
-    use RawHttpRequestVal::*;
-    let mut map = btreemap! {
-        "request_type".to_string() => match request_type {
-            CallOrQuery::Call => String("call".to_string()),
-            CallOrQuery::Query => String("query".to_string()),
-        },
-        "canister_id".to_string() => Bytes(canister_id),
-        "method_name".to_string() => String(method_name.to_string()),
-        "arg".to_string() => Bytes(arg),
-        "ingress_expiry".to_string() => U64(ingress_expiry),
-        "sender".to_string() => Bytes(sender),
-    };
+    let mut map = vec![
+        (
+            "request_type".to_string(),
+            match request_type {
+                CallOrQuery::Call => RawHttpRequestVal::String("call".to_string()),
+                CallOrQuery::Query => RawHttpRequestVal::String("query".to_string()),
+            },
+        ),
+        (
+            "canister_id".to_string(),
+            RawHttpRequestVal::Bytes(canister_id),
+        ),
+        (
+            "method_name".to_string(),
+            RawHttpRequestVal::String(method_name.to_string()),
+        ),
+        ("arg".to_string(), RawHttpRequestVal::Bytes(arg)),
+        (
+            "ingress_expiry".to_string(),
+            RawHttpRequestVal::U64(ingress_expiry),
+        ),
+        ("sender".to_string(), RawHttpRequestVal::Bytes(sender)),
+    ]
+    .into_iter()
+    .collect::<BTreeMap<_, _>>();
+
     if let Some(some_nonce) = nonce {
-        map.insert("nonce".to_string(), Bytes(some_nonce.to_vec()));
+        map.insert(
+            "nonce".to_string(),
+            RawHttpRequestVal::Bytes(some_nonce.to_vec()),
+        );
     }
     RequestId(hash_of_map(&map))
 }
@@ -206,25 +222,40 @@ fn representation_independent_hash_read_state(
     sender: Vec<u8>,
     nonce: Option<&[u8]>,
 ) -> RequestId {
-    use RawHttpRequestVal::*;
+    let mut map = vec![
+        (
+            "request_type".to_string(),
+            RawHttpRequestVal::String("read_state".to_string()),
+        ),
+        (
+            "ingress_expiry".to_string(),
+            RawHttpRequestVal::U64(ingress_expiry),
+        ),
+        (
+            "paths".to_string(),
+            RawHttpRequestVal::Array(
+                paths
+                    .iter()
+                    .map(|p| {
+                        RawHttpRequestVal::Array(
+                            p.iter()
+                                .map(|b| RawHttpRequestVal::Bytes(b.as_bytes().to_vec()))
+                                .collect(),
+                        )
+                    })
+                    .collect(),
+            ),
+        ),
+        ("sender".to_string(), RawHttpRequestVal::Bytes(sender)),
+    ]
+    .into_iter()
+    .collect::<BTreeMap<_, _>>();
 
-    let mut map = btreemap! {
-        "request_type".to_string() => String("read_state".to_string()),
-        "ingress_expiry".to_string() => U64(ingress_expiry),
-        "paths".to_string() => Array(paths
-                .iter()
-                .map(|p| {
-                    RawHttpRequestVal::Array(
-                        p.iter()
-                            .map(|b| RawHttpRequestVal::Bytes(b.as_bytes().to_vec()))
-                            .collect(),
-                    )
-                })
-                .collect()),
-        "sender".to_string() => Bytes(sender),
-    };
     if let Some(some_nonce) = nonce {
-        map.insert("nonce".to_string(), Bytes(some_nonce.to_vec()));
+        map.insert(
+            "nonce".to_string(),
+            RawHttpRequestVal::Bytes(some_nonce.to_vec()),
+        );
     }
     RequestId(hash_of_map(&map))
 }
