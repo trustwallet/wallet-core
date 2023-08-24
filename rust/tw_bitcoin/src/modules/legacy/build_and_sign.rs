@@ -201,12 +201,12 @@ pub fn taproot_build_and_sign_transaction(
         CommonProto::SigningError::Error_internal
     };
 
-    let transaction_id_hex = hex::encode(signed.transaction_id.as_ref(), false);
+    let txid_hex = hex::encode(signed.txid.as_ref(), false);
 
     let legacy_output = LegacyProto::SigningOutput {
         transaction: Some(legacy_transaction),
         encoded: signed.encoded,
-        transaction_id: transaction_id_hex.into(),
+        transaction_id: txid_hex.into(),
         error,
         error_message: Default::default(),
     };

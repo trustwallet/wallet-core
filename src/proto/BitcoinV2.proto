@@ -242,7 +242,8 @@ message SigningOutput {
     // The encoded transaction that submitted to the network.
     bytes encoded = 2;
 
-    bytes transaction_id = 3;
+    // The transaction ID.
+    bytes txid = 3;
 
     uint64 weight = 5;
 

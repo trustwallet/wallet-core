@@ -347,8 +347,7 @@ impl BitcoinEntry {
             error: Proto::Error::OK,
             transaction: Some(transaction),
             encoded: utxo_serialized.encoded,
-            // TODO: Should be returned by `tw_utxo`.
-            transaction_id: Cow::default(),
+            txid: utxo_serialized.txid,
             weight: utxo_serialized.weight,
             fee: utxo_serialized.fee,
         })
