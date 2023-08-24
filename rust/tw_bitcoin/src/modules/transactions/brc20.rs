@@ -31,7 +31,7 @@ impl Brc20Ticker {
     pub fn new(string: String) -> Result<Self> {
         // Brc20Ticker must be a 4-letter identifier.
         if string.len() != 4 {
-            return Err(Error::from(Proto::Error::Error_brc20_invalid_ticker));
+            return Err(Error::from(Proto::Error::Error_invalid_brc20_ticker));
         }
 
         Ok(Brc20Ticker(string))

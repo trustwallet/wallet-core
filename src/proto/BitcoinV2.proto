@@ -6,34 +6,44 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 import "Utxo.proto";
 
-// TODO: Update numbers/sorting.
-// TODO: This should also include all UTXO errors.
 enum Error {
     OK = 0;
-    Error_invalid_private_key = 1;
-    Error_invalid_public_key = 2;
-    Error_invalid_sighash = 3;
-    Error_invalid_sighash_type = 16;
-    Error_invalid_witness_pubkey_hash = 4;
-    Error_brc20_invalid_ticker = 5;
-    Error_invalid_ecdsa_signature = 11;
-    Error_invalid_schnorr_signature = 14;
-    Error_invalid_control_block = 12;
-    Error_invalid_pubkey_hash = 13;
-    Error_invalid_taproot_root = 15;
-    Error_unmatched_input_signature_count = 17;
-    Error_missing_input_builder = 18;
-    Error_missing_output_builder = 20;
-    Error_missing_recipient = 19;
-    Error_unsupported_address_recipient = 21;
-    Error_bad_address_recipient = 22;
-    Error_invalid_redeem_script = 23;
-    Error_invalid_witness_redeem_script = 24;
-    Error_invalid_taproot_tweaked_pubkey = 25;
-    Error_legacy_p2tr_invalid_variant = 26;
-    Error_legacy_unsupported_script_pubkey = 27;
-    Error_legacy_expected_redeem_script = 28;
-    Error_legacy_outpoint_not_set = 29;
+    // `tx_utxo` related errors.
+    Error_invalid_wpkh_script_pubkey = 1;
+    Error_invalid_leaf_hash = 2;
+    Error_invalid_sighash_type = 3;
+    Error_invalid_lock_time = 4;
+    Error_invalid_txid = 5;
+    Error_sighash_failed = 6;
+    Error_missing_sighash_method = 7;
+    Error_failed_encoding = 8;
+    Error_insufficient_inputs = 9;
+    Error_missing_change_script_pubkey = 10;
+    Error_zero_sequence_not_enabled = 11;
+    // `tw_bitcoin` related errors.
+    Error_unmatched_input_signature_count = 12;
+    Error_missing_input_builder = 13;
+    Error_missing_output_builder = 14;
+    Error_missing_recipient = 15;
+    Error_legacy_p2tr_invalid_variant = 16;
+    Error_legacy_unsupported_script_pubkey = 17;
+    Error_legacy_expected_redeem_script = 18;
+    Error_legacy_outpoint_not_set = 19;
+    Error_invalid_private_key = 20;
+    Error_invalid_public_key = 21;
+    Error_invalid_sighash = 22;
+    Error_invalid_witness_pubkey_hash = 23;
+    Error_invalid_brc20_ticker = 24;
+    Error_invalid_ecdsa_signature = 25;
+    Error_invalid_schnorr_signature = 26;
+    Error_invalid_control_block = 27;
+    Error_invalid_pubkey_hash = 28;
+    Error_invalid_taproot_root = 29;
+    Error_invalid_redeem_script = 30;
+    Error_invalid_witness_redeem_script = 31;
+    Error_invalid_taproot_tweaked_pubkey = 32;
+    Error_unsupported_address_recipient = 33;
+    Error_bad_address_recipient = 34;
 }
 
 message SigningInput {
