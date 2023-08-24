@@ -137,7 +137,7 @@ pub fn taproot_build_and_sign_transaction(
         // The input selector, as dictated by the `TransactionPlan` of the
         // legacy protobuf structure.
         input_selector,
-        sat_vb: legacy.byte_fee as u64,
+        fee_per_vb: legacy.byte_fee as u64,
         change_output: Some(
             // The change output (return to myself).
             Proto::Output {

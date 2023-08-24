@@ -33,7 +33,7 @@ fn p2pkh_fee_estimate() {
         inputs: vec![],
         outputs: vec![],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: SAT_VB,
+        fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
     };
@@ -92,7 +92,7 @@ fn p2wpkh_fee_estimate() {
         inputs: vec![],
         outputs: vec![],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: SAT_VB,
+        fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
     };
@@ -176,7 +176,7 @@ fn p2tr_key_path_fee_estimate() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: SAT_VB,
+        fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
     };
@@ -242,7 +242,7 @@ fn brc20_inscribe_fee_estimate() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: SAT_VB,
+        fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
     };

@@ -50,7 +50,7 @@ fn send_to_p2pkh_address() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
+        fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
     };
@@ -114,7 +114,7 @@ fn send_to_p2wpkh_address() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
+        fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
     };
@@ -181,7 +181,7 @@ fn send_to_p2tr_key_path_address() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
+        fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
     };

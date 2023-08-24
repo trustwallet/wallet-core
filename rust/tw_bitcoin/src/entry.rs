@@ -239,7 +239,7 @@ impl BitcoinEntry {
                 })
                 .collect(),
             input_selector: proto.input_selector,
-            weight_base: proto.sat_vb,
+            weight_base: proto.fee_per_vb,
             change_script_pubkey,
             disable_change_output: proto.disable_change_output,
         };
@@ -301,7 +301,7 @@ impl BitcoinEntry {
                     script_pubkey: Cow::Borrowed(&out.script_pubkey),
                 })
                 .collect(),
-            weight_base: proto.sat_vb,
+            weight_base: proto.fee_per_vb,
         };
 
         let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);

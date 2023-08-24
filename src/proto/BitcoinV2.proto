@@ -63,7 +63,7 @@ message SigningInput {
 
     Utxo.Proto.InputSelector input_selector = 7;
 
-    uint64 sat_vb = 8;
+    uint64 fee_per_vb = 8;
 
     // The change output to be added (return to sender).
     // The `value` can be left at 0.

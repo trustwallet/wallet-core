@@ -50,7 +50,7 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
+        fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
     };

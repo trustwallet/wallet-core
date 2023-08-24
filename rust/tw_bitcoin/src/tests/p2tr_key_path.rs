@@ -47,7 +47,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
+        fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
     };
@@ -90,7 +90,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        sat_vb: 0,
+        fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
     };
