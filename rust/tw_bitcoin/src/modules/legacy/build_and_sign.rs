@@ -149,8 +149,6 @@ pub fn taproot_build_and_sign_transaction(
     };
 
     // NOTE, unhandled legacy fields:
-    // * hash_type
-    // * scripts (for P2SH)
     // * use_max_amount
     // * coin_type
     // * output_op_return
