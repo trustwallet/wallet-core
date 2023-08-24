@@ -41,7 +41,7 @@ fn p2pkh_fee_estimate() {
     signing.inputs.push(Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 2 * ONE_BTC,
+        value: 2 * ONE_BTC,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -51,7 +51,7 @@ fn p2pkh_fee_estimate() {
     });
 
     signing.outputs.push(Proto::Output {
-        amount: ONE_BTC,
+        value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
@@ -100,7 +100,7 @@ fn p2wpkh_fee_estimate() {
     signing.inputs.push(Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 2 * ONE_BTC,
+        value: 2 * ONE_BTC,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -110,7 +110,7 @@ fn p2wpkh_fee_estimate() {
     });
 
     signing.outputs.push(Proto::Output {
-        amount: ONE_BTC,
+        value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
@@ -150,7 +150,7 @@ fn p2tr_key_path_fee_estimate() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 2 * ONE_BTC,
+        value: 2 * ONE_BTC,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -163,7 +163,7 @@ fn p2tr_key_path_fee_estimate() {
     };
 
     let out1 = Proto::Output {
-        amount: ONE_BTC,
+        value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2tr_key_path(bob_pubkey.as_slice().into()),
         }),
@@ -210,7 +210,7 @@ fn brc20_inscribe_fee_estimate() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 2 * ONE_BTC,
+        value: 2 * ONE_BTC,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -225,7 +225,7 @@ fn brc20_inscribe_fee_estimate() {
     };
 
     let out1 = Proto::Output {
-        amount: ONE_BTC,
+        value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
                 inscribe_to: alice_pubkey.as_slice().into(),

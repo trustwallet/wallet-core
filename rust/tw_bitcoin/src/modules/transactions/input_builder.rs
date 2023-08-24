@@ -287,7 +287,7 @@ impl InputBuilder {
         let utxo = UtxoProto::TxIn {
             txid: input.txid.to_vec().into(),
             vout: input.vout,
-            amount: input.amount,
+            value: input.value,
             sequence: input.sequence,
             sequence_enable_zero: input.sequence_enable_zero,
             script_pubkey: script_pubkey.to_vec().into(),

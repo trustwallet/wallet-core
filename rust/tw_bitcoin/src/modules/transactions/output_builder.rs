@@ -171,7 +171,7 @@ impl OutputBuilder {
             },
             // We derive the transaction type from the address.
             ProtoOutputRecipient::from_address(addr) => {
-                let proto = output_from_address(output.amount, addr.as_ref())?;
+                let proto = output_from_address(output.value, addr.as_ref())?;
 
                 // Recursive call, will initiate the appropraite builder.
                 return Self::utxo_from_proto(&proto);
@@ -182,7 +182,7 @@ impl OutputBuilder {
         };
 
         let utxo = Proto::mod_PreSigningOutput::TxOut {
-            value: output.amount,
+            value: output.value,
             script_pubkey: script_pubkey.to_vec().into(),
             control_block: control_block.map(|cb| cb.into()).unwrap_or_default(),
             taproot_payload: taproot_payload.map(|cb| cb.into()).unwrap_or_default(),
@@ -259,7 +259,7 @@ fn witness_pubkey_hash_from_proto(
 }
 
 // Derives the P2* output from the given address.
-pub fn output_from_address(amount: u64, addr: &str) -> Result<Proto::Output<'static>> {
+pub fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>> {
     let string = String::from_utf8(addr.to_vec()).unwrap();
     let addr = Address::from_str(&string)
         .unwrap()
@@ -270,7 +270,7 @@ pub fn output_from_address(amount: u64, addr: &str) -> Result<Proto::Output<'sta
     let proto = match addr.payload {
         // Identified a "PubkeyHash" address (i.e. P2PKH).
         Payload::PubkeyHash(pubkey_hash) => Proto::Output {
-            amount,
+            value,
             to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
                 variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                     to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
@@ -290,7 +290,7 @@ pub fn output_from_address(amount: u64, addr: &str) -> Result<Proto::Output<'sta
                     }
 
                     Proto::Output {
-                        amount,
+                        value,
                         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
                             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
@@ -308,7 +308,7 @@ pub fn output_from_address(amount: u64, addr: &str) -> Result<Proto::Output<'sta
                     }
 
                     Proto::Output {
-                        amount,
+                        value,
                         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
                             variant: ProtoOutputBuilder::p2tr_dangerous_assume_tweaked(
                                 pubkey.into(),

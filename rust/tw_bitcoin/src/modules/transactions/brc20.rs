@@ -77,13 +77,13 @@ impl BRC20DeployPayload {
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
-    pub fn new(ticker: Brc20Ticker, amount: u64) -> Self {
+    pub fn new(ticker: Brc20Ticker, value: u64) -> Self {
         BRC20Payload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),
             inner: TransferPayload {
                 tick: ticker,
-                amt: amount.to_string(),
+                amt: value.to_string(),
             },
         }
     }
@@ -92,13 +92,13 @@ impl BRC20TransferPayload {
 impl BRC20MintPayload {
     const OPERATION: &str = "mint";
 
-    pub fn new(ticker: Brc20Ticker, amount: u64) -> Self {
+    pub fn new(ticker: Brc20Ticker, value: u64) -> Self {
         BRC20Payload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),
             inner: MintPayload {
                 tick: ticker,
-                amt: amount.to_string(),
+                amt: value.to_string(),
             },
         }
     }
@@ -158,9 +158,9 @@ impl BRC20TransferInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: Brc20Ticker,
-        amount: u64,
+        value: u64,
     ) -> Result<BRC20TransferInscription> {
-        let data: BRC20Payload<TransferPayload> = BRC20TransferPayload::new(ticker, amount);
+        let data: BRC20Payload<TransferPayload> = BRC20TransferPayload::new(ticker, value);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(
@@ -194,9 +194,9 @@ impl BRC20MintInscription {
     pub fn new(
         recipient: Recipient<PublicKey>,
         ticker: Brc20Ticker,
-        amount: u64,
+        value: u64,
     ) -> Result<BRC20MintInscription> {
-        let data = BRC20MintPayload::new(ticker, amount);
+        let data = BRC20MintPayload::new(ticker, value);
         Self::from_payload(data, recipient)
     }
     pub fn from_payload(

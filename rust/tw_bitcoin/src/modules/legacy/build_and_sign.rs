@@ -130,7 +130,7 @@ pub fn taproot_build_and_sign_transaction(
         outputs: vec![
             // The target output (main recipient).
             Proto::Output {
-                amount: legacy.amount as u64,
+                value: legacy.amount as u64,
                 to_recipient: ProtoOutputRecipient::from_address(legacy.to_address),
             },
         ],
@@ -141,7 +141,7 @@ pub fn taproot_build_and_sign_transaction(
         change_output: Some(
             // The change output (return to myself).
             Proto::Output {
-                amount: legacy.amount as u64,
+                value: legacy.amount as u64,
                 to_recipient: ProtoOutputRecipient::from_address(legacy.change_address),
             },
         ),
@@ -188,7 +188,7 @@ pub fn taproot_build_and_sign_transaction(
             .outputs
             .iter()
             .map(|output| LegacyProto::TransactionOutput {
-                value: output.amount as i64,
+                value: output.value as i64,
                 script: output.script_pubkey.clone(),
                 spendingScript: output.taproot_payload.clone(),
             })
@@ -309,7 +309,7 @@ fn input_from_legacy_utxo(
     Ok(Proto::Input {
         txid: out_point.hash.to_vec().into(),
         vout: out_point.index,
-        amount: utxo.amount as u64,
+        value: utxo.amount as u64,
         // TODO: Or is it `utxo.sequence`?
         sequence: out_point.sequence,
         // TODO: Is this okay?

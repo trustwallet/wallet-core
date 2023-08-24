@@ -9,7 +9,7 @@ use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 
 // When building the spending conditions of inputs (scriptPubkey), then the
-// actual amount is not important. We can just use 0 here.
+// actual value is not important. We can just use 0 here.
 const SATOSHIS: i64 = 0;
 const PUBKEY: &str = "028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f";
 

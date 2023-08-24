@@ -24,7 +24,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 100_000_000 * 50,
+        value: 100_000_000 * 50,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -34,7 +34,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     };
 
     let out1 = Proto::Output {
-        amount: 100_000_000 * 50 - 1_000_000,
+        value: 100_000_000 * 50 - 1_000_000,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2tr_key_path(bob_pubkey.as_slice().into()),
         }),
@@ -64,7 +64,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 100_000_000 * 50 - 1_000_000,
+        value: 100_000_000 * 50 - 1_000_000,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
@@ -77,7 +77,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
     };
 
     let out1 = Proto::Output {
-        amount: 100_000_000 * 50 - 1_000_000 - 1_000_000,
+        value: 100_000_000 * 50 - 1_000_000 - 1_000_000,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2tr_key_path(alice_pubkey.as_slice().into()),
         }),

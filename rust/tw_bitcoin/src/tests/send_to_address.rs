@@ -24,7 +24,7 @@ fn send_to_p2pkh_address() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 10_000,
+        value: 10_000,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -39,7 +39,7 @@ fn send_to_p2pkh_address() {
     let address_string = address.to_string();
 
     let out1 = Proto::Output {
-        amount: 1_000,
+        value: 1_000,
         to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
     };
 
@@ -66,7 +66,7 @@ fn send_to_p2pkh_address() {
     // The expected P2PKH scriptPubkey
     let expected = ScriptBuf::new_p2pkh(&recipient.pubkey_hash());
 
-    assert_eq!(tx.outputs[0].amount, 1_000);
+    assert_eq!(tx.outputs[0].value, 1_000);
     assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
     assert!(tx.outputs[0].taproot_payload.is_empty());
     assert!(tx.outputs[0].control_block.is_empty());
@@ -88,7 +88,7 @@ fn send_to_p2wpkh_address() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 10_000,
+        value: 10_000,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -103,7 +103,7 @@ fn send_to_p2wpkh_address() {
     let address_string = address.to_string();
 
     let out1 = Proto::Output {
-        amount: 1_000,
+        value: 1_000,
         to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
     };
 
@@ -130,7 +130,7 @@ fn send_to_p2wpkh_address() {
     // The expected P2WPKH scriptPubkey
     let expected = ScriptBuf::new_v0_p2wpkh(&recipient.wpubkey_hash().unwrap());
 
-    assert_eq!(tx.outputs[0].amount, 1_000);
+    assert_eq!(tx.outputs[0].value, 1_000);
     assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
     assert!(tx.outputs[0].taproot_payload.is_empty());
     assert!(tx.outputs[0].control_block.is_empty());
@@ -152,7 +152,7 @@ fn send_to_p2tr_key_path_address() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 10_000,
+        value: 10_000,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -170,7 +170,7 @@ fn send_to_p2tr_key_path_address() {
     let address_string = address.to_string();
 
     let out1 = Proto::Output {
-        amount: 1_000,
+        value: 1_000,
         to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
     };
 
@@ -197,7 +197,7 @@ fn send_to_p2tr_key_path_address() {
     // The expected P2TR key-path scriptPubkey
     let expected = ScriptBuf::new_v1_p2tr(&secp, xonly, None);
 
-    assert_eq!(tx.outputs[0].amount, 1_000);
+    assert_eq!(tx.outputs[0].value, 1_000);
     assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
     assert!(tx.outputs[0].taproot_payload.is_empty());
     assert!(tx.outputs[0].control_block.is_empty());

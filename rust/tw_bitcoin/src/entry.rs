@@ -328,7 +328,7 @@ impl BitcoinEntry {
         for output in utxo_outputs {
             proto_outputs.push(Proto::TransactionOutput {
                 script_pubkey: output.script_pubkey,
-                amount: output.value,
+                value: output.value,
                 taproot_payload: output.taproot_payload,
                 control_block: output.control_block,
             });

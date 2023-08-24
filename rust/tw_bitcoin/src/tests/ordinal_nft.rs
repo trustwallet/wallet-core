@@ -22,7 +22,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 32_400,
+        value: 32_400,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -32,7 +32,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     };
 
     let out1 = Proto::Output {
-        amount: 31_100,
+        value: 31_100,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OrdinalInscription {
                 inscribe_to: alice_pubkey.as_slice().into(),
@@ -81,7 +81,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 31_100,
+        value: 31_100,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
@@ -96,7 +96,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     };
 
     let out1 = Proto::Output {
-        amount: 546,
+        value: 546,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(

@@ -22,7 +22,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 1,
-        amount: 26_400,
+        value: 26_400,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -32,7 +32,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     let out1 = Proto::Output {
-        amount: 7_000,
+        value: 7_000,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
                 inscribe_to: alice_pubkey.as_slice().into(),
@@ -44,7 +44,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
 
     // Change/return transaction.
     let out2 = Proto::Output {
-        amount: 16_400,
+        value: 16_400,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
@@ -92,7 +92,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        amount: 7_000,
+        value: 7_000,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
@@ -107,7 +107,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     };
 
     let out1 = Proto::Output {
-        amount: 546,
+        value: 546,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
