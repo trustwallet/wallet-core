@@ -141,7 +141,7 @@ impl InputBuilder {
                         (
                             // indicator of witness item
                             1 +
-                            // the payload (TODO: should this be `repeated bytes`?)
+                            // the payload/witness
                             complex.payload.len() as u64
                         ),
                     )
@@ -186,7 +186,7 @@ impl InputBuilder {
                             1 +
                             // length + Schnorr signature (can be 71 or 72)
                             1 + 72 +
-                            // the payload (TODO: should this be `repeated bytes`?)
+                            // the payload/witness
                             nft.inscription().taproot_program().len() as u64 +
                             // length + control block
                             1 + control_block.size() as u64
@@ -234,7 +234,7 @@ impl InputBuilder {
                             1 +
                             // length + Schnorr signature (can be 71 or 72)
                             1 + 72 +
-                            // the payload (TODO: should this be `repeated bytes`?)
+                            // the payload/witness
                             transfer.inscription().taproot_program().len() as u64 +
                             // length + control block
                             1 + control_block.size() as u64
