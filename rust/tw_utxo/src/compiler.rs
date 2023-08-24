@@ -58,7 +58,7 @@ impl Compiler<StandardBitcoinContext> {
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
-        let total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
+        let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
         // Do some easy checks now.
@@ -99,8 +99,8 @@ impl Compiler<StandardBitcoinContext> {
                         return false;
                     }
 
-                    total_input += input.amount;
-                    remaining = remaining.saturating_sub(input.amount);
+                    total_input += input.value;
+                    remaining = remaining.saturating_sub(input.value);
 
                     true
                 })
@@ -130,7 +130,7 @@ impl Compiler<StandardBitcoinContext> {
         proto.inputs = selected.clone();
 
         // Update the `total_input` amount based on the selected inputs.
-        let total_input: u64 = proto.inputs.iter().map(|input| input.amount).sum();
+        let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
 
         // Calculate the total input weight projection.
         let input_weight: u64 = proto.inputs.iter().map(|input| input.weight_estimate).sum();
@@ -214,7 +214,7 @@ impl Compiler<StandardBitcoinContext> {
                             .p2wpkh_script_code()
                             .as_ref()
                             .ok_or(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey))?,
-                        input.amount,
+                        input.value,
                         sighash_type,
                     )?;
 
@@ -245,7 +245,7 @@ impl Compiler<StandardBitcoinContext> {
                         .inputs
                         .iter()
                         .map(|i| TxOut {
-                            value: i.amount,
+                            value: i.value,
                             script_pubkey: ScriptBuf::from_bytes(i.script_pubkey.to_vec()),
                         })
                         .collect::<Vec<TxOut>>();
@@ -283,7 +283,7 @@ impl Compiler<StandardBitcoinContext> {
                     let prevouts = Prevouts::One(
                         index,
                         TxOut {
-                            value: input.amount,
+                            value: input.value,
                             script_pubkey: ScriptBuf::from_bytes(input.script_pubkey.to_vec()),
                         },
                     );

@@ -23,7 +23,7 @@ fn sighash_input_p2pkh_output_p2wpkh() {
             txid: txid.into(),
             vout: 0,
             // Amount is not part of sighash for `Legacy`.
-            amount: u64::MAX,
+            value: u64::MAX,
             sequence: u32::MAX,
             sequence_enable_zero: false,
             script_pubkey: input_script_pubkey.as_bytes().into(),
@@ -69,7 +69,7 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
         inputs: vec![Proto::TxIn {
             txid: txid.into(),
             vout: 0,
-            amount: 50 * 100_000_000 - 1_000_000,
+            value: 50 * 100_000_000 - 1_000_000,
             sequence: u32::MAX,
             sequence_enable_zero: false,
             script_pubkey: input_script_pubkey.as_bytes().into(),

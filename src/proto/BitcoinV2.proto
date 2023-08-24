@@ -66,7 +66,7 @@ message SigningInput {
     uint64 sat_vb = 8;
 
     // The change output to be added (return to sender).
-    // The `amount` can be left at 0.
+    // The `value` can be left at 0.
     Output change_output = 9;
 
     // Explicility disable change output creation.
@@ -83,7 +83,7 @@ message Input {
 
     bool sequence_enable_zero = 4;
 
-    uint64 amount = 5;
+    uint64 value = 5;
 
     Utxo.Proto.SighashType sighash_type = 6;
 
@@ -147,7 +147,7 @@ message Input {
 }
 
 message Output {
-    uint64 amount = 1;
+    uint64 value = 1;
 
     oneof to_recipient {
         Builder builder = 2;
@@ -225,7 +225,7 @@ message PreSigningOutput {
 
     // The output of a transaction.
     message TxOut {
-        // The value of the output (amount).
+        // The value of the output (in satoshis).
         uint64 value = 1;
         // The spending condition of the output.
         bytes script_pubkey = 2;
@@ -284,8 +284,8 @@ message TransactionOutput {
     // The condition for claiming the output.
     bytes script_pubkey = 1;
 
-    // The amount sent.
-    uint64 amount = 2;
+    // The value sent in satoshis.
+    uint64 value = 2;
 
     // In case of P2TR script-path (complex scripts), this is the payload that
     // must later be revealed and is required for claiming.

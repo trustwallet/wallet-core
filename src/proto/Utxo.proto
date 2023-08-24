@@ -65,7 +65,7 @@ message TxIn {
     // The index of the referenced output.
     uint32 vout = 2;
 
-    uint64 amount = 3;
+    uint64 value = 3;
 
     uint32 sequence = 4;
 
@@ -111,7 +111,7 @@ enum SighashType {
 
 // The output of a transaction.
 message TxOut {
-    // The value of the output (amount).
+    // The value of the output.
     uint64 value = 1;
     // The spending condition of the output.
     bytes script_pubkey = 2;

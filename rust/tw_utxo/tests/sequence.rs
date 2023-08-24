@@ -18,7 +18,7 @@ fn zero_sequence_disabled() {
     let tx1 = Proto::TxIn {
         txid: txid.into(),
         vout: 0,
-        amount: 1_000,
+        value: 1_000,
         // We use a sequence of zero,
         sequence: 0,
         // ...but it's not explicitly enabled.
