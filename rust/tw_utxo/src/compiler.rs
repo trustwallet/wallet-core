@@ -373,9 +373,13 @@ impl Compiler<StandardBitcoinContext> {
         tx.consensus_encode(&mut buffer)
             .map_err(|_| Error::from(Proto::Error::Error_failed_encoding))?;
 
+        // The transaction identifier.
+        let txid = tx.txid().as_byte_array().to_vec();
+
         Ok(Proto::SerializedTransaction {
             error: Proto::Error::OK,
             encoded: buffer.into(),
+            txid: txid.into(),
             weight: tx.weight().to_wu(),
             fee: tx.weight().to_vbytes_ceil() * proto.weight_base,
         })

@@ -182,7 +182,10 @@ message SerializedTransaction {
     // The encoded transaction, ready to be submitted to the network.
     bytes encoded = 2;
 
-    uint64 weight = 3;
+    // The transaction ID.
+    bytes txid = 3;
 
-    uint64 fee = 4;
+    uint64 weight = 4;
+
+    uint64 fee = 5;
 }
