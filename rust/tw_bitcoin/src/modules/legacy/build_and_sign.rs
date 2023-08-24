@@ -16,6 +16,7 @@ use tw_proto::Common::Proto as CommonProto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[no_mangle]
+#[deprecated]
 pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     input: *const u8,
     input_len: usize,
