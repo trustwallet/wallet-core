@@ -28,6 +28,25 @@ pub mod aliases {
     pub type ProtoInputBuilder<'a> = Proto::mod_Input::mod_Builder::OneOfvariant<'a>;
 }
 
+fn handle_utxo_error(err: &UtxoProto::Error) -> Result<()> {
+    let err = match err {
+        UtxoProto::Error::OK => return Ok(()),
+        UtxoProto::Error::Error_invalid_wpkh_script_pubkey => Proto::Error::Error_invalid_wpkh_script_pubkey,
+        UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_invalid_leaf_hash,
+        UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_invalid_sighash_type,
+        UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_invalid_lock_time,
+        UtxoProto::Error::Error_invalid_txid => Proto::Error::Error_invalid_txid,
+        UtxoProto::Error::Error_sighash_failed => Proto::Error::Error_sighash_failed,
+        UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_missing_sighash_method,
+        UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_failed_encoding,
+        UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_insufficient_inputs,
+        UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_missing_change_script_pubkey,
+        UtxoProto::Error::Error_zero_sequence_not_enabled => Proto::Error::Error_zero_sequence_not_enabled,
+    };
+
+    Err(Error::from(err))
+}
+
 pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
 
 pub struct PlaceHolder;
@@ -224,6 +243,7 @@ impl BitcoinEntry {
         };
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
+        handle_utxo_error(&utxo_presigning.error)?;
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
@@ -283,6 +303,7 @@ impl BitcoinEntry {
         };
 
         let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);
+        handle_utxo_error(&utxo_serialized.error)?;
 
         // Prepare `Proto::TransactionInput` protobufs for signing output.
         let mut proto_inputs = vec![];
