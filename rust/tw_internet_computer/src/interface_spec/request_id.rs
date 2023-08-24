@@ -18,6 +18,8 @@ const DOMAIN_IC_REQUEST: &[u8; 11] = b"\x0Aic-request";
 pub struct RequestId(pub [u8; 32]);
 
 impl RequestId {
+    /// Create the prehash from the request ID.
+    /// See: https://internetcomputer.org/docs/current/references/ic-interface-spec#envelope-authentication
     pub fn sig_data(&self) -> H256 {
         let mut sig_data = vec![];
         sig_data.extend_from_slice(DOMAIN_IC_REQUEST);
