@@ -1,7 +1,62 @@
-use ic_ledger_types::{AccountIdentifier, DEFAULT_SUBACCOUNT};
+use tw_encoding::hex;
+use tw_hash::{crc32::crc32, sha2::sha224, H256};
 use tw_keypair::ecdsa::secp256k1::PublicKey;
 
 use crate::principal::Principal;
+
+pub enum AccountIdentifierFromHexError {
+    InvalidLength,
+    InvalidChecksum,
+    DecodeHex,
+}
+
+pub struct AccountIdentifier(H256);
+
+impl AccountIdentifier {
+    pub fn new(owner: &Principal) -> Self {
+        let mut input = vec![];
+        input.extend_from_slice(b"\x0Aaccount-id");
+        input.extend_from_slice(owner.0.as_slice());
+        input.extend_from_slice(&H256::new()[..]);
+
+        let hash = sha224(&input);
+        let crc32_bytes = crc32(&hash).to_be_bytes();
+
+        let mut result = H256::new();
+        result[0..4].copy_from_slice(&crc32_bytes);
+        result[4..32].copy_from_slice(&hash);
+        Self(result)
+    }
+
+    pub fn to_hex(&self) -> String {
+        hex::encode(self.0, false)
+    }
+
+    pub fn from_hex(hex_str: &str) -> Result<AccountIdentifier, AccountIdentifierFromHexError> {
+        if hex_str.len() != 64 {
+            return Err(AccountIdentifierFromHexError::InvalidLength);
+        }
+
+        let hex = H256::try_from(
+            hex::decode(hex_str)
+                .map_err(|_| AccountIdentifierFromHexError::DecodeHex)?
+                .as_slice(),
+        )
+        .map_err(|_| AccountIdentifierFromHexError::DecodeHex)?;
+
+        if !is_check_sum_valid(hex) {
+            return Err(AccountIdentifierFromHexError::InvalidChecksum);
+        }
+
+        Ok(Self(hex))
+    }
+}
+
+fn is_check_sum_valid(hash: H256) -> bool {
+    let found_checksum = &hash[0..4];
+    let expected_checksum = crc32(&hash[4..]).to_be_bytes();
+    found_checksum == expected_checksum
+}
 
 /// Checks if the provided string is a valid ICP account identifier.
 pub fn is_valid<S: AsRef<str>>(address: S) -> bool {
@@ -20,7 +75,7 @@ pub enum AddressFromPublicKeyError {
 /// Creates an ICP account identifier from the provided public key.
 pub fn from_public_key(public_key: &PublicKey) -> String {
     let principal = Principal::from(public_key);
-    let account_id = AccountIdentifier::new(&principal.0, &DEFAULT_SUBACCOUNT);
+    let account_id = AccountIdentifier::new(&principal);
     account_id.to_hex()
 }
 

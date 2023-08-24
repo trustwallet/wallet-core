@@ -6,6 +6,7 @@
 
 pub mod blake;
 pub mod blake2;
+pub mod crc32;
 pub mod ffi;
 pub mod groestl;
 pub mod hmac;

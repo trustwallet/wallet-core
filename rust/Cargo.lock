@@ -771,33 +771,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ic-cdk"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08d4c0b932bf454d5d60e61e13c3c944972fcfd74dc82b9ed5c8b0a75979cf50"
-dependencies = [
- "candid",
- "ic-cdk-macros",
- "ic0",
- "serde",
- "serde_bytes",
-]
-
-[[package]]
-name = "ic-cdk-macros"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "411c0dd4c149132b68e679274d397053332ee29996c6a541075895881916333b"
-dependencies = [
- "candid",
- "proc-macro2",
- "quote",
- "serde",
- "serde_tokenstream",
- "syn 1.0.107",
-]
-
-[[package]]
 name = "ic-certification"
 version = "0.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -808,27 +781,6 @@ dependencies = [
  "serde_bytes",
  "sha2 0.10.6",
 ]
-
-[[package]]
-name = "ic-ledger-types"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3cd65aaa43039c7a6f82f2c126251b53dd04957b8cc95b61691c046bfde5771e"
-dependencies = [
- "candid",
- "crc32fast",
- "hex",
- "ic-cdk",
- "serde",
- "serde_bytes",
- "sha2 0.10.6",
-]
-
-[[package]]
-name = "ic0"
-version = "0.18.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "576c539151d4769fb4d1a0c25c4108dd18facd04c5695b02cf2d226ab4e43aa5"
 
 [[package]]
 name = "impl-codec"
@@ -1463,17 +1415,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_tokenstream"
-version = "0.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "797ba1d80299b264f3aac68ab5d12e5825a561749db4df7cd7c8083900c5d4e9"
-dependencies = [
- "proc-macro2",
- "serde",
- "syn 1.0.107",
-]
-
-[[package]]
 name = "sha1"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1837,6 +1778,7 @@ version = "0.1.0"
 dependencies = [
  "blake-hash",
  "blake2b-ref",
+ "crc32fast",
  "digest 0.10.6",
  "groestl",
  "hmac",
@@ -1857,7 +1799,6 @@ version = "0.1.0"
 dependencies = [
  "candid",
  "ic-certification",
- "ic-ledger-types",
  "pb-rs",
  "quick-protobuf",
  "serde",

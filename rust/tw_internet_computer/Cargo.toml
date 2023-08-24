@@ -8,7 +8,6 @@ edition = "2021"
 [dependencies]
 candid = "0.9.3"
 ic-certification = "0.25.0"
-ic-ledger-types = "0.7.0"
 quick-protobuf = "0.8.1"
 serde = { version = "1.0.136", features = ["derive"] }
 serde_bytes = "0.11.2"
