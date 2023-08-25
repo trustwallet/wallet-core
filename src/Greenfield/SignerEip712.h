@@ -23,6 +23,9 @@ public:
     /// Returns an rsv signature.
     static Data sign(const Proto::SigningInput& input);
 
+    /// Returns a pre-image hash that needs to be signed.
+    static Data preImageHash(const Proto::SigningInput& input);
+
     /// Packs the Tx input in a EIP712 object.
     static json wrapTxToTypedData(const Proto::SigningInput& input);
 

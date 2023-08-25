@@ -14,7 +14,7 @@
 
 namespace TW::Greenfield::tests {
 
-TEST(GreenfieldSigner, Eip712TypedDataJson) {
+TEST(GreenfieldSigner, SignerEip712) {
     Proto::SigningInput input;
     input.set_signing_mode(Proto::Eip712);
     input.set_account_number(15560);
@@ -36,8 +36,8 @@ TEST(GreenfieldSigner, Eip712TypedDataJson) {
     amountOfFee->set_denom("BNB");
     amountOfFee->set_amount("2000000000000000");
 
-    auto actual = SignerEip712::wrapTxToTypedData(input);
-    auto expected = json::parse(R"(
+    auto typedData = SignerEip712::wrapTxToTypedData(input);
+    auto expectedJson = json::parse(R"(
 {
     "types": {
         "Coin": [
@@ -188,7 +188,18 @@ TEST(GreenfieldSigner, Eip712TypedDataJson) {
     }
 }
     )");
-    EXPECT_EQ(actual, expected);
+    EXPECT_EQ(typedData, expectedJson);
+
+    auto expectedPreHash = "b8c62654582ca96b37ca94966199682bf70ed934e740d2f874ff54675a0ac344";
+    auto preHash = SignerEip712::preImageHash(input);
+    EXPECT_EQ(hex(preHash), expectedPreHash);
+
+    auto privateKey = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto signature = SignerEip712::sign(input);
+    auto expectedSignature = "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d1b";
+    EXPECT_EQ(hex(signature), expectedSignature);
 }
 
 } // namespace TW::Greenfield::tests

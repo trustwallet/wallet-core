@@ -7,6 +7,8 @@
 #include "SignerEip712.h"
 
 #include "Ethereum/MessageSigner.h"
+#include "Ethereum/ABI/ParamStruct.h"
+#include "HexCoding.h"
 
 #include <unordered_map>
 
@@ -160,7 +162,18 @@ json SignerEip712::wrapTxToTypedData(const Proto::SigningInput& input) {
     }
 }
 
+Data SignerEip712::preImageHash(const Proto::SigningInput& input) {
+    const auto txTypedData = wrapTxToTypedData(input);
+    return Ethereum::ABI::ParamStruct::hashStructJson(txTypedData.dump());
+}
+
 Data SignerEip712::sign(const Proto::SigningInput& input) {
+    const PrivateKey privateKey(data(input.private_key()));
+    const auto txTypedData = wrapTxToTypedData(input).dump();
+    const auto chainId = std::stoull(input.eth_chain_id());
+
+    const auto signatureStr = Ethereum::MessageSigner::signTypedData(privateKey, txTypedData, Ethereum::MessageType::Legacy, chainId);
+    return parse_hex(signatureStr);
 }
 
 } // namespace TW::Greenfield
