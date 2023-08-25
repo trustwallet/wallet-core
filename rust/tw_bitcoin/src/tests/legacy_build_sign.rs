@@ -24,7 +24,7 @@ fn print_wif_keys() {
 }
 
 const FULL_SATOSHIS: i64 = (ONE_BTC * 50) as i64;
-const SEND_SATOSHIS: i64 = FULL_SATOSHIS - (ONE_BTC / 100) as i64;
+const SEND_SATOSHIS: i64 = FULL_SATOSHIS - 1_000_000;
 
 #[test]
 fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
@@ -180,7 +180,8 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     // Output.
     let output = unsafe {
-        tw_build_p2tr_key_path_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len()).into_vec()
+        tw_build_p2tr_key_path_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len())
+            .into_vec()
     };
     let output: LegacyProto::TransactionOutput = tw_proto::deserialize(&output).unwrap();
 
@@ -225,5 +226,67 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     assert_eq!(encoded_hex, "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000");
 
-    //todo!()
+    let txid: Vec<u8> = hex("9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac")
+        .into_iter()
+        .rev()
+        .collect();
+
+    // Input.
+    let input = unsafe {
+        tw_build_p2tr_key_path_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len())
+            .into_vec()
+    };
+    let input: LegacyProto::TransactionOutput = tw_proto::deserialize(&input).unwrap();
+
+    // Output.
+    let output = unsafe {
+        tw_build_p2tr_key_path_script(
+            SEND_SATOSHIS - 1_000_000,
+            alice_pubkey.as_c_ptr(),
+            alice_pubkey.len(),
+        )
+        .into_vec()
+    };
+    let output: LegacyProto::TransactionOutput = tw_proto::deserialize(&output).unwrap();
+
+    let signing = LegacyProto::SigningInput {
+        private_key: vec![bob_private_key.into()],
+        utxo: vec![LegacyProto::UnspentTransaction {
+            out_point: Some(LegacyProto::OutPoint {
+                hash: txid.into(),
+                index: 0,
+                sequence: u32::MAX,
+                ..Default::default()
+            }),
+            script: input.script,
+            amount: input.value,
+            variant: LegacyProto::TransactionVariant::P2TRKEYPATH,
+            spendingScript: Default::default(),
+        }],
+        plan: Some(LegacyProto::TransactionPlan {
+            utxos: vec![LegacyProto::UnspentTransaction {
+                out_point: Default::default(),
+                script: output.script,
+                amount: output.value,
+                variant: LegacyProto::TransactionVariant::P2PKH,
+                spendingScript: Default::default(),
+            }],
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let serialized = tw_proto::serialize(&signing).unwrap();
+
+    let res = unsafe {
+        tw_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len()).into_vec()
+    };
+
+    let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
+    dbg!(&output);
+    assert_eq!(output.error, CommonProto::SigningError::OK);
+
+    let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
+
+    assert_eq!(encoded_hex, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000");
 }
