@@ -1,3 +1,4 @@
+use super::ONE_BTC;
 use crate::entry::{
     BitcoinEntry, PlaceHolder, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder,
     ProtoOutputRecipient,
@@ -10,7 +11,6 @@ fn hex(string: &str) -> Vec<u8> {
     tw_encoding::hex::decode(string).unwrap()
 }
 
-const ONE_BTC: u64 = 100_000_000;
 const SAT_VB: u64 = 20;
 
 #[test]
