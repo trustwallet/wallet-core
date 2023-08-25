@@ -106,7 +106,6 @@ pub fn taproot_build_and_sign_transaction(
     let signed = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing_input);
     // TODO: Check error.
 
-    dbg!(&signed);
     let transaction = signed
         .transaction
         .expect("transaction not returned from signer");
@@ -187,6 +186,7 @@ fn input_from_legacy_utxo(
         },
         LegacyProto::TransactionVariant::BRC20TRANSFER
         | LegacyProto::TransactionVariant::NFTINSCRIPTION => {
+            // TODO: Check if empty.
             let spending_script = ScriptBuf::from_bytes(utxo.spendingScript.to_vec());
 
             let xonly = XOnlyPublicKey::from(my_pubkey.inner);
@@ -234,7 +234,7 @@ fn input_from_legacy_utxo(
         value: utxo.amount as u64,
         // TODO: Or is it `utxo.sequence`?
         sequence: out_point.sequence,
-        sequence_enable_zero: true,
+        sequence_enable_zero: false,
         sighash_type,
         to_recipient: ProtoInputRecipient::builder(input_builder),
     })

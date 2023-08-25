@@ -69,9 +69,12 @@ impl InputClaimBuilder {
                     let control_block = ControlBlock::decode(taproot.control_block.as_ref())
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_control_block))?;
 
+                    let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
+
                     // The spending script itself.
                     (ScriptBuf::new(), {
                         let mut w = Witness::new();
+                        w.push(sig.to_vec());
                         w.push(taproot.payload.as_ref());
                         w.push(control_block.serialize());
                         w

@@ -184,9 +184,8 @@ impl BitcoinEntry {
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::SigningOutput<'static>> {
         let pre_signed = self.preimage_hashes_impl(_coin, proto.clone())?;
-        dbg!(&pre_signed);
-
         // Check for error.
+
         if pre_signed.error != Proto::Error::OK {
             return Err(Error::from(pre_signed.error));
         }
@@ -246,7 +245,6 @@ impl BitcoinEntry {
         };
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
-        dbg!(&utxo_presigning);
         handle_utxo_error(&utxo_presigning.error)?;
 
         Ok(Proto::PreSigningOutput {

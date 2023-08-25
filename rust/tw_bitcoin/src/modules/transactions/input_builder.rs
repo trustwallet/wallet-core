@@ -178,6 +178,9 @@ impl InputBuilder {
 
                     (
                         signing_method,
+                        // TODO: This is technically not needed here, since
+                        // Sighash only includes the leaf hash, not the actual
+                        // payload. Remove this (same for other complex scripts).
                         ScriptBuf::from(nft.inscription().taproot_program()),
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
