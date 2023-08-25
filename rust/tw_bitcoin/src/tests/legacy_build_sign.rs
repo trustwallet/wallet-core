@@ -83,14 +83,10 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
     };
 
     let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    dbg!(&output);
     assert_eq!(output.error, CommonProto::SigningError::OK);
 
     let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
-
     assert_eq!(encoded_hex, "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000");
-
-    //todo!()
 }
 
 #[test]
@@ -150,14 +146,10 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
     };
 
     let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    dbg!(&output);
     assert_eq!(output.error, CommonProto::SigningError::OK);
 
     let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
-
     assert_eq!(encoded_hex, "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000");
-
-    //todo!()
 }
 
 #[test]
@@ -219,11 +211,9 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
     };
 
     let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    dbg!(&output);
     assert_eq!(output.error, CommonProto::SigningError::OK);
 
     let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
-
     assert_eq!(encoded_hex, "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000");
 
     let txid: Vec<u8> = hex("9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac")
@@ -283,10 +273,8 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
     };
 
     let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    dbg!(&output);
     assert_eq!(output.error, CommonProto::SigningError::OK);
 
     let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
-
     assert_eq!(encoded_hex, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000");
 }
