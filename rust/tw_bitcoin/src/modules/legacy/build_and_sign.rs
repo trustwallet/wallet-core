@@ -67,7 +67,8 @@ pub fn taproot_build_and_sign_transaction(
                     .get(0)
                     .expect("private key not specified")
             }),
-            Network::Bitcoin,
+            // Test data is for Signet.
+            Network::Signet,
         )
         .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?;
 

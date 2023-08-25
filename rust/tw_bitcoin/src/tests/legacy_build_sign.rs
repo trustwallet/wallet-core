@@ -14,7 +14,7 @@ use tw_proto::Common::Proto as CommonProto;
 
 #[test]
 fn print_wif_keys() {
-    let pk = PrivateKey::from_wif("cTk5wSci88FPka7JwHpNEA82dUMjAysdDbCiuYB2fegfgGESAZVn").unwrap();
+    let pk = PrivateKey::from_wif("cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1").unwrap();
     let seckey = tw_encoding::hex::encode(pk.to_bytes(), false);
     dbg!(seckey);
 
@@ -55,6 +55,7 @@ fn ffi_tw_taproot_build_and_sign_transaction() {
             out_point: Some(LegacyProto::OutPoint {
                 hash: txid,
                 index: 0,
+                sequence: u32::MAX,
                 ..Default::default()
             }),
             script: input.script,
