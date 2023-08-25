@@ -68,6 +68,8 @@ message SigningInput {
 
     // The change output to be added (return to sender).
     // The `value` can be left at 0.
+    // TODO: For the sake of correctness, an error should be returned if
+    // `change_output.value` is set.
     Output change_output = 9;
 
     // Explicility disable change output creation.
