@@ -31,16 +31,16 @@ Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& a
     return {addr.bytes.begin(), addr.bytes.end()};
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     // TODO
     return {};
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     
 }
 

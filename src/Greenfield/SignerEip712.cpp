@@ -162,9 +162,10 @@ json SignerEip712::wrapTxToTypedData(const Proto::SigningInput& input) {
     }
 }
 
-Data SignerEip712::preImageHash(const Proto::SigningInput& input) {
+Eip712PreImage SignerEip712::preImageHash(const Proto::SigningInput& input) {
     const auto txTypedData = wrapTxToTypedData(input);
-    return Ethereum::ABI::ParamStruct::hashStructJson(txTypedData.dump());
+    const auto txTypedDataHash = Ethereum::ABI::ParamStruct::hashStructJson(txTypedData.dump());
+    return {.typedData = txTypedData, .typedDataHash = txTypedDataHash};
 }
 
 Data SignerEip712::sign(const Proto::SigningInput& input) {

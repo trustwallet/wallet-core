@@ -15,8 +15,12 @@ namespace TW::Greenfield {
 
 using json = nlohmann::json;
 
-class SignerEip712 {
-public:
+struct Eip712PreImage {
+    json typedData;
+    Data typedDataHash;
+};
+
+struct SignerEip712 {
     ~SignerEip712() = delete;
 
     /// Signs a Proto::SigningInput transaction as EIP712.
@@ -24,7 +28,7 @@ public:
     static Data sign(const Proto::SigningInput& input);
 
     /// Returns a pre-image hash that needs to be signed.
-    static Data preImageHash(const Proto::SigningInput& input);
+    static Eip712PreImage preImageHash(const Proto::SigningInput& input);
 
     /// Packs the Tx input in a EIP712 object.
     static json wrapTxToTypedData(const Proto::SigningInput& input);
@@ -33,4 +37,4 @@ public:
     static json wrapMsgSendToTypedData(const Proto::SigningInput& input);
 };
 
-}
+} // namespace TW::Greenfield

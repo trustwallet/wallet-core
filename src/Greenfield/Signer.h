@@ -24,6 +24,8 @@ public:
 
     /// Collect pre-image hashes to be signed
     static TxCompiler::Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input);
+
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature);
 };
 
 } // namespace TW::Greenfield
