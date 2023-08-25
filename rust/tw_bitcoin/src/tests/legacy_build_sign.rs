@@ -13,6 +13,8 @@ use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::Common::Proto as CommonProto;
 
 #[test]
+#[ignore]
+// TODO: Remove this.
 fn print_wif_keys() {
     let pk = PrivateKey::from_wif("cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB").unwrap();
     let seckey = tw_encoding::hex::encode(pk.to_bytes(), false);
@@ -37,12 +39,6 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
         .rev()
         .collect();
 
-    // Input.
-    let input = unsafe {
-        tw_build_p2pkh_script(FULL_SATOSHIS, alice_pubkey.as_c_ptr(), alice_pubkey.len()).into_vec()
-    };
-    let input: LegacyProto::TransactionOutput = tw_proto::deserialize(&input).unwrap();
-
     // Output.
     let output = unsafe {
         tw_build_p2pkh_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len()).into_vec()
@@ -58,8 +54,9 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
                 sequence: u32::MAX,
                 ..Default::default()
             }),
-            script: input.script,
-            amount: input.value,
+            // For inputs, script is not needed (derived from variant).
+            script: Default::default(),
+            amount: FULL_SATOSHIS,
             variant: LegacyProto::TransactionVariant::P2PKH,
             spendingScript: Default::default(),
         }],
@@ -75,17 +72,15 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
         }),
         ..Default::default()
     };
-
     let serialized = tw_proto::serialize(&signing).unwrap();
 
-    let res = unsafe {
+    let signed = unsafe {
         tw_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len()).into_vec()
     };
+    let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
-    let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    assert_eq!(output.error, CommonProto::SigningError::OK);
-
-    let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
+    assert_eq!(signed.error, CommonProto::SigningError::OK);
+    let encoded_hex = tw_encoding::hex::encode(signed.encoded, false);
     assert_eq!(encoded_hex, "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000");
 }
 
@@ -99,12 +94,6 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
         .into_iter()
         .rev()
         .collect();
-
-    // Input.
-    let input = unsafe {
-        tw_build_p2pkh_script(FULL_SATOSHIS, alice_pubkey.as_c_ptr(), alice_pubkey.len()).into_vec()
-    };
-    let input: LegacyProto::TransactionOutput = tw_proto::deserialize(&input).unwrap();
 
     // Output.
     let output = unsafe {
@@ -121,8 +110,9 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
                 sequence: u32::MAX,
                 ..Default::default()
             }),
-            script: input.script,
-            amount: input.value,
+            // For inputs, script is not needed (derived from variant).
+            script: Default::default(),
+            amount: FULL_SATOSHIS,
             variant: LegacyProto::TransactionVariant::P2PKH,
             spendingScript: Default::default(),
         }],
@@ -138,17 +128,15 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
         }),
         ..Default::default()
     };
-
     let serialized = tw_proto::serialize(&signing).unwrap();
 
-    let res = unsafe {
+    let signed = unsafe {
         tw_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len()).into_vec()
     };
+    let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
-    let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    assert_eq!(output.error, CommonProto::SigningError::OK);
-
-    let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
+    assert_eq!(signed.error, CommonProto::SigningError::OK);
+    let encoded_hex = tw_encoding::hex::encode(signed.encoded, false);
     assert_eq!(encoded_hex, "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000");
 }
 
@@ -163,12 +151,6 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
         .into_iter()
         .rev()
         .collect();
-
-    // Input.
-    let input = unsafe {
-        tw_build_p2pkh_script(FULL_SATOSHIS, alice_pubkey.as_c_ptr(), alice_pubkey.len()).into_vec()
-    };
-    let input: LegacyProto::TransactionOutput = tw_proto::deserialize(&input).unwrap();
 
     // Output.
     let output = unsafe {
@@ -186,8 +168,9 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
                 sequence: u32::MAX,
                 ..Default::default()
             }),
-            script: input.script,
-            amount: input.value,
+            // For inputs, script is not needed (derived from variant).
+            script: Default::default(),
+            amount: FULL_SATOSHIS,
             variant: LegacyProto::TransactionVariant::P2PKH,
             spendingScript: Default::default(),
         }],
@@ -203,30 +186,21 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
         }),
         ..Default::default()
     };
-
     let serialized = tw_proto::serialize(&signing).unwrap();
 
-    let res = unsafe {
+    let signed = unsafe {
         tw_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len()).into_vec()
     };
+    let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
-    let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    assert_eq!(output.error, CommonProto::SigningError::OK);
-
-    let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
+    assert_eq!(signed.error, CommonProto::SigningError::OK);
+    let encoded_hex = tw_encoding::hex::encode(signed.encoded, false);
     assert_eq!(encoded_hex, "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000");
 
     let txid: Vec<u8> = hex("9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac")
         .into_iter()
         .rev()
         .collect();
-
-    // Input.
-    let input = unsafe {
-        tw_build_p2tr_key_path_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len())
-            .into_vec()
-    };
-    let input: LegacyProto::TransactionOutput = tw_proto::deserialize(&input).unwrap();
 
     // Output.
     let output = unsafe {
@@ -248,8 +222,9 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
                 sequence: u32::MAX,
                 ..Default::default()
             }),
-            script: input.script,
-            amount: input.value,
+            // For inputs, script is not needed (derived from variant).
+            script: Default::default(),
+            amount: SEND_SATOSHIS,
             variant: LegacyProto::TransactionVariant::P2TRKEYPATH,
             spendingScript: Default::default(),
         }],
@@ -289,12 +264,6 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
         .rev()
         .collect();
 
-    // Input.
-    let input = unsafe {
-        tw_build_p2wpkh_script(26_400, alice_pubkey.as_c_ptr(), alice_pubkey.len()).into_vec()
-    };
-    let input: LegacyProto::TransactionOutput = tw_proto::deserialize(&input).unwrap();
-
     // Output.
     let c_ticker = CString::new("oadf").unwrap();
     let brc20_output = unsafe {
@@ -326,8 +295,9 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
                 sequence: u32::MAX,
                 ..Default::default()
             }),
-            script: input.script,
-            amount: input.value,
+            // For inputs, script is not needed (derived from variant).
+            script: Default::default(),
+            amount: 26_400,
             variant: LegacyProto::TransactionVariant::P2WPKH,
             spendingScript: Default::default(),
         }],
@@ -389,6 +359,7 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
             script: Default::default(),
             amount: brc20_output.value,
             variant: LegacyProto::TransactionVariant::BRC20TRANSFER,
+            // IMPORTANT: spending script is specified.
             spendingScript: brc20_output.spendingScript,
         }],
         plan: Some(LegacyProto::TransactionPlan {
@@ -406,14 +377,12 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
 
     let serialized = tw_proto::serialize(&signing).unwrap();
 
-    let res = unsafe {
+    let signed = unsafe {
         tw_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len()).into_vec()
     };
+    let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
-    let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
-    dbg!(&signed.transaction);
     assert_eq!(signed.error, CommonProto::SigningError::OK);
-
     let encoded_hex = tw_encoding::hex::encode(signed.encoded, false);
     assert_eq!(encoded_hex, "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03406a35548b8fa4620028e021a944c1d3dc6e947243a7bfc901bf63fefae0d2460efa149a6440cab51966aa4f09faef2d1e5efcba23ab4ca6e669da598022dbcfe35b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
 }
