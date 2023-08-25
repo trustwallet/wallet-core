@@ -59,7 +59,6 @@ pub fn taproot_build_and_sign_transaction(
 
     // Prepare the inputs.
     let mut inputs = vec![];
-
     for (index, utxo) in legacy.utxo.iter().enumerate() {
         let private_key = PrivateKey::from_slice(
             legacy.private_key.get(index).unwrap_or_else(|| {
@@ -77,6 +76,14 @@ pub fn taproot_build_and_sign_transaction(
         inputs.push(input_from_legacy_utxo(my_pubkey, utxo, legacy.hash_type)?)
     }
 
+    let mut outputs = vec![];
+    for output in legacy.plan.unwrap().utxos {
+        outputs.push(Proto::Output {
+            value: output.amount as u64,
+            to_recipient: Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(output.script),
+        })
+    }
+
     let input_selector = UtxoProto::InputSelector::UseAll;
 
     // The primary payload.
@@ -86,20 +93,22 @@ pub fn taproot_build_and_sign_transaction(
         private_key: legacy.private_key[0].to_vec().into(),
         lock_time: Some(lock_time),
         inputs,
-        outputs: vec![],
+        outputs,
         // The input selector, as dictated by the `TransactionPlan` of the
         // legacy protobuf structure.
         input_selector,
         fee_per_vb: legacy.byte_fee as u64,
         change_output: None,
-        disable_change_output: false,
+        disable_change_output: true,
     };
 
     let signed = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing_input);
+    // TODO: Check error.
+
     dbg!(&signed);
     let transaction = signed
         .transaction
-        .expect("transactio not returned from signer");
+        .expect("transaction not returned from signer");
 
     let legacy_transaction = LegacyProto::Transaction {
         version: 2,

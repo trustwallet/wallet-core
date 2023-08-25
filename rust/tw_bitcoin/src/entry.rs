@@ -183,7 +183,8 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::SigningOutput<'static>> {
-        let pre_signed = self.preimage_hashes(_coin, proto.clone());
+        let pre_signed = self.preimage_hashes_impl(_coin, proto.clone())?;
+        dbg!(&pre_signed);
 
         // Check for error.
         if pre_signed.error != Proto::Error::OK {
@@ -221,7 +222,7 @@ impl BitcoinEntry {
             let output = crate::modules::transactions::OutputBuilder::utxo_from_proto(
                 &proto
                     .change_output
-                    .ok_or_else(|| Error::from(Proto::Error::Error_invalid_public_key))?,
+                    .ok_or_else(|| Error::from(Proto::Error::Error_invalid_change_output))?,
             )?;
 
             output.script_pubkey
@@ -245,6 +246,7 @@ impl BitcoinEntry {
         };
 
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
+        dbg!(&utxo_presigning);
         handle_utxo_error(&utxo_presigning.error)?;
 
         Ok(Proto::PreSigningOutput {

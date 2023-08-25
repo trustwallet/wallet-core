@@ -42,8 +42,9 @@ enum Error {
     Error_invalid_redeem_script = 30;
     Error_invalid_witness_redeem_script = 31;
     Error_invalid_taproot_tweaked_pubkey = 32;
-    Error_unsupported_address_recipient = 33;
-    Error_bad_address_recipient = 34;
+    Error_invalid_change_output = 33;
+    Error_unsupported_address_recipient = 34;
+    Error_bad_address_recipient = 35;
 }
 
 message SigningInput {
