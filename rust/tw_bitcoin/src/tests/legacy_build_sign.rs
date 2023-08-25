@@ -2,13 +2,9 @@
 
 use super::{hex, ONE_BTC};
 use crate::modules::legacy::*;
-use crate::modules::transactions::{BRC20TransferInscription, Brc20Ticker, OrdinalNftInscription};
-use bitcoin::{PrivateKey, PublicKey, ScriptBuf};
+use bitcoin::PrivateKey;
 use secp256k1::ffi::CPtr;
-use secp256k1::XOnlyPublicKey;
-use std::collections::HashMap;
 use std::ffi::CString;
-use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::Common::Proto as CommonProto;
 
@@ -31,7 +27,6 @@ const SEND_SATOSHIS: i64 = FULL_SATOSHIS - 1_000_000;
 #[test]
 fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
     let alice_private_key = hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657");
-    let alice_pubkey = hex("036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536");
     let bob_pubkey = hex("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf");
 
     let txid = hex("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b")
@@ -87,7 +82,6 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
 #[test]
 fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
     let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
-    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
     let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
 
     let txid = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
