@@ -177,10 +177,8 @@ Data SignerEip712::sign(const Proto::SigningInput& input) {
     return parse_hex(signatureStr);
 }
 
-Data SignerEip712::prepareSignature(const Data& signature) {
-    auto newSign = signature;
-    Ethereum::MessageSigner::prepareSignature(newSign, Ethereum::MessageType::Legacy);
-    return newSign;
+void SignerEip712::prepareSignature(Data& signature) {
+    Ethereum::MessageSigner::prepareSignature(signature, Ethereum::MessageType::Legacy);
 }
 
 } // namespace TW::Greenfield

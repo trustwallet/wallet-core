@@ -23,6 +23,9 @@ std::string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const std:
 }
 
 std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+        return Ethereum::Address(publicKey.extended()).string();
+    }
     return Ethereum::Address(publicKey).string();
 }
 

@@ -13,12 +13,23 @@
 namespace TW::Greenfield {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
-    Data signature = SignerEip712::sign(input);
+    Proto::SigningOutput output;
 
+    Data signature = SignerEip712::sign(input);
     PrivateKey privateKey(data(input.private_key()));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
-    return compile(input, publicKey, signature);
+    // At this moment, we support Protobuf serialization only.
+    auto jsonResult = ProtobufSerialization::encodeTxProtobuf(input, publicKey, signature);
+    if (jsonResult.isFailure()) {
+        output.set_error(jsonResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(jsonResult.error()));
+        return output;
+    }
+
+    output.set_signature(signature.data(), signature.size());
+    output.set_serialized(jsonResult.payload().dump());
+    return output;
 }
 
 TxCompiler::Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input) {
@@ -36,18 +47,21 @@ TxCompiler::Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningI
 Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature) {
     Proto::SigningOutput output;
 
-    // prepare Signature
-    const auto ethSignature = SignerEip712::prepareSignature(signature);
+    Data sign = signature;
+    if (input.signing_mode() == Proto::SigningMode::Eip712) {
+        // Prepare the signature to be compiled.
+        SignerEip712::prepareSignature(sign);
+    }
 
     // At this moment, we support Protobuf serialization only.
-    auto jsonResult = ProtobufSerialization::encodeTxProtobuf(input, publicKey, ethSignature);
+    auto jsonResult = ProtobufSerialization::encodeTxProtobuf(input, publicKey, sign);
     if (jsonResult.isFailure()) {
         output.set_error(jsonResult.error());
         output.set_error_message(Common::Proto::SigningError_Name(jsonResult.error()));
         return output;
     }
 
-    output.set_signature(ethSignature.data(), ethSignature.size());
+    output.set_signature(sign.data(), sign.size());
     output.set_serialized(jsonResult.payload().dump());
     return output;
 }

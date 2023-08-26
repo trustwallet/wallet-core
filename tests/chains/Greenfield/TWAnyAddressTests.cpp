@@ -12,15 +12,10 @@
 
 using namespace TW;
 
-// TODO: Finalize tests
-
 TEST(TWGreenfield, Address) {
-    // TODO: Finalize test implementation
-
-    auto string = STRING("__ADD_VALID_ADDRESS_HERE__");
+    auto string = STRING("0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed");
     auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeGreenfield));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
-    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "__CORRESPONDING_ADDRESS_DATA__");
+    auto actual = WRAPS(TWAnyAddressDescription(addr.get()));
+    auto expected = STRING("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
+    EXPECT_TRUE(TWStringEqual(actual.get(), expected.get()));
 }

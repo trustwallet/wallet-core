@@ -37,7 +37,7 @@ struct SignerEip712 {
     static json wrapMsgSendToTypedData(const Proto::SigningInput& input);
 
     /// Prepares the given `signature` to make it Ethereum compatible.
-    static Data prepareSignature(const Data& signature);
+    static void prepareSignature(Data& signature);
 };
 
 } // namespace TW::Greenfield
