@@ -32,7 +32,7 @@ TEST(GreenfieldCompiler, PreHashCompile) {
     input.set_eth_chain_id("5600");
     input.set_sequence(2);
 
-    auto& msg = *input.mutable_message();
+    auto& msg = *input.add_messages();
     auto& msgSend = *msg.mutable_send_coins_message();
     msgSend.set_from_address("0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1");
     msgSend.set_to_address("0x280b27f3676db1C4475EE10F75D510Eb527fd155");

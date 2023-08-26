@@ -56,7 +56,6 @@ public:
     std::shared_ptr<ParamNamed> getParam(int idx) const { return _params[idx]; }
     std::string getType() const;
     Data encodeHashes() const;
-    // TODO remove
     void fillExtraTypesMap(ExtraTypesMap& extraTypes) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const;
     ParamSetNamed clone() const;

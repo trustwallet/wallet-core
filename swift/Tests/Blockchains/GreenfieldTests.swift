@@ -9,6 +9,8 @@ import XCTest
 
 class GreenfieldTests: XCTestCase {
     func testSign() {
+        // Successfully broadcasted: https://greenfieldscan.com/tx/ED8508F3C174C4430B8EE718A6D6F0B02A8C516357BE72B1336CF74356529D19
+
         let sendCoinsMessage = GreenfieldMessage.Send.with {
             $0.fromAddress = "0xA815ae0b06dC80318121745BE40e7F8c6654e9f3"
             $0.toAddress = "0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0"
@@ -39,7 +41,7 @@ class GreenfieldTests: XCTestCase {
             $0.cosmosChainID = "greenfield_5600-1"
             $0.memo = "Trust Wallet test memo"
             $0.sequence = 0
-            $0.message = message
+            $0.messages = [message]
             $0.fee = fee
             $0.privateKey = Data(hexString: "825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a")!
         }

@@ -87,8 +87,8 @@ message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 9;
 
-    // Payload message.
-    Message message = 10;
+    // Message payloads.
+    repeated Message messages = 10;
 
     // Broadcast mode (included in output, relevant when broadcasting)
     BroadcastMode mode = 11;

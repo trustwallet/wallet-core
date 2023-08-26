@@ -23,6 +23,8 @@ class TestGreenfieldSigner {
 
     @Test
     fun GreenfieldTransactionSigning() {
+        // Successfully broadcasted: https://greenfieldscan.com/tx/ED8508F3C174C4430B8EE718A6D6F0B02A8C516357BE72B1336CF74356529D19
+
         val key =
             PrivateKey("825d2bb32965764a98338139412c7591ed54c951dd65504cd8ddaeaa0fea7b2a".toHexByteArray())
 
@@ -54,9 +56,9 @@ class TestGreenfieldSigner {
             fee = greenfieldFee
             mode = Greenfield.BroadcastMode.SYNC
             privateKey = ByteString.copyFrom(key.data())
-            message = Greenfield.Message.newBuilder().apply {
+            addMessages(Greenfield.Message.newBuilder().apply {
                 sendCoinsMessage = msgSend
-            }.build()
+            })
         }.build()
 
         val output = AnySigner.sign(signingInput, CoinType.GREENFIELD, Greenfield.SigningOutput.parser())

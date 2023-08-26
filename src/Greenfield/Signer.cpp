@@ -15,7 +15,15 @@ namespace TW::Greenfield {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     Proto::SigningOutput output;
 
-    Data signature = SignerEip712::sign(input);
+    const auto signatureResult = SignerEip712::sign(input);
+    if (signatureResult.isFailure()) {
+        output.set_error(signatureResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(signatureResult.error()));
+        return output;
+    }
+
+    const auto signature = signatureResult.payload();
+
     PrivateKey privateKey(data(input.private_key()));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
@@ -36,7 +44,14 @@ TxCompiler::Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningI
     TxCompiler::Proto::PreSigningOutput output;
 
     // At this moment, we support Eip712 signing mode only.
-    const auto preImage = SignerEip712::preImageHash(input);
+    const auto preImageResult = SignerEip712::preImageHash(input);
+    if (preImageResult.isFailure()) {
+        output.set_error(preImageResult.error());
+        output.set_error_message(Common::Proto::SigningError_Name(preImageResult.error()));
+        return output;
+    }
+
+    const auto preImage = preImageResult.payload();
     auto preImageData = data(preImage.typedData.dump());
 
     output.set_data_hash(preImage.typedDataHash.data(), preImage.typedDataHash.size());

@@ -8,12 +8,15 @@
 
 #include "Data.h"
 #include "proto/Greenfield.pb.h"
+#include "Result.h"
 
 #include <nlohmann/json.hpp>
 
 namespace TW::Greenfield {
 
 using json = nlohmann::json;
+template <typename T>
+using SigningResult = Result<T, Common::Proto::SigningError>;
 
 struct Eip712PreImage {
     json typedData;
@@ -25,16 +28,16 @@ struct SignerEip712 {
 
     /// Signs a Proto::SigningInput transaction as EIP712.
     /// Returns an rsv signature.
-    static Data sign(const Proto::SigningInput& input);
+    static SigningResult<Data> sign(const Proto::SigningInput& input);
 
     /// Returns a pre-image hash that needs to be signed.
-    static Eip712PreImage preImageHash(const Proto::SigningInput& input);
+    static SigningResult<Eip712PreImage> preImageHash(const Proto::SigningInput& input);
 
     /// Packs the Tx input in a EIP712 object.
-    static json wrapTxToTypedData(const Proto::SigningInput& input);
+    static SigningResult<json> wrapTxToTypedData(const Proto::SigningInput& input);
 
     /// Packs the `MsgSend` Tx input in a EIP712 object.
-    static json wrapMsgSendToTypedData(const Proto::SigningInput& input);
+    static json wrapMsgSendToTypedData(const Proto::SigningInput& input, const Proto::Message_Send& msgSendProto);
 
     /// Prepares the given `signature` to make it Ethereum compatible.
     static void prepareSignature(Data& signature);

@@ -86,7 +86,11 @@ SigningResult<json> ProtobufSerialization::encodeTxProtobuf(const Proto::Signing
 SigningResult<Data> ProtobufSerialization::encodeTxBody(const Proto::SigningInput& input) {
     cosmos::TxBody txBody;
 
-    const auto msgAny = convertMessage(input.message());
+    // At this moment, we support only one message.
+    if (input.messages_size() != 1) {
+        return SigningResult<Data>::failure(Common::Proto::SigningError::Error_invalid_params);
+    }
+    const auto msgAny = convertMessage(input.messages(0));
     if (msgAny.isFailure()) {
         return SigningResult<Data>::failure(msgAny.error());
     }

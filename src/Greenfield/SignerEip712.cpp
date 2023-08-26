@@ -11,7 +11,7 @@
 #include "Ethereum/ABI/ParamStruct.h"
 #include "HexCoding.h"
 
-#include <unordered_map>
+#include <map>
 
 namespace TW::Greenfield {
 
@@ -119,9 +119,7 @@ json domainDataJson(const std::string& chainId) {
 }
 
 // Returns a JSON data of the `EIP712Domain` type using `MsgSend` transaction.
-json SignerEip712::wrapMsgSendToTypedData(const Proto::SigningInput& input) {
-    const auto& msgSendProto = input.message().send_coins_message();
-
+json SignerEip712::wrapMsgSendToTypedData(const Proto::SigningInput& input, const Proto::Message_Send& msgSendProto) {
     auto sendAmounts = json::array();
     for (const auto& sAmount : msgSendProto.amounts()) {
         sendAmounts.push_back(json{
@@ -151,27 +149,41 @@ json SignerEip712::wrapMsgSendToTypedData(const Proto::SigningInput& input) {
     };
 }
 
-json SignerEip712::wrapTxToTypedData(const Proto::SigningInput& input) {
-    switch(input.message().message_oneof_case()) {
+SigningResult<json> SignerEip712::wrapTxToTypedData(const Proto::SigningInput& input) {
+    if (input.messages_size() != 1) {
+        return SigningResult<json>::failure(Common::Proto::SigningError::Error_invalid_params);
+    }
+
+    switch(input.messages(0).message_oneof_case()) {
         case Proto::Message::kSendCoinsMessage:
         default:
-            return wrapMsgSendToTypedData(input);
+            const auto& msgSendProto = input.messages(0).send_coins_message();
+            return SigningResult<json>::success(wrapMsgSendToTypedData(input, msgSendProto));
     }
 }
 
-Eip712PreImage SignerEip712::preImageHash(const Proto::SigningInput& input) {
-    const auto txTypedData = wrapTxToTypedData(input);
+SigningResult<Eip712PreImage> SignerEip712::preImageHash(const Proto::SigningInput& input) {
+    const auto txTypedDataResult = wrapTxToTypedData(input);
+    if (txTypedDataResult.isFailure()) {
+        return SigningResult<Eip712PreImage>::failure(txTypedDataResult.error());
+    }
+
+    const auto txTypedData = txTypedDataResult.payload();
     const auto txTypedDataHash = Ethereum::ABI::ParamStruct::hashStructJson(txTypedData.dump());
-    return {.typedData = txTypedData, .typedDataHash = txTypedDataHash};
+    return SigningResult<Eip712PreImage>::success({.typedData = txTypedData, .typedDataHash = txTypedDataHash});
 }
 
-Data SignerEip712::sign(const Proto::SigningInput& input) {
+SigningResult<Data> SignerEip712::sign(const Proto::SigningInput& input) {
     const PrivateKey privateKey(data(input.private_key()));
-    const auto txTypedData = wrapTxToTypedData(input).dump();
+    const auto txTypedDataResult = wrapTxToTypedData(input);
+    if (txTypedDataResult.isFailure()) {
+        return SigningResult<Data>::failure(txTypedDataResult.error());
+    }
+    const auto txTypedData = txTypedDataResult.payload().dump();
     const auto chainId = std::stoull(input.eth_chain_id());
 
     const auto signatureStr = Ethereum::MessageSigner::signTypedData(privateKey, txTypedData, Ethereum::MessageType::Legacy, chainId);
-    return parse_hex(signatureStr);
+    return SigningResult<Data>::success(parse_hex(signatureStr));
 }
 
 void SignerEip712::prepareSignature(Data& signature) {

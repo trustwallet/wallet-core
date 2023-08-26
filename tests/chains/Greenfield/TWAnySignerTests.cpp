@@ -25,7 +25,7 @@ TEST(TWAnySignerGreenfield, Sign) {
     input.set_mode(Proto::BroadcastMode::SYNC);
     input.set_memo("Trust Wallet test memo");
 
-    auto &msg = *input.mutable_message();
+    auto &msg = *input.add_messages();
     auto &msgSend = *msg.mutable_send_coins_message();
     msgSend.set_from_address("0xA815ae0b06dC80318121745BE40e7F8c6654e9f3");
     msgSend.set_to_address("0x8dbD6c7Ede90646a61Bbc649831b7c298BFd37A0");
