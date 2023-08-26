@@ -7,6 +7,7 @@
 #include "ProtobufSerialization.h"
 
 #include "Base64.h"
+#include "Constants.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "PrivateKey.h"
@@ -14,8 +15,6 @@
 
 namespace TW::Greenfield {
 
-/// TODO move to a Constants.h
-static constexpr uint64_t TIMEOUT_HEIGHT = 0;
 static constexpr auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
 
 using Any = google::protobuf::Any;

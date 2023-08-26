@@ -6,6 +6,7 @@
 
 #include "SignerEip712.h"
 
+#include "Constants.h"
 #include "Ethereum/MessageSigner.h"
 #include "Ethereum/ABI/ParamStruct.h"
 #include "HexCoding.h"
@@ -13,10 +14,6 @@
 #include <unordered_map>
 
 namespace TW::Greenfield {
-
-const std::string TIMEOUT_HEIGHT = "0";
-const std::string FEE_GRANTER = "";
-const std::string MSG_SEND_TYPE = "/cosmos.bank.v1beta1.MsgSend";
 
 namespace internal::types {
 
@@ -149,7 +146,7 @@ json SignerEip712::wrapMsgSendToTypedData(const Proto::SigningInput& input) {
                 {"type", MSG_SEND_TYPE}
             }},
             {"sequence", std::to_string(input.sequence())},
-            {"timeout_height", TIMEOUT_HEIGHT}
+            {"timeout_height", TIMEOUT_HEIGHT_STR}
         }}
     };
 }
