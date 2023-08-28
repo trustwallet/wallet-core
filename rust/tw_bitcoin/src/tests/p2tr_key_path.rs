@@ -1,15 +1,15 @@
 use super::hex;
 use crate::entry::{
-    BitcoinEntry, PlaceHolder, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder,
-    ProtoOutputRecipient,
+    BitcoinEntry, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder, ProtoOutputRecipient,
 };
 use tw_coin_entry::coin_entry::CoinEntry;
+use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
 fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
-    let coin = PlaceHolder;
+    let coin = EmptyCoinContext;
 
     let alice_private_key = hex("12ce558df23528f1aa86f1f51ac7e13a197a06bda27610fa89e13b04c40ee999");
     let alice_pubkey = hex("0351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058");

@@ -2,14 +2,15 @@ use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
 use std::borrow::Cow;
 use std::fmt::Display;
+use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
-use tw_coin_entry::modules::json_signer::JsonSigner;
+use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
-use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
+use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
@@ -28,53 +29,7 @@ pub mod aliases {
     pub type ProtoInputBuilder<'a> = Proto::mod_Input::mod_Builder::OneOfvariant<'a>;
 }
 
-#[rustfmt::skip]
-/// Convert `Utxo.proto` error type to `BitcoinV2.proto` error type.
-fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
-    let bitcoin_err = match utxo_err {
-        UtxoProto::Error::OK => return Ok(()),
-        UtxoProto::Error::Error_invalid_wpkh_script_pubkey => Proto::Error::Error_utxo_invalid_wpkh_script_pubkey,
-        UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_utxo_invalid_leaf_hash,
-        UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_utxo_invalid_sighash_type,
-        UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_utxo_invalid_lock_time,
-        UtxoProto::Error::Error_invalid_txid => Proto::Error::Error_utxo_invalid_txid,
-        UtxoProto::Error::Error_sighash_failed => Proto::Error::Error_utxo_sighash_failed,
-        UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_utxo_missing_sighash_method,
-        UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_utxo_failed_encoding,
-        UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
-        UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
-        UtxoProto::Error::Error_zero_sequence_not_enabled => Proto::Error::Error_utxo_zero_sequence_not_enabled,
-    };
-
-    Err(Error::from(bitcoin_err))
-}
-
-pub type PlaceHolderProto<'a> = tw_proto::Bitcoin::Proto::SigningInput<'a>;
-
-pub struct PlaceHolder;
-
-impl CoinContext for PlaceHolder {
-    fn public_key_type(&self) -> PublicKeyType {
-        todo!()
-    }
-}
-
-pub struct NoJsonSigner;
-
-impl JsonSigner for NoJsonSigner {
-    fn sign_json(
-        &self,
-        _coin: &dyn tw_coin_entry::coin_context::CoinContext,
-        _input_json: &str,
-        _key: &PrivateKey,
-    ) -> tw_coin_entry::error::SigningResult<String> {
-        todo!()
-    }
-}
-
-pub struct BitcoinEntry;
-
-pub struct Address(bitcoin::address::Address<NetworkChecked>);
+pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
 impl Display for Address {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -84,9 +39,11 @@ impl Display for Address {
 
 impl CoinAddress for Address {
     fn data(&self) -> tw_memory::Data {
-        todo!()
+        self.0.to_string().into_bytes()
     }
 }
+
+pub struct BitcoinEntry;
 
 impl CoinEntry for BitcoinEntry {
     type AddressPrefix = NoPrefix;
@@ -103,10 +60,16 @@ impl CoinEntry for BitcoinEntry {
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
-        _address: &str,
+        address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let address = bitcoin::address::Address::from_str(address)
+            .map_err(|_| AddressError::FromHexError)?
+            .require_network(bitcoin::Network::Bitcoin)
+            .map_err(|_| AddressError::InvalidInput)
+            .unwrap();
+
+        Ok(Address(address))
     }
 
     #[inline]
@@ -352,4 +315,25 @@ impl BitcoinEntry {
             fee: utxo_serialized.fee,
         })
     }
+}
+
+#[rustfmt::skip]
+/// Convert `Utxo.proto` error type to `BitcoinV2.proto` error type.
+fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
+    let bitcoin_err = match utxo_err {
+        UtxoProto::Error::OK => return Ok(()),
+        UtxoProto::Error::Error_invalid_wpkh_script_pubkey => Proto::Error::Error_utxo_invalid_wpkh_script_pubkey,
+        UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_utxo_invalid_leaf_hash,
+        UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_utxo_invalid_sighash_type,
+        UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_utxo_invalid_lock_time,
+        UtxoProto::Error::Error_invalid_txid => Proto::Error::Error_utxo_invalid_txid,
+        UtxoProto::Error::Error_sighash_failed => Proto::Error::Error_utxo_sighash_failed,
+        UtxoProto::Error::Error_missing_sighash_method => Proto::Error::Error_utxo_missing_sighash_method,
+        UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_utxo_failed_encoding,
+        UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
+        UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
+        UtxoProto::Error::Error_zero_sequence_not_enabled => Proto::Error::Error_utxo_zero_sequence_not_enabled,
+    };
+
+    Err(Error::from(bitcoin_err))
 }

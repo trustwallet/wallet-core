@@ -1,15 +1,15 @@
 use super::hex;
 use crate::entry::{
-    BitcoinEntry, PlaceHolder, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder,
-    ProtoOutputRecipient,
+    BitcoinEntry, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder, ProtoOutputRecipient,
 };
 use tw_coin_entry::coin_entry::CoinEntry;
+use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
 fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
-    let coin = PlaceHolder;
+    let coin = EmptyCoinContext;
 
     let alice_private_key = hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     let alice_pubkey = hex("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb");

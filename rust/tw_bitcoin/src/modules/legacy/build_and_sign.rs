@@ -6,6 +6,7 @@ use bitcoin::taproot::{LeafVersion, NodeInfo, TaprootSpendInfo};
 use bitcoin::{Network, PrivateKey, PublicKey, ScriptBuf, Transaction};
 use secp256k1::XOnlyPublicKey;
 use tw_coin_entry::coin_entry::CoinEntry;
+use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
@@ -140,7 +141,7 @@ pub fn taproot_build_and_sign_transaction(
     };
 
     // Build and sign the Bitcoin transaction.
-    let signed = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing_input);
+    let signed = crate::entry::BitcoinEntry.sign(&EmptyCoinContext, signing_input);
 
     // Check for error.
     if signed.error != Proto::Error::OK {
