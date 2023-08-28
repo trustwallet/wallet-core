@@ -33,7 +33,7 @@ public:
     bool decode(const Data& encoded, size_t& offset_inout) override { return _param->decode(encoded, offset_inout); }
     bool setValueJson(const std::string& value) override { return _param->setValueJson(value); }
     Data hashStruct() const override { return _param->hashStruct(); }
-    std::string getExtraTypes(std::vector<std::string>& ignoreList) const override { return _param->getExtraTypes(ignoreList); }
+    void fillExtraTypesMap(ExtraTypesMap& extraTypes) const override { _param->fillExtraTypesMap(extraTypes); }
     std::shared_ptr<ParamBase> clone() const override { return cloneNamed(); }
     std::shared_ptr<ParamNamed> cloneNamed() const;
 };
@@ -56,7 +56,7 @@ public:
     std::shared_ptr<ParamNamed> getParam(int idx) const { return _params[idx]; }
     std::string getType() const;
     Data encodeHashes() const;
-    std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
+    void fillExtraTypesMap(ExtraTypesMap& extraTypes) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const;
     ParamSetNamed clone() const;
 };
@@ -79,10 +79,7 @@ public:
     /// Compute the hash of a struct, used for signing, according to EIP712
     Data hashStruct() const override;
     /// Get full type, extended by used sub-types, of the form 'Mail(Person from,Person to,string contents)Person(string name,address wallet)'
-    std::string encodeType() const {
-        std::vector<std::string> ignoreList;
-        return getExtraTypes(ignoreList);
-    }
+    std::string encodeType() const;
     /// Get the hash of the full type.
     Data hashType() const;
 
@@ -93,7 +90,7 @@ public:
     bool decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) override { return true; }
     bool setValueJson([[maybe_unused]] const std::string& value) override { return false; } // see makeStruct
     Data encodeHashes() const;
-    std::string getExtraTypes(std::vector<std::string>& ignoreList) const override;
+    void fillExtraTypesMap(ExtraTypesMap& extraTypes) const override;
     std::shared_ptr<ParamBase> clone() const override;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
 

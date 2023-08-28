@@ -63,6 +63,7 @@ enum TWBlockchain {
     TWBlockchainHedera = 48, // Hedera
     TWBlockchainTheOpenNetwork = 49,
     TWBlockchainSui = 50,
+    TWBlockchainGreenfield = 51,
 };
 
 TW_EXTERN_C_END
