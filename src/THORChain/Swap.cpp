@@ -163,6 +163,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
     switch (fromChain) {
     case Chain::THOR:
         return buildRune(fromAmountNum, memo);
+    case Chain::DASH:
     case Chain::BTC:
     case Chain::DOGE:
     case Chain::BCH:
