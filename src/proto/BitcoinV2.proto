@@ -61,18 +61,21 @@ message SigningInput {
     // included in a block.
     Utxo.Proto.LockTime lock_time = 3;
 
+    // The inputs to spend.
     repeated Input inputs = 5;
 
+    // The output of the transaction. Note that the change output is specified
+    // in the `change_output` field.
     repeated Output outputs = 6;
 
+    // How the inputs should be selected.
     Utxo.Proto.InputSelector input_selector = 7;
 
+    // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
     uint64 fee_per_vb = 8;
 
     // The change output to be added (return to sender).
     // The `value` can be left at 0.
-    // TODO: For the sake of correctness, an error should be returned if
-    // `change_output.value` is set.
     Output change_output = 9;
 
     // Explicility disable change output creation.
@@ -83,18 +86,29 @@ message Input {
     // The referenced transaction ID in REVERSED order.
     bytes txid = 1;
 
+    // The position in the previous transactions output that this input
+    // references.
     uint32 vout = 2;
 
+    // The sequence number, used for timelocks, replace-by-fee, etc. Normally
+    // this number is simply 4294967295 (0xFFFFFFFF) .
     uint32 sequence = 3;
 
+    // If the sequence is a zero value, this field must be set to `true`.
     bool sequence_enable_zero = 4;
 
+    // The amount of satoshis of this input. Required for producing
+    // Segwit/Taproot transactions.
     uint64 value = 5;
 
+    // The sighash type, generally `SighashType::UseDefault` (All)
     Utxo.Proto.SighashType sighash_type = 6;
 
+    // The reciepient of this input (the spender)
     oneof to_recipient {
+        // Construct input with a buildler pattern.
         Builder builder = 7;
+        // Construct input by providing raw spending information directly.
         ScriptWitness custom = 8;
     }
 
@@ -110,54 +124,77 @@ message Input {
             bytes p2wpkh = 6;
             // Pay-to-Taproot-key-path (balance transfers).
             TaprootKeyPath p2tr_key_path = 7;
-            // Pay-to-Taproot-script-path (complex transfers)
+            // Pay-to-Taproot-script-path (complex transfers).
             TaprootScriptPath p2tr_script_path = 8;
+            // Create a BRC20 inscription.
             Brc20Inscription brc20_inscribe = 9;
+            // Create an Ordinal (NFT) inscriptiohn.
             OrdinalInscription ordinal_inscribe = 10;
         }
     }
 
     message ScriptWitness {
+        // The spending condition of this input.
         bytes script_pubkey = 1;
+        // The claiming script for this input (non-Segwit/non-Taproot)
         bytes script_sig = 2;
+        // The claiming script for this input (Segwit/Taproot)
         repeated bytes witness_items = 3;
+        // The signing method.
         Utxo.Proto.SigningMethod signing_method = 5;
     }
 
     message TaprootKeyPath {
+        // Whether only one prevout should be used to calculate the Sighash.
+        // Normally this is `false`.
         bool one_prevout = 1;
+        // The recipient.
         bytes public_key = 2;
     }
 
     message TaprootScriptPath {
+        // Whether only one prevout should be used to calculate the Sighash.
+        // Normally this is `false`.
         bool one_prevout = 1;
+        // The payload of the Taproot transaction.
         bytes payload = 2;
+        // The control block of the Taproot transaction required for claiming.
         bytes control_block = 3;
     }
 
     message OrdinalInscription {
+        // Whether only one prevout should be used to calculate the Sighash.
+        // Normally this is `false`.
         bool one_prevout = 1;
-        // TODO: This is dangeours, could be misinterpreted.
+        // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 2;
+        // The MIME type of the inscription, such as `image/png`, etc.
         string mime_type = 3;
+        // The actual inscription content.
         bytes payload = 4;
     }
 
     message Brc20Inscription {
         bool one_prevout = 1;
-        // TODO: This is dangeours, could be misinterpreted.
+        // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 2;
+        // The ticker of the BRC20 inscription.
         string ticker = 3;
+        // The BRC20 token transfer amount.
         uint64 transfer_amount = 4;
     }
 }
 
 message Output {
+    // The amount of satoshis to spend.
     uint64 value = 1;
 
     oneof to_recipient {
+        // Construct output with builder pattern.
         Builder builder = 2;
+        // Construct output by providing the scriptPubkey directly.
         bytes custom_script_pubkey = 3;
+        // Derive the expected output from the provided address.
         string from_address = 4;
     }
 
@@ -189,20 +226,27 @@ message Output {
     }
 
     message TaprootScriptPath {
+        // The recipient of the output.
         bytes public_key = 1;
+        // The nodehash of the Taproot script, required to compute the sighash.
         bytes node_hash = 2;
     }
 
     message OrdinalInscription {
+        // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 2;
+        // The MIME type of the inscription, such as `image/png`, etc.
         string mime_type = 3;
+        // The actual inscription content.
         bytes payload = 4;
     }
 
     message Brc20Inscription {
-        // TODO: This is dangeours, could be misinterpreted.
+        // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 1;
+        // The ticker of the BRC20 inscription.
         string ticker = 2;
+        // The BRC20 token transfer amount.
         uint64 transfer_amount = 3;
     }
 }
@@ -215,18 +259,22 @@ message ToPublicKeyOrHash {
 }
 
 message PreSigningOutput {
+    // A possible error, `OK` if none.
     Error error = 1;
 
-    /// SighashMethodSighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
+    /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Utxo.Proto.Sighash sighashes = 2;
 
+    // The raw inputs.
     repeated Utxo.Proto.TxIn utxo_inputs = 3;
 
-    // TODO: Rename field.
+    // The raw outputs.
     repeated TxOut utxo_outputs = 4;
 
+    // The estimated weight of the transaction in satoshis.
     uint64 weight_estimate = 5;
 
+    // The estimated fees of the transaction in satoshis.
     uint64 fee_estimate = 6;
 
     // The output of a transaction.
@@ -235,13 +283,15 @@ message PreSigningOutput {
         uint64 value = 1;
         // The spending condition of the output.
         bytes script_pubkey = 2;
+        // The payload of the Taproot script.
         bytes taproot_payload = 3;
-        // The optional control block for an output (P2TR script-path).
+        // The optional control block for a Taproot output (P2TR script-path).
         bytes control_block = 4;
     }
 }
 
 message SigningOutput {
+    // A possible error, `OK` if none.
     Error error = 1;
 
     Transaction transaction = 2;
@@ -249,11 +299,14 @@ message SigningOutput {
     // The encoded transaction that submitted to the network.
     bytes encoded = 3;
 
-    // The transaction ID in REVERSED order.
+    // The transaction ID. Note that this must be reversed when referencing in
+    // future transactions.
     bytes txid = 4;
 
+    // The total and final weight of the transaction.
     uint64 weight = 5;
 
+    // The total and final fee of the transaction in satoshis.
     uint64 fee = 6;
 }
 
@@ -274,9 +327,12 @@ message TransactionInput {
     // The referenced transaction ID in REVERSED order.
     bytes txid = 1;
 
-    // The referenced input by transaction index.
+    // The position in the previous transactions output that this input
+    // references.
     uint32 vout = 3;
 
+    // The sequence number, used for timelocks, replace-by-fee, etc. Normally
+    // this number is simply 4294967295 (0xFFFFFFFF) .
     uint32 sequence = 4;
 
     // The script for claiming the input (non-Segwit/non-Taproot).
@@ -290,7 +346,7 @@ message TransactionOutput {
     // The condition for claiming the output.
     bytes script_pubkey = 1;
 
-    // The value sent in satoshis.
+    // The amount of satoshis to spend.
     uint64 value = 2;
 
     // In case of P2TR script-path (complex scripts), this is the payload that
