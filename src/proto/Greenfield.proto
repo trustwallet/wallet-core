@@ -36,12 +36,25 @@ message Message {
         string from_address = 1;
         string to_address = 2;
         repeated Amount amounts = 3;
+        // Optional. Default `cosmos.bank.v1beta1.MsgSend`.
+        string type_prefix = 4;
+    }
+
+    // greenfield/MsgTransferOut
+    // Used to transfer BNB Greenfield to BSC blockchain.
+    message BridgeTransferOut {
+        // In most cases, `from_address` and `to_address` are equal.
+        string from_address = 1;
+        string to_address = 2;
+        Amount amount = 3;
+        // Optional. Default `greenfield.bridge.MsgTransferOut`.
         string type_prefix = 4;
     }
 
     // The payload message
     oneof message_oneof {
         Send send_coins_message = 1;
+        BridgeTransferOut bridge_transfer_out = 2;
     }
 }
 

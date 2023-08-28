@@ -14,5 +14,6 @@ static constexpr uint64_t TIMEOUT_HEIGHT = 0;
 static constexpr auto* TIMEOUT_HEIGHT_STR = "0";
 static constexpr auto* FEE_GRANTER = "";
 static constexpr auto* MSG_SEND_TYPE = "/cosmos.bank.v1beta1.MsgSend";
+static constexpr auto* MSG_TRANSFER_OUT_TYPE = "/greenfield.bridge.MsgTransferOut";
 
 } // namespace TW::Greenfield

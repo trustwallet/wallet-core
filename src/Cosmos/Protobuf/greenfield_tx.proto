@@ -1,0 +1,15 @@
+syntax = "proto3";
+package greenfield.bridge;
+
+import "coin.proto";
+
+// MsgTransferOut is the Msg/TransferOut request type.
+// Original: https://github.com/bnb-chain/greenfield/blob/f1183e57caeb1ba0d28836b4ed2e64d693d2364d/proto/greenfield/bridge/tx.proto
+message MsgTransferOut {
+    // from address
+    string from = 1;
+    // to address
+    string to = 2;
+    // transfer token amount
+    cosmos.base.v1beta1.Coin amount = 3;
+}

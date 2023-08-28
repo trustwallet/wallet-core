@@ -39,6 +39,9 @@ struct SignerEip712 {
     /// Packs the `MsgSend` Tx input in a EIP712 object.
     static json wrapMsgSendToTypedData(const Proto::SigningInput& input, const Proto::Message_Send& msgSendProto);
 
+    /// Packs the `MsgTransferOut` Tx input in a EIP712 object.
+    static json wrapMsgTransferOutToTypedData(const Proto::SigningInput& input, const Proto::Message_BridgeTransferOut& msgTransferOut);
+
     /// Prepares the given `signature` to make it Ethereum compatible.
     static void prepareSignature(Data& signature);
 };
