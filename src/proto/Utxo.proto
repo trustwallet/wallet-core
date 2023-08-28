@@ -48,7 +48,8 @@ message SigningInput {
 
 enum InputSelector {
     UseAll = 0;
-    SelectAscending = 1;
+    SelectInOrder = 1;
+    SelectAscending = 2;
 }
 
 message LockTime {

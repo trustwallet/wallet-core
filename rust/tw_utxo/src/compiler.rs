@@ -84,15 +84,23 @@ impl Compiler<StandardBitcoinContext> {
             return Err(Error::from(Proto::Error::Error_zero_sequence_not_enabled));
         }
 
-        // Only use the necessariy amount of inputs to cover `total_output`, any
-        // other input gets dropped.
-        let proto_inputs = std::mem::take(&mut proto.inputs);
+        // If the input selector is InputSelector::SelectAscending, we sort the
+        // input first.
+        if let Proto::InputSelector::SelectAscending = proto.input_selector {
+            proto.inputs.sort_by(|a, b| a.value.cmp(&b.value));
+        }
 
-        let selected = if let Proto::InputSelector::SelectAscending = proto.input_selector {
+        // Unless InputSelector::UseAll is provided, we only use the necessariy
+        // amount of inputs to cover `total_output`. Any other input gets
+        // dropped.
+        let selected = if let Proto::InputSelector::SelectInOrder
+        | Proto::InputSelector::SelectAscending = proto.input_selector
+        {
             let mut total_input = total_input;
             let mut remaining = total_output;
 
-            let selected: Vec<Proto::TxIn> = proto_inputs
+            let selected: Vec<Proto::TxIn> = proto
+                .inputs
                 .into_iter()
                 .take_while(|input| {
                     if remaining == 0 {
@@ -115,7 +123,8 @@ impl Compiler<StandardBitcoinContext> {
             selected
         } else {
             // TODO: Write a function for this
-            proto_inputs
+            proto
+                .inputs
                 .into_iter()
                 .map(|input| Proto::TxIn {
                     txid: input.txid.to_vec().into(),
