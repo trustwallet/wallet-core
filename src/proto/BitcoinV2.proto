@@ -101,7 +101,7 @@ message Input {
     // Segwit/Taproot transactions.
     uint64 value = 5;
 
-    // The sighash type, generally `SighashType::UseDefault` (All)
+    // The sighash type, normally `SighashType::UseDefault` (All).
     Utxo.Proto.SighashType sighash_type = 6;
 
     // The reciepient of this input (the spender)
@@ -271,7 +271,7 @@ message PreSigningOutput {
     // The raw outputs.
     repeated TxOut utxo_outputs = 4;
 
-    // The estimated weight of the transaction in satoshis.
+    // The estimated weight of the transaction.
     uint64 weight_estimate = 5;
 
     // The estimated fees of the transaction in satoshis.

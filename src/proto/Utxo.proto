@@ -60,43 +60,57 @@ message LockTime {
 }
 
 message TxIn {
-    // The referenced transaction hash.
+    // The referenced transaction ID in REVERSED order.
     bytes txid = 1;
 
-    // The index of the referenced output.
+    // The position in the previous transactions output that this input
+    // references.
     uint32 vout = 2;
 
+    // The value of this input, such as satoshis. Required for producing
+    // Segwit/Taproot transactions.
     uint64 value = 3;
 
+    // The sequence number, used for timelocks, replace-by-fee, etc. Normally
+    // this number is simply 4294967295 (0xFFFFFFFF) .
     uint32 sequence = 4;
 
-    // Explicitly allow a `sequence` of zero.
+    // If the sequence is a zero value, this field must be set to `true`.
     bool sequence_enable_zero = 5;
 
-    // The spending condition of the output.
+    // The spending condition of the referenced output.
     bytes script_pubkey = 6;
 
-    // The sighash type.
+    // The sighash type, normally `SighashType::UseDefault` (All).
     SighashType sighash_type = 7;
 
+    // The signing method.
     SigningMethod signing_method = 8;
 
+    // The estimated weight of the input, required for estimating fees.
     uint64 weight_estimate = 9;
 
+    // If this input is a Taproot script-path (complex transaction), then this
+    // leaf hash is required in order to compute the sighash.
     bytes leaf_hash = 10;
 }
 
 enum SigningMethod {
+    // Used for P2SH and P2PKH
     Legacy = 0;
+    // Used for P2WSH and P2WPKH
     Segwit = 1;
+    // Used for P2TR key-path and P2TR script-paty
     TaprootAll = 2;
+    // Used for P2TR key-path and P2TR script-paty if only one prevout should be
+    // used to calculate the Sighash. Normally this is not used.
     TaprootOnePrevout = 3;
 }
 
 enum SighashType {
     // Use default (All)
     UseDefault = 0; // 0x00
-    // Sign all outputs.
+    // Sign all outputs (default).
     All = 1; // 0x01
     // Sign no outputs, anyone can choose the destination.
     None = 2; // 0x02
@@ -125,18 +139,26 @@ message PreSigningOutput {
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
     repeated Sighash sighashes = 2;
 
+    // The raw inputs.
     repeated TxIn inputs = 3;
 
+    // The raw outputs.
     repeated TxOut outputs = 4;
 
+    // The estimated weight of the transaction.
     uint64 weight_estimate = 5;
 
+    // The estimated fee of the transaction denominated in the base unit (such
+    // as satoshis).
     uint64 fee_estimate = 6;
 }
 
 message Sighash {
+    // The sighash to be signed.
     bytes sighash = 1;
+    // The used signing method for this sighash.
     SigningMethod signing_method = 2;
+    // The used sighash type for this sighash.
     SighashType sighash_type = 3;
 }
 
@@ -186,7 +208,10 @@ message SerializedTransaction {
     // The transaction ID.
     bytes txid = 3;
 
+    // The total and final weight of the transaction.
     uint64 weight = 4;
 
+    // The total and final fee of the transaction denominated in the base unit
+    // (such as satoshis).
     uint64 fee = 5;
 }
