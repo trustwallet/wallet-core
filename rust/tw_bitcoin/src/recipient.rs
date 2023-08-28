@@ -1,13 +1,10 @@
-use std::str::FromStr;
-
 use crate::modules::transactions::TaprootScript;
 use crate::utils::tweak_pubkey;
-use crate::{Error, Result};
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::taproot::TapNodeHash;
 use bitcoin::{
-    secp256k1::{self, XOnlyPublicKey},
-    Address, Network, PubkeyHash, WPubkeyHash,
+    secp256k1::XOnlyPublicKey,
+    PubkeyHash, WPubkeyHash,
 };
 
 /// This type is used to specify the recipient of a Bitcoin transaction,
@@ -39,34 +36,6 @@ impl Recipient<PublicKey> {
     pub fn pubkey_hash(&self) -> PubkeyHash {
         PubkeyHash::from(self.inner)
     }
-    pub fn wpubkey_hash(&self) -> Result<WPubkeyHash> {
-        Ok(self.inner.wpubkey_hash().unwrap())
-    }
-    pub fn tweaked_pubkey(&self) -> TweakedPublicKey {
-        tweak_pubkey(self.inner)
-    }
-    pub fn untweaked_pubkey(&self) -> UntweakedPublicKey {
-        XOnlyPublicKey::from(self.inner.inner)
-    }
-    pub fn legacy_address(&self, network: Network) -> Address {
-        Address::p2pkh(&self.inner, network)
-    }
-    pub fn segwit_address(&self, network: Network) -> Result<Address> {
-        Ok(Address::p2wpkh(&self.inner, network).unwrap())
-    }
-    pub fn taproot_address(&self, network: Network) -> Address {
-        let untweaked = UntweakedPublicKey::from(self.inner.inner);
-        Address::p2tr(&secp256k1::Secp256k1::new(), untweaked, None, network)
-    }
-    pub fn legacy_address_string(&self, network: Network) -> String {
-        self.legacy_address(network).to_string()
-    }
-    pub fn segwit_address_string(&self, network: Network) -> Result<String> {
-        self.segwit_address(network).map(|addr| addr.to_string())
-    }
-    pub fn taproot_address_string(&self, network: Network) -> String {
-        self.taproot_address(network).to_string()
-    }
 }
 
 impl Recipient<PubkeyHash> {
@@ -76,32 +45,8 @@ impl Recipient<PubkeyHash> {
 }
 
 impl Recipient<WPubkeyHash> {
-    pub fn from_slice(slice: &[u8]) -> Result<Self> {
-        Ok(Recipient {
-            inner: PublicKey::from_slice(slice)
-                .unwrap()
-                .wpubkey_hash()
-                .unwrap(),
-        })
-    }
     pub fn wpubkey_hash(&self) -> &WPubkeyHash {
         &self.inner
-    }
-}
-
-impl Recipient<PublicKey> {
-    pub fn from_slice(slice: &[u8]) -> Result<Self> {
-        Ok(Recipient {
-            inner: PublicKey::from_slice(slice).unwrap(),
-        })
-    }
-}
-
-impl FromStr for Recipient<PublicKey> {
-    type Err = Error;
-
-    fn from_str(string: &str) -> Result<Self> {
-        Self::from_slice(string.as_bytes())
     }
 }
 
@@ -154,43 +99,6 @@ impl From<&KeyPair> for Recipient<TweakedPublicKey> {
         Recipient {
             inner: tweaked.inner,
         }
-    }
-}
-
-impl TryFrom<PublicKey> for Recipient<WPubkeyHash> {
-    type Error = Error;
-
-    fn try_from(pubkey: PublicKey) -> Result<Self> {
-        Ok(Recipient {
-            inner: pubkey.wpubkey_hash().unwrap(),
-        })
-    }
-}
-
-impl TryFrom<Recipient<PublicKey>> for Recipient<WPubkeyHash> {
-    type Error = Error;
-
-    fn try_from(recipient: Recipient<PublicKey>) -> Result<Self> {
-        Ok(Recipient {
-            inner: Self::try_from(recipient.inner)?.inner,
-        })
-    }
-}
-
-impl TryFrom<&KeyPair> for Recipient<WPubkeyHash> {
-    type Error = Error;
-
-    fn try_from(keypair: &KeyPair) -> Result<Self> {
-        let pubkey = Recipient::<PublicKey>::from(keypair);
-        Self::try_from(pubkey.inner)
-    }
-}
-
-impl TryFrom<KeyPair> for Recipient<WPubkeyHash> {
-    type Error = Error;
-
-    fn try_from(keypair: KeyPair) -> Result<Self> {
-        Self::try_from(&keypair)
     }
 }
 
