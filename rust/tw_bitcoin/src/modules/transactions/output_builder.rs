@@ -287,7 +287,7 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                 WitnessVersion::V0 => {
                     let payload = progam.program().as_bytes().to_vec();
 
-                    // Check for P2PKH.
+                    // Check for P2WPKH.
                     if payload.len() == 20 {
                         return Ok(Proto::Output {
                             value,
