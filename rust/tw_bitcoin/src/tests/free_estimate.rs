@@ -45,14 +45,14 @@ fn p2pkh_fee_estimate() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         value: ONE_BTC,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     bob_pubkey.as_slice().into(),
@@ -104,14 +104,14 @@ fn p2wpkh_fee_estimate() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
         }),
     });
 
     signing.outputs.push(Proto::Output {
         value: ONE_BTC,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     bob_pubkey.as_slice().into(),
@@ -154,8 +154,8 @@ fn p2tr_key_path_fee_estimate() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
-            variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::TaprootKeyPath {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::InputTaprootKeyPath {
                 one_prevout: false,
                 public_key: alice_pubkey.as_slice().into(),
             }),
@@ -164,7 +164,7 @@ fn p2tr_key_path_fee_estimate() {
 
     let out1 = Proto::Output {
         value: ONE_BTC,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2tr_key_path(bob_pubkey.as_slice().into()),
         }),
     };
@@ -214,8 +214,8 @@ fn brc20_inscribe_fee_estimate() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
-            variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::Brc20Inscription {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::InputBrc20Inscription {
                 one_prevout: false,
                 inscribe_to: alice_pubkey.as_slice().into(),
                 ticker: "oadf".into(),
@@ -226,8 +226,8 @@ fn brc20_inscribe_fee_estimate() {
 
     let out1 = Proto::Output {
         value: ONE_BTC,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
                 inscribe_to: alice_pubkey.as_slice().into(),
                 ticker: "oadf".into(),
                 transfer_amount: 20,

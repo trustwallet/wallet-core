@@ -25,7 +25,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
     //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         value: _satoshis as u64,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     recipient.to_bytes().into(),
@@ -69,7 +69,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
     //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         value: _satoshis as u64,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     recipient.to_bytes().into(),
@@ -112,7 +112,7 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
     //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         value: _satoshis as u64,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2tr_key_path(recipient.to_bytes().into()),
         }),
     };
@@ -160,8 +160,8 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
 
     let output = Proto::Output {
         value: _satoshis as u64,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
                 inscribe_to: recipient.to_bytes().into(),
                 ticker: ticker.into(),
                 transfer_amount: value,
@@ -219,8 +219,8 @@ pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     // Inscribe NFT data.
     let output = Proto::Output {
         value: _satoshis as u64,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-            variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OrdinalInscription {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OutputOrdinalInscription {
                 inscribe_to: recipient.to_bytes().into(),
                 mime_type: mime_type.into(),
                 payload: payload.into(),

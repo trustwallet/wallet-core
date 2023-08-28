@@ -27,7 +27,7 @@ fn send_to_p2pkh_address() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     };
@@ -91,7 +91,7 @@ fn send_to_p2wpkh_address() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     };
@@ -155,7 +155,7 @@ fn send_to_p2tr_key_path_address() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     };

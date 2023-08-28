@@ -194,7 +194,7 @@ impl OutputBuilder {
 
 // Conenience helper function.
 fn redeem_script_or_hash(
-    script_or_hash: &Proto::mod_Output::RedeemScriptOrHash,
+    script_or_hash: &Proto::mod_Output::OutputRedeemScriptOrHash,
 ) -> Result<ScriptHash> {
     let pubkey_hash = match &script_or_hash.variant {
         ProtoRedeemScriptOrHash::hash(hash) => ScriptHash::from_slice(hash.as_ref())
@@ -212,7 +212,7 @@ fn redeem_script_or_hash(
 
 // Conenience helper function.
 fn witness_redeem_script_or_hash(
-    script_or_hash: &Proto::mod_Output::RedeemScriptOrHash,
+    script_or_hash: &Proto::mod_Output::OutputRedeemScriptOrHash,
 ) -> Result<WScriptHash> {
     let pubkey_hash = match &script_or_hash.variant {
         ProtoRedeemScriptOrHash::hash(hash) => WScriptHash::from_slice(hash)
@@ -272,7 +272,7 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
         // Identified a "PubkeyHash" address (i.e. P2PKH).
         Payload::PubkeyHash(pubkey_hash) => Proto::Output {
             value,
-            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
                 variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                     to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
                         pubkey_hash.to_vec().into(),
@@ -292,7 +292,7 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                         return Ok(Proto::Output {
                             value,
                             to_recipient: ProtoOutputRecipient::builder(
-                                Proto::mod_Output::Builder {
+                                Proto::mod_Output::OutputBuilder {
                                     variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                                         to_address:
                                             Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
@@ -309,9 +309,9 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                     if payload.len() == 32 {
                         return Ok(Proto::Output {
                             value,
-                            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-                                variant: ProtoOutputBuilder::p2wsh(Proto::mod_Output::RedeemScriptOrHash {
-                                    variant: Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant::hash(
+                            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+                                variant: ProtoOutputBuilder::p2wsh(Proto::mod_Output::OutputRedeemScriptOrHash {
+                                    variant: Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::hash(
                                         // Payload is the WScript hash.
                                         payload.to_vec().into(),
                                     ),
@@ -331,7 +331,7 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
 
                     Proto::Output {
                         value,
-                        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+                        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
                             variant: ProtoOutputBuilder::p2tr_dangerous_assume_tweaked(
                                 pubkey.into(),
                             ),
@@ -347,9 +347,9 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
         },
         Payload::ScriptHash(script_hash) => Proto::Output {
             value,
-            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-                variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::RedeemScriptOrHash {
-                    variant: Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant::hash(
+            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+                variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::OutputRedeemScriptOrHash {
+                    variant: Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::hash(
                         script_hash.to_vec().into(),
                     ),
                 }),

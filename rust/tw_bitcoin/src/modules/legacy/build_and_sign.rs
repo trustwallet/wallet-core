@@ -207,19 +207,19 @@ fn input_from_legacy_utxo(
     // We identify the provided `Variant` and invoke the builder function. We
     // explicitly skip/ignore any provided script in the input.
     let input_builder = match utxo.variant {
-        LegacyProto::TransactionVariant::P2PKH => Proto::mod_Input::Builder {
-            variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2pkh(
+        LegacyProto::TransactionVariant::P2PKH => Proto::mod_Input::InputBuilder {
+            variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2pkh(
                 my_pubkey.to_bytes().into(),
             ),
         },
-        LegacyProto::TransactionVariant::P2WPKH => Proto::mod_Input::Builder {
-            variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2wpkh(
+        LegacyProto::TransactionVariant::P2WPKH => Proto::mod_Input::InputBuilder {
+            variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2wpkh(
                 my_pubkey.to_bytes().into(),
             ),
         },
-        LegacyProto::TransactionVariant::P2TRKEYPATH => Proto::mod_Input::Builder {
-            variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2tr_key_path(
-                Proto::mod_Input::TaprootKeyPath {
+        LegacyProto::TransactionVariant::P2TRKEYPATH => Proto::mod_Input::InputBuilder {
+            variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2tr_key_path(
+                Proto::mod_Input::InputTaprootKeyPath {
                     one_prevout: false,
                     public_key: my_pubkey.to_bytes().into(),
                 },
@@ -247,9 +247,9 @@ fn input_from_legacy_utxo(
                 .control_block(&(spending_script, LeafVersion::TapScript))
                 .expect("failed to construct control block");
 
-            Proto::mod_Input::Builder {
-                variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2tr_script_path(
-                    Proto::mod_Input::TaprootScriptPath {
+            Proto::mod_Input::InputBuilder {
+                variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2tr_script_path(
+                    Proto::mod_Input::InputTaprootScriptPath {
                         one_prevout: false,
                         payload: utxo.spendingScript.to_vec().into(),
                         control_block: control_block.serialize().into(),

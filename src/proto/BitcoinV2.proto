@@ -106,12 +106,12 @@ message Input {
     // The reciepient of this input (the spender)
     oneof to_recipient {
         // Construct input with a buildler pattern.
-        Builder builder = 7;
+        InputBuilder builder = 7;
         // Construct input by providing raw spending information directly.
-        ScriptWitness custom = 8;
+        InputScriptWitness custom = 8;
     }
 
-    message Builder {
+    message InputBuilder {
         oneof variant {
             // Pay-to-Script-Hash, specify the redeem script.
             bytes p2sh = 1;
@@ -122,17 +122,17 @@ message Input {
             // Pay-to-Public-Key-Hash, specify the public key.
             bytes p2wpkh = 6;
             // Pay-to-Taproot-key-path (balance transfers).
-            TaprootKeyPath p2tr_key_path = 7;
+            InputTaprootKeyPath p2tr_key_path = 7;
             // Pay-to-Taproot-script-path (complex transfers).
-            TaprootScriptPath p2tr_script_path = 8;
+            InputTaprootScriptPath p2tr_script_path = 8;
             // Create a BRC20 inscription.
-            Brc20Inscription brc20_inscribe = 9;
+            InputBrc20Inscription brc20_inscribe = 9;
             // Create an Ordinal (NFT) inscriptiohn.
-            OrdinalInscription ordinal_inscribe = 10;
+            InputOrdinalInscription ordinal_inscribe = 10;
         }
     }
 
-    message ScriptWitness {
+    message InputScriptWitness {
         // The spending condition of this input.
         bytes script_pubkey = 1;
         // The claiming script for this input (non-Segwit/non-Taproot)
@@ -143,7 +143,7 @@ message Input {
         Utxo.Proto.SigningMethod signing_method = 5;
     }
 
-    message TaprootKeyPath {
+    message InputTaprootKeyPath {
         // Whether only one prevout should be used to calculate the Sighash.
         // Normally this is `false`.
         bool one_prevout = 1;
@@ -151,7 +151,7 @@ message Input {
         bytes public_key = 2;
     }
 
-    message TaprootScriptPath {
+    message InputTaprootScriptPath {
         // Whether only one prevout should be used to calculate the Sighash.
         // Normally this is `false`.
         bool one_prevout = 1;
@@ -161,7 +161,7 @@ message Input {
         bytes control_block = 3;
     }
 
-    message OrdinalInscription {
+    message InputOrdinalInscription {
         // Whether only one prevout should be used to calculate the Sighash.
         // Normally this is `false`.
         bool one_prevout = 1;
@@ -173,7 +173,7 @@ message Input {
         bytes payload = 4;
     }
 
-    message Brc20Inscription {
+    message InputBrc20Inscription {
         bool one_prevout = 1;
         // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 2;
@@ -190,48 +190,48 @@ message Output {
 
     oneof to_recipient {
         // Construct output with builder pattern.
-        Builder builder = 2;
+        OutputBuilder builder = 2;
         // Construct output by providing the scriptPubkey directly.
         bytes custom_script_pubkey = 3;
         // Derive the expected output from the provided address.
         string from_address = 4;
     }
 
-    message Builder {
+    message OutputBuilder {
         oneof variant {
             // Pay-to-Script-Hash, specify the hash.
-            RedeemScriptOrHash p2sh = 1;
+            OutputRedeemScriptOrHash p2sh = 1;
             // Pay-to-Public-Key-Hash
             ToPublicKeyOrHash p2pkh = 2;
             // Pay-to-Witness-Script-Hash, specify the hash.
-            RedeemScriptOrHash p2wsh = 3;
+            OutputRedeemScriptOrHash p2wsh = 3;
             // Pay-to-Public-Key-Hash
             ToPublicKeyOrHash p2wpkh = 4;
             // Pay-to-Taproot-key-path (balance transfers), specify the public key.
             bytes p2tr_key_path = 5;
             // Pay-to-Taproot-script-path (complex transfers)
-            TaprootScriptPath p2tr_script_path = 6;
+            OutputTaprootScriptPath p2tr_script_path = 6;
             bytes p2tr_dangerous_assume_tweaked = 7;
-            OrdinalInscription ordinal_inscribe = 8;
-            Brc20Inscription brc20_inscribe = 9;
+            OutputOrdinalInscription ordinal_inscribe = 8;
+            OutputBrc20Inscription brc20_inscribe = 9;
         }
     }
 
-    message RedeemScriptOrHash {
+    message OutputRedeemScriptOrHash {
         oneof variant {
             bytes redeem_script = 1;
             bytes hash = 2;
         }
     }
 
-    message TaprootScriptPath {
+    message OutputTaprootScriptPath {
         // The recipient of the output.
         bytes public_key = 1;
         // The nodehash of the Taproot script, required to compute the sighash.
         bytes node_hash = 2;
     }
 
-    message OrdinalInscription {
+    message OutputOrdinalInscription {
         // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 1;
         // The MIME type of the inscription, such as `image/png`, etc.
@@ -240,7 +240,7 @@ message Output {
         bytes payload = 3;
     }
 
-    message Brc20Inscription {
+    message OutputBrc20Inscription {
         // The recipient of the inscription, usually the sender.
         bytes inscribe_to = 1;
         // The ticker of the BRC20 inscription.

@@ -28,14 +28,14 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     };
 
     let out1 = Proto::Output {
         value: 100_000_000 * 50 - 1_000_000,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2tr_key_path(bob_pubkey.as_slice().into()),
         }),
     };
@@ -68,8 +68,8 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
-            variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::TaprootKeyPath {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::InputTaprootKeyPath {
                 public_key: bob_pubkey.as_slice().into(),
                 one_prevout: false,
             }),
@@ -78,7 +78,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
 
     let out1 = Proto::Output {
         value: 100_000_000 * 50 - 1_000_000 - 1_000_000,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2tr_key_path(alice_pubkey.as_slice().into()),
         }),
     };

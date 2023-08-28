@@ -27,14 +27,14 @@ fn coin_entry_sign_input_p2pkh_and_p2wpkh_output_p2wpkh() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
     };
 
     let out1 = Proto::Output {
         value: 100_000_000 * 50 - 1_000_000,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     bob_pubkey.as_slice().into(),

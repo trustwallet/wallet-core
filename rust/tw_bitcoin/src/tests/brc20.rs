@@ -26,15 +26,15 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
         }),
     };
 
     let out1 = Proto::Output {
         value: 7_000,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::Brc20Inscription {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
+            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
                 inscribe_to: alice_pubkey.as_slice().into(),
                 ticker: "oadf".into(),
                 transfer_amount: 20,
@@ -45,7 +45,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     // Change/return transaction.
     let out2 = Proto::Output {
         value: 16_400,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     alice_pubkey.as_slice().into(),
@@ -93,8 +93,8 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::Builder {
-            variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::Brc20Inscription {
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::InputBrc20Inscription {
                 one_prevout: false,
                 inscribe_to: alice_pubkey.as_slice().into(),
                 ticker: "oadf".into(),
@@ -105,7 +105,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
 
     let out1 = Proto::Output {
         value: 546,
-        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     alice_pubkey.as_slice().into(),
