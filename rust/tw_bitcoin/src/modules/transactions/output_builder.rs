@@ -285,21 +285,42 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
             match progam.version() {
                 // Identified version 0, i.e. Segwit
                 WitnessVersion::V0 => {
-                    let wpubkey_hash = progam.program().as_bytes().to_vec();
-                    if wpubkey_hash.len() != 20 {
-                        return Err(Error::from(Proto::Error::Error_bad_address_recipient));
+                    let payload = progam.program().as_bytes().to_vec();
+
+                    // Check for P2PKH.
+                    if payload.len() == 20 {
+                        return Ok(Proto::Output {
+                            value,
+                            to_recipient: ProtoOutputRecipient::builder(
+                                Proto::mod_Output::Builder {
+                                    variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+                                        to_address:
+                                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
+                                                // Payload is the WPubkey hash.
+                                                payload.into(),
+                                            ),
+                                    }),
+                                },
+                            ),
+                        });
                     }
 
-                    Proto::Output {
-                        value,
-                        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-                            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
-                                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
-                                    wpubkey_hash.into(),
-                                ),
+                    // Check for P2WSH.
+                    if payload.len() == 32 {
+                        return Ok(Proto::Output {
+                            value,
+                            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+                                variant: ProtoOutputBuilder::p2wsh(Proto::mod_Output::RedeemScriptOrHash {
+                                    variant: Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant::hash(
+                                        // Payload is the WScript hash.
+                                        payload.to_vec().into(),
+                                    ),
+                                }),
                             }),
-                        }),
+                        });
                     }
+
+                    return Err(Error::from(Proto::Error::Error_bad_address_recipient));
                 },
                 // Identified version 1, i.e P2TR key-path (Taproot)
                 WitnessVersion::V1 => {
@@ -324,17 +345,15 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                 },
             }
         },
-        Payload::ScriptHash(script_hash) => {
-            Proto::Output {
-                value,
-                to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
-                    variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::RedeemScriptOrHash {
-                        variant: Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant::hash(
-                            script_hash.to_vec().into(),
-                        ),
-                    }),
+        Payload::ScriptHash(script_hash) => Proto::Output {
+            value,
+            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+                variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::RedeemScriptOrHash {
+                    variant: Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant::hash(
+                        script_hash.to_vec().into(),
+                    ),
                 }),
-            }
+            }),
         },
         _ => {
             return Err(Error::from(
