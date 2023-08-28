@@ -382,8 +382,15 @@ impl Compiler<StandardBitcoinContext> {
         tx.consensus_encode(&mut buffer)
             .map_err(|_| Error::from(Proto::Error::Error_failed_encoding))?;
 
-        // The transaction identifier.
-        let txid = tx.txid().as_byte_array().to_vec();
+        // The transaction identifier, which we represent in
+        // non-reversed/non-network order.
+        let txid: Vec<u8> = tx
+            .txid()
+            .as_byte_array()
+            .to_vec()
+            .into_iter()
+            .rev()
+            .collect();
 
         Ok(Proto::SerializedTransaction {
             error: Proto::Error::OK,

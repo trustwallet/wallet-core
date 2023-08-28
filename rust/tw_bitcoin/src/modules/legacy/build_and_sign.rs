@@ -160,7 +160,7 @@ pub fn taproot_build_and_sign_transaction(
                     // Unused for Bitcoin
                     tree: Default::default(),
                 }),
-                // TODO: Why does this exist twice?
+                // Notr: Not sure why this exists twice?
                 sequence: input.sequence,
                 script: input.script_sig.clone(),
             })
@@ -270,12 +270,19 @@ fn input_from_legacy_utxo(
         .as_ref()
         .ok_or_else(|| Error::from(Proto::Error::Error_legacy_outpoint_not_set))?;
 
+    // We explicitly disable zero-valued sequences for legacy and default to
+    // `0xFFFFFFFF`'
+    let sequence = if out_point.sequence == 0 {
+        u32::MAX
+    } else {
+        out_point.sequence
+    };
+
     Ok(Proto::Input {
         txid: out_point.hash.to_vec().into(),
         vout: out_point.index,
         value: utxo.amount as u64,
-        // TODO: Or is it `utxo.sequence`?
-        sequence: out_point.sequence,
+        sequence,
         sequence_enable_zero: false,
         sighash_type,
         to_recipient: ProtoInputRecipient::builder(input_builder),
