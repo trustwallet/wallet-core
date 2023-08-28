@@ -58,7 +58,7 @@ message SigningInput {
     bytes private_key = 2;
 
     // Block height or timestamp indicating at what point transactions can be
-    // included in a block.
+    // included in a block. None by default (zero value).
     Utxo.Proto.LockTime lock_time = 3;
 
     // The inputs to spend.
@@ -299,8 +299,8 @@ message SigningOutput {
     // The encoded transaction that submitted to the network.
     bytes encoded = 3;
 
-    // The transaction ID. Note that this must be reversed when referencing in
-    // future transactions.
+    // The transaction ID in NON-reversed order. Note that this must be reversed
+    // when referencing in future transactions.
     bytes txid = 4;
 
     // The total and final weight of the transaction.
@@ -314,6 +314,8 @@ message Transaction {
     // The protocol version, is currently expected to be 1 or 2 (BIP68)
     int32 version = 1;
 
+    // Block height or timestamp indicating at what point transactions can be
+    // included in a block. None by default (zero value).
     Utxo.Proto.LockTime lock_time = 2;
 
     // The transaction inputs.
