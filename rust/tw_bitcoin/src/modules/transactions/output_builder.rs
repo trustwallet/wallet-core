@@ -260,12 +260,13 @@ fn witness_pubkey_hash_from_proto(
 
 // Derives the P2* output from the given address.
 fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>> {
-    let string = String::from_utf8(addr.to_vec()).unwrap();
+    let string = String::from_utf8(addr.to_vec())
+        .map_err(|_| Error::from(Proto::Error::Error_bad_address_recipient))?;
     let addr = Address::from_str(&string)
-        .unwrap()
+        .map_err(|_| Error::from(Proto::Error::Error_bad_address_recipient))?
         // TODO: Network.
         .require_network(bitcoin::Network::Bitcoin)
-        .unwrap();
+        .map_err(|_| Error::from(Proto::Error::Error_bad_address_recipient))?;
 
     let proto = match addr.payload {
         // Identified a "PubkeyHash" address (i.e. P2PKH).
