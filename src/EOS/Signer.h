@@ -42,7 +42,7 @@ class Signer {
     
     Transaction buildTx(const Proto::SigningInput& input) const;
     Data buildUnsignedTx(const Proto::SigningInput& input) noexcept;
-    std::string buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept;
+    std::string buildSignedTx(const Proto::SigningInput& input, const Data& signature);
 };
 
 } // namespace TW::EOS

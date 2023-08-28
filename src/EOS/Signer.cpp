@@ -125,7 +125,7 @@ Data Signer::buildUnsignedTx(const Proto::SigningInput& input) noexcept {
     return serializeTx(tx);
 }
 
-std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept {
+std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) {
     auto tx = buildTx(input);
 
     // get key type

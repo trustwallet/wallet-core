@@ -47,9 +47,14 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
                 return;
             }
 
-            auto chainId = Data(input.chain_id().begin(), input.chain_id().end());
-            auto signedTx = Signer(chainId).buildSignedTx(input, signatures[0]);
-            output.set_json_encoded(signedTx.data(), signedTx.size());
+            try {
+                auto chainId = Data(input.chain_id().begin(), input.chain_id().end());
+                auto signedTx = Signer(chainId).buildSignedTx(input, signatures[0]);
+                output.set_json_encoded(signedTx.data(), signedTx.size());
+            } catch (const std::exception& e) {
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_invalid_params));
+            }
         });
 }
 
