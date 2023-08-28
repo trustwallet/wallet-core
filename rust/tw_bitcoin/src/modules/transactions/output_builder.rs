@@ -323,7 +323,11 @@ pub fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'stat
                 },
             }
         },
-        Payload::ScriptHash(_hash) => todo!(),
+        Payload::ScriptHash(_hash) => {
+            return Err(Error::from(
+                Proto::Error::Error_unsupported_address_recipient,
+            ))
+        },
         _ => {
             return Err(Error::from(
                 Proto::Error::Error_unsupported_address_recipient,

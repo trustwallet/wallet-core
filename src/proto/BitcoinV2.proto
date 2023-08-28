@@ -26,7 +26,7 @@ enum Error {
     Error_missing_output_builder = 14;
     Error_missing_recipient = 15;
     Error_legacy_p2tr_invalid_variant = 16;
-    Error_legacy_unsupported_script_pubkey = 17;
+    Error_legacy_no_spending_script_provided = 17;
     Error_legacy_expected_redeem_script = 18;
     Error_legacy_outpoint_not_set = 19;
     Error_invalid_private_key = 20;

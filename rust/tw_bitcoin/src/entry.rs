@@ -184,8 +184,8 @@ impl BitcoinEntry {
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::SigningOutput<'static>> {
         let pre_signed = self.preimage_hashes_impl(_coin, proto.clone())?;
-        // Check for error.
 
+        // Check for error.
         if pre_signed.error != Proto::Error::OK {
             return Err(Error::from(pre_signed.error));
         }

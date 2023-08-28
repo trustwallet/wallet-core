@@ -21,7 +21,6 @@ impl InputClaimBuilder {
     ) -> Result<UtxoProto::TxInClaim<'static>> {
         let (script_sig, witness) = match &input.to_recipient {
             ProtoInputRecipient::builder(variant) => match &variant.variant {
-                ProtoInputBuilder::None => panic!(),
                 ProtoInputBuilder::p2sh(redeem_script) => (
                     ScriptBuf::from_bytes(redeem_script.to_vec()),
                     Witness::new(),
@@ -138,6 +137,9 @@ impl InputClaimBuilder {
                         w.push(control_block.serialize());
                         w
                     })
+                },
+                ProtoInputBuilder::None => {
+                    return Err(Error::from(Proto::Error::Error_missing_input_builder))
                 },
             },
             ProtoInputRecipient::custom(custom) => (

@@ -29,6 +29,8 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
         try_or_else!(tw_proto::deserialize(&data), CByteArray::null);
 
     let Ok(signing) = taproot_build_and_sign_transaction(proto) else {
+        // Convert the `BitcoinV2.proto` error type inot the `Common.proto`
+        // errot type and return.
         let error = LegacyProto::SigningOutput {
             error: CommonProto::SigningError::Error_general,
             ..Default::default()
@@ -38,8 +40,8 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
         return CByteArray::from(serialized)
     };
 
+    // Serialize SigningOutput and return.
     let serialized = tw_proto::serialize(&signing).expect("failed to serialize signed transaction");
-
     CByteArray::from(serialized)
 }
 
@@ -77,6 +79,7 @@ pub fn taproot_build_and_sign_transaction(
         inputs.push(input_from_legacy_utxo(my_pubkey, utxo, legacy.hash_type)?)
     }
 
+    // We skip any sort of builders and use the provided scripts directly.
     let mut outputs = vec![];
     for output in legacy.plan.unwrap().utxos {
         outputs.push(Proto::Output {
@@ -85,7 +88,9 @@ pub fn taproot_build_and_sign_transaction(
         })
     }
 
-    let input_selector = UtxoProto::InputSelector::UseAll;
+    // We only select enough inputs to cover the output balance.
+    // TODO: Should be just `Select`.
+    let input_selector = UtxoProto::InputSelector::SelectAscending;
 
     // The primary payload.
     let signing_input = Proto::SigningInput {
@@ -95,8 +100,6 @@ pub fn taproot_build_and_sign_transaction(
         lock_time: Some(lock_time),
         inputs,
         outputs,
-        // The input selector, as dictated by the `TransactionPlan` of the
-        // legacy protobuf structure.
         input_selector,
         fee_per_vb: legacy.byte_fee as u64,
         change_output: None,
@@ -104,12 +107,18 @@ pub fn taproot_build_and_sign_transaction(
     };
 
     let signed = crate::entry::BitcoinEntry.sign(&crate::entry::PlaceHolder, signing_input);
-    // TODO: Check error.
+
+    // Check for error.
+    if signed.error != Proto::Error::OK {
+        return Err(Error::from(signed.error));
+    }
 
     let transaction = signed
         .transaction
         .expect("transaction not returned from signer");
 
+    // Convert the returned transaction data into the (legacy) `Transaction`
+    // protobuf from `Bitcoin.proto`.
     let legacy_transaction = LegacyProto::Transaction {
         version: 2,
         lockTime: native_lock_time.to_consensus_u32(),
@@ -140,19 +149,14 @@ pub fn taproot_build_and_sign_transaction(
             .collect(),
     };
 
-    let error = if signed.error == Proto::Error::OK {
-        CommonProto::SigningError::OK
-    } else {
-        CommonProto::SigningError::Error_internal
-    };
-
     let txid_hex = hex::encode(signed.txid.as_ref(), false);
 
+    // Put the `Transaction` into the `SigningOutput`, return.
     let legacy_output = LegacyProto::SigningOutput {
         transaction: Some(legacy_transaction),
         encoded: signed.encoded,
         transaction_id: txid_hex.into(),
-        error,
+        error: CommonProto::SigningError::OK,
         error_message: Default::default(),
     };
 
@@ -165,6 +169,8 @@ fn input_from_legacy_utxo(
     utxo: &LegacyProto::UnspentTransaction,
     hash_type: u32,
 ) -> Result<Proto::Input<'static>> {
+    // We identify the provided `Variant` and invoke the builder function. We
+    // explicitly skip/ignore any provided script in the input.
     let input_builder = match utxo.variant {
         LegacyProto::TransactionVariant::P2PKH => Proto::mod_Input::Builder {
             variant: Proto::mod_Input::mod_Builder::OneOfvariant::p2pkh(
@@ -186,7 +192,13 @@ fn input_from_legacy_utxo(
         },
         LegacyProto::TransactionVariant::BRC20TRANSFER
         | LegacyProto::TransactionVariant::NFTINSCRIPTION => {
-            // TODO: Check if empty.
+            // The spending script must to be empty.
+            if utxo.spendingScript.is_empty() {
+                return Err(Error::from(
+                    Proto::Error::Error_legacy_no_spending_script_provided,
+                ));
+            }
+
             let spending_script = ScriptBuf::from_bytes(utxo.spendingScript.to_vec());
 
             let xonly = XOnlyPublicKey::from(my_pubkey.inner);
@@ -212,6 +224,8 @@ fn input_from_legacy_utxo(
         },
     };
 
+    // Convert the integer indicating the sighash type into the corresponding
+    // Utxo variant.
     let sighash_type = match hash_type {
         0 => UtxoProto::SighashType::UseDefault,
         1 => UtxoProto::SighashType::All,
@@ -223,6 +237,7 @@ fn input_from_legacy_utxo(
         _ => return Err(Error::from(Proto::Error::Error_utxo_invalid_sighash_type)),
     };
 
+    // Construct Input and return.
     let out_point = utxo
         .out_point
         .as_ref()
