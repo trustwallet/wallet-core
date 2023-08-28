@@ -239,19 +239,19 @@ message PreSigningOutput {
 }
 
 message SigningOutput {
-    Error error = 4;
+    Error error = 1;
 
-    Transaction transaction = 1;
+    Transaction transaction = 2;
 
     // The encoded transaction that submitted to the network.
-    bytes encoded = 2;
+    bytes encoded = 3;
 
     // The transaction ID in REVERSED order.
-    bytes txid = 3;
+    bytes txid = 4;
 
     uint64 weight = 5;
 
-    uint64 fee = 5;
+    uint64 fee = 6;
 }
 
 message Transaction {
