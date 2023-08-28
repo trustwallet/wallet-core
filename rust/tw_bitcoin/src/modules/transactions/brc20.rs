@@ -135,7 +135,7 @@ impl BRC20DeployInscription {
     ) -> Result<BRC20DeployInscription> {
         let inscription = OrdinalsInscription::new(
             BRC20Payload::<DeployPayload>::MIME,
-            &serde_json::to_vec(&data).unwrap(),
+            &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
             recipient,
         )?;
 
@@ -169,7 +169,7 @@ impl BRC20TransferInscription {
     ) -> Result<BRC20TransferInscription> {
         let inscription = OrdinalsInscription::new(
             BRC20Payload::<TransferPayload>::MIME,
-            &serde_json::to_vec(&data).unwrap(),
+            &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
             recipient,
         )?;
 
@@ -205,7 +205,7 @@ impl BRC20MintInscription {
     ) -> Result<BRC20MintInscription> {
         let inscription = OrdinalsInscription::new(
             BRC20Payload::<MintPayload>::MIME,
-            &serde_json::to_vec(&data).unwrap(),
+            &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
             recipient,
         )?;
 

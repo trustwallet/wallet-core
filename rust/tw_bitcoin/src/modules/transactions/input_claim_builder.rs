@@ -85,7 +85,7 @@ impl InputClaimBuilder {
                     let data = ordinal.payload.as_ref();
 
                     let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
-                        .unwrap();
+                        .expect("badly constructed Ordinal inscription");
 
                     // Create a control block for that inscription.
                     let control_block = nft
@@ -95,7 +95,7 @@ impl InputClaimBuilder {
                             nft.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .expect("incorrectly constructed control block");
+                        .expect("badly constructed control block");
 
                     let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
 
@@ -125,7 +125,7 @@ impl InputClaimBuilder {
                             transfer.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .expect("incorrectly constructed control block");
+                        .expect("badly constructed control block");
 
                     let sig = bitcoin::taproot::Signature::from_slice(signature.as_ref())?;
 

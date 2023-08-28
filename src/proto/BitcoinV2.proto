@@ -30,6 +30,7 @@ enum Error {
     Error_legacy_expected_redeem_script = 18;
     Error_legacy_outpoint_not_set = 19;
     Error_legacy_no_private_key = 36;
+    Error_legacy_no_plan_provided = 37;
     Error_invalid_private_key = 20;
     Error_invalid_public_key = 21;
     Error_invalid_sighash = 22;
@@ -46,6 +47,7 @@ enum Error {
     Error_invalid_change_output = 33;
     Error_unsupported_address_recipient = 34;
     Error_bad_address_recipient = 35;
+    Error_ordinal_mime_type_too_large = 38;
 }
 
 message SigningInput {

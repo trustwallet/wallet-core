@@ -110,7 +110,7 @@ impl OutputBuilder {
                     let data = ordinal.payload.as_ref();
 
                     let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
-                        .unwrap();
+                        .expect("badly constructed Ordinal inscription");
 
                     // Explicit check
                     let control_block = nft
@@ -120,13 +120,13 @@ impl OutputBuilder {
                             nft.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .expect("incorrectly constructed control block");
+                        .expect("badly constructed control block");
 
                     let merkle_root = nft
                         .inscription()
                         .spend_info()
                         .merkle_root()
-                        .expect("incorrectly constructed Taproot merkle root");
+                        .expect("badly constructed Taproot merkle root");
 
                     (
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
@@ -151,13 +151,13 @@ impl OutputBuilder {
                             transfer.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .expect("incorrectly constructed control block");
+                        .expect("badly constructed control block");
 
                     let merkle_root = transfer
                         .inscription()
                         .spend_info()
                         .merkle_root()
-                        .expect("incorrectly constructed Taproot merkle root");
+                        .expect("badly constructed Taproot merkle root");
 
                     (
                         ScriptBuf::new_v1_p2tr(&secp, xonly, Some(merkle_root)),
@@ -259,7 +259,7 @@ fn witness_pubkey_hash_from_proto(
 }
 
 // Derives the P2* output from the given address.
-pub fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>> {
+fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>> {
     let string = String::from_utf8(addr.to_vec()).unwrap();
     let addr = Address::from_str(&string)
         .unwrap()

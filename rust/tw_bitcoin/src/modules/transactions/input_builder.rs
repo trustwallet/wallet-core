@@ -152,7 +152,7 @@ impl InputBuilder {
                     let data = ordinal.payload.as_ref();
 
                     let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
-                        .unwrap();
+                        .expect("badly constructed Ordinal inscription");
 
                     // We construct a control block to estimate the fee,
                     // otherwise we do not need it here.
@@ -163,7 +163,7 @@ impl InputBuilder {
                             nft.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .expect("incorrectly constructed control block");
+                        .expect("badly constructed control block");
 
                     let leaf_hash = Some(TapLeafHash::from_script(
                         nft.inscription().taproot_program(),
@@ -214,7 +214,7 @@ impl InputBuilder {
                             transfer.inscription().taproot_program().to_owned(),
                             LeafVersion::TapScript,
                         ))
-                        .expect("incorrectly constructed control block");
+                        .expect("badly constructed control block");
 
                     let leaf_hash = Some(TapLeafHash::from_script(
                         transfer.inscription().taproot_program(),

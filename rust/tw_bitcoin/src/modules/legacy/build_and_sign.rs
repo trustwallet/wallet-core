@@ -109,7 +109,11 @@ pub fn taproot_build_and_sign_transaction(
 
     // We skip any sort of builders and use the provided scripts directly.
     let mut outputs = vec![];
-    for output in legacy.plan.unwrap().utxos {
+    for output in legacy
+        .plan
+        .ok_or_else(|| Error::from(Proto::Error::Error_legacy_no_plan_provided))?
+        .utxos
+    {
         outputs.push(Proto::Output {
             value: output.amount as u64,
             to_recipient: Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(output.script),

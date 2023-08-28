@@ -2,10 +2,7 @@ use crate::modules::transactions::TaprootScript;
 use crate::utils::tweak_pubkey;
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::taproot::TapNodeHash;
-use bitcoin::{
-    secp256k1::XOnlyPublicKey,
-    PubkeyHash, WPubkeyHash,
-};
+use bitcoin::{secp256k1::XOnlyPublicKey, PubkeyHash, WPubkeyHash};
 
 /// This type is used to specify the recipient of a Bitcoin transaction,
 /// depending on the required information that's required. For example, P2PKH

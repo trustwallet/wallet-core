@@ -1,9 +1,10 @@
 use super::{TaprootProgram, TaprootScript};
-use crate::{Recipient, Result};
+use crate::{Error, Recipient, Result};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
 use bitcoin::{PublicKey, Script};
+use tw_proto::BitcoinV2::Proto;
 
 #[derive(Debug, Clone)]
 pub struct OrdinalsInscription {
@@ -64,7 +65,9 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
 
     // Create MIME buffer.
     let mut mime_buf = PushBytesBuf::new();
-    mime_buf.extend_from_slice(mime).unwrap();
+    mime_buf
+        .extend_from_slice(mime)
+        .map_err(|_| Error::from(Proto::Error::Error_ordinal_mime_type_too_large))?;
 
     // Create an Ordinals Inscription.
     let mut builder = ScriptBuf::builder()
@@ -90,7 +93,9 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
     for chunk in data.chunks(520) {
         // Create data buffer.
         let mut data_buf = PushBytesBuf::new();
-        data_buf.extend_from_slice(chunk).unwrap();
+        data_buf
+            .extend_from_slice(chunk)
+            .expect("chunk size is too large");
 
         // Push buffer
         builder = builder.push_slice(data_buf);
