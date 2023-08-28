@@ -3,8 +3,6 @@ syntax = "proto3";
 package TW.Utxo.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Common.proto";
-
 enum Error {
     OK = 0;
     Error_invalid_wpkh_script_pubkey = 1;

@@ -3,7 +3,6 @@ syntax = "proto3";
 package TW.BitcoinV2.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Common.proto";
 import "Utxo.proto";
 
 enum Error {
