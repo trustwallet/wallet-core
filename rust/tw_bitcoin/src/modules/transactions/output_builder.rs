@@ -331,11 +331,13 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
 
                     Proto::Output {
                         value,
-                        to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-                            variant: ProtoOutputBuilder::p2tr_dangerous_assume_tweaked(
-                                pubkey.into(),
-                            ),
-                        }),
+                        to_recipient: ProtoOutputRecipient::builder(
+                            Proto::mod_Output::OutputBuilder {
+                                variant: ProtoOutputBuilder::p2tr_dangerous_assume_tweaked(
+                                    pubkey.into(),
+                                ),
+                            },
+                        ),
                     }
                 },
                 _ => {

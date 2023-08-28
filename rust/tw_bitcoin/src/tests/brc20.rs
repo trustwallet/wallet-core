@@ -34,11 +34,13 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
     let out1 = Proto::Output {
         value: 7_000,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
-                inscribe_to: alice_pubkey.as_slice().into(),
-                ticker: "oadf".into(),
-                transfer_amount: 20,
-            }),
+            variant: ProtoOutputBuilder::brc20_inscribe(
+                Proto::mod_Output::OutputBrc20Inscription {
+                    inscribe_to: alice_pubkey.as_slice().into(),
+                    ticker: "oadf".into(),
+                    transfer_amount: 20,
+                },
+            ),
         }),
     };
 

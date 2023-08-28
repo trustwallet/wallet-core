@@ -161,11 +161,13 @@ pub unsafe extern "C" fn tw_build_brc20_transfer_inscription(
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
-                inscribe_to: recipient.to_bytes().into(),
-                ticker: ticker.into(),
-                transfer_amount: value,
-            }),
+            variant: ProtoOutputBuilder::brc20_inscribe(
+                Proto::mod_Output::OutputBrc20Inscription {
+                    inscribe_to: recipient.to_bytes().into(),
+                    ticker: ticker.into(),
+                    transfer_amount: value,
+                },
+            ),
         }),
     };
 
@@ -220,11 +222,13 @@ pub unsafe extern "C" fn tw_bitcoin_build_nft_inscription(
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-            variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OutputOrdinalInscription {
-                inscribe_to: recipient.to_bytes().into(),
-                mime_type: mime_type.into(),
-                payload: payload.into(),
-            }),
+            variant: ProtoOutputBuilder::ordinal_inscribe(
+                Proto::mod_Output::OutputOrdinalInscription {
+                    inscribe_to: recipient.to_bytes().into(),
+                    mime_type: mime_type.into(),
+                    payload: payload.into(),
+                },
+            ),
         }),
     };
 

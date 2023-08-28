@@ -8,19 +8,6 @@ use std::ffi::CString;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::Common::Proto as CommonProto;
 
-#[test]
-#[ignore]
-// TODO: Remove this.
-fn print_wif_keys() {
-    let pk = PrivateKey::from_wif("cNt3XNHiJdJpoX5zt3CXY8ncgrCted8bxmFBzcGeTZbBw6jkByWB").unwrap();
-    let seckey = tw_encoding::hex::encode(pk.to_bytes(), false);
-    dbg!(seckey);
-
-    let pubkey = pk.public_key(&secp256k1::Secp256k1::new());
-    let pubkey = tw_encoding::hex::encode(pubkey.to_bytes(), false);
-    dbg!(pubkey);
-}
-
 const FULL_SATOSHIS: i64 = (ONE_BTC * 50) as i64;
 const SEND_SATOSHIS: i64 = FULL_SATOSHIS - 1_000_000;
 

@@ -227,11 +227,13 @@ fn brc20_inscribe_fee_estimate() {
     let out1 = Proto::Output {
         value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-            variant: ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
-                inscribe_to: alice_pubkey.as_slice().into(),
-                ticker: "oadf".into(),
-                transfer_amount: 20,
-            }),
+            variant: ProtoOutputBuilder::brc20_inscribe(
+                Proto::mod_Output::OutputBrc20Inscription {
+                    inscribe_to: alice_pubkey.as_slice().into(),
+                    ticker: "oadf".into(),
+                    transfer_amount: 20,
+                },
+            ),
         }),
     };
 

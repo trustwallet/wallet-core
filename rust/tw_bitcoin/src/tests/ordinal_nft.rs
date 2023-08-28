@@ -34,11 +34,13 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     let out1 = Proto::Output {
         value: 31_100,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-            variant: ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OutputOrdinalInscription {
-                inscribe_to: alice_pubkey.as_slice().into(),
-                mime_type: "image/png".into(),
-                payload: hex(super::data::NFT_INSCRIPTION_IMAGE_DATA).into(),
-            }),
+            variant: ProtoOutputBuilder::ordinal_inscribe(
+                Proto::mod_Output::OutputOrdinalInscription {
+                    inscribe_to: alice_pubkey.as_slice().into(),
+                    mime_type: "image/png".into(),
+                    payload: hex(super::data::NFT_INSCRIPTION_IMAGE_DATA).into(),
+                },
+            ),
         }),
     };
 
@@ -83,12 +85,14 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::UseDefault,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
-            variant: ProtoInputBuilder::ordinal_inscribe(Proto::mod_Input::InputOrdinalInscription {
-                one_prevout: false,
-                inscribe_to: alice_pubkey.as_slice().into(),
-                mime_type: "image/png".into(),
-                payload: hex(super::data::NFT_INSCRIPTION_IMAGE_DATA).into(),
-            }),
+            variant: ProtoInputBuilder::ordinal_inscribe(
+                Proto::mod_Input::InputOrdinalInscription {
+                    one_prevout: false,
+                    inscribe_to: alice_pubkey.as_slice().into(),
+                    mime_type: "image/png".into(),
+                    payload: hex(super::data::NFT_INSCRIPTION_IMAGE_DATA).into(),
+                },
+            ),
         }),
     };
 
