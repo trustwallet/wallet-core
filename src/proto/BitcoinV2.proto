@@ -234,11 +234,11 @@ message Output {
 
     message OrdinalInscription {
         // The recipient of the inscription, usually the sender.
-        bytes inscribe_to = 2;
+        bytes inscribe_to = 1;
         // The MIME type of the inscription, such as `image/png`, etc.
-        string mime_type = 3;
+        string mime_type = 2;
         // The actual inscription content.
-        bytes payload = 4;
+        bytes payload = 3;
     }
 
     message Brc20Inscription {
