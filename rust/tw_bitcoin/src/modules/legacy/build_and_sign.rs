@@ -87,17 +87,20 @@ pub fn taproot_build_and_sign_transaction(
     // Prepare the inputs.
     let mut inputs = vec![];
     for (index, utxo) in legacy.utxo.iter().enumerate() {
-        let private_key = PrivateKey::from_slice(
-            legacy.private_key.get(index).unwrap_or_else(|| {
-                legacy
-                    .private_key
-                    .get(0)
-                    .expect("private key not specified")
-            }),
-            // Test data is for Signet.
-            Network::Signet,
-        )
-        .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?;
+        // We try to fetch the private key in the `private_key` fields by the
+        // corresponding index. If there is none, we default to the first
+        // provided key (implying that one single private key is used for all
+        // inputs).
+        let private_key = if let Some(private_key) = legacy.private_key.get(index) {
+            private_key
+        } else {
+            legacy
+                .private_key
+                .get(0)
+                .ok_or_else(|| Error::from(Proto::Error::Error_legacy_no_private_key))?
+        };
+
+        let private_key = PrivateKey::from_slice(private_key, Network::Bitcoin)?;
 
         let my_pubkey = private_key.public_key(&secp256k1::Secp256k1::new());
 

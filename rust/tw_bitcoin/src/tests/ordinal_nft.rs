@@ -61,9 +61,6 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     assert_eq!(
         output.txid,
         hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")
-            .into_iter()
-            .rev()
-            .collect::<Vec<u8>>()
     );
 
     let encoded = tw_encoding::hex::encode(output.encoded, false);
@@ -125,9 +122,6 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     assert_eq!(
         output.txid,
         hex("173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac")
-            .into_iter()
-            .rev()
-            .collect::<Vec<u8>>()
     );
 
     let encoded = tw_encoding::hex::encode(output.encoded, false);

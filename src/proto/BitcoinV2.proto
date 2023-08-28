@@ -29,6 +29,7 @@ enum Error {
     Error_legacy_no_spending_script_provided = 17;
     Error_legacy_expected_redeem_script = 18;
     Error_legacy_outpoint_not_set = 19;
+    Error_legacy_no_private_key = 36;
     Error_invalid_private_key = 20;
     Error_invalid_public_key = 21;
     Error_invalid_sighash = 22;
