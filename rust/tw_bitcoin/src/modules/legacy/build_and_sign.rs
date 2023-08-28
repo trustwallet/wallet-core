@@ -1,19 +1,44 @@
 use crate::entry::ProtoInputRecipient;
 use crate::{Error, Result};
 use bitcoin::absolute::LockTime;
+use bitcoin::consensus::Decodable;
 use bitcoin::taproot::{LeafVersion, NodeInfo, TaprootSpendInfo};
-use bitcoin::{Network, PrivateKey, PublicKey, ScriptBuf};
+use bitcoin::{Network, PrivateKey, PublicKey, ScriptBuf, Transaction};
 use secp256k1::XOnlyPublicKey;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_encoding::hex;
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
+use tw_memory::ffi::c_result::CUInt64Result;
 use tw_misc::traits::ToBytesVec;
 use tw_misc::try_or_else;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto as CommonProto;
 use tw_proto::Utxo::Proto as UtxoProto;
+
+#[deprecated]
+#[no_mangle]
+pub unsafe extern "C" fn tw_bitcoin_calculate_transaction_fee(
+    input: *const u8,
+    input_len: usize,
+    sat_vb: u64,
+) -> CUInt64Result {
+    let Some(mut encoded) = CByteArrayRef::new(input, input_len).as_slice() else {
+        return CUInt64Result::error(1);
+    };
+
+    // Decode transaction.
+    let Ok(tx) = Transaction::consensus_decode(&mut encoded) else {
+        return CUInt64Result::error(1);
+    };
+
+    // Calculate fee.
+    let weight = tx.weight();
+    let fee = weight.to_vbytes_ceil() * sat_vb;
+
+    CUInt64Result::ok(fee)
+}
 
 #[no_mangle]
 #[deprecated]
