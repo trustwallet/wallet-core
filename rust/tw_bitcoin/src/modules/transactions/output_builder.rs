@@ -324,10 +324,17 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                 },
             }
         },
-        Payload::ScriptHash(_hash) => {
-            return Err(Error::from(
-                Proto::Error::Error_unsupported_address_recipient,
-            ))
+        Payload::ScriptHash(script_hash) => {
+            Proto::Output {
+                value,
+                to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::Builder {
+                    variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::RedeemScriptOrHash {
+                        variant: Proto::mod_Output::mod_RedeemScriptOrHash::OneOfvariant::hash(
+                            script_hash.to_vec().into(),
+                        ),
+                    }),
+                }),
+            }
         },
         _ => {
             return Err(Error::from(
