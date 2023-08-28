@@ -388,8 +388,8 @@ impl Compiler<StandardBitcoinContext> {
         let txid: Vec<u8> = tx
             .txid()
             .as_byte_array()
-            .to_vec()
             .into_iter()
+            .copied()
             .rev()
             .collect();
 
