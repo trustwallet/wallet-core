@@ -76,11 +76,24 @@ impl CoinEntry for BitcoinEntry {
     fn derive_address(
         &self,
         _coin: &dyn CoinContext,
-        _public_key: PublicKey,
+        public_key: PublicKey,
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let pubkey = match public_key {
+            PublicKey::Secp256k1(pubkey) | PublicKey::Secp256k1Extended(pubkey) => pubkey,
+            _ => return Err(AddressError::InvalidInput),
+        };
+
+        let pubkey = bitcoin::PublicKey::from_slice(pubkey.to_vec().as_ref())
+            .map_err(|_| AddressError::InvalidInput)?;
+
+        let address: bitcoin::address::Address<NetworkChecked> = bitcoin::address::Address::new(
+            bitcoin::Network::Bitcoin,
+            bitcoin::address::Payload::PubkeyHash(pubkey.pubkey_hash()),
+        );
+
+        Ok(Address(address))
     }
 
     #[inline]
