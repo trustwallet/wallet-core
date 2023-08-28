@@ -11,7 +11,16 @@
 #include <HexCoding.h>
 #include <PrivateKey.h>
 
+#include <fstream>
 #include <gtest/gtest.h>
+
+extern std::string TESTS_ROOT;
+
+std::string load_file(const std::string& path) {
+    std::ifstream stream(path);
+    std::string content((std::istreambuf_iterator<char>(stream)), (std::istreambuf_iterator<char>()));
+    return content;
+}
 
 namespace TW::Ethereum {
     TEST(EthereumEip712, SignMessageAndVerifyLegacy) {
@@ -242,6 +251,21 @@ namespace TW::Ethereum {
         const auto signature = WRAPS(TWEthereumMessageSignerSignTypedMessageEip155(privateKey.get(), msg.get(), 0));
         EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "446434e4c34d6b7456e5f07a1b994b88bf85c057234c68d1e10c936b1c85706c4e19147c0ac3a983bc2d56ebfd7146f8b62bcea6114900fe8e7d7351f44bf37624");
         EXPECT_TRUE(TWEthereumMessageSignerVerifyMessage(pubKey.get(), msg.get(), signature.get()));
+    }
+
+    // The test checks if extra types are ordered correctly.
+    // The typed message was used to sign a Greenfield transaction:
+    // https://greenfieldscan.com/tx/9F895CF2DD64FB1F428CEFCF2A6585A813C3540FC9FE1EF42DB1DA2CB1DF55AB
+    TEST(TWEthereumEip712, SignTypedMessageExtraTypesOrder) {
+        auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_greenfield.json";
+        auto typeData = load_file(path);
+
+        const auto privKeyData = "9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0";
+        const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+        auto msg = STRING(typeData.c_str());
+        auto expected = "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d1b";
+        const auto signature = WRAPS(TWEthereumMessageSignerSignTypedMessage(privateKey.get(), msg.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), expected);
     }
 
     // Test `TWEthereumMessageSignerSignTypedMessageEip155` where `domain.chainId` is a base10 decimal string.
