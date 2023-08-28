@@ -385,13 +385,7 @@ impl Compiler<StandardBitcoinContext> {
 
         // The transaction identifier, which we represent in
         // non-reversed/non-network order.
-        let txid: Vec<u8> = tx
-            .txid()
-            .as_byte_array()
-            .iter()
-            .copied()
-            .rev()
-            .collect();
+        let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
 
         Ok(Proto::SerializedTransaction {
             error: Proto::Error::OK,
