@@ -9,9 +9,10 @@
 #include "Base64.h"
 #include "Constants.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
+#include "Cosmos/Protobuf/greenfield_ethsecp256k1.pb.h"
+#include "Cosmos/Protobuf/greenfield_tx.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "PrivateKey.h"
-#include "Protobuf/ethsecp256k1.pb.h"
 
 namespace TW::Greenfield {
 
@@ -43,22 +44,34 @@ static cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
 }
 
 static SigningResult<Any> convertMessage(const Proto::Message& msg) {
-    // At this moment, we support `MsgSend` only.
-    if (!msg.has_send_coins_message()) {
-        return SigningResult<Any>::failure(Common::Proto::SigningError::Error_invalid_params);
-    }
-
     Any any;
-    const auto& send = msg.send_coins_message();
 
-    auto msgSend = cosmos::bank::v1beta1::MsgSend();
-    msgSend.set_from_address(send.from_address());
-    msgSend.set_to_address(send.to_address());
+    switch (msg.message_oneof_case()) {
+        case Proto::Message::kSendCoinsMessage: {
+            const auto& send = msg.send_coins_message();
 
-    for (auto i = 0; i < send.amounts_size(); ++i) {
-        *msgSend.add_amount() = convertCoin(send.amounts(i));
+            auto msgSend = cosmos::bank::v1beta1::MsgSend();
+            msgSend.set_from_address(send.from_address());
+            msgSend.set_to_address(send.to_address());
+
+            for (auto i = 0; i < send.amounts_size(); ++i) {
+                *msgSend.add_amount() = convertCoin(send.amounts(i));
+            }
+            any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+            break;
+        }
+        case Proto::Message::kBridgeTransferOut: {
+            const auto& transferOut = msg.bridge_transfer_out();
+
+            auto msgTransferOut = greenfield::bridge::MsgTransferOut();
+            msgTransferOut.set_from(transferOut.from_address());
+            msgTransferOut.set_to(transferOut.to_address());
+            *msgTransferOut.mutable_amount() = convertCoin(transferOut.amount());
+
+            any.PackFrom(msgTransferOut, ProtobufAnyNamespacePrefix);
+            break;
+        }
     }
-    any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
 
     return SigningResult<Any>::success(std::move(any));
 }

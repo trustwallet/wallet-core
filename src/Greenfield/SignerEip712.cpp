@@ -87,6 +87,39 @@ json msgSendTypes() {
     return makeEip712Types(msgTypes);
 }
 
+// `TypeMsg1Amount` and `Msg1` type names are chosen automatically at the function:
+// https://github.com/bnb-chain/greenfield-cosmos-sdk/blob/master/x/auth/tx/eip712.go#L90
+// Please note that all parameters repeat the same scheme as `greenfield.bridge.MsgTransferOut`.
+//
+// Use `https://dcellar.io/` with MetaMask to get proper names of types and
+json msgTransferOutTypes() {
+    // `MsgSend` specific types.
+    TypesMap msgTypes = {
+        // `TypeMsg1Amount` type represents  `cosmos.bank.v1beta1.MsgSend.amount`.
+        {"TypeMsg1Amount", json::array({
+            namedParam("amount", "string"),
+            namedParam("denom", "string"),
+        })},
+        {"Msg1", json::array({
+            namedParam("amount", "TypeMsg1Amount"),
+            namedParam("from", "string"),
+            namedParam("to", "string"),
+            namedParam("type", "string")
+        })},
+        {"Tx", json::array({
+            namedParam("account_number", "uint256"),
+            namedParam("chain_id", "uint256"),
+            namedParam("fee", "Fee"),
+            namedParam("memo", "string"),
+            namedParam("msg1", "Msg1"),
+            namedParam("sequence", "uint256"),
+            namedParam("timeout_height", "uint256")
+        })}
+    };
+
+    return makeEip712Types(msgTypes);
+}
+
 } // namespace internal::types
 
 json feeToJsonData(const Proto::SigningInput& input, const std::string& feePayer) {
@@ -128,6 +161,11 @@ json SignerEip712::wrapMsgSendToTypedData(const Proto::SigningInput& input, cons
         });
     }
 
+    std::string typePrefix = MSG_SEND_TYPE;
+    if (!msgSendProto.type_prefix().empty()) {
+        typePrefix = msgSendProto.type_prefix();
+    }
+
     return json{
         {"types", internal::types::msgSendTypes()},
         {"primaryType", "Tx"},
@@ -149,16 +187,52 @@ json SignerEip712::wrapMsgSendToTypedData(const Proto::SigningInput& input, cons
     };
 }
 
+// Returns a JSON data of the `EIP712Domain` type using `MsgSend` transaction.
+json SignerEip712::wrapMsgTransferOutToTypedData(const Proto::SigningInput& input, const Proto::Message_BridgeTransferOut& msgTransferOut) {
+    std::string typePrefix = MSG_TRANSFER_OUT_TYPE;
+    if (!msgTransferOut.type_prefix().empty()) {
+        typePrefix = msgTransferOut.type_prefix();
+    }
+
+    return json{
+        {"types", internal::types::msgTransferOutTypes()},
+        {"primaryType", "Tx"},
+        {"domain", domainDataJson(input.eth_chain_id())},
+        {"message", json{
+            {"account_number", std::to_string(input.account_number())},
+            {"chain_id", input.eth_chain_id()},
+            {"fee", feeToJsonData(input, msgTransferOut.from_address())},
+            {"memo", input.memo()},
+            {"msg1", json{
+                {"amount", json{
+                    {"amount", msgTransferOut.amount().amount()},
+                    {"denom", msgTransferOut.amount().denom()}
+                }},
+                {"from", msgTransferOut.from_address()},
+                {"to", msgTransferOut.to_address()},
+                {"type", typePrefix}
+            }},
+            {"sequence", std::to_string(input.sequence())},
+            {"timeout_height", TIMEOUT_HEIGHT_STR}
+        }}
+    };
+}
+
 SigningResult<json> SignerEip712::wrapTxToTypedData(const Proto::SigningInput& input) {
     if (input.messages_size() != 1) {
         return SigningResult<json>::failure(Common::Proto::SigningError::Error_invalid_params);
     }
 
     switch(input.messages(0).message_oneof_case()) {
+        case Proto::Message::kBridgeTransferOut: {
+            const auto &msgTransferOut = input.messages(0).bridge_transfer_out();
+            return SigningResult<json>::success(wrapMsgTransferOutToTypedData(input, msgTransferOut));
+        }
         case Proto::Message::kSendCoinsMessage:
-        default:
+        default: {
             const auto& msgSendProto = input.messages(0).send_coins_message();
             return SigningResult<json>::success(wrapMsgSendToTypedData(input, msgSendProto));
+        }
     }
 }
 
