@@ -61,7 +61,8 @@ impl Compiler<StandardBitcoinContext> {
         let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
 
-        // Do some easy checks now.
+        // Do some easy checks first.
+
         // Insufficient input amount.
         if total_output > total_input {
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));

@@ -179,21 +179,25 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
+        // Convert input builders into Utxo inputs.
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
             let txin = crate::modules::transactions::InputBuilder::utxo_from_proto(&input)?;
             utxo_inputs.push(txin);
         }
 
+        // Convert output builders into Utxo outputs.
         let mut utxo_outputs = vec![];
         for output in proto.outputs {
             let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(&output)?;
             utxo_outputs.push(utxo);
         }
 
+        // If automatic change output is enabled, a change script must be provided.
         let change_script_pubkey = if proto.disable_change_output {
             Cow::default()
         } else {
+            // Convert output builder to Utxo output.
             let output = crate::modules::transactions::OutputBuilder::utxo_from_proto(
                 &proto
                     .change_output
@@ -203,6 +207,7 @@ impl BitcoinEntry {
             output.script_pubkey
         };
 
+        // Prepare SigningInput for Utxo sighash generation.
         let utxo_signing = UtxoProto::SigningInput {
             version: proto.version,
             lock_time: proto.lock_time,
@@ -220,6 +225,7 @@ impl BitcoinEntry {
             disable_change_output: proto.disable_change_output,
         };
 
+        // Generate the sighashes to be signed.
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
         handle_utxo_error(&utxo_presigning.error)?;
 
@@ -241,15 +247,15 @@ impl BitcoinEntry {
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Result<Proto::SigningOutput<'static>> {
+        // There must be a signature for each input.
         if proto.inputs.len() != signatures.len() {
             return Err(Error::from(
                 Proto::Error::Error_unmatched_input_signature_count,
             ));
         }
 
-        let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
-
         // Generate claims for all the inputs.
+        let mut utxo_input_claims: Vec<UtxoProto::TxInClaim> = vec![];
         for (input, signature) in proto.inputs.iter().zip(signatures.into_iter()) {
             let utxo_claim =
                 crate::modules::transactions::InputClaimBuilder::utxo_claim_from_proto(
@@ -266,6 +272,7 @@ impl BitcoinEntry {
             utxo_outputs.push(utxo);
         }
 
+        // Prepare PreSerialization input for Utxo compiler.
         let utxo_preserializtion = UtxoProto::PreSerialization {
             version: proto.version,
             lock_time: proto.lock_time.clone(),
@@ -280,6 +287,8 @@ impl BitcoinEntry {
             weight_base: proto.fee_per_vb,
         };
 
+        // Compile the transaction, build the final encoded transaction
+        // containing the signatures/scriptSigs/witnesses.
         let utxo_serialized = tw_utxo::compiler::Compiler::compile(utxo_preserializtion);
         handle_utxo_error(&utxo_serialized.error)?;
 
