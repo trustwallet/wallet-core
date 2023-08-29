@@ -92,7 +92,7 @@ fn ffi_tw_build_brc20_transfer_inscription() {
 
     // Prepare the BRC20 payload + merkle root.
     let ticker = Brc20Ticker::new(ticker_str.to_string()).unwrap();
-    let transfer = BRC20TransferInscription::new(pubkey.into(), ticker, brc20_amount).unwrap();
+    let transfer = BRC20TransferInscription::new(pubkey, ticker, brc20_amount).unwrap();
 
     let merkle_root = transfer
         .inscription()
@@ -137,7 +137,7 @@ fn ffi_tw_bitcoin_build_nft_inscription() {
     };
 
     // Prepare the NFT inscription + merkle root.
-    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), &payload, pubkey.into()).unwrap();
+    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), &payload, pubkey).unwrap();
 
     let merkle_root = nft
         .inscription()

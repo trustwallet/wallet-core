@@ -109,7 +109,7 @@ impl OutputBuilder {
                     let mime_type = ordinal.mime_type.as_ref();
                     let data = ordinal.payload.as_ref();
 
-                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
+                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey)
                         .expect("badly constructed Ordinal inscription");
 
                     // Explicit check
@@ -140,7 +140,7 @@ impl OutputBuilder {
 
                     let ticker = Brc20Ticker::new(brc20.ticker.to_string())?;
                     let transfer =
-                        BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
+                        BRC20TransferInscription::new(pubkey, ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
                     // Explicit check

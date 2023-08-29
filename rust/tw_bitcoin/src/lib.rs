@@ -2,13 +2,8 @@ extern crate serde;
 
 pub mod entry;
 mod modules;
-// TODO: `recipient` and `utils` should be deprecated entirely.
-mod recipient;
 #[cfg(test)]
 mod tests;
-
-// Reexports
-pub use recipient::Recipient;
 
 use tw_proto::BitcoinV2::Proto;
 

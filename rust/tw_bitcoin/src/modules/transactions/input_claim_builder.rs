@@ -84,7 +84,7 @@ impl InputClaimBuilder {
                     let mime_type = ordinal.mime_type.as_ref();
                     let data = ordinal.payload.as_ref();
 
-                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey.into())
+                    let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey)
                         .expect("badly constructed Ordinal inscription");
 
                     // Create a control block for that inscription.
@@ -114,7 +114,7 @@ impl InputClaimBuilder {
 
                     // Construct the BRC20 transfer inscription.
                     let transfer =
-                        BRC20TransferInscription::new(pubkey.into(), ticker, brc20.transfer_amount)
+                        BRC20TransferInscription::new(pubkey, ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
                     // Create a control block for that inscription.

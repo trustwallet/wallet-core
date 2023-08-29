@@ -1,5 +1,5 @@
 use super::TaprootProgram;
-use crate::{Error, Recipient, Result};
+use crate::{Error, Result};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
 use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
@@ -16,10 +16,10 @@ impl OrdinalsInscription {
     pub fn new(
         mime: &[u8],
         data: &[u8],
-        recipient: Recipient<PublicKey>,
+        recipient: PublicKey,
     ) -> Result<OrdinalsInscription> {
         // Create the envelope, containing the inscription content.
-        let envelope = create_envelope(mime, data, recipient.public_key())?;
+        let envelope = create_envelope(mime, data, recipient)?;
 
         Ok(OrdinalsInscription { envelope })
     }
@@ -121,7 +121,7 @@ impl OrdinalNftInscription {
     // * ...
     //
     // [Ordinal inscription]: https://docs.ordinals.com/inscriptions.html
-    pub fn new(mime_type: &[u8], data: &[u8], recipient: Recipient<PublicKey>) -> Result<Self> {
+    pub fn new(mime_type: &[u8], data: &[u8], recipient: PublicKey) -> Result<Self> {
         OrdinalsInscription::new(mime_type, data, recipient).map(OrdinalNftInscription)
     }
     pub fn inscription(&self) -> &OrdinalsInscription {

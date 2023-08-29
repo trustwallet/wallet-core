@@ -1,5 +1,5 @@
 use super::ordinals::OrdinalsInscription;
-use crate::{Error, Recipient, Result};
+use crate::{Error, Result};
 use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
 use tw_proto::BitcoinV2::Proto;
@@ -52,7 +52,7 @@ pub struct BRC20TransferInscription(OrdinalsInscription);
 
 impl BRC20TransferInscription {
     pub fn new(
-        recipient: Recipient<PublicKey>,
+        recipient: PublicKey,
         ticker: Brc20Ticker,
         value: u64,
     ) -> Result<BRC20TransferInscription> {
