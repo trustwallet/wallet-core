@@ -19,9 +19,7 @@ impl<T> BRC20Payload<T> {
     const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
 
-// Convenience aliases.
-pub type BRC20DeployPayload = BRC20Payload<DeployPayload>;
-pub type BRC20MintPayload = BRC20Payload<MintPayload>;
+// Convenience alias.
 pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -44,36 +42,6 @@ impl Brc20Ticker {
     }
 }
 
-impl TryFrom<String> for Brc20Ticker {
-    type Error = Error;
-
-    fn try_from(string: String) -> Result<Self> {
-        Self::new(string)
-    }
-}
-
-impl BRC20DeployPayload {
-    const OPERATION: &str = "deploy";
-
-    pub fn new(
-        ticker: Brc20Ticker,
-        max: usize,
-        limit: Option<usize>,
-        decimals: Option<usize>,
-    ) -> Self {
-        BRC20Payload {
-            protocol: Self::PROTOCOL_ID.to_string(),
-            operation: Self::OPERATION.to_string(),
-            inner: DeployPayload {
-                tick: ticker,
-                max: max.to_string(),
-                lim: limit.map(|l| l.to_string()),
-                dec: decimals.map(|d| d.to_string()),
-            },
-        }
-    }
-}
-
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
@@ -86,63 +54,6 @@ impl BRC20TransferPayload {
                 amt: value.to_string(),
             },
         }
-    }
-}
-
-impl BRC20MintPayload {
-    const OPERATION: &str = "mint";
-
-    pub fn new(ticker: Brc20Ticker, value: u64) -> Self {
-        BRC20Payload {
-            protocol: Self::PROTOCOL_ID.to_string(),
-            operation: Self::OPERATION.to_string(),
-            inner: MintPayload {
-                tick: ticker,
-                amt: value.to_string(),
-            },
-        }
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct DeployPayload {
-    pub tick: Brc20Ticker,
-    pub max: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lim: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub dec: Option<String>,
-}
-
-#[derive(Debug, Clone)]
-pub struct BRC20DeployInscription(OrdinalsInscription);
-
-impl BRC20DeployInscription {
-    pub fn new(
-        recipient: Recipient<PublicKey>,
-        ticker: Brc20Ticker,
-        max: usize,
-        limit: Option<usize>,
-        decimals: Option<usize>,
-    ) -> Result<BRC20DeployInscription> {
-        let data = BRC20DeployPayload::new(ticker, max, limit, decimals);
-
-        Self::from_payload(data, recipient)
-    }
-    pub fn from_payload(
-        data: BRC20DeployPayload,
-        recipient: Recipient<PublicKey>,
-    ) -> Result<BRC20DeployInscription> {
-        let inscription = OrdinalsInscription::new(
-            BRC20Payload::<DeployPayload>::MIME,
-            &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
-            recipient,
-        )?;
-
-        Ok(BRC20DeployInscription(inscription))
-    }
-    pub fn inscription(&self) -> &OrdinalsInscription {
-        &self.0
     }
 }
 
@@ -174,42 +85,6 @@ impl BRC20TransferInscription {
         )?;
 
         Ok(BRC20TransferInscription(inscription))
-    }
-    pub fn inscription(&self) -> &OrdinalsInscription {
-        &self.0
-    }
-}
-
-/// The structure is the same as `TransferPayload`, but we'll keep it separate
-/// for clarity.
-#[derive(Serialize, Deserialize)]
-pub struct MintPayload {
-    pub tick: Brc20Ticker,
-    pub amt: String,
-}
-
-pub struct BRC20MintInscription(OrdinalsInscription);
-
-impl BRC20MintInscription {
-    pub fn new(
-        recipient: Recipient<PublicKey>,
-        ticker: Brc20Ticker,
-        value: u64,
-    ) -> Result<BRC20MintInscription> {
-        let data = BRC20MintPayload::new(ticker, value);
-        Self::from_payload(data, recipient)
-    }
-    pub fn from_payload(
-        data: BRC20MintPayload,
-        recipient: Recipient<PublicKey>,
-    ) -> Result<BRC20MintInscription> {
-        let inscription = OrdinalsInscription::new(
-            BRC20Payload::<MintPayload>::MIME,
-            &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
-            recipient,
-        )?;
-
-        Ok(BRC20MintInscription(inscription))
     }
     pub fn inscription(&self) -> &OrdinalsInscription {
         &self.0
