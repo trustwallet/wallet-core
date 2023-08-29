@@ -2,6 +2,7 @@ use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use super::OrdinalNftInscription;
 use crate::aliases::*;
 use crate::{Error, Result};
+use bitcoin::script::PushBytesBuf;
 use bitcoin::taproot::{ControlBlock, LeafVersion};
 use bitcoin::{ScriptBuf, Witness};
 use std::borrow::Cow;
@@ -21,10 +22,13 @@ impl InputClaimBuilder {
     ) -> Result<UtxoProto::TxInClaim<'static>> {
         let (script_sig, witness) = match &input.to_recipient {
             ProtoInputRecipient::builder(variant) => match &variant.variant {
-                ProtoInputBuilder::p2sh(redeem_script) => (
-                    ScriptBuf::from_bytes(redeem_script.to_vec()),
-                    Witness::new(),
-                ),
+                ProtoInputBuilder::p2sh(redeem_script) => {
+                    let x = ScriptBuf::from_bytes(redeem_script.to_vec());
+
+                    println!("CLAIM: {}", tw_encoding::hex::encode(x.as_bytes(), false));
+
+                    (x, Witness::new())
+                },
                 ProtoInputBuilder::p2pkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;

@@ -81,6 +81,8 @@ message TxIn {
     // If the sequence is a zero value, this field must be set to `true`.
     bool sequence_enable_zero = 5;
 
+    bytes p2sh_script_sig = 4;
+
     // The spending condition of the referenced output.
     bytes script_pubkey = 6;
 

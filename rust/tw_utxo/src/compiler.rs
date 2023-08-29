@@ -115,6 +115,7 @@ impl Compiler<StandardBitcoinContext> {
                 })
                 .map(|input| Proto::TxIn {
                     txid: input.txid.to_vec().into(),
+                    p2sh_script_sig: input.p2sh_script_sig.to_vec().into(),
                     script_pubkey: input.script_pubkey.to_vec().into(),
                     leaf_hash: input.leaf_hash.to_vec().into(),
                     ..input
@@ -129,6 +130,7 @@ impl Compiler<StandardBitcoinContext> {
                 .into_iter()
                 .map(|input| Proto::TxIn {
                     txid: input.txid.to_vec().into(),
+                    p2sh_script_sig: input.p2sh_script_sig.to_vec().into(),
                     script_pubkey: input.script_pubkey.to_vec().into(),
                     leaf_hash: input.leaf_hash.to_vec().into(),
                     ..input
@@ -185,6 +187,7 @@ impl Compiler<StandardBitcoinContext> {
         // Convert *updated* Protobuf structure to `bitcoin` crate native
         // transaction.
         let tx = convert_proto_to_tx(&proto)?;
+        dbg!(&tx);
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
@@ -408,11 +411,12 @@ fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transac
     for txin in &proto.inputs {
         let txid = Txid::from_slice(txin.txid.as_ref())
             .map_err(|_| Error::from(Proto::Error::Error_invalid_txid))?;
+
         let vout = txin.vout;
 
         tx.input.push(TxIn {
             previous_output: OutPoint { txid, vout },
-            script_sig: ScriptBuf::new(),
+            script_sig: ScriptBuf::from_bytes(txin.p2sh_script_sig.to_vec()),
             sequence: Sequence(txin.sequence),
             witness: Witness::new(),
         });
