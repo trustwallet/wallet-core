@@ -4,24 +4,6 @@ use bitcoin::PublicKey;
 use serde::{Deserialize, Serialize};
 use tw_proto::BitcoinV2::Proto;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BRC20Payload<T> {
-    #[serde(rename = "p")]
-    protocol: String,
-    #[serde(rename = "op")]
-    operation: String,
-    #[serde(flatten)]
-    inner: T,
-}
-
-impl<T> BRC20Payload<T> {
-    const PROTOCOL_ID: &str = "brc-20";
-    const MIME: &[u8] = b"text/plain;charset=utf-8";
-}
-
-// Convenience alias.
-pub type BRC20TransferPayload = BRC20Payload<TransferPayload>;
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Brc20Ticker(String);
 
@@ -41,6 +23,24 @@ impl Brc20Ticker {
             .expect("ticker must be four bytes")
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct BRC20Payload<T> {
+    #[serde(rename = "p")]
+    protocol: String,
+    #[serde(rename = "op")]
+    operation: String,
+    #[serde(flatten)]
+    inner: T,
+}
+
+impl<T> BRC20Payload<T> {
+    const PROTOCOL_ID: &str = "brc-20";
+    const MIME: &[u8] = b"text/plain;charset=utf-8";
+}
+
+// Convenience alias.
+type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
@@ -74,7 +74,7 @@ impl BRC20TransferInscription {
         let data: BRC20Payload<TransferPayload> = BRC20TransferPayload::new(ticker, value);
         Self::from_payload(data, recipient)
     }
-    pub fn from_payload(
+    fn from_payload(
         data: BRC20TransferPayload,
         recipient: Recipient<PublicKey>,
     ) -> Result<BRC20TransferInscription> {

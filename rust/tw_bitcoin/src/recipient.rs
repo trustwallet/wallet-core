@@ -1,5 +1,4 @@
 use crate::modules::transactions::TaprootScript;
-use crate::utils::tweak_pubkey;
 use bitcoin::key::{KeyPair, PublicKey, TweakedPublicKey, UntweakedPublicKey};
 use bitcoin::taproot::TapNodeHash;
 use bitcoin::{secp256k1::XOnlyPublicKey, PubkeyHash, WPubkeyHash};
@@ -63,38 +62,6 @@ impl From<&KeyPair> for Recipient<PublicKey> {
     fn from(keypair: &KeyPair) -> Self {
         Recipient {
             inner: PublicKey::new(keypair.public_key()),
-        }
-    }
-}
-
-impl From<PublicKey> for Recipient<TweakedPublicKey> {
-    fn from(pubkey: PublicKey) -> Self {
-        let tweaked = tweak_pubkey(pubkey);
-        Recipient { inner: tweaked }
-    }
-}
-
-impl From<Recipient<PublicKey>> for Recipient<TweakedPublicKey> {
-    fn from(recipient: Recipient<PublicKey>) -> Self {
-        Recipient {
-            inner: Self::from(recipient.inner).inner,
-        }
-    }
-}
-
-impl From<KeyPair> for Recipient<TweakedPublicKey> {
-    fn from(keypair: KeyPair) -> Self {
-        Self::from(&keypair)
-    }
-}
-
-impl From<&KeyPair> for Recipient<TweakedPublicKey> {
-    fn from(keypair: &KeyPair) -> Self {
-        let pk = Recipient::<PublicKey>::from(keypair);
-        let tweaked = Recipient::<TweakedPublicKey>::from(pk);
-
-        Recipient {
-            inner: tweaked.inner,
         }
     }
 }

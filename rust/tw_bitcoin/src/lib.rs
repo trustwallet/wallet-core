@@ -6,7 +6,6 @@ pub mod modules;
 pub mod recipient;
 #[cfg(test)]
 mod tests;
-pub mod utils;
 
 // Reexports
 pub use recipient::Recipient;
