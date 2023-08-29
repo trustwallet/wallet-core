@@ -25,42 +25,33 @@ impl Brc20Ticker {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct BRC20Payload<T> {
+struct BRC20TransferPayload {
     #[serde(rename = "p")]
     protocol: String,
     #[serde(rename = "op")]
     operation: String,
-    #[serde(flatten)]
-    inner: T,
+    #[serde(rename = "tick")]
+    ticker: Brc20Ticker,
+    #[serde(rename = "amt")]
+    amount: String,
 }
 
-impl<T> BRC20Payload<T> {
+impl BRC20TransferPayload {
     const PROTOCOL_ID: &str = "brc-20";
     const MIME: &[u8] = b"text/plain;charset=utf-8";
 }
-
-// Convenience alias.
-type BRC20TransferPayload = BRC20Payload<TransferPayload>;
 
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
     pub fn new(ticker: Brc20Ticker, value: u64) -> Self {
-        BRC20Payload {
+        BRC20TransferPayload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),
-            inner: TransferPayload {
-                tick: ticker,
-                amt: value.to_string(),
-            },
+            ticker,
+            amount: value.to_string(),
         }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct TransferPayload {
-    pub tick: Brc20Ticker,
-    pub amt: String,
 }
 
 pub struct BRC20TransferInscription(OrdinalsInscription);
@@ -71,15 +62,10 @@ impl BRC20TransferInscription {
         ticker: Brc20Ticker,
         value: u64,
     ) -> Result<BRC20TransferInscription> {
-        let data: BRC20Payload<TransferPayload> = BRC20TransferPayload::new(ticker, value);
-        Self::from_payload(data, recipient)
-    }
-    fn from_payload(
-        data: BRC20TransferPayload,
-        recipient: Recipient<PublicKey>,
-    ) -> Result<BRC20TransferInscription> {
+        let data: BRC20TransferPayload = BRC20TransferPayload::new(ticker, value);
+
         let inscription = OrdinalsInscription::new(
-            BRC20Payload::<TransferPayload>::MIME,
+            BRC20TransferPayload::MIME,
             &serde_json::to_vec(&data).expect("badly constructed BRC20 payload"),
             recipient,
         )?;
