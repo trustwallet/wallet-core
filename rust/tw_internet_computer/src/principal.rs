@@ -30,45 +30,6 @@ pub enum PrincipalError {
 /// A Principal can be serialized to a byte array ([`Vec<u8>`]) or a text
 /// representation, but the inner structure of the byte representation
 /// is kept private.
-///
-/// Example of using a Principal object:
-/// ```
-/// # use candid::Principal;
-/// let text = "aaaaa-aa";  // The management canister ID.
-/// let principal = Principal::from_text(text).expect("Could not decode the principal.");
-/// assert_eq!(principal.as_slice(), &[] as &[u8]);
-/// assert_eq!(principal.to_text(), text);
-/// ```
-///
-/// Similarly, serialization using serde has two versions:
-/// serilizing to a byte bufer for non-human readable serializer, and a string version for human
-/// readable serializers.
-///
-/// ```
-/// # use candid::Principal;
-/// use serde::{Deserialize, Serialize};
-/// use std::str::FromStr;
-///
-/// #[derive(Serialize)]
-/// struct Data {
-///     id: Principal,
-/// }
-///
-/// let id = Principal::from_str("2chl6-4hpzw-vqaaa-aaaaa-c").unwrap();
-///
-/// // JSON is human readable, so this will serialize to a textual
-/// // representation of the Principal.
-/// assert_eq!(
-///     serde_json::to_string(&Data { id: id.clone() }).unwrap(),
-///     r#"{"id":"2chl6-4hpzw-vqaaa-aaaaa-c"}"#
-/// );
-///
-/// // CBOR is not human readable, so will serialize to bytes.
-/// assert_eq!(
-///     serde_cbor::to_vec(&Data { id: id.clone() }).unwrap(),
-///     &[161, 98, 105, 100, 73, 239, 205, 171, 0, 0, 0, 0, 0, 1],
-/// );
-/// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Principal {
     /// Length.
