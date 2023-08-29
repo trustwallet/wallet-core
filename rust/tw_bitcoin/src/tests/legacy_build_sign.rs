@@ -2,7 +2,6 @@
 
 use super::{hex, ONE_BTC};
 use crate::modules::legacy::*;
-use bitcoin::PrivateKey;
 use secp256k1::ffi::CPtr;
 use std::ffi::CString;
 use tw_proto::Bitcoin::Proto as LegacyProto;

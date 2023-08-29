@@ -192,7 +192,7 @@ impl OutputBuilder {
     }
 }
 
-// Conenience helper function.
+// Convenience helper function.
 fn redeem_script_or_hash(
     script_or_hash: &Proto::mod_Output::OutputRedeemScriptOrHash,
 ) -> Result<ScriptHash> {
@@ -210,7 +210,7 @@ fn redeem_script_or_hash(
     Ok(pubkey_hash)
 }
 
-// Conenience helper function.
+// Convenience helper function.
 fn witness_redeem_script_or_hash(
     script_or_hash: &Proto::mod_Output::OutputRedeemScriptOrHash,
 ) -> Result<WScriptHash> {
@@ -228,7 +228,7 @@ fn witness_redeem_script_or_hash(
     Ok(pubkey_hash)
 }
 
-// Conenience helper function.
+// Convenience helper function.
 fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<PubkeyHash> {
     let pubkey_hash = match &pubkey_or_hash.to_address {
         ProtoPubkeyOrHash::hash(hash) => PubkeyHash::from_slice(hash.as_ref())
@@ -242,7 +242,7 @@ fn pubkey_hash_from_proto(pubkey_or_hash: &Proto::ToPublicKeyOrHash) -> Result<P
     Ok(pubkey_hash)
 }
 
-// Conenience helper function.
+// Convenience helper function.
 fn witness_pubkey_hash_from_proto(
     pubkey_or_hash: &Proto::ToPublicKeyOrHash,
 ) -> Result<WPubkeyHash> {
