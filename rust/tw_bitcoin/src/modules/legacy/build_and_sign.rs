@@ -71,7 +71,7 @@ pub unsafe extern "C" fn tw_taproot_build_and_sign_transaction(
     CByteArray::from(serialized)
 }
 
-pub fn taproot_build_and_sign_transaction(
+fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
     // Convert the appropriate lock time.

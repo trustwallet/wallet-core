@@ -1,0 +1,7 @@
+pub mod data;
+
+pub const ONE_BTC: u64 = 100_000_000;
+
+pub fn hex(string: &str) -> Vec<u8> {
+    tw_encoding::hex::decode(string).unwrap()
+}

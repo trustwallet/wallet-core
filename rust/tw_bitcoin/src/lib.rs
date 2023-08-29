@@ -1,9 +1,7 @@
 extern crate serde;
 
-mod entry;
-mod modules;
-#[cfg(test)]
-mod tests;
+pub mod entry;
+pub mod modules;
 
 pub use entry::*;
 
@@ -45,7 +43,7 @@ impl From<bitcoin::taproot::Error> for Error {
 }
 
 // Convenience aliases.
-mod aliases {
+pub mod aliases {
     use super::Proto;
 
     pub type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
