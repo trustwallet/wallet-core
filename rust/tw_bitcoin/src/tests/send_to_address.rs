@@ -1,5 +1,6 @@
 use super::hex;
-use crate::entry::{BitcoinEntry, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputRecipient};
+use crate::aliases::*;
+use crate::entry::BitcoinEntry;
 use bitcoin::{Address, PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use tw_coin_entry::coin_entry::CoinEntry;

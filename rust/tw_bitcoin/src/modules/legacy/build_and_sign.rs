@@ -1,4 +1,4 @@
-use crate::entry::ProtoInputRecipient;
+use crate::aliases::ProtoInputRecipient;
 use crate::{Error, Result};
 use bitcoin::absolute::LockTime;
 use bitcoin::consensus::Decodable;

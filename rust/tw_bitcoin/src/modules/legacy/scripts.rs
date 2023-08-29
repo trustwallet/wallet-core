@@ -1,4 +1,4 @@
-use crate::entry::aliases::*;
+use crate::aliases::*;
 use bitcoin::PublicKey;
 use std::ffi::{c_char, CStr};
 use tw_memory::ffi::c_byte_array::CByteArray;

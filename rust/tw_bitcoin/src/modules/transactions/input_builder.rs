@@ -1,5 +1,5 @@
 use super::brc20::{BRC20TransferInscription, Brc20Ticker};
-use crate::entry::aliases::*;
+use crate::aliases::*;
 use crate::modules::transactions::OrdinalNftInscription;
 use crate::{Error, Result};
 use bitcoin::taproot::{LeafVersion, TapLeafHash};

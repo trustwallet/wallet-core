@@ -1,9 +1,11 @@
 extern crate serde;
 
-pub mod entry;
+mod entry;
 mod modules;
 #[cfg(test)]
 mod tests;
+
+pub use entry::*;
 
 use tw_proto::BitcoinV2::Proto;
 
@@ -40,4 +42,17 @@ impl From<bitcoin::taproot::Error> for Error {
     fn from(_: bitcoin::taproot::Error) -> Self {
         Error::from(Proto::Error::Error_invalid_schnorr_signature)
     }
+}
+
+// Convenience aliases.
+mod aliases {
+    use super::Proto;
+
+    pub type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
+    pub type ProtoOutputBuilder<'a> = Proto::mod_Output::mod_OutputBuilder::OneOfvariant<'a>;
+    pub type ProtoPubkeyOrHash<'a> = Proto::mod_ToPublicKeyOrHash::OneOfto_address<'a>;
+    pub type ProtoRedeemScriptOrHash<'a> =
+        Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant<'a>;
+    pub type ProtoInputRecipient<'a> = Proto::mod_Input::OneOfto_recipient<'a>;
+    pub type ProtoInputBuilder<'a> = Proto::mod_Input::mod_InputBuilder::OneOfvariant<'a>;
 }

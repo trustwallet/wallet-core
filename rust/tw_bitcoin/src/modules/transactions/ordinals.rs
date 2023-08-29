@@ -13,11 +13,7 @@ pub struct OrdinalsInscription {
 
 impl OrdinalsInscription {
     /// Creates a new Ordinals Inscription ("commit stage").
-    pub fn new(
-        mime: &[u8],
-        data: &[u8],
-        recipient: PublicKey,
-    ) -> Result<OrdinalsInscription> {
+    pub fn new(mime: &[u8], data: &[u8], recipient: PublicKey) -> Result<OrdinalsInscription> {
         // Create the envelope, containing the inscription content.
         let envelope = create_envelope(mime, data, recipient)?;
 

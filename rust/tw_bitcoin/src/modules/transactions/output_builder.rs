@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use super::OrdinalNftInscription;
-use crate::entry::aliases::*;
+use crate::aliases::*;
 use crate::{Error, Result};
 use bitcoin::address::{Payload, WitnessVersion};
 use bitcoin::key::TweakedPublicKey;

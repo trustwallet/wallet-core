@@ -1,7 +1,6 @@
 use super::hex;
-use crate::entry::{
-    BitcoinEntry, ProtoInputBuilder, ProtoInputRecipient, ProtoOutputBuilder, ProtoOutputRecipient,
-};
+use crate::aliases::*;
+use crate::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
