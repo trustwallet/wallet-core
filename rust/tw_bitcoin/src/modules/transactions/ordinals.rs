@@ -1,4 +1,4 @@
-use super::{TaprootProgram, TaprootScript};
+use super::TaprootProgram;
 use crate::{Error, Recipient, Result};
 use bitcoin::script::{PushBytesBuf, ScriptBuf};
 use bitcoin::secp256k1::XOnlyPublicKey;
@@ -9,7 +9,6 @@ use tw_proto::BitcoinV2::Proto;
 #[derive(Debug, Clone)]
 pub struct OrdinalsInscription {
     envelope: TaprootProgram,
-    recipient: Recipient<TaprootScript>,
 }
 
 impl OrdinalsInscription {
@@ -22,25 +21,13 @@ impl OrdinalsInscription {
         // Create the envelope, containing the inscription content.
         let envelope = create_envelope(mime, data, recipient.public_key())?;
 
-        // Compute the merkle root of the inscription.
-        let merkle_root = envelope
-            .spend_info
-            .merkle_root()
-            .expect("Ordinals envelope not constructed correctly");
-
-        Ok(OrdinalsInscription {
-            envelope,
-            recipient: Recipient::<TaprootScript>::from_pubkey_recipient(recipient, merkle_root),
-        })
+        Ok(OrdinalsInscription { envelope })
     }
     pub fn taproot_program(&self) -> &Script {
         self.envelope.script.as_script()
     }
     pub fn spend_info(&self) -> &TaprootSpendInfo {
         &self.envelope.spend_info
-    }
-    pub fn recipient(&self) -> &Recipient<TaprootScript> {
-        &self.recipient
     }
 }
 

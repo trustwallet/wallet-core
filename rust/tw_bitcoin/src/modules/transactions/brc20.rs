@@ -16,12 +16,6 @@ impl Brc20Ticker {
 
         Ok(Brc20Ticker(string))
     }
-    pub fn to_byte_array(&self) -> [u8; 4] {
-        self.0
-            .as_bytes()
-            .try_into()
-            .expect("ticker must be four bytes")
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -44,7 +38,7 @@ impl BRC20TransferPayload {
 impl BRC20TransferPayload {
     const OPERATION: &str = "transfer";
 
-    pub fn new(ticker: Brc20Ticker, value: u64) -> Self {
+    fn new(ticker: Brc20Ticker, value: u64) -> Self {
         BRC20TransferPayload {
             protocol: Self::PROTOCOL_ID.to_string(),
             operation: Self::OPERATION.to_string(),
