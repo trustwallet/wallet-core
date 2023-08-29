@@ -112,7 +112,7 @@ impl OutputBuilder {
                     let nft = OrdinalNftInscription::new(mime_type.as_bytes(), data, pubkey)
                         .expect("badly constructed Ordinal inscription");
 
-                    // Explicit check
+                    // Construct the control block.
                     let control_block = nft
                         .inscription()
                         .spend_info()
@@ -122,6 +122,7 @@ impl OutputBuilder {
                         ))
                         .expect("badly constructed control block");
 
+                    // Construct the merkle root.
                     let merkle_root = nft
                         .inscription()
                         .spend_info()
@@ -143,7 +144,7 @@ impl OutputBuilder {
                         BRC20TransferInscription::new(pubkey, ticker, brc20.transfer_amount)
                             .expect("invalid BRC20 transfer construction");
 
-                    // Explicit check
+                    // Construct the control block.
                     let control_block = transfer
                         .inscription()
                         .spend_info()
@@ -153,6 +154,7 @@ impl OutputBuilder {
                         ))
                         .expect("badly constructed control block");
 
+                    // Construct the merkle root.
                     let merkle_root = transfer
                         .inscription()
                         .spend_info()
