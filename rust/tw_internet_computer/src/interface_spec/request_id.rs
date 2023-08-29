@@ -36,29 +36,13 @@ impl From<&EnvelopeContent> for RequestId {
                 canister_id,
                 method_name,
                 arg,
-            } => representation_independent_hash_call_or_query(
-                CallOrQuery::Call,
+            } => representation_independent_hash_call(
                 canister_id.as_slice().to_vec(),
                 method_name,
                 arg.clone(),
                 *ingress_expiry,
                 sender.as_slice().to_vec(),
                 nonce.as_deref(),
-            ),
-            EnvelopeContent::Query {
-                ingress_expiry,
-                sender,
-                canister_id,
-                method_name,
-                arg,
-            } => representation_independent_hash_call_or_query(
-                CallOrQuery::Query,
-                canister_id.as_slice().to_vec(),
-                method_name,
-                arg.clone(),
-                *ingress_expiry,
-                sender.as_slice().to_vec(),
-                None,
             ),
             EnvelopeContent::ReadState {
                 ingress_expiry,
@@ -72,12 +56,6 @@ impl From<&EnvelopeContent> for RequestId {
             ),
         }
     }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-enum CallOrQuery {
-    Call,
-    Query,
 }
 
 /// The different types of values supported in `RawHttpRequest`.
@@ -170,8 +148,7 @@ fn hash_of_map<S: ToString>(map: &BTreeMap<S, RawHttpRequestVal>) -> H256 {
     H256::try_from(hash.as_slice()).unwrap_or_else(|_| H256::new())
 }
 
-fn representation_independent_hash_call_or_query(
-    request_type: CallOrQuery,
+fn representation_independent_hash_call(
     canister_id: Vec<u8>,
     method_name: &str,
     arg: Vec<u8>,
@@ -182,10 +159,7 @@ fn representation_independent_hash_call_or_query(
     let mut map = vec![
         (
             "request_type".to_string(),
-            match request_type {
-                CallOrQuery::Call => RawHttpRequestVal::String("call".to_string()),
-                CallOrQuery::Query => RawHttpRequestVal::String("query".to_string()),
-            },
+            RawHttpRequestVal::String("call".to_string()),
         ),
         (
             "canister_id".to_string(),
@@ -260,13 +234,11 @@ fn representation_independent_hash_read_state(
 
 #[cfg(test)]
 mod test {
-
-    use candid::Principal;
+    use crate::principal::Principal;
 
     #[test]
     fn representation_independent_hash_call_or_query() {
-        let hash = super::representation_independent_hash_call_or_query(
-            super::CallOrQuery::Call,
+        let hash = super::representation_independent_hash_call(
             vec![0, 0, 0, 0, 0, 0, 4, 210],
             "hello",
             b"DIDL\x00\xFD*".to_vec(),

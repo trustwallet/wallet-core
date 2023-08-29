@@ -16,7 +16,7 @@ impl AccountIdentifier {
     pub fn new(owner: &Principal) -> Self {
         let mut input = vec![];
         input.extend_from_slice(b"\x0Aaccount-id");
-        input.extend_from_slice(owner.0.as_slice());
+        input.extend_from_slice(owner.as_slice());
         input.extend_from_slice(&H256::new()[..]);
 
         let hash = sha224(&input);

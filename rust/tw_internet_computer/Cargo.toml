@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-candid = "0.9.3"
 ciborium = "0.2.1"
 ic-certification = "0.25.0"
 quick-protobuf = "0.8.1"

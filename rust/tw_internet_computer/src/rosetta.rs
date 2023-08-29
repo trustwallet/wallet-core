@@ -1,10 +1,10 @@
 use crate::interface_spec::envelope::{Envelope, EnvelopeContent};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 /// The types of requests that are available from the Rosetta node.
 /// This enum is truncated to include support only for the
 /// operations that this crate can currently perform.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub enum RequestType {
     // Aliases for backwards compatibility
     #[serde(rename = "TRANSACTION")]
@@ -23,7 +23,7 @@ pub type Request = (RequestType, Vec<EnvelopePair>);
 
 /// A signed IC update call and the corresponding read-state call for
 /// a particular ingress window.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct EnvelopePair {
     pub update: Envelope,
     pub read_state: Envelope,
