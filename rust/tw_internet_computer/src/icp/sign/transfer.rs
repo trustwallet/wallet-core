@@ -103,8 +103,8 @@ fn create_update_envelope(
     let content = EnvelopeContent::Call {
         nonce: None, //TODO: do we need the nonce?
         ingress_expiry,
-        sender: sender.0,
-        canister_id: canister_id.0,
+        sender,
+        canister_id,
         method_name: METHOD_NAME.to_string(),
         arg,
     };
@@ -131,7 +131,7 @@ fn create_read_state_envelope(
 
     let content = EnvelopeContent::ReadState {
         ingress_expiry,
-        sender: sender.0,
+        sender,
         paths: vec![vec![
             "request_status".into(),
             update_request_id.0.as_slice().into(),

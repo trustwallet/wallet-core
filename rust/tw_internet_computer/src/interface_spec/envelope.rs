@@ -1,8 +1,9 @@
-use candid::Principal;
 use ic_certification::Label;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+use crate::principal::Principal;
+
+#[derive(Debug, Clone, Serialize)]
 pub struct Envelope {
     pub content: EnvelopeContent,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -12,7 +13,7 @@ pub struct Envelope {
 }
 
 /// The content of an IC ingress message, not including any signature information.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 #[serde(tag = "request_type", rename_all = "snake_case")]
 pub enum EnvelopeContent {
     /// A replicated call to a canister method, whether update or query.
@@ -40,19 +41,5 @@ pub enum EnvelopeContent {
         sender: Principal,
         /// A list of paths within the state tree to fetch.
         paths: Vec<Vec<Label>>,
-    },
-    /// An unreplicated call to a canister query method.
-    Query {
-        /// A nanosecond timestamp after which this request is no longer valid.
-        ingress_expiry: u64,
-        /// The principal that is sending this request.
-        sender: Principal,
-        /// The ID of the canister to be called.
-        canister_id: Principal,
-        /// The name of the canister method to be called.
-        method_name: String,
-        /// The argument to pass to the canister method.
-        #[serde(with = "serde_bytes")]
-        arg: Vec<u8>,
     },
 }
