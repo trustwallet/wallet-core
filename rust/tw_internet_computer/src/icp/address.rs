@@ -52,6 +52,12 @@ impl AccountIdentifier {
     }
 }
 
+impl AsRef<[u8]> for AccountIdentifier {
+    fn as_ref(&self) -> &[u8] {
+        self.0.as_slice()
+    }
+}
+
 fn is_check_sum_valid(hash: H256) -> bool {
     let found_checksum = &hash[0..4];
     let expected_checksum = crc32(&hash[4..]).to_be_bytes();
