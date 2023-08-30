@@ -1,3 +1,7 @@
+// This seems to be required, even if the tests in `tests/` actually use
+// functions/constants.
+#![allow(dead_code)]
+
 pub mod data;
 
 pub const ONE_BTC: u64 = 100_000_000;
