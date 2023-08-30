@@ -115,7 +115,7 @@ impl Compiler<StandardBitcoinContext> {
                 })
                 .map(|input| Proto::TxIn {
                     txid: input.txid.to_vec().into(),
-                    p2sh_script_sig: input.p2sh_script_sig.to_vec().into(),
+                    script_sig: input.script_sig.to_vec().into(),
                     script_pubkey: input.script_pubkey.to_vec().into(),
                     leaf_hash: input.leaf_hash.to_vec().into(),
                     ..input
@@ -130,7 +130,7 @@ impl Compiler<StandardBitcoinContext> {
                 .into_iter()
                 .map(|input| Proto::TxIn {
                     txid: input.txid.to_vec().into(),
-                    p2sh_script_sig: input.p2sh_script_sig.to_vec().into(),
+                    script_sig: input.script_sig.to_vec().into(),
                     script_pubkey: input.script_pubkey.to_vec().into(),
                     leaf_hash: input.leaf_hash.to_vec().into(),
                     ..input
@@ -415,7 +415,7 @@ fn convert_proto_to_tx<'a>(proto: &'a Proto::SigningInput<'a>) -> Result<Transac
 
         tx.input.push(TxIn {
             previous_output: OutPoint { txid, vout },
-            script_sig: ScriptBuf::from_bytes(txin.p2sh_script_sig.to_vec()),
+            script_sig: ScriptBuf::from_bytes(txin.script_sig.to_vec()),
             sequence: Sequence(txin.sequence),
             witness: Witness::new(),
         });

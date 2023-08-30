@@ -23,7 +23,7 @@ fn zero_sequence_disabled() {
         sequence: 0,
         // ...but it's not explicitly enabled.
         sequence_enable_zero: false,
-        p2sh_script_sig: Default::default(),
+        script_sig: Default::default(),
         script_pubkey: input_script_pubkey.as_bytes().into(),
         sighash_type: Proto::SighashType::All,
         signing_method: Proto::SigningMethod::Legacy,
