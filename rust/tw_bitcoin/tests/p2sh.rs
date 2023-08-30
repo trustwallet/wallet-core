@@ -101,7 +101,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let out1 = Proto::Output {
         value: 50 * ONE_BTC - 1_000_000 - 1_000_000,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-            variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
+            variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
                     alice_pubkey.as_slice().into(),
                 ),
@@ -111,7 +111,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     let mut signing = Proto::SigningInput {
         version: 2,
-        private_key: bob_private_key.as_slice().into(),
+        private_key: Default::default(),
         lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
@@ -121,11 +121,15 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         disable_change_output: true,
     };
 
+    // Generate the sighashes.
     let sighashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
+
+    // Sign the sighashes.
     let signatures = Signer::signatures_from_proto(&sighashes, bob_private_key.to_vec()).unwrap();
     assert_eq!(signatures.len(), 1);
-
     let sig = &signatures[0];
+
+    // Construc the final redeem scrip with the necessary stack items (signature + pubkey).
     let mut sig_buf = PushBytesBuf::new();
     sig_buf.extend_from_slice(sig).unwrap();
 
@@ -140,6 +144,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         .push_slice(redeem_script_buf)
         .into_script();
 
+    // Update the input.
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
@@ -152,8 +157,10 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         }),
     };
 
+    // Update the full transaction.
     signing.inputs[0] = tx1;
 
+    // Compile the final transaction.
     let output = BitcoinEntry.compile(&coin, signing, signatures, vec![]);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
 
