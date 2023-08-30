@@ -188,11 +188,6 @@ impl Compiler<StandardBitcoinContext> {
         // transaction.
         let tx = convert_proto_to_tx(&proto)?;
 
-        for txin in &tx.input {
-            let x = tw_encoding::hex::encode(&txin.script_sig, false);
-            println!("SCRIPT SIG TO SIGN: {}", x);
-        }
-
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
@@ -208,13 +203,8 @@ impl Compiler<StandardBitcoinContext> {
                         EcdsaSighashType::from_consensus(input.sighash_type as u32)
                     };
 
-                    println!("INTO SIGHASH script-sig: {}", tw_encoding::hex::encode(&input.script_sig, false)); 
-                    println!("INTO SIGHASH script-pubkey: {}", tw_encoding::hex::encode(&input.script_pubkey, false)); 
-
                     let sighash =
                         cache.legacy_signature_hash(index, script_pubkey, sighash_type.to_u32())?;
-
-                    println!("GENERATED SIGHASH: {}", tw_encoding::hex::encode(sighash.as_byte_array(), false));
 
                     sighashes.push((
                         sighash.as_byte_array().to_vec(),

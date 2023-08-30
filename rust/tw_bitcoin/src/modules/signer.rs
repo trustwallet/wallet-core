@@ -22,11 +22,6 @@ impl Signer {
         let mut signatures = vec![];
 
         for (entry, utxo) in input.sighashes.iter().zip(input.utxo_inputs.iter()) {
-            println!(
-                "SIGHASH TO SIGN: {}",
-                tw_encoding::hex::encode(entry.sighash.as_ref(), false)
-            );
-
             let sighash = Message::from_slice(entry.sighash.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash))?;
 

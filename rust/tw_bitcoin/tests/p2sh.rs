@@ -3,7 +3,6 @@ mod common;
 use bitcoin::script::PushBytesBuf;
 use bitcoin::{PublicKey, ScriptBuf};
 use common::hex;
-use secp256k1::hashes::Hash;
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_bitcoin::modules::signer::Signer;
@@ -13,23 +12,6 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 use crate::common::ONE_BTC;
-
-#[test]
-pub fn keypair_from_wif() {
-    use bitcoin::PrivateKey;
-
-    let seckey =
-        PrivateKey::from_wif("cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1").unwrap();
-    let pubkey = seckey.public_key(&secp256k1::Secp256k1::new());
-    println!(
-        "Secret key: {}",
-        tw_encoding::hex::encode(seckey.to_bytes(), false)
-    );
-    println!(
-        "Public key: {}",
-        tw_encoding::hex::encode(pubkey.to_bytes(), false)
-    );
-}
 
 #[test]
 #[ignore]
@@ -49,11 +31,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     let bob_native_pubkey = PublicKey::from_slice(&bob_pubkey).unwrap();
     let redeem_script = ScriptBuf::new_p2pkh(&bob_native_pubkey.pubkey_hash());
-
-    println!(
-        "REDEEM SCRIPT: {}",
-        tw_encoding::hex::encode(redeem_script.as_bytes(), false)
-    );
 
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
@@ -91,9 +68,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         disable_change_output: true,
         dangerous_use_fixed_schnorr_rng: false,
     };
-
-    let x = tw_encoding::hex::encode(redeem_script.script_hash().as_byte_array(), false);
-    println!("REDEEM SCRIPT HASH: {}", x);
 
     let output = BitcoinEntry.sign(&coin, signing);
     let encoded = tw_encoding::hex::encode(output.encoded, false);
@@ -168,11 +142,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         .push_slice(redeem_script_buf.as_push_bytes())
         .into_script();
 
-    println!(
-        "FULL REDEEM SCRIPT: {}",
-        tw_encoding::hex::encode(full_redeem_script.as_bytes(), false)
-    );
-
     // Update the input with the full redeem script.
     signing.inputs[0].to_recipient = ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
         variant: ProtoInputBuilder::p2sh(full_redeem_script.as_bytes().into()),
@@ -180,8 +149,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     // Compile the final transaction.
     let output = BitcoinEntry.compile(&coin, signing, signatures, vec![]);
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
-    println!("ENCODED: {}", encoded);
+    let _encoded = tw_encoding::hex::encode(output.encoded, false);
     assert_eq!(output.error, Proto::Error::OK);
 
     // WIP...

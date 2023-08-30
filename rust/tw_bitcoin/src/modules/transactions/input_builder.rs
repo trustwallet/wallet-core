@@ -24,10 +24,6 @@ impl InputBuilder {
                     script_sig = redeem_script.to_vec().into();
 
                     let redeem_script = ScriptBuf::from_bytes(redeem_script.to_vec());
-                    println!(
-                        "INPUT BUILDER: {}",
-                        tw_encoding::hex::encode(redeem_script.as_bytes(), false)
-                    );
                     let script_pubkey = ScriptBuf::new_p2sh(&redeem_script.script_hash());
 
                     (
