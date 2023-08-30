@@ -123,6 +123,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     // Sign the sighashes.
     let signatures =
         Signer::signatures_from_proto(&sighashes, bob_private_key.to_vec(), false).unwrap();
+
     assert_eq!(signatures.len(), 1);
     let sig = &signatures[0];
 
@@ -138,27 +139,17 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let full_redeem_script = ScriptBuf::builder()
         .push_slice(sig_buf)
         .push_key(&bob_native_pubkey)
-        .push_slice(redeem_script_buf)
+        .push_slice(redeem_script_buf.as_push_bytes())
         .into_script();
 
-    // Update the input.
-    let tx1 = Proto::Input {
-        txid: txid.as_slice().into(),
-        vout: 0,
-        value: 50 * ONE_BTC - 1_000_000,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
-        sighash_type: UtxoProto::SighashType::All,
-        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
-            variant: ProtoInputBuilder::p2sh(full_redeem_script.as_bytes().into()),
-        }),
-    };
-
-    // Update the full transaction.
-    signing.inputs[0] = tx1;
+    // Update the input with the full redeem script.
+    signing.inputs[0].to_recipient = ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+        variant: ProtoInputBuilder::p2sh(full_redeem_script.as_bytes().into()),
+    });
 
     // Compile the final transaction.
     let output = BitcoinEntry.compile(&coin, signing, signatures, vec![]);
+    let _encoded = tw_encoding::hex::encode(output.encoded, false);
     assert_eq!(output.error, Proto::Error::OK);
 
     // WIP...

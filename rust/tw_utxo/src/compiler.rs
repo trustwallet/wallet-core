@@ -187,6 +187,7 @@ impl Compiler<StandardBitcoinContext> {
         // Convert *updated* Protobuf structure to `bitcoin` crate native
         // transaction.
         let tx = convert_proto_to_tx(&proto)?;
+
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];

@@ -81,6 +81,8 @@ message TxIn {
     // If the sequence is a zero value, this field must be set to `true`.
     bool sequence_enable_zero = 5;
 
+    // The scriptSig used to generate the sighash. Normally this is left empty,
+    // but certain transaction types might require this such as Bitcoin's P2SH.
     bytes script_sig = 6;
 
     // The spending condition of the referenced output.
