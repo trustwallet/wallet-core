@@ -64,6 +64,7 @@ enum TWBlockchain {
     TWBlockchainTheOpenNetwork = 49,
     TWBlockchainSui = 50,
     TWBlockchainGreenfield = 51,
+    TWBlockchainInternetComputer = 53,  // TODO remove if the blockchain already exists, or just remove this comment if not
 };
 
 TW_EXTERN_C_END
