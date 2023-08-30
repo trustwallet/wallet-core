@@ -21,20 +21,20 @@ struct TWBitcoinV2;
 /// \param proto the serialized `SigningOutput` protobuf structure from `BitcoinV2.proto`.
 /// \return A pointer to the serialized `SigningOutput` protobuf structure from `BitcoinV2.proto`.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWBitcoinV2Sign(TWData* _Nonnull proto);
+TWData* _Nonnull TWBitcoinV2Sign(enum TWCoinType coin, TWData* _Nonnull proto);
 
 /// TODO...
 ///
 /// \param proto the serialized `SigningOutput` protobuf structure from `BitcoinV2.proto`.
 /// \return A pointer to the serialized `PreSigningOutput` protobuf structure from `BitcoinV2.proto`.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWBitcoinV2PreImageHashes(TWData* _Nonnull proto);
+TWData* _Nonnull TWBitcoinV2PreImageHashes(enum TWCoinType coin, TWData* _Nonnull proto);
 
 /// TODO...
 ///
 /// \param proto the serialized `SigningOutput` protobuf structure from `BitcoinV2.proto`.
 /// \return A pointer to the serialized `SigningOutput` protobuf structure from `BitcoinV2.proto`.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWBitcoinV2Compile(TWData* _Nonnull proto);
+TWData* _Nonnull TWBitcoinV2Compile(enum TWCoinType coin, TWData* _Nonnull proto);
 
 TW_EXTERN_C_END
