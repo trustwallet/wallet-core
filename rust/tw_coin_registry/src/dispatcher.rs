@@ -13,6 +13,7 @@ use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
+use tw_internet_computer::entry::InternetComputerEntry;
 use tw_ronin::entry::RoninEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;

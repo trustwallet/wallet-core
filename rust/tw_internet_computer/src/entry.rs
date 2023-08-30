@@ -15,7 +15,10 @@ use tw_coin_entry::{
 use tw_proto::InternetComputer::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-use crate::{icp::address::AccountIdentifier, principal::Principal};
+use crate::{
+    context::StandardInternetComputerContext, icp::address::AccountIdentifier,
+    principal::Principal, signer::Signer,
+};
 
 pub struct InternetComputerEntry;
 
@@ -34,6 +37,7 @@ impl CoinEntry for InternetComputerEntry {
 
     type PlanBuilder = NoPlanBuilder;
 
+    #[inline]
     fn parse_address(
         &self,
         _coin: &dyn CoinContext,
@@ -43,6 +47,7 @@ impl CoinEntry for InternetComputerEntry {
         AccountIdentifier::from_hex(address).map_err(|_| AddressError::FromHexError)
     }
 
+    #[inline]
     fn derive_address(
         &self,
         _coin: &dyn tw_coin_entry::coin_context::CoinContext,
@@ -58,29 +63,30 @@ impl CoinEntry for InternetComputerEntry {
         Ok(address)
     }
 
+    #[inline]
     fn sign(
         &self,
-        coin: &dyn tw_coin_entry::coin_context::CoinContext,
+        _coin: &dyn tw_coin_entry::coin_context::CoinContext,
         input: Self::SigningInput<'_>,
     ) -> Self::SigningOutput {
-        todo!()
+        Signer::<StandardInternetComputerContext>::sign_proto(input)
     }
 
     fn preimage_hashes(
         &self,
-        coin: &dyn tw_coin_entry::coin_context::CoinContext,
-        input: Self::SigningInput<'_>,
+        _coin: &dyn tw_coin_entry::coin_context::CoinContext,
+        _input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        todo!()
+        unimplemented!()
     }
 
     fn compile(
         &self,
-        coin: &dyn tw_coin_entry::coin_context::CoinContext,
-        input: Self::SigningInput<'_>,
-        signatures: Vec<tw_coin_entry::coin_entry::SignatureBytes>,
-        public_keys: Vec<tw_coin_entry::coin_entry::PublicKeyBytes>,
+        _coin: &dyn tw_coin_entry::coin_context::CoinContext,
+        _input: Self::SigningInput<'_>,
+        _signatures: Vec<tw_coin_entry::coin_entry::SignatureBytes>,
+        _public_keys: Vec<tw_coin_entry::coin_entry::PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        todo!()
+        unimplemented!()
     }
 }
