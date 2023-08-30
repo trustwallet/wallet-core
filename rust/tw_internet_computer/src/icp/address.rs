@@ -1,9 +1,22 @@
-use tw_coin_entry::coin_entry::CoinAddress;
+use tw_coin_entry::{
+    coin_entry::CoinAddress,
+    error::{AddressError, AddressResult},
+};
 use tw_encoding::hex;
 use tw_hash::{crc32::crc32, sha2::sha224, H256};
 use tw_keypair::ecdsa::secp256k1::PublicKey;
 
 use crate::principal::Principal;
+
+pub trait IcpAddress: std::str::FromStr<Err = AddressError> + Into<AccountIdentifier> {
+    fn from_str_optional(s: &str) -> AddressResult<Option<Self>> {
+        if s.is_empty() {
+            return Ok(None);
+        }
+
+        Self::from_str(s).map(Some)
+    }
+}
 
 pub enum AccountIdentifierFromHexError {
     InvalidLength,
@@ -55,6 +68,14 @@ impl AccountIdentifier {
     }
 }
 
+impl std::str::FromStr for AccountIdentifier {
+    type Err = AddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        AccountIdentifier::from_hex(s).map_err(|_| AddressError::FromHexError)
+    }
+}
+
 impl std::fmt::Display for AccountIdentifier {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.to_hex())
@@ -66,6 +87,8 @@ impl CoinAddress for AccountIdentifier {
         self.bytes.into_vec()
     }
 }
+
+impl IcpAddress for AccountIdentifier {}
 
 impl AsRef<[u8]> for AccountIdentifier {
     fn as_ref(&self) -> &[u8] {
