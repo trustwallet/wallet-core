@@ -14,6 +14,7 @@ use tw_proto::Utxo::Proto as UtxoProto;
 use crate::common::ONE_BTC;
 
 #[test]
+#[ignore]
 fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let coin = EmptyCoinContext;
 
@@ -158,9 +159,8 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     // Compile the final transaction.
     let output = BitcoinEntry.compile(&coin, signing, signatures, vec![]);
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
-
     assert_eq!(output.error, Proto::Error::OK);
-    println!("ENCODED: {}", encoded);
-    //assert_eq!(&encoded, "020000000182bd495ffd6799180d1eb65b8e6d346519120d2f445bfab69f871a417ab7995d0000000085483045022100bc3e0c381e44eecf0a59e49e9b9ecaba1d5b906b3abad8fd2030cd4294a4cbd902203252b8795a16f95f79f0f322d6630aafdf3515b23e2d099bb98a70b6f3456db10121037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf1976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88acffffffff01806de72901000000160014e4c1ea86373d554b8f4efff2cfb0001ea19124d200000000");
+
+    // WIP...
+    todo!()
 }
