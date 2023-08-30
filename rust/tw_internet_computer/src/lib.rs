@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod ffi;
+pub mod entry;
 pub mod icp;
 pub(crate) mod identity;
 pub(crate) mod interface_spec;

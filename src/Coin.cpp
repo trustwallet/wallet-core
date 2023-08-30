@@ -64,6 +64,7 @@
 #include "Hedera/Entry.h"
 #include "TheOpenNetwork/Entry.h"
 #include "Sui/Entry.h"
+#include "InternetComputer/Entry.h" // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -119,6 +120,7 @@ Everscale::Entry EverscaleDP;
 Hedera::Entry HederaDP;
 TheOpenNetwork::Entry tonDP;
 Sui::Entry SuiDP;
+InternetComputer::Entry InternetComputerDP; // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -176,6 +178,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainHedera: entry = &HederaDP; break;
         case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
         case TWBlockchainSui: entry = &SuiDP; break;
+        case TWBlockchainInternetComputer: entry = &InternetComputerDP; break; // TODO remove if the blockchain already exists, or just remove this comment if not
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

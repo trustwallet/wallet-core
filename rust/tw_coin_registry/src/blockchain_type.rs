@@ -14,6 +14,7 @@ use std::str::FromStr;
 #[derive(Copy, Clone, Debug)]
 pub enum BlockchainType {
     Ethereum,
+    InternetComputer,
     Ronin,
     Unsupported,
 }
@@ -34,6 +35,7 @@ impl FromStr for BlockchainType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "Ethereum" => Ok(BlockchainType::Ethereum),
+            "InternetComputer" => Ok(BlockchainType::InternetComputer),
             "Ronin" => Ok(BlockchainType::Ronin),
             _ => Ok(BlockchainType::Unsupported),
         }

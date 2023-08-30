@@ -18,11 +18,13 @@ pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
 pub type EvmEntryExtStaticRef = &'static dyn EvmEntryExt;
 
 const ETHEREUM: EthereumEntry = EthereumEntry;
+const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
 const RONIN: RoninEntry = RoninEntry;
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
     match blockchain {
         BlockchainType::Ethereum => Ok(&ETHEREUM),
+        BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
@@ -41,6 +43,7 @@ pub fn evm_dispatcher(coin: CoinType) -> RegistryResult<EvmEntryExtStaticRef> {
     let item = get_coin_item(coin)?;
     match item.blockchain {
         BlockchainType::Ethereum => Ok(&ETHEREUM),
+        BlockchainType::InternetComputer => Err(RegistryError::Unsupported),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }

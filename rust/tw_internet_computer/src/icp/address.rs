@@ -1,3 +1,4 @@
+use tw_coin_entry::coin_entry::CoinAddress;
 use tw_encoding::hex;
 use tw_hash::{crc32::crc32, sha2::sha224, H256};
 use tw_keypair::ecdsa::secp256k1::PublicKey;
@@ -10,7 +11,9 @@ pub enum AccountIdentifierFromHexError {
     DecodeHex,
 }
 
-pub struct AccountIdentifier(H256);
+pub struct AccountIdentifier {
+    bytes: H256,
+}
 
 impl AccountIdentifier {
     pub fn new(owner: &Principal) -> Self {
@@ -22,14 +25,14 @@ impl AccountIdentifier {
         let hash = sha224(&input);
         let crc32_bytes = crc32(&hash).to_be_bytes();
 
-        let mut result = H256::new();
-        result[0..4].copy_from_slice(&crc32_bytes);
-        result[4..32].copy_from_slice(&hash);
-        Self(result)
+        let mut bytes = H256::new();
+        bytes[0..4].copy_from_slice(&crc32_bytes);
+        bytes[4..32].copy_from_slice(&hash);
+        Self { bytes }
     }
 
     pub fn to_hex(&self) -> String {
-        hex::encode(self.0, false)
+        hex::encode(self.bytes, false)
     }
 
     pub fn from_hex(hex_str: &str) -> Result<AccountIdentifier, AccountIdentifierFromHexError> {
@@ -48,13 +51,25 @@ impl AccountIdentifier {
             return Err(AccountIdentifierFromHexError::InvalidChecksum);
         }
 
-        Ok(Self(hex))
+        Ok(Self { bytes: hex })
+    }
+}
+
+impl std::fmt::Display for AccountIdentifier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_hex())
+    }
+}
+
+impl CoinAddress for AccountIdentifier {
+    fn data(&self) -> tw_memory::Data {
+        self.bytes.into_vec()
     }
 }
 
 impl AsRef<[u8]> for AccountIdentifier {
     fn as_ref(&self) -> &[u8] {
-        self.0.as_slice()
+        self.bytes.as_slice()
     }
 }
 
