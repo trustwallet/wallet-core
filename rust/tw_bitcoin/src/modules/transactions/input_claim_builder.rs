@@ -2,7 +2,6 @@ use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use super::OrdinalNftInscription;
 use crate::aliases::*;
 use crate::{Error, Result};
-use bitcoin::script::PushBytesBuf;
 use bitcoin::taproot::{ControlBlock, LeafVersion};
 use bitcoin::{ScriptBuf, Witness};
 use std::borrow::Cow;

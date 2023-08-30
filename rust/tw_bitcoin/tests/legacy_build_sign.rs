@@ -232,8 +232,12 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
     let output: LegacyProto::SigningOutput = tw_proto::deserialize(&res).unwrap();
     assert_eq!(output.error, CommonProto::SigningError::OK);
 
+    const REVEAL_RAW: &str = "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000";
     let encoded_hex = tw_encoding::hex::encode(output.encoded, false);
-    //assert_eq!(encoded_hex, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000");
+    assert_eq!(encoded_hex[..188], REVEAL_RAW[..188]);
+    // Schnorr signature does not match (non-deterministic).
+    assert_ne!(encoded_hex[188..316], REVEAL_RAW[188..316]);
+    assert_eq!(encoded_hex[316..], REVEAL_RAW[316..]);
 }
 
 #[test]
@@ -364,7 +368,12 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
+    const REVEAL_RAW: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03406a35548b8fa4620028e021a944c1d3dc6e947243a7bfc901bf63fefae0d2460efa149a6440cab51966aa4f09faef2d1e5efcba23ab4ca6e669da598022dbcfe35b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
+
     assert_eq!(signed.error, CommonProto::SigningError::OK);
     let encoded_hex = tw_encoding::hex::encode(signed.encoded, false);
-    //assert_eq!(encoded_hex, "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03406a35548b8fa4620028e021a944c1d3dc6e947243a7bfc901bf63fefae0d2460efa149a6440cab51966aa4f09faef2d1e5efcba23ab4ca6e669da598022dbcfe35b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000");
+    assert_eq!(encoded_hex[..164], REVEAL_RAW[..164]);
+    // Schnorr signature does not match (non-deterministic).
+    assert_ne!(encoded_hex[164..292], REVEAL_RAW[164..292]);
+    assert_eq!(encoded_hex[292..], REVEAL_RAW[292..]);
 }
