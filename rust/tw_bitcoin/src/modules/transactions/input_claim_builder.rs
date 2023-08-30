@@ -146,7 +146,7 @@ impl InputClaimBuilder {
                     return Err(Error::from(Proto::Error::Error_missing_input_builder))
                 },
             },
-            ProtoInputRecipient::custom(custom) => (
+            ProtoInputRecipient::custom_script(custom) => (
                 ScriptBuf::from_bytes(custom.script_sig.to_vec()),
                 Witness::from_slice(&custom.witness_items),
             ),

@@ -252,7 +252,7 @@ impl InputBuilder {
                     return Err(Error::from(Proto::Error::Error_missing_input_builder))
                 },
             },
-            ProtoInputRecipient::custom(custom) => {
+            ProtoInputRecipient::custom_script(custom) => {
                 let script_pubkey = ScriptBuf::from_bytes(custom.script_pubkey.to_vec());
 
                 let leaf_hash = if let UtxoProto::SigningMethod::TaprootAll
