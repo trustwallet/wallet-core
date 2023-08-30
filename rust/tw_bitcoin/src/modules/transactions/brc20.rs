@@ -1,10 +1,10 @@
 use super::ordinals::OrdinalsInscription;
 use crate::{Error, Result};
 use bitcoin::PublicKey;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use tw_proto::BitcoinV2::Proto;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Brc20Ticker(String);
 
 impl Brc20Ticker {
@@ -18,7 +18,7 @@ impl Brc20Ticker {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize)]
 struct BRC20TransferPayload {
     #[serde(rename = "p")]
     protocol: String,
@@ -68,5 +68,26 @@ impl BRC20TransferInscription {
     }
     pub fn inscription(&self) -> &OrdinalsInscription {
         &self.0
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn brc20_ticker_validity() {
+        // Must be four characters.
+        let ticker = Brc20Ticker::new("invalid".to_string());
+        assert!(ticker.is_err());
+
+        let ticker = Brc20Ticker::new("asdf".to_string());
+        assert!(ticker.is_ok());
+
+        // Cover clone implemenation.
+        let ticker = ticker.unwrap();
+
+        let _cloned = ticker.clone();
+        let _ticker = ticker;
     }
 }
