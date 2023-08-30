@@ -6,7 +6,6 @@ use bitcoin::taproot::{TaprootBuilder, TaprootSpendInfo};
 use bitcoin::{PublicKey, Script};
 use tw_proto::BitcoinV2::Proto;
 
-#[derive(Debug, Clone)]
 pub struct OrdinalsInscription {
     envelope: TaprootProgram,
 }

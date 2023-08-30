@@ -79,6 +79,8 @@ message SigningInput {
 
     // Explicility disable change output creation.
     bool disable_change_output = 10;
+
+    bool dangerous_use_fixed_schnorr_rng = 11;
 }
 
 message Input {
@@ -108,7 +110,7 @@ message Input {
         // Construct input with a buildler pattern.
         InputBuilder builder = 7;
         // Construct input by providing raw spending information directly.
-        InputScriptWitness custom = 8;
+        InputScriptWitness custom_script = 8;
     }
 
     message InputBuilder {

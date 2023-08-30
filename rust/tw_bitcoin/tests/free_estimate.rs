@@ -1,14 +1,12 @@
-use super::ONE_BTC;
-use crate::aliases::*;
-use crate::entry::BitcoinEntry;
+mod common;
+
+use common::{hex, ONE_BTC};
+use tw_bitcoin::aliases::*;
+use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-
-fn hex(string: &str) -> Vec<u8> {
-    tw_encoding::hex::decode(string).unwrap()
-}
 
 const SAT_VB: u64 = 20;
 
@@ -35,6 +33,7 @@ fn p2pkh_fee_estimate() {
         fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     signing.inputs.push(Proto::Input {
@@ -94,6 +93,7 @@ fn p2wpkh_fee_estimate() {
         fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     signing.inputs.push(Proto::Input {
@@ -178,6 +178,7 @@ fn p2tr_key_path_fee_estimate() {
         fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let prehashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
@@ -246,6 +247,7 @@ fn brc20_inscribe_fee_estimate() {
         fee_per_vb: SAT_VB,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let prehashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());

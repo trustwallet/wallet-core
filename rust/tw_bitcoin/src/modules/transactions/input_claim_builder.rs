@@ -28,7 +28,6 @@ impl InputClaimBuilder {
                 ProtoInputBuilder::p2pkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
-                    dbg!(&pubkey);
 
                     // The spending script itself.
                     (
@@ -142,7 +141,7 @@ impl InputClaimBuilder {
                     return Err(Error::from(Proto::Error::Error_missing_input_builder))
                 },
             },
-            ProtoInputRecipient::custom(custom) => (
+            ProtoInputRecipient::custom_script(custom) => (
                 ScriptBuf::from_bytes(custom.script_sig.to_vec()),
                 Witness::from_slice(&custom.witness_items),
             ),

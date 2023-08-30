@@ -1,6 +1,8 @@
-use super::hex;
-use crate::aliases::*;
-use crate::entry::BitcoinEntry;
+mod common;
+
+use common::hex;
+use tw_bitcoin::aliases::*;
+use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
@@ -49,6 +51,7 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -92,6 +95,8 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        // We enable deterministic Schnorr signatures here
+        dangerous_use_fixed_schnorr_rng: true,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);

@@ -29,6 +29,7 @@ fn sighash_input_p2pkh_output_p2tr_key_spend() {
             value: u64::MAX,
             sequence: u32::MAX,
             sequence_enable_zero: false,
+            p2sh_script_sig: Default::default(),
             script_pubkey: input_script_pubkey.as_bytes().into(),
             sighash_type: Proto::SighashType::All,
             signing_method: Proto::SigningMethod::Legacy,

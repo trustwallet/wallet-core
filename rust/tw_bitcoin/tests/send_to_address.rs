@@ -1,8 +1,10 @@
-use super::hex;
-use crate::aliases::*;
-use crate::entry::BitcoinEntry;
+mod common;
+
 use bitcoin::{Address, PublicKey, ScriptBuf};
+use common::hex;
 use secp256k1::XOnlyPublicKey;
+use tw_bitcoin::aliases::*;
+use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
@@ -53,6 +55,7 @@ fn send_to_p2pkh_address() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -117,6 +120,7 @@ fn send_to_p2wpkh_address() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -184,6 +188,7 @@ fn send_to_p2tr_key_path_address() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);

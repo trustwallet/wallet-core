@@ -1,10 +1,14 @@
 #![allow(deprecated)]
 
-use crate::modules::legacy::*;
-use crate::modules::transactions::{BRC20TransferInscription, Brc20Ticker, OrdinalNftInscription};
+mod common;
+
 use bitcoin::{PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use std::ffi::CString;
+use tw_bitcoin::modules::legacy::*;
+use tw_bitcoin::modules::transactions::{
+    BRC20TransferInscription, Brc20Ticker, OrdinalNftInscription,
+};
 use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 
@@ -120,7 +124,7 @@ fn ffi_tw_bitcoin_build_nft_inscription() {
 
     let mime_type = "image/png";
     let c_mime_type = CString::new(mime_type).unwrap();
-    let payload_hex = super::data::NFT_INSCRIPTION_IMAGE_DATA;
+    let payload_hex = common::data::NFT_INSCRIPTION_IMAGE_DATA;
     let payload = tw_encoding::hex::decode(payload_hex).unwrap();
 
     // Call the FFI function.

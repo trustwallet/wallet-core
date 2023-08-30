@@ -155,6 +155,7 @@ impl BitcoinEntry {
         let signatures = crate::modules::signer::Signer::signatures_from_proto(
             &pre_signed,
             proto.private_key.to_vec(),
+            proto.dangerous_use_fixed_schnorr_rng,
         )?;
 
         self.compile_impl(_coin, proto, signatures, vec![])
