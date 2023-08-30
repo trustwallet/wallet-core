@@ -27,7 +27,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType c
 
 std::string Signer::signaturePreimage(const Proto::SigningInput& input, const Data& publicKey, TWCoinType coin) const {
     auto isEvmCosmosChain = [coin]() {
-        return coin == TWCoinTypeNativeInjective || coin == TWCoinTypeEvmos || coin == TWCoinTypeNativeCanto;
+        return coin == TWCoinTypeNativeInjective || coin == TWCoinTypeNativeEvmos || coin == TWCoinTypeNativeCanto;
     };
     switch (input.signing_mode()) {
     case Proto::JSON:
