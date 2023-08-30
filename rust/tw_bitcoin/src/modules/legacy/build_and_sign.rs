@@ -138,6 +138,7 @@ fn taproot_build_and_sign_transaction(
         fee_per_vb: legacy.byte_fee as u64,
         change_output: None,
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     // Build and sign the Bitcoin transaction.

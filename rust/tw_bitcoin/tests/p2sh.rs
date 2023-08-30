@@ -72,6 +72,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -119,13 +120,15 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     // Generate the sighashes.
     let sighashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
 
     // Sign the sighashes.
-    let signatures = Signer::signatures_from_proto(&sighashes, bob_private_key.to_vec()).unwrap();
+    let signatures =
+        Signer::signatures_from_proto(&sighashes, bob_private_key.to_vec(), false).unwrap();
     assert_eq!(signatures.len(), 1);
     let sig = &signatures[0];
 

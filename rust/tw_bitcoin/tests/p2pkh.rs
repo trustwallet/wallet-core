@@ -56,6 +56,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);

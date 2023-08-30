@@ -55,6 +55,7 @@ fn send_to_p2pkh_address() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -119,6 +120,7 @@ fn send_to_p2wpkh_address() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -186,6 +188,7 @@ fn send_to_p2tr_key_path_address() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);

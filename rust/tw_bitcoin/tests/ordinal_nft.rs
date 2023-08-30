@@ -55,6 +55,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -118,6 +119,8 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        // We enable deterministic Schnorr signatures here
+        dangerous_use_fixed_schnorr_rng: true,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -134,7 +137,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
 
     const REVEAL_RAW: &str = common::data::NFT_INSCRIPTION_RAW_HEX;
 
-    //assert_eq!(encoded, REVEAL_RAW);
+    assert_eq!(encoded, REVEAL_RAW);
     assert_eq!(transaction.inputs.len(), 1);
     assert_eq!(transaction.outputs.len(), 1);
 }

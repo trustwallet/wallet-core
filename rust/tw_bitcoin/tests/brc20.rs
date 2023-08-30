@@ -67,6 +67,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -127,6 +128,8 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
         fee_per_vb: 0,
         change_output: Default::default(),
         disable_change_output: true,
+        // We enable deterministic Schnorr signatures here
+        dangerous_use_fixed_schnorr_rng: true,
     };
 
     let output = BitcoinEntry.sign(&coin, signing);
@@ -143,7 +146,7 @@ fn coin_entry_sign_brc20_commit_reveal_transfer() {
 
     const REVEAL_RAW: &str = "02000000000101b11f1782607a1fe5f033ccf9dc17404db020a0dedff94183596ee67ad4177d790000000000ffffffff012202000000000000160014e311b8d6ddff856ce8e9a4e03bc6d4fe5050a83d03406a35548b8fa4620028e021a944c1d3dc6e947243a7bfc901bf63fefae0d2460efa149a6440cab51966aa4f09faef2d1e5efcba23ab4ca6e669da598022dbcfe35b0063036f7264010118746578742f706c61696e3b636861727365743d7574662d3800377b2270223a226272632d3230222c226f70223a227472616e73666572222c227469636b223a226f616466222c22616d74223a223230227d6821c00f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb00000000";
 
-    //assert_eq!(encoded, REVEAL_RAW);
+    assert_eq!(encoded, REVEAL_RAW);
     assert_eq!(transaction.inputs.len(), 1);
     assert_eq!(transaction.outputs.len(), 1);
 }

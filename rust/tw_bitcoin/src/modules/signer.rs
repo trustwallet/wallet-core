@@ -13,6 +13,7 @@ impl Signer {
     pub fn signatures_from_proto(
         input: &Proto::PreSigningOutput<'_>,
         private_key: PrivateKeyBytes,
+        dangerous_use_fixed_schnorr_rng: bool,
     ) -> Result<Vec<SignatureBytes>> {
         let secp = Secp256k1::new();
         let keypair = KeyPair::from_seckey_slice(&secp, private_key.as_ref())
@@ -55,13 +56,14 @@ impl Signer {
                         let tweaked = KeyPair::from(tapped);
 
                         // Construct the Schnorr signature.
-                        #[cfg(not(test))]
-                        let schnorr = secp.sign_schnorr(&sighash, &tweaked);
-                        #[cfg(test)]
-                        // For tests, we disable the included randomness in order to create
-                        // reproducible signatures. Randomness should ALWAYS be used in
-                        // production.
-                        let schnorr = secp.sign_schnorr_no_aux_rand(&sighash, &tweaked);
+                        let schnorr = if dangerous_use_fixed_schnorr_rng {
+                            // For tests, we disable the included randomness in order to create
+                            // reproducible signatures. Randomness should ALWAYS be used in
+                            // production.
+                            secp.sign_schnorr_no_aux_rand(&sighash, &tweaked)
+                        } else {
+                            secp.sign_schnorr(&sighash, &tweaked)
+                        };
 
                         let sig = bitcoin::taproot::Signature {
                             sig: schnorr,
@@ -78,13 +80,14 @@ impl Signer {
                         // process is simpler than for P2TR key-path.
 
                         // Construct the Schnorr signature.
-                        #[cfg(not(test))]
-                        let schnorr = secp.sign_schnorr(&sighash, &keypair);
-                        #[cfg(test)]
-                        // For tests, we disable the included randomness in order to create
-                        // reproducible signatures. Randomness should ALWAYS be used in
-                        // production.
-                        let schnorr = secp.sign_schnorr_no_aux_rand(&sighash, &keypair);
+                        let schnorr = if dangerous_use_fixed_schnorr_rng {
+                            // For tests, we disable the included randomness in order to create
+                            // reproducible signatures. Randomness should ALWAYS be used in
+                            // production.
+                            secp.sign_schnorr_no_aux_rand(&sighash, &keypair)
+                        } else {
+                            secp.sign_schnorr(&sighash, &keypair)
+                        };
 
                         let sig = bitcoin::taproot::Signature {
                             sig: schnorr,

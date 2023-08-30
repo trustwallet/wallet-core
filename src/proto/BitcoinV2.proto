@@ -79,6 +79,8 @@ message SigningInput {
 
     // Explicility disable change output creation.
     bool disable_change_output = 10;
+
+    bool dangerous_use_fixed_schnorr_rng = 11;
 }
 
 message Input {
