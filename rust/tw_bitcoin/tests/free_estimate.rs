@@ -1,16 +1,12 @@
 mod common;
 
-use common::ONE_BTC;
+use common::{hex, ONE_BTC};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-
-fn hex(string: &str) -> Vec<u8> {
-    tw_encoding::hex::decode(string).unwrap()
-}
 
 const SAT_VB: u64 = 20;
 

@@ -135,9 +135,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
     let encoded = tw_encoding::hex::encode(output.encoded, false);
     let transaction = output.transaction.unwrap();
 
-    const REVEAL_RAW: &str = common::data::NFT_INSCRIPTION_RAW_HEX;
-
-    assert_eq!(encoded, REVEAL_RAW);
+    assert_eq!(encoded, common::data::NFT_INSCRIPTION_RAW_HEX);
     assert_eq!(transaction.inputs.len(), 1);
     assert_eq!(transaction.outputs.len(), 1);
 }

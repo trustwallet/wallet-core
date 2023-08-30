@@ -1,7 +1,5 @@
 mod common;
 
-use bitcoin::blockdata::opcodes::all::*;
-use bitcoin::ecdsa::Signature;
 use bitcoin::script::PushBytesBuf;
 use bitcoin::{PublicKey, ScriptBuf};
 use common::hex;
@@ -32,11 +30,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     let bob_native_pubkey = PublicKey::from_slice(&bob_pubkey).unwrap();
     let redeem_script = ScriptBuf::new_p2pkh(&bob_native_pubkey.pubkey_hash());
-
-    println!(
-        "REDEEM: {}",
-        tw_encoding::hex::encode(redeem_script.as_bytes(), false)
-    );
 
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
