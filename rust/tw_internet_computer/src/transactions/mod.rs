@@ -13,7 +13,6 @@ use crate::protocol::{identity, principal::Principal, rosetta};
 pub enum SignTransactionError {
     Identity(identity::SigningError),
     EncodingArgsFailed,
-    EncodingSignedTransactionFailed,
     InvalidToAccountIdentifier,
 }
 

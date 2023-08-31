@@ -182,9 +182,7 @@ mod test {
         )
         .unwrap();
         // Encode the signed transaction.
-        let mut cbor_encoded_signed_transaction = vec![];
-        ciborium::ser::into_writer(&signed_transaction, &mut cbor_encoded_signed_transaction)
-            .unwrap();
+        let cbor_encoded_signed_transaction = tw_cbor::serialize(&signed_transaction).unwrap();
         let hex_encoded_signed_transaction = hex::encode(&cbor_encoded_signed_transaction, false);
         assert_eq!(hex_encoded_signed_transaction, SIGNED_TRANSACTION);
     }
