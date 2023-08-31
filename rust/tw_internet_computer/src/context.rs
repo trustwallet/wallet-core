@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::{
-    icp::address::{AccountIdentifier, IcpAddress},
+    address::{AccountIdentifier, IcpAddress},
     protocol::principal::Principal,
 };
 

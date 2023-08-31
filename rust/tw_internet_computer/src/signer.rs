@@ -13,11 +13,11 @@ use tw_coin_entry::{
 use tw_keypair::ecdsa::secp256k1;
 use tw_proto::Common::Proto::SigningError as CommonError;
 use tw_proto::InternetComputer::Proto;
-use tw_proto::InternetComputer::Proto::mod_Transaction::OneOftransaction_oneof as Tx;
 
 use crate::{
     context::{CanisterId, InternetComputerContext},
     protocol::principal::Principal,
+    transactions::sign_transaction,
 };
 
 pub struct Signer<Context: InternetComputerContext> {
@@ -41,24 +41,16 @@ impl<Context: InternetComputerContext> Signer<Context> {
         };
 
         let canister_id = Self::canister_id();
+        let signed_transaction =
+            sign_transaction(private_key, canister_id, &transaction.transaction_oneof)
+                .map_err(|_| SigningError(CommonError::Error_general))?;
 
-        let signed_transaction = match &transaction.transaction_oneof {
-            Tx::transfer(transfer) => {
-                let args = crate::icp::sign::TransferArgs {
-                    memo: transfer.memo,
-                    amount: transfer.amount,
-                    max_fee: None,
-                    to: transfer.to_account_identifier.to_string(),
-                    current_timestamp_secs: transfer.current_timestamp_secs,
-                };
-                crate::icp::sign::transfer(private_key, canister_id, args)
-                    .map_err(|_| SigningError(CommonError::Error_general))?
-            },
-            Tx::None => return Err(SigningError(CommonError::Error_invalid_params)),
-        };
+        let mut cbor_encoded_signed_transaction = vec![];
+        ciborium::ser::into_writer(&signed_transaction, &mut cbor_encoded_signed_transaction)
+            .map_err(|_| SigningError(CommonError::Error_signing))?;
 
         Ok(Proto::SigningOutput {
-            signed_transaction: signed_transaction.into(),
+            signed_transaction: cbor_encoded_signed_transaction.into(),
             ..Proto::SigningOutput::default()
         })
     }

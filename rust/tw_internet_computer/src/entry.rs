@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::str::FromStr;
+
 use tw_coin_entry::{
     coin_context::CoinContext,
     coin_entry::CoinEntry,
@@ -15,10 +17,7 @@ use tw_coin_entry::{
 use tw_proto::InternetComputer::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
-use crate::{
-    context::StandardInternetComputerContext, icp::address::AccountIdentifier,
-    protocol::principal::Principal, signer::Signer,
-};
+use crate::{address::AccountIdentifier, context::StandardInternetComputerContext, signer::Signer};
 
 pub struct InternetComputerEntry;
 
@@ -44,7 +43,7 @@ impl CoinEntry for InternetComputerEntry {
         address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        AccountIdentifier::from_hex(address).map_err(|_| AddressError::FromHexError)
+        Self::Address::from_str(address)
     }
 
     #[inline]
@@ -58,9 +57,7 @@ impl CoinEntry for InternetComputerEntry {
         let secp256k1_public_key = public_key
             .to_secp256k1()
             .ok_or(AddressError::PublicKeyTypeMismatch)?;
-        let principal = Principal::from(secp256k1_public_key);
-        let address = AccountIdentifier::new(&principal);
-        Ok(address)
+        Ok(Self::Address::from(secp256k1_public_key))
     }
 
     #[inline]
