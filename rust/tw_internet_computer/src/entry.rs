@@ -17,7 +17,7 @@ use tw_proto::TxCompiler::Proto as CompilerProto;
 
 use crate::{
     context::StandardInternetComputerContext, icp::address::AccountIdentifier,
-    principal::Principal, signer::Signer,
+    protocol::principal::Principal, signer::Signer,
 };
 
 pub struct InternetComputerEntry;

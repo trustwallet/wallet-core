@@ -1,7 +1,7 @@
 use tw_hash::H256;
 use tw_keypair::{ecdsa::secp256k1::PrivateKey, traits::SigningKeyTrait, KeyPairError};
 
-use crate::principal::Principal;
+use super::principal::Principal;
 
 #[derive(Debug)]
 pub enum SigningError {

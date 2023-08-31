@@ -1,5 +1,8 @@
 pub mod envelope;
+pub mod identity;
+pub mod principal;
 pub mod request_id;
+pub mod rosetta;
 
 use std::time::Duration;
 

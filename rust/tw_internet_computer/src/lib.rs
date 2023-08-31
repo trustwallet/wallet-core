@@ -7,8 +7,5 @@
 mod context;
 pub mod entry;
 pub mod icp;
-pub(crate) mod identity;
-pub(crate) mod interface_spec;
-pub(crate) mod principal;
-pub(crate) mod rosetta;
+pub(crate) mod protocol;
 mod signer;

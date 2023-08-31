@@ -234,7 +234,7 @@ fn representation_independent_hash_read_state(
 
 #[cfg(test)]
 mod test {
-    use crate::principal::Principal;
+    use crate::protocol::principal::Principal;
 
     #[test]
     fn representation_independent_hash_call_or_query() {
