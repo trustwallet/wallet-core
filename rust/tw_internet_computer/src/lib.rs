@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+pub mod address;
 mod context;
 pub mod entry;
-pub mod icp;
 pub(crate) mod protocol;
 mod signer;
+mod transactions;

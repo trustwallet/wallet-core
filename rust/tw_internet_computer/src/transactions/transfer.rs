@@ -1,24 +1,24 @@
 use std::time::Duration;
 
+use ic_certification::Label;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 
 use crate::{
-    icp::{
-        address::AccountIdentifier,
-        proto::ic_ledger::pb::v1::{
-            AccountIdentifier as ProtoAccountIdentifier, Memo, Payment, SendRequest, TimeStamp,
-            Tokens,
-        },
-    },
+    address::AccountIdentifier,
     protocol::{
         envelope::{Envelope, EnvelopeContent},
         get_ingress_expiry,
-        identity::{Identity, SigningError},
+        identity::Identity,
         principal::Principal,
         request_id::RequestId,
         rosetta,
     },
+    transactions::proto::ic_ledger::pb::v1::{
+        AccountIdentifier as ProtoAccountIdentifier, Memo, Payment, SendRequest, TimeStamp, Tokens,
+    },
 };
+
+use super::SignTransactionError;
 
 #[derive(Clone, Debug)]
 pub struct TransferArgs {
@@ -30,14 +30,14 @@ pub struct TransferArgs {
 }
 
 impl TryFrom<TransferArgs> for SendRequest<'_> {
-    type Error = SignTransferError;
+    type Error = SignTransactionError;
 
     fn try_from(args: TransferArgs) -> Result<Self, Self::Error> {
         let current_timestamp_duration = Duration::from_secs(args.current_timestamp_secs);
         let timestamp_nanos = current_timestamp_duration.as_nanos() as u64;
 
         let to_account_identifier = AccountIdentifier::from_hex(&args.to)
-            .map_err(|_| SignTransferError::InvalidToAccountIdentifier)?;
+            .map_err(|_| SignTransactionError::InvalidToAccountIdentifier)?;
         let to_hash = to_account_identifier.as_ref().to_vec();
 
         let request = Self {
@@ -57,14 +57,6 @@ impl TryFrom<TransferArgs> for SendRequest<'_> {
     }
 }
 
-#[derive(Debug)]
-pub enum SignTransferError {
-    Identity(SigningError),
-    EncodingArgsFailed,
-    EncodingSignedTransactionFailed,
-    InvalidToAccountIdentifier,
-}
-
 /// The endpoint on the ledger canister that is used to make transfers.
 const METHOD_NAME: &str = "send_pb";
 
@@ -72,7 +64,7 @@ pub fn transfer(
     private_key: PrivateKey,
     canister_id: Principal,
     args: TransferArgs,
-) -> Result<Vec<u8>, SignTransferError> {
+) -> Result<rosetta::SignedTransaction, SignTransactionError> {
     let current_timestamp_duration = Duration::from_secs(args.current_timestamp_secs);
     let ingress_expiry = get_ingress_expiry(current_timestamp_duration);
     let identity = Identity::new(private_key);
@@ -80,7 +72,7 @@ pub fn transfer(
     // Encode the arguments for the ledger `send_pb` endpoint.
     let send_request = SendRequest::try_from(args)?;
     let arg =
-        tw_proto::serialize(&send_request).map_err(|_| SignTransferError::EncodingArgsFailed)?;
+        tw_proto::serialize(&send_request).map_err(|_| SignTransactionError::EncodingArgsFailed)?;
     // Create the update envelope.
     let (request_id, update_envelope) =
         create_update_envelope(&identity, canister_id, arg, ingress_expiry)?;
@@ -94,13 +86,7 @@ pub fn transfer(
 
     // Create a signed transaction containing the envelope pair.
     let request: rosetta::Request = (rosetta::RequestType::Send, vec![envelope_pair]);
-    let signed_transaction: rosetta::SignedTransaction = vec![request];
-    // Encode the signed transaction.
-    let mut cbor_encoded_signed_transaction = vec![];
-    ciborium::ser::into_writer(&signed_transaction, &mut cbor_encoded_signed_transaction)
-        .map_err(|_| SignTransferError::EncodingSignedTransactionFailed)?;
-
-    Ok(cbor_encoded_signed_transaction)
+    Ok(vec![request])
 }
 
 fn create_update_envelope(
@@ -108,7 +94,7 @@ fn create_update_envelope(
     canister_id: Principal,
     arg: Vec<u8>,
     ingress_expiry: u64,
-) -> Result<(RequestId, Envelope), SignTransferError> {
+) -> Result<(RequestId, Envelope), SignTransactionError> {
     let sender = identity.sender();
     let content = EnvelopeContent::Call {
         nonce: None, //TODO: do we need the nonce?
@@ -122,7 +108,7 @@ fn create_update_envelope(
     let request_id = RequestId::from(&content);
     let signature = identity
         .sign(request_id.sig_data())
-        .map_err(SignTransferError::Identity)?;
+        .map_err(SignTransactionError::Identity)?;
 
     let env = Envelope {
         content,
@@ -136,22 +122,22 @@ fn create_read_state_envelope(
     identity: &Identity,
     update_request_id: RequestId,
     ingress_expiry: u64,
-) -> Result<(RequestId, Envelope), SignTransferError> {
+) -> Result<(RequestId, Envelope), SignTransactionError> {
     let sender = identity.sender();
 
     let content = EnvelopeContent::ReadState {
         ingress_expiry,
         sender,
         paths: vec![vec![
-            "request_status".into(),
-            update_request_id.0.as_slice().into(),
+            Label::from("request_status"),
+            Label::from(update_request_id.0.as_slice()),
         ]],
     };
 
     let request_id = RequestId::from(&content);
     let signature = identity
         .sign(request_id.sig_data())
-        .map_err(SignTransferError::Identity)?;
+        .map_err(SignTransactionError::Identity)?;
 
     let env = Envelope {
         content,
@@ -165,7 +151,7 @@ fn create_read_state_envelope(
 mod test {
     use tw_encoding::hex;
 
-    use crate::icp::address::AccountIdentifier;
+    use crate::address::AccountIdentifier;
 
     use super::*;
 
@@ -195,7 +181,11 @@ mod test {
             },
         )
         .unwrap();
-        let hex_encoded_signed_transaction = hex::encode(&signed_transaction, false);
+        // Encode the signed transaction.
+        let mut cbor_encoded_signed_transaction = vec![];
+        ciborium::ser::into_writer(&signed_transaction, &mut cbor_encoded_signed_transaction)
+            .unwrap();
+        let hex_encoded_signed_transaction = hex::encode(&cbor_encoded_signed_transaction, false);
         assert_eq!(hex_encoded_signed_transaction, SIGNED_TRANSACTION);
     }
 }

@@ -36,6 +36,7 @@ fn test_any_address_derive() {
         let expected_address = match coin.blockchain {
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::Ronin => "ronin:Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309",
+            BlockchainType::InternetComputer => "",
             BlockchainType::Unsupported => unreachable!(),
         };
 
@@ -65,6 +66,7 @@ fn test_any_address_normalize_eth() {
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
                 "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
             ),
+            BlockchainType::InternetComputer => ("", ""),
             BlockchainType::Unsupported => unreachable!(),
         };
 
@@ -99,6 +101,7 @@ fn test_any_address_is_valid_eth() {
                 "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
             ],
             BlockchainType::Unsupported => unreachable!(),
+            BlockchainType::InternetComputer => unreachable!(),
         };
 
         for valid_addr in valid {
@@ -116,6 +119,7 @@ fn test_any_address_is_valid_eth_invalid() {
                 vec!["b16Db98B365B1f89191996942612B14F1Da4Bd5f"]
             },
             BlockchainType::Unsupported => unreachable!(),
+            BlockchainType::InternetComputer => unreachable!(),
         };
 
         for invalid_addr in invalid {
