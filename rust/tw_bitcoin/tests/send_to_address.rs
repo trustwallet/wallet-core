@@ -11,6 +11,72 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
+fn send_to_p2sh_address() {
+    let coin = EmptyCoinContext;
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    let txid: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
+        .into_iter()
+        .rev()
+        .collect();
+
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: 10_000,
+        sequence: u32::MAX,
+        sequence_enable_zero: false,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
+        }),
+    };
+
+    // Create the P2SH address.
+    let recipient = PublicKey::from_slice(&bob_pubkey).unwrap();
+    // We use a simple P2PKH as the redeem script.
+    let redeem_script = ScriptBuf::new_p2pkh(&recipient.pubkey_hash());
+    let address = Address::p2sh(&redeem_script, bitcoin::Network::Bitcoin).unwrap();
+
+    // The output variant is derived from the specified address.
+    let out1 = Proto::Output {
+        value: 1_000,
+        to_recipient: ProtoOutputRecipient::from_address(address.to_string().into()),
+    };
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Default::default(),
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        input_selector: UtxoProto::InputSelector::UseAll,
+        fee_per_vb: 0,
+        change_output: Default::default(),
+        disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
+    };
+
+    let output = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(output.error, Proto::Error::OK);
+
+    let tx = output.transaction.as_ref().unwrap();
+    assert_eq!(tx.inputs.len(), 1);
+    assert_eq!(tx.outputs.len(), 1);
+
+    // The expected P2SH scriptPubkey
+    let expected = ScriptBuf::new_p2sh(&redeem_script.script_hash());
+
+    assert_eq!(tx.outputs[0].value, 1_000);
+    assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
+    assert!(tx.outputs[0].taproot_payload.is_empty());
+    assert!(tx.outputs[0].control_block.is_empty());
+}
+
+#[test]
 fn send_to_p2pkh_address() {
     let coin = EmptyCoinContext;
 
@@ -68,6 +134,72 @@ fn send_to_p2pkh_address() {
 
     // The expected P2PKH scriptPubkey
     let expected = ScriptBuf::new_p2pkh(&recipient.pubkey_hash());
+
+    assert_eq!(tx.outputs[0].value, 1_000);
+    assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
+    assert!(tx.outputs[0].taproot_payload.is_empty());
+    assert!(tx.outputs[0].control_block.is_empty());
+}
+
+#[test]
+fn send_to_p2wsh_address() {
+    let coin = EmptyCoinContext;
+
+    let alice_private_key = hex("57a64865bce5d4855e99b1cce13327c46171434f2d72eeaf9da53ee075e7f90a");
+    let alice_pubkey = hex("028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f");
+    let bob_pubkey = hex("025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f");
+
+    let txid: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
+        .into_iter()
+        .rev()
+        .collect();
+
+    let tx1 = Proto::Input {
+        txid: txid.as_slice().into(),
+        vout: 0,
+        value: 10_000,
+        sequence: u32::MAX,
+        sequence_enable_zero: false,
+        sighash_type: UtxoProto::SighashType::All,
+        to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
+            variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
+        }),
+    };
+
+    // Create the P2WSH address.
+    let recipient = PublicKey::from_slice(&bob_pubkey).unwrap();
+    // We use a simple P2PKH as the redeem script.
+    let redeem_script = ScriptBuf::new_p2pkh(&recipient.pubkey_hash());
+    let address = Address::p2wsh(&redeem_script, bitcoin::Network::Bitcoin);
+
+    // The output variant is derived from the specified address.
+    let out1 = Proto::Output {
+        value: 1_000,
+        to_recipient: ProtoOutputRecipient::from_address(address.to_string().into()),
+    };
+
+    let signing = Proto::SigningInput {
+        version: 2,
+        private_key: alice_private_key.as_slice().into(),
+        lock_time: Default::default(),
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        input_selector: UtxoProto::InputSelector::UseAll,
+        fee_per_vb: 0,
+        change_output: Default::default(),
+        disable_change_output: true,
+        dangerous_use_fixed_schnorr_rng: false,
+    };
+
+    let output = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(output.error, Proto::Error::OK);
+
+    let tx = output.transaction.as_ref().unwrap();
+    assert_eq!(tx.inputs.len(), 1);
+    assert_eq!(tx.outputs.len(), 1);
+
+    // The expected Pw2SH scriptPubkey
+    let expected = ScriptBuf::new_v0_p2wsh(&redeem_script.wscript_hash());
 
     assert_eq!(tx.outputs[0].value, 1_000);
     assert_eq!(tx.outputs[0].script_pubkey, expected.as_bytes());
