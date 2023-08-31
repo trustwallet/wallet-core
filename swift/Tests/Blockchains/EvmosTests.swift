@@ -68,7 +68,7 @@ class EvmosTests: XCTestCase {
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .nativeEvmos)
         // https://www.mintscan.io/evmos/txs/B05D2047086B158665EC552879270AEF40AEAAFEE7D275B63E9674E3CC4C4E55
         let expected = """
-        {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpoBCpcBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEncKLGV2bW9zMXJrMzlkazN3ZmY1bnBzN2VtdWh2M250a24zbnN6NnoyZXJxZnIwEixldm1vczEwazlscnJydWFwOW51OTZteHd3eWUyZjZhNXdhemVoMzNrcTY3ehoZCgZhZXZtb3MSDzIwMDAwMDAwMDAwMDAwMBJ7ClcKTwooL2V0aGVybWludC5jcnlwdG8udjEuZXRoc2VjcDI1NmsxLlB1YktleRIjCiEClHXJ+iPsaTZnuqdsTaabSczP3wWMTcsnumfPvJCC2e0SBAoCCAESIAoaCgZhZXZtb3MSEDE0MDAwMDAwMDAwMDAwMDAQ4MUIGkAz9vh1EutbLrLZmRA4eK72bA6bhfMX0YnhtRl5jeaL3AYmk0qdrwG9XzzleBsZ++IokJIk47cgOOyvEjl92Jhj"}
+        {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpoBCpcBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEncKLGV2bW9zMXJrMzlkazN3ZmY1bnBzN2VtdWh2M250a24zbnN6NnoyZXJxZnIwEixldm1vczEwazlscnJydWFwOW51OTZteHd3eWUyZjZhNXdhemVoMzNrcTY3ehoZCgZhZXZtb3MSDzIwMDAwMDAwMDAwMDAwMBKbAQp3Cm8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSQwpBBJR1yfoj7Gk2Z7qnbE2mm0nMz98FjE3LJ7pnz7yQgtntkHR4ZWCqaYsZu5cpUmscdZNPPUp4975xnkOGt0mzYxASBAoCCAESIAoaCgZhZXZtb3MSEDE0MDAwMDAwMDAwMDAwMDAQ4MUIGkDBSFkYlIx1/6ZvRtEHyq6r0EEFDb/5T2Cb9zVYWtYZE1e7YteG2GuYMX546PvBQ7CYAFZEkr+rU6okC0nAT0UK"}
         """
         XCTAssertJSONEqual(output.serialized, expected)
         XCTAssertEqual(output.errorMessage, "")
