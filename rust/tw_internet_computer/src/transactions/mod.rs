@@ -1,6 +1,6 @@
 mod transfer;
 
-mod proto {
+pub mod proto {
     include!(concat!(env!("OUT_DIR"), "/proto/mod.rs"));
 }
 
