@@ -227,8 +227,8 @@ message Output {
     }
 
     message OutputTaprootScriptPath {
-        // The recipient of the output.
-        bytes public_key = 1;
+        // The internal key, usually the public key of the recipient.
+        bytes internal_key = 1;
         // The merkle root of the Taproot script(s), required to compute the sighash.
         bytes merkle_root = 2;
     }

@@ -52,7 +52,7 @@ fn coin_entry_custom_script_path() {
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2tr_script_path(
                 Proto::mod_Output::OutputTaprootScriptPath {
-                    public_key: alice_pubkey.to_vec().into(),
+                    internal_key: alice_pubkey.to_vec().into(),
                     merkle_root: merkle_root.to_vec().into(),
                 },
             ),

@@ -81,7 +81,7 @@ impl OutputBuilder {
                     let node_hash = TapNodeHash::from_slice(complex.merkle_root.as_ref())
                         .map_err(|_| Error::from(Proto::Error::Error_invalid_taproot_root))?;
 
-                    let pubkey = bitcoin::PublicKey::from_slice(complex.public_key.as_ref())?;
+                    let pubkey = bitcoin::PublicKey::from_slice(complex.internal_key.as_ref())?;
                     let xonly = XOnlyPublicKey::from(pubkey.inner);
 
                     (
