@@ -1575,6 +1575,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_cbor"
+version = "0.1.0"
+dependencies = [
+ "ciborium",
+ "serde",
+]
+
+[[package]]
 name = "tw_coin_entry"
 version = "0.1.0"
 dependencies = [
@@ -1670,12 +1678,12 @@ dependencies = [
 name = "tw_internet_computer"
 version = "0.1.0"
 dependencies = [
- "ciborium",
  "ic-certification",
  "pb-rs",
  "quick-protobuf",
  "serde",
  "serde_bytes",
+ "tw_cbor",
  "tw_coin_entry",
  "tw_encoding",
  "tw_hash",

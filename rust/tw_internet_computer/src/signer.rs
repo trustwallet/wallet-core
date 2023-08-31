@@ -45,9 +45,8 @@ impl<Context: InternetComputerContext> Signer<Context> {
             sign_transaction(private_key, canister_id, &transaction.transaction_oneof)
                 .map_err(|_| SigningError(CommonError::Error_general))?;
 
-        let mut cbor_encoded_signed_transaction = vec![];
-        ciborium::ser::into_writer(&signed_transaction, &mut cbor_encoded_signed_transaction)
-            .map_err(|_| SigningError(CommonError::Error_signing))?;
+        let cbor_encoded_signed_transaction = tw_cbor::serialize(&signed_transaction)
+            .map_err(|_| SigningError(CommonError::Error_general))?;
 
         Ok(Proto::SigningOutput {
             signed_transaction: cbor_encoded_signed_transaction.into(),

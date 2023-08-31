@@ -2,6 +2,7 @@
 members = [
     "tw_any_coin",
     "tw_bitcoin",
+    "tw_cbor",
     "tw_coin_entry",
     "tw_coin_registry",
     "tw_encoding",
