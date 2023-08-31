@@ -2,6 +2,7 @@ use crate::{Error, Result};
 use bitcoin::key::{TapTweak, TweakedKeyPair};
 use bitcoin::sighash::{EcdsaSighashType, TapSighashType};
 use secp256k1::{KeyPair, Message, Secp256k1};
+use std::collections::HashMap;
 use tw_coin_entry::coin_entry::{PrivateKeyBytes, SignatureBytes};
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
@@ -13,18 +14,33 @@ impl Signer {
     pub fn signatures_from_proto(
         input: &Proto::PreSigningOutput<'_>,
         private_key: PrivateKeyBytes,
+        individual_keys: HashMap<usize, PrivateKeyBytes>,
         dangerous_use_fixed_schnorr_rng: bool,
     ) -> Result<Vec<SignatureBytes>> {
         let secp = Secp256k1::new();
-        let keypair = KeyPair::from_seckey_slice(&secp, private_key.as_ref())
-            .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?;
 
         let mut signatures = vec![];
 
-        for (entry, utxo) in input.sighashes.iter().zip(input.utxo_inputs.iter()) {
+        for (index, (entry, utxo)) in input
+            .sighashes
+            .iter()
+            .zip(input.utxo_inputs.iter())
+            .enumerate()
+        {
+            // Check if there's an individual private key for the given input. If not, use the primary one.
+            let keypair = if let Some(slice) = individual_keys.get(&index) {
+                KeyPair::from_seckey_slice(&secp, slice)
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?
+            } else {
+                KeyPair::from_seckey_slice(&secp, private_key.as_ref())
+                    .map_err(|_| Error::from(Proto::Error::Error_invalid_private_key))?
+            };
+
+            // Create signable message from sighash.
             let sighash = Message::from_slice(entry.sighash.as_ref())
                 .map_err(|_| Error::from(Proto::Error::Error_invalid_sighash))?;
 
+            // Sign the sighash depending on signing method.
             match entry.signing_method {
                 // Create a ECDSA signature for legacy and segwit transaction.
                 UtxoProto::SigningMethod::Legacy | UtxoProto::SigningMethod::Segwit => {

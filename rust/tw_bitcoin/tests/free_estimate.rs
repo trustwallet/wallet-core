@@ -37,6 +37,7 @@ fn p2pkh_fee_estimate() {
     };
 
     signing.inputs.push(Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
@@ -97,6 +98,7 @@ fn p2wpkh_fee_estimate() {
     };
 
     signing.inputs.push(Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
@@ -147,6 +149,7 @@ fn p2tr_key_path_fee_estimate() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
@@ -208,6 +211,7 @@ fn brc20_inscribe_fee_estimate() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,

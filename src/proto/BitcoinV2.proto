@@ -84,33 +84,37 @@ message SigningInput {
 }
 
 message Input {
+    // Use an individual private key for this input. Only required if the `sign`
+    // method is called.
+    bytes private_key = 1;
+
     // The referenced transaction ID in REVERSED order.
-    bytes txid = 1;
+    bytes txid = 2;
 
     // The position in the previous transactions output that this input
     // references.
-    uint32 vout = 2;
+    uint32 vout = 3;
 
     // The sequence number, used for timelocks, replace-by-fee, etc. Normally
     // this number is simply 4294967295 (0xFFFFFFFF) .
-    uint32 sequence = 3;
+    uint32 sequence = 4;
 
     // If the sequence is a zero value, this field must be set to `true`.
-    bool sequence_enable_zero = 4;
+    bool sequence_enable_zero = 5;
 
     // The amount of satoshis of this input. Required for producing
     // Segwit/Taproot transactions.
-    uint64 value = 5;
+    uint64 value = 6;
 
     // The sighash type, normally `SighashType::UseDefault` (All).
-    Utxo.Proto.SighashType sighash_type = 6;
+    Utxo.Proto.SighashType sighash_type = 7;
 
     // The reciepient of this input (the spender)
     oneof to_recipient {
         // Construct input with a buildler pattern.
-        InputBuilder builder = 7;
+        InputBuilder builder = 8;
         // Construct input by providing raw spending information directly.
-        InputScriptWitness custom_script = 8;
+        InputScriptWitness custom_script = 9;
     }
 
     message InputBuilder {

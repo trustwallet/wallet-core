@@ -24,6 +24,7 @@ fn send_to_p2sh_address() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
@@ -90,6 +91,7 @@ fn send_to_p2pkh_address() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
@@ -156,6 +158,7 @@ fn send_to_p2wsh_address() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
@@ -222,6 +225,7 @@ fn send_to_p2wpkh_address() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
@@ -288,6 +292,7 @@ fn send_to_p2tr_key_path_address() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,

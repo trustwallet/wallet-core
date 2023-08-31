@@ -1,6 +1,7 @@
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
 use std::borrow::Cow;
+use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -145,6 +146,15 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::SigningOutput<'static>> {
+        // Collect individual private keys per input, if there are any.
+        let mut individual_keys = HashMap::new();
+        for (index, txin) in proto.inputs.iter().enumerate() {
+            if !txin.private_key.is_empty() {
+                individual_keys.insert(index, txin.private_key.to_vec());
+            }
+        }
+
+        // Generate the sighashes.
         let pre_signed = self.preimage_hashes_impl(_coin, proto.clone())?;
 
         // Check for error.
@@ -152,12 +162,15 @@ impl BitcoinEntry {
             return Err(Error::from(pre_signed.error));
         }
 
+        // Sign the sighashes.
         let signatures = crate::modules::signer::Signer::signatures_from_proto(
             &pre_signed,
             proto.private_key.to_vec(),
+            individual_keys,
             proto.dangerous_use_fixed_schnorr_rng,
         )?;
 
+        // Construct the final transaction.
         self.compile_impl(_coin, proto, signatures, vec![])
     }
 

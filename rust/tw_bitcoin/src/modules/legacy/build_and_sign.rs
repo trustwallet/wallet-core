@@ -288,6 +288,7 @@ fn input_from_legacy_utxo(
     };
 
     Ok(Proto::Input {
+        private_key: Default::default(),
         txid: out_point.hash.to_vec().into(),
         vout: out_point.index,
         value: utxo.amount as u64,

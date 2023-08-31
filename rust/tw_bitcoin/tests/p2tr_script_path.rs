@@ -28,6 +28,7 @@ fn coin_entry_custom_script_path() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 1,
         value: 26_400,
@@ -114,6 +115,7 @@ fn coin_entry_custom_script_path() {
 
     // Provide the the payload and control block directly to the builder.
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 7_000,

@@ -94,7 +94,7 @@ impl OutputBuilder {
                     let xonly = XOnlyPublicKey::from_slice(tweaked_pubkey).map_err(|_| {
                         Error::from(Proto::Error::Error_invalid_taproot_tweaked_pubkey)
                     })?;
-                    // TODO: Can we do some extra checks here?
+
                     let tweaked = TweakedPublicKey::dangerous_assume_tweaked(xonly);
 
                     (

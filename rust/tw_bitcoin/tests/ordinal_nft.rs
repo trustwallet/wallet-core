@@ -21,6 +21,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 32_400,
@@ -80,6 +81,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 31_100,

@@ -39,6 +39,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: ONE_BTC * 50,

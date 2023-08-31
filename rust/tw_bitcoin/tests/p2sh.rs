@@ -31,6 +31,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let redeem_script = ScriptBuf::new_p2pkh(&bob_native_pubkey.pubkey_hash());
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 50 * ONE_BTC,
@@ -80,6 +81,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         .collect();
 
     let tx1 = Proto::Input {
+        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 50 * ONE_BTC - MINER_FEE,
@@ -119,8 +121,13 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let sighashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
 
     // Sign the sighashes.
-    let signatures =
-        Signer::signatures_from_proto(&sighashes, bob_private_key.to_vec(), false).unwrap();
+    let signatures = Signer::signatures_from_proto(
+        &sighashes,
+        bob_private_key.to_vec(),
+        Default::default(),
+        false,
+    )
+    .unwrap();
 
     assert_eq!(signatures.len(), 1);
     let sig = &signatures[0];
