@@ -1,4 +1,4 @@
-use crate::interface_spec::envelope::{Envelope, EnvelopeContent};
+use super::envelope::{Envelope, EnvelopeContent};
 use serde::Serialize;
 
 /// The types of requests that are available from the Rosetta node.

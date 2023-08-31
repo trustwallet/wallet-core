@@ -6,7 +6,7 @@
 
 use crate::{
     icp::address::{AccountIdentifier, IcpAddress},
-    principal::Principal,
+    protocol::principal::Principal,
 };
 
 pub trait CanisterId {

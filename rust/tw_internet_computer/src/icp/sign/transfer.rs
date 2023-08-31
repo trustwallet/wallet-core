@@ -10,14 +10,14 @@ use crate::{
             Tokens,
         },
     },
-    identity::{Identity, SigningError},
-    interface_spec::{
+    protocol::{
         envelope::{Envelope, EnvelopeContent},
         get_ingress_expiry,
+        identity::{Identity, SigningError},
+        principal::Principal,
         request_id::RequestId,
+        rosetta,
     },
-    principal::Principal,
-    rosetta,
 };
 
 #[derive(Clone, Debug)]

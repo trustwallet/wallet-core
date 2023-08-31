@@ -1,7 +1,7 @@
 use ic_certification::Label;
 use serde::Serialize;
 
-use crate::principal::Principal;
+use super::principal::Principal;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Envelope {

@@ -17,7 +17,7 @@ use tw_proto::InternetComputer::Proto::mod_Transaction::OneOftransaction_oneof a
 
 use crate::{
     context::{CanisterId, InternetComputerContext},
-    principal::Principal,
+    protocol::principal::Principal,
 };
 
 pub struct Signer<Context: InternetComputerContext> {
