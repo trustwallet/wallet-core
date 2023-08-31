@@ -16,7 +16,6 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
     switch (hasher) {
     case Hash::HasherSha1:
         return Hash::sha1;
-    default:
     case Hash::HasherSha256:
         return Hash::sha256;
     case Hash::HasherSha512:
