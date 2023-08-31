@@ -1,6 +1,6 @@
 mod common;
 
-use common::hex;
+use common::{hex, MINER_FEE, ONE_BTC};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_coin_entry::coin_entry::CoinEntry;
@@ -26,7 +26,7 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        value: 100_000_000 * 50,
+        value: ONE_BTC * 50,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -36,7 +36,7 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
     };
 
     let out1 = Proto::Output {
-        value: 100_000_000 * 50 - 1_000_000,
+        value: ONE_BTC * 50 - MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
@@ -74,7 +74,7 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        value: 100_000_000 * 50 - 1_000_000,
+        value: ONE_BTC * 50 - MINER_FEE,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -84,7 +84,7 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
     };
 
     let out1 = Proto::Output {
-        value: 100_000_000 * 50 - 1_000_000 - 1_000_000,
+        value: ONE_BTC * 50 - MINER_FEE - MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(

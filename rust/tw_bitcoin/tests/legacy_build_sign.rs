@@ -2,15 +2,15 @@
 
 mod common;
 
-use common::{hex, ONE_BTC};
+use common::{hex, MINER_FEE, ONE_BTC};
 use secp256k1::ffi::CPtr;
 use std::ffi::CString;
 use tw_bitcoin::modules::legacy::*;
 use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_proto::Common::Proto as CommonProto;
 
-const FULL_SATOSHIS: i64 = (ONE_BTC * 50) as i64;
-const SEND_SATOSHIS: i64 = FULL_SATOSHIS - 1_000_000;
+const ONE_BTC_I64: i64 = ONE_BTC as i64;
+const MINER_FEE_I64: i64 = MINER_FEE as i64;
 
 #[test]
 fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
@@ -24,7 +24,12 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
 
     // Output.
     let output = unsafe {
-        tw_build_p2pkh_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len()).into_vec()
+        tw_build_p2pkh_script(
+            ONE_BTC_I64 * 50 - MINER_FEE_I64,
+            bob_pubkey.as_c_ptr(),
+            bob_pubkey.len(),
+        )
+        .into_vec()
     };
     let output: LegacyProto::TransactionOutput = tw_proto::deserialize(&output).unwrap();
 
@@ -40,7 +45,7 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
             }),
             // For inputs, script is not needed (derived from variant).
             script: Default::default(),
-            amount: FULL_SATOSHIS,
+            amount: ONE_BTC_I64 * 50,
             variant: LegacyProto::TransactionVariant::P2PKH,
             spendingScript: Default::default(),
         }],
@@ -82,7 +87,12 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
 
     // Output.
     let output = unsafe {
-        tw_build_p2wpkh_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len()).into_vec()
+        tw_build_p2wpkh_script(
+            ONE_BTC_I64 * 50 - MINER_FEE_I64,
+            bob_pubkey.as_c_ptr(),
+            bob_pubkey.len(),
+        )
+        .into_vec()
     };
     let output: LegacyProto::TransactionOutput = tw_proto::deserialize(&output).unwrap();
 
@@ -98,7 +108,7 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
             }),
             // For inputs, script is not needed (derived from variant).
             script: Default::default(),
-            amount: FULL_SATOSHIS,
+            amount: ONE_BTC_I64 * 50,
             variant: LegacyProto::TransactionVariant::P2PKH,
             spendingScript: Default::default(),
         }],
@@ -142,8 +152,12 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     // Output.
     let output = unsafe {
-        tw_build_p2tr_key_path_script(SEND_SATOSHIS, bob_pubkey.as_c_ptr(), bob_pubkey.len())
-            .into_vec()
+        tw_build_p2tr_key_path_script(
+            ONE_BTC_I64 * 50 - MINER_FEE_I64,
+            bob_pubkey.as_c_ptr(),
+            bob_pubkey.len(),
+        )
+        .into_vec()
     };
     let output: LegacyProto::TransactionOutput = tw_proto::deserialize(&output).unwrap();
 
@@ -159,7 +173,7 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
             }),
             // For inputs, script is not needed (derived from variant).
             script: Default::default(),
-            amount: FULL_SATOSHIS,
+            amount: ONE_BTC_I64 * 50,
             variant: LegacyProto::TransactionVariant::P2PKH,
             spendingScript: Default::default(),
         }],
@@ -198,7 +212,7 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
     // Output.
     let output = unsafe {
         tw_build_p2tr_key_path_script(
-            SEND_SATOSHIS - 1_000_000,
+            ONE_BTC_I64 * 50 - MINER_FEE_I64 - MINER_FEE_I64,
             alice_pubkey.as_c_ptr(),
             alice_pubkey.len(),
         )
@@ -218,7 +232,7 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
             }),
             // For inputs, script is not needed (derived from variant).
             script: Default::default(),
-            amount: SEND_SATOSHIS,
+            amount: ONE_BTC_I64 * 50 - MINER_FEE_I64,
             variant: LegacyProto::TransactionVariant::P2TRKEYPATH,
             spendingScript: Default::default(),
         }],

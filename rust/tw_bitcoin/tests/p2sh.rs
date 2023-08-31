@@ -2,7 +2,7 @@ mod common;
 
 use bitcoin::script::PushBytesBuf;
 use bitcoin::{PublicKey, ScriptBuf};
-use common::hex;
+use common::{hex, MINER_FEE, ONE_BTC};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::entry::BitcoinEntry;
 use tw_bitcoin::modules::signer::Signer;
@@ -10,8 +10,6 @@ use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-
-use crate::common::ONE_BTC;
 
 #[test]
 #[ignore]
@@ -45,7 +43,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     };
 
     let out1 = Proto::Output {
-        value: 50 * ONE_BTC - 1_000_000,
+        value: 50 * ONE_BTC - MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::OutputRedeemScriptOrHash {
                 variant:
@@ -84,7 +82,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let tx1 = Proto::Input {
         txid: txid.as_slice().into(),
         vout: 0,
-        value: 50 * ONE_BTC - 1_000_000,
+        value: 50 * ONE_BTC - MINER_FEE,
         sequence: u32::MAX,
         sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
@@ -94,7 +92,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     };
 
     let out1 = Proto::Output {
-        value: 50 * ONE_BTC - 1_000_000 - 1_000_000,
+        value: 50 * ONE_BTC - MINER_FEE - MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
                 to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
