@@ -1538,6 +1538,7 @@ dependencies = [
  "lazy_static",
  "serde",
  "serde_json",
+ "tw_bitcoin",
  "tw_coin_entry",
  "tw_ethereum",
  "tw_evm",
