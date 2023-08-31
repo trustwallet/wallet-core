@@ -229,8 +229,8 @@ message Output {
     message OutputTaprootScriptPath {
         // The recipient of the output.
         bytes public_key = 1;
-        // The nodehash of the Taproot script, required to compute the sighash.
-        bytes node_hash = 2;
+        // The merkle root of the Taproot script(s), required to compute the sighash.
+        bytes merkle_root = 2;
     }
 
     message OutputOrdinalInscription {
