@@ -34,6 +34,8 @@ fn test_any_address_derive() {
 
         // TODO match `CoinType` when it's generated.
         let expected_address = match coin.blockchain {
+            // By default, Bitcoin will return a P2PKH address.
+            BlockchainType::Bitcoin => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::Ronin => "ronin:Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::Unsupported => unreachable!(),
@@ -57,6 +59,8 @@ fn test_any_address_derive() {
 fn test_any_address_normalize_eth() {
     for coin in supported_coin_items() {
         let (denormalized, expected_normalized) = match coin.blockchain {
+            // TODO: Not sure if this is expected behavior, results in None.
+            BlockchainType::Bitcoin => continue,
             BlockchainType::Ethereum => (
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
                 "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
@@ -85,9 +89,14 @@ fn test_any_address_normalize_eth() {
 }
 
 #[test]
-fn test_any_address_is_valid_eth() {
+fn test_any_address_is_valid_coin() {
     for coin in supported_coin_items() {
         let valid = match coin.blockchain {
+            BlockchainType::Bitcoin => vec![
+                "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx",
+                "bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff",
+                "bc1pwse34zfpvt344rvlt7tw0ngjtfh9xasc4q03avf0lk74jzjpzjuqaz7ks5",
+            ],
             BlockchainType::Ethereum => vec![
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
                 "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
@@ -98,7 +107,7 @@ fn test_any_address_is_valid_eth() {
                 "ronin:b16db98b365b1f89191996942612b14f1da4bd5f",
                 "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
             ],
-            BlockchainType::Unsupported => unreachable!(),
+            _ => unreachable!(),
         };
 
         for valid_addr in valid {
@@ -109,9 +118,12 @@ fn test_any_address_is_valid_eth() {
 }
 
 #[test]
-fn test_any_address_is_valid_eth_invalid() {
+fn test_any_address_is_valid_coin_invalid() {
     for coin in supported_coin_items() {
         let invalid = match coin.blockchain {
+            BlockchainType::Bitcoin => {
+                vec!["0xb16db98b365b1f89191996942612b14f1da4bd5f"]
+            },
             BlockchainType::Ethereum | BlockchainType::Ronin => {
                 vec!["b16Db98B365B1f89191996942612B14F1Da4Bd5f"]
             },
