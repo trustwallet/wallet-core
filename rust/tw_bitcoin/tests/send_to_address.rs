@@ -106,6 +106,7 @@ fn send_to_p2pkh_address() {
     let address = Address::p2pkh(&recipient, bitcoin::Network::Bitcoin);
     let address_string = address.to_string();
 
+    // The output variant is derived from the specified address.
     let out1 = Proto::Output {
         value: 1_000,
         to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
@@ -237,6 +238,7 @@ fn send_to_p2wpkh_address() {
     let address = Address::p2wpkh(&recipient, bitcoin::Network::Bitcoin).unwrap();
     let address_string = address.to_string();
 
+    // The output variant is derived from the specified address.
     let out1 = Proto::Output {
         value: 1_000,
         to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
@@ -305,6 +307,7 @@ fn send_to_p2tr_key_path_address() {
     let address = Address::p2tr(&secp, xonly, None, bitcoin::Network::Bitcoin);
     let address_string = address.to_string();
 
+    // The output variant is derived from the specified address.
     let out1 = Proto::Output {
         value: 1_000,
         to_recipient: ProtoOutputRecipient::from_address(address_string.as_str().into()),
