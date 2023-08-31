@@ -402,7 +402,7 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) {
 std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
     // AuthInfo
     const auto privateKey = PrivateKey(input.private_key());
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    const auto publicKey = privateKey.getPublicKey(TWCoinTypePublicKeyType(coin));
     return buildAuthInfo(input, publicKey, coin);
 }
 
