@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod address;
-mod context;
+pub mod context;
 pub mod entry;
-pub(crate) mod protocol;
-mod signer;
-mod transactions;
+pub mod protocol;
+pub mod signer;
+pub mod transactions;

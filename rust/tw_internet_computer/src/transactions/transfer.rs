@@ -89,6 +89,7 @@ pub fn transfer(
     Ok(vec![request])
 }
 
+#[inline]
 fn create_update_envelope(
     identity: &Identity,
     canister_id: Principal,
@@ -118,6 +119,7 @@ fn create_update_envelope(
     Ok((request_id, env))
 }
 
+#[inline]
 fn create_read_state_envelope(
     identity: &Identity,
     update_request_id: RequestId,
