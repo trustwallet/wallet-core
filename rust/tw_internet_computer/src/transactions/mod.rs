@@ -11,6 +11,7 @@ use crate::protocol::{identity, principal::Principal, rosetta};
 
 #[derive(Debug)]
 pub enum SignTransactionError {
+    InvalidArguments,
     Identity(identity::SigningError),
     EncodingArgsFailed,
     InvalidToAccountIdentifier,
@@ -33,6 +34,6 @@ pub fn sign_transaction(
                 current_timestamp_secs: transfer_args.current_timestamp_secs,
             },
         ),
-        Tx::None => todo!(),
+        Tx::None => Err(SignTransactionError::InvalidArguments),
     }
 }

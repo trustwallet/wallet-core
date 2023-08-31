@@ -16,9 +16,28 @@ use tw_proto::InternetComputer::Proto;
 
 use crate::{
     context::{CanisterId, InternetComputerContext},
-    protocol::principal::Principal,
-    transactions::sign_transaction,
+    protocol::{identity, principal::Principal},
+    transactions::{self, sign_transaction},
 };
+
+impl From<transactions::SignTransactionError> for SigningError {
+    fn from(error: transactions::SignTransactionError) -> Self {
+        match error {
+            transactions::SignTransactionError::InvalidArguments => {
+                SigningError(CommonError::Error_invalid_params)
+            },
+            transactions::SignTransactionError::Identity(identity_error) => match identity_error {
+                identity::SigningError::Failed(_) => SigningError(CommonError::Error_signing),
+            },
+            transactions::SignTransactionError::EncodingArgsFailed => {
+                SigningError(CommonError::Error_internal)
+            },
+            transactions::SignTransactionError::InvalidToAccountIdentifier => {
+                SigningError(CommonError::Error_invalid_address)
+            },
+        }
+    }
+}
 
 pub struct Signer<Context: InternetComputerContext> {
     _phantom: PhantomData<Context>,
@@ -43,10 +62,10 @@ impl<Context: InternetComputerContext> Signer<Context> {
         let canister_id = Self::canister_id();
         let signed_transaction =
             sign_transaction(private_key, canister_id, &transaction.transaction_oneof)
-                .map_err(|_| SigningError(CommonError::Error_general))?;
+                .map_err(SigningError::from)?;
 
         let cbor_encoded_signed_transaction = tw_cbor::serialize(&signed_transaction)
-            .map_err(|_| SigningError(CommonError::Error_general))?;
+            .map_err(|_| SigningError(CommonError::Error_internal))?;
 
         Ok(Proto::SigningOutput {
             signed_transaction: cbor_encoded_signed_transaction.into(),
