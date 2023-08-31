@@ -15,13 +15,11 @@ pub use input_claim_builder::InputClaimBuilder;
 pub use ordinals::{OrdinalNftInscription, OrdinalsInscription};
 pub use output_builder::OutputBuilder;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TaprootScript {
     pub pubkey: PublicKey,
     pub merkle_root: TapNodeHash,
 }
 
-#[derive(Debug, Clone)]
 pub struct TaprootProgram {
     pub script: ScriptBuf,
     pub spend_info: TaprootSpendInfo,
