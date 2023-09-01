@@ -33,7 +33,7 @@ TEST(EvmosCompiler, CompileWithSignatures) {
 
     PublicKey publicKey = privateKey.getPublicKey(TWCoinTypePublicKeyType(coin));
     const auto pubKeyBz = publicKey.bytes;
-    ASSERT_EQ(hex(pubKeyBz), "02088ac2919987d927368cb2be2ade44cd0ed3616745a9699cae264b3fc5a7c360");
+    ASSERT_EQ(hex(pubKeyBz), "04088ac2919987d927368cb2be2ade44cd0ed3616745a9699cae264b3fc5a7c3607d99f441b8340990ee990cb3eaf560f1f0bafe600c7e94a4be8392166984f728");
     input.set_public_key(pubKeyBz.data(), pubKeyBz.size());
 
     auto msg = input.add_messages();
