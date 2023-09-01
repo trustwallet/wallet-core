@@ -14,6 +14,8 @@ kotlin {
         publishLibraryVariants = listOf("release")
     }
 
+    jvm()
+
     val nativeTargets =
         listOf(
             iosArm64(),
@@ -37,9 +39,6 @@ kotlin {
             }
         }
 
-        val androidMain by getting {
-            kotlin.srcDir(projectDir.resolve("src/androidMain/generated"))
-        }
         val commonMain by getting {
             kotlin.srcDirs(
                 projectDir.resolve("src/commonMain/generated"),
@@ -50,10 +49,21 @@ kotlin {
                 api(libs.wire.runtime)
             }
         }
+
+        val androidMain by getting
+        val jvmMain by getting
+        create("commonAndroidJvmMain") {
+            kotlin.srcDir(projectDir.resolve("src/commonAndroidJvmMain/generated"))
+
+            dependsOn(commonMain)
+            androidMain.dependsOn(this)
+            jvmMain.dependsOn(this)
+        }
+
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosX64Main by getting
-        val iosMain by creating {
+        create("iosMain") {
             kotlin.srcDir(projectDir.resolve("src/iosMain/generated"))
 
             dependsOn(commonMain)
@@ -61,7 +71,8 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
             iosX64Main.dependsOn(this)
         }
-        val jsMain by getting {
+
+        getByName("jsMain") {
             kotlin.srcDir(projectDir.resolve("src/jsMain/generated"))
         }
     }
