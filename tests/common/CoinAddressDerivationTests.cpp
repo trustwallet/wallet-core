@@ -227,7 +227,7 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "nano_1qepdf4k95dhb5gsmhmq3iddqsxiafwkihunm7irn48jdiwdtnn6pe93k3f6");
             break;
         case TWCoinTypeNativeEvmos:
-            EXPECT_EQ(address, "evmos1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj07me7uu");
+            EXPECT_EQ(address, "evmos1j80up364zkmh9l06xp3nxccufrngql83ghwyf0");
             break;
         case TWCoinTypeNebulas:
             EXPECT_EQ(address, "n1XTciu9ZRYt3ni7SxNBmivk9Y6XpP6VrhT");

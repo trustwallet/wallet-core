@@ -26,16 +26,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType c
 }
 
 std::string Signer::signaturePreimage(const Proto::SigningInput& input, const Data& publicKey, TWCoinType coin) const {
-    auto isEvmCosmosChain = [coin]() {
-        return coin == TWCoinTypeNativeInjective || coin == TWCoinTypeNativeEvmos || coin == TWCoinTypeNativeCanto;
-    };
     switch (input.signing_mode()) {
     case Proto::JSON:
         return Json::signaturePreimageJSON(input).dump();
 
     case Proto::Protobuf:
     default:
-        auto pbk = isEvmCosmosChain() ? PublicKey(publicKey, TWPublicKeyTypeSECP256k1Extended) :  PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
+        auto pbk = PublicKey(publicKey, TWCoinTypePublicKeyType(coin));
         return Protobuf::signaturePreimageProto(input, pbk, coin);
     }
 }

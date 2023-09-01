@@ -3892,7 +3892,7 @@
       }
     ],
     "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
+    "publicKeyType": "secp256k1",
     "hrp": "evmos",
     "addressHasher": "keccak256",
     "explorer": {
