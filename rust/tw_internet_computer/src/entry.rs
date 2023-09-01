@@ -9,13 +9,16 @@ use std::str::FromStr;
 use tw_coin_entry::{
     coin_context::CoinContext,
     coin_entry::CoinEntry,
-    error::{AddressError, AddressResult},
+    error::{AddressError, AddressResult, SigningError},
     modules::{json_signer::NoJsonSigner, plan_builder::NoPlanBuilder},
     prefix::NoPrefix,
+    signing_output_error,
 };
 
-use tw_proto::InternetComputer::Proto;
-use tw_proto::TxCompiler::Proto as CompilerProto;
+use tw_proto::{
+    Common::Proto::SigningError as CommonError, InternetComputer::Proto,
+    TxCompiler::Proto as CompilerProto,
+};
 
 use crate::{address::AccountIdentifier, context::StandardInternetComputerContext, signer::Signer};
 
@@ -74,7 +77,10 @@ impl CoinEntry for InternetComputerEntry {
         _coin: &dyn tw_coin_entry::coin_context::CoinContext,
         _input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
-        unimplemented!()
+        signing_output_error!(
+            CompilerProto::PreSigningOutput,
+            SigningError(CommonError::Error_not_supported)
+        )
     }
 
     fn compile(
@@ -84,6 +90,9 @@ impl CoinEntry for InternetComputerEntry {
         _signatures: Vec<tw_coin_entry::coin_entry::SignatureBytes>,
         _public_keys: Vec<tw_coin_entry::coin_entry::PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        unimplemented!()
+        signing_output_error!(
+            Proto::SigningOutput,
+            SigningError(CommonError::Error_not_supported)
+        )
     }
 }
