@@ -11,8 +11,7 @@ use tw_coin_entry::{
     signing_output_error,
 };
 use tw_keypair::ecdsa::secp256k1;
-use tw_proto::Common::Proto::SigningError as CommonError;
-use tw_proto::InternetComputer::Proto;
+use tw_proto::{Common::Proto::SigningError as CommonError, InternetComputer::Proto};
 
 use crate::{
     context::{CanisterId, InternetComputerContext},
