@@ -71,6 +71,9 @@ static SigningResult<Any> convertMessage(const Proto::Message& msg) {
             any.PackFrom(msgTransferOut, ProtobufAnyNamespacePrefix);
             break;
         }
+        default: {
+            return SigningResult<Any>::failure(Common::Proto::SigningError::Error_invalid_params);
+        }
     }
 
     return SigningResult<Any>::success(std::move(any));

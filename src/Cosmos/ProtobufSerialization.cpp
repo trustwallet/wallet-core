@@ -29,11 +29,20 @@
 #include "Base64.h"
 #include "uint256.h"
 
-#include <google/protobuf/util/json_util.h>
-
 using namespace TW;
 
 namespace TW::Cosmos::Protobuf {
+
+namespace internal {
+
+// Some of the Cosmos blockchains use different public key types for address deriving and transaction signing.
+// `registry.json` contains the public key required to derive an address,
+// while this function prepares the given public key to use it for transaction signing/compiling.
+inline PublicKey preparePublicKey(const PublicKey& publicKey, TWCoinType coin) {
+    return coin == TWCoinTypeNativeEvmos ? publicKey.compressed() : publicKey;
+}
+
+} // namespace internal
 
 using json = nlohmann::json;
 using string = std::string;
@@ -407,6 +416,8 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
 }
 
 std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& publicKey, TWCoinType coin) {
+    const auto pbk = internal::preparePublicKey(publicKey, coin);
+
     if (input.messages_size() >= 1 && input.messages(0).has_sign_direct_message()) {
         return input.messages(0).sign_direct_message().auth_info_bytes();
     }
@@ -419,19 +430,19 @@ std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& pub
     switch(coin) {
         case TWCoinTypeNativeEvmos: {
             auto pubKey = ethermint::crypto::v1::ethsecp256k1::PubKey();
-            pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
+            pubKey.set_key(pbk.bytes.data(), pbk.bytes.size());
             signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
             break;
         }
         case TWCoinTypeNativeInjective: {
             auto pubKey = injective::crypto::v1beta1::ethsecp256k1::PubKey();
-            pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
+            pubKey.set_key(pbk.bytes.data(), pbk.bytes.size());
             signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
             break;
         }
         default: {
             auto pubKey = cosmos::crypto::secp256k1::PubKey();
-            pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
+            pubKey.set_key(pbk.bytes.data(), pbk.bytes.size());
             signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
         }
     }
