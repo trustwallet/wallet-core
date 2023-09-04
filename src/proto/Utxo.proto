@@ -17,25 +17,27 @@ enum Error {
 }
 
 message SigningInput {
-    // The protocol version, is currently expected to be 1 or 2 (BIP68)
+    // The protocol version.
     int32 version = 1;
 
     // Block height or timestamp indicating at what point transactions can be
     // included in a block.
     LockTime lock_time = 2;
 
-    // The inputs of the transaction to sign. If an individual input does not
-    // provide an index, then the index of the inserted order is used.
+    // The inputs of the transaction.
     repeated TxIn inputs = 3;
 
+    // The outputs of the transaction.
     repeated TxOut outputs = 4;
 
+    // How inputs should be selected.
     InputSelector input_selector = 5;
 
     // The base unit per weight. In the case of Bitcoin, that would refer to
-    // satoshis ("satVb").
+    // satoshis by vbyte ("satVb").
     uint64 weight_base = 6;
 
+    // The change output where to send left-over funds to (usually the sender).
     bytes change_script_pubkey = 7;
 
     // Explicility disable change output creation.
@@ -45,8 +47,8 @@ message SigningInput {
 enum InputSelector {
     // Use all the inputs provided in the given order.
     UseAll = 0;
-    // Automatically select enough inputs to cover the outputs of the
-    // transaction.
+    // Automatically select enough inputs in the given order to cover the
+    // outputs of the transaction.
     SelectInOrder = 1;
     // Automatically select enough inputs in an ascending order to cover the
     // outputs of the transaction.
