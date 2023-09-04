@@ -76,12 +76,16 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::p2wpkh(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
+                    let script_pubkey =
+                        ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().ok_or_else(|| {
+                            Error::from(Proto::Error::Error_invalid_witness_pubkey_hash)
+                        })?)
+                        .p2wpkh_script_code()
+                        .ok_or_else(|| Error::from(Proto::Error::Error_invalid_wpkh_script_code))?;
 
                     (
                         UtxoProto::SigningMethod::Segwit,
-                        ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().ok_or_else(|| {
-                            Error::from(Proto::Error::Error_invalid_witness_pubkey_hash)
-                        })?),
+                        script_pubkey,
                         NO_LEAF_HASH,
                         // witness bytes, scale factor NOT applied.
                         (

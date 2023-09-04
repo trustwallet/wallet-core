@@ -20,7 +20,7 @@ fn coin_entry_emtpy() {
     };
 
     let output = BitcoinEntry.sign(&_coin, signing);
-    dbg!(output);
+    assert_eq!(output.error, Proto::Error::OK);
 }
 
 #[test]

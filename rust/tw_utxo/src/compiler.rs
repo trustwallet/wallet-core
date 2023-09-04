@@ -221,12 +221,7 @@ impl Compiler<StandardBitcoinContext> {
 
                     let sighash = cache.segwit_signature_hash(
                         index,
-                        script_pubkey
-                            .p2wpkh_script_code()
-                            .unwrap_or_else(|| script_pubkey)
-                            .as_script(),
-                            //.as_ref()
-                            //.ok_or(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey))?,
+                        script_pubkey.as_script(),
                         input.value,
                         sighash_type,
                     )?;

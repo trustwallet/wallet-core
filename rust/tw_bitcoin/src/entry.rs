@@ -53,8 +53,7 @@ impl CoinEntry for BitcoinEntry {
         let address = bitcoin::address::Address::from_str(address)
             .map_err(|_| AddressError::FromHexError)?
             .require_network(bitcoin::Network::Bitcoin)
-            .map_err(|_| AddressError::InvalidInput)
-            .unwrap();
+            .map_err(|_| AddressError::InvalidInput)?;
 
         Ok(Address(address))
     }
@@ -344,7 +343,6 @@ impl BitcoinEntry {
 fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
     let bitcoin_err = match utxo_err {
         UtxoProto::Error::OK => return Ok(()),
-        UtxoProto::Error::Error_invalid_wpkh_script_pubkey => Proto::Error::Error_utxo_invalid_wpkh_script_pubkey,
         UtxoProto::Error::Error_invalid_leaf_hash => Proto::Error::Error_utxo_invalid_leaf_hash,
         UtxoProto::Error::Error_invalid_sighash_type => Proto::Error::Error_utxo_invalid_sighash_type,
         UtxoProto::Error::Error_invalid_lock_time => Proto::Error::Error_utxo_invalid_lock_time,

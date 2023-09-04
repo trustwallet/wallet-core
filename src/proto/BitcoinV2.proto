@@ -8,7 +8,6 @@ import "Utxo.proto";
 enum Error {
     OK = 0;
     // `tx_utxo` related errors.
-    Error_utxo_invalid_wpkh_script_pubkey = 1;
     Error_utxo_invalid_leaf_hash = 2;
     Error_utxo_invalid_sighash_type = 3;
     Error_utxo_invalid_lock_time = 4;
@@ -41,7 +40,9 @@ enum Error {
     Error_invalid_pubkey_hash = 28;
     Error_invalid_taproot_root = 29;
     Error_invalid_redeem_script = 30;
-    Error_invalid_witness_redeem_script = 31;
+    Error_invalid_wpkh_script_code = 1;
+    Error_invalid_witness_redeem_script_hash = 31;
+    Error_invalid_witness_encoding = 39;
     Error_invalid_taproot_tweaked_pubkey = 32;
     Error_invalid_change_output = 33;
     Error_unsupported_address_recipient = 34;

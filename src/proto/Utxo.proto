@@ -5,17 +5,16 @@ option java_package = "wallet.core.jni.proto";
 
 enum Error {
     OK = 0;
-    Error_invalid_wpkh_script_pubkey = 1;
-    Error_invalid_leaf_hash = 2;
-    Error_invalid_sighash_type = 3;
-    Error_invalid_lock_time = 4;
-    Error_invalid_txid = 5;
-    Error_sighash_failed = 6;
-    Error_missing_sighash_method = 7;
-    Error_failed_encoding = 8;
-    Error_insufficient_inputs = 9;
-    Error_missing_change_script_pubkey = 10;
-    Error_zero_sequence_not_enabled = 11;
+    Error_invalid_leaf_hash = 1;
+    Error_invalid_sighash_type = 2;
+    Error_invalid_lock_time = 3;
+    Error_invalid_txid = 4;
+    Error_sighash_failed = 5;
+    Error_missing_sighash_method = 6;
+    Error_failed_encoding = 7;
+    Error_insufficient_inputs = 8;
+    Error_missing_change_script_pubkey = 9;
+    Error_zero_sequence_not_enabled = 10;
 }
 
 message SigningInput {

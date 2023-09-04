@@ -218,7 +218,7 @@ fn witness_redeem_script_or_hash(
 ) -> Result<WScriptHash> {
     let pubkey_hash = match &script_or_hash.variant {
         ProtoRedeemScriptOrHash::hash(hash) => WScriptHash::from_slice(hash)
-            .map_err(|_| Error::from(Proto::Error::Error_invalid_witness_redeem_script))?,
+            .map_err(|_| Error::from(Proto::Error::Error_invalid_witness_redeem_script_hash))?,
         ProtoRedeemScriptOrHash::redeem_script(script) => {
             ScriptBuf::from_bytes(script.to_vec()).wscript_hash()
         },

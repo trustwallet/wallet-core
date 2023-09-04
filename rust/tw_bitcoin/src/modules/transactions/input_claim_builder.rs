@@ -40,7 +40,9 @@ impl InputClaimBuilder {
                     )
                 },
                 ProtoInputBuilder::p2wsh(redeem_script) => {
-                    let witness = Witness::consensus_decode(&mut redeem_script.as_ref()).unwrap();
+                    let witness = Witness::consensus_decode(&mut redeem_script.as_ref())
+                        .map_err(|_| Error::from(Proto::Error::Error_invalid_witness_encoding))?;
+
                     (ScriptBuf::new(), witness)
                 },
                 ProtoInputBuilder::p2wpkh(pubkey) => {
