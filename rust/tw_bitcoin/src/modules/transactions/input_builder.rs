@@ -2,11 +2,8 @@ use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use crate::aliases::*;
 use crate::modules::transactions::OrdinalNftInscription;
 use crate::{Error, Result};
-use bitcoin::address::WitnessProgram;
-use bitcoin::script::PushBytesBuf;
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::ScriptBuf;
-use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
@@ -76,10 +73,12 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::p2wpkh(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
+
                     let script_pubkey =
                         ScriptBuf::new_v0_p2wpkh(&pubkey.wpubkey_hash().ok_or_else(|| {
                             Error::from(Proto::Error::Error_invalid_witness_pubkey_hash)
                         })?)
+                        // Special script code requirement for claiming P2WPKH outputs.
                         .p2wpkh_script_code()
                         .ok_or_else(|| Error::from(Proto::Error::Error_invalid_wpkh_script_code))?;
 
@@ -114,9 +113,12 @@ impl InputBuilder {
                         UtxoProto::SigningMethod::TaprootAll
                     };
 
+                    let script_pubkey =
+                        ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None);
+
                     (
                         signing_method,
-                        ScriptBuf::new_v1_p2tr(&secp256k1::Secp256k1::new(), xonly, None),
+                        script_pubkey,
                         NO_LEAF_HASH,
                         // witness bytes, scale factor NOT applied.
                         (
@@ -129,9 +131,9 @@ impl InputBuilder {
                     )
                 },
                 ProtoInputBuilder::p2tr_script_path(complex) => {
-                    let script_buf = ScriptBuf::from_bytes(complex.payload.to_vec());
+                    let script_pubkey = ScriptBuf::from_bytes(complex.payload.to_vec());
                     let leaf_hash = Some(TapLeafHash::from_script(
-                        script_buf.as_script(),
+                        script_pubkey.as_script(),
                         bitcoin::taproot::LeafVersion::TapScript,
                     ));
 
@@ -143,7 +145,7 @@ impl InputBuilder {
 
                     (
                         signing_method,
-                        script_buf,
+                        script_pubkey,
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
                         (
@@ -184,12 +186,14 @@ impl InputBuilder {
                         UtxoProto::SigningMethod::TaprootAll
                     };
 
+                    let script_pubkey = ScriptBuf::from(nft.inscription().taproot_program());
+
                     (
                         signing_method,
                         // TODO: This is technically not needed here, since
                         // Sighash only includes the leaf hash, not the actual
                         // payload. Remove this (same for other complex scripts).
-                        ScriptBuf::from(nft.inscription().taproot_program()),
+                        script_pubkey,
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
                         (
@@ -235,9 +239,11 @@ impl InputBuilder {
                         UtxoProto::SigningMethod::TaprootAll
                     };
 
+                    let script_pubkey = ScriptBuf::from(transfer.inscription().taproot_program());
+
                     (
                         signing_method,
-                        ScriptBuf::from(transfer.inscription().taproot_program()),
+                        script_pubkey,
                         leaf_hash,
                         // witness bytes, scale factor NOT applied.
                         (
@@ -259,9 +265,9 @@ impl InputBuilder {
             ProtoInputRecipient::custom_script(custom) => {
                 let script_pubkey = ScriptBuf::from_bytes(custom.script_pubkey.to_vec());
 
+                #[rustfmt::skip]
                 let leaf_hash = if let UtxoProto::SigningMethod::TaprootAll
-                | UtxoProto::SigningMethod::TaprootOnePrevout =
-                    custom.signing_method
+                    | UtxoProto::SigningMethod::TaprootOnePrevout = custom.signing_method
                 {
                     Some(TapLeafHash::from_script(
                         &script_pubkey,
