@@ -59,17 +59,17 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
     // https://www.blockchain.com/explorer/transactions/btc/f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117
     assert_eq!(
-        output.txid,
+        signed.txid,
         hex("f1e708e5c5847339e16accf8716c14b33717c14d6fe68f9db36627cecbde7117")
     );
 
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
-    let transaction = output.transaction.unwrap();
+    let encoded = tw_encoding::hex::encode(signed.encoded, false);
+    let transaction = signed.transaction.unwrap();
 
     assert_eq!(transaction.inputs.len(), 1);
     assert_eq!(transaction.outputs.len(), 1);
@@ -125,17 +125,17 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         dangerous_use_fixed_schnorr_rng: true,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
     // https://www.blockchain.com/explorer/transactions/btc/173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac
     assert_eq!(
-        output.txid,
+        signed.txid,
         hex("173f8350b722243d44cc8db5584de76b432eb6d0888d9e66e662db51584f44ac")
     );
 
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
-    let transaction = output.transaction.unwrap();
+    let encoded = tw_encoding::hex::encode(signed.encoded, false);
+    let transaction = signed.transaction.unwrap();
 
     assert_eq!(encoded, common::data::NFT_INSCRIPTION_RAW_HEX);
     assert_eq!(transaction.inputs.len(), 1);

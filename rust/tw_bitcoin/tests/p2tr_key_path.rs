@@ -55,8 +55,9 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    let encoded = tw_encoding::hex::encode(signed.encoded, false);
+    assert_eq!(signed.error, Proto::Error::OK);
     assert_eq!(&encoded, "02000000013ab533f8709accfffd1de4fa29b6584ec78f5a2f23947c938f835a3e916305c5000000006b48304502210086ab2c2192e2738529d6cd9604d8ee75c5b09b0c2f4066a5c5fa3f87a26c0af602202afc7096aaa992235c43e712146057b5ed6a776d82b9129620bc5a21991c0a5301210351e003fdc48e7f31c9bc94996c91f6c3273b7ef4208a1686021bedf7673bb058ffffffff01c0aff62901000000225120e01cfdd05da8fa1d71f987373f3790d45dea9861acb0525c86656fe50f4397a600000000");
 
     let txid: Vec<u8> = hex("9a582032f6a50cedaff77d3d5604b33adf8bc31bdaef8de977c2187e395860ac")
@@ -101,7 +102,8 @@ fn coin_entry_sign_input_p2pkh_output_p2tr_key_path() {
         dangerous_use_fixed_schnorr_rng: true,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    let encoded = tw_encoding::hex::encode(signed.encoded, false);
+    assert_eq!(signed.error, Proto::Error::OK);
     assert_eq!(&encoded, "02000000000101ac6058397e18c277e98defda1bc38bdf3ab304563d7df7afed0ca5f63220589a0000000000ffffffff01806de72901000000225120a5c027857e359d19f625e52a106b8ac6ca2d6a8728f6cf2107cd7958ee0787c20140ec2d3910d41506b60aaa20520bb72f15e2d2cbd97e3a8e26ee7bad5f4c56b0f2fb0ceaddac33cb2813a33ba017ba6b1d011bab74a0426f12a2bcf47b4ed5bc8600000000");
 }

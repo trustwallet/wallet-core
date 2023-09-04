@@ -61,10 +61,10 @@ fn send_to_p2sh_address() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
-    let tx = output.transaction.as_ref().unwrap();
+    let tx = signed.transaction.as_ref().unwrap();
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
 
@@ -127,10 +127,10 @@ fn send_to_p2pkh_address() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
-    let tx = output.transaction.as_ref().unwrap();
+    let tx = signed.transaction.as_ref().unwrap();
 
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
@@ -195,10 +195,10 @@ fn send_to_p2wsh_address() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
-    let tx = output.transaction.as_ref().unwrap();
+    let tx = signed.transaction.as_ref().unwrap();
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
 
@@ -261,10 +261,10 @@ fn send_to_p2wpkh_address() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
-    let tx = output.transaction.as_ref().unwrap();
+    let tx = signed.transaction.as_ref().unwrap();
 
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
@@ -331,10 +331,10 @@ fn send_to_p2tr_key_path_address() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    assert_eq!(output.error, Proto::Error::OK);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    assert_eq!(signed.error, Proto::Error::OK);
 
-    let tx = output.transaction.as_ref().unwrap();
+    let tx = signed.transaction.as_ref().unwrap();
 
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);

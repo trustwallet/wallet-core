@@ -60,13 +60,14 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    let encoded = tw_encoding::hex::encode(signed.encoded, false);
 
-    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(signed.error, Proto::Error::OK);
     assert_eq!(&encoded, "020000000111b9f62923af73e297abb69f749e7a1aa2735fbdfd32ac5f6aa89e5c96841c18000000006b483045022100df9ed0b662b759e68b89a42e7144cddf787782a7129d4df05642dd825930e6e6022051a08f577f11cc7390684bbad2951a6374072253ffcf2468d14035ed0d8cd6490121028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28fffffffff01c0aff629010000001600140d0e1cec6c2babe8badde5e9b3dea667da90036d00000000");
 
     // Create transaction with P2WPKH as input (claim).
+
     let txid: Vec<u8> = hex("858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e")
         .into_iter()
         .rev()
@@ -109,9 +110,9 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
         dangerous_use_fixed_schnorr_rng: false,
     };
 
-    let output = BitcoinEntry.sign(&coin, signing);
-    let encoded = tw_encoding::hex::encode(output.encoded, false);
+    let signed = BitcoinEntry.sign(&coin, signing);
+    let encoded = tw_encoding::hex::encode(signed.encoded, false);
 
-    assert_eq!(output.error, Proto::Error::OK);
+    assert_eq!(signed.error, Proto::Error::OK);
     assert_eq!(&encoded, "020000000001016e1f16dcfafbb3a83697f6c23c624cd71085a7f8a25ce0bd9743a41d0a458e850000000000ffffffff01806de7290100000016001460cda7b50f14c152d7401c28ae773c698db9237302483045022100a9b517de5a5e036d7133df499b5b751db6f9a01576a6c5dc38229ec08b6c45cd02200e42c9f8c707c9bf0ceab4f739ec8d683dc1f1f29e195a8da9bc183584d624a60121025a0af1510f0f24d40dd00d7c0e51605ca504bbc177c3e19b065f373a1efdd22f00000000");
 }
