@@ -16,10 +16,7 @@ jobs:
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
-      - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2023-06-27
+
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-mac
