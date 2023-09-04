@@ -26,7 +26,6 @@ fn sighash_input_p2pkh_output_p2wpkh() {
             value: u64::MAX,
             sequence: u32::MAX,
             sequence_enable_zero: false,
-            script_sig: Default::default(),
             script_pubkey: input_script_pubkey.as_bytes().into(),
             sighash_type: Proto::SighashType::All,
             signing_method: Proto::SigningMethod::Legacy,
@@ -57,7 +56,9 @@ fn sighash_input_p2pkh_output_p2wpkh() {
 #[test]
 fn sighash_input_p2wpkh_output_p2wpkh() {
     let wpubkey_hash = witness_pubkey_hash("0d0e1cec6c2babe8badde5e9b3dea667da90036d");
-    let input_script_pubkey = ScriptBuf::new_v0_p2wpkh(&wpubkey_hash);
+    let input_script_pubkey = ScriptBuf::new_v0_p2wpkh(&wpubkey_hash)
+        .p2wpkh_script_code()
+        .unwrap();
 
     let wpubkey_hash = witness_pubkey_hash("60cda7b50f14c152d7401c28ae773c698db92373");
     let output_script_pubkey = ScriptBuf::new_v0_p2wpkh(&wpubkey_hash);
@@ -73,7 +74,6 @@ fn sighash_input_p2wpkh_output_p2wpkh() {
             value: 50 * 100_000_000 - 1_000_000,
             sequence: u32::MAX,
             sequence_enable_zero: false,
-            script_sig: Default::default(),
             script_pubkey: input_script_pubkey.as_bytes().into(),
             sighash_type: Proto::SighashType::All,
             signing_method: Proto::SigningMethod::Segwit,
