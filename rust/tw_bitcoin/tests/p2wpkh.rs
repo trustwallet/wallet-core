@@ -28,12 +28,11 @@ fn coin_entry_sign_input_p2pkh_output_p2wpkh() {
         txid: txid.as_slice().into(),
         vout: 0,
         value: ONE_BTC * 50,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     let out1 = Proto::Output {

@@ -75,16 +75,6 @@ impl Compiler<StandardBitcoinContext> {
             ));
         }
 
-        // If a `sequence` of zero is specified, the `sequence_enable_zero` must
-        // be explicitly set to true.
-        if proto
-            .inputs
-            .iter()
-            .any(|input| input.sequence == 0 && !input.sequence_enable_zero)
-        {
-            return Err(Error::from(Proto::Error::Error_zero_sequence_not_enabled));
-        }
-
         // If the input selector is InputSelector::SelectAscending, we sort the
         // input first.
         if let Proto::InputSelector::SelectAscending = proto.input_selector {

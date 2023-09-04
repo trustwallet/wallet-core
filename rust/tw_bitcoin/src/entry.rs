@@ -178,6 +178,8 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
+        let proto = handle_sequences(proto);
+
         // Convert input builders into Utxo inputs.
         let mut utxo_inputs = vec![];
         for input in proto.inputs {
@@ -246,6 +248,8 @@ impl BitcoinEntry {
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Result<Proto::SigningOutput<'static>> {
+        let proto = handle_sequences(proto);
+
         // There must be a signature for each input.
         if proto.inputs.len() != signatures.len() {
             return Err(Error::from(
@@ -338,6 +342,19 @@ impl BitcoinEntry {
     }
 }
 
+// Convenience function for handling sequences.
+fn handle_sequences(mut proto: Proto::SigningInput<'_>) -> Proto::SigningInput<'_> {
+    proto.inputs.iter_mut().for_each(|txin| {
+        // If a sequence of zero is not expliclity enabled, we interpreted a
+        // sequence of zero as the max value (default).
+        if !txin.sequence_enable_zero && txin.sequence == 0 {
+            txin.sequence = u32::MAX
+        }
+    });
+
+    proto
+}
+
 #[rustfmt::skip]
 /// Convert `Utxo.proto` error type to `BitcoinV2.proto` error type.
 fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
@@ -352,7 +369,6 @@ fn handle_utxo_error(utxo_err: &UtxoProto::Error) -> Result<()> {
         UtxoProto::Error::Error_failed_encoding => Proto::Error::Error_utxo_failed_encoding,
         UtxoProto::Error::Error_insufficient_inputs => Proto::Error::Error_utxo_insufficient_inputs,
         UtxoProto::Error::Error_missing_change_script_pubkey => Proto::Error::Error_utxo_missing_change_script_pubkey,
-        UtxoProto::Error::Error_zero_sequence_not_enabled => Proto::Error::Error_utxo_zero_sequence_not_enabled,
     };
 
     Err(Error::from(bitcoin_err))

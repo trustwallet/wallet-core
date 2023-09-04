@@ -17,8 +17,8 @@ enum Error {
     Error_utxo_failed_encoding = 8;
     Error_utxo_insufficient_inputs = 9;
     Error_utxo_missing_change_script_pubkey = 10;
-    Error_utxo_zero_sequence_not_enabled = 11;
     // `tw_bitcoin` related errors.
+    Error_zero_sequence_not_enabled = 11;
     Error_unmatched_input_signature_count = 12;
     Error_missing_input_builder = 13;
     Error_missing_output_builder = 14;

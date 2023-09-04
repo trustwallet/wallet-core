@@ -14,7 +14,6 @@ enum Error {
     Error_failed_encoding = 7;
     Error_insufficient_inputs = 8;
     Error_missing_change_script_pubkey = 9;
-    Error_zero_sequence_not_enabled = 10;
 }
 
 message SigningInput {
@@ -76,9 +75,6 @@ message TxIn {
     // The sequence number, used for timelocks, replace-by-fee, etc. Normally
     // this number is simply 4294967295 (0xFFFFFFFF) .
     uint32 sequence = 4;
-
-    // If the sequence is a zero value, this field must be set to `true`.
-    bool sequence_enable_zero = 5;
 
     // The spending condition of the referenced output.
     bytes script_pubkey = 7;
