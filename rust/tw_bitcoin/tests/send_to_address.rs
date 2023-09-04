@@ -24,16 +24,14 @@ fn send_to_p2sh_address() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     // Create the P2SH address.
@@ -49,16 +47,12 @@ fn send_to_p2sh_address() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
@@ -91,16 +85,14 @@ fn send_to_p2pkh_address() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     // Create the P2PKH address.
@@ -115,23 +107,18 @@ fn send_to_p2pkh_address() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
     assert_eq!(signed.error, Proto::Error::OK);
 
     let tx = signed.transaction.as_ref().unwrap();
-
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
 
@@ -158,16 +145,14 @@ fn send_to_p2wsh_address() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     // Create the P2WSH address.
@@ -183,16 +168,12 @@ fn send_to_p2wsh_address() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
@@ -225,16 +206,14 @@ fn send_to_p2wpkh_address() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     // Create the P2WPKH address.
@@ -249,23 +228,18 @@ fn send_to_p2wpkh_address() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
     assert_eq!(signed.error, Proto::Error::OK);
 
     let tx = signed.transaction.as_ref().unwrap();
-
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
 
@@ -292,16 +266,14 @@ fn send_to_p2tr_key_path_address() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 10_000,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     // Create the P2TR key-path address.
@@ -319,23 +291,18 @@ fn send_to_p2tr_key_path_address() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
     assert_eq!(signed.error, Proto::Error::OK);
 
     let tx = signed.transaction.as_ref().unwrap();
-
     assert_eq!(tx.inputs.len(), 1);
     assert_eq!(tx.outputs.len(), 1);
 

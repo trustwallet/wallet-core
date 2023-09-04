@@ -32,16 +32,14 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let redeem_script = ScriptBuf::new_p2pkh(&bob_native_pubkey.pubkey_hash());
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 50 * ONE_BTC,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     };
 
     let out1 = Proto::Output {
@@ -57,16 +55,12 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let signed = BitcoinEntry.sign(&coin, signing);
@@ -82,17 +76,15 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 50 * ONE_BTC - MINER_FEE,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             // The way P2SH is signed in Bitcoin, we first place the redeem script directly here.
             variant: ProtoInputBuilder::p2sh(redeem_script.as_bytes().into()),
         }),
+        ..Default::default()
     };
 
     let out1 = Proto::Output {
@@ -107,7 +99,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     };
 
     let mut signing = Proto::SigningInput {
-        version: 2,
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,

@@ -145,6 +145,12 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::SigningOutput<'static>> {
+        // Technically not required here, since this gets called by
+        // `preimage_hashes_impl` and `compile_impl`. But we're leaving this
+        // here in case this methods gets extended and the pre-processing does
+        // not get accidentally forgotten.
+        let proto = pre_processor(proto);
+
         // Collect individual private keys per input, if there are any.
         let mut individual_keys = HashMap::new();
         for (index, txin) in proto.inputs.iter().enumerate() {
@@ -178,7 +184,7 @@ impl BitcoinEntry {
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
-        let proto = handle_sequences(proto);
+        let proto = pre_processor(proto);
 
         // Convert input builders into Utxo inputs.
         let mut utxo_inputs = vec![];
@@ -248,7 +254,7 @@ impl BitcoinEntry {
         signatures: Vec<SignatureBytes>,
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Result<Proto::SigningOutput<'static>> {
-        let proto = handle_sequences(proto);
+        let proto = pre_processor(proto);
 
         // There must be a signature for each input.
         if proto.inputs.len() != signatures.len() {
@@ -342,11 +348,18 @@ impl BitcoinEntry {
     }
 }
 
-// Convenience function for handling sequences.
-fn handle_sequences(mut proto: Proto::SigningInput<'_>) -> Proto::SigningInput<'_> {
+// Convenience function for pre-processing of certain fields that must be
+// executed on each `CoinEntry` call.
+fn pre_processor(mut proto: Proto::SigningInput<'_>) -> Proto::SigningInput<'_> {
+    // We automatically set the transaction version to 2.
+    if proto.version == 0 {
+        proto.version = 2;
+    }
+
+    // If an input sequence (timelock, replace-by-fee, etc) of zero is not
+    // expliclity enabled, we interpreted a sequence of zero as the max value
+    // (default).
     proto.inputs.iter_mut().for_each(|txin| {
-        // If a sequence of zero is not expliclity enabled, we interpreted a
-        // sequence of zero as the max value (default).
         if !txin.sequence_enable_zero && txin.sequence == 0 {
             txin.sequence = u32::MAX
         }

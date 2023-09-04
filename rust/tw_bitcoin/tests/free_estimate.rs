@@ -24,29 +24,24 @@ fn p2pkh_fee_estimate() {
         .collect();
 
     let mut signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![],
         outputs: vec![],
         input_selector: UtxoProto::InputSelector::UseAll,
         fee_per_vb: SAT_VB,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     signing.inputs.push(Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2pkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     });
 
     signing.outputs.push(Proto::Output {
@@ -85,29 +80,25 @@ fn p2wpkh_fee_estimate() {
         .collect();
 
     let mut signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![],
         outputs: vec![],
         input_selector: UtxoProto::InputSelector::UseAll,
         fee_per_vb: SAT_VB,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     signing.inputs.push(Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
         sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
         }),
+        ..Default::default()
     });
 
     signing.outputs.push(Proto::Output {
@@ -149,12 +140,9 @@ fn p2tr_key_path_fee_estimate() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::InputTaprootKeyPath {
@@ -162,6 +150,7 @@ fn p2tr_key_path_fee_estimate() {
                 public_key: alice_pubkey.as_slice().into(),
             }),
         }),
+        ..Default::default()
     };
 
     let out1 = Proto::Output {
@@ -172,16 +161,13 @@ fn p2tr_key_path_fee_estimate() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
         fee_per_vb: SAT_VB,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let prehashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
@@ -211,12 +197,9 @@ fn brc20_inscribe_fee_estimate() {
         .collect();
 
     let tx1 = Proto::Input {
-        private_key: Default::default(),
         txid: txid.as_slice().into(),
         vout: 0,
         value: 2 * ONE_BTC,
-        sequence: u32::MAX,
-        sequence_enable_zero: false,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::brc20_inscribe(Proto::mod_Input::InputBrc20Inscription {
@@ -226,6 +209,7 @@ fn brc20_inscribe_fee_estimate() {
                 transfer_amount: 20,
             }),
         }),
+        ..Default::default()
     };
 
     let out1 = Proto::Output {
@@ -242,16 +226,13 @@ fn brc20_inscribe_fee_estimate() {
     };
 
     let signing = Proto::SigningInput {
-        version: 2,
         private_key: alice_private_key.as_slice().into(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
         fee_per_vb: SAT_VB,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     let prehashes = BitcoinEntry.preimage_hashes(&coin, signing.clone());
