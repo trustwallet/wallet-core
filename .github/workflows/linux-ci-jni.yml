@@ -48,7 +48,7 @@ jobs:
           CXX: /usr/bin/clang++
       - name: CMake (Java, Kotlin)
         run: |
-          cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_JAVA=ON -DTW_KOTLIN=ON -GNinja
+          cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_COMPILE_JAVA=ON -DTW_COMPILE_KOTLIN=ON -GNinja
         env:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++

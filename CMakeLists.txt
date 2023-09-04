@@ -75,10 +75,10 @@ if (${ANDROID})
         set(WALLET_CORE_BINDGEN ${WALLET_CORE_RS_TARGET_DIR}/x86_64-linux-android/release/${WALLET_CORE_RS_LIB})
     endif ()
     target_link_libraries(TrustWalletCore PUBLIC ${WALLET_CORE_BINDGEN} ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
-elseif (${TW_JAVA})
+elseif (${TW_COMPILE_JAVA})
     message("Configuring for JNI")
     file(GLOB_RECURSE core_sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.cpp jni/cpp/*.h)
-    if (${KOTLIN})
+    if (${TW_COMPILE_KOTLIN})
         file(GLOB_RECURSE specific_sources
                 jni/kotlin/*.h
                 jni/kotlin/*.c
