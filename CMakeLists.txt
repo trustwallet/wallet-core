@@ -56,8 +56,8 @@ if (${ANDROID})
         file(GLOB_RECURSE specific_sources
                 jni/kotlin/*.h
                 jni/kotlin/*.c
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.h
-                kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.c
+                kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.h
+                kotlin/wallet-core-kotlin/src/commonAndroidJvmMain/cpp/generated/*.c
                 )
     else ()
         file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
