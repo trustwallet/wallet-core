@@ -2,6 +2,7 @@ use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use super::OrdinalNftInscription;
 use crate::aliases::*;
 use crate::{Error, Result};
+use bitcoin::consensus::Decodable;
 use bitcoin::taproot::{ControlBlock, LeafVersion};
 use bitcoin::{ScriptBuf, Witness};
 use std::borrow::Cow;
@@ -21,14 +22,10 @@ impl InputClaimBuilder {
     ) -> Result<UtxoProto::TxInClaim<'static>> {
         let (script_sig, witness) = match &input.to_recipient {
             ProtoInputRecipient::builder(variant) => match &variant.variant {
-                ProtoInputBuilder::p2sh(redeem_script) => {
-                    println!("INPUT_CLAIMER REDEEM SCRIPT: {}", tw_encoding::hex::encode(redeem_script, false));
-
-                    (
-                        ScriptBuf::from_bytes(redeem_script.to_vec()),
-                        Witness::new(),
-                    )
-                },
+                ProtoInputBuilder::p2sh(redeem_script) => (
+                    ScriptBuf::from_bytes(redeem_script.to_vec()),
+                    Witness::new(),
+                ),
                 ProtoInputBuilder::p2pkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
@@ -43,7 +40,8 @@ impl InputClaimBuilder {
                     )
                 },
                 ProtoInputBuilder::p2wsh(redeem_script) => {
-                    (ScriptBuf::new(), Witness::from_slice(&[redeem_script]))
+                    let witness = Witness::consensus_decode(&mut redeem_script.as_ref()).unwrap();
+                    (ScriptBuf::new(), witness)
                 },
                 ProtoInputBuilder::p2wpkh(pubkey) => {
                     let sig = bitcoin::ecdsa::Signature::from_slice(signature.as_ref())?;

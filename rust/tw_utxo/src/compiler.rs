@@ -186,6 +186,7 @@ impl Compiler<StandardBitcoinContext> {
         // transaction.
         let tx = convert_proto_to_tx(&proto)?;
 
+        dbg!(&tx);
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
@@ -222,8 +223,10 @@ impl Compiler<StandardBitcoinContext> {
                         index,
                         script_pubkey
                             .p2wpkh_script_code()
-                            .as_ref()
-                            .ok_or(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey))?,
+                            .unwrap_or_else(|| script_pubkey)
+                            .as_script(),
+                            //.as_ref()
+                            //.ok_or(Error::from(Proto::Error::Error_invalid_wpkh_script_pubkey))?,
                         input.value,
                         sighash_type,
                     )?;

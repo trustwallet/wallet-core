@@ -12,6 +12,23 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
+pub fn keypair_from_wif() {
+    use bitcoin::PrivateKey;
+
+    let seckey =
+        PrivateKey::from_wif("cQUNzeMnF9xPPLqZhH7hMVYGwSuu3b78zznuc5UrxgXnYQBq6Bx1").unwrap();
+    let pubkey = seckey.public_key(&secp256k1::Secp256k1::new());
+    println!(
+        "Secret key: {}",
+        tw_encoding::hex::encode(seckey.to_bytes(), false)
+    );
+    println!(
+        "Public key: {}",
+        tw_encoding::hex::encode(pubkey.to_bytes(), false)
+    );
+}
+
+#[test]
 fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let coin = EmptyCoinContext;
 

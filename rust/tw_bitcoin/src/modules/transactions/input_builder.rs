@@ -2,8 +2,11 @@ use super::brc20::{BRC20TransferInscription, Brc20Ticker};
 use crate::aliases::*;
 use crate::modules::transactions::OrdinalNftInscription;
 use crate::{Error, Result};
+use bitcoin::address::WitnessProgram;
+use bitcoin::script::PushBytesBuf;
 use bitcoin::taproot::{LeafVersion, TapLeafHash};
 use bitcoin::ScriptBuf;
+use secp256k1::hashes::Hash;
 use secp256k1::XOnlyPublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
@@ -19,6 +22,7 @@ impl InputBuilder {
         let (signing_method, script_pubkey, leaf_hash, weight) = match &input.to_recipient {
             ProtoInputRecipient::builder(builder) => match &builder.variant {
                 ProtoInputBuilder::p2sh(redeem_script) => {
+                    // The scriptPubkey is the redeem script directly.
                     let script_pubkey = ScriptBuf::from_bytes(redeem_script.to_vec());
 
                     (
@@ -34,10 +38,11 @@ impl InputBuilder {
                 },
                 ProtoInputBuilder::p2pkh(pubkey) => {
                     let pubkey = bitcoin::PublicKey::from_slice(pubkey.as_ref())?;
+                    let script_pubkey = ScriptBuf::new_p2pkh(&pubkey.pubkey_hash());
 
                     (
                         UtxoProto::SigningMethod::Legacy,
-                        ScriptBuf::new_p2pkh(&pubkey.pubkey_hash()),
+                        script_pubkey,
                         NO_LEAF_HASH,
                         // scale factor applied to non-witness bytes
                         4 * (
@@ -55,12 +60,12 @@ impl InputBuilder {
                     )
                 },
                 ProtoInputBuilder::p2wsh(redeem_script) => {
-                    let redeem_script = ScriptBuf::from_bytes(redeem_script.to_vec());
-                    let wscript_hash = redeem_script.wscript_hash();
+                    // The scriptPubkey is the redeem script directly.
+                    let script_pubkey = ScriptBuf::from_bytes(redeem_script.to_vec());
 
                     (
                         UtxoProto::SigningMethod::Segwit,
-                        ScriptBuf::new_v0_p2wsh(&wscript_hash),
+                        script_pubkey,
                         NO_LEAF_HASH,
                         // witness bytes, scale factor NOT applied.
                         (
