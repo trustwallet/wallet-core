@@ -12,7 +12,6 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 #[test]
-#[ignore]
 fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let coin = EmptyCoinContext;
 
@@ -21,7 +20,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     let bob_private_key = hex("b7da1ec42b19085fe09fec54b9d9eacd998ae4e6d2ad472be38d8393391b9ead");
     let bob_pubkey = hex("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf");
 
-    // Create transaction with P2PKH as input and output.
     let txid: Vec<u8> = hex("e7503721268d0547b3b009dab56e5ebd8bcadbfc7dfae3468a56b5cb0c07a2f7")
         .into_iter()
         .rev()
@@ -74,7 +72,6 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
     assert_eq!(output.error, Proto::Error::OK);
     assert_eq!(&encoded, "0200000001f7a2070ccbb5568a46e3fa7dfcdbca8bbd5e6eb5da09b0b347058d26213750e7000000006a473044022007c88caf624c0a130fc79d2835ed5b6db49f2dea0d5e685f06138aaa4a904d690220243fe7744c8b48759e74a87075de3f548988252a770871fc1444652bb32ec46e0121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff6290100000017a914a519b524d55ae8972e8e0e6b9d645ab20eb2635e8700000000");
 
-    // Create transaction with P2PKH as input and output.
     let txid: Vec<u8> = hex("5d99b77a411a879fb6fa5b442f0d121965346d8e5ab61e0d189967fd5f49bd82")
         .into_iter()
         .rev()
@@ -106,15 +103,11 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     let mut signing = Proto::SigningInput {
         version: 2,
-        private_key: Default::default(),
-        lock_time: Default::default(),
         inputs: vec![tx1],
         outputs: vec![out1],
         input_selector: UtxoProto::InputSelector::UseAll,
-        fee_per_vb: 0,
-        change_output: Default::default(),
         disable_change_output: true,
-        dangerous_use_fixed_schnorr_rng: false,
+        ..Default::default()
     };
 
     // Generate the sighashes.
@@ -154,9 +147,7 @@ fn coin_entry_sign_input_p2pkh_output_p2sh() {
 
     // Compile the final transaction.
     let output = BitcoinEntry.compile(&coin, signing, signatures, vec![]);
-    let _encoded = tw_encoding::hex::encode(output.encoded, false);
+    let encoded = tw_encoding::hex::encode(output.encoded, false);
     assert_eq!(output.error, Proto::Error::OK);
-
-    // WIP...
-    todo!()
+    assert_eq!(&encoded, "020000000182bd495ffd6799180d1eb65a8e6d346519120d2f445bfab69f871a417ab7995d000000008447304402207aad4b72c6d78c81a1e795325bd5ddb449f0a1363205903f5e37950e6b89054102202aaf4dd919700d21fe2431352df99c434378bd0d46b778b445079579300effdf0121037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf1976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88acffffffff01806de729010000001976a914e4c1ea86373d554b8f4efff2cfb0001ea19124d288ac00000000");
 }

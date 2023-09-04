@@ -16,15 +16,10 @@ pub struct InputBuilder;
 
 impl InputBuilder {
     pub fn utxo_from_proto(input: &Proto::Input<'_>) -> Result<UtxoProto::TxIn<'static>> {
-        let mut script_sig = Default::default();
-
         let (signing_method, script_pubkey, leaf_hash, weight) = match &input.to_recipient {
             ProtoInputRecipient::builder(builder) => match &builder.variant {
                 ProtoInputBuilder::p2sh(redeem_script) => {
-                    script_sig = redeem_script.to_vec().into();
-
-                    let redeem_script = ScriptBuf::from_bytes(redeem_script.to_vec());
-                    let script_pubkey = ScriptBuf::new_p2sh(&redeem_script.script_hash());
+                    let script_pubkey = ScriptBuf::from_bytes(redeem_script.to_vec());
 
                     (
                         UtxoProto::SigningMethod::Legacy,
@@ -297,7 +292,6 @@ impl InputBuilder {
             value: input.value,
             sequence: input.sequence,
             sequence_enable_zero: input.sequence_enable_zero,
-            script_sig,
             script_pubkey: script_pubkey.to_vec().into(),
             signing_method,
             sighash_type: input.sighash_type,
