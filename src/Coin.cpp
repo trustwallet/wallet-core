@@ -24,17 +24,18 @@
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
 #include "EOS/Entry.h"
-#include "MultiversX/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Everscale/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
 #include "Harmony/Entry.h"
-#include "Icon/Entry.h"
+#include "Hedera/Entry.h"
 #include "IOST/Entry.h"
+#include "Icon/Entry.h"
 #include "IoTeX/Entry.h"
 #include "Kusama/Entry.h"
+#include "MultiversX/Entry.h"
 #include "NEAR/Entry.h"
 #include "NEO/Entry.h"
 #include "NULS/Entry.h"
@@ -45,12 +46,13 @@
 #include "Oasis/Entry.h"
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
-#include "XRP/Entry.h"
 #include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
+#include "Sui/Entry.h"
 #include "THORChain/Entry.h"
 #include "Tezos/Entry.h"
+#include "TheOpenNetwork/Entry.h"
 #include "Theta/Entry.h"
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
@@ -58,12 +60,8 @@
 #include "Waves/Entry.h"
 #include "XRP/Entry.h"
 #include "Zcash/Entry.h"
-#include "Zilliqa/Entry.h"
 #include "Zen/Entry.h"
-#include "Everscale/Entry.h"
-#include "Hedera/Entry.h"
-#include "TheOpenNetwork/Entry.h"
-#include "Sui/Entry.h"
+#include "Zilliqa/Entry.h"
 #include "InternetComputer/Entry.h" // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_includes_marker_do_not_modify
 
@@ -128,60 +126,160 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
     CoinEntry* entry = nullptr;
     const auto blockchain = TW::blockchain(coinType);
     switch (blockchain) {
-        // #coin-list#
-        case TWBlockchainBitcoin: entry = &bitcoinDP; break;
-        case TWBlockchainBitcoinDiamond: entry = &bcdDP; break;
-        case TWBlockchainEthereum: entry = &ethereumDP; break;
-        case TWBlockchainVechain: entry = &vechainDP; break;
-        case TWBlockchainTron: entry = &tronDP; break;
-        case TWBlockchainIcon: entry = &iconDP; break;
-        case TWBlockchainBinance: entry = &binanceDP; break;
-        case TWBlockchainRipple: entry = &rippleDP; break;
-        case TWBlockchainTezos: entry = &tezosDP; break;
-        case TWBlockchainNimiq: entry = &nimiqDP; break;
-        case TWBlockchainStellar: entry = &stellarDP; break;
-        case TWBlockchainAion: entry = &aionDP; break;
-        case TWBlockchainCosmos: entry = &cosmosDP; break;
-        case TWBlockchainTheta: entry = &thetaDP; break;
-        case TWBlockchainOntology: entry = &ontologyDP; break;
-        case TWBlockchainZilliqa: entry = &zilliqaDP; break;
-        case TWBlockchainIoTeX: entry = &iotexDP; break;
-        case TWBlockchainEOS: entry = &eosDP; break;
-        case TWBlockchainNano: entry = &nanoDP; break;
-        case TWBlockchainNULS: entry = &nulsDP; break;
-        case TWBlockchainWaves: entry = &wavesDP; break;
-        case TWBlockchainAeternity: entry = &aeternityDP; break;
-        case TWBlockchainNebulas: entry = &nebulasDP; break;
-        case TWBlockchainFIO: entry = &fioDP; break;
-        case TWBlockchainSolana: entry = &solanaDP; break;
-        case TWBlockchainHarmony: entry = &harmonyDP; break;
-        case TWBlockchainNEAR: entry = &nearDP; break;
-        case TWBlockchainAlgorand: entry = &algorandDP; break;
-        case TWBlockchainPolkadot: entry = &polkadotDP; break;
-        case TWBlockchainCardano: entry = &cardanoDP; break;
-        case TWBlockchainNEO: entry = &neoDP; break;
-        case TWBlockchainFilecoin: entry = &filecoinDP; break;
-        case TWBlockchainMultiversX: entry = &multiversxDP; break;
-        case TWBlockchainOasisNetwork: entry = &oasisDP; break;
-        case TWBlockchainDecred: entry = &decredDP; break;
-        case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
-        case TWBlockchainZcash: entry = &zcashDP; break;
-        case TWBlockchainZen: entry = &zenDP; break;
-        case TWBlockchainVerge: entry = &vergeDP; break;
-        case TWBlockchainIOST: entry = &iostDP; break;
-        case TWBlockchainThorchain: entry = &thorchainDP; break;
-        case TWBlockchainRonin: entry = &roninDP; break;
-        case TWBlockchainKusama: entry = &kusamaDP; break;
-        case TWBlockchainNervos: entry = &NervosDP; break;
-        case TWBlockchainEverscale: entry = &EverscaleDP; break;
-        case TWBlockchainAptos: entry = &AptosDP; break;
-        case TWBlockchainHedera: entry = &HederaDP; break;
-        case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
-        case TWBlockchainSui: entry = &SuiDP; break;
+    // #coin-list#
+    case TWBlockchainBitcoin:
+        entry = &bitcoinDP;
+        break;
+    case TWBlockchainBitcoinDiamond:
+        entry = &bcdDP;
+        break;
+    case TWBlockchainEthereum:
+        entry = &ethereumDP;
+        break;
+    case TWBlockchainVechain:
+        entry = &vechainDP;
+        break;
+    case TWBlockchainTron:
+        entry = &tronDP;
+        break;
+    case TWBlockchainIcon:
+        entry = &iconDP;
+        break;
+    case TWBlockchainBinance:
+        entry = &binanceDP;
+        break;
+    case TWBlockchainRipple:
+        entry = &rippleDP;
+        break;
+    case TWBlockchainTezos:
+        entry = &tezosDP;
+        break;
+    case TWBlockchainNimiq:
+        entry = &nimiqDP;
+        break;
+    case TWBlockchainStellar:
+        entry = &stellarDP;
+        break;
+    case TWBlockchainAion:
+        entry = &aionDP;
+        break;
+    case TWBlockchainCosmos:
+        entry = &cosmosDP;
+        break;
+    case TWBlockchainTheta:
+        entry = &thetaDP;
+        break;
+    case TWBlockchainOntology:
+        entry = &ontologyDP;
+        break;
+    case TWBlockchainZilliqa:
+        entry = &zilliqaDP;
+        break;
+    case TWBlockchainIoTeX:
+        entry = &iotexDP;
+        break;
+    case TWBlockchainEOS:
+        entry = &eosDP;
+        break;
+    case TWBlockchainNano:
+        entry = &nanoDP;
+        break;
+    case TWBlockchainNULS:
+        entry = &nulsDP;
+        break;
+    case TWBlockchainWaves:
+        entry = &wavesDP;
+        break;
+    case TWBlockchainAeternity:
+        entry = &aeternityDP;
+        break;
+    case TWBlockchainNebulas:
+        entry = &nebulasDP;
+        break;
+    case TWBlockchainFIO:
+        entry = &fioDP;
+        break;
+    case TWBlockchainSolana:
+        entry = &solanaDP;
+        break;
+    case TWBlockchainHarmony:
+        entry = &harmonyDP;
+        break;
+    case TWBlockchainNEAR:
+        entry = &nearDP;
+        break;
+    case TWBlockchainAlgorand:
+        entry = &algorandDP;
+        break;
+    case TWBlockchainPolkadot:
+        entry = &polkadotDP;
+        break;
+    case TWBlockchainCardano:
+        entry = &cardanoDP;
+        break;
+    case TWBlockchainNEO:
+        entry = &neoDP;
+        break;
+    case TWBlockchainFilecoin:
+        entry = &filecoinDP;
+        break;
+    case TWBlockchainMultiversX:
+        entry = &multiversxDP;
+        break;
+    case TWBlockchainOasisNetwork:
+        entry = &oasisDP;
+        break;
+    case TWBlockchainDecred:
+        entry = &decredDP;
+        break;
+    case TWBlockchainGroestlcoin:
+        entry = &groestlcoinDP;
+        break;
+    case TWBlockchainZcash:
+        entry = &zcashDP;
+        break;
+    case TWBlockchainZen:
+        entry = &zenDP;
+        break;
+    case TWBlockchainVerge:
+        entry = &vergeDP;
+        break;
+    case TWBlockchainIOST:
+        entry = &iostDP;
+        break;
+    case TWBlockchainThorchain:
+        entry = &thorchainDP;
+        break;
+    case TWBlockchainRonin:
+        entry = &roninDP;
+        break;
+    case TWBlockchainKusama:
+        entry = &kusamaDP;
+        break;
+    case TWBlockchainNervos:
+        entry = &NervosDP;
+        break;
+    case TWBlockchainEverscale:
+        entry = &EverscaleDP;
+        break;
+    case TWBlockchainAptos:
+        entry = &AptosDP;
+        break;
+    case TWBlockchainHedera:
+        entry = &HederaDP;
+        break;
+    case TWBlockchainTheOpenNetwork:
+        entry = &tonDP;
+        break;
+    case TWBlockchainSui:
+        entry = &SuiDP;
+        break;
         case TWBlockchainInternetComputer: entry = &InternetComputerDP; break; // TODO remove if the blockchain already exists, or just remove this comment if not
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
-        default: entry = nullptr; break;
+    default:
+        entry = nullptr;
+        break;
     }
     assert(entry != nullptr);
     return entry;
@@ -231,15 +329,16 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 }
 
 namespace TW::internal {
-    inline std::string normalizeAddress(TWCoinType coin, const string& address) {
-        // dispatch
-        auto* dispatcher = coinDispatcher(coin);
-        assert(dispatcher != nullptr);
-        return dispatcher->normalizeAddress(coin, address);
-    }
+inline std::string normalizeAddress(TWCoinType coin, const string& address) {
+    // dispatch
+    auto* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->normalizeAddress(coin, address);
 }
+} // namespace TW::internal
 
-std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
+std::string TW::normalizeAddress(TWCoinType coin, const string& address) {
+    ;
     if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";
