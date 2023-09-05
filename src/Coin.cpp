@@ -24,17 +24,18 @@
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
 #include "EOS/Entry.h"
-#include "MultiversX/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Everscale/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
 #include "Harmony/Entry.h"
-#include "Icon/Entry.h"
+#include "Hedera/Entry.h"
 #include "IOST/Entry.h"
+#include "Icon/Entry.h"
 #include "IoTeX/Entry.h"
 #include "Kusama/Entry.h"
+#include "MultiversX/Entry.h"
 #include "NEAR/Entry.h"
 #include "NEO/Entry.h"
 #include "NULS/Entry.h"
@@ -45,12 +46,13 @@
 #include "Oasis/Entry.h"
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
-#include "XRP/Entry.h"
 #include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
+#include "Sui/Entry.h"
 #include "THORChain/Entry.h"
 #include "Tezos/Entry.h"
+#include "TheOpenNetwork/Entry.h"
 #include "Theta/Entry.h"
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
@@ -58,13 +60,13 @@
 #include "Waves/Entry.h"
 #include "XRP/Entry.h"
 #include "Zcash/Entry.h"
-#include "Zilliqa/Entry.h"
 #include "Zen/Entry.h"
 #include "Everscale/Entry.h"
 #include "Hedera/Entry.h"
 #include "TheOpenNetwork/Entry.h"
 #include "Sui/Entry.h"
 #include "Greenfield/Entry.h"
+#include "Zilliqa/Entry.h"
 #include "InternetComputer/Entry.h" // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_includes_marker_do_not_modify
 
@@ -184,7 +186,9 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainInternetComputer: entry = &InternetComputerDP; break; // TODO remove if the blockchain already exists, or just remove this comment if not
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
-        default: entry = nullptr; break;
+    default:
+        entry = nullptr;
+        break;
     }
     assert(entry != nullptr);
     return entry;
@@ -234,15 +238,16 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 }
 
 namespace TW::internal {
-    inline std::string normalizeAddress(TWCoinType coin, const string& address) {
-        // dispatch
-        auto* dispatcher = coinDispatcher(coin);
-        assert(dispatcher != nullptr);
-        return dispatcher->normalizeAddress(coin, address);
-    }
+inline std::string normalizeAddress(TWCoinType coin, const string& address) {
+    // dispatch
+    auto* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->normalizeAddress(coin, address);
 }
+} // namespace TW::internal
 
-std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
+std::string TW::normalizeAddress(TWCoinType coin, const string& address) {
+    ;
     if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";

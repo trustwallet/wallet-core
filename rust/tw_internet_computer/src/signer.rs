@@ -34,6 +34,9 @@ impl From<transactions::SignTransactionError> for SigningError {
             transactions::SignTransactionError::InvalidToAccountIdentifier => {
                 SigningError(CommonError::Error_invalid_address)
             },
+            transactions::SignTransactionError::InvalidAmount => {
+                SigningError(CommonError::Error_invalid_requested_token_amount)
+            },
         }
     }
 }

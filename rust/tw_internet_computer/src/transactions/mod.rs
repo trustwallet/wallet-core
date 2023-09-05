@@ -11,6 +11,7 @@ use crate::protocol::{identity, principal::Principal, rosetta};
 
 #[derive(Debug)]
 pub enum SignTransactionError {
+    InvalidAmount,
     InvalidArguments,
     Identity(identity::SigningError),
     EncodingArgsFailed,
