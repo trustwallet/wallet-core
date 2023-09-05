@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "OPT_IN_USAGE")
 
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackOutput
 
@@ -10,11 +10,19 @@ plugins {
 }
 
 kotlin {
+    targetHierarchy.default()
+
     android {
         publishLibraryVariants = listOf("release")
     }
 
-    jvm()
+    jvm {
+        testRuns.named("test") {
+            executionTask.configure {
+                useJUnitPlatform()
+            }
+        }
+    }
 
     val nativeTargets =
         listOf(
@@ -50,6 +58,12 @@ kotlin {
             }
         }
 
+        getByName("commonTest") {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
         val androidMain by getting
         val jvmMain by getting
         create("commonAndroidJvmMain") {
@@ -60,16 +74,8 @@ kotlin {
             jvmMain.dependsOn(this)
         }
 
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosX64Main by getting
-        create("iosMain") {
+        getByName("iosMain") {
             kotlin.srcDir(projectDir.resolve("src/iosMain/generated"))
-
-            dependsOn(commonMain)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-            iosX64Main.dependsOn(this)
         }
 
         getByName("jsMain") {
