@@ -59,10 +59,13 @@ jobs:
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_COMPILE_JAVA=ON -DTW_COMPILE_KOTLIN=ON -GNinja
 
-    # The build artifact will be used in `tools/kotlin-build` in the future.
     - name: Build JNI
       run: |
         ninja -Cbuild
+        mv build/libTrustWalletCore.dylib kotlin/wallet-core-kotlin/src/jvmMain/resources/jni/macos-arm64/
 
     - name: Build Kotlin Multiplatform
       run: tools/kotlin-build
+
+    - name: Run Kotlin Multiplatform tests
+      run: tools/kotlin-test
