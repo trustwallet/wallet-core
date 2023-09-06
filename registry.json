@@ -441,6 +441,36 @@
     }
   },
   {
+    "id": "zeneon",
+    "name": "Zen EON",
+    "coinId": 7332,
+    "symbol": "ZEN",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "7332",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://eon-explorer.horizenlabs.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb462e3dac8eef21957d3b6cff3c184d083434367a726dd871e98a774f4d037a5",
+      "sampleAccount": "0x09bCfC348101B1179BCF3837aC996cF09357215f"
+    },
+    "info": {
+      "url": "https://eon.horizen.io",
+      "source": "https://github.com/HorizenOfficial/eon",
+      "rpc": "https://eon-rpc.horizenlabs.io/ethv1",
+      "documentation": "https://eon.horizen.io/docs"
+    }
+  },
+  {
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,

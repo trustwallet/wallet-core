@@ -83,6 +83,7 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeLinea:
         case TWCoinTypeGreenfield:
         case TWCoinTypeMantle:
+        case TWCoinTypeZenEON:
             EXPECT_EQ(address, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
             break;
 
