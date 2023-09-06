@@ -11,6 +11,7 @@ use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
+use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
@@ -85,13 +86,7 @@ impl CoinEntry for BitcoinEntry {
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
         self.sign_impl(_coin, proto)
-            .or_else(|err| {
-                std::result::Result::<_, ()>::Ok(Proto::SigningOutput {
-                    error: err.into(),
-                    ..Default::default()
-                })
-            })
-            .expect("did not convert error value")
+            .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
     }
 
     #[inline]
@@ -101,13 +96,7 @@ impl CoinEntry for BitcoinEntry {
         proto: Proto::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
         self.preimage_hashes_impl(_coin, proto)
-            .or_else(|err| {
-                std::result::Result::<_, ()>::Ok(Proto::PreSigningOutput {
-                    error: err.into(),
-                    ..Default::default()
-                })
-            })
-            .expect("did not convert error value")
+            .unwrap_or_else(|err| signing_output_error!(Proto::PreSigningOutput, err))
     }
 
     #[inline]
@@ -119,13 +108,7 @@ impl CoinEntry for BitcoinEntry {
         _public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         self.compile_impl(_coin, proto, signatures, _public_keys)
-            .or_else(|err| {
-                std::result::Result::<_, ()>::Ok(Proto::SigningOutput {
-                    error: err.into(),
-                    ..Default::default()
-                })
-            })
-            .expect("did not convert error value")
+            .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
     }
 
     #[inline]
@@ -238,6 +221,7 @@ impl BitcoinEntry {
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
+            error_message: Default::default(),
             sighashes: utxo_presigning.sighashes,
             // Update selected inputs.
             utxo_inputs: utxo_presigning.inputs,
@@ -339,6 +323,7 @@ impl BitcoinEntry {
         // Return the full protobuf output.
         Ok(Proto::SigningOutput {
             error: Proto::Error::OK,
+            error_message: Default::default(),
             transaction: Some(transaction),
             encoded: utxo_serialized.encoded,
             txid: utxo_serialized.txid,
