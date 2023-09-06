@@ -1,7 +1,7 @@
+use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
 use std::borrow::Cow;
-use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -85,7 +85,7 @@ impl CoinEntry for BitcoinEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, proto: Self::SigningInput<'_>) -> Self::SigningOutput {
-        self.sign_impl(_coin, proto)
+        Signer::sign_proto(_coin, proto)
             .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
     }
 
@@ -113,46 +113,7 @@ impl CoinEntry for BitcoinEntry {
 }
 
 impl BitcoinEntry {
-    fn sign_impl(
-        &self,
-        _coin: &dyn CoinContext,
-        proto: Proto::SigningInput<'_>,
-    ) -> Result<Proto::SigningOutput<'static>> {
-        // Technically not required here, since this gets called by
-        // `preimage_hashes_impl` and `compile_impl`. But we're leaving this
-        // here in case this methods gets extended and the pre-processing does
-        // not get accidentally forgotten.
-        let proto = pre_processor(proto);
-
-        // Collect individual private keys per input, if there are any.
-        let mut individual_keys = HashMap::new();
-        for (index, txin) in proto.inputs.iter().enumerate() {
-            if !txin.private_key.is_empty() {
-                individual_keys.insert(index, txin.private_key.to_vec());
-            }
-        }
-
-        // Generate the sighashes.
-        let pre_signed = self.preimage_hashes_impl(_coin, proto.clone())?;
-
-        // Check for error.
-        if pre_signed.error != Proto::Error::OK {
-            return Err(Error::from(pre_signed.error));
-        }
-
-        // Sign the sighashes.
-        let signatures = crate::modules::signer::Signer::signatures_from_proto(
-            &pre_signed,
-            proto.private_key.to_vec(),
-            individual_keys,
-            proto.dangerous_use_fixed_schnorr_rng,
-        )?;
-
-        // Construct the final transaction.
-        self.compile_impl(_coin, proto, signatures, vec![])
-    }
-
-    fn preimage_hashes_impl(
+    pub(crate) fn preimage_hashes_impl(
         &self,
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
@@ -221,7 +182,7 @@ impl BitcoinEntry {
         })
     }
 
-    fn compile_impl(
+    pub(crate) fn compile_impl(
         &self,
         _coin: &dyn CoinContext,
         proto: Proto::SigningInput<'_>,
@@ -325,7 +286,7 @@ impl BitcoinEntry {
 
 // Convenience function for pre-processing of certain fields that must be
 // executed on each `CoinEntry` call.
-fn pre_processor(mut proto: Proto::SigningInput<'_>) -> Proto::SigningInput<'_> {
+pub(crate) fn pre_processor(mut proto: Proto::SigningInput<'_>) -> Proto::SigningInput<'_> {
     // We automatically set the transaction version to 2.
     if proto.version == 0 {
         proto.version = 2;
