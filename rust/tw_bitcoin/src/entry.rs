@@ -110,16 +110,6 @@ impl CoinEntry for BitcoinEntry {
         self.compile_impl(_coin, proto, signatures, _public_keys)
             .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
     }
-
-    #[inline]
-    fn json_signer(&self) -> Option<Self::JsonSigner> {
-        None
-    }
-
-    #[inline]
-    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
-        None
-    }
 }
 
 impl BitcoinEntry {
