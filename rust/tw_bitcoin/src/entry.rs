@@ -160,18 +160,18 @@ impl BitcoinEntry {
         let proto = pre_processor(proto);
 
         // Convert input builders into Utxo inputs.
-        let mut utxo_inputs = vec![];
-        for input in proto.inputs {
-            let txin = crate::modules::transactions::InputBuilder::utxo_from_proto(&input)?;
-            utxo_inputs.push(txin);
-        }
+        let utxo_inputs = proto
+            .inputs
+            .iter()
+            .map(crate::modules::transactions::InputBuilder::utxo_from_proto)
+            .collect::<Result<Vec<_>>>()?;
 
         // Convert output builders into Utxo outputs.
-        let mut utxo_outputs = vec![];
-        for output in proto.outputs {
-            let utxo = crate::modules::transactions::OutputBuilder::utxo_from_proto(&output)?;
-            utxo_outputs.push(utxo);
-        }
+        let utxo_outputs = proto
+            .outputs
+            .iter()
+            .map(crate::modules::transactions::OutputBuilder::utxo_from_proto)
+            .collect::<Result<Vec<_>>>()?;
 
         // If automatic change output is enabled, a change script must be provided.
         let change_script_pubkey = if proto.disable_change_output {
