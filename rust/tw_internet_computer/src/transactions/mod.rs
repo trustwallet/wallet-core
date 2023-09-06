@@ -16,6 +16,7 @@ pub enum SignTransactionError {
     Identity(identity::SigningError),
     EncodingArgsFailed,
     InvalidToAccountIdentifier,
+    InvalidEnvelopePair,
 }
 
 pub fn sign_transaction(

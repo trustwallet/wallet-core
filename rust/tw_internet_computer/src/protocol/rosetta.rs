@@ -21,29 +21,90 @@ pub type SignedTransaction = Vec<Request>;
 /// of the same call.
 pub type Request = (RequestType, Vec<EnvelopePair>);
 
+#[derive(Debug, Clone)]
+pub enum EnvelopePairError {
+    InvalidUpdateEnvelope,
+    InvalidReadStateEnvelope,
+}
+
 /// A signed IC update call and the corresponding read-state call for
 /// a particular ingress window.
 #[derive(Debug, Clone, Serialize)]
 pub struct EnvelopePair {
-    pub update: Envelope,
-    pub read_state: Envelope,
+    update: Envelope,
+    read_state: Envelope,
 }
 
 impl EnvelopePair {
-    pub fn new(update_envelope: Envelope, read_state_envelope: Envelope) -> Self {
-        assert!(matches!(
-            update_envelope.content,
-            EnvelopeContent::Call { .. }
-        ));
+    pub fn new(
+        update_envelope: Envelope,
+        read_state_envelope: Envelope,
+    ) -> Result<Self, EnvelopePairError> {
+        if !matches!(update_envelope.content, EnvelopeContent::Call { .. }) {
+            return Err(EnvelopePairError::InvalidUpdateEnvelope);
+        }
 
-        assert!(matches!(
+        if !matches!(
             read_state_envelope.content,
             EnvelopeContent::ReadState { .. }
-        ));
+        ) {
+            return Err(EnvelopePairError::InvalidReadStateEnvelope);
+        }
 
-        Self {
+        Ok(Self {
             update: update_envelope,
             read_state: read_state_envelope,
-        }
+        })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::protocol::principal::Principal;
+
+    use super::*;
+
+    #[test]
+    fn envelope_pair_creation() {
+        let update_envelope = Envelope {
+            content: EnvelopeContent::Call {
+                nonce: None,
+                ingress_expiry: 0,
+                sender: Principal::anonymous(),
+                canister_id: Principal::anonymous(),
+                method_name: "".to_string(),
+                arg: vec![],
+            },
+            sender_pubkey: None,
+            sender_sig: None,
+        };
+
+        let read_state_envelope = Envelope {
+            content: EnvelopeContent::ReadState {
+                ingress_expiry: 0,
+                sender: Principal::anonymous(),
+                paths: vec![],
+            },
+            sender_pubkey: None,
+            sender_sig: None,
+        };
+
+        // A valid envelope pair.
+        let _ = EnvelopePair::new(update_envelope.clone(), read_state_envelope.clone()).unwrap();
+
+        // Invalid update envelope.
+        let pair_result =
+            EnvelopePair::new(read_state_envelope.clone(), read_state_envelope.clone());
+        assert!(matches!(
+            pair_result,
+            Err(EnvelopePairError::InvalidUpdateEnvelope)
+        ));
+
+        // Invalid read state envelope.
+        let pair_result = EnvelopePair::new(update_envelope.clone(), update_envelope.clone());
+        assert!(matches!(
+            pair_result,
+            Err(EnvelopePairError::InvalidReadStateEnvelope)
+        ));
     }
 }

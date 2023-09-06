@@ -86,7 +86,8 @@ pub fn transfer(
         create_read_state_envelope(&identity, request_id, ingress_expiry)?;
 
     // Create a new EnvelopePair with the update call and read_state envelopes.
-    let envelope_pair = rosetta::EnvelopePair::new(update_envelope, read_state_envelope);
+    let envelope_pair = rosetta::EnvelopePair::new(update_envelope, read_state_envelope)
+        .map_err(|_| SignTransactionError::InvalidEnvelopePair)?;
 
     // Create a signed transaction containing the envelope pair.
     let request: rosetta::Request = (rosetta::RequestType::Send, vec![envelope_pair]);
@@ -166,7 +167,6 @@ mod test {
     #[test]
     fn transfer_successful() {
         let current_timestamp_nanos = Duration::from_secs(1_691_709_940).as_nanos() as u64;
-        println!("ctn: {}", current_timestamp_nanos);
         let private_key = PrivateKey::try_from(
             "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be",
         )

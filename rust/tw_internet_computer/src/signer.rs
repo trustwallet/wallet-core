@@ -28,7 +28,8 @@ impl From<transactions::SignTransactionError> for SigningError {
             transactions::SignTransactionError::Identity(identity_error) => match identity_error {
                 identity::SigningError::Failed(_) => SigningError(CommonError::Error_signing),
             },
-            transactions::SignTransactionError::EncodingArgsFailed => {
+            transactions::SignTransactionError::InvalidEnvelopePair
+            | transactions::SignTransactionError::EncodingArgsFailed => {
                 SigningError(CommonError::Error_internal)
             },
             transactions::SignTransactionError::InvalidToAccountIdentifier => {
