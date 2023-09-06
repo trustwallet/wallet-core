@@ -370,3 +370,11 @@ message TransactionOutput {
     // required for claiming.
     bytes control_block = 4;
 }
+
+message PlanInput {
+
+}
+
+message PlanOutput {
+
+}

@@ -1,21 +1,21 @@
+use crate::modules::plan_builder::BitcoinPlanBuilder;
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
-use std::borrow::Cow;
-use std::fmt::Display;
-use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
+use std::borrow::Cow;
+use std::fmt::Display;
+use std::str::FromStr;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 
@@ -42,7 +42,7 @@ impl CoinEntry for BitcoinEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
+    type PlanBuilder = BitcoinPlanBuilder;
 
     #[inline]
     fn parse_address(
@@ -109,6 +109,11 @@ impl CoinEntry for BitcoinEntry {
     ) -> Self::SigningOutput {
         self.compile_impl(_coin, proto, signatures, _public_keys)
             .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
+    }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        Some(BitcoinPlanBuilder)
     }
 }
 
