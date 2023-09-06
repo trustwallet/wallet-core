@@ -19,7 +19,7 @@ message Transaction {
         string to_account_identifier = 1;
         uint64 amount = 2;
         uint64 memo = 3;
-        uint64 current_timestamp_secs = 4;
+        uint64 current_timestamp_nanos = 4;
     }
 
     // Payload transfer

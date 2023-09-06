@@ -31,7 +31,7 @@ class InternetComputerTests: XCTestCase {
                     $0.toAccountIdentifier = "943d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826a"
                     $0.amount = 100000000
                     $0.memo = 0
-                    $0.currentTimestampSecs = 1691709940
+                    $0.currentTimestampNanos = 1691709940000000000
                 }
             }
                 
@@ -49,7 +49,7 @@ class InternetComputerTests: XCTestCase {
                     $0.toAccountIdentifier = "643d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826b"
                     $0.amount = 100000000
                     $0.memo = 0
-                    $0.currentTimestampSecs = 1691709940
+                    $0.currentTimestampNanos = 1691709940000000000
                 }
             }
                 
@@ -67,7 +67,7 @@ class InternetComputerTests: XCTestCase {
                     $0.toAccountIdentifier = "943d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826a"
                     $0.amount = 0
                     $0.memo = 0
-                    $0.currentTimestampSecs = 1691709940
+                    $0.currentTimestampNanos = 1691709940000000000
                 }
             }
                 

@@ -21,7 +21,7 @@ TEST(TWAnySignerInternetComputer, Sign) {
     input.mutable_transaction()->mutable_transfer()->set_to_account_identifier("943d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826a");
     input.mutable_transaction()->mutable_transfer()->set_amount(100'000'000);
     input.mutable_transaction()->mutable_transfer()->set_memo(0);
-    input.mutable_transaction()->mutable_transfer()->set_current_timestamp_secs(1'691'709'940);
+    input.mutable_transaction()->mutable_transfer()->set_current_timestamp_secs(1'691'709'940'000'000'000);
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeInternetComputer);
