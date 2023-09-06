@@ -52,16 +52,15 @@ impl From<bitcoin::taproot::Error> for Error {
 }
 
 // Convenience aliases.
+#[rustfmt::skip]
 pub mod aliases {
     use super::Proto;
 
     pub type ProtoOutputRecipient<'a> = Proto::mod_Output::OneOfto_recipient<'a>;
     pub type ProtoOutputBuilder<'a> = Proto::mod_Output::mod_OutputBuilder::OneOfvariant<'a>;
-    pub type ProtoOutputRedeemScriptOrHashBuilder<'a> =
-        Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant<'a>;
+    pub type ProtoOutputRedeemScriptOrHashBuilder<'a> = Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant<'a>;
     pub type ProtoPubkeyOrHash<'a> = Proto::mod_ToPublicKeyOrHash::OneOfto_address<'a>;
-    pub type ProtoRedeemScriptOrHash<'a> =
-        Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant<'a>;
+    pub type ProtoRedeemScriptOrHash<'a> = Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant<'a>;
     pub type ProtoInputRecipient<'a> = Proto::mod_Input::OneOfto_recipient<'a>;
     pub type ProtoInputBuilder<'a> = Proto::mod_Input::mod_InputBuilder::OneOfvariant<'a>;
 }
