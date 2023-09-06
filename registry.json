@@ -414,7 +414,7 @@
     "id": "mantle",
     "name": "Mantle",
     "coinId": 5000,
-    "symbol": "ETH",
+    "symbol": "MNT",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
