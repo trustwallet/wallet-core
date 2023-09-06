@@ -35,7 +35,7 @@ class TestInternetComputerSigner {
                     toAccountIdentifier = "943d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826a"
                     amount = 100000000
                     memo = 0
-                    currentTimestampSecs = 1691709940
+                    currentTimestampNanos = 1691709940000000000
                 }.build()
             }.build())
             .setPrivateKey(ByteString.copyFrom(key.data()))
@@ -53,7 +53,7 @@ class TestInternetComputerSigner {
                     toAccountIdentifier = "643d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826b"
                     amount = 100000000
                     memo = 0
-                    currentTimestampSecs = 1691709940
+                    currentTimestampNanos = 1691709940000000000
                 }.build()
             }.build())
             .setPrivateKey(ByteString.copyFrom(key.data()))
@@ -71,7 +71,7 @@ class TestInternetComputerSigner {
                     toAccountIdentifier = "943d12e762f43806782f524b8f90297298a6d79e4749b41b585ec427409c826a"
                     amount = 0
                     memo = 0
-                    currentTimestampSecs = 1691709940
+                    currentTimestampNanos = 1691709940000000000
                 }.build()
             }.build())
             .setPrivateKey(ByteString.copyFrom(key.data()))

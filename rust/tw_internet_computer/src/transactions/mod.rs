@@ -32,7 +32,7 @@ pub fn sign_transaction(
                 amount: transfer_args.amount,
                 max_fee: None,
                 to: transfer_args.to_account_identifier.to_string(),
-                current_timestamp_secs: transfer_args.current_timestamp_secs,
+                current_timestamp_nanos: transfer_args.current_timestamp_nanos,
             },
         ),
         Tx::None => Err(SignTransactionError::InvalidArguments),

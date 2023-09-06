@@ -26,14 +26,14 @@ pub struct TransferArgs {
     pub amount: u64,
     pub max_fee: Option<u64>,
     pub to: String,
-    pub current_timestamp_secs: u64,
+    pub current_timestamp_nanos: u64,
 }
 
 impl TryFrom<TransferArgs> for SendRequest<'_> {
     type Error = SignTransactionError;
 
     fn try_from(args: TransferArgs) -> Result<Self, Self::Error> {
-        let current_timestamp_duration = Duration::from_secs(args.current_timestamp_secs);
+        let current_timestamp_duration = Duration::from_nanos(args.current_timestamp_nanos);
         let timestamp_nanos = current_timestamp_duration.as_nanos() as u64;
 
         let to_account_identifier = AccountIdentifier::from_hex(&args.to)
@@ -69,7 +69,7 @@ pub fn transfer(
         return Err(SignTransactionError::InvalidAmount);
     }
 
-    let current_timestamp_duration = Duration::from_secs(args.current_timestamp_secs);
+    let current_timestamp_duration = Duration::from_nanos(args.current_timestamp_nanos);
     let ingress_expiry = get_ingress_expiry(current_timestamp_duration);
     let identity = Identity::new(private_key);
 
@@ -165,6 +165,8 @@ mod test {
 
     #[test]
     fn transfer_successful() {
+        let current_timestamp_nanos = Duration::from_secs(1_691_709_940).as_nanos() as u64;
+        println!("ctn: {}", current_timestamp_nanos);
         let private_key = PrivateKey::try_from(
             "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be",
         )
@@ -183,7 +185,7 @@ mod test {
                 amount: 100_000_000,
                 max_fee: None,
                 to: to_account_identifier.to_hex(),
-                current_timestamp_secs: 1_691_709_940,
+                current_timestamp_nanos,
             },
         )
         .unwrap();
