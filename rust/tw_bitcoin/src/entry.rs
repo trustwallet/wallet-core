@@ -2,6 +2,9 @@ use crate::modules::plan_builder::BitcoinPlanBuilder;
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
+use std::borrow::Cow;
+use std::fmt::Display;
+use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
@@ -13,9 +16,6 @@ use tw_keypair::tw::PublicKey;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::Utxo::Proto as UtxoProto;
-use std::borrow::Cow;
-use std::fmt::Display;
-use std::str::FromStr;
 
 pub struct Address(pub bitcoin::address::Address<NetworkChecked>);
 

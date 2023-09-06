@@ -371,10 +371,25 @@ message TransactionOutput {
     bytes control_block = 4;
 }
 
-message PlanInput {
+message ComposePlan {
+    oneof compose {
+        ComposeBrc20Plan brc20 = 1;
+    }
 
+    message ComposeBrc20Plan {
+        Output tagged_output = 1;
+        Input.InputBrc20Inscription payload = 2;
+        uint64 fee_per_vb = 3;
+    }
 }
 
-message PlanOutput {
+message TransactionPlan {
+    oneof plan {
+        Brc20Plan brc20 = 1;
+    }
 
+    message Brc20Plan {
+        SigningInput commit = 1;
+        SigningInput reveal = 2;
+    }
 }
