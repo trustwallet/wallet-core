@@ -26,7 +26,7 @@ TEST(TWMantleCoinType, TWCoinType) {
 
     assertStringsEqual(id, "mantle");
     assertStringsEqual(name, "Mantle");
-    assertStringsEqual(symbol, "ETH");
+    assertStringsEqual(symbol, "MNT");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
