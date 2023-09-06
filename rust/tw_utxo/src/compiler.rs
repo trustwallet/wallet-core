@@ -176,7 +176,6 @@ impl Compiler<StandardBitcoinContext> {
         // transaction.
         let tx = convert_proto_to_tx(&proto)?;
 
-        dbg!(&tx);
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
@@ -303,8 +302,14 @@ impl Compiler<StandardBitcoinContext> {
             }
         }
 
+        let tx = cache.into_transaction();
+        // The transaction identifier, which we represent in
+        // non-reversed/non-network order.
+        let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
+
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
+            txid: txid.into(),
             sighashes: sighashes
                 .into_iter()
                 .map(|(sighash, method, sighash_type)| Proto::Sighash {

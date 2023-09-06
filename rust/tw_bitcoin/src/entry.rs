@@ -178,6 +178,7 @@ impl BitcoinEntry {
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
             error_message: Default::default(),
+            txid: utxo_presigning.txid,
             sighashes: utxo_presigning.sighashes,
             // Update selected inputs.
             utxo_inputs: utxo_presigning.inputs,

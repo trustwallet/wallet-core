@@ -271,20 +271,24 @@ message PreSigningOutput {
 
     string error_message = 2;
 
+    // The transaction ID in NON-reversed order. Note that this must be reversed
+    // when referencing in future transactions.
+    bytes txid = 3;
+
     /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
-    repeated Utxo.Proto.Sighash sighashes = 3;
+    repeated Utxo.Proto.Sighash sighashes = 4;
 
     // The raw inputs.
-    repeated Utxo.Proto.TxIn utxo_inputs = 4;
+    repeated Utxo.Proto.TxIn utxo_inputs = 5;
 
     // The raw outputs.
-    repeated TxOut utxo_outputs = 5;
+    repeated TxOut utxo_outputs = 6;
 
     // The estimated weight of the transaction.
-    uint64 weight_estimate = 6;
+    uint64 weight_estimate = 7;
 
     // The estimated fees of the transaction in satoshis.
-    uint64 fee_estimate = 7;
+    uint64 fee_estimate = 8;
 
     // The output of a transaction.
     message TxOut {
