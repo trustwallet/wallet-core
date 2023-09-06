@@ -411,6 +411,36 @@
     }
   },
   {
+    "id": "mantle",
+    "name": "Mantle",
+    "coinId": 5000,
+    "symbol": "MNT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "5000",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.mantle.xyz",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xfae996ea23f1ff9909ac04d26ae6e52ab600a84163fab9e0e893483c685629dd",
+      "sampleAccount": "0xA295EEFd401C8BE1457F266d3e73cdD015e5CFbb"
+    },
+    "info": {
+      "url": "https://www.mantle.xyz",
+      "source": "https://github.com/mantlenetworkio",
+      "rpc": "https://rpc.mantle.xyz",
+      "documentation": "https://docs.mantle.xyz/network/introduction/overview"
+    }
+  },
+  {
     "id": "ethereum",
     "name": "Ethereum",
     "coinId": 60,
