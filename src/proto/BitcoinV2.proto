@@ -377,9 +377,26 @@ message ComposePlan {
     }
 
     message ComposeBrc20Plan {
-        Output tagged_output = 1;
-        Input.InputBrc20Inscription payload = 2;
-        uint64 fee_per_vb = 3;
+        repeated Input inputs = 1;
+
+        // How the inputs should be selected.
+        Utxo.Proto.InputSelector input_selector = 7;
+
+        uint64 dust_limit = 2;
+
+        Output tagged_output = 3;
+
+        Input.InputBrc20Inscription inscription = 4;
+
+        // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
+        uint64 fee_per_vb = 8;
+
+        // The change output to be added (return to sender).
+        // The `value` can be left at 0.
+        Output change_output = 9;
+
+        // Explicility disable change output creation.
+        bool disable_change_output = 10;
     }
 }
 
