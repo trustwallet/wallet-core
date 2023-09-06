@@ -49,7 +49,7 @@ impl BitcoinPlanBuilder {
 
         let presigned = BitcoinEntry.preimage_hashes(_coin, reveal_signing.clone());
         let fee_estimate = presigned.fee_estimate;
-        let commit_txid: Vec<u8> = presigned.txid.into_iter().recv().collect();
+        let commit_txid: Vec<u8> = presigned.txid.to_vec().iter().copied().rev().collect();
 
         let dust_limit: u64 = if proto.dust_limit == 0 {
             546
