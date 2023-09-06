@@ -48,9 +48,7 @@ fn p2pkh_fee_estimate() {
         value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    bob_pubkey.as_slice().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
             }),
         }),
     });
@@ -105,9 +103,7 @@ fn p2wpkh_fee_estimate() {
         value: ONE_BTC,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    bob_pubkey.as_slice().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
             }),
         }),
     });

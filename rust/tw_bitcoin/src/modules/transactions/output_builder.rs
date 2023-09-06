@@ -276,9 +276,7 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
             value,
             to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
                 variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
-                    to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
-                        pubkey_hash.to_vec().into(),
-                    ),
+                    to_address: ProtoPubkeyOrHash::hash(pubkey_hash.to_vec().into()),
                 }),
             }),
         },
@@ -296,11 +294,10 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                             to_recipient: ProtoOutputRecipient::builder(
                                 Proto::mod_Output::OutputBuilder {
                                     variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
-                                        to_address:
-                                            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(
-                                                // Payload is the WPubkey hash.
-                                                payload.into(),
-                                            ),
+                                        to_address: ProtoPubkeyOrHash::hash(
+                                            // Payload is the WPubkey hash.
+                                            payload.into(),
+                                        ),
                                     }),
                                 },
                             ),
@@ -311,14 +308,18 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
                     if payload.len() == 32 {
                         return Ok(Proto::Output {
                             value,
-                            to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
-                                variant: ProtoOutputBuilder::p2wsh(Proto::mod_Output::OutputRedeemScriptOrHash {
-                                    variant: Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::hash(
-                                        // Payload is the WScript hash.
-                                        payload.to_vec().into(),
+                            to_recipient: ProtoOutputRecipient::builder(
+                                Proto::mod_Output::OutputBuilder {
+                                    variant: ProtoOutputBuilder::p2wsh(
+                                        Proto::mod_Output::OutputRedeemScriptOrHash {
+                                            variant: ProtoOutputRedeemScriptOrHashBuilder::hash(
+                                                // Payload is the WScript hash.
+                                                payload.to_vec().into(),
+                                            ),
+                                        },
                                     ),
-                                }),
-                            }),
+                                },
+                            ),
                         });
                     }
 
@@ -353,7 +354,7 @@ fn output_from_address(value: u64, addr: &str) -> Result<Proto::Output<'static>>
             value,
             to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
                 variant: ProtoOutputBuilder::p2sh(Proto::mod_Output::OutputRedeemScriptOrHash {
-                    variant: Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::hash(
+                    variant: ProtoOutputRedeemScriptOrHashBuilder::hash(
                         script_hash.to_vec().into(),
                     ),
                 }),

@@ -1,4 +1,4 @@
-use crate::aliases::ProtoInputRecipient;
+use crate::aliases::*;
 use crate::{Error, Result};
 use bitcoin::absolute::LockTime;
 use bitcoin::consensus::Decodable;
@@ -117,7 +117,7 @@ fn taproot_build_and_sign_transaction(
     {
         outputs.push(Proto::Output {
             value: output.amount as u64,
-            to_recipient: Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(output.script),
+            to_recipient: ProtoOutputRecipient::custom_script_pubkey(output.script),
         })
     }
 
@@ -209,22 +209,16 @@ fn input_from_legacy_utxo(
     // explicitly skip/ignore any provided script in the input.
     let input_builder = match utxo.variant {
         LegacyProto::TransactionVariant::P2PKH => Proto::mod_Input::InputBuilder {
-            variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2pkh(
-                my_pubkey.to_bytes().into(),
-            ),
+            variant: ProtoInputBuilder::p2pkh(my_pubkey.to_bytes().into()),
         },
         LegacyProto::TransactionVariant::P2WPKH => Proto::mod_Input::InputBuilder {
-            variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2wpkh(
-                my_pubkey.to_bytes().into(),
-            ),
+            variant: ProtoInputBuilder::p2wpkh(my_pubkey.to_bytes().into()),
         },
         LegacyProto::TransactionVariant::P2TRKEYPATH => Proto::mod_Input::InputBuilder {
-            variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2tr_key_path(
-                Proto::mod_Input::InputTaprootKeyPath {
-                    one_prevout: false,
-                    public_key: my_pubkey.to_bytes().into(),
-                },
-            ),
+            variant: ProtoInputBuilder::p2tr_key_path(Proto::mod_Input::InputTaprootKeyPath {
+                one_prevout: false,
+                public_key: my_pubkey.to_bytes().into(),
+            }),
         },
         LegacyProto::TransactionVariant::BRC20TRANSFER
         | LegacyProto::TransactionVariant::NFTINSCRIPTION => {
@@ -249,7 +243,7 @@ fn input_from_legacy_utxo(
                 .expect("failed to construct control block");
 
             Proto::mod_Input::InputBuilder {
-                variant: Proto::mod_Input::mod_InputBuilder::OneOfvariant::p2tr_script_path(
+                variant: ProtoInputBuilder::p2tr_script_path(
                     Proto::mod_Input::InputTaprootScriptPath {
                         one_prevout: false,
                         payload: utxo.spendingScript.to_vec().into(),

@@ -71,7 +71,11 @@ impl BitcoinPlanBuilder {
         };
 
         let commit_signing = Proto::SigningInput {
-            inputs: proto.inputs.into_iter().map(super::utils::hard_clone_proto_input).collect(),
+            inputs: proto
+                .inputs
+                .into_iter()
+                .map(super::utils::hard_clone_proto_input)
+                .collect(),
             outputs: vec![brc20_output],
             input_selector: proto.input_selector,
             disable_change_output: proto.disable_change_output,

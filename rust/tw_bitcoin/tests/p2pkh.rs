@@ -53,9 +53,7 @@ fn coin_entry_sign_input_p2pkh_output_p2pkh() {
         value: ONE_BTC * 50 - MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    bob_pubkey.as_slice().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(bob_pubkey.as_slice().into()),
             }),
         }),
     };

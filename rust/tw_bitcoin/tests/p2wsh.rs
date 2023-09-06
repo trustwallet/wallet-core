@@ -46,10 +46,9 @@ fn coin_entry_sign_input_p2pkh_output_p2wsh() {
         value: 50 * ONE_BTC - 3 * MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wsh(Proto::mod_Output::OutputRedeemScriptOrHash {
-                variant:
-                    Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::redeem_script(
-                        redeem_script.as_bytes().into(),
-                    ),
+                variant: ProtoOutputRedeemScriptOrHashBuilder::redeem_script(
+                    redeem_script.as_bytes().into(),
+                ),
             }),
         }),
     };
@@ -92,9 +91,7 @@ fn coin_entry_sign_input_p2pkh_output_p2wsh() {
         value: 50 * ONE_BTC - 4 * MINER_FEE,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    alice_pubkey.as_slice().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(alice_pubkey.as_slice().into()),
             }),
         }),
     };

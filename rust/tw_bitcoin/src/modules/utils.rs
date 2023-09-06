@@ -6,139 +6,6 @@ use tw_proto::BitcoinV2::Proto;
 // does not actually clone the underlying data (but the smart pointer instead),
 // we must hard-clone individual fields manually. This is unfortunately required
 // due to how protobuf library works and our use of the 'static constraints.
-pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Proto::Output<'static> {
-    fn new_builder(
-        variant: Proto::mod_Output::mod_OutputBuilder::OneOfvariant<'static>,
-    ) -> Proto::mod_Output::OneOfto_recipient<'static> {
-        Proto::mod_Output::OneOfto_recipient::builder(Proto::mod_Output::OutputBuilder { variant })
-    }
-
-    fn new_script_or_hash(
-        proto: Proto::mod_Output::OutputRedeemScriptOrHash<'_>,
-    ) -> Proto::mod_Output::OutputRedeemScriptOrHash<'static> {
-        let variant = match proto.variant {
-            Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::redeem_script(
-                script,
-            ) => Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::redeem_script(
-                script.to_vec().into(),
-            ),
-            Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::hash(hash) => {
-                Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::hash(
-                    hash.to_vec().into(),
-                )
-            },
-            Proto::mod_Output::mod_OutputRedeemScriptOrHash::OneOfvariant::None => todo!(),
-        };
-
-        Proto::mod_Output::OutputRedeemScriptOrHash { variant }
-    }
-
-    fn new_pubkey_or_hash(
-        proto: Proto::ToPublicKeyOrHash<'_>,
-    ) -> Proto::ToPublicKeyOrHash<'static> {
-        let to_address = match proto.to_address {
-            Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(pubkey) => {
-                Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(pubkey.to_vec().into())
-            },
-            Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash) => {
-                Proto::mod_ToPublicKeyOrHash::OneOfto_address::hash(hash.to_vec().into())
-            },
-            Proto::mod_ToPublicKeyOrHash::OneOfto_address::None => todo!(),
-        };
-
-        Proto::ToPublicKeyOrHash { to_address }
-    }
-
-    let to_recipient = match proto.to_recipient {
-        Proto::mod_Output::OneOfto_recipient::builder(builder) => match builder.variant {
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(script_or_hash) => {
-                new_builder(Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2sh(
-                    new_script_or_hash(script_or_hash),
-                ))
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(pubkey_or_hash) => {
-                new_builder(Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2pkh(
-                    new_pubkey_or_hash(pubkey_or_hash),
-                ))
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2wsh(script_or_hash) => {
-                new_builder(Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2wsh(
-                    new_script_or_hash(script_or_hash),
-                ))
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(pubkey_or_hash) => {
-                new_builder(Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2wpkh(
-                    new_pubkey_or_hash(pubkey_or_hash),
-                ))
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(pubkey) => {
-                new_builder(
-                    Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_key_path(
-                        pubkey.to_vec().into(),
-                    ),
-                )
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(script_path) => {
-                new_builder(
-                    Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_script_path(
-                        Proto::mod_Output::OutputTaprootScriptPath {
-                            internal_key: script_path.internal_key.to_vec().into(),
-                            merkle_root: script_path.merkle_root.to_vec().into(),
-                        },
-                    ),
-                )
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(
-                tweaked,
-            ) => new_builder(
-                Proto::mod_Output::mod_OutputBuilder::OneOfvariant::p2tr_dangerous_assume_tweaked(
-                    tweaked.to_vec().into(),
-                ),
-            ),
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(brc20) => {
-                new_builder(
-                    Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(
-                        Proto::mod_Output::OutputBrc20Inscription {
-                            inscribe_to: brc20.inscribe_to.to_vec().into(),
-                            ticker: brc20.ticker.to_string().into(),
-                            transfer_amount: brc20.transfer_amount,
-                        },
-                    ),
-                )
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(ord) => {
-                new_builder(
-                    Proto::mod_Output::mod_OutputBuilder::OneOfvariant::ordinal_inscribe(
-                        Proto::mod_Output::OutputOrdinalInscription {
-                            inscribe_to: ord.inscribe_to.to_vec().into(),
-                            mime_type: ord.mime_type.to_string().into(),
-                            payload: ord.payload.to_vec().into(),
-                        },
-                    ),
-                )
-            },
-            Proto::mod_Output::mod_OutputBuilder::OneOfvariant::None => todo!(),
-        },
-        Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(custom) => {
-            Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(custom.to_vec().into())
-        },
-        Proto::mod_Output::OneOfto_recipient::from_address(address) => {
-            Proto::mod_Output::OneOfto_recipient::from_address(address.to_string().into())
-        },
-        Proto::mod_Output::OneOfto_recipient::None => todo!(),
-    };
-
-    Proto::Output {
-        value: proto.value,
-        to_recipient,
-    }
-}
-
-// Convenience function: our protobuf library wraps certain types (such as
-// `bytes`) in `Cow`, but given that calling `clone()` on a `Cow::Borrowed(T)`
-// does not actually clone the underlying data (but the smart pointer instead),
-// we must hard-clone individual fields manually. This is unfortunately required
-// due to how protobuf library works and our use of the 'static constraints.
 pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Proto::Input<'static> {
     fn new_builder(variant: ProtoInputBuilder<'static>) -> ProtoInputRecipient<'static> {
         ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder { variant })
@@ -209,5 +76,100 @@ pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Proto::Input<'static> 
         txid: proto.txid.to_vec().into(),
         to_recipient,
         ..proto
+    }
+}
+
+// Convenience function: our protobuf library wraps certain types (such as
+// `bytes`) in `Cow`, but given that calling `clone()` on a `Cow::Borrowed(T)`
+// does not actually clone the underlying data (but the smart pointer instead),
+// we must hard-clone individual fields manually. This is unfortunately required
+// due to how protobuf library works and our use of the 'static constraints.
+pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Proto::Output<'static> {
+    fn new_builder(variant: ProtoOutputBuilder<'static>) -> ProtoOutputRecipient<'static> {
+        ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder { variant })
+    }
+
+    fn new_script_or_hash(
+        proto: Proto::mod_Output::OutputRedeemScriptOrHash<'_>,
+    ) -> Proto::mod_Output::OutputRedeemScriptOrHash<'static> {
+        let variant = match proto.variant {
+            ProtoOutputRedeemScriptOrHashBuilder::redeem_script(script) => {
+                ProtoOutputRedeemScriptOrHashBuilder::redeem_script(script.to_vec().into())
+            },
+            ProtoOutputRedeemScriptOrHashBuilder::hash(hash) => {
+                ProtoOutputRedeemScriptOrHashBuilder::hash(hash.to_vec().into())
+            },
+            ProtoOutputRedeemScriptOrHashBuilder::None => todo!(),
+        };
+
+        Proto::mod_Output::OutputRedeemScriptOrHash { variant }
+    }
+
+    fn new_pubkey_or_hash(
+        proto: Proto::ToPublicKeyOrHash<'_>,
+    ) -> Proto::ToPublicKeyOrHash<'static> {
+        let to_address = match proto.to_address {
+            ProtoPubkeyOrHash::pubkey(pubkey) => ProtoPubkeyOrHash::pubkey(pubkey.to_vec().into()),
+            ProtoPubkeyOrHash::hash(hash) => ProtoPubkeyOrHash::hash(hash.to_vec().into()),
+            ProtoPubkeyOrHash::None => todo!(),
+        };
+
+        Proto::ToPublicKeyOrHash { to_address }
+    }
+
+    let to_recipient = match proto.to_recipient {
+        ProtoOutputRecipient::builder(builder) => match builder.variant {
+            ProtoOutputBuilder::p2sh(script_or_hash) => {
+                new_builder(ProtoOutputBuilder::p2sh(new_script_or_hash(script_or_hash)))
+            },
+            ProtoOutputBuilder::p2pkh(pubkey_or_hash) => new_builder(ProtoOutputBuilder::p2pkh(
+                new_pubkey_or_hash(pubkey_or_hash),
+            )),
+            ProtoOutputBuilder::p2wsh(script_or_hash) => new_builder(ProtoOutputBuilder::p2wsh(
+                new_script_or_hash(script_or_hash),
+            )),
+            ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => new_builder(ProtoOutputBuilder::p2wpkh(
+                new_pubkey_or_hash(pubkey_or_hash),
+            )),
+            ProtoOutputBuilder::p2tr_key_path(pubkey) => {
+                new_builder(ProtoOutputBuilder::p2tr_key_path(pubkey.to_vec().into()))
+            },
+            ProtoOutputBuilder::p2tr_script_path(script_path) => new_builder(
+                ProtoOutputBuilder::p2tr_script_path(Proto::mod_Output::OutputTaprootScriptPath {
+                    internal_key: script_path.internal_key.to_vec().into(),
+                    merkle_root: script_path.merkle_root.to_vec().into(),
+                }),
+            ),
+            ProtoOutputBuilder::p2tr_dangerous_assume_tweaked(tweaked) => new_builder(
+                ProtoOutputBuilder::p2tr_dangerous_assume_tweaked(tweaked.to_vec().into()),
+            ),
+            ProtoOutputBuilder::brc20_inscribe(brc20) => new_builder(
+                ProtoOutputBuilder::brc20_inscribe(Proto::mod_Output::OutputBrc20Inscription {
+                    inscribe_to: brc20.inscribe_to.to_vec().into(),
+                    ticker: brc20.ticker.to_string().into(),
+                    transfer_amount: brc20.transfer_amount,
+                }),
+            ),
+            ProtoOutputBuilder::ordinal_inscribe(ord) => new_builder(
+                ProtoOutputBuilder::ordinal_inscribe(Proto::mod_Output::OutputOrdinalInscription {
+                    inscribe_to: ord.inscribe_to.to_vec().into(),
+                    mime_type: ord.mime_type.to_string().into(),
+                    payload: ord.payload.to_vec().into(),
+                }),
+            ),
+            ProtoOutputBuilder::None => todo!(),
+        },
+        ProtoOutputRecipient::custom_script_pubkey(custom) => {
+            ProtoOutputRecipient::custom_script_pubkey(custom.to_vec().into())
+        },
+        ProtoOutputRecipient::from_address(address) => {
+            ProtoOutputRecipient::from_address(address.to_string().into())
+        },
+        ProtoOutputRecipient::None => todo!(),
+    };
+
+    Proto::Output {
+        value: proto.value,
+        to_recipient,
     }
 }
