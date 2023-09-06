@@ -22,7 +22,6 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
     );
     let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
-    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
@@ -66,7 +65,6 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
 
     let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
-    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
@@ -109,7 +107,6 @@ pub unsafe extern "C" fn tw_build_p2tr_key_path_script(
     );
     let recipient = try_or_else!(PublicKey::from_slice(slice), CByteArray::null);
 
-    //let tx_out = TxOutputP2PKH::new(satoshis as u64, recipient);
     let output = Proto::Output {
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
