@@ -1485,6 +1485,7 @@ dependencies = [
 name = "tw_any_coin"
 version = "0.1.0"
 dependencies = [
+ "tw_any_coin",
  "tw_coin_entry",
  "tw_coin_registry",
  "tw_encoding",

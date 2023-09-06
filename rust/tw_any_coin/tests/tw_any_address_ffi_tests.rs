@@ -59,8 +59,10 @@ fn test_any_address_derive() {
 fn test_any_address_normalize_eth() {
     for coin in supported_coin_items() {
         let (denormalized, expected_normalized) = match coin.blockchain {
-            // TODO: Not sure if this is expected behavior, results in None.
-            BlockchainType::Bitcoin => continue,
+            BlockchainType::Bitcoin => (
+                "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
+                "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X"
+            ),
             BlockchainType::Ethereum => (
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
                 "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
