@@ -94,6 +94,8 @@ impl BitcoinPlanBuilder {
             }),
         };
 
+        let brc20_output_value = brc20_output.value;
+
         // Create the full COMMIT transaction with the appropriately selected inputs.
         let commit_signing = Proto::SigningInput {
             inputs: proto
@@ -161,6 +163,7 @@ impl BitcoinPlanBuilder {
 
         // Now we construct the *actual* REVEAL transaction.
         let brc20_input = Proto::Input {
+            value: brc20_output_value,
             txid: commit_txid.into(), // Reference COMMIT transaction.
             sighash_type: UtxoProto::SighashType::UseDefault,
             to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {

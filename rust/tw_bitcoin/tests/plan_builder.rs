@@ -14,6 +14,8 @@ fn transaction_plan_compose_brc20() {
     let _coin = EmptyCoinContext;
 
     let alice_private_key = hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
+    let alice_pubkey = hex("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb");
+
     let txid1: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
         .into_iter()
         .rev()
@@ -107,18 +109,18 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(commit.inputs[0], tx1);
 
         // Check first output.
-        let res_brc20 = &commit.outputs[0];
-        assert_eq!(res_brc20.value, 3846);
-        let Proto::mod_Output::OneOfto_recipient::builder(builder) = &res_brc20.to_recipient else { panic!() };
+        let plan_out_brc20 = &commit.outputs[0];
+        assert_eq!(plan_out_brc20.value, 3846);
+        let Proto::mod_Output::OneOfto_recipient::builder(builder) = &plan_out_brc20.to_recipient else { panic!() };
         let Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
         assert_eq!(brc20.inscribe_to, alice_pubkey);
         assert_eq!(brc20.ticker, "oadf");
         assert_eq!(brc20.transfer_amount, 20);
 
         // Check second output.
-        let res_change = &commit.outputs[1];
-        assert_eq!(res_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
-        assert_eq!(res_change.to_recipient, change_output.to_recipient);
+        let plan_out_change = &commit.outputs[1];
+        assert_eq!(plan_out_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
+        assert_eq!(plan_out_change.to_recipient, change_output.to_recipient);
 
         // Check basics of the COMMIT transaction.
 
@@ -131,6 +133,19 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(reveal.change_output, Default::default());
         assert!(reveal.disable_change_output);
 
+        // Check first and only input.
+        let plan_input = &reveal.inputs[0];
+        //assert_eq!(plan_input.txid, )
+        assert_eq!(plan_input.sequence, u32::MAX);
+        assert_eq!(plan_input.value, 3846);
+        assert_eq!(plan_input.sighash_type, UtxoProto::SighashType::UseDefault);
+        let Proto::mod_Input::OneOfto_recipient::builder(builder) = &plan_input.to_recipient else { panic!() };
+        let Proto::mod_Input::mod_InputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
+        assert_eq!(brc20.inscribe_to, alice_pubkey);
+        assert_eq!(brc20.ticker, "oadf");
+        assert_eq!(brc20.transfer_amount, 20);
+
+        // Check first and only output.
         assert_eq!(reveal.outputs[0], tagged_output);
     } else {
         panic!()
