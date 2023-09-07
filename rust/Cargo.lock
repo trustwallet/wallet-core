@@ -1578,6 +1578,7 @@ dependencies = [
 name = "tw_cbor"
 version = "0.1.0"
 dependencies = [
+ "arbitrary",
  "ciborium",
  "serde",
  "serde_bytes",
