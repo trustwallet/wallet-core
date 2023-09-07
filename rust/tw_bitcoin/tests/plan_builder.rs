@@ -92,6 +92,8 @@ fn transaction_plan_compose_brc20() {
     // Compute plan
     let builder = BitcoinEntry.plan_builder().unwrap();
     let built = builder.plan(&_coin, compose);
+    assert_eq!(built.error, Proto::Error::OK);
+
     let Proto::mod_TransactionPlan::OneOfplan::brc20(plan) = built.plan else { panic!() };
 
     // Check basics of the COMMIT transaction.
@@ -105,7 +107,7 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(commit.outputs.len(), 2);
         // Use inputs as provided (already selected by TransactionPlan).
         assert_eq!(commit.input_selector, UtxoProto::InputSelector::UseAll);
-        assert_eq!(commit.fee_per_vb, 25);
+        assert_eq!(commit.fee_per_vb, 0);
         // Change output generation is disabled, inclulded in `commit.outputs`.
         assert_eq!(commit.change_output, Default::default());
         assert!(commit.disable_change_output);
@@ -141,7 +143,7 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(reveal.outputs.len(), 1);
         // Use inputs as provided.
         assert_eq!(reveal.input_selector, UtxoProto::InputSelector::UseAll);
-        assert_eq!(reveal.fee_per_vb, 25);
+        assert_eq!(reveal.fee_per_vb, 0);
         // Change output generation is disabled.
         assert_eq!(reveal.change_output, Default::default());
         assert!(reveal.disable_change_output);
@@ -170,7 +172,9 @@ fn transaction_plan_compose_brc20() {
 
     // Signed both transactions from the returned plan.
     let commit_signed = BitcoinEntry.sign(&_coin, commit_signing);
+    assert_eq!(commit_signed.error, Proto::Error::OK);
     let reveal_signed = BitcoinEntry.sign(&_coin, reveal_signing);
+    assert_eq!(reveal_signed.error, Proto::Error::OK);
 
     // Note that the API returns this in a non-reversed manner, so we need to reverse it first.
     let commit_txid = commit_signed.txid.iter().copied().rev().collect::<Vec<_>>();
@@ -183,6 +187,6 @@ fn transaction_plan_compose_brc20() {
             .as_ref()
     );
 
-    dbg!(&commit_signed);
-    dbg!(&reveal_signed);
+    //dbg!(&commit_signed);
+    //dbg!(&reveal_signed);
 }

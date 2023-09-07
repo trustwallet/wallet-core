@@ -1,7 +1,9 @@
 use crate::modules::utils::hard_clone_proto_output;
 use crate::{aliases::*, pre_processor, BitcoinEntry};
+use crate::{Error, Result};
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::modules::plan_builder::PlanBuilder;
+use tw_coin_entry::signing_output_error;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::InputBrc20Inscription;
 use tw_proto::Utxo::Proto as UtxoProto;
@@ -18,25 +20,37 @@ impl PlanBuilder for BitcoinPlanBuilder {
         _coin: &dyn tw_coin_entry::coin_context::CoinContext,
         proto: Self::SigningInput<'_>,
     ) -> Self::Plan {
-        match proto.compose {
-            Proto::mod_ComposePlan::OneOfcompose::brc20(plan) => {
-                let built_plan = self.plan_brc20(_coin, plan);
-
-                Proto::TransactionPlan {
-                    plan: Proto::mod_TransactionPlan::OneOfplan::brc20(built_plan),
-                }
-            },
-            _ => panic!(),
-        }
+        self.plan_impl(_coin, proto)
+            .unwrap_or_else(|err| signing_output_error!(Proto::TransactionPlan, err))
     }
 }
 
 impl BitcoinPlanBuilder {
+    fn plan_impl(
+        &self,
+        _coin: &dyn tw_coin_entry::coin_context::CoinContext,
+        proto: Proto::ComposePlan<'_>,
+    ) -> Result<Proto::TransactionPlan<'static>> {
+        let plan = match proto.compose {
+            Proto::mod_ComposePlan::OneOfcompose::brc20(plan) => {
+                let built_plan = self.plan_brc20(_coin, plan)?;
+
+                Proto::TransactionPlan {
+                    error: Proto::Error::OK,
+                    error_message: Default::default(),
+                    plan: Proto::mod_TransactionPlan::OneOfplan::brc20(built_plan),
+                }
+            },
+            _ => panic!(),
+        };
+
+        Ok(plan)
+    }
     fn plan_brc20(
         &self,
         _coin: &dyn tw_coin_entry::coin_context::CoinContext,
         proto: Proto::mod_ComposePlan::ComposeBrc20Plan<'_>,
-    ) -> Proto::mod_TransactionPlan::Brc20Plan<'static> {
+    ) -> Result<Proto::mod_TransactionPlan::Brc20Plan<'static>> {
         // Hard-clones
         let inscription = proto.inscription.unwrap();
         let brc20_info = InputBrc20Inscription {
@@ -76,6 +90,10 @@ impl BitcoinPlanBuilder {
 
         // We can now determine the fee of the reveal transaction.
         let dummy_presigned = BitcoinEntry.preimage_hashes(_coin, dummy_reveal);
+        if dummy_presigned.error != Proto::Error::OK {
+            return Err(Error::from(dummy_presigned.error));
+        }
+
         assert_eq!(dummy_presigned.error, Proto::Error::OK);
         let reveal_fee_estimate = dummy_presigned.fee_estimate;
 
@@ -121,6 +139,10 @@ impl BitcoinPlanBuilder {
         // We now determine the Txid of the COMMIT transaction, which we will have
         // to use in the REVEAL transaction.
         let presigned = BitcoinEntry.preimage_hashes(_coin, commit_signing.clone());
+        if presigned.error != Proto::Error::OK {
+            return Err(Error::from(presigned.error));
+        }
+
         assert_eq!(presigned.error, Proto::Error::OK);
         let commit_txid: Vec<u8> = presigned.txid.to_vec().iter().copied().rev().collect();
 
@@ -160,6 +182,7 @@ impl BitcoinPlanBuilder {
 
         commit_signing.input_selector = UtxoProto::InputSelector::UseAll;
         commit_signing.disable_change_output = true;
+        commit_signing.fee_per_vb = 0;
         commit_signing.change_output = Default::default();
 
         // Now we construct the *actual* REVEAL transaction.
@@ -181,16 +204,16 @@ impl BitcoinPlanBuilder {
             outputs: vec![tagged_output],
             input_selector: UtxoProto::InputSelector::UseAll,
             change_output: Default::default(),
-            fee_per_vb: proto.fee_per_vb,
+            fee_per_vb: 0,
             disable_change_output: true,
             ..Default::default()
         };
 
         let reveal_signing = pre_processor(reveal_signing);
 
-        Proto::mod_TransactionPlan::Brc20Plan {
+        Ok(Proto::mod_TransactionPlan::Brc20Plan {
             commit: Some(commit_signing),
             reveal: Some(reveal_signing),
-        }
+        })
     }
 }

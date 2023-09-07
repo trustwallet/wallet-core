@@ -411,8 +411,13 @@ message ComposePlan {
 }
 
 message TransactionPlan {
+    // A possible error, `OK` if none.
+    Error error = 1;
+
+    string error_message = 2;
+
     oneof plan {
-        Brc20Plan brc20 = 1;
+        Brc20Plan brc20 = 3;
     }
 
     message Brc20Plan {
