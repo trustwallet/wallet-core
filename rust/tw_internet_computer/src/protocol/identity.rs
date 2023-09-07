@@ -67,3 +67,44 @@ impl Identity {
         Ok(signature)
     }
 }
+
+#[cfg(test)]
+mod test {
+
+    use tw_encoding::hex;
+
+    use super::*;
+
+    /// Test that the sender is derived from the private key.
+    #[test]
+    fn sender() {
+        let private_key = PrivateKey::try_from(
+            "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be",
+        )
+        .unwrap();
+        let identity = Identity::new(private_key);
+        let sender = identity.sender();
+        assert_eq!(
+            sender.to_text(),
+            "hpikg-6exdt-jn33w-ndty3-fc7jc-tl2lr-buih3-cs3y7-tftkp-sfp62-gqe"
+        )
+    }
+
+    /// Test signing with the identity.
+    #[test]
+    fn sign() {
+        let private_key = PrivateKey::try_from(
+            "227102911bb99ce7285a55f952800912b7d22ebeeeee59d77fc33a5d7c7080be",
+        )
+        .unwrap();
+        let der_encoded_public_key = private_key.public().der_encoded();
+        let identity = Identity::new(private_key);
+        let content = H256::new();
+        let signature = identity.sign(content).unwrap();
+        assert_eq!(
+            hex::encode(signature.signature, false),
+            "17c0974ee2ae621099389a5e4d0f960925d2e0e23658df03069308fb8edcb7bb120a338ada3e2ede7f41f6ed2f424a8a4f2c8fb68260f27d4f1bf96d19094b9f"
+        );
+        assert_eq!(der_encoded_public_key, signature.public_key);
+    }
+}
