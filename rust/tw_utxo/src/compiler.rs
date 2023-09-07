@@ -57,6 +57,8 @@ impl Compiler<StandardBitcoinContext> {
     fn preimage_hashes_impl(
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
+        // TODO: Check for duplicate Txid (user error).
+
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
         let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();

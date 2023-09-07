@@ -16,7 +16,7 @@ fn transaction_plan_compose_brc20() {
     let alice_private_key = hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
     let alice_pubkey = hex("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb");
 
-    let txid1: Vec<u8> = hex("f4b643cde78a2391745db2c081c5c67b76543210fedcba9876543210abcdef12")
+    let txid1: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
         .into_iter()
         .rev()
         .collect();
@@ -32,7 +32,7 @@ fn transaction_plan_compose_brc20() {
         ..Default::default()
     };
 
-    let txid2: Vec<u8> = hex("f4b643cde78a2391745db2c081c5c67b76543210fedcba9876543210abcdef12")
+    let txid2: Vec<u8> = hex("858e450a1da44397bde05ca2f8a78510d74c623cc2f69736a8b3fbfadc161f6e")
         .into_iter()
         .rev()
         .collect();
@@ -40,7 +40,7 @@ fn transaction_plan_compose_brc20() {
     let tx2 = Proto::Input {
         txid: txid2.as_slice().into(),
         vout: 0,
-        value: ONE_BTC,
+        value: ONE_BTC * 2,
         sighash_type: UtxoProto::SighashType::All,
         to_recipient: ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder {
             variant: ProtoInputBuilder::p2wpkh(alice_pubkey.as_slice().into()),
@@ -89,7 +89,7 @@ fn transaction_plan_compose_brc20() {
     };
 
     let builder = BitcoinEntry.plan_builder().unwrap();
-	let x = builder.plan(&_coin, compose);
+    let plan = builder.plan(&_coin, compose);
 
-	dbg!(x);
+    dbg!(plan);
 }
