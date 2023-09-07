@@ -77,6 +77,7 @@ fn transaction_plan_compose_brc20() {
     let compose = Proto::ComposePlan {
         compose: Proto::mod_ComposePlan::OneOfcompose::brc20(
             Proto::mod_ComposePlan::ComposeBrc20Plan {
+                private_key: alice_private_key.clone().into(),
                 inputs: vec![tx1.clone(), tx2.clone()],
                 input_selector: UtxoProto::InputSelector::SelectAscending,
                 tagged_output: Some(tagged_output.clone()),
@@ -98,7 +99,7 @@ fn transaction_plan_compose_brc20() {
         let mut commit = plan.commit.unwrap();
         // One input covers all outputs.
         assert_eq!(commit.version, 2);
-        assert!(commit.private_key.is_empty());
+        assert_eq!(commit.private_key, alice_private_key);
         assert_eq!(commit.inputs.len(), 1);
         // BRC20 inscription output + change.
         assert_eq!(commit.outputs.len(), 2);
@@ -134,7 +135,7 @@ fn transaction_plan_compose_brc20() {
     let reveal_signing = {
         let mut reveal = plan.reveal.unwrap();
         assert_eq!(reveal.version, 2);
-        assert!(reveal.private_key.is_empty());
+        assert_eq!(reveal.private_key, alice_private_key);
         // One inputs covers all outputs.
         assert_eq!(reveal.inputs.len(), 1);
         assert_eq!(reveal.outputs.len(), 1);
@@ -181,4 +182,7 @@ fn transaction_plan_compose_brc20() {
             .txid
             .as_ref()
     );
+
+    dbg!(&commit_signed);
+    dbg!(&reveal_signed);
 }

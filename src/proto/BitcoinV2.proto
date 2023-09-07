@@ -381,24 +381,32 @@ message ComposePlan {
     }
 
     message ComposeBrc20Plan {
-        repeated Input inputs = 1;
+        // (optional) Sets the private key in the composed transactions. Can
+        // also be added manually.
+        bytes private_key = 1;
 
-        // How the inputs should be selected.
-        Utxo.Proto.InputSelector input_selector = 2;
+        // The inputs for the commit transaction.
+        repeated Input inputs = 2;
 
-        Output tagged_output = 3;
+        // How the inputs for the commit transaction should be selected.
+        Utxo.Proto.InputSelector input_selector = 3;
 
-        Input.InputBrc20Inscription inscription = 4;
+        // The tagged output of the inscription. Commonly a P2WPKH transaction
+        // with the value of 546 (dust limit).
+        Output tagged_output = 4;
+
+        // The BRC20 payload to inscribe.
+        Input.InputBrc20Inscription inscription = 5;
 
         // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
-        uint64 fee_per_vb = 5;
+        uint64 fee_per_vb = 6;
 
         // The change output to be added (return to sender).
         // The `value` can be left at 0.
-        Output change_output = 6;
+        Output change_output = 7;
 
         // Explicility disable change output creation.
-        bool disable_change_output = 7;
+        bool disable_change_output = 8;
     }
 }
 

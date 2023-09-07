@@ -98,6 +98,7 @@ impl BitcoinPlanBuilder {
 
         // Create the full COMMIT transaction with the appropriately selected inputs.
         let commit_signing = Proto::SigningInput {
+            private_key: proto.private_key.to_vec().into(),
             inputs: proto
                 .inputs
                 .iter()
@@ -162,6 +163,7 @@ impl BitcoinPlanBuilder {
         commit_signing.change_output = Default::default();
 
         // Now we construct the *actual* REVEAL transaction.
+
         let brc20_input = Proto::Input {
             value: brc20_output_value,
             txid: commit_txid.into(), // Reference COMMIT transaction.
@@ -174,6 +176,7 @@ impl BitcoinPlanBuilder {
 
         // Build the REVEAL transaction.
         let reveal_signing = Proto::SigningInput {
+            private_key: proto.private_key.to_vec().into(),
             inputs: vec![brc20_input],
             outputs: vec![tagged_output],
             input_selector: UtxoProto::InputSelector::UseAll,
