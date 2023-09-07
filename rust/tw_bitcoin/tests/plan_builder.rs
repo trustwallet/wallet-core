@@ -82,14 +82,37 @@ fn transaction_plan_compose_brc20() {
                 tagged_output: Some(tagged_output),
                 inscription: Some(brc20_inscription),
                 fee_per_vb: 25,
-                change_output: Some(change_output),
+                change_output: Some(change_output.clone()),
                 disable_change_output: false,
             },
         ),
     };
 
     let builder = BitcoinEntry.plan_builder().unwrap();
-    let plan = builder.plan(&_coin, compose);
+    let built = builder.plan(&_coin, compose);
 
-    dbg!(plan);
+    if let Proto::mod_TransactionPlan::OneOfplan::brc20(plan) = built.plan {
+        let commit = plan.commit.unwrap();
+
+        // One input covers all outputs.
+        assert_eq!(commit.inputs.len(), 1);
+        // BRC20 inscription output + change.
+        assert_eq!(commit.outputs.len(), 2);
+        assert_eq!(commit.input_selector, UtxoProto::InputSelector::UseAll);
+        assert_eq!(commit.fee_per_vb, 25);
+        assert_eq!(commit.change_output, Default::default());
+        assert!(commit.disable_change_output);
+
+        let reveal = plan.reveal.unwrap();
+
+        // One inputs covers all outputs.
+        assert_eq!(reveal.inputs.len(), 1);
+        assert_eq!(reveal.outputs.len(), 1);
+        assert_eq!(reveal.input_selector, UtxoProto::InputSelector::UseAll);
+        assert_eq!(reveal.fee_per_vb, 25);
+        assert_eq!(reveal.change_output, Default::default());
+        assert!(reveal.disable_change_output);
+    } else {
+        panic!()
+    }
 }
