@@ -157,8 +157,6 @@ impl Compiler<StandardBitcoinContext> {
         // (implying insufficient input amount).
         let change_amount_before_fee = total_input - total_output;
         if change_amount_before_fee < fee_estimate {
-            dbg!(fee_estimate as i64- change_amount_before_fee as i64);
-
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
         }
 

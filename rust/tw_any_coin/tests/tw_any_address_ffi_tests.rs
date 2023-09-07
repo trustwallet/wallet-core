@@ -61,7 +61,7 @@ fn test_any_address_normalize_eth() {
         let (denormalized, expected_normalized) = match coin.blockchain {
             BlockchainType::Bitcoin => (
                 "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
-                "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X"
+                "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
             ),
             BlockchainType::Ethereum => (
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
