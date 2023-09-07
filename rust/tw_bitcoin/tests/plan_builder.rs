@@ -97,6 +97,7 @@ fn transaction_plan_compose_brc20() {
         let commit = plan.commit.unwrap();
         // One input covers all outputs.
         assert_eq!(commit.version, 2);
+        assert!(commit.private_key.is_empty());
         assert_eq!(commit.inputs.len(), 1);
         // BRC20 inscription output + change.
         assert_eq!(commit.outputs.len(), 2);
@@ -109,22 +110,24 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(commit.inputs[0], tx1);
 
         // Check first output.
-        let plan_out_brc20 = &commit.outputs[0];
-        assert_eq!(plan_out_brc20.value, 3846);
-        let Proto::mod_Output::OneOfto_recipient::builder(builder) = &plan_out_brc20.to_recipient else { panic!() };
+        let res_out_brc20 = &commit.outputs[0];
+        assert_eq!(res_out_brc20.value, 3846);
+        let Proto::mod_Output::OneOfto_recipient::builder(builder) = &res_out_brc20.to_recipient else { panic!() };
         let Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
         assert_eq!(brc20.inscribe_to, alice_pubkey);
         assert_eq!(brc20.ticker, "oadf");
         assert_eq!(brc20.transfer_amount, 20);
 
         // Check second output.
-        let plan_out_change = &commit.outputs[1];
-        assert_eq!(plan_out_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
-        assert_eq!(plan_out_change.to_recipient, change_output.to_recipient);
+        let res_out_change = &commit.outputs[1];
+        assert_eq!(res_out_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
+        assert_eq!(res_out_change.to_recipient, change_output.to_recipient);
 
         // Check basics of the COMMIT transaction.
 
         let reveal = plan.reveal.unwrap();
+        assert_eq!(reveal.version, 2);
+        assert!(reveal.private_key.is_empty());
         // One inputs covers all outputs.
         assert_eq!(reveal.inputs.len(), 1);
         assert_eq!(reveal.outputs.len(), 1);
@@ -134,12 +137,15 @@ fn transaction_plan_compose_brc20() {
         assert!(reveal.disable_change_output);
 
         // Check first and only input.
-        let plan_input = &reveal.inputs[0];
+        let res_in_brc20 = &reveal.inputs[0];
         //assert_eq!(plan_input.txid, )
-        assert_eq!(plan_input.sequence, u32::MAX);
-        assert_eq!(plan_input.value, 3846);
-        assert_eq!(plan_input.sighash_type, UtxoProto::SighashType::UseDefault);
-        let Proto::mod_Input::OneOfto_recipient::builder(builder) = &plan_input.to_recipient else { panic!() };
+        assert_eq!(res_in_brc20.sequence, u32::MAX);
+        assert_eq!(res_in_brc20.value, 3846);
+        assert_eq!(
+            res_in_brc20.sighash_type,
+            UtxoProto::SighashType::UseDefault
+        );
+        let Proto::mod_Input::OneOfto_recipient::builder(builder) = &res_in_brc20.to_recipient else { panic!() };
         let Proto::mod_Input::mod_InputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
         assert_eq!(brc20.inscribe_to, alice_pubkey);
         assert_eq!(brc20.ticker, "oadf");
