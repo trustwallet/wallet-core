@@ -96,9 +96,7 @@ fn coin_entry_sign_ordinal_nft_commit_reveal_transfer() {
         value: 546,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    alice_pubkey.as_slice().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(alice_pubkey.as_slice().into()),
             }),
         }),
     };

@@ -136,21 +136,25 @@ message PreSigningOutput {
     // error code, 0 is ok, other codes will be treated as errors
     Error error = 1;
 
+    // The transaction ID in NON-reversed order. Note that this must be reversed
+    // when referencing in future transactions.
+    bytes txid = 2;
+
     /// Sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
-    repeated Sighash sighashes = 2;
+    repeated Sighash sighashes = 3;
 
     // The raw inputs.
-    repeated TxIn inputs = 3;
+    repeated TxIn inputs = 4;
 
     // The raw outputs.
-    repeated TxOut outputs = 4;
+    repeated TxOut outputs = 5;
 
     // The estimated weight of the transaction.
-    uint64 weight_estimate = 5;
+    uint64 weight_estimate = 6;
 
     // The estimated fee of the transaction denominated in the base unit (such
     // as satoshis).
-    uint64 fee_estimate = 6;
+    uint64 fee_estimate = 7;
 }
 
 message Sighash {

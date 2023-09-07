@@ -57,6 +57,8 @@ impl Compiler<StandardBitcoinContext> {
     fn preimage_hashes_impl(
         mut proto: Proto::SigningInput<'_>,
     ) -> Result<Proto::PreSigningOutput<'static>> {
+        // TODO: Check for duplicate Txid (user error).
+
         // Calculate total outputs amount, based on it we can determine how many inputs to select.
         let total_input: u64 = proto.inputs.iter().map(|input| input.value).sum();
         let total_output: u64 = proto.outputs.iter().map(|output| output.value).sum();
@@ -155,13 +157,15 @@ impl Compiler<StandardBitcoinContext> {
         // (implying insufficient input amount).
         let change_amount_before_fee = total_input - total_output;
         if change_amount_before_fee < fee_estimate {
+            dbg!(fee_estimate as i64- change_amount_before_fee as i64);
+
             return Err(Error::from(Proto::Error::Error_insufficient_inputs));
         }
 
-        // The amount to be returned (if enabled).
-        let change_amount = change_amount_before_fee - fee_estimate;
-
         if !proto.disable_change_output {
+            // The amount to be returned (if enabled).
+            let change_amount = change_amount_before_fee - fee_estimate;
+
             // Update the passed on protobuf structure by adding a change output
             // (return to sender)
             if change_amount != 0 {
@@ -176,7 +180,6 @@ impl Compiler<StandardBitcoinContext> {
         // transaction.
         let tx = convert_proto_to_tx(&proto)?;
 
-        dbg!(&tx);
         let mut cache = SighashCache::new(&tx);
 
         let mut sighashes: Vec<(Vec<u8>, ProtoSigningMethod, Proto::SighashType)> = vec![];
@@ -303,8 +306,14 @@ impl Compiler<StandardBitcoinContext> {
             }
         }
 
+        let tx = cache.into_transaction();
+        // The transaction identifier, which we represent in
+        // non-reversed/non-network order.
+        let txid: Vec<u8> = tx.txid().as_byte_array().iter().copied().rev().collect();
+
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
+            txid: txid.into(),
             sighashes: sighashes
                 .into_iter()
                 .map(|(sighash, method, sighash_type)| Proto::Sighash {

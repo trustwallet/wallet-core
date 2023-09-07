@@ -1,3 +1,4 @@
+use crate::modules::plan_builder::BitcoinPlanBuilder;
 use crate::modules::signer::Signer;
 use crate::{Error, Result};
 use bitcoin::address::NetworkChecked;
@@ -9,7 +10,6 @@ use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, Signatur
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
-use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
@@ -42,7 +42,7 @@ impl CoinEntry for BitcoinEntry {
 
     // Optional modules:
     type JsonSigner = NoJsonSigner;
-    type PlanBuilder = NoPlanBuilder;
+    type PlanBuilder = BitcoinPlanBuilder;
 
     #[inline]
     fn parse_address(
@@ -110,6 +110,11 @@ impl CoinEntry for BitcoinEntry {
         self.compile_impl(_coin, proto, signatures, _public_keys)
             .unwrap_or_else(|err| signing_output_error!(Proto::SigningOutput, err))
     }
+
+    #[inline]
+    fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        Some(BitcoinPlanBuilder)
+    }
 }
 
 impl BitcoinEntry {
@@ -128,7 +133,7 @@ impl BitcoinEntry {
             .collect::<Result<Vec<_>>>()?;
 
         // Convert output builders into Utxo outputs.
-        let utxo_outputs = proto
+        let mut utxo_outputs = proto
             .outputs
             .iter()
             .map(crate::modules::transactions::OutputBuilder::utxo_from_proto)
@@ -170,9 +175,25 @@ impl BitcoinEntry {
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
         handle_utxo_error(&utxo_presigning.error)?;
 
+        // If a change output was created by the Utxo compiler, we return it here too.
+        if utxo_presigning.outputs.len() == utxo_outputs.len() + 1 {
+            let change_output = utxo_presigning
+                .outputs
+                .last()
+                .expect("expected change output");
+
+            utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                value: change_output.value,
+                script_pubkey: change_output.script_pubkey.to_vec().into(),
+                control_block: Default::default(),
+                taproot_payload: Default::default(),
+            })
+        }
+
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
             error_message: Default::default(),
+            txid: utxo_presigning.txid,
             sighashes: utxo_presigning.sighashes,
             // Update selected inputs.
             utxo_inputs: utxo_presigning.inputs,

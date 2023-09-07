@@ -220,8 +220,8 @@ message Output {
             // Pay-to-Taproot-script-path (complex transfers)
             OutputTaprootScriptPath p2tr_script_path = 6;
             bytes p2tr_dangerous_assume_tweaked = 7;
-            OutputOrdinalInscription ordinal_inscribe = 8;
-            OutputBrc20Inscription brc20_inscribe = 9;
+            OutputBrc20Inscription brc20_inscribe = 8;
+            OutputOrdinalInscription ordinal_inscribe = 9;
         }
     }
 
@@ -271,20 +271,24 @@ message PreSigningOutput {
 
     string error_message = 2;
 
+    // The transaction ID in NON-reversed order. Note that this must be reversed
+    // when referencing in future transactions.
+    bytes txid = 3;
+
     /// The sighashes to be signed; ECDSA for legacy and Segwit, Schnorr for Taproot.
-    repeated Utxo.Proto.Sighash sighashes = 3;
+    repeated Utxo.Proto.Sighash sighashes = 4;
 
     // The raw inputs.
-    repeated Utxo.Proto.TxIn utxo_inputs = 4;
+    repeated Utxo.Proto.TxIn utxo_inputs = 5;
 
     // The raw outputs.
-    repeated TxOut utxo_outputs = 5;
+    repeated TxOut utxo_outputs = 6;
 
     // The estimated weight of the transaction.
-    uint64 weight_estimate = 6;
+    uint64 weight_estimate = 7;
 
     // The estimated fees of the transaction in satoshis.
-    uint64 fee_estimate = 7;
+    uint64 fee_estimate = 8;
 
     // The output of a transaction.
     message TxOut {
@@ -369,4 +373,55 @@ message TransactionOutput {
     // In case of P2TR script-path (complex scripts), this is the control block
     // required for claiming.
     bytes control_block = 4;
+}
+
+message ComposePlan {
+    oneof compose {
+        ComposeBrc20Plan brc20 = 1;
+    }
+
+    message ComposeBrc20Plan {
+        // (optional) Sets the private key in the composed transactions. Can
+        // also be added manually.
+        bytes private_key = 1;
+
+        // The inputs for the commit transaction.
+        repeated Input inputs = 2;
+
+        // How the inputs for the commit transaction should be selected.
+        Utxo.Proto.InputSelector input_selector = 3;
+
+        // The tagged output of the inscription. Commonly a P2WPKH transaction
+        // with the value of 546 (dust limit).
+        Output tagged_output = 4;
+
+        // The BRC20 payload to inscribe.
+        Input.InputBrc20Inscription inscription = 5;
+
+        // The amount of satoshis per vbyte ("satVb"), used for fee calculation.
+        uint64 fee_per_vb = 6;
+
+        // The change output to be added (return to sender).
+        // The `value` can be left at 0.
+        Output change_output = 7;
+
+        // Explicility disable change output creation.
+        bool disable_change_output = 8;
+    }
+}
+
+message TransactionPlan {
+    // A possible error, `OK` if none.
+    Error error = 1;
+
+    string error_message = 2;
+
+    oneof plan {
+        Brc20Plan brc20 = 3;
+    }
+
+    message Brc20Plan {
+        SigningInput commit = 1;
+        SigningInput reveal = 2;
+    }
 }

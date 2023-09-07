@@ -26,9 +26,7 @@ pub unsafe extern "C" fn tw_build_p2pkh_script(
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2pkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    recipient.to_bytes().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(recipient.to_bytes().into()),
             }),
         }),
     };
@@ -69,9 +67,7 @@ pub unsafe extern "C" fn tw_build_p2wpkh_script(
         value: _satoshis as u64,
         to_recipient: ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder {
             variant: ProtoOutputBuilder::p2wpkh(Proto::ToPublicKeyOrHash {
-                to_address: Proto::mod_ToPublicKeyOrHash::OneOfto_address::pubkey(
-                    recipient.to_bytes().into(),
-                ),
+                to_address: ProtoPubkeyOrHash::pubkey(recipient.to_bytes().into()),
             }),
         }),
     };
