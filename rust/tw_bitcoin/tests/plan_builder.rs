@@ -88,72 +88,74 @@ fn transaction_plan_compose_brc20() {
         ),
     };
 
+    // Compute plan
     let builder = BitcoinEntry.plan_builder().unwrap();
     let built = builder.plan(&_coin, compose);
+    let Proto::mod_TransactionPlan::OneOfplan::brc20(plan) = built.plan else { panic!() };
 
-    if let Proto::mod_TransactionPlan::OneOfplan::brc20(plan) = built.plan {
-        // Check basics of the COMMIT transaction.
+    // Check basics of the COMMIT transaction.
 
-        let commit = plan.commit.unwrap();
-        // One input covers all outputs.
-        assert_eq!(commit.version, 2);
-        assert!(commit.private_key.is_empty());
-        assert_eq!(commit.inputs.len(), 1);
-        // BRC20 inscription output + change.
-        assert_eq!(commit.outputs.len(), 2);
-        assert_eq!(commit.input_selector, UtxoProto::InputSelector::UseAll);
-        assert_eq!(commit.fee_per_vb, 25);
-        assert_eq!(commit.change_output, Default::default());
-        assert!(commit.disable_change_output);
+    let commit = plan.commit.unwrap();
+    // One input covers all outputs.
+    assert_eq!(commit.version, 2);
+    assert!(commit.private_key.is_empty());
+    assert_eq!(commit.inputs.len(), 1);
+    // BRC20 inscription output + change.
+    assert_eq!(commit.outputs.len(), 2);
+    // Use inputs as provided (already selected by TransactionPlan).
+    assert_eq!(commit.input_selector, UtxoProto::InputSelector::UseAll);
+    assert_eq!(commit.fee_per_vb, 25);
+    // Change output generation is disabled, inclulded in `commit.outputs`.
+    assert_eq!(commit.change_output, Default::default());
+    assert!(commit.disable_change_output);
 
-        // Check first input.
-        assert_eq!(commit.inputs[0], tx1);
+    // Check first input.
+    assert_eq!(commit.inputs[0], tx1);
 
-        // Check first output.
-        let res_out_brc20 = &commit.outputs[0];
-        assert_eq!(res_out_brc20.value, 3846);
-        let Proto::mod_Output::OneOfto_recipient::builder(builder) = &res_out_brc20.to_recipient else { panic!() };
-        let Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
-        assert_eq!(brc20.inscribe_to, alice_pubkey);
-        assert_eq!(brc20.ticker, "oadf");
-        assert_eq!(brc20.transfer_amount, 20);
+    // Check first output.
+    let res_out_brc20 = &commit.outputs[0];
+    assert_eq!(res_out_brc20.value, 3846);
+    let Proto::mod_Output::OneOfto_recipient::builder(builder) = &res_out_brc20.to_recipient else { panic!() };
+    let Proto::mod_Output::mod_OutputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
+    assert_eq!(brc20.inscribe_to, alice_pubkey);
+    assert_eq!(brc20.ticker, "oadf");
+    assert_eq!(brc20.transfer_amount, 20);
 
-        // Check second output.
-        let res_out_change = &commit.outputs[1];
-        assert_eq!(res_out_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
-        assert_eq!(res_out_change.to_recipient, change_output.to_recipient);
+    // Check second output (ie. change output).
+    let res_out_change = &commit.outputs[1];
+    assert_eq!(res_out_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
+    assert_eq!(res_out_change.to_recipient, change_output.to_recipient);
 
-        // Check basics of the COMMIT transaction.
+    // Check basics of the REVEAL transaction.
 
-        let reveal = plan.reveal.unwrap();
-        assert_eq!(reveal.version, 2);
-        assert!(reveal.private_key.is_empty());
-        // One inputs covers all outputs.
-        assert_eq!(reveal.inputs.len(), 1);
-        assert_eq!(reveal.outputs.len(), 1);
-        assert_eq!(reveal.input_selector, UtxoProto::InputSelector::UseAll);
-        assert_eq!(reveal.fee_per_vb, 25);
-        assert_eq!(reveal.change_output, Default::default());
-        assert!(reveal.disable_change_output);
+    let reveal = plan.reveal.unwrap();
+    assert_eq!(reveal.version, 2);
+    assert!(reveal.private_key.is_empty());
+    // One inputs covers all outputs.
+    assert_eq!(reveal.inputs.len(), 1);
+    assert_eq!(reveal.outputs.len(), 1);
+    // Use inputs as provided.
+    assert_eq!(reveal.input_selector, UtxoProto::InputSelector::UseAll);
+    assert_eq!(reveal.fee_per_vb, 25);
+    // Change output generation is disabled.
+    assert_eq!(reveal.change_output, Default::default());
+    assert!(reveal.disable_change_output);
 
-        // Check first and only input.
-        let res_in_brc20 = &reveal.inputs[0];
-        //assert_eq!(plan_input.txid, )
-        assert_eq!(res_in_brc20.sequence, u32::MAX);
-        assert_eq!(res_in_brc20.value, 3846);
-        assert_eq!(
-            res_in_brc20.sighash_type,
-            UtxoProto::SighashType::UseDefault
-        );
-        let Proto::mod_Input::OneOfto_recipient::builder(builder) = &res_in_brc20.to_recipient else { panic!() };
-        let Proto::mod_Input::mod_InputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
-        assert_eq!(brc20.inscribe_to, alice_pubkey);
-        assert_eq!(brc20.ticker, "oadf");
-        assert_eq!(brc20.transfer_amount, 20);
+    // Check first and only input.
+    let res_in_brc20 = &reveal.inputs[0];
+    //assert_eq!(plan_input.txid, )
+    assert_eq!(res_in_brc20.sequence, u32::MAX);
+    assert_eq!(res_in_brc20.value, 3846);
+    assert_eq!(
+        res_in_brc20.sighash_type,
+        UtxoProto::SighashType::UseDefault
+    );
+    let Proto::mod_Input::OneOfto_recipient::builder(builder) = &res_in_brc20.to_recipient else { panic!() };
+    let Proto::mod_Input::mod_InputBuilder::OneOfvariant::brc20_inscribe(brc20) = &builder.variant else { panic!() };
+    assert_eq!(brc20.inscribe_to, alice_pubkey);
+    assert_eq!(brc20.ticker, "oadf");
+    assert_eq!(brc20.transfer_amount, 20);
 
-        // Check first and only output.
-        assert_eq!(reveal.outputs[0], tagged_output);
-    } else {
-        panic!()
-    }
+    // Check first and only output.
+    assert_eq!(reveal.outputs[0], tagged_output);
 }
