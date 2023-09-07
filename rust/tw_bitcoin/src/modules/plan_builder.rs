@@ -95,7 +95,7 @@ impl BitcoinPlanBuilder {
         };
 
         // Create the full COMMIT transaction with the appropriately selected inputs.
-        let mut commit_signing = Proto::SigningInput {
+        let commit_signing = Proto::SigningInput {
             inputs: proto
                 .inputs
                 .iter()
@@ -111,6 +111,8 @@ impl BitcoinPlanBuilder {
             disable_change_output: proto.disable_change_output,
             ..Default::default()
         };
+
+        let mut commit_signing = pre_processor(commit_signing);
 
         // We now determine the Txid of the COMMIT transaction, which we will have
         // to use in the REVEAL transaction.
@@ -136,6 +138,22 @@ impl BitcoinPlanBuilder {
 
         commit_signing.inputs = selected_inputs;
 
+        // Update the change amount to calculated amount.
+        if !proto.disable_change_output && presigned.utxo_outputs.len() == 2 {
+            let calculated_change = presigned
+                .utxo_outputs
+                .last()
+                .expect("No Utxo outputs generated")
+                .value;
+
+            let change_output = commit_signing
+                .change_output
+                .as_mut()
+                .expect("change output not set");
+
+            change_output.value = calculated_change;
+        }
+
         // Now we construct the *actual* REVEAL transaction. Note that we use the
         let brc20_input = Proto::Input {
             txid: commit_txid.into(), // Reference COMMIT transaction.
@@ -151,9 +169,13 @@ impl BitcoinPlanBuilder {
             inputs: vec![brc20_input],
             outputs: vec![tagged_output],
             input_selector: UtxoProto::InputSelector::UseAll,
+            change_output: Default::default(),
+            fee_per_vb: proto.fee_per_vb,
             disable_change_output: true,
             ..Default::default()
         };
+
+        let reveal_signing = pre_processor(reveal_signing);
 
         Proto::mod_TransactionPlan::Brc20Plan {
             commit: Some(commit_signing),

@@ -133,7 +133,7 @@ impl BitcoinEntry {
             .collect::<Result<Vec<_>>>()?;
 
         // Convert output builders into Utxo outputs.
-        let utxo_outputs = proto
+        let mut utxo_outputs = proto
             .outputs
             .iter()
             .map(crate::modules::transactions::OutputBuilder::utxo_from_proto)
@@ -174,6 +174,21 @@ impl BitcoinEntry {
         // Generate the sighashes to be signed.
         let utxo_presigning = tw_utxo::compiler::Compiler::preimage_hashes(utxo_signing);
         handle_utxo_error(&utxo_presigning.error)?;
+
+        // If a change output was created by the Utxo compiler, we return it here too.
+        if utxo_presigning.outputs.len() == utxo_outputs.len() + 1 {
+            let change_output = utxo_presigning
+                .outputs
+                .last()
+                .expect("expected change output");
+
+            utxo_outputs.push(Proto::mod_PreSigningOutput::TxOut {
+                value: change_output.value,
+                script_pubkey: change_output.script_pubkey.to_vec().into(),
+                control_block: Default::default(),
+                taproot_payload: Default::default(),
+            })
+        }
 
         Ok(Proto::PreSigningOutput {
             error: Proto::Error::OK,
