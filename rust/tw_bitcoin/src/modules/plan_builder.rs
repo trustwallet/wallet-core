@@ -1,9 +1,9 @@
+use crate::modules::utils::hard_clone_proto_output;
 use crate::{aliases::*, pre_processor, BitcoinEntry};
 use tw_coin_entry::coin_entry::CoinEntry;
 use tw_coin_entry::modules::plan_builder::PlanBuilder;
 use tw_proto::BitcoinV2::Proto;
 use tw_proto::BitcoinV2::Proto::mod_Input::InputBrc20Inscription;
-use tw_proto::BitcoinV2::Proto::mod_Output::OutputBrc20Inscription;
 use tw_proto::Utxo::Proto as UtxoProto;
 
 pub struct BitcoinPlanBuilder;
@@ -106,7 +106,8 @@ impl BitcoinPlanBuilder {
             input_selector: proto.input_selector,
             change_output: proto
                 .change_output
-                .map(super::utils::hard_clone_proto_output),
+                .as_ref()
+                .map(|output| super::utils::hard_clone_proto_output(output.clone())),
             fee_per_vb: proto.fee_per_vb,
             disable_change_output: proto.disable_change_output,
             ..Default::default()
@@ -140,17 +141,18 @@ impl BitcoinPlanBuilder {
 
         // Update the change amount to calculated amount.
         if !proto.disable_change_output && presigned.utxo_outputs.len() == 2 {
-            let change_output = presigned
+            let change_amount = presigned
                 .utxo_outputs
                 .last()
-                .expect("No Utxo outputs generated");
+                .expect("No Utxo outputs generated")
+                .value;
 
-            commit_signing.outputs.push(Proto::Output {
-                value: change_output.value,
-                to_recipient: Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(
-                    change_output.script_pubkey.to_vec().into(),
-                ),
-            });
+            let mut change_output = proto.change_output.expect("change output expected");
+            change_output.value = change_amount;
+
+            commit_signing
+                .outputs
+                .push(hard_clone_proto_output(change_output));
         }
 
         commit_signing.input_selector = UtxoProto::InputSelector::UseAll;

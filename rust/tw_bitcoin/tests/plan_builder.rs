@@ -1,7 +1,5 @@
 mod common;
 
-use bitcoin::PublicKey;
-use bitcoin::ScriptBuf;
 use common::{hex, ONE_BTC};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::BitcoinEntry;
@@ -16,9 +14,6 @@ fn transaction_plan_compose_brc20() {
     let _coin = EmptyCoinContext;
 
     let alice_private_key = hex("e253373989199da27c48680e3a3fc0f648d50f9a727ef17a7fe6a4dc3b159129");
-    let alice_pubkey = hex("030f209b6ada5edb42c77fd2bc64ad650ae38314c8f451f3e36d80bc8e26f132cb");
-    let alice_native_pubkey = PublicKey::from_slice(&alice_pubkey).unwrap();
-
     let txid1: Vec<u8> = hex("181c84965c9ea86a5fac32fdbd5f73a21a7a9e749fb6ab97e273af2329f6b911")
         .into_iter()
         .rev()
@@ -82,7 +77,7 @@ fn transaction_plan_compose_brc20() {
             Proto::mod_ComposePlan::ComposeBrc20Plan {
                 inputs: vec![tx1.clone(), tx2.clone()],
                 input_selector: UtxoProto::InputSelector::SelectAscending,
-                tagged_output: Some(tagged_output),
+                tagged_output: Some(tagged_output.clone()),
                 inscription: Some(brc20_inscription),
                 fee_per_vb: 25,
                 change_output: Some(change_output.clone()),
@@ -95,9 +90,11 @@ fn transaction_plan_compose_brc20() {
     let built = builder.plan(&_coin, compose);
 
     if let Proto::mod_TransactionPlan::OneOfplan::brc20(plan) = built.plan {
-        let commit = plan.commit.unwrap();
+        // Check basics of the COMMIT transaction.
 
+        let commit = plan.commit.unwrap();
         // One input covers all outputs.
+        assert_eq!(commit.version, 2);
         assert_eq!(commit.inputs.len(), 1);
         // BRC20 inscription output + change.
         assert_eq!(commit.outputs.len(), 2);
@@ -106,9 +103,10 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(commit.change_output, Default::default());
         assert!(commit.disable_change_output);
 
+        // Check first input.
         assert_eq!(commit.inputs[0], tx1);
 
-        // Checkout first output
+        // Check first output.
         let res_brc20 = &commit.outputs[0];
         assert_eq!(res_brc20.value, 3846);
         let Proto::mod_Output::OneOfto_recipient::builder(builder) = &res_brc20.to_recipient else { panic!() };
@@ -120,14 +118,11 @@ fn transaction_plan_compose_brc20() {
         // Check second output.
         let res_change = &commit.outputs[1];
         assert_eq!(res_change.value, ONE_BTC - 3846 - 3175); // Change: tx1 value - out1 value
-        let Proto::mod_Output::OneOfto_recipient::custom_script_pubkey(change_script_pubkey) = &res_change.to_recipient else { panic!() };
-        assert_eq!(
-            change_script_pubkey.as_ref(),
-            ScriptBuf::new_v0_p2wpkh(&alice_native_pubkey.wpubkey_hash().unwrap()).as_bytes()
-        );
+        assert_eq!(res_change.to_recipient, change_output.to_recipient);
+
+        // Check basics of the COMMIT transaction.
 
         let reveal = plan.reveal.unwrap();
-
         // One inputs covers all outputs.
         assert_eq!(reveal.inputs.len(), 1);
         assert_eq!(reveal.outputs.len(), 1);
@@ -135,6 +130,8 @@ fn transaction_plan_compose_brc20() {
         assert_eq!(reveal.fee_per_vb, 25);
         assert_eq!(reveal.change_output, Default::default());
         assert!(reveal.disable_change_output);
+
+        assert_eq!(reveal.outputs[0], tagged_output);
     } else {
         panic!()
     }
