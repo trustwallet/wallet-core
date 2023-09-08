@@ -8,7 +8,8 @@ name = "wallet_core_rs"
 crate-type = ["staticlib", "rlib"] # Creates static lib
 
 [features]
-default = ["ethereum-rlp"]
+default = ["bitcoin-legacy", "ethereum-rlp"]
+bitcoin-legacy = []
 ethereum-rlp = []
 
 [dependencies]
