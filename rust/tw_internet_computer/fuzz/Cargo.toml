@@ -1,0 +1,31 @@
+[package]
+name = "tw_internet_computer-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
+
+[dependencies.tw_internet_computer]
+path = ".."
+
+
+[dependencies.tw_keypair]
+path = "../../tw_keypair"
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "tw_internet_computer_transfer"
+path = "fuzz_targets/tw_internet_computer_transfer.rs"
+test = false
+doc = false
