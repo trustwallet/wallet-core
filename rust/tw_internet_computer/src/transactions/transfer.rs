@@ -20,12 +20,19 @@ use crate::{
 
 use super::SignTransactionError;
 
+/// Arguments to be used with [transfer] to create a signed transaction enveloper pair.
 #[derive(Clone, Debug)]
 pub struct TransferArgs {
+    /// The memo field is used as a method to help identify the transaction.
     pub memo: u64,
+    /// The amount of ICP to send as e8s.
     pub amount: u64,
+    /// The maximum fee will to be paid to complete the transfer.
+    /// If not provided, the minimum fee will be applied to the transaction. Currently 10_000 e8s (0.00010000 ICP).
     pub max_fee: Option<u64>,
+    /// The address to send the amount to.
     pub to: String,
+    /// The current timestamp in nanoseconds.
     pub current_timestamp_nanos: u64,
 }
 
@@ -60,6 +67,8 @@ impl TryFrom<TransferArgs> for SendRequest<'_> {
 /// The endpoint on the ledger canister that is used to make transfers.
 const METHOD_NAME: &str = "send_pb";
 
+/// Given a secp256k1 private key, the canister ID of an ICP-based ledger canister, and the actual transfer args,
+/// this function creates a signed transaction to be sent to a Rosetta API node.
 pub fn transfer(
     private_key: PrivateKey,
     canister_id: Principal,
