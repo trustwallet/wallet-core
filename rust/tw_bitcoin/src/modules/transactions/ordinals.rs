@@ -77,7 +77,7 @@ fn create_envelope(mime: &[u8], data: &[u8], internal_key: PublicKey) -> Result<
         let mut data_buf = PushBytesBuf::new();
         data_buf
             .extend_from_slice(chunk)
-            .expect("chunk size is too large");
+            .map_err(|_| Error::from(Proto::Error::Error_ordinal_payload_too_large))?;
 
         // Push buffer
         builder = builder.push_slice(data_buf);
