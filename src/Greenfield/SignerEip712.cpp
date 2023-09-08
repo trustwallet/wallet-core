@@ -58,7 +58,7 @@ json makeEip712Types(const TypesMap& msgTypes) {
 // https://github.com/bnb-chain/greenfield-cosmos-sdk/blob/master/x/auth/tx/eip712.go#L90
 // Please note that all parameters repeat the same scheme as `cosmos.bank.v1beta1.MsgSend`.
 //
-// Use `https://dcellar.io/` with MetaMask to get proper names of types and
+// Use `https://dcellar.io/` with MetaMask to get proper names of types.
 json msgSendTypes() {
     // `MsgSend` specific types.
     TypesMap msgTypes = {
@@ -91,7 +91,7 @@ json msgSendTypes() {
 // https://github.com/bnb-chain/greenfield-cosmos-sdk/blob/master/x/auth/tx/eip712.go#L90
 // Please note that all parameters repeat the same scheme as `greenfield.bridge.MsgTransferOut`.
 //
-// Use `https://dcellar.io/` with MetaMask to get proper names of types and
+// Use `https://dcellar.io/` with MetaMask to get proper names of types.
 json msgTransferOutTypes() {
     // `MsgSend` specific types.
     TypesMap msgTypes = {
@@ -115,6 +115,37 @@ json msgTransferOutTypes() {
             namedParam("sequence", "uint256"),
             namedParam("timeout_height", "uint256")
         })}
+    };
+
+    return makeEip712Types(msgTypes);
+}
+
+// `TypeMsg1Amount` and `Msg1` type names are chosen automatically at the function:
+// https://github.com/bnb-chain/greenfield-cosmos-sdk/blob/master/x/auth/tx/eip712.go#L90
+// Please note that all parameters repeat the same scheme as `cosmos.staking.v1beta1.MsgDelegate` and `cosmos.staking.v1beta1.MsgUndelegate`.
+json stakingMsgTypes() {
+    // `MsgSend` specific types.
+    TypesMap msgTypes = {
+        // `TypeMsg1Amount` type represents  `cosmos.bank.v1beta1.MsgSend.amount`.
+        {"TypeMsg1Amount", json::array({
+                                           namedParam("amount", "string"),
+                                           namedParam("denom", "string"),
+                                       })},
+        {"Msg1", json::array({
+                                 namedParam("amount", "TypeMsg1Amount"),
+                                 namedParam("delegator_address", "string"),
+                                 namedParam("type", "string"),
+                                 namedParam("validator_address", "string")
+                             })},
+        {"Tx", json::array({
+                               namedParam("account_number", "uint256"),
+                               namedParam("chain_id", "uint256"),
+                               namedParam("fee", "Fee"),
+                               namedParam("memo", "string"),
+                               namedParam("msg1", "Msg1"),
+                               namedParam("sequence", "uint256"),
+                               namedParam("timeout_height", "uint256")
+                           })}
     };
 
     return makeEip712Types(msgTypes);
@@ -218,6 +249,50 @@ json SignerEip712::wrapMsgTransferOutToTypedData(const Proto::SigningInput& inpu
     };
 }
 
+template <typename StakingMsg>
+json wrapStakingMsgToTypedData(const Proto::SigningInput& input, const StakingMsg& stakingMsg, const std::string& typePrefix) {
+    return json{
+        {"types", internal::types::stakingMsgTypes()},
+        {"primaryType", "Tx"},
+        {"domain", domainDataJson(input.eth_chain_id())},
+        {"message", json{
+            {"account_number", std::to_string(input.account_number())},
+            {"chain_id", input.eth_chain_id()},
+            {"fee", feeToJsonData(input, stakingMsg.delegator_address())},
+            {"memo", input.memo()},
+            {"msg1", json{
+                {"amount", json{
+                    {"amount", stakingMsg.amount().amount()},
+                    {"denom", stakingMsg.amount().denom()}
+                }},
+                {"delegator_address", stakingMsg.delegator_address()},
+                {"validator_address", stakingMsg.validator_address()},
+                {"type", typePrefix}
+            }},
+            {"sequence", std::to_string(input.sequence())},
+            {"timeout_height", TIMEOUT_HEIGHT_STR}
+        }}
+    };
+}
+
+// Returns a JSON data of the `EIP712Domain` type using `MsgDelegate` transaction.
+json SignerEip712::wrapMsgDelegateToTypedData(const Proto::SigningInput& input, const Proto::Message_Delegate& msgDelegate) {
+    std::string typePrefix = MSG_DELEGATE_TYPE;
+    if (!msgDelegate.type_prefix().empty()) {
+        typePrefix = msgDelegate.type_prefix();
+    }
+    return wrapStakingMsgToTypedData(input, msgDelegate, typePrefix);
+}
+
+// Returns a JSON data of the `EIP712Domain` type using `MsgUndelegate` transaction.
+json SignerEip712::wrapMsgUndelegateToTypedData(const Proto::SigningInput& input, const Proto::Message_Undelegate& msgUndelegate) {
+    std::string typePrefix = MSG_UNDELEGATE_TYPE;
+    if (!msgUndelegate.type_prefix().empty()) {
+        typePrefix = msgUndelegate.type_prefix();
+    }
+    return wrapStakingMsgToTypedData(input, msgUndelegate, typePrefix);
+}
+
 SigningResult<json> SignerEip712::wrapTxToTypedData(const Proto::SigningInput& input) {
     if (input.messages_size() != 1) {
         return SigningResult<json>::failure(Common::Proto::SigningError::Error_invalid_params);
@@ -227,6 +302,14 @@ SigningResult<json> SignerEip712::wrapTxToTypedData(const Proto::SigningInput& i
         case Proto::Message::kBridgeTransferOut: {
             const auto &msgTransferOut = input.messages(0).bridge_transfer_out();
             return SigningResult<json>::success(wrapMsgTransferOutToTypedData(input, msgTransferOut));
+        }
+        case Proto::Message::kStakeMessage: {
+            const auto& msgDelegate = input.messages(0).stake_message();
+            return SigningResult<json>::success(wrapMsgDelegateToTypedData(input, msgDelegate));
+        }
+        case Proto::Message::kUnstakeMessage: {
+            const auto& msgUndelegate = input.messages(0).unstake_message();
+            return SigningResult<json>::success(wrapMsgUndelegateToTypedData(input, msgUndelegate));
         }
         case Proto::Message::kSendCoinsMessage:
         default: {

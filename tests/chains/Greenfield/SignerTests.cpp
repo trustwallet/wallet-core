@@ -387,6 +387,191 @@ TEST(GreenfieldSigner, SignerEip712TransferOut) {
     EXPECT_EQ(hex(signature), expectedSignature);
 }
 
+TEST(GreenfieldSigner, SignerEip712Delegate) {
+    Proto::SigningInput input;
+    input.set_signing_mode(Proto::Eip712);
+    input.set_account_number(15560);
+    input.set_cosmos_chain_id("greenfield_9000-1");
+    input.set_eth_chain_id("9000");
+    input.set_sequence(2);
+
+    auto& msg = *input.add_messages();
+    auto& msgSend = *msg.mutable_stake_message();
+    msgSend.set_delegator_address("0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1");
+    msgSend.set_validator_address("0x45D415799659720f4c90F7fd1Ef5D7390Ffc9166");
+    msgSend.mutable_amount()->set_denom("BNB");
+    msgSend.mutable_amount()->set_amount("100000000000000");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("BNB");
+    amountOfFee->set_amount("2000000000000000");
+
+    auto typedData = SignerEip712::wrapTxToTypedData(input).payload();
+    auto expectedJson = json::parse(R"(
+{
+    "types": {
+        "Coin": [
+            {
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "name": "denom",
+                "type": "string"
+            }
+        ],
+        "EIP712Domain": [
+            {
+                "name": "chainId",
+                "type": "uint256"
+            },
+            {
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "name": "salt",
+                "type": "string"
+            },
+            {
+                "name": "verifyingContract",
+                "type": "string"
+            },
+            {
+                "name": "version",
+                "type": "string"
+            }
+        ],
+        "Fee": [
+            {
+                "name": "amount",
+                "type": "Coin[]"
+            },
+            {
+                "name": "gas_limit",
+                "type": "uint256"
+            },
+            {
+                "name": "granter",
+                "type": "string"
+            },
+            {
+                "name": "payer",
+                "type": "string"
+            }
+        ],
+        "Msg1": [
+            {
+                "name": "amount",
+                "type": "TypeMsg1Amount"
+            },
+            {
+                "name": "delegator_address",
+                "type": "string"
+            },
+            {
+                "name": "type",
+                "type": "string"
+            },
+            {
+                "name": "validator_address",
+                "type": "string"
+            }
+        ],
+        "Tx": [
+            {
+                "name": "account_number",
+                "type": "uint256"
+            },
+            {
+                "name": "chain_id",
+                "type": "uint256"
+            },
+            {
+                "name": "fee",
+                "type": "Fee"
+            },
+            {
+                "name": "memo",
+                "type": "string"
+            },
+            {
+                "name": "msg1",
+                "type": "Msg1"
+            },
+            {
+                "name": "sequence",
+                "type": "uint256"
+            },
+            {
+                "name": "timeout_height",
+                "type": "uint256"
+            }
+        ],
+        "TypeMsg1Amount": [
+            {
+                "name": "amount",
+                "type": "string"
+            },
+            {
+                "name": "denom",
+                "type": "string"
+            }
+        ]
+    },
+    "primaryType": "Tx",
+    "domain": {
+        "name": "Greenfield Tx",
+        "version": "1.0.0",
+        "chainId": "9000",
+        "verifyingContract": "greenfield",
+        "salt": "0"
+    },
+    "message": {
+        "account_number": "15560",
+        "chain_id": "9000",
+        "fee": {
+            "amount": [
+                {
+                    "amount": "2000000000000000",
+                    "denom": "BNB"
+                }
+            ],
+            "gas_limit": "200000",
+            "granter": "",
+            "payer": "0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1"
+        },
+        "memo": "",
+        "msg1": {
+            "amount": {
+                "amount": "100000000000000",
+                "denom": "BNB"
+            },
+            "delegator_address": "0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1",
+            "type": "/cosmos.staking.v1beta1.MsgDelegate",
+            "validator_address": "0x45D415799659720f4c90F7fd1Ef5D7390Ffc9166"
+        },
+        "sequence": "2",
+        "timeout_height": "0"
+    }
+}
+    )");
+    EXPECT_EQ(typedData, expectedJson);
+
+    auto expectedPreHash = "e3737a0fbd69208b4524e199294be92a73a17cbc5e35ef8e400939f42b1ca770";
+    auto preHash = SignerEip712::preImageHash(input).payload();
+    EXPECT_EQ(hex(preHash.typedDataHash), expectedPreHash);
+
+    auto privateKey = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto signature = SignerEip712::sign(input).payload();
+    auto expectedSignature = "5b3313eca47c9cc46110bd68cec6791ae9829afac2c014b543f0e28970ebfdec31520711960554a01282f62988e3d9a9af5a0a0ddd72f33ecf49d0fb38e48b751c";
+    EXPECT_EQ(hex(signature), expectedSignature);
+}
+
 TEST(GreenfieldSigner, SignMsgSend9F895C) {
     // Successfully broadcasted https://greenfieldscan.com/tx/0x9f895cf2dd64fb1f428cefcf2a6585a813c3540fc9fe1ef42db1da2cb1df55ab
 
@@ -488,6 +673,44 @@ TEST(GreenfieldSigner, SignMsgTransferOut) {
     EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
     EXPECT_EQ(hex(output.signature()), "ce030c1ca1bbcd14cbf337b1078fbc09a199b15665e1aadf9f6bba0b6c90489729f0b3481f3a5e6062fa5f90e444c34b67e894cc5bb9f1d213c80ce160421f381c");
     EXPECT_EQ(output.serialized(), R"({"mode":"BROADCAST_MODE_SYNC","tx_bytes":"CpkBCpYBCiEvZ3JlZW5maWVsZC5icmlkZ2UuTXNnVHJhbnNmZXJPdXQScQoqMHg5ZDFkOTdhREZjZDMyNEJiZDYwM0QzODcyQkQ3OGUwNDA5ODUxMGIxEioweDlkMWQ5N2FERmNkMzI0QmJkNjAzRDM4NzJCRDc4ZTA0MDk4NTEwYjEaFwoDQk5CEhA1NjcwMDAwMDAwMDAwMDAwEnUKWApNCiYvY29zbW9zLmNyeXB0by5ldGguZXRoc2VjcDI1NmsxLlB1YktleRIjCiECee80Bk2hDbBGPHBIBha6AgcD7DpFAm3ve+vSCC9db8gSBQoDCMgFGAcSGQoUCgNCTkISDTYwMDAwMDAwMDAwMDAQsAkaQc4DDByhu80Uy/M3sQePvAmhmbFWZeGq359rugtskEiXKfCzSB86XmBi+l+Q5ETDS2folMxbufHSE8gM4WBCHzgc"})");
+}
+
+TEST(GreenfieldSigner, SignMsgDelegate) {
+    // Successfully broadcasted Greenfield: https://greenfieldscan.com/tx/38C29C530A74946CFD22EE07DA642F5EF9399BC9AEA59EC56A9B5BE16DE16CE7
+    // BSC (parent transaction): https://testnet.bscscan.com/tx/0x7f73c8a362e14e58cb5e0ec17616afc50eff7aa398db472383a6d017c8a5861a
+
+    Proto::SigningInput input;
+    input.set_signing_mode(Proto::Eip712);
+    input.set_account_number(9447);
+    input.set_cosmos_chain_id("greenfield_5600-1");
+    input.set_eth_chain_id("5600");
+    input.set_sequence(1);
+    input.set_mode(Proto::BroadcastMode::SYNC);
+
+    auto& msg = *input.add_messages();
+    auto& msgTransferOut = *msg.mutable_stake_message();
+    msgTransferOut.set_delegator_address("0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1");
+    msgTransferOut.set_validator_address("0xb3e28a807c2eab41000eda29ac48852e86fa0383");
+    auto amountOfTx = msgTransferOut.mutable_amount();
+    amountOfTx->set_denom("BNB");
+    amountOfTx->set_amount("6780000000000000");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(1200);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("BNB");
+    amountOfFee->set_amount("6000000000000");
+
+    auto privateKey = parse_hex("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+    EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
+
+    // TODO
+    std::cout << output.serialized() << std::endl;
+    // EXPECT_EQ(hex(output.signature()), "ce030c1ca1bbcd14cbf337b1078fbc09a199b15665e1aadf9f6bba0b6c90489729f0b3481f3a5e6062fa5f90e444c34b67e894cc5bb9f1d213c80ce160421f381c");
+    // EXPECT_EQ(output.serialized(), R"({"mode":"BROADCAST_MODE_SYNC","tx_bytes":"CpkBCpYBCiEvZ3JlZW5maWVsZC5icmlkZ2UuTXNnVHJhbnNmZXJPdXQScQoqMHg5ZDFkOTdhREZjZDMyNEJiZDYwM0QzODcyQkQ3OGUwNDA5ODUxMGIxEioweDlkMWQ5N2FERmNkMzI0QmJkNjAzRDM4NzJCRDc4ZTA0MDk4NTEwYjEaFwoDQk5CEhA1NjcwMDAwMDAwMDAwMDAwEnUKWApNCiYvY29zbW9zLmNyeXB0by5ldGguZXRoc2VjcDI1NmsxLlB1YktleRIjCiECee80Bk2hDbBGPHBIBha6AgcD7DpFAm3ve+vSCC9db8gSBQoDCMgFGAcSGQoUCgNCTkISDTYwMDAwMDAwMDAwMDAQsAkaQc4DDByhu80Uy/M3sQePvAmhmbFWZeGq359rugtskEiXKfCzSB86XmBi+l+Q5ETDS2folMxbufHSE8gM4WBCHzgc"})");
 }
 
 TEST(GreenfieldSigner, SignNoMessages) {

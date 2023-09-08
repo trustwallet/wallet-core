@@ -11,6 +11,7 @@
 #include "Cosmos/Protobuf/bank_tx.pb.h"
 #include "Cosmos/Protobuf/greenfield_ethsecp256k1.pb.h"
 #include "Cosmos/Protobuf/greenfield_tx.pb.h"
+#include "Cosmos/Protobuf/staking_tx.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "PrivateKey.h"
 
@@ -69,6 +70,28 @@ static SigningResult<Any> convertMessage(const Proto::Message& msg) {
             *msgTransferOut.mutable_amount() = convertCoin(transferOut.amount());
 
             any.PackFrom(msgTransferOut, ProtobufAnyNamespacePrefix);
+            break;
+        }
+        case Proto::Message::kStakeMessage: {
+            const auto& stake = msg.stake_message();
+
+            auto msgDelegate = cosmos::staking::v1beta1::MsgDelegate();
+            msgDelegate.set_delegator_address(stake.delegator_address());
+            msgDelegate.set_validator_address(stake.validator_address());
+            *msgDelegate.mutable_amount() = convertCoin(stake.amount());
+
+            any.PackFrom(msgDelegate, ProtobufAnyNamespacePrefix);
+            break;
+        }
+        case Proto::Message::kUnstakeMessage: {
+            const auto& stake = msg.unstake_message();
+
+            auto msgDelegate = cosmos::staking::v1beta1::MsgUndelegate();
+            msgDelegate.set_delegator_address(stake.delegator_address());
+            msgDelegate.set_validator_address(stake.validator_address());
+            *msgDelegate.mutable_amount() = convertCoin(stake.amount());
+
+            any.PackFrom(msgDelegate, ProtobufAnyNamespacePrefix);
             break;
         }
         default: {

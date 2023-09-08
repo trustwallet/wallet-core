@@ -51,10 +51,28 @@ message Message {
         string type_prefix = 4;
     }
 
+    // cosmos-sdk/MsgDelegate
+    message Delegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+        string type_prefix = 4;
+    }
+
+    // cosmos-sdk/MsgUndelegate to unstake
+    message Undelegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+        string type_prefix = 4;
+    }
+
     // The payload message
     oneof message_oneof {
         Send send_coins_message = 1;
         BridgeTransferOut bridge_transfer_out = 2;
+        Delegate stake_message = 3;
+        Undelegate unstake_message = 4;
     }
 }
 
