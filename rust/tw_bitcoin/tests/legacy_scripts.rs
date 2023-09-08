@@ -18,12 +18,12 @@ const SATOSHIS: i64 = 0;
 const PUBKEY: &str = "028d7dce6d72fb8f7af9566616c6436349c67ad379f2404dd66fe7085fe0fba28f";
 
 #[test]
-fn ffi_tw_build_p2pkh_script() {
+fn ffi_tw_bitcoin_legacy_build_p2pkh_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        legacy_ffi::tw_build_p2pkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
+        legacy_ffi::tw_bitcoin_legacy_build_p2pkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
             .into_vec()
     };
 
@@ -37,12 +37,12 @@ fn ffi_tw_build_p2pkh_script() {
 }
 
 #[test]
-fn ffi_tw_build_p2wpkh_script() {
+fn ffi_tw_bitcoin_legacy_build_p2wpkh_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        legacy_ffi::tw_build_p2wpkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
+        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
             .into_vec()
     };
 
@@ -56,12 +56,12 @@ fn ffi_tw_build_p2wpkh_script() {
 }
 
 #[test]
-fn ffi_tw_build_p2tr_key_path_script() {
+fn ffi_tw_bitcoin_legacy_build_p2tr_key_path_script() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        legacy_ffi::tw_build_p2tr_key_path_script(
+        legacy_ffi::tw_bitcoin_legacy_build_p2tr_key_path_script(
             SATOSHIS,
             pubkey_slice.as_ptr(),
             pubkey_slice.len(),
@@ -80,7 +80,7 @@ fn ffi_tw_build_p2tr_key_path_script() {
 }
 
 #[test]
-fn ffi_tw_build_brc20_transfer_inscription() {
+fn ffi_tw_bitcoin_legacy_build_brc20_transfer_inscription() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
@@ -90,7 +90,7 @@ fn ffi_tw_build_brc20_transfer_inscription() {
 
     // Call the FFI function.
     let raw = unsafe {
-        legacy_ffi::tw_build_brc20_transfer_inscription(
+        legacy_ffi::tw_bitcoin_legacy_build_brc20_transfer_inscription(
             c_ticker.as_ptr(),
             brc20_amount,
             SATOSHIS,
@@ -124,7 +124,7 @@ fn ffi_tw_build_brc20_transfer_inscription() {
 }
 
 #[test]
-fn ffi_tw_bitcoin_build_nft_inscription() {
+fn ffi_tw_bitcoin_legacy_build_nft_inscription() {
     let pubkey_slice = hex::decode(PUBKEY).unwrap();
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
@@ -135,7 +135,7 @@ fn ffi_tw_bitcoin_build_nft_inscription() {
 
     // Call the FFI function.
     let raw = unsafe {
-        legacy_ffi::tw_bitcoin_build_nft_inscription(
+        legacy_ffi::tw_bitcoin_legacy_build_nft_inscription(
             c_mime_type.as_ptr(),
             payload.as_ptr(),
             payload.len(),
