@@ -23,8 +23,12 @@ fn ffi_tw_bitcoin_legacy_build_p2pkh_script() {
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_build_p2pkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_build_p2pkh_script(
+            SATOSHIS,
+            pubkey_slice.as_ptr(),
+            pubkey_slice.len(),
+        )
+        .into_vec()
     };
 
     // The expected script.
@@ -42,8 +46,12 @@ fn ffi_tw_bitcoin_legacy_build_p2wpkh_script() {
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(
+            SATOSHIS,
+            pubkey_slice.as_ptr(),
+            pubkey_slice.len(),
+        )
+        .into_vec()
     };
 
     // The expected script.

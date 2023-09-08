@@ -13,6 +13,9 @@ use tw_proto::BitcoinV2::Proto;
 use tw_proto::Common::Proto as CommonProto;
 use tw_proto::Utxo::Proto as UtxoProto;
 
+// Builds a Taproot transaction for the legacy protobuf structure, as used by
+// `tw_bitcoin_legacy_taproot_build_and_sign_transaction` in the
+// `wallet-core-rs` crate.
 pub fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {

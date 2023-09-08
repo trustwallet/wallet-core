@@ -6,17 +6,17 @@
 
 #![allow(clippy::missing_safety_doc)]
 
+use std::ffi::{c_char, CStr};
 use tw_bitcoin::aliases::*;
 use tw_bitcoin::native::consensus::Decodable;
 use tw_bitcoin::native::{PublicKey, Transaction};
 use tw_memory::ffi::c_byte_array::CByteArray;
 use tw_memory::ffi::c_byte_array_ref::CByteArrayRef;
-use tw_proto::BitcoinV2::Proto;
-use tw_proto::Common::Proto as CommonProto;
-use tw_proto::Bitcoin::Proto as LegacyProto;
 use tw_memory::ffi::c_result::CUInt64Result;
 use tw_misc::try_or_else;
-use std::ffi::{c_char, CStr};
+use tw_proto::Bitcoin::Proto as LegacyProto;
+use tw_proto::BitcoinV2::Proto;
+use tw_proto::Common::Proto as CommonProto;
 
 // NOTE: The tests for those APIs can be found in `tw_bitcoin`.
 

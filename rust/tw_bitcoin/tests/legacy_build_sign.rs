@@ -65,8 +65,11 @@ fn ffi_proto_sign_input_p2pkh_output_p2pkh() {
 
     // Sign and build the transaction.
     let signed = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(
+            serialized.as_c_ptr(),
+            serialized.len(),
+        )
+        .into_vec()
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
@@ -129,8 +132,11 @@ fn ffi_proto_sign_input_p2pkh_output_p2wpkh() {
 
     // Sign and build the transaction.
     let signed = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(
+            serialized.as_c_ptr(),
+            serialized.len(),
+        )
+        .into_vec()
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
@@ -195,8 +201,11 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     // Sign and build the transaction.
     let signed = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(
+            serialized.as_c_ptr(),
+            serialized.len(),
+        )
+        .into_vec()
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
@@ -255,8 +264,11 @@ fn ffi_proto_sign_input_p2pkh_output_p2tr_key_path() {
 
     // Sign and build the transaction.
     let signed = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(
+            serialized.as_c_ptr(),
+            serialized.len(),
+        )
+        .into_vec()
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
@@ -298,8 +310,12 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
 
     // Change output.
     let change_output = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(16_400, alice_pubkey.as_c_ptr(), alice_pubkey.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(
+            16_400,
+            alice_pubkey.as_c_ptr(),
+            alice_pubkey.len(),
+        )
+        .into_vec()
     };
     let change_output: LegacyProto::TransactionOutput =
         tw_proto::deserialize(&change_output).unwrap();
@@ -346,8 +362,11 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
 
     // Sign and build the transaction.
     let signed = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(
+            serialized.as_c_ptr(),
+            serialized.len(),
+        )
+        .into_vec()
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
@@ -365,8 +384,12 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
 
     // Tagged output.
     let output = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(546, alice_pubkey.as_c_ptr(), alice_pubkey.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_build_p2wpkh_script(
+            546,
+            alice_pubkey.as_c_ptr(),
+            alice_pubkey.len(),
+        )
+        .into_vec()
     };
     let output: LegacyProto::TransactionOutput = tw_proto::deserialize(&output).unwrap();
 
@@ -402,8 +425,11 @@ fn ffi_proto_sign_input_p2wpkh_output_brc20() {
 
     // Sign and build the transaction.
     let signed = unsafe {
-        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(serialized.as_c_ptr(), serialized.len())
-            .into_vec()
+        legacy_ffi::tw_bitcoin_legacy_taproot_build_and_sign_transaction(
+            serialized.as_c_ptr(),
+            serialized.len(),
+        )
+        .into_vec()
     };
     let signed: LegacyProto::SigningOutput = tw_proto::deserialize(&signed).unwrap();
 
