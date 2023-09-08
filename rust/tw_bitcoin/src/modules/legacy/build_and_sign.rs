@@ -102,10 +102,11 @@ fn taproot_build_and_sign_transaction(
         };
 
         let private_key = PrivateKey::from_slice(private_key, Network::Bitcoin)?;
-
         let my_pubkey = private_key.public_key(&secp256k1::Secp256k1::new());
 
-        inputs.push(input_from_legacy_utxo(my_pubkey, utxo, legacy.hash_type)?)
+        let mut input = input_from_legacy_utxo(my_pubkey, utxo, legacy.hash_type)?;
+        input.private_key = private_key.to_bytes().into();
+        inputs.push(input);
     }
 
     // We skip any sort of builders and use the provided scripts directly.
@@ -129,8 +130,11 @@ fn taproot_build_and_sign_transaction(
     // The primary payload.
     let signing_input = Proto::SigningInput {
         version: 2,
-        // TODO: each input should have an individual field for this.
-        private_key: legacy.private_key[0].to_vec().into(),
+        private_key: legacy
+            .private_key
+            .get(0)
+            .map(|pk| pk.to_vec().into())
+            .unwrap_or_default(),
         lock_time: Some(lock_time),
         inputs,
         outputs,
