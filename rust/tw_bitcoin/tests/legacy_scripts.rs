@@ -5,12 +5,12 @@ mod common;
 use bitcoin::{PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use std::ffi::CString;
-use tw_bitcoin::modules::legacy::*;
 use tw_bitcoin::modules::transactions::{
     BRC20TransferInscription, Brc20Ticker, OrdinalNftInscription,
 };
 use tw_encoding::hex;
 use tw_proto::Bitcoin::Proto as LegacyProto;
+use wallet_core_rs::ffi::bitcoin::legacy as legacy_ffi;
 
 // When building the spending conditions of inputs (scriptPubkey), then the
 // actual value is not important. We can just use 0 here.
@@ -23,7 +23,8 @@ fn ffi_tw_build_p2pkh_script() {
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        tw_build_p2pkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len()).into_vec()
+        legacy_ffi::tw_build_p2pkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
+            .into_vec()
     };
 
     // The expected script.
@@ -41,7 +42,8 @@ fn ffi_tw_build_p2wpkh_script() {
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        tw_build_p2wpkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len()).into_vec()
+        legacy_ffi::tw_build_p2wpkh_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
+            .into_vec()
     };
 
     // The expected script.
@@ -59,8 +61,12 @@ fn ffi_tw_build_p2tr_key_path_script() {
     let pubkey = PublicKey::from_slice(&pubkey_slice).unwrap();
 
     let raw = unsafe {
-        tw_build_p2tr_key_path_script(SATOSHIS, pubkey_slice.as_ptr(), pubkey_slice.len())
-            .into_vec()
+        legacy_ffi::tw_build_p2tr_key_path_script(
+            SATOSHIS,
+            pubkey_slice.as_ptr(),
+            pubkey_slice.len(),
+        )
+        .into_vec()
     };
 
     // The expected script.
@@ -84,7 +90,7 @@ fn ffi_tw_build_brc20_transfer_inscription() {
 
     // Call the FFI function.
     let raw = unsafe {
-        tw_build_brc20_transfer_inscription(
+        legacy_ffi::tw_build_brc20_transfer_inscription(
             c_ticker.as_ptr(),
             brc20_amount,
             SATOSHIS,
@@ -129,7 +135,7 @@ fn ffi_tw_bitcoin_build_nft_inscription() {
 
     // Call the FFI function.
     let raw = unsafe {
-        tw_bitcoin_build_nft_inscription(
+        legacy_ffi::tw_bitcoin_build_nft_inscription(
             c_mime_type.as_ptr(),
             payload.as_ptr(),
             payload.len(),

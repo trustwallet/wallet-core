@@ -5,7 +5,9 @@ pub mod modules;
 
 use std::fmt::Display;
 
+pub use bitcoin as native;
 pub use entry::*;
+pub use secp256k1;
 
 use tw_proto::BitcoinV2::Proto;
 
