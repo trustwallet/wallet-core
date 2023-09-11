@@ -18,11 +18,22 @@ pub trait IcpAddress: std::str::FromStr<Err = AddressError> + Into<AccountIdenti
     }
 }
 
+/// The ICP ledger keeps track of accounts using account identifiers.
+/// An account identifier is created by `SHA-224` hashing:
+/// * \x0Aaccount-id
+/// * the owner's principal ID
+/// * subaccount (32-bytes)
+/// Then,
+/// * CRC32 the SHA-224 hash
+/// * Prepend the CRC32 to the SHA-224.
+/// https://internetcomputer.org/docs/current/references/ledger/#_accounts
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AccountIdentifier {
     bytes: H256,
 }
 
 impl AccountIdentifier {
+    /// Create a default account identifier from the given principal owner.
     pub fn new(owner: &Principal) -> Self {
         let mut input = vec![];
         input.extend_from_slice(b"\x0Aaccount-id");
@@ -38,10 +49,12 @@ impl AccountIdentifier {
         Self { bytes }
     }
 
+    /// Return the textual-encoded account identifier.
     pub fn to_hex(&self) -> String {
         hex::encode(self.bytes, false)
     }
 
+    /// Instantiate an account identifier from a hex-encoded string.
     pub fn from_hex(hex_str: &str) -> AddressResult<Self> {
         if hex_str.len() != 64 {
             return Err(AddressError::FromHexError);
