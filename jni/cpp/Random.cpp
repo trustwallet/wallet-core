@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <string.h>
+#include <stdint.h>
 
 static JavaVM* cachedJVM;
 
@@ -27,7 +28,12 @@ uint32_t random32() {
 
 void random_buffer(uint8_t *buf, size_t len) {
     JNIEnv *env;
+
+#if defined(__ANDROID__) || defined(ANDROID)
     cachedJVM->AttachCurrentThread(&env, nullptr);
+#else
+    cachedJVM->AttachCurrentThread((void **) &env, nullptr);
+#endif
 
     // SecureRandom random = new SecureRandom();
     jclass secureRandomClass = env->FindClass("java/security/SecureRandom");

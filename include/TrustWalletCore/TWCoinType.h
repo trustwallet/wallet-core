@@ -120,7 +120,7 @@ enum TWCoinType {
     TWCoinTypeSyscoin = 57,
     TWCoinTypeVerge = 77,
     TWCoinTypeZen = 121,
-    TWCoinTypeMetis = 1001088,
+    TWCoinTypeMetis = 10001088,
     TWCoinTypeAurora = 1323161554,
     TWCoinTypeEvmos = 10009001,
     TWCoinTypeNativeEvmos = 20009001,
@@ -176,6 +176,8 @@ enum TWCoinType {
     TWCoinTypeArbitrumNova = 10042170,
     TWCoinTypeLinea = 59144,
     TWCoinTypeGreenfield = 5600,
+    TWCoinTypeMantle = 5000,
+    TWCoinTypeZenEON = 7332,
 };
 
 /// Returns the blockchain for a coin type.
