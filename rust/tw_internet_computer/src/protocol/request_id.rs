@@ -234,6 +234,8 @@ fn representation_independent_hash_read_state(
 
 #[cfg(test)]
 mod test {
+    use ic_certification::Label;
+
     use crate::protocol::principal::Principal;
 
     #[test]
@@ -250,6 +252,33 @@ mod test {
         assert_eq!(
             tw_encoding::hex::encode(hash.0, false),
             "1d1091364d6bb8a6c16b203ee75467d59ead468f523eb058880ae8ec80e2b101"
+        );
+    }
+
+    #[test]
+    fn representation_independent_hash_read_state() {
+        let update_request_id = super::representation_independent_hash_call(
+            vec![0, 0, 0, 0, 0, 0, 4, 210],
+            "hello",
+            b"DIDL\x00\xFD*".to_vec(),
+            1685570400000000000,
+            Principal::anonymous().as_slice().to_vec(),
+            None,
+        );
+
+        let hash = super::representation_independent_hash_read_state(
+            1685570400000000000,
+            &vec![vec![
+                Label::from("request_status"),
+                Label::from(update_request_id.0.as_slice()),
+            ]],
+            Principal::anonymous().as_slice().to_vec(),
+            None,
+        );
+
+        assert_eq!(
+            tw_encoding::hex::encode(hash.0, false),
+            "3cde0f14a953c3afbe1335f22e861bb62389f1449beca02707ab197e6829c2a3"
         );
     }
 }
