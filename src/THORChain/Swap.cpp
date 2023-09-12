@@ -47,6 +47,21 @@ static Data ethAddressStringToData(const std::string& asString) {
     return asData;
 }
 
+std::string vaultAddressesMAYA(Chain chain) {
+    switch (chain) {
+    case Chain::ETH:
+        return "0xe499e7b91d1349a861d09d847551dd9ce9508146";
+    case Chain::BTC:
+        return "bc1qzz4mgm2yl5cfhwp5rhgvdyy62z737sm8rc25ac";
+    case Chain::THOR:
+        return "thor1zz4mgm2yl5cfhwp5rhgvdyy62z737sm8n9dyv2";
+    case Chain::DASH:
+        return "XcCzLaeJJgPmMT39DZsAHemrVMnHtZw7Xd";
+    default:
+        return "";
+    }
+}
+
 TWCoinType chainCoinTypeTHOR(Chain chain) {
     switch (chain) {
     case Chain::ETH:
@@ -87,8 +102,8 @@ TWCoinType chainCoinTypeMAYA(Chain chain) {
     }
 }
 
-TWCoinType chainCoinType(Chain toChain, Chain mfromChain) {
-    if(mfromChain == Chain::MAYA){
+TWCoinType chainCoinType(Chain toChain, std::string VaultAddress) {
+    if(VaultAddress == vaultAddressesMAYA(toChain)){
         return chainCoinTypeMAYA(toChain);
     }
 
@@ -134,26 +149,26 @@ std::string chainNameMAYA(Chain chain) {
     }
 }
 
-std::string chainName(Chain toChain, Chain mfromChain) {
-    if(mfromChain == Chain::MAYA){
+std::string chainName(Chain toChain, std::string VaultAddress) {
+    if(VaultAddress == vaultAddressesMAYA(toChain)){
         return chainNameMAYA(toChain);
     }
 
     return chainNameTHOR(toChain);
 }
 
-bool validateAddress(Chain chain, const std::string& address, Chain mfromChain) {
-    return TW::validateAddress(chainCoinType(chain, mfromChain), address);
+bool validateAddress(Chain chain, const std::string& address, std::string VaultAddress) {
+    return TW::validateAddress(chainCoinType(chain, VaultAddress), address);
 }
 
 SwapBundled SwapBuilder::build(bool shortened) {
     auto fromChain = static_cast<Chain>(mFromAsset.chain());
     auto toChain = static_cast<Chain>(mToAsset.chain());
 
-    if (!validateAddress(fromChain, mFromAddress, mfromChain)) {
+    if (!validateAddress(fromChain, mFromAddress, mVaultAddress)) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_from_address), .error = "Invalid from address"};
     }
-    if (!validateAddress(toChain, mToAddress, mfromChain)) {
+    if (!validateAddress(toChain, mToAddress, mVaultAddress)) {
         return {.status_code = static_cast<SwapErrorCode>(Proto::ErrorCode::Error_Invalid_to_address), .error = "Invalid to address"};
     }
 
@@ -191,7 +206,7 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     const auto& toSymbol = mToAsset.symbol();
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
-    memo << prefix + ":" + chainName(toChain, mfromChain) + "." + toCoinToken + ":" + mToAddress;
+    memo << prefix + ":" + chainName(toChain, mVaultAddress) + "." + toCoinToken + ":" + mToAddress;
 
     memo << ":" << std::to_string(toAmountLimitNum);
     if (mStreamParams.has_value()) {
@@ -223,7 +238,7 @@ SwapBundled SwapBuilder::buildBitcoin(const uint256_t& amount, const std::string
     auto input = Bitcoin::Proto::SigningInput();
     Data out;
     // Following fields must be set afterwards, before signing ...
-    auto coinType = chainCoinType(fromChain, mfromChain);
+    auto coinType = chainCoinType(fromChain, mVaultAddress);
     input.set_hash_type(Bitcoin::hashTypeForCoin(coinType));
     input.set_byte_fee(1);
     input.set_use_max_amount(false);
@@ -394,7 +409,7 @@ SwapBundled SwapBuilder::buildRune(const uint256_t& amount, const std::string& m
     coin->set_decimals(0);
 
     auto* asset = coin->mutable_asset();
-    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain()), mfromChain));
+    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain()), mVaultAddress));
     asset->set_symbol(mFromAsset.symbol());
     asset->set_ticker(mFromAsset.symbol());
 
