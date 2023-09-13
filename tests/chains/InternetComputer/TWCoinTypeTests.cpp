@@ -22,7 +22,7 @@ TEST(TWInternetComputerCoinType, TWCoinType) {
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("529ea51c22e8d66e8302eabd9297b100fdb369109822248bb86939a671fbc55b"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
-    assertStringsEqual(id, "icp");
+    assertStringsEqual(id, "internet_computer");
     assertStringsEqual(name, "Internet Computer");
     assertStringsEqual(symbol, "ICP");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
