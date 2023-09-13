@@ -47,23 +47,23 @@ enum TWBlockchain {
     TWBlockchainFilecoin = 32,
     TWBlockchainMultiversX = 33,
     TWBlockchainOasisNetwork = 34,
-    TWBlockchainDecred = 35, // Bitcoin
-    TWBlockchainZcash = 36, // Bitcoin
-    TWBlockchainGroestlcoin = 37, // Bitcoin
-    TWBlockchainThorchain = 38, // Cosmos
-    TWBlockchainRonin = 39, // Ethereum
-    TWBlockchainKusama = 40, // Polkadot
-    TWBlockchainZen = 41, // Bitcoin
+    TWBlockchainDecred = 35,         // Bitcoin
+    TWBlockchainZcash = 36,          // Bitcoin
+    TWBlockchainGroestlcoin = 37,    // Bitcoin
+    TWBlockchainThorchain = 38,      // Cosmos
+    TWBlockchainRonin = 39,          // Ethereum
+    TWBlockchainKusama = 40,         // Polkadot
+    TWBlockchainZen = 41,            // Bitcoin
     TWBlockchainBitcoinDiamond = 42, // Bitcoin
-    TWBlockchainVerge = 43, // Bitcoin
+    TWBlockchainVerge = 43,          // Bitcoin
     TWBlockchainNervos = 44,
     TWBlockchainEverscale = 45,
-    TWBlockchainAptos = 46, // Aptos
-    TWBlockchainNebl = 47, // Bitcoin
+    TWBlockchainAptos = 46,  // Aptos
+    TWBlockchainNebl = 47,   // Bitcoin
     TWBlockchainHedera = 48, // Hedera
     TWBlockchainTheOpenNetwork = 49,
     TWBlockchainSui = 50,
-    TWBlockchainInternetComputer = 53,  // TODO remove if the blockchain already exists, or just remove this comment if not
+    TWBlockchainInternetComputer = 51,
 };
 
 TW_EXTERN_C_END
