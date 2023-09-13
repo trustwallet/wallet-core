@@ -60,7 +60,6 @@ class SwapBuilder {
     std::optional<std::string> mAffFeeRate{std::nullopt};
     std::optional<std::string> mExtraMemo{std::nullopt};
     std::optional<std::size_t> mExpirationPolicy{std::nullopt};
-    Chain mfromChain;
 
     SwapBundled buildBitcoin(const uint256_t& amount, const std::string& memo, Chain fromChain);
     SwapBundled buildBinance(Proto::Asset fromAsset, const uint256_t& amount, const std::string& memo);
@@ -170,11 +169,6 @@ public:
         } else {
             mExpirationPolicy = std::nullopt;
         }
-        return *this;
-    }
-
-    SwapBuilder& fromChain(Chain chain) noexcept {
-        mfromChain = std::move(chain);
         return *this;
     }
 
