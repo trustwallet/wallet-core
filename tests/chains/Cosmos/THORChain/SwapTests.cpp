@@ -42,6 +42,10 @@ const auto VaultBtc = "bc1q6m9u2qsu8mh8y7v8rr2ywavtj8g5arzlyhcej7";
 const auto VaultEth = "0x1091c4De6a3cF09CdA00AbDAeD42c7c3B69C83EC";
 const auto VaultBnb = "bnb1n9esxuw8ca7ts8l6w66kdh800s09msvul6vlse";
 const auto RouterEth = "0x42A5Ed456650a09Dc10EBc6361A7480fDd61f27B";
+const auto MAYAVaultBtc = "bc1qzz4mgm2yl5cfhwp5rhgvdyy62z737sm8rc25ac";
+const auto MAYAVaultEth = "0xe499e7b91d1349a861d09d847551dd9ce9508146";
+const auto MAYAVaultThor = "thor1zz4mgm2yl5cfhwp5rhgvdyy62z737sm8n9dyv2";
+const auto MAYAVaultDash = "XcCzLaeJJgPmMT39DZsAHemrVMnHtZw7Xd";
 
 TEST(THORChainSwap, OverflowFixEth) {
     Proto::Asset fromAsset;
@@ -773,10 +777,9 @@ TEST(THORChainSwap, SwapBtcCacao) {
                                          .to(toAsset)
                                          .fromAddress(Address1Btc)
                                          .toAddress(Address1Maya)
-                                         .vault(VaultBtc)
+                                         .vault(MAYAVaultBtc)
                                          .fromAmount("4000000")
                                          .toAmountLimit("121065076")
-                                         .fromChain(Chain::MAYA)
                                          .build();
     ASSERT_EQ(errorCode, 0);
     ASSERT_EQ(error, "");
@@ -787,7 +790,7 @@ TEST(THORChainSwap, SwapBtcCacao) {
 
     // check fields
     EXPECT_EQ(tx.amount(), 4000000);
-    EXPECT_EQ(tx.to_address(), VaultBtc);
+    EXPECT_EQ(tx.to_address(), MAYAVaultBtc);
     EXPECT_EQ(tx.change_address(), Address1Btc);
     EXPECT_EQ(tx.output_op_return(), "=:MAYA.CACAO:maya1xhfwp27s3y3lsnzp6d0qd870q9vleelunq7f2f:121065076");
     EXPECT_EQ(tx.coin_type(), 0ul);
@@ -1218,7 +1221,6 @@ TEST(THORChainSwap, FromCacaoNotSupported) {
                                        .toAddress(Address1Btc)
                                        .fromAmount("1000")
                                        .toAmountLimit("1000")
-                                       .fromChain(Chain::MAYA)
                                        .build();
     EXPECT_EQ(errorCode, Proto::ErrorCode::Error_Unsupported_from_chain);
     EXPECT_EQ(error, "Unsupported from chain: 9");
