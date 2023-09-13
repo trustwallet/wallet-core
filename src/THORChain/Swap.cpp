@@ -47,19 +47,15 @@ static Data ethAddressStringToData(const std::string& asString) {
     return asData;
 }
 
-std::string vaultAddressesMAYA(Chain chain) {
-    switch (chain) {
-    case Chain::ETH:
-        return "0xe499e7b91d1349a861d09d847551dd9ce9508146";
-    case Chain::BTC:
-        return "bc1qzz4mgm2yl5cfhwp5rhgvdyy62z737sm8rc25ac";
-    case Chain::THOR:
-        return "thor1zz4mgm2yl5cfhwp5rhgvdyy62z737sm8n9dyv2";
-    case Chain::DASH:
-        return "XcCzLaeJJgPmMT39DZsAHemrVMnHtZw7Xd";
-    default:
-        return "";
+bool isMAYAVaultAddresse(std::string vault) {
+    if(vault == MAYAVaultAddress.BTC ||
+       vault == MAYAVaultAddress.ETH ||
+       vault == MAYAVaultAddress.THOR ||
+       vault == MAYAVaultAddress.DASH){
+        return true;
     }
+    
+    return false;
 }
 
 TWCoinType chainCoinTypeTHOR(Chain chain) {
@@ -102,12 +98,12 @@ TWCoinType chainCoinTypeMAYA(Chain chain) {
     }
 }
 
-TWCoinType chainCoinType(Chain toChain, std::string VaultAddress) {
-    if(VaultAddress == vaultAddressesMAYA(toChain)){
-        return chainCoinTypeMAYA(toChain);
+TWCoinType chainCoinType(Chain Chain, std::string VaultAddress) {
+    if(isMAYAVaultAddresse(VaultAddress)){
+        return chainCoinTypeMAYA(Chain);
     }
 
-    return chainCoinTypeTHOR(toChain);
+    return chainCoinTypeTHOR(Chain);
 }
 
 std::string chainNameTHOR(Chain chain) {
@@ -149,12 +145,12 @@ std::string chainNameMAYA(Chain chain) {
     }
 }
 
-std::string chainName(Chain toChain, std::string VaultAddress) {
-    if(VaultAddress == vaultAddressesMAYA(toChain)){
-        return chainNameMAYA(toChain);
+std::string chainName(Chain Chain, std::string VaultAddress) {
+    if(isMAYAVaultAddresse(VaultAddress)){
+        return chainNameMAYA(Chain);
     }
 
-    return chainNameTHOR(toChain);
+    return chainNameTHOR(Chain);
 }
 
 bool validateAddress(Chain chain, const std::string& address, std::string VaultAddress) {

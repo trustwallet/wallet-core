@@ -33,6 +33,22 @@ enum Chain {
     DASH = 10
 };
 
+// MAYAChain available vaults
+struct MAYAVaults {
+    std::string BTC;
+    std::string ETH;
+    std::string THOR;
+    std::string DASH;
+};
+
+// MAYAChain available vault addresses
+const MAYAVaults MAYAVaultAddress = {
+    "bc1qzz4mgm2yl5cfhwp5rhgvdyy62z737sm8rc25ac",
+    "0xe499e7b91d1349a861d09d847551dd9ce9508146",
+    "thor1zz4mgm2yl5cfhwp5rhgvdyy62z737sm8n9dyv2",
+    "XcCzLaeJJgPmMT39DZsAHemrVMnHtZw7Xd",
+};
+
 using SwapErrorCode = int;
 
 struct SwapBundled {
