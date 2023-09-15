@@ -27,7 +27,8 @@ enum Chain {
     BCH = 5,
     LTC = 6,
     ATOM = 7,
-    AVAX = 8
+    AVAX = 8,
+    BSC = 9,
 };
 
 using SwapErrorCode = int;
