@@ -36,7 +36,9 @@ fn test_any_address_derive() {
         let expected_address = match coin.blockchain {
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::Ronin => "ronin:Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309",
-            BlockchainType::InternetComputer => "",
+            BlockchainType::InternetComputer => {
+                "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa"
+            },
             BlockchainType::Unsupported => unreachable!(),
         };
 
