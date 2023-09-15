@@ -43,7 +43,12 @@ pub fn registry_iter() -> impl Iterator<Item = &'static CoinItem> {
 
 #[inline]
 pub fn supported_coin_items() -> impl Iterator<Item = &'static CoinItem> {
-    registry_iter().filter(|item| !matches!(item.blockchain, BlockchainType::Unsupported))
+    registry_iter().filter(|item| {
+        !matches!(
+            item.blockchain,
+            BlockchainType::InternetComputer | BlockchainType::Unsupported
+        )
+    })
 }
 
 fn parse_registry_json() -> RegistryMap {
