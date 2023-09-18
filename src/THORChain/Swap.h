@@ -82,6 +82,7 @@ class SwapBuilder {
     SwapBundled buildEth(const uint256_t& amount, const std::string& memo);
     SwapBundled buildAtom(const uint256_t& amount, const std::string& memo);
     SwapBundled buildRune(const uint256_t& amount, const std::string& memo);
+    SwapBundled buildCacao(const uint256_t& amount, const std::string& memo);
 
 public:
     SwapBuilder() noexcept = default;

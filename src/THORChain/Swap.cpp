@@ -174,6 +174,8 @@ SwapBundled SwapBuilder::build(bool shortened) {
     switch (fromChain) {
     case Chain::THOR:
         return buildRune(fromAmountNum, memo);
+    case Chain::MAYA:
+        return buildCacao(fromAmountNum, memo);
     case Chain::DASH:
     case Chain::BTC:
     case Chain::DOGE:
@@ -386,6 +388,38 @@ SwapBundled SwapBuilder::buildAtom(const uint256_t& amount, const std::string& m
 SwapBundled SwapBuilder::buildRune(const uint256_t& amount, const std::string& memo) {
     auto* hrp = stringForHRP(TW::hrp(TWCoinTypeTHORChain));
     auto* chainId = TW::chainId(TWCoinTypeTHORChain);
+
+    Bech32Address fromAddress(hrp);
+    Bech32Address::decode(mFromAddress, fromAddress, hrp);
+
+    Data out;
+
+    Cosmos::Proto::SigningInput input;
+    input.set_signing_mode(Cosmos::Proto::Protobuf);
+    input.set_chain_id(chainId);
+
+    auto* msg = input.add_messages()->mutable_thorchain_deposit_message();
+    msg->set_signer(fromAddress.getKeyHash().data(), fromAddress.getKeyHash().size());
+    msg->set_memo(memo);
+
+    auto* coin = msg->add_coins();
+    coin->set_amount(toString(amount));
+    coin->set_decimals(0);
+
+    auto* asset = coin->mutable_asset();
+    asset->set_chain(chainName(static_cast<Chain>(mFromAsset.chain()), mVaultAddress));
+    asset->set_symbol(mFromAsset.symbol());
+    asset->set_ticker(mFromAsset.symbol());
+
+    auto serialized = input.SerializeAsString();
+    out.insert(out.end(), serialized.begin(), serialized.end());
+
+    return {.out = std::move(out)};
+}
+
+SwapBundled SwapBuilder::buildCacao(const uint256_t& amount, const std::string& memo) {
+    auto* hrp = stringForHRP(TW::hrp(TWCoinTypeMAYAChain));
+    auto* chainId = TW::chainId(TWCoinTypeMAYAChain);
 
     Bech32Address fromAddress(hrp);
     Bech32Address::decode(mFromAddress, fromAddress, hrp);
