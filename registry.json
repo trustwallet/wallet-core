@@ -3850,7 +3850,7 @@
   {
     "id": "metis",
     "name": "Metis",
-    "coinId": 1001088,
+    "coinId": 10001088,
     "symbol": "METIS",
     "decimals": 18,
     "blockchain": "Ethereum",
