@@ -33,6 +33,7 @@ pub enum AddressError {
     FromHexError,
     PublicKeyTypeMismatch,
     UnexpectedAddressPrefix,
+    InvalidInput,
 }
 
 pub type SigningResult<T> = Result<T, SigningError>;
