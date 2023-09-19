@@ -118,7 +118,9 @@ pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Result<Proto::Output
         let to_address = match proto.to_address {
             ProtoPubkeyOrHash::pubkey(pubkey) => ProtoPubkeyOrHash::pubkey(pubkey.to_vec().into()),
             ProtoPubkeyOrHash::hash(hash) => ProtoPubkeyOrHash::hash(hash.to_vec().into()),
-            ProtoPubkeyOrHash::None => todo!(),
+            ProtoPubkeyOrHash::None => {
+                return Err(Error::from(Proto::Error::Error_missing_recipient))
+            },
         };
 
         Ok(Proto::ToPublicKeyOrHash { to_address })
@@ -164,7 +166,9 @@ pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Result<Proto::Output
                     payload: ord.payload.to_vec().into(),
                 }),
             ),
-            ProtoOutputBuilder::None => todo!(),
+            ProtoOutputBuilder::None => {
+                return Err(Error::from(Proto::Error::Error_missing_output_builder))
+            },
         },
         ProtoOutputRecipient::custom_script_pubkey(custom) => {
             ProtoOutputRecipient::custom_script_pubkey(custom.to_vec().into())
@@ -172,7 +176,9 @@ pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Result<Proto::Output
         ProtoOutputRecipient::from_address(address) => {
             ProtoOutputRecipient::from_address(address.to_string().into())
         },
-        ProtoOutputRecipient::None => todo!(),
+        ProtoOutputRecipient::None => {
+            return Err(Error::from(Proto::Error::Error_missing_output_builder))
+        },
     };
 
     Ok(Proto::Output {
