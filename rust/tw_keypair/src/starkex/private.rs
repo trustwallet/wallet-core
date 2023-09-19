@@ -18,6 +18,10 @@ use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
+/// The maximum number of attempts to sign a message.
+/// As the number is coming from `rfc6979_generate_k` so the probability is lower.
+const SIGN_RETRIES: usize = 5;
+
 /// Represents a private key that is used in `starknet` context.
 pub struct PrivateKey {
     secret: FieldElement,
@@ -80,7 +84,7 @@ pub fn ecdsa_sign(
 ) -> Result<EcdsaSignature, SignError> {
     // Seed-retry logic ported from `cairo-lang`
     let mut seed = None;
-    loop {
+    for _ in 0..SIGN_RETRIES {
         let k = rfc6979_generate_k(message_hash, private_key, seed.as_ref());
 
         match sign(private_key, message_hash, &k) {
@@ -96,5 +100,25 @@ pub fn ecdsa_sign(
                 };
             },
         };
+    }
+    Err(SignError::InvalidMessageHash)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_starknet_sign_invalid_k() {
+        let private = PrivateKey {
+            secret: field_element_from_bytes_be(&[0; 32]).unwrap(),
+        };
+        let hash = vec![0; 32];
+
+        // Return value does not implement Debug, so we cannot unwrap here.
+        match private.sign(hash) {
+            Ok(_) => panic!("Retry limit expected"),
+            Err(err) => assert_eq!(err, KeyPairError::SigningError),
+        }
     }
 }
