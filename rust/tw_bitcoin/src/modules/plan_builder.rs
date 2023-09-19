@@ -67,7 +67,7 @@ impl BitcoinPlanBuilder {
             proto
                 .tagged_output
                 .ok_or_else(|| Error::from(Proto::Error::Error_missing_tagged_output))?,
-        );
+        )?;
 
         // First, we create the reveal transaction in order to calculate its input requirement (fee + dust limit).
 
@@ -121,6 +121,13 @@ impl BitcoinPlanBuilder {
 
         let brc20_output_value = brc20_output.value;
 
+        // Clone the change output, if provided.
+        let change_output = if let Some(change) = proto.change_output {
+            Some(super::utils::hard_clone_proto_output(change)?)
+        } else {
+            None
+        };
+
         // Create the full COMMIT transaction with the appropriately selected inputs.
         let commit_signing = Proto::SigningInput {
             private_key: proto.private_key.to_vec().into(),
@@ -129,13 +136,10 @@ impl BitcoinPlanBuilder {
                 .iter()
                 .cloned()
                 .map(super::utils::hard_clone_proto_input)
-                .collect(),
+                .collect::<Result<_>>()?,
             outputs: vec![brc20_output],
             input_selector: proto.input_selector,
-            change_output: proto
-                .change_output
-                .as_ref()
-                .map(|output| super::utils::hard_clone_proto_output(output.clone())),
+            change_output: change_output.clone(),
             fee_per_vb: proto.fee_per_vb,
             disable_change_output: proto.disable_change_output,
             ..Default::default()
@@ -167,7 +171,7 @@ impl BitcoinPlanBuilder {
             .into_iter()
             .filter(|input| selected_txids.contains(&input.txid))
             .map(super::utils::hard_clone_proto_input)
-            .collect();
+            .collect::<Result<_>>()?;
 
         commit_signing.inputs = selected_inputs;
 
@@ -179,12 +183,12 @@ impl BitcoinPlanBuilder {
                 .expect("No Utxo outputs generated")
                 .value;
 
-            let mut change_output = proto.change_output.expect("change output expected");
+            let mut change_output = change_output.expect("change output expected");
             change_output.value = change_amount;
 
             commit_signing
                 .outputs
-                .push(hard_clone_proto_output(change_output));
+                .push(hard_clone_proto_output(change_output)?);
         }
 
         commit_signing.input_selector = UtxoProto::InputSelector::UseAll;

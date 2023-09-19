@@ -1,4 +1,5 @@
 use crate::aliases::*;
+use crate::{Error, Result};
 use tw_proto::BitcoinV2::Proto;
 
 // Convenience function: our protobuf library wraps certain types (such as
@@ -6,7 +7,7 @@ use tw_proto::BitcoinV2::Proto;
 // does not actually clone the underlying data (but the smart pointer instead),
 // we must hard-clone individual fields manually. This is unfortunately required
 // due to how protobuf library works and our use of the 'static constraints.
-pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Proto::Input<'static> {
+pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Result<Proto::Input<'static>> {
     fn new_builder(variant: ProtoInputBuilder<'static>) -> ProtoInputRecipient<'static> {
         ProtoInputRecipient::builder(Proto::mod_Input::InputBuilder { variant })
     }
@@ -54,7 +55,9 @@ pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Proto::Input<'static> 
                     payload: ord.payload.to_vec().into(),
                 }),
             ),
-            ProtoInputBuilder::None => todo!(),
+            ProtoInputBuilder::None => {
+                return Err(Error::from(Proto::Error::Error_missing_input_builder))
+            },
         },
         ProtoInputRecipient::custom_script(custom) => {
             ProtoInputRecipient::custom_script(Proto::mod_Input::InputScriptWitness {
@@ -68,15 +71,17 @@ pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Proto::Input<'static> 
                 signing_method: custom.signing_method,
             })
         },
-        ProtoInputRecipient::None => todo!(),
+        ProtoInputRecipient::None => {
+            return Err(Error::from(Proto::Error::Error_missing_recipient))
+        },
     };
 
-    Proto::Input {
+    Ok(Proto::Input {
         private_key: proto.private_key.to_vec().into(),
         txid: proto.txid.to_vec().into(),
         to_recipient,
         ..proto
-    }
+    })
 }
 
 // Convenience function: our protobuf library wraps certain types (such as
@@ -84,14 +89,14 @@ pub fn hard_clone_proto_input(proto: Proto::Input<'_>) -> Proto::Input<'static> 
 // does not actually clone the underlying data (but the smart pointer instead),
 // we must hard-clone individual fields manually. This is unfortunately required
 // due to how protobuf library works and our use of the 'static constraints.
-pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Proto::Output<'static> {
+pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Result<Proto::Output<'static>> {
     fn new_builder(variant: ProtoOutputBuilder<'static>) -> ProtoOutputRecipient<'static> {
         ProtoOutputRecipient::builder(Proto::mod_Output::OutputBuilder { variant })
     }
 
     fn new_script_or_hash(
         proto: Proto::mod_Output::OutputRedeemScriptOrHash<'_>,
-    ) -> Proto::mod_Output::OutputRedeemScriptOrHash<'static> {
+    ) -> Result<Proto::mod_Output::OutputRedeemScriptOrHash<'static>> {
         let variant = match proto.variant {
             ProtoOutputRedeemScriptOrHashBuilder::redeem_script(script) => {
                 ProtoOutputRedeemScriptOrHashBuilder::redeem_script(script.to_vec().into())
@@ -99,37 +104,39 @@ pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Proto::Output<'stati
             ProtoOutputRedeemScriptOrHashBuilder::hash(hash) => {
                 ProtoOutputRedeemScriptOrHashBuilder::hash(hash.to_vec().into())
             },
-            ProtoOutputRedeemScriptOrHashBuilder::None => todo!(),
+            ProtoOutputRedeemScriptOrHashBuilder::None => {
+                return Err(Error::from(Proto::Error::Error_missing_recipient))
+            },
         };
 
-        Proto::mod_Output::OutputRedeemScriptOrHash { variant }
+        Ok(Proto::mod_Output::OutputRedeemScriptOrHash { variant })
     }
 
     fn new_pubkey_or_hash(
         proto: Proto::ToPublicKeyOrHash<'_>,
-    ) -> Proto::ToPublicKeyOrHash<'static> {
+    ) -> Result<Proto::ToPublicKeyOrHash<'static>> {
         let to_address = match proto.to_address {
             ProtoPubkeyOrHash::pubkey(pubkey) => ProtoPubkeyOrHash::pubkey(pubkey.to_vec().into()),
             ProtoPubkeyOrHash::hash(hash) => ProtoPubkeyOrHash::hash(hash.to_vec().into()),
             ProtoPubkeyOrHash::None => todo!(),
         };
 
-        Proto::ToPublicKeyOrHash { to_address }
+        Ok(Proto::ToPublicKeyOrHash { to_address })
     }
 
     let to_recipient = match proto.to_recipient {
         ProtoOutputRecipient::builder(builder) => match builder.variant {
-            ProtoOutputBuilder::p2sh(script_or_hash) => {
-                new_builder(ProtoOutputBuilder::p2sh(new_script_or_hash(script_or_hash)))
-            },
+            ProtoOutputBuilder::p2sh(script_or_hash) => new_builder(ProtoOutputBuilder::p2sh(
+                new_script_or_hash(script_or_hash)?,
+            )),
             ProtoOutputBuilder::p2pkh(pubkey_or_hash) => new_builder(ProtoOutputBuilder::p2pkh(
-                new_pubkey_or_hash(pubkey_or_hash),
+                new_pubkey_or_hash(pubkey_or_hash)?,
             )),
             ProtoOutputBuilder::p2wsh(script_or_hash) => new_builder(ProtoOutputBuilder::p2wsh(
-                new_script_or_hash(script_or_hash),
+                new_script_or_hash(script_or_hash)?,
             )),
             ProtoOutputBuilder::p2wpkh(pubkey_or_hash) => new_builder(ProtoOutputBuilder::p2wpkh(
-                new_pubkey_or_hash(pubkey_or_hash),
+                new_pubkey_or_hash(pubkey_or_hash)?,
             )),
             ProtoOutputBuilder::p2tr_key_path(pubkey) => {
                 new_builder(ProtoOutputBuilder::p2tr_key_path(pubkey.to_vec().into()))
@@ -168,8 +175,8 @@ pub fn hard_clone_proto_output(proto: Proto::Output<'_>) -> Proto::Output<'stati
         ProtoOutputRecipient::None => todo!(),
     };
 
-    Proto::Output {
+    Ok(Proto::Output {
         value: proto.value,
         to_recipient,
-    }
+    })
 }
