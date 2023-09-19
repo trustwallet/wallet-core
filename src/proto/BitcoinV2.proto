@@ -23,6 +23,8 @@ enum Error {
     Error_missing_input_builder = 13;
     Error_missing_output_builder = 14;
     Error_missing_recipient = 15;
+    Error_missing_inscription = 41;
+    Error_missing_tagged_output = 42;
     Error_legacy_p2tr_invalid_variant = 16;
     Error_legacy_no_spending_script_provided = 17;
     Error_legacy_expected_redeem_script = 18;

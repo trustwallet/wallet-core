@@ -52,7 +52,10 @@ impl BitcoinPlanBuilder {
         proto: Proto::mod_ComposePlan::ComposeBrc20Plan<'_>,
     ) -> Result<Proto::mod_TransactionPlan::Brc20Plan<'static>> {
         // Hard-clones
-        let inscription = proto.inscription.unwrap();
+        let inscription = proto
+            .inscription
+            .ok_or_else(|| Error::from(Proto::Error::Error_missing_inscription))?;
+
         let brc20_info = InputBrc20Inscription {
             one_prevout: inscription.one_prevout,
             inscribe_to: inscription.inscribe_to.to_vec().into(),
@@ -60,7 +63,11 @@ impl BitcoinPlanBuilder {
             transfer_amount: inscription.transfer_amount,
         };
 
-        let tagged_output = super::utils::hard_clone_proto_output(proto.tagged_output.unwrap());
+        let tagged_output = super::utils::hard_clone_proto_output(
+            proto
+                .tagged_output
+                .ok_or_else(|| Error::from(Proto::Error::Error_missing_tagged_output))?,
+        );
 
         // First, we create the reveal transaction in order to calculate its input requirement (fee + dust limit).
 
