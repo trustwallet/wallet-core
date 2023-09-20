@@ -42,6 +42,7 @@ pub struct Hash<const N: usize>([u8; N]);
 
 impl<const N: usize> DefaultIsZeroes for Hash<N> {}
 
+/// cbindgen:ignore
 impl<const N: usize> Hash<N> {
     pub const LEN: usize = N;
 

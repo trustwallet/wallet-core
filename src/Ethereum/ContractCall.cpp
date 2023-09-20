@@ -7,6 +7,8 @@
 #include "ContractCall.h"
 #include "ABI.h"
 #include "HexCoding.h"
+#include "proto/EthereumAbi.pb.h"
+#include "TrustWalletCore/TWCoinType.h"
 #include "uint256.h"
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -129,36 +131,27 @@ void fillTupleArray(ParamSet& paramSet, const json& jsonSet) {
     paramSet.addParam(tupleArray);
 }
 
-optional<string> decodeCall(const Data& call, const json& abi) {
-    // check bytes length
-    if (call.size() <= 4) {
+optional<string> decodeCall(const Data& call, const std::string& abi) {
+    EthereumAbi::Proto::ContractCallDecodingInput input;
+    input.set_encoded(call.data(), call.size());
+    input.set_smart_contract_abi_json(abi);
+
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_abi_decode_contract_call(TWCoinTypeEthereum, inputData.get());
+
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
         return {};
     }
 
-    auto methodId = hex(Data(call.begin(), call.begin() + 4));
+    EthereumAbi::Proto::ContractCallDecodingOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
 
-    if (abi.find(methodId) == abi.end()) {
+    if (output.error() != Common::Proto::SigningError::OK) {
         return {};
     }
 
-    // build Function with types
-    const auto registry = abi[methodId];
-    auto func = Function(registry["name"]);
-    decodeParamSet(func._inParams, registry["inputs"]);
-
-    // decode inputs
-    size_t offset = 0;
-    auto success = func.decodeInput(call, offset);
-    if (!success) {
-        return {};
-    }
-
-    // build output json
-    auto decoded = json{
-        {"function", func.getType()},
-        {"inputs", buildInputs(func._inParams, registry["inputs"])},
-    };
-    return decoded.dump();
+    return output.decoded_json();
 }
 
 } // namespace TW::Ethereum::ABI

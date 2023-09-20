@@ -20,6 +20,16 @@
 using namespace TW;
 namespace EthAbi = TW::Ethereum::ABI;
 
+TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _Nonnull input) {
+    const Data& inputData = *(reinterpret_cast<const Data*>(input));
+
+    const Rust::TWDataWrapper dataInPtr(inputData);
+    Rust::TWDataWrapper dataOutPtr = Rust::tw_ethereum_abi_decode_contract_call(static_cast<uint32_t>(coin), dataInPtr.get());
+
+    auto dataOut = dataOutPtr.toDataOrDefault();
+    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
+}
+
 TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func_in) {
     assert(func_in != nullptr);
     EthAbi::Function& function = func_in->impl;
@@ -44,8 +54,7 @@ TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString*
     const Data& call = *(reinterpret_cast<const Data*>(callData));
     const auto& jsonString = *reinterpret_cast<const std::string*>(abiString);
     try {
-        auto abi = nlohmann::json::parse(jsonString);
-        auto string = EthAbi::decodeCall(call, abi);
+        auto string = EthAbi::decodeCall(call, jsonString);
         if (!string.has_value()) {
             return nullptr;
         }

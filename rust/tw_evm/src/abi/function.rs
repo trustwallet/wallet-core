@@ -23,7 +23,7 @@ pub struct Function {
 }
 
 impl Function {
-    /// Returns a signature that uniquely identifies this function.
+    /// Returns a signature that uniquely identifies this function including `inputs` **only**.
     ///
     /// Examples:
     /// - `functionName()`
@@ -33,24 +33,14 @@ impl Function {
     ///
     /// The method implementation is inspired by
     /// https://github.com/rust-ethereum/ethabi/blob/b1710adc18f5b771d2d2519c87248b1ba9430778/ethabi/src/function.rs#L88-L97
-    pub fn signature(&self) -> String {
+    pub fn signature_with_inputs(&self) -> String {
         let inputs = self
             .inputs
             .iter()
             .map(|p| p.kind.to_ethabi().to_string())
             .collect::<Vec<_>>()
             .join(",");
-        let outputs = self
-            .outputs
-            .iter()
-            .map(|p| p.kind.to_ethabi().to_string())
-            .collect::<Vec<_>>()
-            .join(",");
-
-        match (inputs.len(), outputs.len()) {
-            (_, 0) => format!("{}({inputs})", self.name),
-            (_, _) => format!("{}({inputs}):({outputs})", self.name),
-        }
+        format!("{}({inputs})", self.name)
     }
 
     /// Parses the ABI function input to a list of tokens.

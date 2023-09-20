@@ -26,7 +26,7 @@ pub struct AbiEncoder<Context: EvmContext> {
 impl<Context: EvmContext> AbiEncoder<Context> {
     pub fn decode_contract_call(
         input: Proto::ContractCallDecodingInput,
-    ) -> Proto::ContractCallDecodingOutput {
+    ) -> Proto::ContractCallDecodingOutput<'static> {
         Self::decode_contract_call_impl(input)
             .unwrap_or_else(|err| signing_output_error!(Proto::ContractCallDecodingOutput, err))
     }
@@ -34,7 +34,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     // TODO use `Context`.
     fn decode_contract_call_impl(
         input: Proto::ContractCallDecodingInput,
-    ) -> SigningResult<Proto::ContractCallDecodingOutput> {
+    ) -> SigningResult<Proto::ContractCallDecodingOutput<'static>> {
         if input.encoded.len() < H32::len() {
             return Err(SigningError(SigningErrorType::Error_invalid_params));
         }
@@ -57,7 +57,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
         // Serialize the `decoded_json` result.
         let decoded_res = SmartContractCallDecodedInput {
-            function: function.signature(),
+            function: function.signature_with_inputs(),
             inputs: &decoded_tokens,
         };
         let decoded_json = serde_json::to_string(&decoded_res)

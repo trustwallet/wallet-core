@@ -4,7 +4,7 @@
     {
       "name": "token",
       "type": "address",
-      "value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+      "value": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
     },
     {
       "name": "amount",
@@ -22,7 +22,7 @@
           {
             "name": "target",
             "type": "address",
-            "value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+            "value": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
           },
           {
             "name": "value",
@@ -49,7 +49,7 @@
           {
             "name": "target",
             "type": "address",
-            "value": "0x99a58482bd75cbab83b27ec03ca68ff489b5788f"
+            "value": "0x99a58482BD75cbab83b27EC03CA68fF489b5788f"
           },
           {
             "name": "value",
@@ -94,7 +94,7 @@
     {
       "name": "gasRefundRecipient",
       "type": "address",
-      "value": "0xa140f413c63fbda84e9008607e678258fffbc76b"
+      "value": "0xa140F413C63FBDA84E9008607E678258ffFbC76b"
     },
     {
       "name": "enableExpress",

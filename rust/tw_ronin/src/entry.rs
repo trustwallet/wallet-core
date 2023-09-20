@@ -14,12 +14,14 @@ use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::evm_entry::EvmEntry;
+use tw_evm::modules::abi_encoder::AbiEncoder;
 use tw_evm::modules::compiler::Compiler;
 use tw_evm::modules::json_signer::EthJsonSigner;
 use tw_evm::modules::rlp_encoder::RlpEncoder;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
+use tw_proto::EthereumAbi::Proto as AbiProto;
 use tw_proto::EthereumRlp::Proto as RlpProto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -94,8 +96,18 @@ impl EvmEntry for RoninEntry {
     type RlpEncodingInput<'a> = RlpProto::EncodingInput<'a>;
     type RlpEncodingOutput = RlpProto::EncodingOutput<'static>;
 
+    type DecodeContractCallInput<'a> = AbiProto::ContractCallDecodingInput<'a>;
+    type DecodeContractCallOutput = AbiProto::ContractCallDecodingOutput<'static>;
+
     #[inline]
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput {
         RlpEncoder::<RoninContext>::encode_with_proto(input)
+    }
+
+    #[inline]
+    fn decode_contract_call(
+        input: Self::DecodeContractCallInput<'_>,
+    ) -> Self::DecodeContractCallOutput {
+        AbiEncoder::<RoninContext>::decode_contract_call(input)
     }
 }
