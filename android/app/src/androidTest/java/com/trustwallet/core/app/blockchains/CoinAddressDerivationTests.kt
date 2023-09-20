@@ -42,10 +42,10 @@ class CoinAddressDerivationTests {
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
-        ETHEREUM, SMARTCHAIN, POLYGON, OPTIMISM, ZKSYNC, ARBITRUM, ECOCHAIN, AVALANCHECCHAIN, XDAI,
+        ETHEREUM, SMARTCHAIN, POLYGON, OPTIMISM, ZKSYNC, ARBITRUM, ARBITRUMNOVA, ECOCHAIN, AVALANCHECCHAIN, XDAI,
         FANTOM, CELO, CRONOSCHAIN, SMARTBITCOINCASH, KUCOINCOMMUNITYCHAIN, BOBA, METIS,
         AURORA, EVMOS, MOONRIVER, MOONBEAM, KAVAEVM, KLAYTN, METER, OKXCHAIN, POLYGONZKEVM, SCROLL,
-        CONFLUXESPACE, ACALAEVM, OPBNBTESTNET, NEON, BASE -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        CONFLUXESPACE, ACALAEVM, OPBNB, NEON, BASE, LINEA, GREENFIELD, MANTLE, ZENEON -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         RONIN -> assertEquals("ronin:8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         GOCHAIN -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
@@ -145,5 +145,6 @@ class CoinAddressDerivationTests {
         AKASH -> assertEquals("akash142j9u5eaduzd7faumygud6ruhdwme98qal870f", address)
         NOBLE -> assertEquals("noble142j9u5eaduzd7faumygud6ruhdwme98qc8l3wa", address)
         ROOTSTOCK -> assertEquals("0xA2D7065F94F838a3aB9C04D67B312056846424Df", address)
+        SEI -> assertEquals("sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj", address)
     }
 }

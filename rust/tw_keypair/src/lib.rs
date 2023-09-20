@@ -56,7 +56,7 @@ pub mod test_utils;
 
 pub type KeyPairResult<T> = Result<T, KeyPairError>;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum KeyPairError {
     InvalidSecretKey,
     InvalidPublicKey,
