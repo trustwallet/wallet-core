@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+pushd kotlin
+./gradlew :wallet-core-kotlin:jvmTest
+popd

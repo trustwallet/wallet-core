@@ -45,7 +45,7 @@ public:
     bool decode(const Data& encoded, size_t& offset_inout) override;
     bool setValueJson(const std::string& value) override;
     Data hashStruct() const override;
-    std::string getExtraTypes(std::vector<std::string>& ignoreList) const override;
+    void fillExtraTypesMap(ExtraTypesMap& extraTypes) const override;
     std::shared_ptr<ParamBase> clone() const override;
 };
 

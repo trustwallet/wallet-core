@@ -32,7 +32,7 @@ std::string Signer::signaturePreimage(const Proto::SigningInput& input, const Da
 
     case Proto::Protobuf:
     default:
-        auto pbk = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
+        auto pbk = PublicKey(publicKey, TWCoinTypePublicKeyType(coin));
         return Protobuf::signaturePreimageProto(input, pbk, coin);
     }
 }

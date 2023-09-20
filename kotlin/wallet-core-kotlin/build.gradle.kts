@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "OPT_IN_USAGE")
 
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackOutput
 
@@ -10,8 +10,18 @@ plugins {
 }
 
 kotlin {
+    targetHierarchy.default()
+
     android {
         publishLibraryVariants = listOf("release")
+    }
+
+    jvm {
+        testRuns.named("test") {
+            executionTask.configure {
+                useJUnitPlatform()
+            }
+        }
     }
 
     val nativeTargets =
@@ -37,9 +47,6 @@ kotlin {
             }
         }
 
-        val androidMain by getting {
-            kotlin.srcDir(projectDir.resolve("src/androidMain/generated"))
-        }
         val commonMain by getting {
             kotlin.srcDirs(
                 projectDir.resolve("src/commonMain/generated"),
@@ -50,18 +57,28 @@ kotlin {
                 api(libs.wire.runtime)
             }
         }
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosX64Main by getting
-        val iosMain by creating {
-            kotlin.srcDir(projectDir.resolve("src/iosMain/generated"))
+
+        getByName("commonTest") {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
+        val androidMain by getting
+        val jvmMain by getting
+        create("commonAndroidJvmMain") {
+            kotlin.srcDir(projectDir.resolve("src/commonAndroidJvmMain/generated"))
 
             dependsOn(commonMain)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-            iosX64Main.dependsOn(this)
+            androidMain.dependsOn(this)
+            jvmMain.dependsOn(this)
         }
-        val jsMain by getting {
+
+        getByName("iosMain") {
+            kotlin.srcDir(projectDir.resolve("src/iosMain/generated"))
+        }
+
+        getByName("jsMain") {
             kotlin.srcDir(projectDir.resolve("src/jsMain/generated"))
         }
     }
