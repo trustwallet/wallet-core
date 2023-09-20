@@ -183,7 +183,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
         case TWBlockchainSui: entry = &SuiDP; break;
         case TWBlockchainGreenfield: entry = &GreenfieldDP; break;
-        case TWBlockchainInternetComputer: entry = &InternetComputerDP; break; // TODO remove if the blockchain already exists, or just remove this comment if not
+        case TWBlockchainInternetComputer: entry = &InternetComputerDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
     default:
