@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ethabi = "18.0.0"
+ethabi = { version = "18.0.0", features = ["full-serde"] }
 lazy_static = "1.4.0"
 rlp = "0.5.2"
 serde = { version = "1.0.159", features = ["derive"] }

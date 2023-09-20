@@ -8,13 +8,21 @@ use crate::address::Address;
 use tw_coin_entry::error::{SigningError, SigningErrorType};
 use tw_number::U256;
 
+pub mod function;
+pub mod param;
+pub mod param_token;
+pub mod param_type;
 pub mod prebuild;
+pub mod token;
 
 pub type AbiResult<T> = Result<T, AbiError>;
 
 #[derive(Debug)]
 pub enum AbiError {
     InvalidParams,
+    InvalidEncodedData,
+    InvalidParamType,
+    Internal,
 }
 
 impl From<ethabi::Error> for AbiError {

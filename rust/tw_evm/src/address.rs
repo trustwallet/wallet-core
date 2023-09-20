@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use serde::de::Error as SerdeError;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::ops::{RangeFrom, RangeInclusive};
 use std::str::FromStr;
@@ -28,7 +30,7 @@ pub trait EvmAddress: FromStr<Err = AddressError> + Into<Address> {
 }
 
 /// Represents an Ethereum address.
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Address {
     bytes: H160,
 }
@@ -50,6 +52,16 @@ impl Address {
         let bytes = H160::try_from(&hash[ADDRESS_HASH_RANGE]).expect("Expected 20 byte array");
 
         Address { bytes }
+    }
+
+    /// Constructs an address from the 20-length byte array.
+    pub fn from_bytes(bytes: H160) -> Address {
+        Address { bytes }
+    }
+
+    /// Constructs an address from the `ethabi::Address`.
+    pub fn from_ethabi(addr: &ethabi::Address) -> Address {
+        Address::from_bytes(H160::from(addr.0))
     }
 
     /// Displays the address in mixed-case checksum form
@@ -119,6 +131,25 @@ impl Display for Address {
     #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.into_checksum_address())
+    }
+}
+
+impl<'de> Deserialize<'de> for Address {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s: &str = Deserialize::deserialize(deserializer)?;
+        Address::from_str(s).map_err(|e| SerdeError::custom(format!("{e:?}")))
+    }
+}
+
+impl Serialize for Address {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
     }
 }
 

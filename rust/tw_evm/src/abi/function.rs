@@ -1,0 +1,67 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+use crate::abi::param::Param;
+use crate::abi::param_token::ParamToken;
+use crate::abi::{AbiError, AbiResult};
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct Function {
+    /// Function name.
+    pub name: String,
+    /// Function input.
+    pub inputs: Vec<Param>,
+    /// Function output.
+    pub outputs: Vec<Param>,
+    /// Whether the function reads or modifies blockchain state.
+    #[serde(rename = "stateMutability", default)]
+    pub state_mutability: ethabi::StateMutability,
+}
+
+impl Function {
+    /// Returns a signature that uniquely identifies this function.
+    ///
+    /// Examples:
+    /// - `functionName()`
+    /// - `functionName():(uint256)`
+    /// - `functionName(bool):(uint256,string)`
+    /// - `functionName(uint256,bytes32):(string,uint256)`
+    ///
+    /// The method implementation is inspired by
+    /// https://github.com/rust-ethereum/ethabi/blob/b1710adc18f5b771d2d2519c87248b1ba9430778/ethabi/src/function.rs#L88-L97
+    pub fn signature(&self) -> String {
+        let inputs = self
+            .inputs
+            .iter()
+            .map(|p| p.kind.to_ethabi().to_string())
+            .collect::<Vec<_>>()
+            .join(",");
+        let outputs = self
+            .outputs
+            .iter()
+            .map(|p| p.kind.to_ethabi().to_string())
+            .collect::<Vec<_>>()
+            .join(",");
+
+        match (inputs.len(), outputs.len()) {
+            (_, 0) => format!("{}({inputs})", self.name),
+            (_, _) => format!("{}({inputs}):({outputs})", self.name),
+        }
+    }
+
+    /// Parses the ABI function input to a list of tokens.
+    pub fn decode_input(&self, data: &[u8]) -> AbiResult<Vec<ParamToken>> {
+        let param_types: Vec<_> = self.inputs.iter().map(|p| p.ethabi_type()).collect();
+        let tokens =
+            ethabi::decode(&param_types, data).map_err(|_| AbiError::InvalidEncodedData)?;
+        self.inputs
+            .iter()
+            .zip(tokens.into_iter())
+            .map(|(param, token)| ParamToken::with_ethabi_token(param, token))
+            .collect::<AbiResult<Vec<_>>>()
+    }
+}

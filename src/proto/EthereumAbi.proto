@@ -16,15 +16,6 @@ message NumberNParam {
     bytes value = 2;
 }
 
-// A fixed-size byte array.
-message ByteArrayFixParam {
-    // Size of the fixed array in bytes.
-    uint64 size = 1;
-
-    // Raw bytes.
-    bytes value = 2;
-}
-
 // A byte array of arbitrary size.
 message ArrayParam {
     repeated ParamValue values = 1;
@@ -32,7 +23,7 @@ message ArrayParam {
 
 // A tuple with various parameters similar to a structure.
 message TupleParam {
-    repeated ParamValue params = 1;
+    repeated NamedParam params = 1;
 }
 
 // An enumeration of possible parameters.
@@ -40,28 +31,20 @@ message ParamValue {
     oneof param {
         // Simple values.
         bool boolean = 1;
-        uint32 number_u8 = 2;
-        uint32 number_u16 = 3;
-        uint32 number_u32 = 4;
-        uint64 number_u64 = 5;
-        bytes number_u256 = 6;
-        // Gap in field numbering is intentional.
-        NumberNParam number_uint = 9;
-        int32 number_i8 = 10;
-        int32 number_i16 = 11;
-        int32 number_i32 = 12;
-        int64 number_i64 = 13;
-        bytes number_i256 = 14;
-        // Gap in field numbering is intentional.
-        NumberNParam number_int = 17;
-        string string_value = 18;
-        string address = 19;
-        bytes byte_array = 20;
-        ByteArrayFixParam byte_array_fix = 21;
+        NumberNParam number_int = 2;
+        NumberNParam number_uint = 3;
+        // Nested values. Gap in field numbering is intentional.
+        string string_value = 7;
+        string address = 8;
+        bytes byte_array = 9;
+        bytes byte_array_fix = 10;
 
         // Nested values. Gap in field numbering is intentional.
         ArrayParam array = 24;
-        TupleParam tuple = 25;
+        ArrayParam fixed_array = 25;
+
+        // Nested values. Gap in field numbering is intentional.
+        TupleParam tuple = 29;
     }
 }
 
