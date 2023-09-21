@@ -9,6 +9,9 @@
 #include "ParamBase.h"
 #include "Parameters.h"
 #include "Bytes.h"
+#include "proto/EthereumAbi.pb.h"
+#include "rust/Wrapper.h"
+#include "TrustWalletCore/TWCoinType.h"
 
 #include "../../uint256.h"
 #include "../../Hash.h"
@@ -16,6 +19,125 @@
 #include <string>
 
 namespace TW::Ethereum::ABI {
+
+class FunctionV2 {
+public:
+    std::string name;
+
+    explicit FunctionV2(std::string name): name(std::move(name)) {}
+
+    int addParam(EthereumAbi::Proto::NamedParamType paramType, EthereumAbi::Proto::NamedParam paramValue, bool isOutput = false) {
+        if (isOutput) {
+            auto idx = outputValues.size();
+            *outputs.add_params() = std::move(paramType);
+            outputValues.emplace_back(std::move(paramValue));
+            return static_cast<int>(idx);
+        }
+
+        auto idx = inputValues.size();
+        *inputs.add_params() = std::move(paramType);
+        inputValues.emplace_back(std::move(paramValue));
+        return static_cast<int>(idx);
+    }
+
+    int addUintParam(uint32_t bits, const Data& encodedValue, bool isOutput = false) {
+        EthereumAbi::Proto::NamedParamType paramType;
+        paramType.mutable_param()->mutable_number_uint()->set_bits(bits);
+
+        EthereumAbi::Proto::NamedParam paramValue;
+        auto* numValue = paramValue.mutable_value()->mutable_number_uint();
+        numValue->set_bits(bits);
+        numValue->set_value(encodedValue.data(), encodedValue.size());
+
+        return addParam(std::move(paramType), std::move(paramValue), isOutput);
+    }
+
+    int addIntParam(uint32_t bits, const Data& encodedValue, bool isOutput = false) {
+        EthereumAbi::Proto::NamedParamType paramType;
+        paramType.mutable_param()->mutable_number_int()->set_bits(bits);
+
+        EthereumAbi::Proto::NamedParam paramValue;
+        auto* numValue = paramValue.mutable_value()->mutable_number_int();
+        numValue->set_bits(bits);
+        numValue->set_value(encodedValue.data(), encodedValue.size());
+
+        return addParam(std::move(paramType), std::move(paramValue), isOutput);
+    }
+
+    std::optional<EthereumAbi::Proto::NamedParam> getParam(int idx, bool isOutput = false) const {
+        const auto& values = isOutput ? outputValues : inputValues;
+
+        if (idx < 0) {
+            return {};
+        }
+
+        auto idxSize = static_cast<std::size_t>(idx);
+        if (idxSize >= values.size()) {
+            return {};
+        }
+        return values[idxSize];
+    }
+
+    Data getUintParamData(int idx, uint32_t bits, bool isOutput) const {
+        auto param = getParam(idx, isOutput);
+        if (!param.has_value() || !param->value().has_number_uint() || param->value().number_uint().bits() != bits) {
+            return store(0);
+        }
+        return data(param->value().number_uint().value());
+    }
+
+    template <typename T>
+    T getUintParam(int idx, uint32_t bits, bool isOutput) const  {
+        auto valueData = getUintParamData(idx, bits, isOutput);
+        auto val256 = load(valueData);
+        return static_cast<T>(val256);
+    }
+
+    bool decode(const Data& encoded, bool isOutput) {
+        EthereumAbi::Proto::ParamsDecodingInput input;
+
+        input.set_encoded(encoded.data(), encoded.size());
+        if (isOutput) {
+            *input.mutable_abi_params() = outputs;
+        } else {
+            *input.mutable_abi_params() = inputs;
+        }
+
+        Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+        Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_abi_decode_params(TWCoinTypeEthereum, inputData.get());
+
+        auto outputData = outputPtr.toDataOrDefault();
+        if (outputData.empty()) {
+            return false;
+        }
+
+        EthereumAbi::Proto::ParamsDecodingOutput output;
+        output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+        if (output.error() != Common::Proto::SigningError::OK) {
+            return false;
+        }
+
+        std::vector<EthereumAbi::Proto::NamedParam> decoded;
+        for (const auto &param : output.params()) {
+            decoded.emplace_back(param);
+        }
+
+        if (isOutput) {
+            outputValues = decoded;
+        } else {
+            inputValues = decoded;
+        }
+        return true;
+    }
+
+private:
+    EthereumAbi::Proto::AbiParams inputs;
+    EthereumAbi::Proto::AbiParams outputs;
+
+    std::vector<EthereumAbi::Proto::NamedParam> inputValues;
+    std::vector<EthereumAbi::Proto::NamedParam> outputValues;
+};
 
 /// Non-generic version of Function, templated version is impossible to pass around to and back over C interface
 /// (void* looses the template parameters).
@@ -78,4 +200,5 @@ inline void encode(const Function& func, Data& data) {
 /// Wrapper for C interface.
 struct TWEthereumAbiFunction {
     TW::Ethereum::ABI::Function impl;
+    TW::Ethereum::ABI::FunctionV2 implV2;
 };

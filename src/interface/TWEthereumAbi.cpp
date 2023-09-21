@@ -42,12 +42,11 @@ TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func
 bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,
                                TWData* _Nonnull encoded) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
     assert(encoded != nullptr);
-    Data encData = data(TWDataBytes(encoded), TWDataSize(encoded));
+    const Data& encData = *(reinterpret_cast<const Data*>(encoded));
 
-    size_t offset = 0;
-    return function.decodeOutput(encData, offset);
+    bool isOutput = true;
+    return func_in->implV2.decode(encData, isOutput);
 }
 
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString* _Nonnull abiString) {

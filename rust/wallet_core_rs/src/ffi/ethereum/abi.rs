@@ -30,3 +30,22 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_contract_call(
         .map(|data| TWData::from(data).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
+
+/// Decode a function input or output data according to a given ABI.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.ParamsDecodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.ParamsDecodingOutput` proto object.
+#[no_mangle]
+pub unsafe extern "C" fn tw_ethereum_abi_decode_params(
+    coin: CoinType,
+    input: *const TWData,
+) -> *mut TWData {
+    let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
+
+    evm_dispatcher
+        .decode_params(input_data.as_slice())
+        .map(|data| TWData::from(data).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}

@@ -24,6 +24,7 @@ mod tests {
     use tw_encoding::hex;
     use tw_hash::sha3::keccak256;
     use tw_hash::{H256, H264, H520};
+    use tw_hash::sha2::sha256;
     use tw_misc::traits::{ToBytesVec, ToBytesZeroizing};
 
     #[test]

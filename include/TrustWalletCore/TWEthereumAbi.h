@@ -28,26 +28,29 @@ struct TWEthereumAbi;
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _Nonnull input);
 
-/// Decode a function input or output data according to an ABI json.
+/// Decode a function input or output data according to a given ABI.
 ///
+/// \param coin EVM-compatible coin type.
 /// \param input The serialized data of `TW.EthereumAbi.Proto.ParamsDecodingInput`.
 /// \return The serialized data of a `TW.EthereumAbi.Proto.ParamsDecodingOutput` proto object.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiDecodeParams(TWData* _Nonnull input);
+TWData* _Nonnull TWEthereumAbiDecodeParams(enum TWCoinType coin, TWData* _Nonnull input);
 
 /// Decode an Eth ABI value.
 ///
+/// \param coin EVM-compatible coin type.
 /// \param input The serialized data of `TW.EthereumAbi.Proto.ValueDecodingInput`.
 /// \return The serialized data of a `TW.EthereumAbi.Proto.ValueDecodingOutput` proto object.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiDecodeValue(TWData* _Nonnull input);
+TWData* _Nonnull TWEthereumAbiDecodeValue(enum TWCoinType coin, TWData* _Nonnull input);
 
 /// Encode function to Eth ABI binary.
 ///
+/// \param coin EVM-compatible coin type.
 /// \param input The serialized data of `TW.EthereumAbi.Proto.FunctionEncodingInput`.
 /// \return The serialized data of a `TW.EthereumAbi.Proto.FunctionEncodingOutput` proto object.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiEncodeFunction(TWData* _Nonnull input);
+TWData* _Nonnull TWEthereumAbiEncodeFunction(enum TWCoinType coin, TWData* _Nonnull input);
 
 /// Encode function to Eth ABI binary
 ///

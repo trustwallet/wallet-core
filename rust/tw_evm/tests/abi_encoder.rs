@@ -16,10 +16,6 @@ use tw_proto::EthereumAbi::Proto;
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
 use Proto::mod_ParamValue::OneOfparam as ParamEnum;
 
-fn param_value(param: ParamEnum) -> Proto::ParamValue {
-    Proto::ParamValue { param }
-}
-
 fn named_param_type(name: &str, kind: ParamTypeEnum<'static>) -> Proto::NamedParamType<'static> {
     Proto::NamedParamType {
         name: name.to_string().into(),
@@ -30,7 +26,7 @@ fn named_param_type(name: &str, kind: ParamTypeEnum<'static>) -> Proto::NamedPar
 fn named_param(name: &str, value: ParamEnum<'static>) -> Proto::NamedParam<'static> {
     Proto::NamedParam {
         name: Cow::Owned(name.to_string()),
-        value: Some(param_value(value)),
+        value: Some(Proto::ParamValue { param: value }),
     }
 }
 

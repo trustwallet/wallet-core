@@ -88,7 +88,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     // TODO return `Proto::AbiError`
-    pub fn decode_params_impl(
+    fn decode_params_impl(
         input: Proto::ParamsDecodingInput<'_>,
     ) -> SigningResult<Proto::ParamsDecodingOutput<'static>> {
         use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;

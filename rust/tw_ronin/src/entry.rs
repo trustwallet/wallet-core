@@ -99,6 +99,9 @@ impl EvmEntry for RoninEntry {
     type DecodeContractCallInput<'a> = AbiProto::ContractCallDecodingInput<'a>;
     type DecodeContractCallOutput = AbiProto::ContractCallDecodingOutput<'static>;
 
+    type DecodeParamsInput<'a> = AbiProto::ParamsDecodingInput<'a>;
+    type DecodeParamsOutput = AbiProto::ParamsDecodingOutput<'static>;
+
     #[inline]
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput {
         RlpEncoder::<RoninContext>::encode_with_proto(input)
@@ -109,5 +112,10 @@ impl EvmEntry for RoninEntry {
         input: Self::DecodeContractCallInput<'_>,
     ) -> Self::DecodeContractCallOutput {
         AbiEncoder::<RoninContext>::decode_contract_call(input)
+    }
+
+    #[inline]
+    fn decode_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput {
+        AbiEncoder::<RoninContext>::decode_params(input)
     }
 }

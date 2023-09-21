@@ -11,8 +11,12 @@ use tw_proto::{deserialize, serialize, MessageRead, MessageWrite, ProtoResult};
 pub trait EvmEntry {
     type RlpEncodingInput<'a>: MessageRead<'a>;
     type RlpEncodingOutput: MessageWrite;
+
     type DecodeContractCallInput<'a>: MessageRead<'a> + MessageWrite;
     type DecodeContractCallOutput: MessageWrite;
+
+    type DecodeParamsInput<'a>: MessageRead<'a> + MessageWrite;
+    type DecodeParamsOutput: MessageWrite;
 
     /// Encodes an item or a list of items as Eth RLP binary format.
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput;
@@ -21,6 +25,9 @@ pub trait EvmEntry {
     fn decode_contract_call(
         input: Self::DecodeContractCallInput<'_>,
     ) -> Self::DecodeContractCallOutput;
+
+    /// Decodes a function input or output data according to a given ABI.
+    fn decode_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput;
 }
 
 /// The [`EvmEntry`] trait extension.
@@ -30,6 +37,9 @@ pub trait EvmEntryExt {
 
     /// Decodes function call data to human readable json format, according to input abi json.
     fn decode_contract_call(&self, input: &[u8]) -> ProtoResult<Data>;
+
+    /// Decodes a function input or output data according to a given ABI.
+    fn decode_params(&self, input: &[u8]) -> ProtoResult<Data>;
 }
 
 impl<T> EvmEntryExt for T
@@ -45,6 +55,12 @@ where
     fn decode_contract_call(&self, input: &[u8]) -> ProtoResult<Data> {
         let input = deserialize(input)?;
         let output = <Self as EvmEntry>::decode_contract_call(input);
+        serialize(&output)
+    }
+
+    fn decode_params(&self, input: &[u8]) -> ProtoResult<Data> {
+        let input = deserialize(input)?;
+        let output = <Self as EvmEntry>::decode_params(input);
         serialize(&output)
     }
 }

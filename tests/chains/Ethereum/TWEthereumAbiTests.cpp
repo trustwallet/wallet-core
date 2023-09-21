@@ -60,7 +60,7 @@ TEST(TWEthereumAbi, FuncCreate2) {
     auto p1index = TWEthereumAbiFunctionAddParamUInt256(func, p1val.get(), false);
     EXPECT_EQ(0, p1index);
 
-    Data dummy(0);
+    Data dummy = store(0);
     auto p2index = TWEthereumAbiFunctionAddParamUInt256(func, &dummy, true);
     EXPECT_EQ(0, p2index);
 
