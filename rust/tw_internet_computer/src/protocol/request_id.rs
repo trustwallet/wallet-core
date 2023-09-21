@@ -1,10 +1,9 @@
 use std::collections::BTreeMap;
 
-use ic_certification::Label;
 use serde::{Deserialize, Serialize};
 use tw_hash::{sha2::sha256, H256};
 
-use super::envelope::EnvelopeContent;
+use super::envelope::{EnvelopeContent, Label};
 
 const DOMAIN_IC_REQUEST: &[u8; 11] = b"\x0Aic-request";
 
@@ -61,10 +60,17 @@ impl From<&EnvelopeContent> for RequestId {
 /// The different types of values supported in `RawHttpRequest`.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 enum RawHttpRequestVal {
-    Bytes(#[serde(with = "serde_bytes")] Vec<u8>),
+    Bytes(#[serde(serialize_with = "serialize_bytes")] Vec<u8>),
     String(String),
     U64(u64),
     Array(Vec<RawHttpRequestVal>),
+}
+
+fn serialize_bytes<S>(bytes: &[u8], s: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    s.serialize_bytes(bytes)
 }
 
 fn hash_string(value: String) -> Vec<u8> {
@@ -211,7 +217,7 @@ fn representation_independent_hash_read_state(
                     .map(|p| {
                         RawHttpRequestVal::Array(
                             p.iter()
-                                .map(|b| RawHttpRequestVal::Bytes(b.as_bytes().to_vec()))
+                                .map(|b| RawHttpRequestVal::Bytes(b.as_slice().to_vec()))
                                 .collect(),
                         )
                     })
@@ -234,9 +240,8 @@ fn representation_independent_hash_read_state(
 
 #[cfg(test)]
 mod test {
-    use ic_certification::Label;
 
-    use crate::protocol::principal::Principal;
+    use crate::protocol::{envelope::Label, principal::Principal};
 
     #[test]
     fn representation_independent_hash_call_or_query() {
@@ -270,7 +275,7 @@ mod test {
             1685570400000000000,
             &vec![vec![
                 Label::from("request_status"),
-                Label::from(update_request_id.0.as_slice()),
+                Label::from(update_request_id),
             ]],
             Principal::anonymous().as_slice().to_vec(),
             None,

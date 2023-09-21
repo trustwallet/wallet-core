@@ -720,18 +720,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ic-certification"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6561f6ae522da62b6fb89c0594337c18e96a69fa1f89baae8542f3634023635b"
-dependencies = [
- "hex",
- "serde",
- "serde_bytes",
- "sha2 0.10.6",
-]
-
-[[package]]
 name = "impl-codec"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1680,11 +1668,9 @@ dependencies = [
 name = "tw_internet_computer"
 version = "0.1.0"
 dependencies = [
- "ic-certification",
  "pb-rs",
  "quick-protobuf",
  "serde",
- "serde_bytes",
  "tw_cbor",
  "tw_coin_entry",
  "tw_encoding",
