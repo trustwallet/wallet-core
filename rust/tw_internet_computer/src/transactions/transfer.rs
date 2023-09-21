@@ -1,12 +1,11 @@
 use std::time::Duration;
 
-use ic_certification::Label;
 use tw_keypair::ecdsa::secp256k1::PrivateKey;
 
 use crate::{
     address::AccountIdentifier,
     protocol::{
-        envelope::{Envelope, EnvelopeContent},
+        envelope::{Envelope, EnvelopeContent, Label},
         get_ingress_expiry,
         identity::Identity,
         principal::Principal,
@@ -146,7 +145,7 @@ fn create_read_state_envelope(
         sender,
         paths: vec![vec![
             Label::from("request_status"),
-            Label::from(update_request_id.0.as_slice()),
+            Label::from(update_request_id),
         ]],
     };
 
