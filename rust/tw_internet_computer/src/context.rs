@@ -9,22 +9,10 @@ use crate::{
     protocol::principal::Principal,
 };
 
-pub trait CanisterId {
-    fn principal_id() -> Principal;
-}
-
 pub trait InternetComputerContext {
     type Address: IcpAddress;
-    type Canister: CanisterId;
-}
 
-pub struct StandardInternetComputerLedgerCanister;
-
-impl CanisterId for StandardInternetComputerLedgerCanister {
-    fn principal_id() -> Principal {
-        // ICP Ledger Canister: ryjl3-tyaaa-aaaaa-aaaba-cai
-        Principal::from_slice(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01, 0x01])
-    }
+    fn get_canister_id() -> Principal;
 }
 
 #[derive(Default)]
@@ -32,7 +20,11 @@ pub struct StandardInternetComputerContext;
 
 impl InternetComputerContext for StandardInternetComputerContext {
     type Address = AccountIdentifier;
-    type Canister = StandardInternetComputerLedgerCanister;
+
+    fn get_canister_id() -> Principal {
+        // ICP Ledger Canister: ryjl3-tyaaa-aaaaa-aaaba-cai
+        Principal::from_slice(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01, 0x01])
+    }
 }
 
 #[cfg(test)]
@@ -55,8 +47,8 @@ mod test {
     }
 
     impl<Context: InternetComputerContext> ContextTest<Context> {
-        fn canister_id() -> Principal {
-            Context::Canister::principal_id()
+        fn get_canister_id() -> Principal {
+            Context::get_canister_id()
         }
 
         fn account_identifier_optional(s: &str) -> AddressResult<Option<Context::Address>> {
@@ -79,13 +71,7 @@ mod test {
 
     #[test]
     fn standard_internet_computer_context_canister_type() {
-        let ledger_canister_id = ContextTest::<StandardInternetComputerContext>::canister_id();
-        assert_eq!(ledger_canister_id.to_text(), TEXTUAL_ICP_LEDGER_CANISTER_ID);
-    }
-
-    #[test]
-    fn standard_internet_computer_ledger_canister() {
-        let ledger_canister_id = StandardInternetComputerLedgerCanister::principal_id();
+        let ledger_canister_id = ContextTest::<StandardInternetComputerContext>::get_canister_id();
         assert_eq!(ledger_canister_id.to_text(), TEXTUAL_ICP_LEDGER_CANISTER_ID);
     }
 }

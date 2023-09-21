@@ -14,8 +14,8 @@ use tw_keypair::ecdsa::secp256k1;
 use tw_proto::{Common::Proto::SigningError as CommonError, InternetComputer::Proto};
 
 use crate::{
-    context::{CanisterId, InternetComputerContext},
-    protocol::{identity, principal::Principal},
+    context::InternetComputerContext,
+    protocol::identity,
     transactions::{self, sign_transaction},
 };
 
@@ -62,7 +62,7 @@ impl<Context: InternetComputerContext> Signer<Context> {
             return Err(SigningError(CommonError::Error_invalid_params));
         };
 
-        let canister_id = Self::canister_id();
+        let canister_id = Context::get_canister_id();
         let signed_transaction =
             sign_transaction(private_key, canister_id, &transaction.transaction_oneof)
                 .map_err(SigningError::from)?;
@@ -74,10 +74,5 @@ impl<Context: InternetComputerContext> Signer<Context> {
             signed_transaction: cbor_encoded_signed_transaction.into(),
             ..Proto::SigningOutput::default()
         })
-    }
-
-    #[inline]
-    fn canister_id() -> Principal {
-        Context::Canister::principal_id()
     }
 }
