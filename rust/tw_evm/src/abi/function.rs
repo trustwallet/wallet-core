@@ -4,9 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::abi::decode::decode_params;
 use crate::abi::param::Param;
 use crate::abi::param_token::ParamToken;
-use crate::abi::{AbiError, AbiResult};
+use crate::abi::AbiResult;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -45,13 +46,6 @@ impl Function {
 
     /// Parses the ABI function input to a list of tokens.
     pub fn decode_input(&self, data: &[u8]) -> AbiResult<Vec<ParamToken>> {
-        let param_types: Vec<_> = self.inputs.iter().map(|p| p.ethabi_type()).collect();
-        let tokens =
-            ethabi::decode(&param_types, data).map_err(|_| AbiError::InvalidEncodedData)?;
-        self.inputs
-            .iter()
-            .zip(tokens.into_iter())
-            .map(|(param, token)| ParamToken::with_ethabi_token(param, token))
-            .collect::<AbiResult<Vec<_>>>()
+        decode_params(&self.inputs, data)
     }
 }

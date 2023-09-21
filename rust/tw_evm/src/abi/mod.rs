@@ -8,6 +8,7 @@ use crate::address::Address;
 use tw_coin_entry::error::{SigningError, SigningErrorType};
 use tw_number::U256;
 
+pub mod decode;
 pub mod function;
 pub mod param;
 pub mod param_token;

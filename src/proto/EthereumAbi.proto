@@ -5,8 +5,69 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
+// ABI type parameters excluding values.
+
+// Indicates a boolean type.
+message BoolType {}
+
+// Generic number type for all other bit sizes, like UInt24, 40, 48, ... 248.
+message NumberNType {
+    uint32 bits = 1;
+}
+
+// Indicates a string type.
+message StringType {}
+
+// Indicates an address type.
+message AddressType {}
+
+// Indicates an array type with an inner `element_type`.
+message ArrayType {
+    ParamType element_type = 1;
+}
+
+// Indicates a fixed-size array type with an inner `element_type`.
+message FixedArrayType {
+    uint64 size = 1;
+    ParamType element_type = 2;
+}
+
+// Indicates a byte array type.
+message ByteArrayType {}
+
+// Indicates a fixed-size byte array type.
+message ByteArrayFixType {
+    uint64 size = 1;
+}
+
+// Indicates a tuple with inner type parameters.
+message TupleType {
+    repeated NamedParamType params = 1;
+}
+
+message ParamType {
+    oneof param {
+        BoolType boolean = 1;
+        NumberNType number_int = 2;
+        NumberNType number_uint = 3;
+        // Nested values. Gap in field numbering is intentional.
+        StringType string_param = 7;
+        AddressType address = 8;
+        ByteArrayType byte_array = 9;
+        ByteArrayFixType byte_array_fix = 10;
+
+        // Nested values. Gap in field numbering is intentional.
+        ArrayType array = 14;
+        FixedArrayType fixed_array = 15;
+
+        // Nested values. Gap in field numbering is intentional.
+        TupleType tuple = 19;
+    }
+}
+
+// ABI parameters including values.
+
 // Generic number parameter for all other bit sizes, like UInt24, 40, 48, ... 248.
-// For predefined sizes (8, 16, 32, 64, 256) use a special type like `ParamValue::number_u16`.
 message NumberNParam {
     // Count of bits of the number.
     // 0 < bits <= 256, bits % 8 == 0
@@ -40,11 +101,11 @@ message ParamValue {
         bytes byte_array_fix = 10;
 
         // Nested values. Gap in field numbering is intentional.
-        ArrayParam array = 24;
-        ArrayParam fixed_array = 25;
+        ArrayParam array = 14;
+        ArrayParam fixed_array = 15;
 
         // Nested values. Gap in field numbering is intentional.
-        TupleParam tuple = 29;
+        TupleParam tuple = 19;
     }
 }
 
@@ -55,6 +116,15 @@ message NamedParam {
 
     // Value of the parameter.
     ParamValue value = 2;
+}
+
+// A named type parameter.
+message NamedParamType {
+    // Name of the parameter.
+    string name = 1;
+
+    // Type of the parameter.
+    ParamType param = 2;
 }
 
 //// TWEthereumAbiDecodeContractCall
@@ -101,27 +171,36 @@ message ContractCallDecodingOutput {
 
 //// TWEthereumAbiDecodeParams
 
+message AbiParams {
+    repeated NamedParamType params = 1;
+}
+
 // Decode a function input or output data according to the given ABI json.
 message ParamsDecodingInput {
     // An encoded ABI.
     bytes encoded = 1;
 
-    // A set of ABI parameters in JSON.
-    // Expected to be a JSON array at the entry level.
-    // Example:
-    // ```
-    // [
-    //     {
-    //         "name": "_to',
-    //         "type": "address"
-    //     },
-    //     {
-    //         "name": "_value",
-    //         "type": "uint256"
-    //     }
-    // ]
-    // ```
-    string params_abi_json = 2;
+    oneof abi {
+        // A set of ABI parameters in JSON.
+        // Expected to be a JSON array at the entry level.
+        // Example:
+        // ```
+        // [
+        //     {
+        //         "name": "_to',
+        //         "type": "address"
+        //     },
+        //     {
+        //         "name": "_value",
+        //         "type": "uint256"
+        //     }
+        // ]
+        // ```
+        string abi_json = 2;
+
+        // A set of ABI type parameters.
+        AbiParams abi_params = 3;
+    }
 }
 
 message ParamsDecodingOutput {

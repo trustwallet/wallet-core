@@ -20,6 +20,7 @@ TW_EXPORT_STRUCT
 struct TWEthereumAbi;
 
 /// Decode a contract call (function input) according to an ABI json.
+/// TODO add a test
 ///
 /// \param coin EVM-compatible coin type.
 /// \param input The serialized data of `TW.EthereumAbi.Proto.ContractCallDecodingInput`.

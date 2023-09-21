@@ -4,19 +4,27 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use serde_json::Value as Json;
+use serde_json::{json, Value as Json};
 use std::borrow::Cow;
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::DecodeHex;
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::abi_encoder::AbiEncoder;
+use tw_number::U256;
 use tw_proto::EthereumAbi::Proto;
 
-use tw_number::U256;
+use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
 use Proto::mod_ParamValue::OneOfparam as ParamEnum;
 
 fn param_value(param: ParamEnum) -> Proto::ParamValue {
     Proto::ParamValue { param }
+}
+
+fn named_param_type(name: &str, kind: ParamTypeEnum<'static>) -> Proto::NamedParamType<'static> {
+    Proto::NamedParamType {
+        name: name.to_string().into(),
+        param: Some(Proto::ParamType { param: kind }),
+    }
 }
 
 fn named_param(name: &str, value: ParamEnum<'static>) -> Proto::NamedParam<'static> {
@@ -54,7 +62,7 @@ where
 }
 
 #[test]
-fn test_swap_v2_tuple_array() {
+fn test_decode_contract_call() {
     const SWAP_V2_ABI: &str = include_str!("data/swap_v2.json");
     const SWAP_V2_DECODED: &str = include_str!("data/swap_v2_decoded.json");
 
@@ -126,5 +134,79 @@ fn test_swap_v2_tuple_array() {
         named_param("enableExpress", ParamEnum::boolean(true)),
     ];
 
+    assert_eq!(output.params, expected_proto);
+}
+
+#[test]
+fn test_decode_params_with_abi_json() {
+    let abi_json = json!([
+        {
+            "internalType": "bytes32",
+            "name": "node",
+            "type": "bytes32"
+        },
+        {
+            "internalType": "address",
+            "name": "resolver",
+            "type": "address"
+        }
+    ]);
+    let abi_json = serde_json::to_string(&abi_json).unwrap();
+    let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41".decode_hex().unwrap();
+
+    let input = Proto::ParamsDecodingInput {
+        encoded: Cow::Owned(encoded),
+        abi: Proto::mod_ParamsDecodingInput::OneOfabi::abi_json(abi_json.into()),
+    };
+
+    let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+
+    let node_bytes = "0xe71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f"
+        .decode_hex()
+        .unwrap();
+    let expected_proto = vec![
+        named_param("node", ParamEnum::byte_array_fix(node_bytes.into())),
+        named_param(
+            "resolver",
+            ParamEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
+        ),
+    ];
+    assert_eq!(output.params, expected_proto);
+}
+
+#[test]
+fn test_decode_params_with_abi_params() {
+    let abi_params = vec![
+        named_param_type(
+            "node",
+            ParamTypeEnum::byte_array_fix(Proto::ByteArrayFixType { size: 32 }),
+        ),
+        named_param_type("resolver", ParamTypeEnum::address(Proto::AddressType {})),
+    ];
+    let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41".decode_hex().unwrap();
+
+    let input = Proto::ParamsDecodingInput {
+        encoded: Cow::Owned(encoded),
+        abi: Proto::mod_ParamsDecodingInput::OneOfabi::abi_params(Proto::AbiParams {
+            params: abi_params,
+        }),
+    };
+
+    let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+
+    let node_bytes = "0xe71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f"
+        .decode_hex()
+        .unwrap();
+    let expected_proto = vec![
+        named_param("node", ParamEnum::byte_array_fix(node_bytes.into())),
+        named_param(
+            "resolver",
+            ParamEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
+        ),
+    ];
     assert_eq!(output.params, expected_proto);
 }
