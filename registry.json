@@ -4446,5 +4446,34 @@
       "rpc": "https://neon-proxy-mainnet.solana.p2p.org/",
       "documentation": "https://docs.neonfoundation.io/docs/quick_start"
     }
+  },
+  {
+    "id": "lightlink",
+    "name": "LightLink",
+    "coinId": 10001890,
+    "symbol": "LL",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "1890",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://phoenix.lightlink.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x11c250e1ba9a94c64d241a2ed6c0f39407fa9898c5aa2a176f38c31f04469877",
+      "sampleAccount": "0xCD3b6008ba2F5115004ab7A07Be779cAa63CdF3F"
+    },
+    "info": {
+      "url": "https://www.lightlink.io",
+      "rpc": "https://replicator.phoenix.lightlink.io/rpc/v1",
+      "documentation": "https://docs.lightlink.io"
+    }
   }
 ]
