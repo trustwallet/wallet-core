@@ -20,11 +20,11 @@ cargo run
 
 - The app links with the wallet-core library (C/C++).
 - The `walletcore_iface.rs` file contains the interface definitions in Rust.
-- Links with `TrustWalletCore`, `TrezorCrypto`, `protobuf`, and the platform libc (`c++` or `stdc++`). Build/link paramaters are in `build.rs`.
+- Links with `TrustWalletCore`, `TrezorCrypto`, `protobuf`, and the platform libc (`c++` or `stdc++`). Build/link parameters are in `build.rs`.
 - Rust proto files are created during the build process, from the `.proto` files in wallet-core,
 into subfolder `src/wc_proto`
 (see `build.rs`).
-- Notable dependecies:
+- Notable dependencies:
   -- `protobuf`
   -- `lib` for C linking
   -- `hex`
