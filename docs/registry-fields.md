@@ -31,7 +31,7 @@ Ex.: `10000118` for Osmosis, `118` for Cosmos; `20000714` for BNB Smart Chain.
 See also: `slip44` and `chainId`.
 
 **`slip44`**
-Optionally, SLIP-44 (BIP-44) coin ID can be specified here, in case it differs from `coinId`.  Most of the case the two are the same, so this can be omitted.
+Optionally, SLIP-44 (BIP-44) coin ID can be specified here, in case it differs from `coinId`.  In most cases the two are the same, so this can be omitted.
 Ex.: `60` for Optimism (coinID is `10000070`).
 
 **`symbol`**
@@ -67,7 +67,7 @@ Note that the second number, the BIP-44 ID, usually matches the coinId.
 Some blockchains may support additional alternative derivations.  These have:
 
 - a name
-- a alternative derivation path (optional)
+- an alternative derivation path (optional)
 
 Derivation may differ in the derivation path, or by address generation method (based on the derivation name).
 The first derivation is considered the default.
