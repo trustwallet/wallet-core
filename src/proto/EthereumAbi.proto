@@ -254,3 +254,12 @@ message FunctionEncodingOutput {
     // An encoded smart contract call with a prefixed function signature (4 bytes).
     bytes encoded = 2;
 }
+
+//// TWEthereumAbiFunctionGetType
+
+// Return the function type signature, of the form "baz(int32,uint256)".
+message FunctionGetTypeInput {
+    string function_name = 1;
+
+    repeated NamedParamType inputs = 2;
+}

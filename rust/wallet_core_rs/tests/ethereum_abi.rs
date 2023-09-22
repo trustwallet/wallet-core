@@ -12,11 +12,21 @@ use tw_proto::EthereumAbi::{Proto as AbiProto, Proto};
 use tw_proto::{deserialize, serialize};
 use wallet_core_rs::ffi::ethereum::abi::{
     tw_ethereum_abi_decode_contract_call, tw_ethereum_abi_decode_params,
+    tw_ethereum_abi_function_get_signature,
 };
 
+use tw_memory::test_utils::tw_string_helper::TWStringHelper;
+use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
 use Proto::mod_ParamValue::OneOfparam as ParamEnum;
 
 const ETHEREUM_COIN_TYPE: u32 = 60;
+
+fn named_param_type(name: &str, kind: ParamTypeEnum<'static>) -> Proto::NamedParamType<'static> {
+    Proto::NamedParamType {
+        name: name.to_string().into(),
+        param: Some(Proto::ParamType { param: kind }),
+    }
+}
 
 fn named_param(name: &str, value: ParamEnum<'static>) -> Proto::NamedParam<'static> {
     Proto::NamedParam {
@@ -98,4 +108,28 @@ fn test_ethereum_abi_decode_params() {
         named_param("approved", ParamEnum::boolean(true)),
     ];
     assert_eq!(output.params, expected_tokens);
+}
+
+#[test]
+fn test_ethereum_abi_function_get_signature() {
+    let input = AbiProto::FunctionGetTypeInput {
+        function_name: "baz".into(),
+        inputs: vec![
+            named_param_type(
+                "foo",
+                ParamTypeEnum::number_uint(Proto::NumberNType { bits: 64 }),
+            ),
+            named_param_type("bar", ParamTypeEnum::address(Proto::AddressType {})),
+        ],
+    };
+
+    let input_data = TWDataHelper::create(serialize(&input).unwrap());
+
+    let actual = TWStringHelper::wrap(unsafe {
+        tw_ethereum_abi_function_get_signature(ETHEREUM_COIN_TYPE, input_data.ptr())
+    })
+    .to_string()
+    .expect("!tw_ethereum_abi_function_get_signature returned nullptr");
+
+    assert_eq!(actual, "baz(uint64,address)");
 }

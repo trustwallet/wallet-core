@@ -102,6 +102,8 @@ impl EvmEntry for RoninEntry {
     type DecodeParamsInput<'a> = AbiProto::ParamsDecodingInput<'a>;
     type DecodeParamsOutput = AbiProto::ParamsDecodingOutput<'static>;
 
+    type GetFunctionSignatureInput<'a> = AbiProto::FunctionGetTypeInput<'a>;
+
     #[inline]
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput {
         RlpEncoder::<RoninContext>::encode_with_proto(input)
@@ -117,5 +119,10 @@ impl EvmEntry for RoninEntry {
     #[inline]
     fn decode_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput {
         AbiEncoder::<RoninContext>::decode_params(input)
+    }
+
+    #[inline]
+    fn get_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String {
+        AbiEncoder::<RoninContext>::get_function_signature(input)
     }
 }

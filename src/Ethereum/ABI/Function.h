@@ -131,6 +131,17 @@ public:
         return true;
     }
 
+    std::string getType() const {
+        EthereumAbi::Proto::FunctionGetTypeInput input;
+        input.set_function_name(name);
+        *input.mutable_inputs() = inputs.params();
+
+        Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+        Rust::TWStringWrapper outputPtr = Rust::tw_ethereum_abi_function_get_signature(TWCoinTypeEthereum, inputData.get());
+
+        return outputPtr.toStringOrDefault();
+    }
+
 private:
     EthereumAbi::Proto::AbiParams inputs;
     EthereumAbi::Proto::AbiParams outputs;

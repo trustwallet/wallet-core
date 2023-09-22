@@ -12,11 +12,13 @@ pub trait EvmEntry {
     type RlpEncodingInput<'a>: MessageRead<'a>;
     type RlpEncodingOutput: MessageWrite;
 
-    type DecodeContractCallInput<'a>: MessageRead<'a> + MessageWrite;
+    type DecodeContractCallInput<'a>: MessageRead<'a>;
     type DecodeContractCallOutput: MessageWrite;
 
-    type DecodeParamsInput<'a>: MessageRead<'a> + MessageWrite;
+    type DecodeParamsInput<'a>: MessageRead<'a>;
     type DecodeParamsOutput: MessageWrite;
+
+    type GetFunctionSignatureInput<'a>: MessageRead<'a>;
 
     /// Encodes an item or a list of items as Eth RLP binary format.
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput;
@@ -28,6 +30,9 @@ pub trait EvmEntry {
 
     /// Decodes a function input or output data according to a given ABI.
     fn decode_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput;
+
+    /// Returns the function type signature, of the form "baz(int32,uint256)".
+    fn get_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String;
 }
 
 /// The [`EvmEntry`] trait extension.
@@ -40,6 +45,9 @@ pub trait EvmEntryExt {
 
     /// Decodes a function input or output data according to a given ABI.
     fn decode_params(&self, input: &[u8]) -> ProtoResult<Data>;
+
+    /// Returns the function type signature, of the form "baz(int32,uint256)".
+    fn get_function_signature(&self, input: &[u8]) -> ProtoResult<String>;
 }
 
 impl<T> EvmEntryExt for T
@@ -62,5 +70,10 @@ where
         let input = deserialize(input)?;
         let output = <Self as EvmEntry>::decode_params(input);
         serialize(&output)
+    }
+
+    fn get_function_signature(&self, input: &[u8]) -> ProtoResult<String> {
+        let input = deserialize(input)?;
+        Ok(<Self as EvmEntry>::get_function_signature(input))
     }
 }

@@ -29,11 +29,9 @@ void TWEthereumAbiFunctionDelete(struct TWEthereumAbiFunction *_Nonnull func_in)
     delete func_in;
 }
 
-// TODO implement in Rust
 TWString *_Nonnull TWEthereumAbiFunctionGetType(struct TWEthereumAbiFunction *_Nonnull func_in) {
     assert(func_in != nullptr);
-    auto function = func_in->impl;
-    std::string sign = function.getType();
+    std::string sign = func_in->implV2.getType();
     return TWStringCreateWithUTF8Bytes(sign.c_str());
 }
 

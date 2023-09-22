@@ -28,11 +28,25 @@ pub struct AbiEncoder<Context: EvmContext> {
 }
 
 impl<Context: EvmContext> AbiEncoder<Context> {
+    #[inline]
     pub fn decode_contract_call(
         input: Proto::ContractCallDecodingInput,
     ) -> Proto::ContractCallDecodingOutput<'static> {
         Self::decode_contract_call_impl(input)
             .unwrap_or_else(|err| signing_output_error!(Proto::ContractCallDecodingOutput, err))
+    }
+
+    #[inline]
+    pub fn decode_params(
+        input: Proto::ParamsDecodingInput<'_>,
+    ) -> Proto::ParamsDecodingOutput<'static> {
+        Self::decode_params_impl(input)
+            .unwrap_or_else(|err| signing_output_error!(Proto::ParamsDecodingOutput, err))
+    }
+
+    #[inline]
+    pub fn get_function_signature(input: Proto::FunctionGetTypeInput<'_>) -> String {
+        Self::get_function_signature_impl(input)
     }
 
     // TODO use `Context`.
@@ -80,13 +94,6 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    pub fn decode_params(
-        input: Proto::ParamsDecodingInput<'_>,
-    ) -> Proto::ParamsDecodingOutput<'static> {
-        Self::decode_params_impl(input)
-            .unwrap_or_else(|err| signing_output_error!(Proto::ParamsDecodingOutput, err))
-    }
-
     // TODO return `Proto::AbiError`
     fn decode_params_impl(
         input: Proto::ParamsDecodingInput<'_>,
@@ -115,6 +122,22 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             params: decoded_protos,
             ..Proto::ParamsDecodingOutput::default()
         })
+    }
+
+    fn get_function_signature_impl(input: Proto::FunctionGetTypeInput<'_>) -> String {
+        let function_inputs = input
+            .inputs
+            .into_iter()
+            .map(Self::named_param_type_from_proto)
+            .collect::<AbiResult<Vec<_>>>()
+            .unwrap_or_default();
+
+        let fun = Function {
+            name: input.function_name.to_string(),
+            inputs: function_inputs,
+            ..Function::default()
+        };
+        fun.signature_with_inputs()
     }
 
     fn named_param_type_from_proto(

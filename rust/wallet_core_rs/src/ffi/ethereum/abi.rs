@@ -9,6 +9,7 @@
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::dispatcher::evm_dispatcher;
 use tw_memory::ffi::tw_data::TWData;
+use tw_memory::ffi::tw_string::TWString;
 use tw_memory::ffi::RawPtrTrait;
 use tw_misc::try_or_else;
 
@@ -48,4 +49,28 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_params(
         .decode_params(input_data.as_slice())
         .map(|data| TWData::from(data).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
+}
+
+/// Returns the function type signature, of the form "baz(int32,uint256)".
+///
+/// # Deprecated
+///
+/// The function is deprecated since it returns a signature of a ABI function with **only** input parameters.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.FunctionGetTypeInput`.
+/// \return function type signature as a Non-null string.
+#[no_mangle]
+pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
+    coin: CoinType,
+    input: *const TWData,
+) -> *mut TWString {
+    let input_data = try_or_else!(TWData::from_ptr_as_ref(input), || TWString::new()
+        .into_ptr());
+    let evm_dispatcher = try_or_else!(evm_dispatcher(coin), || TWString::new().into_ptr());
+
+    evm_dispatcher
+        .get_function_signature(input_data.as_slice())
+        .map(|str| TWString::from(str).into_ptr())
+        .unwrap_or_else(|_| TWString::new().into_ptr())
 }

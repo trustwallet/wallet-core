@@ -10,7 +10,7 @@ use crate::abi::param_token::ParamToken;
 use crate::abi::AbiResult;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct Function {
     /// Function name.
     pub name: String,
