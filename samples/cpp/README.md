@@ -23,7 +23,7 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 You need to download and build WalletCore yourself
 (there is no official binary distribution).
-The dependencies TrezorCrypto and protobuf are also needed, these are also come with WalletCore.
+The dependencies TrezorCrypto and protobuf are also needed, these also come with WalletCore.
 You need to [build](https://developer.trustwallet.com/wallet-core/building) the library.
 
 
@@ -49,7 +49,7 @@ Run it:
 ./sample
 ```
 
-The relavant sample code is in the file `cpp/sample.cpp`.
+The relevant sample code is in the file `cpp/sample.cpp`.
 
 # What it Does
 

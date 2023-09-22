@@ -2,7 +2,7 @@
 
 ## Overview
 
-This folder contains a simple but complete **iOS/macOS** sample application, for demostrating usage of the
+This folder contains a simple but complete **iOS/macOS** sample application, for demonstrating usage of the
 [Wallet Core](https://github.com/trustwallet/wallet-core) library (part of [Trust Wallet](https://trustwallet.com)).
 
 ## DISCLAIMER
