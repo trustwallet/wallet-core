@@ -64,6 +64,56 @@ public:
         return addParam(std::move(paramType), std::move(paramValue), isOutput);
     }
 
+    int addInArrayParam(int idx, EthereumAbi::Proto::ParamType paramType, EthereumAbi::Proto::ParamValue paramValue) {
+        if (idx < 0) {
+            return -1;
+        }
+
+        auto idxSize = static_cast<std::size_t>(idx);
+        if (idxSize >= inputValues.size()) {
+            return -1;
+        }
+
+        auto& arrayValue = *inputValues[idxSize].mutable_value();
+        auto& arrayType = *inputs.mutable_params(idx)->mutable_param();
+
+        if (!arrayValue.has_array() || !arrayType.has_array()) {
+            return -1;
+        }
+
+        auto arrayInElementIdx = arrayValue.array().values_size();
+
+        *arrayValue.mutable_array()->add_values() = std::move(paramValue);
+        // Override the element type.
+        *arrayType.mutable_array()->mutable_element_type() = std::move(paramType);
+
+        return arrayInElementIdx;
+    }
+
+    int addInArrayUintParam(int idx, uint32_t bits, const Data& encodedValue) {
+        EthereumAbi::Proto::ParamType paramType;
+        paramType.mutable_number_uint()->set_bits(bits);
+
+        EthereumAbi::Proto::ParamValue paramValue;
+        auto* numValue = paramValue.mutable_number_uint();
+        numValue->set_bits(bits);
+        numValue->set_value(encodedValue.data(), encodedValue.size());
+
+        return addInArrayParam(idx, std::move(paramType), std::move(paramValue));
+    }
+
+    int addInArrayIntParam(int idx, uint32_t bits, const Data& encodedValue) {
+        EthereumAbi::Proto::ParamType paramType;
+        paramType.mutable_number_int()->set_bits(bits);
+
+        EthereumAbi::Proto::ParamValue paramValue;
+        auto* numValue = paramValue.mutable_number_int();
+        numValue->set_bits(bits);
+        numValue->set_value(encodedValue.data(), encodedValue.size());
+
+        return addInArrayParam(idx, std::move(paramType), std::move(paramValue));
+    }
+
     std::optional<EthereumAbi::Proto::NamedParam> getParam(int idx, bool isOutput = false) const {
         const auto& values = isOutput ? outputValues : inputValues;
 
@@ -75,6 +125,7 @@ public:
         if (idxSize >= values.size()) {
             return {};
         }
+
         return values[idxSize];
     }
 

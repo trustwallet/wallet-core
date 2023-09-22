@@ -129,7 +129,7 @@ int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull fun
     EthereumAbi::Proto::NamedParam paramValue;
     paramValue.mutable_value()->set_boolean(val);
 
-    return func_in->implV2.addParam(paramType, paramValue, isOutput);
+    return func_in->implV2.addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull func_in, TWString *_Nonnull val, bool isOutput) {
@@ -143,7 +143,7 @@ int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull f
     auto* s = reinterpret_cast<const std::string*>(val);
     paramValue.mutable_value()->set_string_value(*s);
 
-    return func_in->implV2.addParam(paramType, paramValue, isOutput);
+    return func_in->implV2.addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
@@ -159,7 +159,7 @@ int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull 
     auto addressStr = hex(addressData, prefixed);
     paramValue.mutable_value()->set_address(addressStr);
 
-    return func_in->implV2.addParam(paramType, paramValue, isOutput);
+    return func_in->implV2.addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
@@ -173,7 +173,7 @@ int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull fu
     const Data& bytesData = *(reinterpret_cast<const Data*>(val));
     paramValue.mutable_value()->set_byte_array(bytesData.data(), bytesData.size());
 
-    return func_in->implV2.addParam(paramType, paramValue, isOutput);
+    return func_in->implV2.addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, size_t count, TWData *_Nonnull val, bool isOutput) {
@@ -184,10 +184,11 @@ int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull
     paramType.mutable_param()->mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
 
     EthereumAbi::Proto::NamedParam paramValue;
-    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
+    Data bytesData = *(reinterpret_cast<const Data*>(val));
+    bytesData.resize(count);
     paramValue.mutable_value()->set_byte_array_fix(bytesData.data(), bytesData.size());
 
-    return func_in->implV2.addParam(paramType, paramValue, isOutput);
+    return func_in->implV2.addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull func_in, bool isOutput) {
@@ -201,7 +202,7 @@ int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull fu
     // Declare the `array` empty value.
     paramValue.mutable_value()->mutable_array();
 
-    return func_in->implV2.addParam(paramType, paramValue, isOutput);
+    return func_in->implV2.addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
 ///// GetParam
@@ -262,144 +263,145 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFuncti
 
 ///// AddInArrayParam
 
-int addInArrayParam(EthAbi::Function& function, int arrayIdx, const std::shared_ptr<EthAbi::ParamBase>& childParam) {
-    std::shared_ptr<EthAbi::ParamBase> param;
-    if (!function.getInParam(arrayIdx, param)) {
-        return -1;
-    }
-    std::shared_ptr<EthAbi::ParamArray> paramArr = std::dynamic_pointer_cast<EthAbi::ParamArray>(param);
-    if (paramArr == nullptr) {
-        return -1; // not an array
-    }
-    return paramArr->addParam(childParam);
-}
-
 int TWEthereumAbiFunctionAddInArrayParamUInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint8_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamUInt8>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayUintParam(arrayIdx, 8, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamUInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint16_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamUInt16>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayUintParam(arrayIdx, 16, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamUInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint32_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamUInt32>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayUintParam(arrayIdx, 32, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, uint64_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamUInt64>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayUintParam(arrayIdx, 64, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    uint256_t val2 = load(*static_cast<const Data*>(val));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamUInt256>(val2));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
+    return func_in->implV2.addInArrayUintParam(arrayIdx, 256, bytesData);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamUIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int bits, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    uint256_t val2 = load(*static_cast<const Data*>(val));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamUIntN>(bits, val2));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
+    return func_in->implV2.addInArrayUintParam(arrayIdx, bits, bytesData);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int8_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamInt8>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayIntParam(arrayIdx, 8, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamInt16(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int16_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamInt16>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayIntParam(arrayIdx, 16, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int32_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamInt32>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayIntParam(arrayIdx, 32, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int64_t val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamInt64>(val));
+    auto encodedVal = store(val);
+    return func_in->implV2.addInArrayIntParam(arrayIdx, 64, encodedVal);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    assert(val != nullptr);
-    int256_t val2 = EthAbi::ValueEncoder::int256FromUint256(load(*static_cast<const Data*>(val)));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamInt256>(val2));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
+    return func_in->implV2.addInArrayIntParam(arrayIdx, 256, bytesData);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamIntN(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, int bits, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    assert(val != nullptr);
-    int256_t val2 = EthAbi::ValueEncoder::int256FromUint256(load(*static_cast<const Data*>(val)));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamIntN>(bits, val2));
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
+    return func_in->implV2.addInArrayIntParam(arrayIdx, bits, bytesData);
 }
 
 int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, bool val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
 
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamBool>(val));
+    EthereumAbi::Proto::ParamType paramType;
+    // Declare the boolean type.
+    paramType.mutable_boolean();
+
+    EthereumAbi::Proto::ParamValue paramValue;
+    paramValue.set_boolean(val);
+
+    return func_in->implV2.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWString *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
 
-    assert(val != nullptr);
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamString>(TWStringUTF8Bytes(val)));
+    EthereumAbi::Proto::ParamType paramType;
+    // Declare the boolean type.
+    paramType.mutable_string_param();
+
+    EthereumAbi::Proto::ParamValue paramValue;
+    paramValue.set_string_value(TWStringUTF8Bytes(val));
+
+    return func_in->implV2.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
 
-    assert(val != nullptr);
-    Data data = TW::data(TWDataBytes(val), TWDataSize(val));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamAddress>(data));
+    EthereumAbi::Proto::ParamType paramType;
+    // Declare the boolean type.
+    paramType.mutable_address();
+
+    EthereumAbi::Proto::ParamValue paramValue;
+    const Data& addressData = *(reinterpret_cast<const Data*>(val));
+    bool prefixed = true;
+    auto addressStr = hex(addressData, prefixed);
+    paramValue.set_address(addressStr);
+
+    return func_in->implV2.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
 
-    Data data = TW::data(TWDataBytes(val), TWDataSize(val));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamByteArray>(data));
+    EthereumAbi::Proto::ParamType paramType;
+    // Declare the boolean type.
+    paramType.mutable_byte_array();
+
+    EthereumAbi::Proto::ParamValue paramValue;
+    const Data& bytesData = *(reinterpret_cast<const Data*>(val));
+    paramValue.set_byte_array(bytesData.data(), bytesData.size());
+
+    return func_in->implV2.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, size_t count, TWData *_Nonnull val) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
 
-    Data data = TW::data(TWDataBytes(val), TWDataSize(val));
-    return addInArrayParam(function, arrayIdx, std::make_shared<EthAbi::ParamByteArrayFix>(count, data));
+    EthereumAbi::Proto::ParamType paramType;
+    // Declare the boolean type.
+    paramType.mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
+
+    EthereumAbi::Proto::ParamValue paramValue;
+    Data bytesData = *(reinterpret_cast<const Data*>(val));
+    bytesData.resize(count);
+    paramValue.set_byte_array_fix(bytesData.data(), bytesData.size());
+
+    return func_in->implV2.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
 }
