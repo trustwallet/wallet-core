@@ -7,8 +7,9 @@
 use crate::abi::decode::decode_params;
 use crate::abi::param::Param;
 use crate::abi::param_token::ParamToken;
-use crate::abi::AbiResult;
+use crate::abi::{AbiError, AbiResult};
 use serde::Deserialize;
+use tw_memory::Data;
 
 #[derive(Debug, Default, Deserialize)]
 pub struct Function {
@@ -28,9 +29,9 @@ impl Function {
     ///
     /// Examples:
     /// - `functionName()`
-    /// - `functionName():(uint256)`
-    /// - `functionName(bool):(uint256,string)`
-    /// - `functionName(uint256,bytes32):(string,uint256)`
+    /// - `functionName()`
+    /// - `functionName(bool)`
+    /// - `functionName(uint256,bytes32)`
     ///
     /// The method implementation is inspired by
     /// https://github.com/rust-ethereum/ethabi/blob/b1710adc18f5b771d2d2519c87248b1ba9430778/ethabi/src/function.rs#L88-L97
@@ -47,5 +48,39 @@ impl Function {
     /// Parses the ABI function input to a list of tokens.
     pub fn decode_input(&self, data: &[u8]) -> AbiResult<Vec<ParamToken>> {
         decode_params(&self.inputs, data)
+    }
+
+    /// Encodes function input to Eth ABI binary.
+    pub fn encode_input(&self, params: Vec<ParamToken>) -> AbiResult<Data> {
+        let ethabi_tokens: Vec<_> = params
+            .into_iter()
+            .map(|param| param.value.into_ethabi_token())
+            .collect();
+
+        self.to_ethabi_function()
+            .encode_input(&ethabi_tokens)
+            .map_err(|_| AbiError::InvalidParams)
+    }
+
+    pub(crate) fn to_ethabi_function(&self) -> ethabi::Function {
+        let inputs = self
+            .inputs
+            .iter()
+            .map(Param::to_ethabi_param)
+            .collect::<Vec<_>>();
+        let outputs = self
+            .outputs
+            .iter()
+            .map(Param::to_ethabi_param)
+            .collect::<Vec<_>>();
+
+        #[allow(deprecated)]
+        ethabi::Function {
+            name: self.name.clone(),
+            inputs,
+            outputs,
+            state_mutability: self.state_mutability,
+            constant: None,
+        }
     }
 }

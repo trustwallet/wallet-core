@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::{convert_address, convert_u256, AbiError, AbiResult};
+use crate::abi::{AbiError, AbiResult};
 use crate::address::Address;
 use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
@@ -25,8 +25,8 @@ impl Erc20 {
     pub fn transfer(recipient: Address, amount: U256) -> AbiResult<Data> {
         let func = ERC20.function("transfer")?;
         func.encode_input(&[
-            Token::Address(convert_address(recipient)),
-            Token::Uint(convert_u256(amount)),
+            Token::Address(recipient.to_ethabi()),
+            Token::Uint(amount.to_ethabi()),
         ])
         .map_err(AbiError::from)
     }
@@ -34,8 +34,8 @@ impl Erc20 {
     pub fn approve(spender: Address, amount: U256) -> AbiResult<Data> {
         let func = ERC20.function("approve")?;
         func.encode_input(&[
-            Token::Address(convert_address(spender)),
-            Token::Uint(convert_u256(amount)),
+            Token::Address(spender.to_ethabi()),
+            Token::Uint(amount.to_ethabi()),
         ])
         .map_err(AbiError::from)
     }

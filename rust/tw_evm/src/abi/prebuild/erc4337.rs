@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::{convert_address, convert_u256, AbiError, AbiResult};
+use crate::abi::{AbiError, AbiResult};
 use crate::address::Address;
 use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
@@ -32,8 +32,8 @@ impl Erc4337SimpleAccount {
     pub fn encode_execute(args: ExecuteArgs) -> AbiResult<Data> {
         let func = ERC4337_SIMPLE_ACCOUNT.function("execute")?;
         func.encode_input(&[
-            Token::Address(convert_address(args.to)),
-            Token::Uint(convert_u256(args.value)),
+            Token::Address(args.to.to_ethabi()),
+            Token::Uint(args.value.to_ethabi()),
             Token::Bytes(args.data),
         ])
         .map_err(AbiError::from)
@@ -56,8 +56,8 @@ impl Erc4337SimpleAccount {
         let mut datas = Vec::with_capacity(capacity);
 
         for arg in args {
-            addresses.push(Token::Address(convert_address(arg.to)));
-            values.push(Token::Uint(convert_u256(arg.value)));
+            addresses.push(Token::Address(arg.to.to_ethabi()));
+            values.push(Token::Uint(arg.value.to_ethabi()));
             datas.push(Token::Bytes(arg.data));
         }
 

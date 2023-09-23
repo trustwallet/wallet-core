@@ -20,6 +20,14 @@ pub struct Param {
 }
 
 impl Param {
+    pub(crate) fn to_ethabi_param(&self) -> ethabi::Param {
+        ethabi::Param {
+            name: self.name.clone().unwrap_or_default(),
+            kind: self.ethabi_type(),
+            internal_type: self.internal_type.clone(),
+        }
+    }
+
     pub(crate) fn ethabi_type(&self) -> ethabi::ParamType {
         self.kind.to_ethabi()
     }

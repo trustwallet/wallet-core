@@ -133,6 +133,19 @@ impl U256 {
     }
 }
 
+#[cfg(feature = "ethabi")]
+impl U256 {
+    pub fn from_ethabi(u: ethabi::Uint) -> U256 {
+        let mut bytes = H256::new();
+        u.to_big_endian(bytes.as_mut_slice());
+        U256::from_big_endian(bytes)
+    }
+
+    pub fn to_ethabi(&self) -> ethabi::Uint {
+        ethabi::Uint::from_big_endian(self.to_big_endian().as_slice())
+    }
+}
+
 impl FromStr for U256 {
     type Err = NumberError;
 

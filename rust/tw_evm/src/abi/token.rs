@@ -12,7 +12,6 @@ use ethabi::param_type::Writer;
 use ethabi::Token as EthAbiToken;
 use serde::{Serialize, Serializer};
 use tw_encoding::hex::ToHex;
-use tw_hash::H256;
 use tw_memory::Data;
 use tw_number::U256;
 
@@ -101,11 +100,11 @@ impl Token {
             (EthAbiToken::FixedBytes(bytes), _) => Ok(Token::FixedBytes(bytes)),
             (EthAbiToken::Bytes(bytes), _) => Ok(Token::Bytes(bytes)),
             (EthAbiToken::Int(i), ParamType::Int { bits }) => {
-                let int = convert_to_u256(&i);
+                let int = U256::from_ethabi(i);
                 Ok(Token::Int { int, bits: *bits })
             },
             (EthAbiToken::Uint(u), ParamType::Uint { bits }) => {
-                let uint = convert_to_u256(&u);
+                let uint = U256::from_ethabi(u);
                 Ok(Token::Uint { uint, bits: *bits })
             },
             (EthAbiToken::Bool(bool), _) => Ok(Token::Bool(bool)),
@@ -130,6 +129,33 @@ impl Token {
             },
             // `kind` and `token` types mismatch.
             _ => Err(AbiError::Internal),
+        }
+    }
+
+    pub(crate) fn into_ethabi_token(self) -> ethabi::Token {
+        match self {
+            Token::Address(addr) => ethabi::Token::Address(addr.to_ethabi()),
+            Token::FixedBytes(bytes) => ethabi::Token::FixedBytes(bytes),
+            Token::Bytes(bytes) => ethabi::Token::Bytes(bytes),
+            Token::Int { int, .. } => ethabi::Token::Int(int.to_ethabi()),
+            Token::Uint { uint, .. } => ethabi::Token::Uint(uint.to_ethabi()),
+            Token::Bool(bool) => ethabi::Token::Bool(bool),
+            Token::String(str) => ethabi::Token::String(str),
+            Token::FixedArray { arr, .. } => {
+                let ethabi_arr = arr.into_iter().map(Token::into_ethabi_token).collect();
+                ethabi::Token::FixedArray(ethabi_arr)
+            },
+            Token::Array { arr, .. } => {
+                let ethabi_arr = arr.into_iter().map(Token::into_ethabi_token).collect();
+                ethabi::Token::Array(ethabi_arr)
+            },
+            Token::Tuple { params } => {
+                let params = params
+                    .into_iter()
+                    .map(|param| param.value.into_ethabi_token())
+                    .collect();
+                ethabi::Token::Tuple(params)
+            },
         }
     }
 
@@ -167,11 +193,4 @@ fn convert_array(elem_type: &ParamType, arr: Vec<EthAbiToken>) -> AbiResult<Vec<
         .map(|elem_token| Token::with_ethabi_token(elem_type, elem_token))
         .collect::<AbiResult<Vec<_>>>()?;
     Ok(elems)
-}
-
-/// TODO consider moving to `tw_number` marked as `cfg(feature = "ethabi")`.
-fn convert_to_u256(u: &ethabi::Uint) -> U256 {
-    let mut bytes = H256::new();
-    u.to_big_endian(bytes.as_mut_slice());
-    U256::from_big_endian(bytes)
 }

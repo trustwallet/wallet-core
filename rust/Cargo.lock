@@ -1651,6 +1651,7 @@ dependencies = [
 name = "tw_number"
 version = "0.1.0"
 dependencies = [
+ "ethabi",
  "primitive-types",
  "serde",
  "tw_encoding",

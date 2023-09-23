@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::{convert_address, convert_u256, AbiError, AbiResult};
+use crate::abi::{AbiError, AbiResult};
 use crate::address::Address;
 use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
@@ -31,10 +31,10 @@ impl Erc1155 {
     ) -> AbiResult<Data> {
         let func = ERC1155.function("safeTransferFrom")?;
         func.encode_input(&[
-            Token::Address(convert_address(from)),
-            Token::Address(convert_address(to)),
-            Token::Uint(convert_u256(token_id)),
-            Token::Uint(convert_u256(value)),
+            Token::Address(from.to_ethabi()),
+            Token::Address(to.to_ethabi()),
+            Token::Uint(token_id.to_ethabi()),
+            Token::Uint(value.to_ethabi()),
             Token::Bytes(data),
         ])
         .map_err(AbiError::from)

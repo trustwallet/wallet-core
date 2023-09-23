@@ -79,7 +79,9 @@ message NumberNParam {
 
 // A byte array of arbitrary size.
 message ArrayParam {
-    repeated ParamValue values = 1;
+    ParamType element_type = 1;
+
+    repeated ParamValue values = 2;
 }
 
 // A tuple with various parameters similar to a structure.
@@ -243,7 +245,7 @@ message FunctionEncodingInput {
     string function_name = 1;
 
     // Parameters to be encoded.
-    repeated ParamValue params = 2;
+    repeated NamedParam params = 2;
 }
 
 message FunctionEncodingOutput {
@@ -253,6 +255,12 @@ message FunctionEncodingOutput {
 
     // An encoded smart contract call with a prefixed function signature (4 bytes).
     bytes encoded = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }
 
 //// TWEthereumAbiFunctionGetType

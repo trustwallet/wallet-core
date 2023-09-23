@@ -64,6 +64,11 @@ impl Address {
         Address::from_bytes(H160::from(addr.0))
     }
 
+    /// Converts the address to `ethabi::Address`.
+    pub fn to_ethabi(&self) -> ethabi::Address {
+        ethabi::Address::from(self.bytes.take())
+    }
+
     /// Displays the address in mixed-case checksum form
     /// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
     fn into_checksum_address(self) -> String {
