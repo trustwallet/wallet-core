@@ -104,25 +104,33 @@ impl EvmEntry for RoninEntry {
 
     type GetFunctionSignatureInput<'a> = AbiProto::FunctionGetTypeInput<'a>;
 
+    type EncodeFunctionInput<'a> = AbiProto::FunctionEncodingInput<'a>;
+    type EncodeFunctionOutput = AbiProto::FunctionEncodingOutput<'static>;
+
     #[inline]
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput {
         RlpEncoder::<RoninContext>::encode_with_proto(input)
     }
 
     #[inline]
-    fn decode_contract_call(
+    fn decode_abi_contract_call(
         input: Self::DecodeContractCallInput<'_>,
     ) -> Self::DecodeContractCallOutput {
         AbiEncoder::<RoninContext>::decode_contract_call(input)
     }
 
     #[inline]
-    fn decode_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput {
+    fn decode_abi_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput {
         AbiEncoder::<RoninContext>::decode_params(input)
     }
 
     #[inline]
-    fn get_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String {
+    fn get_abi_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String {
         AbiEncoder::<RoninContext>::get_function_signature(input)
+    }
+
+    #[inline]
+    fn encode_abi_function(input: Self::EncodeFunctionInput<'_>) -> Self::EncodeFunctionOutput {
+        AbiEncoder::<RoninContext>::encode_contract_call(input)
     }
 }

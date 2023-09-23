@@ -20,23 +20,40 @@
 using namespace TW;
 namespace EthAbi = TW::Ethereum::ABI;
 
-TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _Nonnull input) {
+template <typename F>
+static TWData* _Nonnull ethereumAbiForwardToRust(F rustFunction, enum TWCoinType coin, TWData* _Nonnull input) {
     const Data& inputData = *(reinterpret_cast<const Data*>(input));
 
     const Rust::TWDataWrapper dataInPtr(inputData);
-    Rust::TWDataWrapper dataOutPtr = Rust::tw_ethereum_abi_decode_contract_call(static_cast<uint32_t>(coin), dataInPtr.get());
+    Rust::TWDataWrapper dataOutPtr = rustFunction(static_cast<uint32_t>(coin), dataInPtr.get());
 
     auto dataOut = dataOutPtr.toDataOrDefault();
     return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
 
+/// TODO add a test
+TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _Nonnull input) {
+    return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_decode_contract_call, coin, input);
+}
+
+/// TODO add a test
+TWData* _Nonnull TWEthereumAbiDecodeParams(enum TWCoinType coin, TWData* _Nonnull input) {
+    return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_decode_params, coin, input);
+}
+
+/// TODO add a test
+TWData* _Nonnull TWEthereumAbiEncodeFunction(enum TWCoinType coin, TWData* _Nonnull input) {
+    return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_encode_function, coin, input);
+}
+
 TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func_in) {
     assert(func_in != nullptr);
-    EthAbi::Function& function = func_in->impl;
-
-    Data encoded;
-    function.encode(encoded);
-    return TWDataCreateWithData(&encoded);
+    Data encodedData;
+    auto encoded = func_in->implV2.encodeInput();
+    if (encoded.has_value()) {
+        encodedData = encoded.value();
+    }
+    return TWDataCreateWithData(&encodedData);
 }
 
 bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,

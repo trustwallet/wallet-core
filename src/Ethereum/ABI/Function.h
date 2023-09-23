@@ -84,6 +84,7 @@ public:
         auto arrayInElementIdx = arrayValue.array().values_size();
 
         *arrayValue.mutable_array()->add_values() = std::move(paramValue);
+        *arrayValue.mutable_array()->mutable_element_type() = paramType;
         // Override the element type.
         *arrayType.mutable_array()->mutable_element_type() = std::move(paramType);
 
@@ -142,6 +143,31 @@ public:
         auto valueData = getUintParamData(idx, bits, isOutput);
         auto val256 = load(valueData);
         return static_cast<T>(val256);
+    }
+
+    std::optional<Data> encodeInput() const {
+        EthereumAbi::Proto::FunctionEncodingInput input;
+        input.set_function_name(name);
+        for (const auto& param : inputValues) {
+            *input.add_params() = param;
+        }
+
+        Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+        Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_abi_encode_function(TWCoinTypeEthereum, inputData.get());
+
+        auto outputData = outputPtr.toDataOrDefault();
+        if (outputData.empty()) {
+            return {};
+        }
+
+        EthereumAbi::Proto::FunctionEncodingOutput output;
+        output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+        if (output.error() != Common::Proto::SigningError::OK) {
+            return {};
+        }
+
+        return data(output.encoded());
     }
 
     bool decode(const Data& encoded, bool isOutput) {

@@ -27,7 +27,7 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_contract_call(
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
 
     evm_dispatcher
-        .decode_contract_call(input_data.as_slice())
+        .decode_abi_contract_call(input_data.as_slice())
         .map(|data| TWData::from(data).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
@@ -46,16 +46,12 @@ pub unsafe extern "C" fn tw_ethereum_abi_decode_params(
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
 
     evm_dispatcher
-        .decode_params(input_data.as_slice())
+        .decode_abi_params(input_data.as_slice())
         .map(|data| TWData::from(data).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
 
 /// Returns the function type signature, of the form "baz(int32,uint256)".
-///
-/// # Deprecated
-///
-/// The function is deprecated since it returns a signature of a ABI function with **only** input parameters.
 ///
 /// \param coin EVM-compatible coin type.
 /// \param input The serialized data of `TW.EthereumAbi.Proto.FunctionGetTypeInput`.
@@ -70,7 +66,26 @@ pub unsafe extern "C" fn tw_ethereum_abi_function_get_signature(
     let evm_dispatcher = try_or_else!(evm_dispatcher(coin), || TWString::new().into_ptr());
 
     evm_dispatcher
-        .get_function_signature(input_data.as_slice())
+        .get_abi_function_signature(input_data.as_slice())
         .map(|str| TWString::from(str).into_ptr())
         .unwrap_or_else(|_| TWString::new().into_ptr())
+}
+
+/// Encode function inputs to Eth ABI binary.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.FunctionEncodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.FunctionEncodingOutput` proto object.
+#[no_mangle]
+pub unsafe extern "C" fn tw_ethereum_abi_encode_function(
+    coin: CoinType,
+    input: *const TWData,
+) -> *mut TWData {
+    let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
+
+    evm_dispatcher
+        .encode_abi_function(input_data.as_slice())
+        .map(|data| TWData::from(data).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
 }

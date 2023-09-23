@@ -20,19 +20,25 @@ pub trait EvmEntry {
 
     type GetFunctionSignatureInput<'a>: MessageRead<'a>;
 
+    type EncodeFunctionInput<'a>: MessageRead<'a>;
+    type EncodeFunctionOutput: MessageWrite;
+
     /// Encodes an item or a list of items as Eth RLP binary format.
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput;
 
     /// Decodes function call data to human readable json format, according to input abi json.
-    fn decode_contract_call(
+    fn decode_abi_contract_call(
         input: Self::DecodeContractCallInput<'_>,
     ) -> Self::DecodeContractCallOutput;
 
     /// Decodes a function input or output data according to a given ABI.
-    fn decode_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput;
+    fn decode_abi_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
-    fn get_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String;
+    fn get_abi_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String;
+
+    // Encodes function inputs to Eth ABI binary.
+    fn encode_abi_function(input: Self::EncodeFunctionInput<'_>) -> Self::EncodeFunctionOutput;
 }
 
 /// The [`EvmEntry`] trait extension.
@@ -41,13 +47,16 @@ pub trait EvmEntryExt {
     fn encode_rlp(&self, input: &[u8]) -> ProtoResult<Data>;
 
     /// Decodes function call data to human readable json format, according to input abi json.
-    fn decode_contract_call(&self, input: &[u8]) -> ProtoResult<Data>;
+    fn decode_abi_contract_call(&self, input: &[u8]) -> ProtoResult<Data>;
 
     /// Decodes a function input or output data according to a given ABI.
-    fn decode_params(&self, input: &[u8]) -> ProtoResult<Data>;
+    fn decode_abi_params(&self, input: &[u8]) -> ProtoResult<Data>;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
-    fn get_function_signature(&self, input: &[u8]) -> ProtoResult<String>;
+    fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String>;
+
+    // Encodes function inputs to Eth ABI binary.
+    fn encode_abi_function(&self, input: &[u8]) -> ProtoResult<Data>;
 }
 
 impl<T> EvmEntryExt for T
@@ -60,20 +69,26 @@ where
         serialize(&output)
     }
 
-    fn decode_contract_call(&self, input: &[u8]) -> ProtoResult<Data> {
+    fn decode_abi_contract_call(&self, input: &[u8]) -> ProtoResult<Data> {
         let input = deserialize(input)?;
-        let output = <Self as EvmEntry>::decode_contract_call(input);
+        let output = <Self as EvmEntry>::decode_abi_contract_call(input);
         serialize(&output)
     }
 
-    fn decode_params(&self, input: &[u8]) -> ProtoResult<Data> {
+    fn decode_abi_params(&self, input: &[u8]) -> ProtoResult<Data> {
         let input = deserialize(input)?;
-        let output = <Self as EvmEntry>::decode_params(input);
+        let output = <Self as EvmEntry>::decode_abi_params(input);
         serialize(&output)
     }
 
-    fn get_function_signature(&self, input: &[u8]) -> ProtoResult<String> {
+    fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String> {
         let input = deserialize(input)?;
-        Ok(<Self as EvmEntry>::get_function_signature(input))
+        Ok(<Self as EvmEntry>::get_abi_function_signature(input))
+    }
+
+    fn encode_abi_function(&self, input: &[u8]) -> ProtoResult<Data> {
+        let input = deserialize(input)?;
+        let output = <Self as EvmEntry>::encode_abi_function(input);
+        serialize(&output)
     }
 }

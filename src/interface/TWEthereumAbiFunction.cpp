@@ -150,7 +150,7 @@ int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull 
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::NamedParamType paramType;
-    // Declare the `string` type.
+    // Declare the `address` type.
     paramType.mutable_param()->mutable_address();
 
     EthereumAbi::Proto::NamedParam paramValue;
@@ -166,7 +166,7 @@ int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull fu
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::NamedParamType paramType;
-    // Declare the `string` type.
+    // Declare the `byte_array` type.
     paramType.mutable_param()->mutable_byte_array();
 
     EthereumAbi::Proto::NamedParam paramValue;
@@ -180,7 +180,7 @@ int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::NamedParamType paramType;
-    // Declare the `string` type.
+    // Declare the `byte_array_fix` type.
     paramType.mutable_param()->mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
 
     EthereumAbi::Proto::NamedParam paramValue;
@@ -195,7 +195,7 @@ int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull fu
     assert(func_in != nullptr);
 
     EthereumAbi::Proto::NamedParamType paramType;
-    // Declare the `string` type.
+    // Declare the `array` type.
     paramType.mutable_param()->mutable_array();
 
     EthereumAbi::Proto::NamedParam paramValue;
