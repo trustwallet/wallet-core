@@ -357,13 +357,13 @@ fn test_decode_value() {
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af",
             kind: "uint256",
-            expected_value_str: "91d0eb3e2af",
+            expected_value_str: "10020405371567",
             expected_value_proto: ParamEnum::number_uint(number_n::<256>(10020405371567)),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af0000000000000000000000000000000000000000000000000000000000000000",
             kind: "uint256",
-            expected_value_str: "91d0eb3e2af",
+            expected_value_str: "10020405371567",
             expected_value_proto: ParamEnum::number_uint(number_n::<256>(10020405371567)),
         },
         TestInput {
@@ -410,7 +410,7 @@ fn test_decode_value() {
         TestInput {
             encoded: "3132333435363738393000000000000000000000000000000000000000000000",
             kind: "bytes10",
-            expected_value_str: "31323334353637383930",
+            expected_value_str: "0x31323334353637383930",
             expected_value_proto: ParamEnum::byte_array_fix(
                 "0x31323334353637383930".decode_hex().unwrap().into(),
             ),
@@ -438,7 +438,6 @@ fn test_decode_value() {
             param: test.expected_value_proto,
         };
         assert_eq!(output.param.unwrap(), expected_value);
-        // TODO uncomment
-        // assert_eq!(output.param_str, test.expected_value_str);
+        assert_eq!(output.param_str, test.expected_value_str);
     }
 }

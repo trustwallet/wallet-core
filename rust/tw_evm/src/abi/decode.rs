@@ -35,11 +35,11 @@ pub fn decode_value(param_type: &ParamType, data: &[u8]) -> AbiResult<Token> {
         // If the token is dynamic, we need to append a dynamic offset that points to the `data`.
         let mut encoded = Vec::with_capacity(DEFAULT_DYNAMIC_OFFSET.len() + data.len());
         encoded.extend_from_slice(&DEFAULT_DYNAMIC_OFFSET[..]);
-        encoded.extend_from_slice(&data);
+        encoded.extend_from_slice(data);
 
         ethabi::decode(&[ethabi_type], &encoded)
     } else {
-        ethabi::decode(&[ethabi_type], &data)
+        ethabi::decode(&[ethabi_type], data)
     }
     .map_err(|_| AbiError::InvalidEncodedData)?;
 

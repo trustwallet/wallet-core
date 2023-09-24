@@ -70,7 +70,42 @@ pub enum Token {
 
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.clone().into_ethabi_token())
+        /// Formats the given element of a tuple or array.
+        fn format_sequence_token(token: &Token) -> String {
+            // Check if the parameter value should be quoted.
+            match token {
+                Token::Address(_) | Token::FixedBytes(_) | Token::Bytes(_) | Token::String(_) => {
+                    format!(r#""{token}""#)
+                },
+                _ => format!("{token}"),
+            }
+        }
+
+        match self {
+            Token::Address(addr) => write!(f, "{addr}"),
+            Token::Bytes(bytes) | Token::FixedBytes(bytes) => {
+                write!(f, "{}", bytes.to_hex_prefixed())
+            },
+            Token::Int { int: uint, .. } | Token::Uint { uint, .. } => write!(f, "{uint}"),
+            Token::Bool(bool) => write!(f, "{bool}"),
+            Token::String(str) => write!(f, "{str}"),
+            Token::FixedArray { arr, .. } | Token::Array { arr, .. } => {
+                let s = arr
+                    .iter()
+                    .map(format_sequence_token)
+                    .collect::<Vec<String>>()
+                    .join(",");
+                write!(f, "[{s}]")
+            },
+            Token::Tuple { params } => {
+                let s = params
+                    .iter()
+                    .map(|param| format_sequence_token(&param.value))
+                    .collect::<Vec<String>>()
+                    .join(",");
+                write!(f, "({s})")
+            },
+        }
     }
 }
 
