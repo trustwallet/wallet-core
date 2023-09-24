@@ -49,7 +49,7 @@ TEST(TWEthereumAbiValue, decodeValue) {
     {
         const auto input = "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077";
         const auto type = "address";
-        const auto expected = "0xf784682c82526e245f50975190ef0fff4e4fc077";
+        const auto expected = "0xF784682C82526e245F50975190EF0fff4E4fC077";
         auto data = WRAPD(TWDataCreateWithHexString(STRING(input).get()));
         auto result = WRAPS(TWEthereumAbiValueDecodeValue(data.get(), WRAPS(TWStringCreateWithUTF8Bytes(type)).get()));
         EXPECT_EQ(std::string(expected), std::string(TWStringUTF8Bytes(result.get())));
@@ -97,8 +97,8 @@ TEST(TWEthereumAbiValue, decodeArray) {
             "0000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3";
         const auto type = "address[]";
         const auto expected = 
-            "[\"0xf784682c82526e245f50975190ef0fff4e4fc077\","
-            "\"0x2e00cd222cb42b616d86d037cc494e8ab7f5c9a3\"]";
+            "[\"0xF784682C82526e245F50975190EF0fff4E4fC077\","
+            "\"0x2e00CD222Cb42B616D86D037Cc494e8ab7F5c9a3\"]";
         auto data = WRAPD(TWDataCreateWithHexString(STRING(input).get()));
         auto result = WRAPS(TWEthereumAbiValueDecodeArray(data.get(), WRAPS(TWStringCreateWithUTF8Bytes(type)).get()));
         EXPECT_EQ(std::string(expected), std::string(TWStringUTF8Bytes(result.get())));

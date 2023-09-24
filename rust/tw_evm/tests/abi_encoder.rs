@@ -362,9 +362,9 @@ fn test_decode_value() {
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af0000000000000000000000000000000000000000000000000000000000000000",
-            kind: "uint256",
+            kind: "int256",
             expected_value_str: "10020405371567",
-            expected_value_proto: ParamEnum::number_uint(number_n::<256>(10020405371567)),
+            expected_value_proto: ParamEnum::number_int(number_n::<256>(10020405371567)),
         },
         TestInput {
             encoded: "000000000000000000000000000000000000000000000000000000000000002a",

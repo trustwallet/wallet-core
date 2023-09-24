@@ -89,3 +89,22 @@ pub unsafe extern "C" fn tw_ethereum_abi_encode_function(
         .map(|data| TWData::from(data).into_ptr())
         .unwrap_or_else(|_| std::ptr::null_mut())
 }
+
+/// /// Decodes an Eth ABI value according to a given type.
+///
+/// \param coin EVM-compatible coin type.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.ValueDecodingInput`.
+/// \return The serialized data of a `TW.EthereumAbi.Proto.ValueDecodingOutput` proto object.
+#[no_mangle]
+pub unsafe extern "C" fn tw_ethereum_abi_decode_value(
+    coin: CoinType,
+    input: *const TWData,
+) -> *mut TWData {
+    let input_data = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    let evm_dispatcher = try_or_else!(evm_dispatcher(coin), std::ptr::null_mut);
+
+    evm_dispatcher
+        .decode_abi_value(input_data.as_slice())
+        .map(|data| TWData::from(data).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}

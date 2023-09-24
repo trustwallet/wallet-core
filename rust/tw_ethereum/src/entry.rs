@@ -107,6 +107,9 @@ impl EvmEntry for EthereumEntry {
     type EncodeFunctionInput<'a> = AbiProto::FunctionEncodingInput<'a>;
     type EncodeFunctionOutput = AbiProto::FunctionEncodingOutput<'static>;
 
+    type ValueDecodingInput<'a> = AbiProto::ValueDecodingInput<'a>;
+    type ValueDecodingOutput = AbiProto::ValueDecodingOutput<'static>;
+
     #[inline]
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput {
         RlpEncoder::<StandardEvmContext>::encode_with_proto(input)
@@ -122,6 +125,11 @@ impl EvmEntry for EthereumEntry {
     #[inline]
     fn decode_abi_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput {
         AbiEncoder::<StandardEvmContext>::decode_params(input)
+    }
+
+    #[inline]
+    fn decode_abi_value(input: Self::ValueDecodingInput<'_>) -> Self::ValueDecodingOutput {
+        AbiEncoder::<StandardEvmContext>::decode_value(input)
     }
 
     #[inline]

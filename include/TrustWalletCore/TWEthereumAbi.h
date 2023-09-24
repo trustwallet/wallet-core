@@ -35,7 +35,7 @@ TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWEthereumAbiDecodeParams(enum TWCoinType coin, TWData* _Nonnull input);
 
-/// Decode an Eth ABI value.
+/// /// Decodes an Eth ABI value according to a given type.
 ///
 /// \param coin EVM-compatible coin type.
 /// \param input The serialized data of `TW.EthereumAbi.Proto.ValueDecodingInput`.

@@ -23,6 +23,9 @@ pub trait EvmEntry {
     type EncodeFunctionInput<'a>: MessageRead<'a>;
     type EncodeFunctionOutput: MessageWrite;
 
+    type ValueDecodingInput<'a>: MessageRead<'a>;
+    type ValueDecodingOutput: MessageWrite;
+
     /// Encodes an item or a list of items as Eth RLP binary format.
     fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput;
 
@@ -33,6 +36,9 @@ pub trait EvmEntry {
 
     /// Decodes a function input or output data according to a given ABI.
     fn decode_abi_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput;
+
+    /// Decodes an Eth ABI value according to a given type.
+    fn decode_abi_value(input: Self::ValueDecodingInput<'_>) -> Self::ValueDecodingOutput;
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     fn get_abi_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String;
@@ -55,8 +61,11 @@ pub trait EvmEntryExt {
     /// Returns the function type signature, of the form "baz(int32,uint256)".
     fn get_abi_function_signature(&self, input: &[u8]) -> ProtoResult<String>;
 
-    // Encodes function inputs to Eth ABI binary.
+    /// Encodes function inputs to Eth ABI binary.
     fn encode_abi_function(&self, input: &[u8]) -> ProtoResult<Data>;
+
+    /// Decodes an Eth ABI value according to a given type.
+    fn decode_abi_value(&self, input: &[u8]) -> ProtoResult<Data>;
 }
 
 impl<T> EvmEntryExt for T
@@ -89,6 +98,12 @@ where
     fn encode_abi_function(&self, input: &[u8]) -> ProtoResult<Data> {
         let input = deserialize(input)?;
         let output = <Self as EvmEntry>::encode_abi_function(input);
+        serialize(&output)
+    }
+
+    fn decode_abi_value(&self, input: &[u8]) -> ProtoResult<Data> {
+        let input = deserialize(input)?;
+        let output = <Self as EvmEntry>::decode_abi_value(input);
         serialize(&output)
     }
 }

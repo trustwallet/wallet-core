@@ -12,7 +12,7 @@ use tw_proto::EthereumAbi::{Proto as AbiProto, Proto};
 use tw_proto::{deserialize, serialize};
 use wallet_core_rs::ffi::ethereum::abi::{
     tw_ethereum_abi_decode_contract_call, tw_ethereum_abi_decode_params,
-    tw_ethereum_abi_function_get_signature,
+    tw_ethereum_abi_decode_value, tw_ethereum_abi_function_get_signature,
 };
 
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
@@ -132,4 +132,30 @@ fn test_ethereum_abi_function_get_signature() {
     .expect("!tw_ethereum_abi_function_get_signature returned nullptr");
 
     assert_eq!(actual, "baz(uint64,address)");
+}
+
+#[test]
+fn test_ethereum_abi_decode_value() {
+    let input = AbiProto::ValueDecodingInput {
+        encoded: "000000000000000000000000000000000000000000000000000000000000002a"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        param_type: "int8".into(),
+    };
+
+    let input_data = TWDataHelper::create(serialize(&input).unwrap());
+
+    let output_data = TWDataHelper::wrap(unsafe {
+        tw_ethereum_abi_decode_value(ETHEREUM_COIN_TYPE, input_data.ptr())
+    })
+    .to_vec()
+    .expect("!tw_ethereum_abi_decode_value returned nullptr");
+
+    let output: AbiProto::ValueDecodingOutput = deserialize(&output_data)
+        .expect("!tw_ethereum_abi_decode_value returned an invalid output");
+
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+    assert_eq!(output.param_str, "42");
 }
