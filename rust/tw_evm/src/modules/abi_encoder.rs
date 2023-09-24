@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::decode::decode_params;
+use crate::abi::decode::{decode_params, decode_value};
 use crate::abi::function::Function;
 use crate::abi::param::Param;
 use crate::abi::param_token::ParamToken;
@@ -45,6 +45,14 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     ) -> Proto::ParamsDecodingOutput<'static> {
         Self::decode_params_impl(input)
             .unwrap_or_else(|err| signing_output_error!(Proto::ParamsDecodingOutput, err))
+    }
+
+    #[inline]
+    pub fn decode_value(
+        input: Proto::ValueDecodingInput<'_>,
+    ) -> Proto::ValueDecodingOutput<'static> {
+        Self::decode_value_impl(input)
+            .unwrap_or_else(|err| signing_output_error!(Proto::ValueDecodingOutput, err))
     }
 
     #[inline]
@@ -132,6 +140,19 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         Ok(Proto::ParamsDecodingOutput {
             params: decoded_protos,
             ..Proto::ParamsDecodingOutput::default()
+        })
+    }
+
+    pub fn decode_value_impl(
+        input: Proto::ValueDecodingInput<'_>,
+    ) -> SigningResult<Proto::ValueDecodingOutput<'static>> {
+        let param_type = ParamType::try_from_type_short(&input.param_type)?;
+        let token = decode_value(&param_type, &input.encoded)?;
+        let token_str = token.to_string();
+        Ok(Proto::ValueDecodingOutput {
+            param: Some(Self::token_to_proto(token)),
+            param_str: token_str.into(),
+            ..Proto::ValueDecodingOutput::default()
         })
     }
 

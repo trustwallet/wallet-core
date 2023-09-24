@@ -11,6 +11,7 @@ use ethabi::Token as EthAbiToken;
 use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
 
+#[derive(Clone)]
 pub struct ParamToken {
     /// Optional param name.
     pub name: Option<String>,

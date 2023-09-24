@@ -11,10 +11,12 @@ use crate::address::Address;
 use ethabi::param_type::Writer;
 use ethabi::Token as EthAbiToken;
 use serde::{Serialize, Serializer};
+use std::fmt;
 use tw_encoding::hex::ToHex;
 use tw_memory::Data;
 use tw_number::U256;
 
+#[derive(Clone)]
 pub enum Token {
     /// Address.
     ///
@@ -64,6 +66,12 @@ pub enum Token {
     ///
     /// solidity name: tuple
     Tuple { params: Vec<ParamToken> },
+}
+
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.clone().into_ethabi_token())
+    }
 }
 
 impl Serialize for Token {

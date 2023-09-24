@@ -224,18 +224,23 @@ message ValueDecodingInput {
     bytes encoded = 1;
 
     // A type of the parameter.
+    // Example: "bytes[32]".
+    // Please note `tuple` is not supported.
     string param_type = 2;
 }
 
 message ValueDecodingOutput {
-    // Decoded parameters.
+    // Decoded parameter.
     ParamValue param = 1;
 
+    // Decoded parameter as a string.
+    string param_str = 2;
+
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 2;
+    Common.Proto.SigningError error = 3;
 
     // error code description
-    string error_message = 3;
+    string error_message = 4;
 }
 
 //// TWEthereumAbiEncodeFunction
