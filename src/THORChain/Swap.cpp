@@ -241,7 +241,7 @@ SwapBundled SwapBuilder::buildEth(const uint256_t& amount, const std::string& me
     Data out;
     auto input = Ethereum::Proto::SigningInput();
     // EIP-1559
-    input.set_tx_mode(Ethereum::Proto::Enveloped);
+    input.set_tx_mode(this->mFromAsset.chain() == Proto::Chain::BSC ? Ethereum::Proto::Legacy : Ethereum::Proto::Enveloped);
     const auto& toTokenId = mFromAsset.token_id();
     // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(mVaultAddress);
