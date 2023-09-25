@@ -33,6 +33,7 @@ impl From<U256> for primitive_types::U256 {
 impl U256 {
     pub const WORDS_COUNT: usize = 4;
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
+    pub const BITS: usize = 256;
 
     #[inline]
     pub fn zero() -> U256 {

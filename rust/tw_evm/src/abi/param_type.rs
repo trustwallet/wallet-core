@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::param::Param;
-use crate::abi::{AbiError, AbiResult};
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use ethabi::param_type::Reader;
 use ethabi::ParamType as EthAbiType;
 use serde::{de::Error as DeError, Deserialize, Deserializer};
@@ -84,7 +84,8 @@ impl ParamType {
     }
 
     pub fn try_from_type_short(type_short: &str) -> AbiResult<ParamType> {
-        let eth_kind = Reader::read(type_short).map_err(|_| AbiError::InvalidParamType)?;
+        let eth_kind = Reader::read(type_short)
+            .map_err(|_| AbiError(AbiErrorKind::Error_missing_param_type))?;
         ParamType::try_from_ethabi_incomplete(eth_kind)
     }
 
@@ -123,7 +124,7 @@ impl ParamType {
             },
             EthAbiType::Tuple(tuple_params) => {
                 if !tuple_params.is_empty() {
-                    return Err(AbiError::InvalidParamType);
+                    return Err(AbiError(AbiErrorKind::Error_missing_param_type));
                 }
                 ParamType::Tuple {
                     params: Vec::default(),

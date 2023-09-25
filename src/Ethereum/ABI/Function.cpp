@@ -136,7 +136,7 @@ bool Function::decode(const Data& encoded, bool isOutput) {
     AbiProto::ParamsDecodingOutput output;
     output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
 
-    if (output.error() != Common::Proto::SigningError::OK) {
+    if (output.error() != AbiProto::AbiError::OK) {
         return false;
     }
 
@@ -182,7 +182,7 @@ MaybeData Function::encodeParams(const std::string& functionName, const NamedTok
     AbiProto::FunctionEncodingOutput output;
     output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
 
-    if (output.error() != Common::Proto::SigningError::OK) {
+    if (output.error() != AbiProto::AbiError::OK) {
         return {};
     }
 

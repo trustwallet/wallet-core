@@ -3,7 +3,30 @@ syntax = "proto3";
 package TW.EthereumAbi.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Common.proto";
+enum AbiError {
+    // This is the OK case, with value=0
+    OK = 0;
+
+    // Internal error.
+    Error_internal = 1;
+
+    // Unexpected function signature or ABI mismatch.
+    Error_abi_mismatch = 2;
+    // Invalid ABI.
+    Error_invalid_abi = 3;
+    // Invalid parameter type.
+    Error_invalid_param_type = 4;
+    // Invalid address value.
+    Error_invalid_address_value = 5;
+    // Invalid UInt value.
+    Error_invalid_uint_value = 6;
+    // Missing parameter type.
+    Error_missing_param_type = 7;
+    // Missing parameter value.
+    Error_missing_param_value = 8;
+    // Invalid encoded data.
+    Error_decoding_data = 9;
+}
 
 // ABI type parameters excluding values.
 
@@ -165,7 +188,7 @@ message ContractCallDecodingOutput {
     repeated NamedToken tokens = 2;
 
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 3;
+    AbiError error = 3;
 
     // error code description
     string error_message = 4;
@@ -210,7 +233,7 @@ message ParamsDecodingOutput {
     repeated NamedToken tokens = 1;
 
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 2;
+    AbiError error = 2;
 
     // error code description
     string error_message = 3;
@@ -237,7 +260,7 @@ message ValueDecodingOutput {
     string param_str = 2;
 
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 3;
+    AbiError error = 3;
 
     // error code description
     string error_message = 4;
@@ -262,7 +285,7 @@ message FunctionEncodingOutput {
     bytes encoded = 2;
 
     // error code, 0 is ok, other codes will be treated as errors
-    Common.Proto.SigningError error = 3;
+    AbiError error = 3;
 
     // error code description
     string error_message = 4;

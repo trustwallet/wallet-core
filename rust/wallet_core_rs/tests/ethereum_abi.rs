@@ -5,9 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use serde_json::{json, Value as Json};
-use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
+use tw_memory::test_utils::tw_string_helper::TWStringHelper;
+use tw_number::U256;
 use tw_proto::EthereumAbi::{Proto as AbiProto, Proto};
 use tw_proto::{deserialize, serialize};
 use wallet_core_rs::ffi::ethereum::abi::{
@@ -16,10 +17,9 @@ use wallet_core_rs::ffi::ethereum::abi::{
     tw_ethereum_abi_function_get_signature,
 };
 
-use tw_memory::test_utils::tw_string_helper::TWStringHelper;
-use tw_number::U256;
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
 use Proto::mod_Token::OneOftoken as TokenEnum;
+use Proto::AbiError as AbiErrorKind;
 
 const ETHEREUM_COIN_TYPE: u32 = 60;
 
@@ -65,7 +65,7 @@ fn test_ethereum_abi_decode_contract_call() {
     let output: AbiProto::ContractCallDecodingOutput = deserialize(&output_data)
         .expect("!tw_ethereum_abi_decode_contract_call returned an invalid output");
 
-    assert_eq!(output.error, SigningErrorType::OK);
+    assert_eq!(output.error, AbiErrorKind::OK);
     assert!(output.error_message.is_empty());
 
     let actual: Json = serde_json::from_str(&output.decoded_json).unwrap();
@@ -106,7 +106,7 @@ fn test_ethereum_abi_decode_params() {
     let output: AbiProto::ParamsDecodingOutput = deserialize(&output_data)
         .expect("!tw_ethereum_abi_decode_params returned an invalid output");
 
-    assert_eq!(output.error, SigningErrorType::OK);
+    assert_eq!(output.error, AbiErrorKind::OK);
     assert!(output.error_message.is_empty());
 
     let expected_tokens = vec![
@@ -164,7 +164,7 @@ fn test_ethereum_abi_encode_function() {
     let output: AbiProto::FunctionEncodingOutput = deserialize(&output_data)
         .expect("!tw_ethereum_abi_encode_function returned an invalid output");
 
-    assert_eq!(output.error, SigningErrorType::OK);
+    assert_eq!(output.error, AbiErrorKind::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.encoded.to_hex(), "72ed38b600000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000000001");
 }
@@ -190,7 +190,7 @@ fn test_ethereum_abi_decode_value() {
     let output: AbiProto::ValueDecodingOutput = deserialize(&output_data)
         .expect("!tw_ethereum_abi_decode_value returned an invalid output");
 
-    assert_eq!(output.error, SigningErrorType::OK);
+    assert_eq!(output.error, AbiErrorKind::OK);
     assert!(output.error_message.is_empty());
     assert_eq!(output.param_str, "42");
 }

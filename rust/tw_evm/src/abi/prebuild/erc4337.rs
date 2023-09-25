@@ -4,9 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::{AbiError, AbiResult};
+use crate::abi::contract::Contract;
+use crate::abi::param_type::ParamType;
+use crate::abi::token::Token;
+use crate::abi::AbiResult;
 use crate::address::Address;
-use ethabi::{Contract, Token};
 use lazy_static::lazy_static;
 use tw_memory::Data;
 use tw_number::U256;
@@ -31,12 +33,11 @@ pub struct Erc4337SimpleAccount;
 impl Erc4337SimpleAccount {
     pub fn encode_execute(args: ExecuteArgs) -> AbiResult<Data> {
         let func = ERC4337_SIMPLE_ACCOUNT.function("execute")?;
-        func.encode_input(&[
-            Token::Address(args.to.to_ethabi()),
-            Token::Uint(args.value.to_ethabi()),
+        func.encode_input([
+            Token::Address(args.to),
+            Token::u256(args.value),
             Token::Bytes(args.data),
         ])
-        .map_err(AbiError::from)
     }
 
     pub fn encode_execute_batch<I>(args: I) -> AbiResult<Data>
@@ -56,16 +57,15 @@ impl Erc4337SimpleAccount {
         let mut datas = Vec::with_capacity(capacity);
 
         for arg in args {
-            addresses.push(Token::Address(arg.to.to_ethabi()));
-            values.push(Token::Uint(arg.value.to_ethabi()));
+            addresses.push(Token::Address(arg.to));
+            values.push(Token::u256(arg.value));
             datas.push(Token::Bytes(arg.data));
         }
 
-        func.encode_input(&[
-            Token::Array(addresses),
-            Token::Array(values),
-            Token::Array(datas),
+        func.encode_input([
+            Token::array(ParamType::Address, addresses),
+            Token::array(ParamType::Uint { bits: U256::BITS }, values),
+            Token::array(ParamType::Bytes, datas),
         ])
-        .map_err(AbiError::from)
     }
 }

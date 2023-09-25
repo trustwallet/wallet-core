@@ -7,11 +7,12 @@
 use crate::abi::decode::decode_params;
 use crate::abi::param::Param;
 use crate::abi::param_token::NamedToken;
-use crate::abi::{AbiError, AbiResult};
+use crate::abi::token::Token;
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use serde::Deserialize;
 use tw_memory::Data;
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct Function {
     /// Function name.
     pub name: String,
@@ -51,15 +52,15 @@ impl Function {
     }
 
     /// Encodes function input to Eth ABI binary.
-    pub fn encode_input(&self, tokens: Vec<NamedToken>) -> AbiResult<Data> {
-        let ethabi_tokens: Vec<_> = tokens
-            .into_iter()
-            .map(|token| token.value.into_ethabi_token())
-            .collect();
-
+    pub fn encode_input<I>(&self, tokens: I) -> AbiResult<Data>
+    where
+        I: IntoIterator<Item = Token>,
+    {
+        let ethabi_tokens: Vec<_> = tokens.into_iter().map(Token::into_ethabi_token).collect();
         self.to_ethabi_function()
             .encode_input(&ethabi_tokens)
-            .map_err(|_| AbiError::InvalidParams)
+            // Given tokens don't match the ABI.
+            .map_err(|_| AbiError(AbiErrorKind::Error_abi_mismatch))
     }
 
     pub(crate) fn to_ethabi_function(&self) -> ethabi::Function {

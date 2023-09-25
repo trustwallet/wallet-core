@@ -8,7 +8,7 @@ use crate::abi::param::Param;
 use crate::abi::param_token::NamedToken;
 use crate::abi::param_type::ParamType;
 use crate::abi::token::Token;
-use crate::abi::{AbiError, AbiResult};
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use lazy_static::lazy_static;
 use tw_number::U256;
 
@@ -19,8 +19,8 @@ lazy_static! {
 
 pub fn decode_params(params: &[Param], data: &[u8]) -> AbiResult<Vec<NamedToken>> {
     let ethabi_types: Vec<_> = params.iter().map(|p| p.ethabi_type()).collect();
-    let ethabi_tokens =
-        ethabi::decode(&ethabi_types, data).map_err(|_| AbiError::InvalidEncodedData)?;
+    let ethabi_tokens = ethabi::decode(&ethabi_types, data)
+        .map_err(|_| AbiError(AbiErrorKind::Error_decoding_data))?;
     params
         .iter()
         .zip(ethabi_tokens.into_iter())
@@ -41,9 +41,12 @@ pub fn decode_value(param_type: &ParamType, data: &[u8]) -> AbiResult<Token> {
     } else {
         ethabi::decode(&[ethabi_type], data)
     }
-    .map_err(|_| AbiError::InvalidEncodedData)?;
+    .map_err(|_| AbiError(AbiErrorKind::Error_decoding_data))?;
 
     // Expected exactly one token.
-    let ethabi_token = tokens.into_iter().next().ok_or(AbiError::Internal)?;
+    let ethabi_token = tokens
+        .into_iter()
+        .next()
+        .ok_or(AbiError(AbiErrorKind::Error_internal))?;
     Token::with_ethabi_token(param_type, ethabi_token)
 }

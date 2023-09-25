@@ -34,7 +34,7 @@ std::string ValueDecoder::decodeValue(const Data& encoded, const std::string& ty
     EthereumAbi::Proto::ValueDecodingOutput output;
     output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
 
-    if (output.error() != Common::Proto::SigningError::OK) {
+    if (output.error() != EthereumAbi::Proto::AbiError::OK) {
         return "";
     }
 

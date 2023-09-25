@@ -6,7 +6,7 @@
 
 use crate::abi::param_token::NamedToken;
 use crate::abi::param_type::ParamType;
-use crate::abi::{AbiError, AbiResult};
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::address::Address;
 use ethabi::param_type::Writer;
 use ethabi::Token as EthAbiToken;
@@ -131,6 +131,20 @@ impl Serialize for Token {
 }
 
 impl Token {
+    pub fn u256(uint: U256) -> Token {
+        Token::Uint {
+            bits: U256::BITS,
+            uint,
+        }
+    }
+
+    pub fn array(element_kind: ParamType, elements: Vec<Token>) -> Token {
+        Token::Array {
+            kind: element_kind,
+            arr: elements,
+        }
+    }
+
     pub fn type_short(&self) -> String {
         let ethabi_type = self.to_param_type().to_ethabi();
         let serialize_tuple_contents = false;
@@ -171,7 +185,7 @@ impl Token {
                 Ok(Token::Tuple { params })
             },
             // `kind` and `token` types mismatch.
-            _ => Err(AbiError::Internal),
+            _ => Err(AbiError(AbiErrorKind::Error_internal)),
         }
     }
 

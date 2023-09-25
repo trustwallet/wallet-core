@@ -6,6 +6,7 @@
 
 use tw_coin_entry::error::{SigningError, SigningErrorType};
 
+pub mod contract;
 pub mod decode;
 pub mod function;
 pub mod param;
@@ -15,28 +16,30 @@ pub mod prebuild;
 pub mod token;
 
 pub type AbiResult<T> = Result<T, AbiError>;
+pub type AbiErrorKind = tw_proto::EthereumAbi::Proto::AbiError;
 
-// TODO
 #[derive(Debug)]
-pub enum AbiError {
-    InvalidParams,
-    InvalidEncodedData,
-    InvalidParamType,
-    InvalidAddressValue,
-    InvalidUintValue,
-    MissingParamType,
-    MissingParamValue,
-    Internal,
-}
-
-impl From<ethabi::Error> for AbiError {
-    fn from(_err: ethabi::Error) -> Self {
-        AbiError::InvalidParams
-    }
-}
+pub struct AbiError(pub AbiErrorKind);
 
 impl From<AbiError> for SigningError {
-    fn from(_: AbiError) -> Self {
-        SigningError(SigningErrorType::Error_internal)
+    fn from(err: AbiError) -> Self {
+        match err.0 {
+            AbiErrorKind::OK => SigningError(SigningErrorType::OK),
+            AbiErrorKind::Error_internal => SigningError(SigningErrorType::Error_internal),
+            _ => SigningError(SigningErrorType::Error_invalid_params),
+        }
     }
+}
+
+#[macro_export]
+macro_rules! abi_output_error {
+    ($output:ty, $error:expr) => {{
+        let err = $error;
+
+        let mut output = <$output>::default();
+        output.error = err.0;
+        output.error_message = std::borrow::Cow::from(format!("{err:?}"));
+
+        output
+    }};
 }

@@ -147,7 +147,7 @@ optional<string> decodeCall(const Data& call, const std::string& abi) {
     EthereumAbi::Proto::ContractCallDecodingOutput output;
     output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
 
-    if (output.error() != Common::Proto::SigningError::OK) {
+    if (output.error() != EthereumAbi::Proto::AbiError::OK) {
         return {};
     }
 
