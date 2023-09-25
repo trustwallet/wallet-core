@@ -42,7 +42,16 @@ message ByteArrayFixType {
 
 // Indicates a tuple with inner type parameters.
 message TupleType {
-    repeated NamedParamType params = 1;
+    repeated Param params = 1;
+}
+
+// Named parameter with type.
+message Param {
+    // Name of the parameter.
+    string name = 1;
+
+    // Type of the parameter.
+    ParamType param = 2;
 }
 
 message ParamType {
@@ -81,17 +90,17 @@ message NumberNParam {
 message ArrayParam {
     ParamType element_type = 1;
 
-    repeated ParamValue values = 2;
+    repeated Token elements = 2;
 }
 
 // A tuple with various parameters similar to a structure.
 message TupleParam {
-    repeated NamedParam params = 1;
+    repeated NamedToken params = 1;
 }
 
 // An enumeration of possible parameters.
-message ParamValue {
-    oneof param {
+message Token {
+    oneof token {
         // Simple values.
         bool boolean = 1;
         NumberNParam number_int = 2;
@@ -112,21 +121,12 @@ message ParamValue {
 }
 
 // A named parameter.
-message NamedParam {
+message NamedToken {
     // Name of the parameter.
     string name = 1;
 
     // Value of the parameter.
-    ParamValue value = 2;
-}
-
-// A named type parameter.
-message NamedParamType {
-    // Name of the parameter.
-    string name = 1;
-
-    // Type of the parameter.
-    ParamType param = 2;
+    Token token = 2;
 }
 
 //// TWEthereumAbiDecodeContractCall
@@ -162,7 +162,7 @@ message ContractCallDecodingOutput {
     string decoded_json = 1;
 
     // Decoded parameters.
-    repeated NamedParam params = 2;
+    repeated NamedToken tokens = 2;
 
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 3;
@@ -174,7 +174,7 @@ message ContractCallDecodingOutput {
 //// TWEthereumAbiDecodeParams
 
 message AbiParams {
-    repeated NamedParamType params = 1;
+    repeated Param params = 1;
 }
 
 // Decode a function input or output data according to the given ABI json.
@@ -207,7 +207,7 @@ message ParamsDecodingInput {
 
 message ParamsDecodingOutput {
     // Decoded parameters.
-    repeated NamedParam params = 1;
+    repeated NamedToken tokens = 1;
 
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 2;
@@ -231,7 +231,7 @@ message ValueDecodingInput {
 
 message ValueDecodingOutput {
     // Decoded parameter.
-    ParamValue param = 1;
+    Token token = 1;
 
     // Decoded parameter as a string.
     string param_str = 2;
@@ -250,7 +250,7 @@ message FunctionEncodingInput {
     string function_name = 1;
 
     // Parameters to be encoded.
-    repeated NamedParam params = 2;
+    repeated NamedToken tokens = 2;
 }
 
 message FunctionEncodingOutput {
@@ -274,5 +274,5 @@ message FunctionEncodingOutput {
 message FunctionGetTypeInput {
     string function_name = 1;
 
-    repeated NamedParamType inputs = 2;
+    repeated Param inputs = 2;
 }

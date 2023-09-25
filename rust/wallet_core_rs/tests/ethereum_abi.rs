@@ -19,21 +19,21 @@ use wallet_core_rs::ffi::ethereum::abi::{
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
 use tw_number::U256;
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
-use Proto::mod_ParamValue::OneOfparam as ParamEnum;
+use Proto::mod_Token::OneOftoken as TokenEnum;
 
 const ETHEREUM_COIN_TYPE: u32 = 60;
 
-fn named_param_type(name: &str, kind: ParamTypeEnum<'static>) -> Proto::NamedParamType<'static> {
-    Proto::NamedParamType {
+fn param(name: &str, kind: ParamTypeEnum<'static>) -> Proto::Param<'static> {
+    Proto::Param {
         name: name.to_string().into(),
         param: Some(Proto::ParamType { param: kind }),
     }
 }
 
-fn named_param(name: &str, value: ParamEnum<'static>) -> Proto::NamedParam<'static> {
-    Proto::NamedParam {
+fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::NamedToken<'static> {
+    Proto::NamedToken {
         name: name.to_string().into(),
-        value: Some(Proto::ParamValue { param: value }),
+        token: Some(Proto::Token { token }),
     }
 }
 
@@ -110,13 +110,13 @@ fn test_ethereum_abi_decode_params() {
     assert!(output.error_message.is_empty());
 
     let expected_tokens = vec![
-        named_param(
+        named_token(
             "to",
-            ParamEnum::address("0x88341d1a8F672D2780C8dC725902AAe72F143B0c".into()),
+            TokenEnum::address("0x88341d1a8F672D2780C8dC725902AAe72F143B0c".into()),
         ),
-        named_param("approved", ParamEnum::boolean(true)),
+        named_token("approved", TokenEnum::boolean(true)),
     ];
-    assert_eq!(output.params, expected_tokens);
+    assert_eq!(output.tokens, expected_tokens);
 }
 
 #[test]
@@ -124,11 +124,11 @@ fn test_ethereum_abi_function_get_signature() {
     let input = AbiProto::FunctionGetTypeInput {
         function_name: "baz".into(),
         inputs: vec![
-            named_param_type(
+            param(
                 "foo",
                 ParamTypeEnum::number_uint(Proto::NumberNType { bits: 64 }),
             ),
-            named_param_type("bar", ParamTypeEnum::address(Proto::AddressType {})),
+            param("bar", ParamTypeEnum::address(Proto::AddressType {})),
         ],
     };
 
@@ -147,9 +147,9 @@ fn test_ethereum_abi_function_get_signature() {
 fn test_ethereum_abi_encode_function() {
     let input = AbiProto::FunctionEncodingInput {
         function_name: "baz".into(),
-        params: vec![
-            named_param("", ParamEnum::number_uint(number_n::<256>(69))),
-            named_param("", ParamEnum::boolean(true)),
+        tokens: vec![
+            named_token("", TokenEnum::number_uint(number_n::<256>(69))),
+            named_token("", TokenEnum::boolean(true)),
         ],
     };
 

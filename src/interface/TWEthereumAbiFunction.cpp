@@ -9,9 +9,7 @@
 #include "Ethereum/ABI.h"
 #include "Data.h"
 #include "HexCoding.h"
-#include "../uint256.h"
 
-#include <string>
 #include <vector>
 #include <cassert>
 
@@ -121,87 +119,87 @@ int TWEthereumAbiFunctionAddParamIntN(struct TWEthereumAbiFunction *_Nonnull fun
 int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, bool val, bool isOutput) {
     assert(func_in != nullptr);
 
-    EthereumAbi::Proto::NamedParamType paramType;
+    EthereumAbi::Proto::Param paramType;
     // Declare the `boolean` type.
     paramType.mutable_param()->mutable_boolean();
 
-    EthereumAbi::Proto::NamedParam paramValue;
-    paramValue.mutable_value()->set_boolean(val);
+    EthereumAbi::Proto::NamedToken token;
+    token.mutable_token()->set_boolean(val);
 
-    return func_in->impl.addParam(std::move(paramType), std::move(paramValue), isOutput);
+    return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull func_in, TWString *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
-    EthereumAbi::Proto::NamedParamType paramType;
+    EthereumAbi::Proto::Param paramType;
     // Declare the `string` type.
     paramType.mutable_param()->mutable_string_param();
 
-    EthereumAbi::Proto::NamedParam paramValue;
+    EthereumAbi::Proto::NamedToken token;
     auto* s = reinterpret_cast<const std::string*>(val);
-    paramValue.mutable_value()->set_string_value(*s);
+    token.mutable_token()->set_string_value(*s);
 
-    return func_in->impl.addParam(std::move(paramType), std::move(paramValue), isOutput);
+    return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
-    EthereumAbi::Proto::NamedParamType paramType;
+    EthereumAbi::Proto::Param paramType;
     // Declare the `address` type.
     paramType.mutable_param()->mutable_address();
 
-    EthereumAbi::Proto::NamedParam paramValue;
+    EthereumAbi::Proto::NamedToken token;
     const Data& addressData = *(reinterpret_cast<const Data*>(val));
     bool prefixed = true;
     auto addressStr = hex(addressData, prefixed);
-    paramValue.mutable_value()->set_address(addressStr);
+    token.mutable_token()->set_address(addressStr);
 
-    return func_in->impl.addParam(std::move(paramType), std::move(paramValue), isOutput);
+    return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
-    EthereumAbi::Proto::NamedParamType paramType;
+    EthereumAbi::Proto::Param paramType;
     // Declare the `byte_array` type.
     paramType.mutable_param()->mutable_byte_array();
 
-    EthereumAbi::Proto::NamedParam paramValue;
+    EthereumAbi::Proto::NamedToken token;
     const Data& bytesData = *(reinterpret_cast<const Data*>(val));
-    paramValue.mutable_value()->set_byte_array(bytesData.data(), bytesData.size());
+    token.mutable_token()->set_byte_array(bytesData.data(), bytesData.size());
 
-    return func_in->impl.addParam(std::move(paramType), std::move(paramValue), isOutput);
+    return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, size_t count, TWData *_Nonnull val, bool isOutput) {
     assert(func_in != nullptr);
 
-    EthereumAbi::Proto::NamedParamType paramType;
+    EthereumAbi::Proto::Param paramType;
     // Declare the `byte_array_fix` type.
     paramType.mutable_param()->mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
 
-    EthereumAbi::Proto::NamedParam paramValue;
+    EthereumAbi::Proto::NamedToken token;
     Data bytesData = *(reinterpret_cast<const Data*>(val));
     bytesData.resize(count);
-    paramValue.mutable_value()->set_byte_array_fix(bytesData.data(), bytesData.size());
+    token.mutable_token()->set_byte_array_fix(bytesData.data(), bytesData.size());
 
-    return func_in->impl.addParam(std::move(paramType), std::move(paramValue), isOutput);
+    return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
 int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull func_in, bool isOutput) {
     assert(func_in != nullptr);
 
-    EthereumAbi::Proto::NamedParamType paramType;
+    EthereumAbi::Proto::Param paramType;
     // Declare the `array` type.
     paramType.mutable_param()->mutable_array();
 
-    EthereumAbi::Proto::NamedParam paramValue;
+    EthereumAbi::Proto::NamedToken token;
     // Declare the `array` empty value.
-    paramValue.mutable_value()->mutable_array();
+    token.mutable_token()->mutable_array();
 
-    return func_in->impl.addParam(std::move(paramType), std::move(paramValue), isOutput);
+    return func_in->impl.addParam(std::move(paramType), std::move(token), isOutput);
 }
 
 ///// GetParam
@@ -225,10 +223,10 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamUInt256(struct TWEthereumAbiFuncti
 bool TWEthereumAbiFunctionGetParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput) {
     assert(func_in != nullptr);
     auto param = func_in->impl.getParam(idx, isOutput);
-    if (!param.has_value() || !param->value().has_boolean()) {
+    if (!param.has_value() || !param->token().has_boolean()) {
         return false;
     }
-    return param->value().boolean();
+    return param->token().boolean();
 }
 
 TWString *_Nonnull TWEthereumAbiFunctionGetParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput) {
@@ -236,10 +234,10 @@ TWString *_Nonnull TWEthereumAbiFunctionGetParamString(struct TWEthereumAbiFunct
     std::string valStr;
 
     auto param = func_in->impl.getParam(idx, isOutput);
-    if (!param.has_value() || !param->value().has_string_value()) {
+    if (!param.has_value() || !param->token().has_string_value()) {
         return TWStringCreateWithUTF8Bytes(valStr.c_str());
     }
-    valStr = param->value().string_value();
+    valStr = param->token().string_value();
     return TWStringCreateWithUTF8Bytes(valStr.c_str());
 }
 
@@ -248,10 +246,10 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFuncti
     Data addressData;
 
     auto param = func_in->impl.getParam(idx, isOutput);
-    if (!param.has_value() || !param->value().has_address()) {
+    if (!param.has_value() || !param->token().has_address()) {
         return TWDataCreateWithData(&addressData);
     }
-    auto addressStr = param->value().address();
+    auto addressStr = param->token().address();
     try {
         addressData = parse_hex(addressStr);
         return TWDataCreateWithData(&addressData);
@@ -341,10 +339,10 @@ int TWEthereumAbiFunctionAddInArrayParamBool(struct TWEthereumAbiFunction *_Nonn
     // Declare the boolean type.
     paramType.mutable_boolean();
 
-    EthereumAbi::Proto::ParamValue paramValue;
-    paramValue.set_boolean(val);
+    EthereumAbi::Proto::Token token;
+    token.set_boolean(val);
 
-    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
+    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWString *_Nonnull val) {
@@ -354,10 +352,10 @@ int TWEthereumAbiFunctionAddInArrayParamString(struct TWEthereumAbiFunction *_No
     // Declare the boolean type.
     paramType.mutable_string_param();
 
-    EthereumAbi::Proto::ParamValue paramValue;
-    paramValue.set_string_value(TWStringUTF8Bytes(val));
+    EthereumAbi::Proto::Token token;
+    token.set_string_value(TWStringUTF8Bytes(val));
 
-    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
+    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
@@ -367,13 +365,13 @@ int TWEthereumAbiFunctionAddInArrayParamAddress(struct TWEthereumAbiFunction *_N
     // Declare the boolean type.
     paramType.mutable_address();
 
-    EthereumAbi::Proto::ParamValue paramValue;
+    EthereumAbi::Proto::Token token;
     const Data& addressData = *(reinterpret_cast<const Data*>(val));
     bool prefixed = true;
     auto addressStr = hex(addressData, prefixed);
-    paramValue.set_address(addressStr);
+    token.set_address(addressStr);
 
-    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
+    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, TWData *_Nonnull val) {
@@ -383,11 +381,11 @@ int TWEthereumAbiFunctionAddInArrayParamBytes(struct TWEthereumAbiFunction *_Non
     // Declare the boolean type.
     paramType.mutable_byte_array();
 
-    EthereumAbi::Proto::ParamValue paramValue;
+    EthereumAbi::Proto::Token token;
     const Data& bytesData = *(reinterpret_cast<const Data*>(val));
-    paramValue.set_byte_array(bytesData.data(), bytesData.size());
+    token.set_byte_array(bytesData.data(), bytesData.size());
 
-    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
+    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }
 
 int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction *_Nonnull func_in, int arrayIdx, size_t count, TWData *_Nonnull val) {
@@ -397,10 +395,10 @@ int TWEthereumAbiFunctionAddInArrayParamBytesFix(struct TWEthereumAbiFunction *_
     // Declare the boolean type.
     paramType.mutable_byte_array_fix()->set_size(static_cast<uint64_t>(count));
 
-    EthereumAbi::Proto::ParamValue paramValue;
+    EthereumAbi::Proto::Token token;
     Data bytesData = *(reinterpret_cast<const Data*>(val));
     bytesData.resize(count);
-    paramValue.set_byte_array_fix(bytesData.data(), bytesData.size());
+    token.set_byte_array_fix(bytesData.data(), bytesData.size());
 
-    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(paramValue));
+    return func_in->impl.addInArrayParam(arrayIdx, std::move(paramType), std::move(token));
 }

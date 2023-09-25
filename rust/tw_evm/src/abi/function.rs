@@ -6,7 +6,7 @@
 
 use crate::abi::decode::decode_params;
 use crate::abi::param::Param;
-use crate::abi::param_token::ParamToken;
+use crate::abi::param_token::NamedToken;
 use crate::abi::{AbiError, AbiResult};
 use serde::Deserialize;
 use tw_memory::Data;
@@ -46,15 +46,15 @@ impl Function {
     }
 
     /// Parses the ABI function input to a list of tokens.
-    pub fn decode_input(&self, data: &[u8]) -> AbiResult<Vec<ParamToken>> {
+    pub fn decode_input(&self, data: &[u8]) -> AbiResult<Vec<NamedToken>> {
         decode_params(&self.inputs, data)
     }
 
     /// Encodes function input to Eth ABI binary.
-    pub fn encode_input(&self, params: Vec<ParamToken>) -> AbiResult<Data> {
-        let ethabi_tokens: Vec<_> = params
+    pub fn encode_input(&self, tokens: Vec<NamedToken>) -> AbiResult<Data> {
+        let ethabi_tokens: Vec<_> = tokens
             .into_iter()
-            .map(|param| param.value.into_ethabi_token())
+            .map(|token| token.value.into_ethabi_token())
             .collect();
 
         self.to_ethabi_function()

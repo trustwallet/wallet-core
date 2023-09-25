@@ -7,7 +7,7 @@
 use crate::abi::decode::{decode_params, decode_value};
 use crate::abi::function::Function;
 use crate::abi::param::Param;
-use crate::abi::param_token::ParamToken;
+use crate::abi::param_token::NamedToken;
 use crate::abi::param_type::ParamType;
 use crate::abi::token::Token;
 use crate::abi::{AbiError, AbiResult};
@@ -103,12 +103,12 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         // Serialize the Proto parameters.
         let decoded_protos = decoded_tokens
             .into_iter()
-            .map(Self::param_token_to_proto)
+            .map(Self::named_token_to_proto)
             .collect();
 
         Ok(Proto::ContractCallDecodingOutput {
             decoded_json: Cow::Owned(decoded_json),
-            params: decoded_protos,
+            tokens: decoded_protos,
             ..Proto::ContractCallDecodingOutput::default()
         })
     }
@@ -125,7 +125,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             AbiEnum::abi_params(abi_params) => abi_params
                 .params
                 .into_iter()
-                .map(Self::named_param_type_from_proto)
+                .map(Self::param_from_proto)
                 .collect::<AbiResult<Vec<_>>>()?,
             AbiEnum::None => return Err(SigningError(SigningErrorType::Error_invalid_params)),
         };
@@ -134,11 +134,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         // Serialize the Proto parameters.
         let decoded_protos = decoded_tokens
             .into_iter()
-            .map(Self::param_token_to_proto)
+            .map(Self::named_token_to_proto)
             .collect();
 
         Ok(Proto::ParamsDecodingOutput {
-            params: decoded_protos,
+            tokens: decoded_protos,
             ..Proto::ParamsDecodingOutput::default()
         })
     }
@@ -150,7 +150,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let token = decode_value(&param_type, &input.encoded)?;
         let token_str = token.to_string();
         Ok(Proto::ValueDecodingOutput {
-            param: Some(Self::token_to_proto(token)),
+            token: Some(Self::token_to_proto(token)),
             param_str: token_str.into(),
             ..Proto::ValueDecodingOutput::default()
         })
@@ -160,7 +160,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let function_inputs = input
             .inputs
             .into_iter()
-            .map(Self::named_param_type_from_proto)
+            .map(Self::param_from_proto)
             .collect::<AbiResult<Vec<_>>>()
             .unwrap_or_default();
 
@@ -177,9 +177,9 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         input: Proto::FunctionEncodingInput<'_>,
     ) -> SigningResult<Proto::FunctionEncodingOutput<'static>> {
         let input_tokens = input
-            .params
+            .tokens
             .into_iter()
-            .map(Self::named_param_from_proto)
+            .map(Self::named_token_from_proto)
             .collect::<AbiResult<Vec<_>>>()?;
         let input_types: Vec<_> = input_tokens.iter().map(|token| token.to_param()).collect();
 
@@ -197,23 +197,21 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    fn named_param_type_to_proto(param: Param) -> Proto::NamedParamType<'static> {
-        Proto::NamedParamType {
+    fn param_to_proto(param: Param) -> Proto::Param<'static> {
+        Proto::Param {
             name: Cow::Owned(param.name.unwrap_or_default()),
             param: Some(Self::param_type_to_proto(param.kind)),
         }
     }
 
-    fn named_param_type_from_proto(
-        named_param_type: Proto::NamedParamType<'_>,
-    ) -> AbiResult<Param> {
-        let name = if named_param_type.name.is_empty() {
+    fn param_from_proto(param: Proto::Param<'_>) -> AbiResult<Param> {
+        let name = if param.name.is_empty() {
             None
         } else {
-            Some(named_param_type.name.to_string())
+            Some(param.name.to_string())
         };
 
-        let proto_param_type = named_param_type.param.ok_or(AbiError::InvalidParamType)?;
+        let proto_param_type = param.param.ok_or(AbiError::InvalidParamType)?;
         let kind = Self::param_type_from_proto(proto_param_type)?;
 
         Ok(Param {
@@ -223,57 +221,57 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    fn named_param_from_proto(named_param: Proto::NamedParam<'_>) -> AbiResult<ParamToken> {
-        let value = named_param.value.ok_or(AbiError::MissingParamValue)?;
-        Ok(ParamToken {
-            name: Some(named_param.name.into()),
-            value: Self::param_value_from_proto(value)?,
+    fn named_token_from_proto(named_token: Proto::NamedToken<'_>) -> AbiResult<NamedToken> {
+        let value = named_token.token.ok_or(AbiError::MissingParamValue)?;
+        Ok(NamedToken {
+            name: Some(named_token.name.into()),
+            value: Self::token_from_proto(value)?,
             internal_type: None,
         })
     }
 
-    fn param_value_from_proto(param_value: Proto::ParamValue<'_>) -> AbiResult<Token> {
-        use Proto::mod_ParamValue::OneOfparam as ParamEnum;
+    fn token_from_proto(token: Proto::Token<'_>) -> AbiResult<Token> {
+        use Proto::mod_Token::OneOftoken as TokenEnum;
 
-        match param_value.param {
-            ParamEnum::boolean(bool) => Ok(Token::Bool(bool)),
-            ParamEnum::number_uint(u) => {
+        match token.token {
+            TokenEnum::boolean(bool) => Ok(Token::Bool(bool)),
+            TokenEnum::number_uint(u) => {
                 let uint = Self::number_n_from_proto(&u.value)?;
                 Ok(Token::Uint {
                     bits: u.bits as usize,
                     uint,
                 })
             },
-            ParamEnum::number_int(i) => {
+            TokenEnum::number_int(i) => {
                 let int = Self::number_n_from_proto(&i.value)?;
                 Ok(Token::Int {
                     bits: i.bits as usize,
                     int,
                 })
             },
-            ParamEnum::string_value(str) => Ok(Token::String(str.to_string())),
-            ParamEnum::address(addr) => {
+            TokenEnum::string_value(str) => Ok(Token::String(str.to_string())),
+            TokenEnum::address(addr) => {
                 let addr = Address::from_str(&addr).map_err(|_| AbiError::InvalidAddressValue)?;
                 Ok(Token::Address(addr))
             },
-            ParamEnum::byte_array(bytes) => Ok(Token::Bytes(bytes.to_vec())),
-            ParamEnum::byte_array_fix(bytes) => Ok(Token::FixedBytes(bytes.to_vec())),
-            ParamEnum::array(arr) => {
+            TokenEnum::byte_array(bytes) => Ok(Token::Bytes(bytes.to_vec())),
+            TokenEnum::byte_array_fix(bytes) => Ok(Token::FixedBytes(bytes.to_vec())),
+            TokenEnum::array(arr) => {
                 let (arr, kind) = Self::array_from_proto(arr)?;
                 Ok(Token::Array { arr, kind })
             },
-            ParamEnum::fixed_array(arr) => {
+            TokenEnum::fixed_array(arr) => {
                 let (arr, kind) = Self::array_from_proto(arr)?;
                 Ok(Token::FixedArray { arr, kind })
             },
-            ParamEnum::tuple(Proto::TupleParam { params }) => {
+            TokenEnum::tuple(Proto::TupleParam { params }) => {
                 let params = params
                     .into_iter()
-                    .map(Self::named_param_from_proto)
+                    .map(Self::named_token_from_proto)
                     .collect::<AbiResult<Vec<_>>>()?;
                 Ok(Token::Tuple { params })
             },
-            ParamEnum::None => Err(AbiError::MissingParamValue),
+            TokenEnum::None => Err(AbiError::MissingParamValue),
         }
     }
 
@@ -281,9 +279,9 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let element_type = array.element_type.ok_or(AbiError::MissingParamType)?;
         let kind = Self::param_type_from_proto(element_type)?;
         let arr = array
-            .values
+            .elements
             .into_iter()
-            .map(Self::param_value_from_proto)
+            .map(Self::token_from_proto)
             .collect::<AbiResult<Vec<_>>>()?;
         Ok((arr, kind))
     }
@@ -317,10 +315,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                 ProtoParamType::array(Box::new(Proto::ArrayType { element_type }))
             },
             ParamType::Tuple { params } => {
-                let params: Vec<_> = params
-                    .into_iter()
-                    .map(Self::named_param_type_to_proto)
-                    .collect();
+                let params: Vec<_> = params.into_iter().map(Self::param_to_proto).collect();
                 ProtoParamType::tuple(Proto::TupleType { params })
             },
         };
@@ -363,7 +358,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                 let params = tuple
                     .params
                     .into_iter()
-                    .map(Self::named_param_type_from_proto)
+                    .map(Self::param_from_proto)
                     .collect::<AbiResult<Vec<_>>>()?;
                 Ok(ParamType::Tuple { params })
             },
@@ -371,31 +366,31 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn param_token_to_proto(token: ParamToken) -> Proto::NamedParam<'static> {
-        Proto::NamedParam {
+    fn named_token_to_proto(token: NamedToken) -> Proto::NamedToken<'static> {
+        Proto::NamedToken {
             name: Cow::Owned(token.name.unwrap_or_default()),
-            value: Some(Self::token_to_proto(token.value)),
+            token: Some(Self::token_to_proto(token.value)),
         }
     }
 
-    fn token_to_proto(token: Token) -> Proto::ParamValue<'static> {
-        use Proto::mod_ParamValue::OneOfparam as ParamEnum;
+    fn token_to_proto(token: Token) -> Proto::Token<'static> {
+        use Proto::mod_Token::OneOftoken as TokenEnum;
 
         let value = match token {
-            Token::Address(addr) => ParamEnum::address(Cow::Owned(addr.to_string())),
-            Token::FixedBytes(bytes) => ParamEnum::byte_array_fix(Cow::Owned(bytes)),
-            Token::Bytes(bytes) => ParamEnum::byte_array(Cow::Owned(bytes)),
-            Token::Int { int, bits } => ParamEnum::number_int(Self::number_n_proto(int, bits)),
-            Token::Uint { uint, bits } => ParamEnum::number_uint(Self::number_n_proto(uint, bits)),
-            Token::Bool(bool) => ParamEnum::boolean(bool),
-            Token::String(str) => ParamEnum::string_value(Cow::Owned(str)),
+            Token::Address(addr) => TokenEnum::address(Cow::Owned(addr.to_string())),
+            Token::FixedBytes(bytes) => TokenEnum::byte_array_fix(Cow::Owned(bytes)),
+            Token::Bytes(bytes) => TokenEnum::byte_array(Cow::Owned(bytes)),
+            Token::Int { int, bits } => TokenEnum::number_int(Self::number_n_proto(int, bits)),
+            Token::Uint { uint, bits } => TokenEnum::number_uint(Self::number_n_proto(uint, bits)),
+            Token::Bool(bool) => TokenEnum::boolean(bool),
+            Token::String(str) => TokenEnum::string_value(Cow::Owned(str)),
             Token::FixedArray { kind, arr } => {
-                ParamEnum::fixed_array(Self::array_to_proto(kind, arr))
+                TokenEnum::fixed_array(Self::array_to_proto(kind, arr))
             },
-            Token::Array { kind, arr, .. } => ParamEnum::array(Self::array_to_proto(kind, arr)),
-            Token::Tuple { params } => ParamEnum::tuple(Self::tuple_to_proto(params)),
+            Token::Array { kind, arr, .. } => TokenEnum::array(Self::array_to_proto(kind, arr)),
+            Token::Tuple { params } => TokenEnum::tuple(Self::tuple_to_proto(params)),
         };
-        Proto::ParamValue { param: value }
+        Proto::Token { token: value }
     }
 
     fn number_n_from_proto(encoded: &[u8]) -> AbiResult<U256> {
@@ -411,13 +406,13 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
     fn array_to_proto(kind: ParamType, arr: Vec<Token>) -> Proto::ArrayParam<'static> {
         Proto::ArrayParam {
-            values: arr.into_iter().map(Self::token_to_proto).collect(),
+            elements: arr.into_iter().map(Self::token_to_proto).collect(),
             element_type: Some(Self::param_type_to_proto(kind)),
         }
     }
 
-    fn tuple_to_proto(params: Vec<ParamToken>) -> Proto::TupleParam<'static> {
-        let params = params.into_iter().map(Self::param_token_to_proto).collect();
+    fn tuple_to_proto(params: Vec<NamedToken>) -> Proto::TupleParam<'static> {
+        let params = params.into_iter().map(Self::named_token_to_proto).collect();
         Proto::TupleParam { params }
     }
 }
@@ -431,5 +426,5 @@ struct SmartContractCallAbiJson {
 #[derive(Serialize)]
 struct SmartContractCallDecodedInputJson<'a> {
     function: String,
-    inputs: &'a [ParamToken],
+    inputs: &'a [NamedToken],
 }

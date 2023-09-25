@@ -12,7 +12,7 @@ use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
 
 #[derive(Clone)]
-pub struct ParamToken {
+pub struct NamedToken {
     /// Optional param name.
     pub name: Option<String>,
     /// Parameter value.
@@ -21,7 +21,7 @@ pub struct ParamToken {
     pub internal_type: Option<String>,
 }
 
-impl ParamToken {
+impl NamedToken {
     pub fn to_param(&self) -> Param {
         Param {
             name: self.name.clone(),
@@ -30,8 +30,8 @@ impl ParamToken {
         }
     }
 
-    pub(crate) fn with_ethabi_token(param: &Param, token: EthAbiToken) -> AbiResult<ParamToken> {
-        Ok(ParamToken {
+    pub(crate) fn with_ethabi_token(param: &Param, token: EthAbiToken) -> AbiResult<NamedToken> {
+        Ok(NamedToken {
             name: param.name.clone(),
             value: Token::with_ethabi_token(&param.kind, token)?,
             internal_type: param.internal_type.clone(),
@@ -39,7 +39,7 @@ impl ParamToken {
     }
 }
 
-impl Serialize for ParamToken {
+impl Serialize for NamedToken {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,

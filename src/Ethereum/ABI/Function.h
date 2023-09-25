@@ -20,16 +20,16 @@ namespace TW::Ethereum::ABI {
 
 namespace AbiProto = EthereumAbi::Proto;
 
-using MaybeNamedParam = std::optional<AbiProto::NamedParam>;
+using MaybeNamedToken = std::optional<AbiProto::NamedToken>;
 using MaybeData = std::optional<Data>;
-using NamedParams = std::vector<AbiProto::NamedParam>;
+using NamedTokens = std::vector<AbiProto::NamedToken>;
 
 class Function {
 public:
     explicit Function(std::string name): name(std::move(name)) {}
 
     /// Adds an input or output parameter. Returns the index of the parameter.
-    int addParam(AbiProto::NamedParamType paramType, AbiProto::NamedParam paramValue, bool isOutput = false);
+    int addParam(AbiProto::Param paramType, AbiProto::NamedToken paramValue, bool isOutput = false);
 
     /// Adds an input or output uint parameter. Returns the index of the parameter.
     int addUintParam(uint32_t bits, const Data& encodedValue, bool isOutput = false);
@@ -39,7 +39,7 @@ public:
 
     /// Adds a parameter to the input array.
     /// Please note the array should be present at `inputValues[idx]`.
-    int addInArrayParam(int idx, AbiProto::ParamType paramType, AbiProto::ParamValue paramValue);
+    int addInArrayParam(int idx, AbiProto::ParamType paramType, AbiProto::Token paramValue);
 
     /// Adds a uint parameter to the input array.
     /// Please note the array should be present at `inputValues[idx]`.
@@ -50,15 +50,15 @@ public:
     int addInArrayIntParam(int idx, uint32_t bits, const Data& encodedValue);
 
     /// Returns an input or output parameter.
-    MaybeNamedParam getParam(int idx, bool isOutput = false) const;
+    MaybeNamedToken getParam(int idx, bool isOutput = false) const;
 
     /// Returns the data of an input or output uint parameter.
     Data getUintParamData(int idx, uint32_t bits, bool isOutput = false) const {
         auto param = getParam(idx, isOutput);
-        if (!param.has_value() || !param->value().has_number_uint() || param->value().number_uint().bits() != bits) {
+        if (!param.has_value() || !param->token().has_number_uint() || param->token().number_uint().bits() != bits) {
             return store(0);
         }
-        return data(param->value().number_uint().value());
+        return data(param->token().number_uint().value());
     }
 
     /// Returns an input or output uint parameter.
@@ -81,7 +81,7 @@ public:
     std::string getType() const;
 
     /// Encodes a function call to Eth ABI binary.
-    static MaybeData encodeParams(const std::string& functionName, const NamedParams& params);
+    static MaybeData encodeParams(const std::string& functionName, const NamedTokens& params);
 
     /// Encodes a function call to Eth ABI binary.
     static MaybeData encodeParams(const std::string& functionName, const BaseParams& params);
@@ -91,8 +91,8 @@ private:
     AbiProto::AbiParams inputs;
     AbiProto::AbiParams outputs;
 
-    NamedParams inputValues;
-    NamedParams outputValues;
+    NamedTokens inputValues;
+    NamedTokens outputValues;
 };
 
 } // namespace TW::Ethereum::ABI

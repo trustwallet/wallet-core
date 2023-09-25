@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::param_token::ParamToken;
+use crate::abi::param_token::NamedToken;
 use crate::abi::param_type::ParamType;
 use crate::abi::{AbiError, AbiResult};
 use crate::address::Address;
@@ -65,7 +65,7 @@ pub enum Token {
     /// Tuple of params of variable types.
     ///
     /// solidity name: tuple
-    Tuple { params: Vec<ParamToken> },
+    Tuple { params: Vec<NamedToken> },
 }
 
 impl fmt::Display for Token {
@@ -166,7 +166,7 @@ impl Token {
                 let params = params
                     .iter()
                     .zip(tuple_params.into_iter())
-                    .map(|(param, token)| ParamToken::with_ethabi_token(param, token))
+                    .map(|(param, token)| NamedToken::with_ethabi_token(param, token))
                     .collect::<AbiResult<Vec<_>>>()?;
                 Ok(Token::Tuple { params })
             },

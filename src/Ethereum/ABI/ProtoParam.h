@@ -15,13 +15,13 @@ namespace AbiProto = EthereumAbi::Proto;
 struct BaseProtoParam {
     virtual ~BaseProtoParam() noexcept = default;
 
-    virtual AbiProto::NamedParam toNamedParam() const {
-        AbiProto::NamedParam proto;
-        *proto.mutable_value() = toParamValue();
+    virtual AbiProto::NamedToken toNamedToken() const {
+        AbiProto::NamedToken proto;
+        *proto.mutable_token() = toToken();
         return proto;
     }
 
-    virtual AbiProto::ParamValue toParamValue() const = 0;
+    virtual AbiProto::Token toToken() const = 0;
 };
 
 using BaseParams = std::vector<std::shared_ptr<BaseProtoParam>>;
@@ -33,8 +33,8 @@ public:
 
     ~ProtoBool() override = default;
 
-    AbiProto::ParamValue toParamValue() const override {
-        AbiProto::ParamValue proto;
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
         proto.set_boolean(m_value);
         return proto;
     }
@@ -53,8 +53,8 @@ public:
 
     ~ProtoUInt256() override = default;
 
-    AbiProto::ParamValue toParamValue() const override {
-        AbiProto::ParamValue proto;
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
         proto.mutable_number_uint()->set_bits(256);
         proto.mutable_number_uint()->set_value(m_number.data(), m_number.size());
         return proto;
@@ -71,8 +71,8 @@ public:
 
     ~ProtoByteArray() override = default;
 
-    AbiProto::ParamValue toParamValue() const override {
-        AbiProto::ParamValue proto;
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
         proto.set_byte_array(m_data.data(), m_data.size());
         return proto;
     }
@@ -88,8 +88,8 @@ public:
 
     ~ProtoString() override = default;
 
-    AbiProto::ParamValue toParamValue() const override {
-        AbiProto::ParamValue proto;
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
         proto.set_string_value(m_string.data(), m_string.size());
         return proto;
     }
@@ -107,8 +107,8 @@ public:
 
     ~ProtoAddress() override = default;
 
-    AbiProto::ParamValue toParamValue() const override {
-        AbiProto::ParamValue proto;
+    AbiProto::Token toToken() const override {
+        AbiProto::Token proto;
         proto.set_address(m_address);
         return proto;
     }

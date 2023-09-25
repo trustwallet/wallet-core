@@ -14,19 +14,19 @@ use tw_number::U256;
 use tw_proto::EthereumAbi::Proto;
 
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
-use Proto::mod_ParamValue::OneOfparam as ParamEnum;
+use Proto::mod_Token::OneOftoken as TokenEnum;
 
-fn named_param_type(name: &str, kind: ParamTypeEnum<'static>) -> Proto::NamedParamType<'static> {
-    Proto::NamedParamType {
+fn param(name: &str, kind: ParamTypeEnum<'static>) -> Proto::Param<'static> {
+    Proto::Param {
         name: name.to_string().into(),
         param: Some(Proto::ParamType { param: kind }),
     }
 }
 
-fn named_param(name: &str, value: ParamEnum<'static>) -> Proto::NamedParam<'static> {
-    Proto::NamedParam {
+fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::NamedToken<'static> {
+    Proto::NamedToken {
         name: Cow::Owned(name.to_string()),
-        value: Some(Proto::ParamValue { param: value }),
+        token: Some(Proto::Token { token }),
     }
 }
 
@@ -43,18 +43,18 @@ fn number_type_n<const BITS: u32>() -> Proto::NumberNType {
 
 fn array(
     element_type: ParamTypeEnum<'static>,
-    values: Vec<ParamEnum<'static>>,
+    values: Vec<TokenEnum<'static>>,
 ) -> Proto::ArrayParam<'static> {
-    let values = values
+    let elements = values
         .into_iter()
-        .map(|param| Proto::ParamValue { param })
+        .map(|token| Proto::Token { token })
         .collect();
     let element_type = Some(Proto::ParamType {
         param: element_type,
     });
     Proto::ArrayParam {
         element_type,
-        values,
+        elements,
     }
 }
 
@@ -66,11 +66,11 @@ fn array_type(element_type: ParamTypeEnum<'static>) -> Box<Proto::ArrayType<'sta
     })
 }
 
-fn tuple<I>(params: I) -> ParamEnum<'static>
+fn tuple<I>(params: I) -> TokenEnum<'static>
 where
-    I: IntoIterator<Item = Proto::NamedParam<'static>>,
+    I: IntoIterator<Item = Proto::NamedToken<'static>>,
 {
-    ParamEnum::tuple(Proto::TupleParam {
+    TokenEnum::tuple(Proto::TupleParam {
         params: params.into_iter().collect(),
     })
 }
@@ -99,14 +99,14 @@ fn test_decode_contract_call() {
 
     let array_inner_type = ParamTypeEnum::tuple(Proto::TupleType {
         params: vec![
-            named_param_type("callType", ParamTypeEnum::number_uint(number_type_n::<8>())),
-            named_param_type("target", ParamTypeEnum::address(Proto::AddressType {})),
-            named_param_type("value", ParamTypeEnum::number_uint(number_type_n::<256>())),
-            named_param_type(
+            param("callType", ParamTypeEnum::number_uint(number_type_n::<8>())),
+            param("target", ParamTypeEnum::address(Proto::AddressType {})),
+            param("value", ParamTypeEnum::number_uint(number_type_n::<256>())),
+            param(
                 "callData",
                 ParamTypeEnum::byte_array(Proto::ByteArrayType {}),
             ),
-            named_param_type(
+            param(
                 "payload",
                 ParamTypeEnum::byte_array(Proto::ByteArrayType {}),
             ),
@@ -114,59 +114,59 @@ fn test_decode_contract_call() {
     });
     let expected_calls = vec![
         tuple(vec![
-            named_param("callType", ParamEnum::number_uint(number_n::<8>(0))),
-            named_param(
+            named_token("callType", TokenEnum::number_uint(number_n::<8>(0))),
+            named_token(
                 "target",
-                ParamEnum::address("0xdAC17F958D2ee523a2206206994597C13D831ec7".into()),
+                TokenEnum::address("0xdAC17F958D2ee523a2206206994597C13D831ec7".into()),
             ),
-            named_param("value", ParamEnum::number_uint(number_n::<256>(0))),
-            named_param("callData", ParamEnum::byte_array(call_data_1.into())),
-            named_param("payload", ParamEnum::byte_array(Cow::default())),
+            named_token("value", TokenEnum::number_uint(number_n::<256>(0))),
+            named_token("callData", TokenEnum::byte_array(call_data_1.into())),
+            named_token("payload", TokenEnum::byte_array(Cow::default())),
         ]),
         tuple(vec![
-            named_param("callType", ParamEnum::number_uint(number_n::<8>(0))),
-            named_param(
+            named_token("callType", TokenEnum::number_uint(number_n::<8>(0))),
+            named_token(
                 "target",
-                ParamEnum::address("0x99a58482BD75cbab83b27EC03CA68fF489b5788f".into()),
+                TokenEnum::address("0x99a58482BD75cbab83b27EC03CA68fF489b5788f".into()),
             ),
-            named_param("value", ParamEnum::number_uint(number_n::<256>(0))),
-            named_param("callData", ParamEnum::byte_array(call_data_2.into())),
-            named_param("payload", ParamEnum::byte_array(Cow::default())),
+            named_token("value", TokenEnum::number_uint(number_n::<256>(0))),
+            named_token("callData", TokenEnum::byte_array(call_data_2.into())),
+            named_token("payload", TokenEnum::byte_array(Cow::default())),
         ]),
     ];
 
     let payload = "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000a140f413c63fbda84e9008607e678258fffbc76b000000000000000000000000000000000000000000000000000000000000000700000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000000000000000000000000000000000000000000036000000000000000000000000000000000000000000000000000000000000005a0000000000000000000000000000000000000000000000000000000000000072000000000000000000000000000000000000000000000000000000000000009600000000000000000000000000000000000000000000000000000000000000ac000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000004268b8f0b87b6eae5d897996e6b845ddbd99adf300000000000000000000000000000000000000000000000000000000000000010000000000000000000000004268b8f0b87b6eae5d897996e6b845ddbd99adf3000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000001b81d678ffb9c0263b24a97847620c99d213eb1400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000004268b8f0b87b6eae5d897996e6b845ddbd99adf3000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000001b81d678ffb9c0263b24a97847620c99d213eb14000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000104414bf3890000000000000000000000004268b8f0b87b6eae5d897996e6b845ddbd99adf300000000000000000000000055d398326f99059ff775485246999027b319795500000000000000000000000000000000000000000000000000000000000000640000000000000000000000004fd39c9e151e50580779bd04b1f7ecc310079fd300000000000000000000000000000000000000000000000000000189c04a7044000000000000000000000000000000000000000000000000000029a23529cf68000000000000000000000000000000000000000000005af4f3f913bd553d03b900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000004268b8f0b87b6eae5d897996e6b845ddbd99adf30000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000055d398326f99059ff775485246999027b3197955000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000044095ea7b30000000000000000000000001b81d678ffb9c0263b24a97847620c99d213eb14000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000055d398326f99059ff775485246999027b3197955000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000001b81d678ffb9c0263b24a97847620c99d213eb14000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000104414bf38900000000000000000000000055d398326f99059ff775485246999027b3197955000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c00000000000000000000000000000000000000000000000000000000000001f40000000000000000000000004fd39c9e151e50580779bd04b1f7ecc310079fd300000000000000000000000000000000000000000000000000000189c04a7045000000000000000000000000000000000000000000005b527785e694f805bdd300000000000000000000000000000000000000000000005f935a1fa5c4a6ec61000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000055d398326f99059ff775485246999027b319795500000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000001000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000bb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000a140f413c63fbda84e9008607e678258fffbc76b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000".decode_hex().unwrap();
     let expected_proto = vec![
-        named_param(
+        named_token(
             "token",
-            ParamEnum::address("0xdAC17F958D2ee523a2206206994597C13D831ec7".into()),
+            TokenEnum::address("0xdAC17F958D2ee523a2206206994597C13D831ec7".into()),
         ),
-        named_param(
+        named_token(
             "amount",
-            ParamEnum::number_uint(number_n::<256>(20000000000000000)),
+            TokenEnum::number_uint(number_n::<256>(20000000000000000)),
         ),
-        named_param(
+        named_token(
             "calls",
-            ParamEnum::array(array(array_inner_type, expected_calls)),
+            TokenEnum::array(array(array_inner_type, expected_calls)),
         ),
-        named_param("bridgedTokenSymbol", ParamEnum::string_value("USDC".into())),
-        named_param(
+        named_token("bridgedTokenSymbol", TokenEnum::string_value("USDC".into())),
+        named_token(
             "destinationChain",
-            ParamEnum::string_value("binance".into()),
+            TokenEnum::string_value("binance".into()),
         ),
-        named_param(
+        named_token(
             "destinationAddress",
-            ParamEnum::string_value("0xce16F69375520ab01377ce7B88f5BA8C48F8D666".into()),
+            TokenEnum::string_value("0xce16F69375520ab01377ce7B88f5BA8C48F8D666".into()),
         ),
-        named_param("payload", ParamEnum::byte_array(payload.into())),
-        named_param(
+        named_token("payload", TokenEnum::byte_array(payload.into())),
+        named_token(
             "gasRefundRecipient",
-            ParamEnum::address("0xa140F413C63FBDA84E9008607E678258ffFbC76b".into()),
+            TokenEnum::address("0xa140F413C63FBDA84E9008607E678258ffFbC76b".into()),
         ),
-        named_param("enableExpress", ParamEnum::boolean(true)),
+        named_token("enableExpress", TokenEnum::boolean(true)),
     ];
 
-    assert_eq!(output.params, expected_proto);
+    assert_eq!(output.tokens, expected_proto);
 }
 
 #[test]
@@ -199,23 +199,23 @@ fn test_decode_params_with_abi_json() {
         .decode_hex()
         .unwrap();
     let expected_proto = vec![
-        named_param("node", ParamEnum::byte_array_fix(node_bytes.into())),
-        named_param(
+        named_token("node", TokenEnum::byte_array_fix(node_bytes.into())),
+        named_token(
             "resolver",
-            ParamEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
+            TokenEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
         ),
     ];
-    assert_eq!(output.params, expected_proto);
+    assert_eq!(output.tokens, expected_proto);
 }
 
 #[test]
 fn test_decode_params_with_abi_params() {
     let abi_params = vec![
-        named_param_type(
+        param(
             "node",
             ParamTypeEnum::byte_array_fix(Proto::ByteArrayFixType { size: 32 }),
         ),
-        named_param_type("resolver", ParamTypeEnum::address(Proto::AddressType {})),
+        param("resolver", ParamTypeEnum::address(Proto::AddressType {})),
     ];
     let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41".decode_hex().unwrap();
 
@@ -234,13 +234,13 @@ fn test_decode_params_with_abi_params() {
         .decode_hex()
         .unwrap();
     let expected_proto = vec![
-        named_param("node", ParamEnum::byte_array_fix(node_bytes.into())),
-        named_param(
+        named_token("node", TokenEnum::byte_array_fix(node_bytes.into())),
+        named_token(
             "resolver",
-            ParamEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
+            TokenEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
         ),
     ];
-    assert_eq!(output.params, expected_proto);
+    assert_eq!(output.tokens, expected_proto);
 }
 
 mod dynamic_arguments {
@@ -250,37 +250,37 @@ mod dynamic_arguments {
     const ENCODED_CALL_WITH_SIGNATURE: &str = "47b941bf00000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
     const ENCODED_CALL: &str = "00000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
 
-    fn param_values() -> Vec<Proto::NamedParam<'static>> {
+    fn token_values() -> Vec<Proto::NamedToken<'static>> {
         let dynamic_array = array(
             ParamTypeEnum::number_uint(number_type_n::<32>()),
             vec![
-                ParamEnum::number_uint(number_n::<32>(0x456)),
-                ParamEnum::number_uint(number_n::<32>(0x789)),
+                TokenEnum::number_uint(number_n::<32>(0x456)),
+                TokenEnum::number_uint(number_n::<32>(0x789)),
             ],
         );
         let byte_array = vec![0x31u8, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30];
         vec![
-            named_param("", ParamEnum::number_uint(number_n::<256>(0x123))),
-            named_param("", ParamEnum::array(dynamic_array)),
-            named_param("", ParamEnum::byte_array_fix(byte_array.into())),
-            named_param("", ParamEnum::string_value("Hello, world!".into())),
+            named_token("", TokenEnum::number_uint(number_n::<256>(0x123))),
+            named_token("", TokenEnum::array(dynamic_array)),
+            named_token("", TokenEnum::byte_array_fix(byte_array.into())),
+            named_token("", TokenEnum::string_value("Hello, world!".into())),
         ]
     }
 
-    fn param_types() -> Vec<Proto::NamedParamType<'static>> {
+    fn param_types() -> Vec<Proto::Param<'static>> {
         vec![
-            named_param_type("", ParamTypeEnum::number_uint(number_type_n::<256>())),
-            named_param_type(
+            param("", ParamTypeEnum::number_uint(number_type_n::<256>())),
+            param(
                 "",
                 ParamTypeEnum::array(array_type(
                     ParamTypeEnum::number_uint(number_type_n::<32>()),
                 )),
             ),
-            named_param_type(
+            param(
                 "",
                 ParamTypeEnum::byte_array_fix(Proto::ByteArrayFixType { size: 10 }),
             ),
-            named_param_type("", ParamTypeEnum::string_param(Proto::StringType {})),
+            param("", ParamTypeEnum::string_param(Proto::StringType {})),
         ]
     }
 
@@ -288,7 +288,7 @@ mod dynamic_arguments {
     fn test_encode_contract_call_with_dynamic_arguments() {
         let input = Proto::FunctionEncodingInput {
             function_name: FUNCTION_NAME.into(),
-            params: param_values(),
+            tokens: token_values(),
         };
 
         let output = AbiEncoder::<StandardEvmContext>::encode_contract_call(input);
@@ -309,7 +309,7 @@ mod dynamic_arguments {
         let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
         assert_eq!(output.error, SigningErrorType::OK);
         assert!(output.error_message.is_empty());
-        assert_eq!(output.params, param_values());
+        assert_eq!(output.tokens, token_values());
     }
 }
 
@@ -317,12 +317,12 @@ mod dynamic_arguments {
 fn test_encode_params_monster() {
     let byte_array = "3132333435".decode_hex().unwrap();
 
-    let u1 = ParamEnum::number_uint(number_n::<8>(1));
-    let u2 = ParamEnum::number_uint(number_n::<16>(2));
-    let u3 = ParamEnum::number_uint(number_n::<32>(3));
-    let u4 = ParamEnum::number_uint(number_n::<64>(4));
-    let u5 = ParamEnum::number_uint(number_n::<168>(0x123));
-    let u6 = ParamEnum::number_uint(number_n::<256>(0x123));
+    let u1 = TokenEnum::number_uint(number_n::<8>(1));
+    let u2 = TokenEnum::number_uint(number_n::<16>(2));
+    let u3 = TokenEnum::number_uint(number_n::<32>(3));
+    let u4 = TokenEnum::number_uint(number_n::<64>(4));
+    let u5 = TokenEnum::number_uint(number_n::<168>(0x123));
+    let u6 = TokenEnum::number_uint(number_n::<256>(0x123));
 
     let u1t = ParamTypeEnum::number_uint(number_type_n::<8>());
     let u2t = ParamTypeEnum::number_uint(number_type_n::<16>());
@@ -331,12 +331,12 @@ fn test_encode_params_monster() {
     let u5t = ParamTypeEnum::number_uint(number_type_n::<168>());
     let u6t = ParamTypeEnum::number_uint(number_type_n::<256>());
 
-    let i1 = ParamEnum::number_int(number_n::<8>(1));
-    let i2 = ParamEnum::number_int(number_n::<16>(2));
-    let i3 = ParamEnum::number_int(number_n::<32>(3));
-    let i4 = ParamEnum::number_int(number_n::<64>(4));
-    let i5 = ParamEnum::number_int(number_n::<168>(0x123));
-    let i6 = ParamEnum::number_int(number_n::<256>(0x123));
+    let i1 = TokenEnum::number_int(number_n::<8>(1));
+    let i2 = TokenEnum::number_int(number_n::<16>(2));
+    let i3 = TokenEnum::number_int(number_n::<32>(3));
+    let i4 = TokenEnum::number_int(number_n::<64>(4));
+    let i5 = TokenEnum::number_int(number_n::<168>(0x123));
+    let i6 = TokenEnum::number_int(number_n::<256>(0x123));
 
     let i1t = ParamTypeEnum::number_int(number_type_n::<8>());
     let i2t = ParamTypeEnum::number_int(number_type_n::<16>());
@@ -345,64 +345,64 @@ fn test_encode_params_monster() {
     let i5t = ParamTypeEnum::number_int(number_type_n::<168>());
     let i6t = ParamTypeEnum::number_int(number_type_n::<256>());
 
-    let b = ParamEnum::boolean(true);
+    let b = TokenEnum::boolean(true);
     let bt = ParamTypeEnum::boolean(Proto::BoolType {});
-    let s = ParamEnum::string_value("Hello, world!".into());
+    let s = TokenEnum::string_value("Hello, world!".into());
     let st = ParamTypeEnum::string_param(Proto::StringType {});
-    let a = ParamEnum::address("0xf784682c82526e245f50975190ef0fff4e4fc077".into());
+    let a = TokenEnum::address("0xf784682c82526e245f50975190ef0fff4e4fc077".into());
     let at = ParamTypeEnum::address(Proto::AddressType {});
-    let bytes = ParamEnum::byte_array(byte_array.clone().into());
+    let bytes = TokenEnum::byte_array(byte_array.clone().into());
     let bytes_t = ParamTypeEnum::byte_array(Proto::ByteArrayType {});
-    let fbytes = ParamEnum::byte_array_fix(byte_array.clone().into());
+    let fbytes = TokenEnum::byte_array_fix(byte_array.clone().into());
     let fbytes_t = ParamTypeEnum::byte_array_fix(Proto::ByteArrayFixType {
         size: byte_array.len() as u64,
     });
 
-    let params = vec![
+    let tokens = vec![
         // Uint
-        named_param("u1", u1.clone()),
-        named_param("u2", u2.clone()),
-        named_param("u3", u3.clone()),
-        named_param("u4", u4.clone()),
-        named_param("u5", u5.clone()),
-        named_param("u6", u6.clone()),
+        named_token("u1", u1.clone()),
+        named_token("u2", u2.clone()),
+        named_token("u3", u3.clone()),
+        named_token("u4", u4.clone()),
+        named_token("u5", u5.clone()),
+        named_token("u6", u6.clone()),
         // Int
-        named_param("i1", i1.clone()),
-        named_param("i2", i2.clone()),
-        named_param("i3", i3.clone()),
-        named_param("i4", i4.clone()),
-        named_param("i5", i5.clone()),
-        named_param("i6", i6.clone()),
+        named_token("i1", i1.clone()),
+        named_token("i2", i2.clone()),
+        named_token("i3", i3.clone()),
+        named_token("i4", i4.clone()),
+        named_token("i5", i5.clone()),
+        named_token("i6", i6.clone()),
         // Single params
-        named_param("b", b.clone()),
-        named_param("s", s.clone()),
-        named_param("a", a.clone()),
-        named_param("bytes", bytes.clone()),
-        named_param("fbytes", fbytes.clone()),
+        named_token("b", b.clone()),
+        named_token("s", s.clone()),
+        named_token("a", a.clone()),
+        named_token("bytes", bytes.clone()),
+        named_token("fbytes", fbytes.clone()),
         // Array<Uint>
-        named_param("a_u1", ParamEnum::array(array(u1t, vec![u1]))),
-        named_param("a_u2", ParamEnum::array(array(u2t, vec![u2]))),
-        named_param("a_u3", ParamEnum::array(array(u3t, vec![u3]))),
-        named_param("a_u4", ParamEnum::array(array(u4t, vec![u4]))),
-        named_param("a_u5", ParamEnum::array(array(u5t, vec![u5]))),
-        named_param("a_u6", ParamEnum::array(array(u6t, vec![u6]))),
+        named_token("a_u1", TokenEnum::array(array(u1t, vec![u1]))),
+        named_token("a_u2", TokenEnum::array(array(u2t, vec![u2]))),
+        named_token("a_u3", TokenEnum::array(array(u3t, vec![u3]))),
+        named_token("a_u4", TokenEnum::array(array(u4t, vec![u4]))),
+        named_token("a_u5", TokenEnum::array(array(u5t, vec![u5]))),
+        named_token("a_u6", TokenEnum::array(array(u6t, vec![u6]))),
         // Array<Int>
-        named_param("a_i1", ParamEnum::array(array(i1t, vec![i1]))),
-        named_param("a_i2", ParamEnum::array(array(i2t, vec![i2]))),
-        named_param("a_i3", ParamEnum::array(array(i3t, vec![i3]))),
-        named_param("a_i4", ParamEnum::array(array(i4t, vec![i4]))),
-        named_param("a_i5", ParamEnum::array(array(i5t, vec![i5]))),
-        named_param("a_i6", ParamEnum::array(array(i6t, vec![i6]))),
+        named_token("a_i1", TokenEnum::array(array(i1t, vec![i1]))),
+        named_token("a_i2", TokenEnum::array(array(i2t, vec![i2]))),
+        named_token("a_i3", TokenEnum::array(array(i3t, vec![i3]))),
+        named_token("a_i4", TokenEnum::array(array(i4t, vec![i4]))),
+        named_token("a_i5", TokenEnum::array(array(i5t, vec![i5]))),
+        named_token("a_i6", TokenEnum::array(array(i6t, vec![i6]))),
         // Arrays with single params
-        named_param("a_b", ParamEnum::array(array(bt, vec![b]))),
-        named_param("a_s", ParamEnum::array(array(st, vec![s]))),
-        named_param("a_a", ParamEnum::array(array(at, vec![a]))),
-        named_param("a_bytes", ParamEnum::array(array(bytes_t, vec![bytes]))),
-        named_param("a_fbytes", ParamEnum::array(array(fbytes_t, vec![fbytes]))),
+        named_token("a_b", TokenEnum::array(array(bt, vec![b]))),
+        named_token("a_s", TokenEnum::array(array(st, vec![s]))),
+        named_token("a_a", TokenEnum::array(array(at, vec![a]))),
+        named_token("a_bytes", TokenEnum::array(array(bytes_t, vec![bytes]))),
+        named_token("a_fbytes", TokenEnum::array(array(fbytes_t, vec![fbytes]))),
     ];
     let encoding_input = Proto::FunctionEncodingInput {
         function_name: "monster".into(),
-        params,
+        tokens,
     };
     let output = AbiEncoder::<StandardEvmContext>::encode_contract_call(encoding_input);
 
@@ -420,53 +420,53 @@ fn test_decode_value() {
         encoded: &'static str,
         kind: &'static str,
         expected_value_str: &'static str,
-        expected_value_proto: ParamEnum<'static>,
+        expected_value_proto: TokenEnum<'static>,
     }
 
-    let num1 = ParamEnum::number_uint(number_n::<8>(49));
-    let num2 = ParamEnum::number_uint(number_n::<8>(50));
-    let num3 = ParamEnum::number_uint(number_n::<8>(51));
-    let address1 = ParamEnum::address("0xF784682C82526e245F50975190EF0fff4E4fC077".into());
-    let address2 = ParamEnum::address("0x2e00CD222Cb42B616D86D037Cc494e8ab7F5c9a3".into());
-    let bytes1 = ParamEnum::byte_array("0x1011".decode_hex().unwrap().into());
-    let bytes2 = ParamEnum::byte_array("0x102222".decode_hex().unwrap().into());
+    let num1 = TokenEnum::number_uint(number_n::<8>(49));
+    let num2 = TokenEnum::number_uint(number_n::<8>(50));
+    let num3 = TokenEnum::number_uint(number_n::<8>(51));
+    let address1 = TokenEnum::address("0xF784682C82526e245F50975190EF0fff4E4fC077".into());
+    let address2 = TokenEnum::address("0x2e00CD222Cb42B616D86D037Cc494e8ab7F5c9a3".into());
+    let bytes1 = TokenEnum::byte_array("0x1011".decode_hex().unwrap().into());
+    let bytes2 = TokenEnum::byte_array("0x102222".decode_hex().unwrap().into());
 
     let test_values = [
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af",
             kind: "uint256",
             expected_value_str: "10020405371567",
-            expected_value_proto: ParamEnum::number_uint(number_n::<256>(10020405371567)),
+            expected_value_proto: TokenEnum::number_uint(number_n::<256>(10020405371567)),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af0000000000000000000000000000000000000000000000000000000000000000",
             kind: "int256",
             expected_value_str: "10020405371567",
-            expected_value_proto: ParamEnum::number_int(number_n::<256>(10020405371567)),
+            expected_value_proto: TokenEnum::number_int(number_n::<256>(10020405371567)),
         },
         TestInput {
             encoded: "000000000000000000000000000000000000000000000000000000000000002a",
             kind: "uint",
             expected_value_str: "42",
-            expected_value_proto: ParamEnum::number_uint(number_n::<256>(42)),
+            expected_value_proto: TokenEnum::number_uint(number_n::<256>(42)),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000000000000018",
             kind: "uint8",
             expected_value_str: "24",
-            expected_value_proto: ParamEnum::number_uint(number_n::<8>(24)),
+            expected_value_proto: TokenEnum::number_uint(number_n::<8>(24)),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000003100000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000033",
             kind: "uint8[]",
             expected_value_str: "[49,50,51]",
-            expected_value_proto: ParamEnum::array(array(ParamTypeEnum::number_uint(number_type_n::<8>()), vec![num1, num2, num3])),
+            expected_value_proto: TokenEnum::array(array(ParamTypeEnum::number_uint(number_type_n::<8>()), vec![num1, num2, num3])),
         },
         TestInput {
             encoded: "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077",
             kind: "address",
             expected_value_str: "0xF784682C82526e245F50975190EF0fff4E4fC077",
-            expected_value_proto: ParamEnum::address(
+            expected_value_proto: TokenEnum::address(
                 "0xF784682C82526e245F50975190EF0fff4E4fC077".into(),
             ),
         },
@@ -474,7 +474,7 @@ fn test_decode_value() {
             encoded: "000000000000000000000000000000000000000000000000000000000000002c48656c6c6f20576f726c64212020202048656c6c6f20576f726c64212020202048656c6c6f20576f726c64210000000000000000000000000000000000000000",
             kind: "string",
             expected_value_str: "Hello World!    Hello World!    Hello World!",
-            expected_value_proto: ParamEnum::string_value(
+            expected_value_proto: TokenEnum::string_value(
                 "Hello World!    Hello World!    Hello World!".into(),
             ),
         },
@@ -482,14 +482,14 @@ fn test_decode_value() {
             encoded: "0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc0770000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3",
             kind: "address[]",
             expected_value_str: r#"["0xF784682C82526e245F50975190EF0fff4E4fC077","0x2e00CD222Cb42B616D86D037Cc494e8ab7F5c9a3"]"#,
-            expected_value_proto: ParamEnum::array(
+            expected_value_proto: TokenEnum::array(
                 array(ParamTypeEnum::address(Proto::AddressType {}), vec![address1, address2])),
         },
         TestInput {
             encoded: "3132333435363738393000000000000000000000000000000000000000000000",
             kind: "bytes10",
             expected_value_str: "0x31323334353637383930",
-            expected_value_proto: ParamEnum::byte_array_fix(
+            expected_value_proto: TokenEnum::byte_array_fix(
                 "0x31323334353637383930".decode_hex().unwrap().into(),
             ),
         },
@@ -497,7 +497,7 @@ fn test_decode_value() {
             encoded: "0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000002101100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000031022220000000000000000000000000000000000000000000000000000000000",
             kind: "bytes[]",
             expected_value_str: r#"["0x1011","0x102222"]"#,
-            expected_value_proto: ParamEnum::array(
+            expected_value_proto: TokenEnum::array(
                 array(ParamTypeEnum::byte_array(Proto::ByteArrayType {}), vec![bytes1, bytes2])
             ),
         },
@@ -512,10 +512,10 @@ fn test_decode_value() {
         assert_eq!(output.error, SigningErrorType::OK);
         assert!(output.error_message.is_empty());
 
-        let expected_value = Proto::ParamValue {
-            param: test.expected_value_proto,
+        let expected_value = Proto::Token {
+            token: test.expected_value_proto,
         };
-        assert_eq!(output.param.unwrap(), expected_value);
+        assert_eq!(output.token.unwrap(), expected_value);
         assert_eq!(output.param_str, test.expected_value_str);
     }
 }
