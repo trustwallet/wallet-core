@@ -31,17 +31,18 @@ static TWData* _Nonnull ethereumAbiForwardToRust(F rustFunction, enum TWCoinType
     return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
 
-/// TODO add a test
 TWData* _Nonnull TWEthereumAbiDecodeContractCall(enum TWCoinType coin, TWData* _Nonnull input) {
     return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_decode_contract_call, coin, input);
 }
 
-/// TODO add a test
 TWData* _Nonnull TWEthereumAbiDecodeParams(enum TWCoinType coin, TWData* _Nonnull input) {
     return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_decode_params, coin, input);
 }
 
-/// TODO add a test
+TWData* _Nonnull TWEthereumAbiDecodeValue(enum TWCoinType coin, TWData* _Nonnull input) {
+    return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_decode_value, coin, input);
+}
+
 TWData* _Nonnull TWEthereumAbiEncodeFunction(enum TWCoinType coin, TWData* _Nonnull input) {
     return ethereumAbiForwardToRust(Rust::tw_ethereum_abi_encode_function, coin, input);
 }

@@ -16,8 +16,8 @@ use tw_misc::try_or_else;
 /// Decode function call data to human readable json format, according to input abi json.
 ///
 /// \param coin EVM-compatible coin type.
-/// \param data Non-null block of data
-/// \return serialized `EthereumAbi::Proto::DecodeContractCallInput`.
+/// \param input The serialized data of `TW.EthereumAbi.Proto.ContractCallDecodingInput`.
+/// \return serialized `EthereumAbi::Proto::ContractCallDecodingOutput`.
 #[no_mangle]
 pub unsafe extern "C" fn tw_ethereum_abi_decode_contract_call(
     coin: CoinType,

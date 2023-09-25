@@ -36,7 +36,7 @@ class TestEthereumAbiDecoder {
         """.trimIndent()
 
         val decoded = EthereumAbi.decodeCall(call, abi)
-        val expected = """{"function":"approve(address,uint256)","inputs":[{"name":"_spender","type":"address","value":"0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"},{"name":"_value","type":"uint256","value":"1"}]}"""
+        val expected = """{"function":"approve(address,uint256)","inputs":[{"name":"_spender","type":"address","value":"0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"},{"name":"_value","type":"uint256","value":"1"}]}"""
 
         assertEquals(decoded, expected)
     }
