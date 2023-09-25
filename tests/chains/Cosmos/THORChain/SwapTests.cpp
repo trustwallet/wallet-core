@@ -523,6 +523,62 @@ TEST(THORChainSwap, SwapErc20Rune) {
     // https://thorchain.net/tx/B5E88D61157E7073995CA8729B75DAB2C1684A7B145DB711327CA4B8FF7DBDE7
 }
 
+TEST(THORChainSwap, SwapBscBnb) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BSC));
+    fromAsset.set_token_id("0x0000000000000000000000000000000000000000");
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::BNB));
+    toAsset.set_symbol("BNB");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress("0xf8192E9c51c070d199a8F262c12DDD1034274083")
+                                         .toAddress("bnb1tjcup6q8nere6r0pdt2ucc4g0xcrhm0jy5xql8")
+                                         .vault("0xcBE4334E4a0fC7C5Fa8083223B28a4b9F695A06C")
+                                         .router("0xb30eC53F98ff5947EDe720D32aC2da7e52A5f56b")
+                                         .fromAmount("10000000000000000")
+                                         .toAmountLimit("100000")
+                                         .expirationPolicy(1775669796)
+                                         .affFeeAddress("t")
+                                         .affFeeRate("0")
+                                         .build();
+    ASSERT_EQ(errorCode, 0);
+    ASSERT_EQ(error, "");
+    EXPECT_EQ(hex(out), "0a01001201002201002a0100422a3078623330654335334639386666353934374544653732304433326143326461376535324135663536625293023290020a072386f26fc1000012840244bc937b000000000000000000000000cbe4334e4a0fc7c5fa8083223b28a4b9f695a06c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d69224000000000000000000000000000000000000000000000000000000000000003f3d3a424e422e424e423a626e6231746a6375703671386e65726536723070647432756363346730786372686d306a793578716c383a3130303030303a743a3000");
+
+    auto tx = Ethereum::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(out.data(), (int)out.size()));
+
+
+    // check fields
+    EXPECT_EQ(tx.to_address(), "0xb30eC53F98ff5947EDe720D32aC2da7e52A5f56b");
+    ASSERT_TRUE(tx.transaction().has_contract_generic());
+
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set few fields before signing
+    auto chainId = store(uint256_t(56));
+    tx.set_chain_id(chainId.data(), chainId.size());
+    auto nonce = store(uint256_t(0));
+    tx.set_nonce(nonce.data(), nonce.size());
+    // 0,000000001
+    auto gasPrice = store(uint256_t(3000000000));
+    tx.set_gas_price(gasPrice.data(), gasPrice.size());
+    auto gasLimit = store(uint256_t(50000));
+    tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+    auto privKey = parse_hex("74c452b55e0da4139172bc3b32bec469cfefbcdce373edda8e33afcfbf9c0a87");
+    tx.set_private_key(privKey.data(), privKey.size());
+
+    // sign and encode resulting input
+    Ethereum::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeSmartChain);
+    EXPECT_EQ(hex(output.encoded()), "f901718084b2d05e0082c35094b30ec53f98ff5947ede720d32ac2da7e52a5f56b872386f26fc10000b9010444bc937b000000000000000000000000cbe4334e4a0fc7c5fa8083223b28a4b9f695a06c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d69224000000000000000000000000000000000000000000000000000000000000003f3d3a424e422e424e423a626e6231746a6375703671386e65726536723070647432756363346730786372686d306a793578716c383a3130303030303a743a30008194a05b0032d4150a3fa3b39a047648c02cb44b3256b9c34b7780265643c33d2aa2c6a017fece0465a271b7bddf655f7ac77419fb0433f9acf64b455b9aa17183b6eb98");
+    // https://viewblock.io/thorchain/tx/4292A5068BAA5619CF7A35861058915423688DF3CAE8F241453D8FCC6E0BF0A9
+    // https://bscscan.com/tx/0x4292a5068baa5619cf7a35861058915423688df3cae8f241453d8fcc6e0bf0a9
+    // https://explorer.bnbchain.org/tx/88A1B6F9D64F3B48CE1107979CD325E817446C5D6729EE6FC917589A6FADA79D
+}
+
 TEST(THORChainSwap, SwapAvaxBnb) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::AVAX));
