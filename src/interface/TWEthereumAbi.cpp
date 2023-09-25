@@ -49,7 +49,7 @@ TWData* _Nonnull TWEthereumAbiEncodeFunction(enum TWCoinType coin, TWData* _Nonn
 TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func_in) {
     assert(func_in != nullptr);
     Data encodedData;
-    auto encoded = func_in->implV2.encodeInput();
+    auto encoded = func_in->impl.encodeInput();
     if (encoded.has_value()) {
         encodedData = encoded.value();
     }
@@ -63,7 +63,7 @@ bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,
     const Data& encData = *(reinterpret_cast<const Data*>(encoded));
 
     bool isOutput = true;
-    return func_in->implV2.decode(encData, isOutput);
+    return func_in->impl.decode(encData, isOutput);
 }
 
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString* _Nonnull abiString) {

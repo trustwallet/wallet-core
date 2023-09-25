@@ -11,6 +11,7 @@
 #include "Ethereum/ABI.h"
 #include "Data.h"
 #include "HexCoding.h"
+#include "proto/EthereumAbi.pb.h"
 #include "uint256.h"
 
 #include "TestUtilities.h"
@@ -261,13 +262,22 @@ TEST(TWEthereumAbi, GetParamWrongType) {
 }
 
 TEST(TWEthereumAbi, DecodeCall) {
-    auto callHex = STRING("c47f0027000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000086465616462656566000000000000000000000000000000000000000000000000");
-    auto call = WRAPD(TWDataCreateWithHexString(callHex.get()));
-    auto abi = STRING(R"|({"c47f0027":{"constant":false,"inputs":[{"name":"name","type":"string"}],"name":"setName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}})|");
-    auto decoded = WRAPS(TWEthereumAbiDecodeCall(call.get(), abi.get()));
-    auto expected = R"|({"function":"setName(string)","inputs":[{"name":"name","type":"string","value":"deadbeef"}]})|";
+    auto encodedCall = parse_hex("c47f0027000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000086465616462656566000000000000000000000000000000000000000000000000");
+    auto abiJson = R"|({"c47f0027":{"constant":false,"inputs":[{"name":"name","type":"string"}],"name":"setName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}})|";
 
-    assertStringsEqual(decoded, expected);
+    EthereumAbi::Proto::ContractCallDecodingInput input;
+    input.set_encoded(encodedCall.data(), encodedCall.size());
+    input.set_smart_contract_abi_json(abiJson);
+
+    const auto inputData = data(input.SerializeAsString());
+    auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t*)inputData.data(), inputData.size()));
+    auto outputTWData = WRAPD(TWEthereumAbiDecodeContractCall(TWCoinTypeEthereum, inputTWData.get()));
+
+    EthereumAbi::Proto::ContractCallDecodingOutput output;
+    output.ParseFromArray(TWDataBytes(outputTWData.get()), static_cast<int>(TWDataSize(outputTWData.get())));
+
+    auto expected = R"|({"function":"setName(string)","inputs":[{"name":"name","type":"string","value":"deadbeef"}]})|";
+    EXPECT_EQ(output.decoded_json(), expected);
 }
 
 TEST(TWEthereumAbi, DecodeInvalidCall) {

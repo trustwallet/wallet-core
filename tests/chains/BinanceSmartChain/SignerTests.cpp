@@ -47,14 +47,12 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
 }
 
 TEST(BinanceSmartChain, SignTokenTransfer) {
-    auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto func = Ethereum::ABI::Function("transfer", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-        std::make_shared<Ethereum::ABI::ParamAddress>(toAddress),
-        std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(10000000000000000))
-    });
-    Data payloadFunction;
-    func.encode(payloadFunction);
-    EXPECT_EQ(hex(payloadFunction), "a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc10000");
+    auto toAddress = "0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683";
+    auto funcData = Ethereum::ABI::Function::encodeParams("transfer", Ethereum::ABI::BaseParams{
+        std::make_shared<Ethereum::ABI::ProtoAddress>(toAddress),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(10000000000000000))
+    }).value();
+    EXPECT_EQ(hex(funcData), "a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc10000");
 
     auto input = Ethereum::Proto::SigningInput();
     auto chainId = store(uint256_t(97));
@@ -73,7 +71,7 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     input.set_to_address(tokenContractAddress);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
-    transfer.set_data(payloadFunction.data(), payloadFunction.size());
+    transfer.set_data(funcData.data(), funcData.size());
 
     const std::string expected = "f8ab1e8504a817c800830f424094ed24fc36d5ee211ea25a80239fb8c4cfd80f12ee80b844a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc1000081e6a0aa9d5e9a947e96f728fe5d3e6467000cd31a693c00270c33ec64b4abddc29516a00bf1d5646139b2bcca1ad64e6e79f45b7d1255de603b5a3765cbd9544ae148d0";
 

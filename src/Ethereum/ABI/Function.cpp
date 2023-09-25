@@ -6,51 +6,195 @@
 
 #include "Function.h"
 
-#include <string>
+#include "rust/Wrapper.h"
+#include "TrustWalletCore/TWCoinType.h"
 
 namespace TW::Ethereum::ABI {
 
-Data Function::getSignature() const {
-    auto typ = getType();
-    auto hash = Hash::keccak256(Data(typ.begin(), typ.end()));
-    auto signature = Data(hash.begin(), hash.begin() + 4);
-    return signature;
+int Function::addParam(AbiProto::NamedParamType paramType, AbiProto::NamedParam paramValue, bool isOutput) {
+    if (isOutput) {
+        auto idx = outputValues.size();
+        *outputs.add_params() = std::move(paramType);
+        outputValues.emplace_back(std::move(paramValue));
+        return static_cast<int>(idx);
+    }
+
+    auto idx = inputValues.size();
+    *inputs.add_params() = std::move(paramType);
+    inputValues.emplace_back(std::move(paramValue));
+    return static_cast<int>(idx);
 }
 
-void Function::encode(Data& data) const {
-    Data signature = getSignature();
-    append(data, signature);
-    _inParams.encode(data);
+int Function::addUintParam(uint32_t bits, const Data& encodedValue, bool isOutput) {
+    AbiProto::NamedParamType paramType;
+    paramType.mutable_param()->mutable_number_uint()->set_bits(bits);
+
+    AbiProto::NamedParam paramValue;
+    auto* numValue = paramValue.mutable_value()->mutable_number_uint();
+    numValue->set_bits(bits);
+    numValue->set_value(encodedValue.data(), encodedValue.size());
+
+    return addParam(std::move(paramType), std::move(paramValue), isOutput);
 }
 
-bool Function::decodeOutput(const Data& encoded, size_t& offset_inout) {
-    // read parameter values
-    if (!_outParams.decode(encoded, offset_inout)) {
+int Function::addIntParam(uint32_t bits, const Data& encodedValue, bool isOutput) {
+    AbiProto::NamedParamType paramType;
+    paramType.mutable_param()->mutable_number_int()->set_bits(bits);
+
+    AbiProto::NamedParam paramValue;
+    auto* numValue = paramValue.mutable_value()->mutable_number_int();
+    numValue->set_bits(bits);
+    numValue->set_value(encodedValue.data(), encodedValue.size());
+
+    return addParam(std::move(paramType), std::move(paramValue), isOutput);
+}
+
+int Function::addInArrayParam(int idx, AbiProto::ParamType paramType, AbiProto::ParamValue paramValue) {
+    if (idx < 0) {
+        return -1;
+    }
+
+    auto idxSize = static_cast<std::size_t>(idx);
+    if (idxSize >= inputValues.size()) {
+        return -1;
+    }
+
+    auto& arrayValue = *inputValues[idxSize].mutable_value();
+    auto& arrayType = *inputs.mutable_params(idx)->mutable_param();
+
+    if (!arrayValue.has_array() || !arrayType.has_array()) {
+        return -1;
+    }
+
+    auto arrayInElementIdx = arrayValue.array().values_size();
+
+    *arrayValue.mutable_array()->add_values() = std::move(paramValue);
+    *arrayValue.mutable_array()->mutable_element_type() = paramType;
+    // Override the element type.
+    *arrayType.mutable_array()->mutable_element_type() = std::move(paramType);
+
+    return arrayInElementIdx;
+}
+
+int Function::addInArrayUintParam(int idx, uint32_t bits, const Data& encodedValue) {
+    AbiProto::ParamType paramType;
+    paramType.mutable_number_uint()->set_bits(bits);
+
+    AbiProto::ParamValue paramValue;
+    auto* numValue = paramValue.mutable_number_uint();
+    numValue->set_bits(bits);
+    numValue->set_value(encodedValue.data(), encodedValue.size());
+
+    return addInArrayParam(idx, std::move(paramType), std::move(paramValue));
+}
+
+int Function::addInArrayIntParam(int idx, uint32_t bits, const Data& encodedValue) {
+    AbiProto::ParamType paramType;
+    paramType.mutable_number_int()->set_bits(bits);
+
+    AbiProto::ParamValue paramValue;
+    auto* numValue = paramValue.mutable_number_int();
+    numValue->set_bits(bits);
+    numValue->set_value(encodedValue.data(), encodedValue.size());
+
+    return addInArrayParam(idx, std::move(paramType), std::move(paramValue));
+}
+
+MaybeNamedParam Function::getParam(int idx, bool isOutput) const {
+    const auto& values = isOutput ? outputValues : inputValues;
+
+    if (idx < 0) {
+        return {};
+    }
+
+    auto idxSize = static_cast<std::size_t>(idx);
+    if (idxSize >= values.size()) {
+        return {};
+    }
+
+    return values[idxSize];
+}
+
+bool Function::decode(const Data& encoded, bool isOutput) {
+    AbiProto::ParamsDecodingInput input;
+
+    input.set_encoded(encoded.data(), encoded.size());
+    if (isOutput) {
+        *input.mutable_abi_params() = outputs;
+    } else {
+        *input.mutable_abi_params() = inputs;
+    }
+
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_abi_decode_params(TWCoinTypeEthereum, inputData.get());
+
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
         return false;
+    }
+
+    AbiProto::ParamsDecodingOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+    if (output.error() != Common::Proto::SigningError::OK) {
+        return false;
+    }
+
+    std::vector<AbiProto::NamedParam> decoded;
+    for (const auto &param : output.params()) {
+        decoded.emplace_back(param);
+    }
+
+    if (isOutput) {
+        outputValues = decoded;
+    } else {
+        inputValues = decoded;
     }
     return true;
 }
 
-bool Function::decodeInput(const Data& encoded, size_t& offset_inout) {
-    // read 4-byte hash
-    auto p = ParamByteArrayFix(4);
-    if (!p.decode(encoded, offset_inout)) {
-        return false;
+std::string Function::getType() const {
+    AbiProto::FunctionGetTypeInput input;
+    input.set_function_name(name);
+    *input.mutable_inputs() = inputs.params();
+
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWStringWrapper outputPtr = Rust::tw_ethereum_abi_function_get_signature(TWCoinTypeEthereum, inputData.get());
+
+    return outputPtr.toStringOrDefault();
+}
+
+MaybeData Function::encodeParams(const std::string& functionName, const NamedParams& params) {
+    AbiProto::FunctionEncodingInput input;
+    input.set_function_name(functionName);
+    for (const auto& param : params) {
+        *input.add_params() = param;
     }
-    std::vector<byte> hash = p.getVal();
-    // adjust offset; hash is NOT padded to 32 bytes
-    offset_inout = offset_inout - 32 + 4;
-    // verify hash
-    Data hashExpect = getSignature();
-    if (hash != hashExpect) {
-        // invalid hash
-        return false;
+
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_abi_encode_function(TWCoinTypeEthereum, inputData.get());
+
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
+        return {};
     }
-    // read parameters
-    if (!_inParams.decode(encoded, offset_inout)) {
-        return false;
+
+    AbiProto::FunctionEncodingOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+    if (output.error() != Common::Proto::SigningError::OK) {
+        return {};
     }
-    return true;
+
+    return data(output.encoded());
+}
+
+MaybeData Function::encodeParams(const std::string& functionName, const BaseParams& params) {
+    NamedParams namedParams;
+    for (const auto& param : params) {
+        namedParams.push_back(param->toNamedParam());
+    }
+    return encodeParams(functionName, namedParams);
 }
 
 } // namespace TW::Ethereum::ABI

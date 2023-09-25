@@ -58,6 +58,14 @@ fn array(
     }
 }
 
+fn array_type(element_type: ParamTypeEnum<'static>) -> Box<Proto::ArrayType<'static>> {
+    Box::new(Proto::ArrayType {
+        element_type: Some(Box::new(Proto::ParamType {
+            param: element_type,
+        })),
+    })
+}
+
 fn tuple<I>(params: I) -> ParamEnum<'static>
 where
     I: IntoIterator<Item = Proto::NamedParam<'static>>,
@@ -233,6 +241,76 @@ fn test_decode_params_with_abi_params() {
         ),
     ];
     assert_eq!(output.params, expected_proto);
+}
+
+mod dynamic_arguments {
+    use super::*;
+
+    const FUNCTION_NAME: &str = "f";
+    const ENCODED_CALL_WITH_SIGNATURE: &str = "47b941bf00000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
+    const ENCODED_CALL: &str = "00000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
+
+    fn param_values() -> Vec<Proto::NamedParam<'static>> {
+        let dynamic_array = array(
+            ParamTypeEnum::number_uint(number_type_n::<32>()),
+            vec![
+                ParamEnum::number_uint(number_n::<32>(0x456)),
+                ParamEnum::number_uint(number_n::<32>(0x789)),
+            ],
+        );
+        let byte_array = vec![0x31u8, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30];
+        vec![
+            named_param("", ParamEnum::number_uint(number_n::<256>(0x123))),
+            named_param("", ParamEnum::array(dynamic_array)),
+            named_param("", ParamEnum::byte_array_fix(byte_array.into())),
+            named_param("", ParamEnum::string_value("Hello, world!".into())),
+        ]
+    }
+
+    fn param_types() -> Vec<Proto::NamedParamType<'static>> {
+        vec![
+            named_param_type("", ParamTypeEnum::number_uint(number_type_n::<256>())),
+            named_param_type(
+                "",
+                ParamTypeEnum::array(array_type(
+                    ParamTypeEnum::number_uint(number_type_n::<32>()),
+                )),
+            ),
+            named_param_type(
+                "",
+                ParamTypeEnum::byte_array_fix(Proto::ByteArrayFixType { size: 10 }),
+            ),
+            named_param_type("", ParamTypeEnum::string_param(Proto::StringType {})),
+        ]
+    }
+
+    #[test]
+    fn test_encode_contract_call_with_dynamic_arguments() {
+        let input = Proto::FunctionEncodingInput {
+            function_name: FUNCTION_NAME.into(),
+            params: param_values(),
+        };
+
+        let output = AbiEncoder::<StandardEvmContext>::encode_contract_call(input);
+        assert_eq!(output.error, SigningErrorType::OK);
+        assert!(output.error_message.is_empty());
+        assert_eq!(output.encoded.to_hex(), ENCODED_CALL_WITH_SIGNATURE);
+    }
+
+    #[test]
+    fn test_decode_params_with_dynamic_arguments_case2() {
+        let input = Proto::ParamsDecodingInput {
+            encoded: ENCODED_CALL.decode_hex().unwrap().into(),
+            abi: Proto::mod_ParamsDecodingInput::OneOfabi::abi_params(Proto::AbiParams {
+                params: param_types(),
+            }),
+        };
+
+        let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
+        assert_eq!(output.error, SigningErrorType::OK);
+        assert!(output.error_message.is_empty());
+        assert_eq!(output.params, param_values());
+    }
 }
 
 #[test]
