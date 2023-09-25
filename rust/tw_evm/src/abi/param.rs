@@ -9,7 +9,7 @@ use serde::de::{MapAccess, Visitor};
 use serde::{de::Error as DeError, Deserialize, Deserializer};
 use std::fmt::Formatter;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Param {
     /// Param name.
     pub name: Option<String>,

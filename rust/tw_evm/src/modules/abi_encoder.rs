@@ -25,6 +25,10 @@ use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::EthereumAbi::Proto;
 
+use Proto::mod_ParamType::OneOfparam as ProtoParamType;
+use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;
+use Proto::mod_Token::OneOftoken as TokenEnum;
+
 pub struct AbiEncoder<Context: EvmContext> {
     _phantom: PhantomData<Context>,
 }
@@ -113,8 +117,6 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     fn decode_params_impl(
         input: Proto::ParamsDecodingInput<'_>,
     ) -> AbiResult<Proto::ParamsDecodingOutput<'static>> {
-        use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;
-
         let abi = match input.abi {
             AbiEnum::abi_json(abi_json) => serde_json::from_str(&abi_json)
                 .map_err(|_| AbiError(AbiErrorKind::Error_invalid_abi))?,
@@ -232,23 +234,15 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     fn token_from_proto(token: Proto::Token<'_>) -> AbiResult<Token> {
-        use Proto::mod_Token::OneOftoken as TokenEnum;
-
         match token.token {
             TokenEnum::boolean(bool) => Ok(Token::Bool(bool)),
             TokenEnum::number_uint(u) => {
                 let uint = Self::number_n_from_proto(&u.value)?;
-                Ok(Token::Uint {
-                    bits: u.bits as usize,
-                    uint,
-                })
+                Token::uint(u.bits as usize, uint)
             },
             TokenEnum::number_int(i) => {
                 let int = Self::number_n_from_proto(&i.value)?;
-                Ok(Token::Int {
-                    bits: i.bits as usize,
-                    int,
-                })
+                Token::int(i.bits as usize, int)
             },
             TokenEnum::string_value(str) => Ok(Token::String(str.to_string())),
             TokenEnum::address(addr) => {
@@ -281,19 +275,24 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         let element_type = array
             .element_type
             .ok_or(AbiError(AbiErrorKind::Error_missing_param_type))?;
-        let kind = Self::param_type_from_proto(element_type)?;
-        let arr = array
-            .elements
-            .into_iter()
-            .map(Self::token_from_proto)
-            .collect::<AbiResult<Vec<_>>>()?;
-        Ok((arr, kind))
+        let element_type = Self::param_type_from_proto(element_type)?;
+
+        let mut array_tokens = Vec::with_capacity(array.elements.len());
+        for proto_token in array.elements {
+            let token = Self::token_from_proto(proto_token)?;
+            let token_type = token.to_param_type();
+
+            // Check if all tokens are the same as declared in `ArrayParam::element_type`.
+            if token_type != element_type {
+                return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+            }
+            array_tokens.push(token);
+        }
+
+        Ok((array_tokens, element_type))
     }
 
     fn param_type_to_proto(param_type: ParamType) -> Proto::ParamType<'static> {
-        // TODO move to top
-        use Proto::mod_ParamType::OneOfparam as ProtoParamType;
-
         let param = match param_type {
             ParamType::Address => ProtoParamType::address(Proto::AddressType {}),
             ParamType::FixedBytes { len } => {
@@ -327,8 +326,6 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     fn param_type_from_proto(param_type: Proto::ParamType<'_>) -> AbiResult<ParamType> {
-        use Proto::mod_ParamType::OneOfparam as ProtoParamType;
-
         match param_type.param {
             ProtoParamType::boolean(_) => Ok(ParamType::Bool),
             ProtoParamType::number_int(i) => Ok(ParamType::Int {
@@ -382,8 +379,6 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     fn token_to_proto(token: Token) -> Proto::Token<'static> {
-        use Proto::mod_Token::OneOftoken as TokenEnum;
-
         let value = match token {
             Token::Address(addr) => TokenEnum::address(Cow::Owned(addr.to_string())),
             Token::FixedBytes(bytes) => TokenEnum::byte_array_fix(Cow::Owned(bytes)),

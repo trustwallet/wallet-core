@@ -10,7 +10,7 @@ use ethabi::param_type::Reader;
 use ethabi::ParamType as EthAbiType;
 use serde::{de::Error as DeError, Deserialize, Deserializer};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ParamType {
     /// Address.
     ///

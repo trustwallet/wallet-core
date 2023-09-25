@@ -138,6 +138,22 @@ impl Token {
         }
     }
 
+    pub fn uint<UInt: Into<U256>>(bits: usize, uint: UInt) -> AbiResult<Token> {
+        Self::check_uint_bits(bits)?;
+        Ok(Token::Uint {
+            uint: uint.into(),
+            bits,
+        })
+    }
+
+    pub fn int<Int: Into<U256>>(bits: usize, uint: Int) -> AbiResult<Token> {
+        Self::check_uint_bits(bits)?;
+        Ok(Token::Int {
+            int: uint.into(),
+            bits,
+        })
+    }
+
     pub fn array(element_kind: ParamType, elements: Vec<Token>) -> Token {
         Token::Array {
             kind: element_kind,
@@ -241,6 +257,14 @@ impl Token {
                 ParamType::Tuple { params }
             },
         }
+    }
+
+    // https://docs.soliditylang.org/en/latest/abi-spec.html#types
+    fn check_uint_bits(bits: usize) -> AbiResult<()> {
+        if bits % 8 != 0 || bits == 0 || bits > 256 {
+            return Err(AbiError(AbiErrorKind::Error_invalid_uint_value));
+        }
+        Ok(())
     }
 }
 
