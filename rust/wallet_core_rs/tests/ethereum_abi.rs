@@ -6,16 +6,18 @@
 
 use serde_json::{json, Value as Json};
 use tw_coin_entry::error::SigningErrorType;
-use tw_encoding::hex::DecodeHex;
+use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
 use tw_proto::EthereumAbi::{Proto as AbiProto, Proto};
 use tw_proto::{deserialize, serialize};
 use wallet_core_rs::ffi::ethereum::abi::{
     tw_ethereum_abi_decode_contract_call, tw_ethereum_abi_decode_params,
-    tw_ethereum_abi_decode_value, tw_ethereum_abi_function_get_signature,
+    tw_ethereum_abi_decode_value, tw_ethereum_abi_encode_function,
+    tw_ethereum_abi_function_get_signature,
 };
 
 use tw_memory::test_utils::tw_string_helper::TWStringHelper;
+use tw_number::U256;
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
 use Proto::mod_ParamValue::OneOfparam as ParamEnum;
 
@@ -32,6 +34,13 @@ fn named_param(name: &str, value: ParamEnum<'static>) -> Proto::NamedParam<'stat
     Proto::NamedParam {
         name: name.to_string().into(),
         value: Some(Proto::ParamValue { param: value }),
+    }
+}
+
+fn number_n<const BITS: u32>(value: u64) -> Proto::NumberNParam<'static> {
+    Proto::NumberNParam {
+        bits: BITS,
+        value: U256::encode_be_compact(value),
     }
 }
 
@@ -132,6 +141,32 @@ fn test_ethereum_abi_function_get_signature() {
     .expect("!tw_ethereum_abi_function_get_signature returned nullptr");
 
     assert_eq!(actual, "baz(uint64,address)");
+}
+
+#[test]
+fn test_ethereum_abi_encode_function() {
+    let input = AbiProto::FunctionEncodingInput {
+        function_name: "baz".into(),
+        params: vec![
+            named_param("", ParamEnum::number_uint(number_n::<256>(69))),
+            named_param("", ParamEnum::boolean(true)),
+        ],
+    };
+
+    let input_data = TWDataHelper::create(serialize(&input).unwrap());
+
+    let output_data = TWDataHelper::wrap(unsafe {
+        tw_ethereum_abi_encode_function(ETHEREUM_COIN_TYPE, input_data.ptr())
+    })
+    .to_vec()
+    .expect("!tw_ethereum_abi_encode_function returned nullptr");
+
+    let output: AbiProto::FunctionEncodingOutput = deserialize(&output_data)
+        .expect("!tw_ethereum_abi_encode_function returned an invalid output");
+
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+    assert_eq!(output.encoded.to_hex(), "72ed38b600000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000000001");
 }
 
 #[test]

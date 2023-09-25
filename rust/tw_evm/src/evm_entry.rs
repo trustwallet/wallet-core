@@ -4,47 +4,61 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::evm_context::EvmContext;
+use crate::modules::abi_encoder::AbiEncoder;
+use crate::modules::rlp_encoder::RlpEncoder;
 use tw_memory::Data;
-use tw_proto::{deserialize, serialize, MessageRead, MessageWrite, ProtoResult};
+use tw_proto::EthereumAbi::Proto as AbiProto;
+use tw_proto::EthereumRlp::Proto as RlpProto;
+use tw_proto::{deserialize, serialize, ProtoResult};
 
 /// An EVM-compatible chain entry.
 pub trait EvmEntry {
-    type RlpEncodingInput<'a>: MessageRead<'a>;
-    type RlpEncodingOutput: MessageWrite;
-
-    type DecodeContractCallInput<'a>: MessageRead<'a>;
-    type DecodeContractCallOutput: MessageWrite;
-
-    type DecodeParamsInput<'a>: MessageRead<'a>;
-    type DecodeParamsOutput: MessageWrite;
-
-    type GetFunctionSignatureInput<'a>: MessageRead<'a>;
-
-    type EncodeFunctionInput<'a>: MessageRead<'a>;
-    type EncodeFunctionOutput: MessageWrite;
-
-    type ValueDecodingInput<'a>: MessageRead<'a>;
-    type ValueDecodingOutput: MessageWrite;
+    type Context: EvmContext;
 
     /// Encodes an item or a list of items as Eth RLP binary format.
-    fn encode_rlp(input: Self::RlpEncodingInput<'_>) -> Self::RlpEncodingOutput;
+    #[inline]
+    fn encode_rlp(input: RlpProto::EncodingInput<'_>) -> RlpProto::EncodingOutput<'static> {
+        RlpEncoder::<Self::Context>::encode_with_proto(input)
+    }
 
     /// Decodes function call data to human readable json format, according to input abi json.
+    #[inline]
     fn decode_abi_contract_call(
-        input: Self::DecodeContractCallInput<'_>,
-    ) -> Self::DecodeContractCallOutput;
+        input: AbiProto::ContractCallDecodingInput<'_>,
+    ) -> AbiProto::ContractCallDecodingOutput<'static> {
+        AbiEncoder::<Self::Context>::decode_contract_call(input)
+    }
 
     /// Decodes a function input or output data according to a given ABI.
-    fn decode_abi_params(input: Self::DecodeParamsInput<'_>) -> Self::DecodeParamsOutput;
+    #[inline]
+    fn decode_abi_params(
+        input: AbiProto::ParamsDecodingInput<'_>,
+    ) -> AbiProto::ParamsDecodingOutput {
+        AbiEncoder::<Self::Context>::decode_params(input)
+    }
 
     /// Decodes an Eth ABI value according to a given type.
-    fn decode_abi_value(input: Self::ValueDecodingInput<'_>) -> Self::ValueDecodingOutput;
+    #[inline]
+    fn decode_abi_value(
+        input: AbiProto::ValueDecodingInput<'_>,
+    ) -> AbiProto::ValueDecodingOutput<'static> {
+        AbiEncoder::<Self::Context>::decode_value(input)
+    }
 
     /// Returns the function type signature, of the form "baz(int32,uint256)".
-    fn get_abi_function_signature(input: Self::GetFunctionSignatureInput<'_>) -> String;
+    #[inline]
+    fn get_abi_function_signature(input: AbiProto::FunctionGetTypeInput<'_>) -> String {
+        AbiEncoder::<Self::Context>::get_function_signature(input)
+    }
 
     // Encodes function inputs to Eth ABI binary.
-    fn encode_abi_function(input: Self::EncodeFunctionInput<'_>) -> Self::EncodeFunctionOutput;
+    #[inline]
+    fn encode_abi_function(
+        input: AbiProto::FunctionEncodingInput<'_>,
+    ) -> AbiProto::FunctionEncodingOutput<'static> {
+        AbiEncoder::<Self::Context>::encode_contract_call(input)
+    }
 }
 
 /// The [`EvmEntry`] trait extension.
