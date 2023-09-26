@@ -15,12 +15,6 @@ namespace AbiProto = EthereumAbi::Proto;
 struct BaseProtoParam {
     virtual ~BaseProtoParam() noexcept = default;
 
-    virtual AbiProto::NamedToken toNamedToken() const {
-        AbiProto::NamedToken proto;
-        *proto.mutable_token() = toToken();
-        return proto;
-    }
-
     virtual AbiProto::Token toToken() const = 0;
 };
 

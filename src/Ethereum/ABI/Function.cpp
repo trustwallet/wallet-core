@@ -11,7 +11,7 @@
 
 namespace TW::Ethereum::ABI {
 
-int Function::addParam(AbiProto::Param paramType, AbiProto::NamedToken paramValue, bool isOutput) {
+int Function::addParam(AbiProto::Param paramType, AbiProto::Token paramValue, bool isOutput) {
     if (isOutput) {
         auto idx = outputValues.size();
         *outputs.add_params() = std::move(paramType);
@@ -29,8 +29,8 @@ int Function::addUintParam(uint32_t bits, const Data& encodedValue, bool isOutpu
     AbiProto::Param paramType;
     paramType.mutable_param()->mutable_number_uint()->set_bits(bits);
 
-    AbiProto::NamedToken paramValue;
-    auto* numValue = paramValue.mutable_token()->mutable_number_uint();
+    AbiProto::Token paramValue;
+    auto* numValue = paramValue.mutable_number_uint();
     numValue->set_bits(bits);
     numValue->set_value(encodedValue.data(), encodedValue.size());
 
@@ -41,8 +41,8 @@ int Function::addIntParam(uint32_t bits, const Data& encodedValue, bool isOutput
     AbiProto::Param paramType;
     paramType.mutable_param()->mutable_number_int()->set_bits(bits);
 
-    AbiProto::NamedToken paramValue;
-    auto* numValue = paramValue.mutable_token()->mutable_number_int();
+    AbiProto::Token paramValue;
+    auto* numValue = paramValue.mutable_number_int();
     numValue->set_bits(bits);
     numValue->set_value(encodedValue.data(), encodedValue.size());
 
@@ -59,17 +59,17 @@ int Function::addInArrayParam(int idx, AbiProto::ParamType paramType, AbiProto::
         return -1;
     }
 
-    auto& arrayValue = *inputValues[idxSize].mutable_token();
+    auto& arrayToken = inputValues[idxSize];
     auto& arrayType = *inputs.mutable_params(idx)->mutable_param();
 
-    if (!arrayValue.has_array() || !arrayType.has_array()) {
+    if (!arrayToken.has_array() || !arrayType.has_array()) {
         return -1;
     }
 
-    auto arrayInElementIdx = arrayValue.array().elements_size();
+    auto arrayInElementIdx = arrayToken.array().elements_size();
 
-    *arrayValue.mutable_array()->add_elements() = std::move(paramValue);
-    *arrayValue.mutable_array()->mutable_element_type() = paramType;
+    *arrayToken.mutable_array()->add_elements() = std::move(paramValue);
+    *arrayToken.mutable_array()->mutable_element_type() = paramType;
     // Override the element type.
     *arrayType.mutable_array()->mutable_element_type() = std::move(paramType);
 
@@ -100,7 +100,7 @@ int Function::addInArrayIntParam(int idx, uint32_t bits, const Data& encodedValu
     return addInArrayParam(idx, std::move(paramType), std::move(paramValue));
 }
 
-MaybeNamedToken Function::getParam(int idx, bool isOutput) const {
+MaybeToken Function::getParam(int idx, bool isOutput) const {
     const auto& values = isOutput ? outputValues : inputValues;
 
     if (idx < 0) {
@@ -140,7 +140,7 @@ bool Function::decode(const Data& encoded, bool isOutput) {
         return false;
     }
 
-    std::vector<AbiProto::NamedToken> decoded;
+    std::vector<AbiProto::Token> decoded;
     for (const auto &param : output.tokens()) {
         decoded.emplace_back(param);
     }
@@ -164,7 +164,7 @@ std::string Function::getType() const {
     return outputPtr.toStringOrDefault();
 }
 
-MaybeData Function::encodeParams(const std::string& functionName, const NamedTokens& tokens) {
+MaybeData Function::encodeParams(const std::string& functionName, const Tokens& tokens) {
     AbiProto::FunctionEncodingInput input;
     input.set_function_name(functionName);
     for (const auto& token : tokens) {
@@ -190,9 +190,9 @@ MaybeData Function::encodeParams(const std::string& functionName, const NamedTok
 }
 
 MaybeData Function::encodeParams(const std::string& functionName, const BaseParams& params) {
-    NamedTokens namedParams;
+    Tokens namedParams;
     for (const auto& param : params) {
-        namedParams.push_back(param->toNamedToken());
+        namedParams.push_back(param->toToken());
     }
     return encodeParams(functionName, namedParams);
 }

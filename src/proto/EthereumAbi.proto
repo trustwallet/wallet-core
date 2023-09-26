@@ -118,16 +118,19 @@ message ArrayParam {
 
 // A tuple with various parameters similar to a structure.
 message TupleParam {
-    repeated NamedToken params = 1;
+    repeated Token params = 1;
 }
 
 // An enumeration of possible parameters.
 message Token {
+    // Optional. Name of a corresponding parameter.
+    string name = 1;
+
     oneof token {
         // Simple values.
-        bool boolean = 1;
-        NumberNParam number_int = 2;
-        NumberNParam number_uint = 3;
+        bool boolean = 2;
+        NumberNParam number_int = 3;
+        NumberNParam number_uint = 4;
         // Nested values. Gap in field numbering is intentional.
         string string_value = 7;
         string address = 8;
@@ -141,15 +144,6 @@ message Token {
         // Nested values. Gap in field numbering is intentional.
         TupleParam tuple = 19;
     }
-}
-
-// A named parameter.
-message NamedToken {
-    // Name of the parameter.
-    string name = 1;
-
-    // Value of the parameter.
-    Token token = 2;
 }
 
 //// TWEthereumAbiDecodeContractCall
@@ -185,7 +179,7 @@ message ContractCallDecodingOutput {
     string decoded_json = 1;
 
     // Decoded parameters.
-    repeated NamedToken tokens = 2;
+    repeated Token tokens = 2;
 
     // error code, 0 is ok, other codes will be treated as errors
     AbiError error = 3;
@@ -230,7 +224,7 @@ message ParamsDecodingInput {
 
 message ParamsDecodingOutput {
     // Decoded parameters.
-    repeated NamedToken tokens = 1;
+    repeated Token tokens = 1;
 
     // error code, 0 is ok, other codes will be treated as errors
     AbiError error = 2;
@@ -273,7 +267,7 @@ message FunctionEncodingInput {
     string function_name = 1;
 
     // Parameters to be encoded.
-    repeated NamedToken tokens = 2;
+    repeated Token tokens = 2;
 }
 
 message FunctionEncodingOutput {

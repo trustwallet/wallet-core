@@ -249,11 +249,7 @@ impl Token {
                 len: arr.len(),
             },
             Token::Tuple { params } => {
-                let params = params
-                    .iter()
-                    // TODO optimize this
-                    .map(|param| param.to_param())
-                    .collect();
+                let params = params.iter().map(|param| param.to_param()).collect();
                 ParamType::Tuple { params }
             },
         }

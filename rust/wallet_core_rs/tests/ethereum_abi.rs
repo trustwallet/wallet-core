@@ -30,10 +30,10 @@ fn param(name: &str, kind: ParamTypeEnum<'static>) -> Proto::Param<'static> {
     }
 }
 
-fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::NamedToken<'static> {
-    Proto::NamedToken {
+fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::Token<'static> {
+    Proto::Token {
         name: name.to_string().into(),
-        token: Some(Proto::Token { token }),
+        token,
     }
 }
 

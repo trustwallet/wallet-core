@@ -222,13 +222,10 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    fn named_token_from_proto(named_token: Proto::NamedToken<'_>) -> AbiResult<NamedToken> {
-        let value = named_token
-            .token
-            .ok_or(AbiError(AbiErrorKind::Error_missing_param_value))?;
+    fn named_token_from_proto(named_token: Proto::Token<'_>) -> AbiResult<NamedToken> {
         Ok(NamedToken {
-            name: Some(named_token.name.into()),
-            value: Self::token_from_proto(value)?,
+            name: Some(named_token.name.clone().into()),
+            value: Self::token_from_proto(named_token)?,
             internal_type: None,
         })
     }
@@ -371,10 +368,10 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn named_token_to_proto(token: NamedToken) -> Proto::NamedToken<'static> {
-        Proto::NamedToken {
+    fn named_token_to_proto(token: NamedToken) -> Proto::Token<'static> {
+        Proto::Token {
             name: Cow::Owned(token.name.unwrap_or_default()),
-            token: Some(Self::token_to_proto(token.value)),
+            ..Self::token_to_proto(token.value)
         }
     }
 
@@ -393,7 +390,10 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             Token::Array { kind, arr, .. } => TokenEnum::array(Self::array_to_proto(kind, arr)),
             Token::Tuple { params } => TokenEnum::tuple(Self::tuple_to_proto(params)),
         };
-        Proto::Token { token: value }
+        Proto::Token {
+            name: "".into(),
+            token: value,
+        }
     }
 
     fn number_n_from_proto(encoded: &[u8]) -> AbiResult<U256> {

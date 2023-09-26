@@ -20,16 +20,16 @@ namespace TW::Ethereum::ABI {
 
 namespace AbiProto = EthereumAbi::Proto;
 
-using MaybeNamedToken = std::optional<AbiProto::NamedToken>;
+using MaybeToken = std::optional<AbiProto::Token>;
 using MaybeData = std::optional<Data>;
-using NamedTokens = std::vector<AbiProto::NamedToken>;
+using Tokens = std::vector<AbiProto::Token>;
 
 class Function {
 public:
     explicit Function(std::string name): name(std::move(name)) {}
 
     /// Adds an input or output parameter. Returns the index of the parameter.
-    int addParam(AbiProto::Param paramType, AbiProto::NamedToken paramValue, bool isOutput = false);
+    int addParam(AbiProto::Param paramType, AbiProto::Token paramValue, bool isOutput = false);
 
     /// Adds an input or output uint parameter. Returns the index of the parameter.
     int addUintParam(uint32_t bits, const Data& encodedValue, bool isOutput = false);
@@ -50,15 +50,15 @@ public:
     int addInArrayIntParam(int idx, uint32_t bits, const Data& encodedValue);
 
     /// Returns an input or output parameter.
-    MaybeNamedToken getParam(int idx, bool isOutput = false) const;
+    MaybeToken getParam(int idx, bool isOutput = false) const;
 
     /// Returns the data of an input or output uint parameter.
     Data getUintParamData(int idx, uint32_t bits, bool isOutput = false) const {
         auto param = getParam(idx, isOutput);
-        if (!param.has_value() || !param->token().has_number_uint() || param->token().number_uint().bits() != bits) {
+        if (!param.has_value() || !param->has_number_uint() || param->number_uint().bits() != bits) {
             return store(0);
         }
-        return data(param->token().number_uint().value());
+        return data(param->number_uint().value());
     }
 
     /// Returns an input or output uint parameter.
@@ -81,7 +81,7 @@ public:
     std::string getType() const;
 
     /// Encodes a function call to Eth ABI binary.
-    static MaybeData encodeParams(const std::string& functionName, const NamedTokens& params);
+    static MaybeData encodeParams(const std::string& functionName, const Tokens& params);
 
     /// Encodes a function call to Eth ABI binary.
     static MaybeData encodeParams(const std::string& functionName, const BaseParams& params);
@@ -91,8 +91,8 @@ private:
     AbiProto::AbiParams inputs;
     AbiProto::AbiParams outputs;
 
-    NamedTokens inputValues;
-    NamedTokens outputValues;
+    Tokens inputValues;
+    Tokens outputValues;
 };
 
 } // namespace TW::Ethereum::ABI

@@ -26,10 +26,10 @@ fn param(name: &str, kind: ParamTypeEnum<'static>) -> Proto::Param<'static> {
     }
 }
 
-fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::NamedToken<'static> {
-    Proto::NamedToken {
+fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::Token<'static> {
+    Proto::Token {
         name: Cow::Owned(name.to_string()),
-        token: Some(Proto::Token { token }),
+        token,
     }
 }
 
@@ -50,7 +50,10 @@ fn array(
 ) -> Proto::ArrayParam<'static> {
     let elements = values
         .into_iter()
-        .map(|token| Proto::Token { token })
+        .map(|token| Proto::Token {
+            name: "".into(),
+            token,
+        })
         .collect();
     let element_type = Some(Proto::ParamType {
         param: element_type,
@@ -71,7 +74,7 @@ fn array_type(element_type: ParamTypeEnum<'static>) -> Box<Proto::ArrayType<'sta
 
 fn tuple<I>(params: I) -> TokenEnum<'static>
 where
-    I: IntoIterator<Item = Proto::NamedToken<'static>>,
+    I: IntoIterator<Item = Proto::Token<'static>>,
 {
     TokenEnum::tuple(Proto::TupleParam {
         params: params.into_iter().collect(),
@@ -250,7 +253,7 @@ mod dynamic_arguments {
     const ENCODED_CALL_WITH_SIGNATURE: &str = "47b941bf00000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
     const ENCODED_CALL: &str = "00000000000000000000000000000000000000000000000000000000000001230000000000000000000000000000000000000000000000000000000000000080313233343536373839300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004560000000000000000000000000000000000000000000000000000000000000789000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20776f726c642100000000000000000000000000000000000000";
 
-    fn token_values() -> Vec<Proto::NamedToken<'static>> {
+    fn token_values() -> Vec<Proto::Token<'static>> {
         let dynamic_array = array(
             ParamTypeEnum::number_uint(number_type_n::<32>()),
             vec![
@@ -512,10 +515,7 @@ fn test_decode_value() {
         assert_eq!(output.error, AbiErrorKind::OK);
         assert!(output.error_message.is_empty());
 
-        let expected_value = Proto::Token {
-            token: test.expected_value_proto,
-        };
-        assert_eq!(output.token.unwrap(), expected_value);
+        assert_eq!(output.token.unwrap().token, test.expected_value_proto);
         assert_eq!(output.param_str, test.expected_value_str);
     }
 }
