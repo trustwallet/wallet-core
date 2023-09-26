@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package TW.Greenfield.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+// A denomination and an amount
+message Amount {
+    // name of the denomination
+    string denom = 1;
+
+    // amount, number as string
+    string amount = 2;
+}
+
+// Fee incl. gas
+message Fee {
+    // Fee amount(s)
+    repeated Amount amounts = 1;
+
+    // Gas price
+    uint64 gas = 2;
+}
+
+// Transaction broadcast mode
+enum BroadcastMode {
+    SYNC = 0;  // Wait for the tx to pass/fail CheckTx
+    ASYNC = 1; // Don't wait for pass/fail CheckTx; send and return tx immediately
+}
+
+// A transaction payload message
+message Message {
+    // cosmos-sdk/MsgSend
+    message Send {
+        string from_address = 1;
+        string to_address = 2;
+        repeated Amount amounts = 3;
+        // Optional. Default `cosmos.bank.v1beta1.MsgSend`.
+        string type_prefix = 4;
+    }
+
+    // greenfield/MsgTransferOut
+    // Used to transfer BNB Greenfield to BSC blockchain.
+    message BridgeTransferOut {
+        // In most cases, `from_address` and `to_address` are equal.
+        string from_address = 1;
+        string to_address = 2;
+        Amount amount = 3;
+        // Optional. Default `greenfield.bridge.MsgTransferOut`.
+        string type_prefix = 4;
+    }
+
+    // The payload message
+    oneof message_oneof {
+        Send send_coins_message = 1;
+        BridgeTransferOut bridge_transfer_out = 2;
+    }
+}
+
+// Options for transaction encoding.
+// Consider adding Json mode.
+enum EncodingMode {
+    Protobuf = 0;    // Protobuf-serialized (binary)
+}
+
+// Options for transaction signing.
+// Consider adding Direct mode when it is supported.
+enum SigningMode {
+    Eip712 = 0;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // An encoding mode.
+    EncodingMode encoding_mode = 1;
+
+    // A signing mode.
+    SigningMode signing_mode = 2;
+
+    // Source account number
+    uint64 account_number = 3;
+
+    // ETH Chain ID (string).
+    // Must be set if `signing_mode` is Eip712.
+    string eth_chain_id = 4;
+
+    // Cosmos Chain ID (string)
+    string cosmos_chain_id = 5;
+
+    // Transaction fee
+    Fee fee = 6;
+
+    // Optional memo
+    string memo = 7;
+
+    // Sequence number (account specific)
+    uint64 sequence = 8;
+
+    // The secret private key used for signing (32 bytes).
+    bytes private_key = 9;
+
+    // Message payloads.
+    repeated Message messages = 10;
+
+    // Broadcast mode (included in output, relevant when broadcasting)
+    BroadcastMode mode = 11;
+
+    bytes public_key = 12;
+}
+
+// Result containing the signed and encoded transaction.
+message SigningOutput {
+    // Signature
+    bytes signature = 1;
+
+    // Signed transaction containing protobuf encoded, Base64-encoded form (Stargate case),
+    // wrapped in a ready-to-broadcast json.
+    string serialized = 2;
+
+    // signatures array json string
+    string signature_json = 3;
+
+    // error description
+    string error_message = 4;
+
+    Common.Proto.SigningError error = 5;
+}

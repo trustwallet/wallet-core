@@ -86,7 +86,10 @@ This list is generated from [./registry.json](../registry.json)
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/qtum/info/logo.png" width="32" />         | <https://qtum.org>            |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
 | 3030    | Hedera           | HBAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hedera/info/logo.png" width="32" />       | <https://hedera.com/>         |
+| 5000    | Mantle           | MNT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/mantle/info/logo.png" width="32" />       | <https://www.mantle.xyz>      |
+| 5600    | BNB Greenfield   | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/greenfield/info/logo.png" width="32" />   | <https://greenfield.bnbchain.org> |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
+| 7332    | Zen EON          | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zeneon/info/logo.png" width="32" />       | <https://eon.horizen.io>      |
 | 8453    | Base             | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png" width="32" />         | <https://base.mirror.xyz/>    |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nuls/info/logo.png" width="32" />         | <https://nuls.io>             |
 | 14001   | WAX              | WAXP   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wax/info/logo.png" width="32" />          | <http://wax.io>               |
@@ -96,7 +99,7 @@ This list is generated from [./registry.json](../registry.json)
 | 59144   | Linea            | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/linea/info/logo.png" width="32" />        | <https://linea.build>         |
 | 105105  | Stratis          | STRAX  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stratis/info/logo.png" width="32" />      | <https://www.stratisplatform.com/> |
 | 534353  | Scroll           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/scroll/info/logo.png" width="32" />       | <https://scroll.io>           |
-| 1001088 | Metis            | METIS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/metis/info/logo.png" width="32" />        | <https://www.metis.io/>       |
+| 10001088 | Metis            | METIS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/metis/info/logo.png" width="32" />        | <https://www.metis.io/>       |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
 | 10000025 | Cronos Chain     | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cronos/info/logo.png" width="32" />       | <https://cronos.org>          |

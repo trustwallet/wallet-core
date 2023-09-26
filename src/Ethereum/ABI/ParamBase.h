@@ -8,10 +8,15 @@
 
 #include "Data.h"
 
-#include <string>
+#include <map>
 #include <memory>
+#include <string>
 
 namespace TW::Ethereum::ABI {
+
+// A map of `StructName -> StructType` key-values, where `StructType` is a full type including the structure name.
+// Referenced struct type should be sorted by name see: https://eips.ethereum.org/EIPS/eip-712#definition-of-encodetype
+using ExtraTypesMap = std::map<std::string, std::string, std::less<>>;
 
 /// Abstract base class for parameters.
 class ParamBase
@@ -26,8 +31,8 @@ public:
     virtual bool setValueJson(const std::string& value) = 0;
     // EIP712-style hash of the value (used for signing); default implementation
     virtual Data hashStruct() const;
-    // Helper for EIP712 encoding; provide full type of all used types (recursively).  Default is empty implementation.
-    virtual std::string getExtraTypes([[maybe_unused]] std::vector<std::string>& ignoreList) const { return ""; }
+    // Helper for EIP712 encoding; fill the given `extraTypes` (recursively).
+    virtual void fillExtraTypesMap([[maybe_unused]] ExtraTypesMap& extraTypes) const {}
     // Creates a copy of this element.
     // This method **must** be implemented in a `final` class only.
     virtual std::shared_ptr<ParamBase> clone() const = 0;

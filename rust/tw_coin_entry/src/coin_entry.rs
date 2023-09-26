@@ -17,6 +17,7 @@ use tw_proto::{MessageRead, MessageWrite};
 
 pub use tw_proto::{ProtoError, ProtoResult};
 
+pub type PrivateKeyBytes = Data;
 pub type SignatureBytes = Data;
 pub type PublicKeyBytes = Data;
 
