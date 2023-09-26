@@ -15,6 +15,7 @@ members = [
     "tw_number",
     "tw_proto",
     "tw_ronin",
+    "tw_utxo",
     "wallet_core_rs",
 ]
 

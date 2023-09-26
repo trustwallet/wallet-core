@@ -164,9 +164,9 @@ dependencies = [
 
 [[package]]
 name = "bitcoin"
-version = "0.30.0"
+version = "0.30.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b36f4c848f6bd9ff208128f08751135846cc23ae57d66ab10a22efff1c675f3c"
+checksum = "4e99ff7289b20a7385f66a0feda78af2fc119d28fb56aea8886a9cd0a4abdd75"
 dependencies = [
  "bech32",
  "bitcoin-private",
@@ -1485,6 +1485,7 @@ dependencies = [
 name = "tw_any_coin"
 version = "0.1.0"
 dependencies = [
+ "tw_any_coin",
  "tw_coin_entry",
  "tw_coin_registry",
  "tw_encoding",
@@ -1503,10 +1504,14 @@ dependencies = [
  "secp256k1",
  "serde",
  "serde_json",
+ "tw_coin_entry",
  "tw_encoding",
+ "tw_keypair",
  "tw_memory",
  "tw_misc",
  "tw_proto",
+ "tw_utxo",
+ "wallet-core-rs",
 ]
 
 [[package]]
@@ -1528,6 +1533,7 @@ dependencies = [
  "lazy_static",
  "serde",
  "serde_json",
+ "tw_bitcoin",
  "tw_coin_entry",
  "tw_ethereum",
  "tw_evm",
@@ -1679,6 +1685,19 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_number",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_utxo"
+version = "0.1.0"
+dependencies = [
+ "bitcoin",
+ "secp256k1",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_keypair",
+ "tw_memory",
  "tw_proto",
 ]
 

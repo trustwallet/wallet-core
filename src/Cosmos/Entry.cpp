@@ -55,7 +55,10 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         txInputData, [&coin](const auto& input, auto& output) {
             auto pkVec = Data(input.public_key().begin(), input.public_key().end());
             auto preimage = Signer().signaturePreimage(input, pkVec, coin);
-            auto imageHash = Hash::sha256(preimage);
+            auto isEvmCosmosChain = [coin]() {
+                return coin == TWCoinTypeNativeInjective || coin == TWCoinTypeNativeEvmos || coin == TWCoinTypeNativeCanto;
+            };
+            auto imageHash = isEvmCosmosChain() ? Hash::keccak256(preimage) : Hash::sha256(preimage);
             output.set_data(preimage.data(), preimage.size());
             output.set_data_hash(imageHash.data(), imageHash.size());
         });

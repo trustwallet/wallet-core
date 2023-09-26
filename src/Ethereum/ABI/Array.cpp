@@ -128,9 +128,10 @@ Data ParamArray::hashStruct() const {
     return hash;
 }
 
-std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {
-    const auto& proto = getProtoElem();
-    return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
+void ParamArray::fillExtraTypesMap(ExtraTypesMap& extraTypes) const {
+    if (const auto& proto = getProtoElem(); proto != nullptr) {
+        proto->fillExtraTypesMap(extraTypes);
+    }
 }
 
 std::shared_ptr<ParamBase> ParamArray::clone() const {

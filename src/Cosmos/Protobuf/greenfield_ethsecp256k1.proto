@@ -1,0 +1,10 @@
+syntax = "proto3";
+package cosmos.crypto.eth.ethsecp256k1;
+
+// PubKey defines a type alias for an ecdsa.PublicKey that implements
+// Tendermint's PubKey interface. It represents the 33-byte compressed public
+// key format.
+// Original: https://github.com/bnb-chain/greenfield-cosmos-sdk/blob/master/proto/cosmos/crypto/eth/ethsecp256k1/keys.proto
+message PubKey {
+    bytes key = 1;
+}

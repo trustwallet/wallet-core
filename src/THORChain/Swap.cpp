@@ -144,8 +144,12 @@ std::string SwapBuilder::buildMemo(bool shortened) noexcept {
     const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
     std::stringstream memo;
     memo << prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + mToAddress;
-    if (toAmountLimitNum > 0) {
-        memo << ":" << std::to_string(toAmountLimitNum);
+
+    memo << ":" << std::to_string(toAmountLimitNum);
+    if (mStreamParams.has_value()) {
+        uint64_t intervalNum = std::stoull(mStreamParams->mInterval);
+        uint64_t quantityNum = std::stoull(mStreamParams->mQuantity);
+        memo << "/" << std::to_string(intervalNum) << "/" << std::to_string(quantityNum);
     }
 
     if (mAffFeeAddress.has_value() || mAffFeeRate.has_value() || mExtraMemo.has_value()) {

@@ -72,31 +72,10 @@ Data ParamSetNamed::encodeHashes() const {
     return hashes;
 }
 
-std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) const {
-    std::string types;
-
-    auto params = _params;
-    /// referenced struct type should be sorted by name see: https://eips.ethereum.org/EIPS/eip-712#definition-of-encodetype
-    std::stable_sort(params.begin(), params.end(), [](auto& a, auto& b) {
-        auto lhs = a->getType();
-        auto rhs = b->getType();
-        if (ParamFactory::isPrimitive(lhs)) {
-            return true;
-        }
-        if (ParamFactory::isPrimitive(rhs)) {
-            return true;
-        }
-        return lhs.compare(rhs) < 0;
-    });
-
-    for (auto& p : params) {
-        auto pType = p->_param->getType();
-        if (std::find(ignoreList.begin(), ignoreList.end(), pType) == ignoreList.end()) {
-            types += p->getExtraTypes(ignoreList);
-            ignoreList.push_back(pType);
-        }
+void ParamSetNamed::fillExtraTypesMap(ExtraTypesMap& extraTypes) const {
+    for (auto& p : _params) {
+        p->fillExtraTypesMap(extraTypes);
     }
-    return types;
 }
 
 std::shared_ptr<ParamNamed> ParamSetNamed::findParamByName(const std::string& name) const {
@@ -140,14 +119,24 @@ Data ParamStruct::hashStruct() const {
     return hash;
 }
 
-std::string ParamStruct::getExtraTypes(std::vector<std::string>& ignoreList) const {
-    std::string types;
-    if (std::find(ignoreList.begin(), ignoreList.end(), _name) == ignoreList.end()) {
-        types += _name + _params.getType();
-        ignoreList.push_back(_name);
+std::string ParamStruct::encodeType() const {
+    ExtraTypesMap extraTypes;
+    fillExtraTypesMap(extraTypes);
+    auto structFullType = extraTypes[_name];
+    extraTypes.erase(_name);
+
+    for (const auto& [paramName, paramType] : extraTypes) {
+        structFullType += paramType;
     }
-    types += _params.getExtraTypes(ignoreList);
-    return types;
+    return structFullType;
+}
+
+void ParamStruct::fillExtraTypesMap(ExtraTypesMap& extraTypes) const {
+    if (extraTypes.contains(_name)) {
+        return;
+    }
+    extraTypes[_name] = _name + _params.getType();
+    _params.fillExtraTypesMap(extraTypes);
 }
 
 std::shared_ptr<ParamBase> ParamStruct::clone() const {
