@@ -65,6 +65,8 @@ TWCoinType chainCoinType(Chain chain) {
         return TWCoinTypeLitecoin;
     case Chain::ATOM:
         return TWCoinTypeCosmos;
+    case Chain::BSC:
+        return TWCoinTypeSmartChain;
     case Chain::THOR:
     default:
         return TWCoinTypeTHORChain;
@@ -78,6 +80,7 @@ std::string chainName(Chain chain) {
     case Chain::ETH:
         return "ETH";
     case Chain::BNB:
+    case Chain::BSC:
         return "BNB";
     case Chain::BTC:
         return "BTC";
@@ -127,6 +130,7 @@ SwapBundled SwapBuilder::build(bool shortened) {
         return buildAtom(fromAmountNum, memo);
     case Chain::ETH:
     case Chain::AVAX:
+    case Chain::BSC:
         return buildEth(fromAmountNum, memo);
     }
     default:
@@ -237,7 +241,7 @@ SwapBundled SwapBuilder::buildEth(const uint256_t& amount, const std::string& me
     Data out;
     auto input = Ethereum::Proto::SigningInput();
     // EIP-1559
-    input.set_tx_mode(Ethereum::Proto::Enveloped);
+    input.set_tx_mode(this->mFromAsset.chain() == Proto::Chain::BSC ? Ethereum::Proto::Legacy : Ethereum::Proto::Enveloped);
     const auto& toTokenId = mFromAsset.token_id();
     // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(mVaultAddress);
