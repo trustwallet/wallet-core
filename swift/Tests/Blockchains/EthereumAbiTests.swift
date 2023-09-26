@@ -221,4 +221,135 @@ class EthereumAbiTests: XCTestCase {
 
         XCTAssertEqual(hash.hexString, "54140d99a864932cbc40fd8a2d1d1706c3923a79c183a3b151e929ac468064db")
     }
+    
+    func testEthereumAbiEncodeFunction() throws {
+        let amountIn = EthereumAbiNumberNParam.with {
+            $0.bits = 256
+            $0.value = Data(hexString: "0x0de0b6b3a7640000")! // 1000000000000000000
+        }
+        let amountOutMin = EthereumAbiNumberNParam.with {
+            $0.bits = 256
+            $0.value = Data(hexString: "0x229f7e501ad62bdb")! // 2494851601099271131
+        }
+        let deadline = EthereumAbiNumberNParam.with {
+            $0.bits = 256
+            $0.value = Data(hexString: "0x5f0ed070")! // 1594806384
+        }
+        
+        let arr = EthereumAbiArrayParam.with {
+            $0.elementType = EthereumAbiParamType.with {
+                $0.address = EthereumAbiAddressType.init()
+            }
+            $0.elements = [
+                EthereumAbiToken.with { $0.address = "0x6B175474E89094C44Da98b954EedeAC495271d0F" },
+                EthereumAbiToken.with { $0.address = "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2" },
+                EthereumAbiToken.with { $0.address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" },
+                EthereumAbiToken.with { $0.address = "0xE41d2489571d322189246DaFA5ebDe1F4699F498" },
+            ]
+        }
+        let encodingInput = EthereumAbiFunctionEncodingInput.with {
+            $0.functionName = "swapExactTokensForTokens"
+            $0.tokens = [
+                EthereumAbiToken.with { $0.numberUint = amountIn },
+                EthereumAbiToken.with { $0.numberUint = amountOutMin },
+                EthereumAbiToken.with { $0.array = arr },
+                EthereumAbiToken.with { $0.address = "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1" },
+                EthereumAbiToken.with { $0.numberUint = deadline },
+            ]
+        }
+        
+        let inputData = try encodingInput.serializedData()
+        let outputData = EthereumAbi.encodeFunction(coin: .ethereum, input: inputData)
+        
+        let encodingOutput = try EthereumAbiFunctionEncodingOutput(serializedData: outputData)
+        XCTAssertEqual(encodingOutput.error, EthereumAbiAbiError.ok)
+        XCTAssertEqual(encodingOutput.functionType, "swapExactTokensForTokens(uint256,uint256,address[],address,uint256)")
+        
+        let expectedEncoded = Data(hexString: "0x38ed17390000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000000229f7e501ad62bdb00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000007d8bf18c7ce84b3e175b339c4ca93aed1dd166f1000000000000000000000000000000000000000000000000000000005f0ed07000000000000000000000000000000000000000000000000000000000000000040000000000000000000000006b175474e89094c44da98b954eedeac495271d0f0000000000000000000000009f8f72aa9304c8b593d555f12ef6589cc3a579a2000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498")!
+        XCTAssertEqual(encodingOutput.encoded, expectedEncoded)
+    }
+    
+    func testEthereumAbiDecodeParams() throws {
+        let encoded = Data(hexString: "00000000000000000000000088341d1a8f672d2780c8dc725902aae72f143b0c0000000000000000000000000000000000000000000000000000000000000001")!
+        
+        let abiParams = [
+            EthereumAbiParam.with {
+                $0.name = "to"
+                $0.param = EthereumAbiParamType.with { $0.address = EthereumAbiAddressType.init() }
+            },
+            EthereumAbiParam.with {
+                $0.name = "approved"
+                $0.param = EthereumAbiParamType.with { $0.boolean = EthereumAbiBoolType.init() }
+            }
+        ]
+        let decodingInput = EthereumAbiParamsDecodingInput.with {
+            $0.encoded = encoded
+            $0.abiParams = EthereumAbiAbiParams.with { $0.params = abiParams }
+        }
+        
+        let inputData = try decodingInput.serializedData()
+        let outputData = EthereumAbi.decodeParams(coin: .ethereum, input: inputData)
+        
+        let decodingOutput = try EthereumAbiParamsDecodingOutput(serializedData: outputData)
+        XCTAssertEqual(decodingOutput.error, EthereumAbiAbiError.ok)
+        
+        XCTAssertEqual(decodingOutput.tokens[0].name, "to")
+        XCTAssertEqual(decodingOutput.tokens[0].address, "0x88341d1a8F672D2780C8dC725902AAe72F143B0c")
+        XCTAssertEqual(decodingOutput.tokens[1].name, "approved")
+        XCTAssertEqual(decodingOutput.tokens[1].boolean, true)
+    }
+    
+    func testEthereumAbiDecodeValue() throws {
+        let encoded = Data(hexString: "000000000000000000000000000000000000000000000000000000000000002c48656c6c6f20576f726c64212020202048656c6c6f20576f726c64212020202048656c6c6f20576f726c64210000000000000000000000000000000000000000")!
+
+        let decodingInput = EthereumAbiValueDecodingInput.with {
+            $0.encoded = encoded
+            $0.paramType = "string"
+        }
+        
+        let inputData = try decodingInput.serializedData()
+        let outputData = EthereumAbi.decodeValue(coin: .ethereum, input: inputData)
+        
+        let decodingOutput = try EthereumAbiValueDecodingOutput(serializedData: outputData)
+        XCTAssertEqual(decodingOutput.error, EthereumAbiAbiError.ok)
+        XCTAssertEqual(decodingOutput.token.stringValue, "Hello World!    Hello World!    Hello World!")
+    }
+    
+    func testEthereumAbiDecodeContractCall() throws {
+        let encoded = Data(hexString: "c47f0027000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000086465616462656566000000000000000000000000000000000000000000000000")!
+        let abiJson = """
+            {
+                "c47f0027": {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "setName",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            }
+        """
+        
+        let decodingInput = EthereumAbiContractCallDecodingInput.with {
+            $0.encoded = encoded
+            $0.smartContractAbiJson = abiJson
+        }
+        
+        let inputData = try decodingInput.serializedData()
+        let outputData = EthereumAbi.decodeContractCall(coin: .ethereum, input: inputData)
+        
+        let decodingOutput = try EthereumAbiContractCallDecodingOutput(serializedData: outputData)
+        XCTAssertEqual(decodingOutput.error, EthereumAbiAbiError.ok)
+        
+        let expectedJson = #"{"function":"setName(string)","inputs":[{"name":"name","type":"string","value":"deadbeef"}]}"#
+        XCTAssertEqual(decodingOutput.decodedJson, expectedJson)
+        XCTAssertEqual(decodingOutput.tokens[0].name, "name")
+        XCTAssertEqual(decodingOutput.tokens[0].stringValue, "deadbeef")
+    }
 }
