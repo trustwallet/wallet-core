@@ -94,14 +94,26 @@ impl EthSignature for SignatureEip155 {
     }
 }
 
-/// Embeds `chain_id` in `v` param, for replay protection, legacy (EIP155).
+/// Embeds `chain_id` in `v` param, for replay protection, legacy or EIP155.
 #[inline]
 pub fn replay_protection(chain_id: U256, v: u8) -> U256 {
     if chain_id.is_zero() {
-        U256::from(v + 27)
+        legacy_replay_protection(v)
     } else {
-        chain_id + chain_id + 35u8 + v
+        eip155_replay_protection(chain_id, v)
     }
+}
+
+/// Embeds `chain_id` in `v` param, for replay protection, legacy.
+#[inline]
+pub fn legacy_replay_protection(v: u8) -> U256 {
+    U256::from(v) + U256::from(27u8)
+}
+
+/// Embeds `chain_id` in `v` param, for replay protection, EIP155.
+#[inline]
+pub fn eip155_replay_protection(chain_id: U256, v: u8) -> U256 {
+    chain_id + chain_id + 35u8 + v
 }
 
 #[cfg(test)]

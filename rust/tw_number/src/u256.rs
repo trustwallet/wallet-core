@@ -212,6 +212,14 @@ macro_rules! impl_map_from {
                 <$u>::from(primitive_types::U256::from(int))
             }
         }
+
+        impl TryFrom<$u> for $int {
+            type Error = NumberError;
+
+            fn try_from(u: $u) -> Result<Self, Self::Error> {
+                <$int>::try_from(u.0).map_err(|_| NumberError::IntegerOverflow)
+            }
+        }
     };
 }
 

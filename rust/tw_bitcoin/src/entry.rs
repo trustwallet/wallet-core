@@ -10,6 +10,7 @@ use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, Signatur
 use tw_coin_entry::derivation::Derivation;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
+use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::tw::PublicKey;
@@ -43,6 +44,7 @@ impl CoinEntry for BitcoinEntry {
     // Optional modules:
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = BitcoinPlanBuilder;
+    type MessageSigner = NoMessageSigner;
 
     #[inline]
     fn parse_address(

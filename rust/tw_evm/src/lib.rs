@@ -10,4 +10,5 @@ pub mod evm_context;
 pub mod evm_entry;
 pub mod modules;
 pub mod rlp;
+pub mod signature;
 pub mod transaction;
