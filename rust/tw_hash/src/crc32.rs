@@ -48,5 +48,5 @@ pub fn crc32(input: &[u8]) -> u32 {
     for b in input {
         c = CRC32_TABLE[((c ^ (*b as u32)) & 0xFF) as usize] ^ (c >> 8);
     }
-    c ^ u32::MAX
+    !c
 }
