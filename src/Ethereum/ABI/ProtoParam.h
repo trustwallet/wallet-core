@@ -108,7 +108,7 @@ public:
     }
 
 private:
-    std::string m_address = "0x0000000000000000000000000000000000000000";
+    std::string m_address {"0x0000000000000000000000000000000000000000"};
 };
 
 } // namespace TW::Ethereum::ABI

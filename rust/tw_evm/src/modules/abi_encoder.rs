@@ -82,20 +82,25 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             H32::try_from(short_signature).expect("The length expected to be checked above");
         let encoded_data = &input.encoded[H32::len()..];
 
-        let abi_json: SmartContractCallAbiJson =
+        let mut abi_json: SmartContractCallAbiJson =
             serde_json::from_str(&input.smart_contract_abi_json)
                 .map_err(|_| AbiError(AbiErrorKind::Error_invalid_abi))?;
 
         let function = abi_json
             .map
-            .get(&short_signature)
+            .get_mut(&short_signature)
             .ok_or(AbiError(AbiErrorKind::Error_abi_mismatch))?;
 
         let decoded_tokens = function.decode_input(encoded_data)?;
 
+        // Clear the `outputs` to avoid adding them to the signature.
+        // This is a requirement that comes from legacy ABI implementation.
+        function.outputs.clear();
+        let function_signature = function.signature();
+
         // Serialize the `decoded_json` result.
         let decoded_res = SmartContractCallDecodedInputJson {
-            function: function.signature_with_inputs(),
+            function: function_signature,
             inputs: &decoded_tokens,
         };
         let decoded_json = serde_json::to_string(&decoded_res)
@@ -167,7 +172,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             inputs: function_inputs,
             ..Function::default()
         };
-        fun.signature_with_inputs()
+        fun.signature()
     }
 
     fn encode_contract_call_impl(
@@ -190,7 +195,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
         let encoded = fun.encode_input(tokens)?;
         Ok(Proto::FunctionEncodingOutput {
-            function_type: fun.signature_with_inputs().into(),
+            function_type: fun.signature().into(),
             encoded: encoded.into(),
             ..Proto::FunctionEncodingOutput::default()
         })

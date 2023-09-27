@@ -33,8 +33,9 @@ enum AbiError {
 // Indicates a boolean type.
 message BoolType {}
 
-// Generic number type for all other bit sizes, like UInt24, 40, 48, ... 248.
+// Generic number type for all bit sizes, like UInt24, 40, 48, ... 248.
 message NumberNType {
+    // The number of bits of an integer.
     uint32 bits = 1;
 }
 
@@ -46,12 +47,15 @@ message AddressType {}
 
 // Indicates an array type with an inner `element_type`.
 message ArrayType {
+    // The type of array elements.
     ParamType element_type = 1;
 }
 
 // Indicates a fixed-size array type with an inner `element_type`.
 message FixedArrayType {
+    // The fixed-size of the array.
     uint64 size = 1;
+    // The type of array elements.
     ParamType element_type = 2;
 }
 
@@ -60,11 +64,13 @@ message ByteArrayType {}
 
 // Indicates a fixed-size byte array type.
 message ByteArrayFixType {
+    // The fixed-size of the array.
     uint64 size = 1;
 }
 
 // Indicates a tuple with inner type parameters.
 message TupleType {
+    // Tuple named parameters.
     repeated Param params = 1;
 }
 
@@ -111,27 +117,31 @@ message NumberNParam {
 
 // A byte array of arbitrary size.
 message ArrayParam {
+    // The type of array elements.
     ParamType element_type = 1;
 
+    // Array elements.
     repeated Token elements = 2;
 }
 
 // A tuple with various parameters similar to a structure.
 message TupleParam {
+    // Tokens (values) of the tuple parameters.
     repeated Token params = 1;
 }
 
-// An enumeration of possible parameters.
+// A value of an ABI parameter.
 message Token {
     // Optional. Name of a corresponding parameter.
     string name = 1;
 
     oneof token {
-        // Simple values.
+        // Integer values.
         bool boolean = 2;
         NumberNParam number_int = 3;
         NumberNParam number_uint = 4;
-        // Nested values. Gap in field numbering is intentional.
+
+        // Simple values. Gap in field numbering is intentional.
         string string_value = 7;
         string address = 8;
         bytes byte_array = 9;
@@ -190,7 +200,9 @@ message ContractCallDecodingOutput {
 
 //// TWEthereumAbiDecodeParams
 
+// A set of ABI type parameters.
 message AbiParams {
+    // ABI type parameters.
     repeated Param params = 1;
 }
 
@@ -264,6 +276,7 @@ message ValueDecodingOutput {
 
 // Encode a function call to Eth ABI binary.
 message FunctionEncodingInput {
+    // Function name.
     string function_name = 1;
 
     // Parameters to be encoded.
@@ -289,7 +302,14 @@ message FunctionEncodingOutput {
 
 // Return the function type signature, of the form "baz(int32,uint256)".
 message FunctionGetTypeInput {
+    // Function signature. Includes function inputs if they are.
+    // Examples:
+    // - `functionName()`
+    // - `functionName()`
+    // - `functionName(bool)`
+    // - `functionName(uint256,bytes32)`
     string function_name = 1;
 
+    // A set of ABI type parameters.
     repeated Param inputs = 2;
 }
