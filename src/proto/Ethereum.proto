@@ -239,6 +239,13 @@ message MessageSigningOutput {
 }
 
 message MessageVerifyingInput {
+    // The message signed.
+    // TODO consider adding message type.
+    string message = 1;
+
+    // Public key that will verify and recover the message from the signature.
+    bytes public_key = 2;
+
     // The signature, Hex-encoded.
-    string signature = 1;
+    string signature = 3;
 }

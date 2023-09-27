@@ -11,18 +11,8 @@ use std::ops::{Range, RangeInclusive};
 use tw_hash::{H256, H520};
 use tw_misc::traits::ToBytesVec;
 
-/// cbindgen:ignore
-const R_RANGE: Range<usize> = 0..32;
-/// cbindgen:ignore
-const S_RANGE: Range<usize> = 32..64;
-/// cbindgen:ignore
-const RECOVERY_LAST: usize = 64;
-/// Expected signature with or without recovery byte in the end of the slice.
-/// cbindgen:ignore
-const VERIFY_SIGNATURE_LEN_RANGE: RangeInclusive<usize> = 64..=65;
-
 /// Represents an ECDSA signature.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Signature<C: EcdsaCurve> {
     pub(crate) signature: ecdsa::Signature<C>,
     pub(crate) v: ecdsa::RecoveryId,
@@ -32,6 +22,11 @@ pub struct Signature<C: EcdsaCurve> {
 impl<C: EcdsaCurve> Signature<C> {
     /// The number of bytes for a serialized signature representation.
     pub const LEN: usize = 65;
+    pub const R_RANGE: Range<usize> = 0..32;
+    pub const S_RANGE: Range<usize> = 32..64;
+    pub const RECOVERY_LAST: usize = 64;
+    /// Expected signature with or without recovery byte in the end of the slice.
+    pub const VERIFY_SIGNATURE_LEN_RANGE: RangeInclusive<usize> = 64..=65;
 
     /// Creates a `secp256k1` recoverable signature from the given [`k256::ecdsa::Signature`]
     /// and the `v` recovery byte.
@@ -67,12 +62,20 @@ impl<C: EcdsaCurve> Signature<C> {
             return Err(KeyPairError::InvalidSignature);
         }
 
-        let v = ecdsa::RecoveryId::from_byte(sig[RECOVERY_LAST])
+        let v = ecdsa::RecoveryId::from_byte(sig[Self::RECOVERY_LAST])
             .ok_or(KeyPairError::InvalidSignature)?;
 
         Ok(Signature {
-            signature: Self::signature_from_slices(&sig[R_RANGE], &sig[S_RANGE])?,
+            signature: Self::signature_from_slices(&sig[Self::R_RANGE], &sig[Self::S_RANGE])?,
             v,
+        })
+    }
+
+    /// Tries to create a Signature from the parts.
+    pub fn try_from_parts(r: H256, s: H256, v: u8) -> KeyPairResult<Self> {
+        Ok(Signature {
+            signature: Self::signature_from_slices(r.as_slice(), s.as_slice())?,
+            v: ecdsa::RecoveryId::from_byte(v).ok_or(KeyPairError::InvalidSignature)?,
         })
     }
 
@@ -82,9 +85,9 @@ impl<C: EcdsaCurve> Signature<C> {
         let (r, s) = self.signature.split_bytes();
 
         let mut dest = H520::default();
-        dest[R_RANGE].copy_from_slice(r.as_slice());
-        dest[S_RANGE].copy_from_slice(s.as_slice());
-        dest[RECOVERY_LAST] = self.v.to_byte();
+        dest[Self::R_RANGE].copy_from_slice(r.as_slice());
+        dest[Self::S_RANGE].copy_from_slice(s.as_slice());
+        dest[Self::RECOVERY_LAST] = self.v.to_byte();
         dest
     }
 
@@ -122,12 +125,15 @@ impl<'a, C: EcdsaCurve> TryFrom<&'a [u8]> for VerifySignature<C> {
     type Error = KeyPairError;
 
     fn try_from(sig: &'a [u8]) -> Result<Self, Self::Error> {
-        if !VERIFY_SIGNATURE_LEN_RANGE.contains(&sig.len()) {
+        if !Signature::<C>::VERIFY_SIGNATURE_LEN_RANGE.contains(&sig.len()) {
             return Err(KeyPairError::InvalidSignature);
         }
 
         Ok(VerifySignature {
-            signature: Signature::signature_from_slices(&sig[R_RANGE], &sig[S_RANGE])?,
+            signature: Signature::signature_from_slices(
+                &sig[Signature::<C>::R_RANGE],
+                &sig[Signature::<C>::S_RANGE],
+            )?,
         })
     }
 }

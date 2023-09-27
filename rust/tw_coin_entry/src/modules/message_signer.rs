@@ -27,7 +27,12 @@ pub trait MessageSigner {
         input: Self::MessageSigningInput<'_>,
     ) -> Self::MessageSigningOutput;
 
-    fn verify_message(&self, input: Self::MessageVerifyingInput<'_>) -> bool;
+    /// Verifies signature.
+    fn verify_message(
+        &self,
+        _coin: &dyn CoinContext,
+        input: Self::MessageVerifyingInput<'_>,
+    ) -> bool;
 }
 
 /// `NoMessageSigner` can't be created since there are no enum variants.
@@ -55,7 +60,11 @@ impl MessageSigner for NoMessageSigner {
         panic!("`NoMessageSigner` should never be constructed and used")
     }
 
-    fn verify_message(&self, _input: Self::MessageVerifyingInput<'_>) -> bool {
+    fn verify_message(
+        &self,
+        _coin: &dyn CoinContext,
+        _input: Self::MessageVerifyingInput<'_>,
+    ) -> bool {
         panic!("`NoMessageSigner` should never be constructed and used")
     }
 }

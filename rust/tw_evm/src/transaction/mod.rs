@@ -11,12 +11,13 @@
 //! - Typed transactions (enveloped, EIP2718), with specific type and transaction payload
 //! - User operations (EIP4337)
 
-use crate::signature::EthSignature;
+use crate::transaction::signature::EthSignature;
 use tw_hash::{sha3::keccak256, H256};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
 
+pub mod signature;
 pub mod transaction_eip1559;
 pub mod transaction_non_typed;
 pub mod user_operation;
