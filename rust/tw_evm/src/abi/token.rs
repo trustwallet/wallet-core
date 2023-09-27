@@ -120,7 +120,7 @@ impl Serialize for Token {
                 bytes.to_hex_prefixed().serialize(serializer)
             },
             Token::Int { int: num, .. } | Token::Uint { uint: num, .. } => {
-                num.serialize(serializer)
+                num.as_decimal_str(serializer)
             },
             Token::Bool(bool) => bool.serialize(serializer),
             Token::String(str) => str.serialize(serializer),

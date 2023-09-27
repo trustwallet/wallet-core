@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::message::eip191_message::Eip191Message;
+use crate::message::eip191::Eip191Message;
 use crate::message::signature::{MessageSignature, SignatureType};
 use crate::message::{EthMessage, EthMessageBoxed};
 use std::borrow::Cow;
@@ -61,9 +61,10 @@ impl EthMessageSigner {
         input: Proto::MessageSigningInput<'_>,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
         let msg = Self::message_from_proto(input)?;
+        let hash = msg.hash()?.to_vec();
         Ok(CompilerProto::PreSigningOutput {
-            data: Cow::Owned(msg.data()),
-            data_hash: Cow::Owned(msg.hash().to_vec()),
+            data: Cow::Owned(hash.clone()),
+            data_hash: Cow::Owned(hash),
             ..CompilerProto::PreSigningOutput::default()
         })
     }
@@ -76,7 +77,8 @@ impl EthMessageSigner {
 
         let msg = Self::message_from_proto(input)?;
 
-        let secp_sign = private_key.sign(msg.hash())?;
+        let hash_to_sign = msg.hash()?;
+        let secp_sign = private_key.sign(hash_to_sign)?;
         let prepared_sign = MessageSignature::prepared(secp_sign, signature_type)?;
 
         Ok(Proto::MessageSigningOutput {
@@ -88,7 +90,7 @@ impl EthMessageSigner {
     fn verify_message_impl(input: Proto::MessageVerifyingInput<'_>) -> SigningResult<bool> {
         let public_key = secp256k1::PublicKey::try_from(input.public_key.as_ref())?;
 
-        let msg_hash = Self::message_from_str(&input.message)?.hash();
+        let msg_hash = Self::message_from_str(&input.message)?.hash()?;
         let secp_signature =
             MessageSignature::from_str(&input.signature)?.to_secp256k1_signature()?;
 

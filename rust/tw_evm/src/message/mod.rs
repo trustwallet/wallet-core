@@ -4,12 +4,33 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_hash::H256;
 
-pub mod eip191_message;
+pub mod eip191;
+pub mod eip712;
 pub mod signature;
 
 pub type EthMessageBoxed = Box<dyn EthMessage>;
+pub type MessageSigningResult<T> = Result<T, MessageSigningError>;
+
+#[derive(Debug)]
+pub enum MessageSigningError {
+    InvalidParameterType,
+    TypeValueMismatch,
+    Internal,
+}
+
+impl From<MessageSigningError> for SigningError {
+    fn from(err: MessageSigningError) -> Self {
+        match err {
+            MessageSigningError::InvalidParameterType | MessageSigningError::TypeValueMismatch => {
+                SigningError(SigningErrorType::Error_invalid_params)
+            },
+            MessageSigningError::Internal => SigningError(SigningErrorType::Error_internal),
+        }
+    }
+}
 
 pub trait EthMessage {
     fn into_boxed(self) -> EthMessageBoxed
@@ -19,9 +40,6 @@ pub trait EthMessage {
         Box::new(self)
     }
 
-    /// Returns message data.
-    fn data(&self) -> Vec<u8>;
-
     /// Returns hash of the message.
-    fn hash(&self) -> H256;
+    fn hash(&self) -> MessageSigningResult<H256>;
 }

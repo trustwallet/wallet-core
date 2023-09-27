@@ -4,7 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::message::EthMessage;
+use crate::message::{EthMessage, MessageSigningResult};
+use tw_coin_entry::error::SigningResult;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 
@@ -23,10 +24,8 @@ impl Eip191Message {
             user_message: user_message.into(),
         }
     }
-}
 
-impl EthMessage for Eip191Message {
-    fn data(&self) -> Vec<u8> {
+    fn data_to_sign(&self) -> Vec<u8> {
         let mut data = Vec::with_capacity(self.user_message.len() * 2);
 
         data.push(ETHEREUM_PREFIX);
@@ -36,9 +35,11 @@ impl EthMessage for Eip191Message {
 
         data
     }
+}
 
-    fn hash(&self) -> H256 {
-        let hash = keccak256(&self.data());
-        H256::try_from(hash.as_slice()).expect("Expected 32 byte hash")
+impl EthMessage for Eip191Message {
+    fn hash(&self) -> MessageSigningResult<H256> {
+        let hash = keccak256(&self.data_to_sign());
+        Ok(H256::try_from(hash.as_slice()).expect("Expected 32 byte hash"))
     }
 }

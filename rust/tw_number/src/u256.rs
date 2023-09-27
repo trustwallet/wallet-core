@@ -182,25 +182,42 @@ where
 mod impl_serde {
     use crate::U256;
     use serde::de::Error as DeError;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer};
     use std::str::FromStr;
 
-    impl<'de> Deserialize<'de> for U256 {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    impl U256 {
+        pub fn as_decimal_str<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            serializer.serialize_str(&self.to_string())
+        }
+
+        pub fn from_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
         {
             let s: &str = Deserialize::deserialize(deserializer)?;
             U256::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
         }
-    }
 
-    impl Serialize for U256 {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        pub fn from_u64_or_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
-            S: Serializer,
+            D: Deserializer<'de>,
         {
-            serializer.serialize_str(&self.to_string())
+            #[derive(Deserialize)]
+            #[serde(untagged)]
+            enum UintOrStr<'a> {
+                Uint(u64),
+                Str(&'a str),
+            }
+
+            match Deserialize::deserialize(deserializer)? {
+                UintOrStr::Uint(u) => Ok(U256::from(u)),
+                UintOrStr::Str(s) => {
+                    U256::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
+                },
+            }
         }
     }
 }
