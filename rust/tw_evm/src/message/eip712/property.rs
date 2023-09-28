@@ -4,12 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::{AbiError, AbiErrorKind};
 use crate::message::{MessageSigningError, MessageSigningResult};
 use serde::de::Error as DeError;
 use serde::{Deserialize, Deserializer};
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Property {
@@ -65,7 +63,7 @@ impl FromStr for PropertyType {
             return Err(MessageSigningError::InvalidParameterType);
         }
 
-        if s.contains(&['[', ']']) {
+        if s.contains(['[', ']']) {
             return Err(MessageSigningError::InvalidParameterType);
         }
 

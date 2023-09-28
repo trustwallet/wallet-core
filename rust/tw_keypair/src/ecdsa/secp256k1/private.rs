@@ -14,9 +14,10 @@ use k256::{AffinePoint, ProjectivePoint};
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
-use zeroize::Zeroizing;
+use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents a `secp256k1` private key.
+#[derive(ZeroizeOnDrop)]
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
 }

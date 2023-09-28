@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::message::{EthMessage, MessageSigningResult};
-use tw_coin_entry::error::SigningResult;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 

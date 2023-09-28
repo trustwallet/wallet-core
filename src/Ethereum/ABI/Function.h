@@ -14,6 +14,7 @@
 #include "../../uint256.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TW::Ethereum::ABI {

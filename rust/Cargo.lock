@@ -1658,6 +1658,7 @@ name = "tw_number"
 version = "0.1.0"
 dependencies = [
  "ethabi",
+ "lazy_static",
  "primitive-types",
  "serde",
  "tw_encoding",

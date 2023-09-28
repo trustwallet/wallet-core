@@ -6,7 +6,6 @@
 
 use crate::abi::encode::encode_tokens;
 use crate::abi::token::Token;
-use crate::abi::AbiResult;
 use crate::message::eip712::property::{Property, PropertyType};
 use crate::message::{EthMessage, MessageSigningError, MessageSigningResult};
 use serde::Deserialize;
@@ -14,7 +13,6 @@ use serde_json::Value as Json;
 use std::collections::HashMap;
 use std::str::FromStr;
 use tw_coin_entry::error::SigningResult;
-use tw_encoding::hex::ToHex;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
 use tw_memory::Data;

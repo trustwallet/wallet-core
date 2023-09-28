@@ -15,6 +15,20 @@ pub mod param_token;
 pub mod param_type;
 pub mod prebuild;
 pub mod token;
+pub mod uint;
+
+#[macro_export]
+macro_rules! abi_output_error {
+    ($output:ty, $error:expr) => {{
+        let err = $error;
+
+        let mut output = <$output>::default();
+        output.error = err.0;
+        output.error_message = std::borrow::Cow::from(format!("{err:?}"));
+
+        output
+    }};
+}
 
 pub type AbiResult<T> = Result<T, AbiError>;
 pub type AbiErrorKind = tw_proto::EthereumAbi::Proto::AbiError;
@@ -30,17 +44,4 @@ impl From<AbiError> for SigningError {
             _ => SigningError(SigningErrorType::Error_invalid_params),
         }
     }
-}
-
-#[macro_export]
-macro_rules! abi_output_error {
-    ($output:ty, $error:expr) => {{
-        let err = $error;
-
-        let mut output = <$output>::default();
-        output.error = err.0;
-        output.error_message = std::borrow::Cow::from(format!("{err:?}"));
-
-        output
-    }};
 }
