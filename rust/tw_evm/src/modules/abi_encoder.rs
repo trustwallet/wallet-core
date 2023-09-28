@@ -22,7 +22,7 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_hash::H32;
 use tw_misc::traits::ToBytesVec;
-use tw_number::U256;
+use tw_number::{I256, U256};
 use tw_proto::EthereumAbi::Proto;
 
 use Proto::mod_ParamType::OneOfparam as ProtoParamType;
@@ -239,11 +239,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         match token.token {
             TokenEnum::boolean(bool) => Ok(Token::Bool(bool)),
             TokenEnum::number_uint(u) => {
-                let uint = Self::number_n_from_proto(&u.value)?;
+                let uint = Self::u_number_n_from_proto(&u.value)?;
                 Token::uint(u.bits as usize, uint)
             },
             TokenEnum::number_int(i) => {
-                let int = Self::number_n_from_proto(&i.value)?;
+                let int = Self::s_number_n_from_proto(&i.value)?;
                 Token::int(i.bits as usize, int)
             },
             TokenEnum::string_value(str) => Ok(Token::String(str.to_string())),
@@ -385,8 +385,10 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             Token::Address(addr) => TokenEnum::address(Cow::Owned(addr.to_string())),
             Token::FixedBytes(bytes) => TokenEnum::byte_array_fix(Cow::Owned(bytes)),
             Token::Bytes(bytes) => TokenEnum::byte_array(Cow::Owned(bytes)),
-            Token::Int { int, bits } => TokenEnum::number_int(Self::number_n_proto(int, bits)),
-            Token::Uint { uint, bits } => TokenEnum::number_uint(Self::number_n_proto(uint, bits)),
+            Token::Int { int, bits } => TokenEnum::number_int(Self::s_number_n_proto(int, bits)),
+            Token::Uint { uint, bits } => {
+                TokenEnum::number_uint(Self::u_number_n_proto(uint, bits))
+            },
             Token::Bool(bool) => TokenEnum::boolean(bool),
             Token::String(str) => TokenEnum::string_value(Cow::Owned(str)),
             Token::FixedArray { kind, arr } => {
@@ -401,12 +403,24 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn number_n_from_proto(encoded: &[u8]) -> AbiResult<U256> {
+    fn s_number_n_from_proto(encoded: &[u8]) -> AbiResult<I256> {
+        I256::from_big_endian_slice(encoded)
+            .map_err(|_| AbiError(AbiErrorKind::Error_invalid_uint_value))
+    }
+
+    fn u_number_n_from_proto(encoded: &[u8]) -> AbiResult<U256> {
         U256::from_big_endian_slice(encoded)
             .map_err(|_| AbiError(AbiErrorKind::Error_invalid_uint_value))
     }
 
-    fn number_n_proto(u: U256, bits: usize) -> Proto::NumberNParam<'static> {
+    fn s_number_n_proto(i: I256, bits: usize) -> Proto::NumberNParam<'static> {
+        Proto::NumberNParam {
+            bits: bits as u32,
+            value: Cow::Owned(i.to_big_endian_compact()),
+        }
+    }
+
+    fn u_number_n_proto(u: U256, bits: usize) -> Proto::NumberNParam<'static> {
         Proto::NumberNParam {
             bits: bits as u32,
             value: Cow::Owned(u.to_big_endian_compact()),

@@ -15,7 +15,7 @@ use serde::{Serialize, Serializer};
 use std::fmt;
 use tw_encoding::hex::ToHex;
 use tw_memory::Data;
-use tw_number::U256;
+use tw_number::{I256, U256};
 
 #[derive(Clone)]
 pub enum Token {
@@ -39,7 +39,7 @@ pub enum Token {
     /// Signed integer.
     ///
     /// solidity name: int
-    Int { int: U256, bits: usize },
+    Int { int: I256, bits: usize },
     /// Unsigned integer.
     ///
     /// solidity name: uint
@@ -87,7 +87,8 @@ impl fmt::Display for Token {
             Token::Bytes(bytes) | Token::FixedBytes(bytes) => {
                 write!(f, "{}", bytes.to_hex_prefixed())
             },
-            Token::Int { int: uint, .. } | Token::Uint { uint, .. } => write!(f, "{uint}"),
+            Token::Int { int, .. } => write!(f, "{int}"),
+            Token::Uint { uint, .. } => write!(f, "{uint}"),
             Token::Bool(bool) => write!(f, "{bool}"),
             Token::String(str) => write!(f, "{str}"),
             Token::FixedArray { arr, .. } | Token::Array { arr, .. } => {
@@ -120,9 +121,8 @@ impl Serialize for Token {
             Token::Bytes(bytes) | Token::FixedBytes(bytes) => {
                 bytes.to_hex_prefixed().serialize(serializer)
             },
-            Token::Int { int: num, .. } | Token::Uint { uint: num, .. } => {
-                num.serialize(serializer)
-            },
+            Token::Int { int, .. } => int.serialize(serializer),
+            Token::Uint { uint, .. } => uint.serialize(serializer),
             Token::Bool(bool) => bool.serialize(serializer),
             Token::String(str) => str.serialize(serializer),
             Token::Array { arr, .. } | Token::FixedArray { arr, .. } => arr.serialize(serializer),
@@ -147,10 +147,10 @@ impl Token {
         })
     }
 
-    pub fn int<Int: Into<U256>>(bits: usize, uint: Int) -> AbiResult<Token> {
+    pub fn int<Int: Into<I256>>(bits: usize, int: Int) -> AbiResult<Token> {
         check_uint_bits(bits)?;
         Ok(Token::Int {
-            int: uint.into(),
+            int: int.into(),
             bits,
         })
     }
@@ -174,7 +174,7 @@ impl Token {
             (EthAbiToken::FixedBytes(bytes), _) => Ok(Token::FixedBytes(bytes)),
             (EthAbiToken::Bytes(bytes), _) => Ok(Token::Bytes(bytes)),
             (EthAbiToken::Int(i), ParamType::Int { bits }) => {
-                let int = U256::from_ethabi(i);
+                let int = I256::from_ethabi(i);
                 Ok(Token::Int { int, bits: *bits })
             },
             (EthAbiToken::Uint(u), ParamType::Uint { bits }) => {

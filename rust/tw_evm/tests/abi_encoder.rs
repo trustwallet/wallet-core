@@ -7,13 +7,14 @@
 use serde_json::{json, Value as Json};
 use std::borrow::Cow;
 use tw_encoding::hex::{DecodeHex, ToHex};
+use tw_evm::abi::AbiErrorKind;
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::abi_encoder::AbiEncoder;
-use tw_number::U256;
+use tw_number::{I256, U256};
 use tw_proto::EthereumAbi::Proto;
 
-use tw_evm::abi::AbiErrorKind;
 use Proto::mod_ParamType::OneOfparam as ParamTypeEnum;
+use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;
 use Proto::mod_Token::OneOftoken as TokenEnum;
 
 const SWAP_V2_ABI: &str = include_str!("data/swap_v2.json");
@@ -33,11 +34,18 @@ fn named_token(name: &str, token: TokenEnum<'static>) -> Proto::Token<'static> {
     }
 }
 
-fn number_n<const BITS: u32>(value: u64) -> Proto::NumberNParam<'static> {
-    Proto::NumberNParam {
+fn u_number_n<const BITS: u32>(value: u64) -> TokenEnum<'static> {
+    TokenEnum::number_uint(Proto::NumberNParam {
         bits: BITS,
         value: U256::encode_be_compact(value),
-    }
+    })
+}
+
+fn s_number_n<const BITS: u32>(value: i64) -> TokenEnum<'static> {
+    TokenEnum::number_int(Proto::NumberNParam {
+        bits: BITS,
+        value: I256::encode_be_compact(value),
+    })
 }
 
 fn number_type_n<const BITS: u32>() -> Proto::NumberNType {
@@ -81,6 +89,59 @@ where
     })
 }
 
+fn test_encode_contract_call_impl(
+    function_name: &str,
+    tokens: Vec<Proto::Token<'_>>,
+    expected_call: &str,
+) {
+    let input = Proto::FunctionEncodingInput {
+        function_name: function_name.into(),
+        tokens,
+    };
+
+    let output = AbiEncoder::<StandardEvmContext>::encode_contract_call(input);
+    assert_eq!(output.error, AbiErrorKind::OK);
+    assert!(output.error_message.is_empty());
+    assert_eq!(output.encoded.to_hex(), expected_call);
+}
+
+fn test_decode_params_impl(
+    encoded: &str,
+    expected_tokens: Vec<Proto::Token<'_>>,
+    abi: AbiEnum<'_>,
+) {
+    let input = Proto::ParamsDecodingInput {
+        encoded: encoded.decode_hex().unwrap().into(),
+        abi,
+    };
+
+    let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
+    assert_eq!(output.error, AbiErrorKind::OK);
+    assert!(output.error_message.is_empty());
+    assert_eq!(output.tokens, expected_tokens);
+}
+
+fn test_decode_contract_call_impl(
+    encoded: &str,
+    abi_json: &str,
+    decoded_json: &str,
+    expected_tokens: Vec<Proto::Token<'_>>,
+) {
+    let input = Proto::ContractCallDecodingInput {
+        encoded: encoded.decode_hex().unwrap().into(),
+        smart_contract_abi_json: Cow::Borrowed(abi_json),
+    };
+
+    let output = AbiEncoder::<StandardEvmContext>::decode_contract_call(input);
+    assert_eq!(output.error, AbiErrorKind::OK);
+    assert!(output.error_message.is_empty());
+
+    let actual_json: Json = serde_json::from_str(&output.decoded_json).unwrap();
+    let expected_json: Json = serde_json::from_str(decoded_json).unwrap();
+    assert_eq!(actual_json, expected_json);
+    assert_eq!(output.tokens, expected_tokens);
+}
+
 mod swap_v2 {
     use super::*;
 
@@ -111,22 +172,22 @@ mod swap_v2 {
 
         let calls = vec![
             tuple(vec![
-                named_token("callType", TokenEnum::number_uint(number_n::<8>(0))),
+                named_token("callType", u_number_n::<8>(0)),
                 named_token(
                     "target",
                     TokenEnum::address("0xdAC17F958D2ee523a2206206994597C13D831ec7".into()),
                 ),
-                named_token("value", TokenEnum::number_uint(number_n::<256>(0))),
+                named_token("value", u_number_n::<256>(0)),
                 named_token("callData", TokenEnum::byte_array(call_data_1.into())),
                 named_token("payload", TokenEnum::byte_array(Cow::default())),
             ]),
             tuple(vec![
-                named_token("callType", TokenEnum::number_uint(number_n::<8>(0))),
+                named_token("callType", u_number_n::<8>(0)),
                 named_token(
                     "target",
                     TokenEnum::address("0x99a58482BD75cbab83b27EC03CA68fF489b5788f".into()),
                 ),
-                named_token("value", TokenEnum::number_uint(number_n::<256>(0))),
+                named_token("value", u_number_n::<256>(0)),
                 named_token("callData", TokenEnum::byte_array(call_data_2.into())),
                 named_token("payload", TokenEnum::byte_array(Cow::default())),
             ]),
@@ -138,10 +199,7 @@ mod swap_v2 {
                 "token",
                 TokenEnum::address("0xdAC17F958D2ee523a2206206994597C13D831ec7".into()),
             ),
-            named_token(
-                "amount",
-                TokenEnum::number_uint(number_n::<256>(20000000000000000)),
-            ),
+            named_token("amount", u_number_n::<256>(20000000000000000)),
             named_token("calls", TokenEnum::array(array(calls_array_type(), calls))),
             named_token("bridgedTokenSymbol", TokenEnum::string_value("USDC".into())),
             named_token(
@@ -163,32 +221,12 @@ mod swap_v2 {
 
     #[test]
     fn test_decode_contract_call_swap_v2() {
-        let input = Proto::ContractCallDecodingInput {
-            encoded: ENCODED_CALL.decode_hex().unwrap().into(),
-            smart_contract_abi_json: Cow::Borrowed(SWAP_V2_ABI),
-        };
-
-        let output = AbiEncoder::<StandardEvmContext>::decode_contract_call(input);
-        assert_eq!(output.error, AbiErrorKind::OK);
-        assert!(output.error_message.is_empty());
-
-        let actual_json: Json = serde_json::from_str(&output.decoded_json).unwrap();
-        let expected_json: Json = serde_json::from_str(SWAP_V2_DECODED).unwrap();
-        assert_eq!(actual_json, expected_json);
-        assert_eq!(output.tokens, token_values());
+        test_decode_contract_call_impl(ENCODED_CALL, SWAP_V2_ABI, SWAP_V2_DECODED, token_values());
     }
 
     #[test]
     fn test_encode_contract_call_swap_v2() {
-        let input = Proto::FunctionEncodingInput {
-            function_name: FUNCTION_NAME.into(),
-            tokens: token_values(),
-        };
-
-        let output = AbiEncoder::<StandardEvmContext>::encode_contract_call(input);
-        assert_eq!(output.error, AbiErrorKind::OK);
-        assert!(output.error_message.is_empty());
-        assert_eq!(output.encoded, ENCODED_CALL.decode_hex().unwrap());
+        test_encode_contract_call_impl(FUNCTION_NAME, token_values(), ENCODED_CALL);
     }
 }
 
@@ -207,32 +245,37 @@ fn test_decode_params_with_abi_json() {
         }
     ]);
     let abi_json = serde_json::to_string(&abi_json).unwrap();
-    let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41".decode_hex().unwrap();
-
-    let input = Proto::ParamsDecodingInput {
-        encoded: Cow::Owned(encoded),
-        abi: Proto::mod_ParamsDecodingInput::OneOfabi::abi_json(abi_json.into()),
-    };
-
-    let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
-    assert_eq!(output.error, AbiErrorKind::OK);
-    assert!(output.error_message.is_empty());
+    let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41";
 
     let node_bytes = "0xe71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f"
         .decode_hex()
         .unwrap();
-    let expected_proto = vec![
+    let expected_tokens = vec![
         named_token("node", TokenEnum::byte_array_fix(node_bytes.into())),
         named_token(
             "resolver",
             TokenEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
         ),
     ];
-    assert_eq!(output.tokens, expected_proto);
+
+    test_decode_params_impl(encoded, expected_tokens, AbiEnum::abi_json(abi_json.into()));
 }
 
 #[test]
 fn test_decode_params_with_abi_params() {
+    let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41";
+
+    let node_bytes = "0xe71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f"
+        .decode_hex()
+        .unwrap();
+    let expected_tokens = vec![
+        named_token("node", TokenEnum::byte_array_fix(node_bytes.into())),
+        named_token(
+            "resolver",
+            TokenEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
+        ),
+    ];
+
     let abi_params = vec![
         param(
             "node",
@@ -240,30 +283,12 @@ fn test_decode_params_with_abi_params() {
         ),
         param("resolver", ParamTypeEnum::address(Proto::AddressType {})),
     ];
-    let encoded = "e71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41".decode_hex().unwrap();
 
-    let input = Proto::ParamsDecodingInput {
-        encoded: Cow::Owned(encoded),
-        abi: Proto::mod_ParamsDecodingInput::OneOfabi::abi_params(Proto::AbiParams {
-            params: abi_params,
-        }),
-    };
-
-    let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
-    assert_eq!(output.error, AbiErrorKind::OK);
-    assert!(output.error_message.is_empty());
-
-    let node_bytes = "0xe71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f"
-        .decode_hex()
-        .unwrap();
-    let expected_proto = vec![
-        named_token("node", TokenEnum::byte_array_fix(node_bytes.into())),
-        named_token(
-            "resolver",
-            TokenEnum::address("0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41".into()),
-        ),
-    ];
-    assert_eq!(output.tokens, expected_proto);
+    test_decode_params_impl(
+        encoded,
+        expected_tokens,
+        AbiEnum::abi_params(Proto::AbiParams { params: abi_params }),
+    );
 }
 
 mod dynamic_arguments {
@@ -276,14 +301,11 @@ mod dynamic_arguments {
     fn token_values() -> Vec<Proto::Token<'static>> {
         let dynamic_array = array(
             ParamTypeEnum::number_uint(number_type_n::<32>()),
-            vec![
-                TokenEnum::number_uint(number_n::<32>(0x456)),
-                TokenEnum::number_uint(number_n::<32>(0x789)),
-            ],
+            vec![u_number_n::<32>(0x456), u_number_n::<32>(0x789)],
         );
         let byte_array = vec![0x31u8, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30];
         vec![
-            named_token("", TokenEnum::number_uint(number_n::<256>(0x123))),
+            named_token("", u_number_n::<256>(0x123)),
             named_token("", TokenEnum::array(dynamic_array)),
             named_token("", TokenEnum::byte_array_fix(byte_array.into())),
             named_token("", TokenEnum::string_value("Hello, world!".into())),
@@ -309,30 +331,72 @@ mod dynamic_arguments {
 
     #[test]
     fn test_encode_contract_call_with_dynamic_arguments() {
-        let input = Proto::FunctionEncodingInput {
-            function_name: FUNCTION_NAME.into(),
-            tokens: token_values(),
-        };
-
-        let output = AbiEncoder::<StandardEvmContext>::encode_contract_call(input);
-        assert_eq!(output.error, AbiErrorKind::OK);
-        assert!(output.error_message.is_empty());
-        assert_eq!(output.encoded.to_hex(), ENCODED_CALL_WITH_SIGNATURE);
+        test_encode_contract_call_impl(FUNCTION_NAME, token_values(), ENCODED_CALL_WITH_SIGNATURE);
     }
 
     #[test]
     fn test_decode_params_with_dynamic_arguments_case2() {
-        let input = Proto::ParamsDecodingInput {
-            encoded: ENCODED_CALL.decode_hex().unwrap().into(),
-            abi: Proto::mod_ParamsDecodingInput::OneOfabi::abi_params(Proto::AbiParams {
+        test_decode_params_impl(
+            ENCODED_CALL,
+            token_values(),
+            AbiEnum::abi_params(Proto::AbiParams {
                 params: param_types(),
             }),
-        };
+        );
+    }
+}
 
-        let output = AbiEncoder::<StandardEvmContext>::decode_params(input);
-        assert_eq!(output.error, AbiErrorKind::OK);
-        assert!(output.error_message.is_empty());
-        assert_eq!(output.tokens, token_values());
+mod negative_integers {
+    use super::*;
+
+    const FUNCTION_NAME: &str = "approve";
+    const ENCODED_CALL_WITH_SIGNATURE: &str = "d4e12f2e0000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaedfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd";
+    const ENCODED_CALL: &str = "0000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaedfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd";
+
+    const ABI_JSON: &str = include_str!("data/abi_with_negative_int.json");
+    const DECODED_JSON: &str = include_str!("data/decoded_abi_with_negative_int.json");
+
+    fn token_values() -> Vec<Proto::Token<'static>> {
+        vec![
+            named_token(
+                "_spender",
+                TokenEnum::address("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed".into()),
+            ),
+            named_token("_value", s_number_n::<256>(-3)),
+        ]
+    }
+
+    fn param_types() -> Vec<Proto::Param<'static>> {
+        vec![
+            param("_spender", ParamTypeEnum::address(Proto::AddressType {})),
+            param("_value", ParamTypeEnum::number_int(number_type_n::<256>())),
+        ]
+    }
+
+    #[test]
+    fn test_encode_contract_call_with_negative_integer() {
+        test_encode_contract_call_impl(FUNCTION_NAME, token_values(), ENCODED_CALL_WITH_SIGNATURE);
+    }
+
+    #[test]
+    fn test_decode_params_with_negative_integer() {
+        test_decode_params_impl(
+            ENCODED_CALL,
+            token_values(),
+            AbiEnum::abi_params(Proto::AbiParams {
+                params: param_types(),
+            }),
+        );
+    }
+
+    #[test]
+    fn test_decode_contract_call_with_negative_integer() {
+        test_decode_contract_call_impl(
+            ENCODED_CALL_WITH_SIGNATURE,
+            ABI_JSON,
+            DECODED_JSON,
+            token_values(),
+        );
     }
 }
 
@@ -340,12 +404,12 @@ mod dynamic_arguments {
 fn test_encode_params_monster() {
     let byte_array = "3132333435".decode_hex().unwrap();
 
-    let u1 = TokenEnum::number_uint(number_n::<8>(1));
-    let u2 = TokenEnum::number_uint(number_n::<16>(2));
-    let u3 = TokenEnum::number_uint(number_n::<32>(3));
-    let u4 = TokenEnum::number_uint(number_n::<64>(4));
-    let u5 = TokenEnum::number_uint(number_n::<168>(0x123));
-    let u6 = TokenEnum::number_uint(number_n::<256>(0x123));
+    let u1 = u_number_n::<8>(1);
+    let u2 = u_number_n::<16>(2);
+    let u3 = u_number_n::<32>(3);
+    let u4 = u_number_n::<64>(4);
+    let u5 = u_number_n::<168>(0x123);
+    let u6 = u_number_n::<256>(0x123);
 
     let u1t = ParamTypeEnum::number_uint(number_type_n::<8>());
     let u2t = ParamTypeEnum::number_uint(number_type_n::<16>());
@@ -354,12 +418,12 @@ fn test_encode_params_monster() {
     let u5t = ParamTypeEnum::number_uint(number_type_n::<168>());
     let u6t = ParamTypeEnum::number_uint(number_type_n::<256>());
 
-    let i1 = TokenEnum::number_int(number_n::<8>(1));
-    let i2 = TokenEnum::number_int(number_n::<16>(2));
-    let i3 = TokenEnum::number_int(number_n::<32>(3));
-    let i4 = TokenEnum::number_int(number_n::<64>(4));
-    let i5 = TokenEnum::number_int(number_n::<168>(0x123));
-    let i6 = TokenEnum::number_int(number_n::<256>(0x123));
+    let i1 = s_number_n::<8>(1);
+    let i2 = s_number_n::<16>(2);
+    let i3 = s_number_n::<32>(3);
+    let i4 = s_number_n::<64>(4);
+    let i5 = s_number_n::<168>(0x123);
+    let i6 = s_number_n::<256>(0x123);
 
     let i1t = ParamTypeEnum::number_int(number_type_n::<8>());
     let i2t = ParamTypeEnum::number_int(number_type_n::<16>());
@@ -446,9 +510,9 @@ fn test_decode_value() {
         expected_value_proto: TokenEnum<'static>,
     }
 
-    let num1 = TokenEnum::number_uint(number_n::<8>(49));
-    let num2 = TokenEnum::number_uint(number_n::<8>(50));
-    let num3 = TokenEnum::number_uint(number_n::<8>(51));
+    let num1 = u_number_n::<8>(49);
+    let num2 = u_number_n::<8>(50);
+    let num3 = u_number_n::<8>(51);
     let address1 = TokenEnum::address("0xF784682C82526e245F50975190EF0fff4E4fC077".into());
     let address2 = TokenEnum::address("0x2e00CD222Cb42B616D86D037Cc494e8ab7F5c9a3".into());
     let bytes1 = TokenEnum::byte_array("0x1011".decode_hex().unwrap().into());
@@ -459,25 +523,25 @@ fn test_decode_value() {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af",
             kind: "uint256",
             expected_value_str: "10020405371567",
-            expected_value_proto: TokenEnum::number_uint(number_n::<256>(10020405371567)),
+            expected_value_proto: u_number_n::<256>(10020405371567),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000091d0eb3e2af0000000000000000000000000000000000000000000000000000000000000000",
             kind: "int256",
             expected_value_str: "10020405371567",
-            expected_value_proto: TokenEnum::number_int(number_n::<256>(10020405371567)),
+            expected_value_proto: s_number_n::<256>(10020405371567),
         },
         TestInput {
             encoded: "000000000000000000000000000000000000000000000000000000000000002a",
             kind: "uint",
             expected_value_str: "42",
-            expected_value_proto: TokenEnum::number_uint(number_n::<256>(42)),
+            expected_value_proto: u_number_n::<256>(42),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000000000000018",
             kind: "uint8",
             expected_value_str: "24",
-            expected_value_proto: TokenEnum::number_uint(number_n::<8>(24)),
+            expected_value_proto: u_number_n::<8>(24),
         },
         TestInput {
             encoded: "0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000003100000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000033",
@@ -555,24 +619,24 @@ fn test_encode_params_invalid_address() {
         },
         // There is no uint0.
         TestInput {
-            token: TokenEnum::number_uint(number_n::<0>(0)),
+            token: u_number_n::<0>(0),
             error: AbiErrorKind::Error_invalid_uint_value,
         },
-        // There is no uint7.
+        // There is no int7.
         TestInput {
-            token: TokenEnum::number_uint(number_n::<7>(1)),
+            token: s_number_n::<7>(1),
             error: AbiErrorKind::Error_invalid_uint_value,
         },
         // There is no uint512.
         TestInput {
-            token: TokenEnum::number_int(number_n::<512>(123)),
+            token: u_number_n::<512>(123),
             error: AbiErrorKind::Error_invalid_uint_value,
         },
         // ArrayType::element_type and token mismatch.
         TestInput {
             token: TokenEnum::array(array(
                 ParamTypeEnum::number_uint(number_type_n::<8>()),
-                vec![TokenEnum::number_uint(number_n::<256>(1000))],
+                vec![u_number_n::<256>(1000)],
             )),
             error: AbiErrorKind::Error_invalid_param_type,
         },
