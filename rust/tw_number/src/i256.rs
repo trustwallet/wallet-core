@@ -193,7 +193,7 @@ impl fmt::Display for I256 {
 mod impl_serde {
     use super::I256;
     use serde::de::Error as DeError;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer};
     use std::str::FromStr;
 
     impl I256 {
@@ -217,25 +217,6 @@ mod impl_serde {
             D: Deserializer<'de>,
         {
             crate::serde_common::from_num_or_decimal_str::<'de, I256, i64, D>(deserializer)
-        }
-    }
-
-    impl<'de> Deserialize<'de> for I256 {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: Deserializer<'de>,
-        {
-            let s: &str = Deserialize::deserialize(deserializer)?;
-            I256::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
-        }
-    }
-
-    impl Serialize for I256 {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
-        {
-            serializer.serialize_str(&self.to_string())
         }
     }
 }
