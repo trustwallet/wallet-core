@@ -111,7 +111,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     // expected payload
     Data payload;
     {
-        payload = ABI::Function::encodeParams("transfer", Ethereum::ABI::BaseParams{
+        payload = ABI::Function::encodeFunctionCall("transfer", Ethereum::ABI::BaseParams{
                                              std::make_shared<ABI::ProtoAddress>(toAddress),
                                              std::make_shared<ABI::ProtoUInt256>(amount)
         }).value();
@@ -285,7 +285,7 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer) {
     // expected payload
     Data payload;
     {
-        auto funcData = ABI::Function::encodeParams("safeTransferFrom", Ethereum::ABI::BaseParams{
+        auto funcData = ABI::Function::encodeFunctionCall("safeTransferFrom", Ethereum::ABI::BaseParams{
                                                      std::make_shared<ABI::ProtoAddress>(fromAddress),
                                                      std::make_shared<ABI::ProtoAddress>(toAddress),
                                                      std::make_shared<ABI::ProtoUInt256>(uint256_t(0x23c47ee5)),
@@ -503,7 +503,7 @@ TEST(TWAnySignerEthereum, StakeRocketPool) {
 
     Data payload;
     {
-        auto funcData = ABI::Function::encodeParams("deposit", Ethereum::ABI::BaseParams{ });
+        auto funcData = ABI::Function::encodeFunctionCall("deposit", Ethereum::ABI::BaseParams{ });
         payload = funcData.value();
     }
 
@@ -551,7 +551,7 @@ TEST(TWAnySignerEthereum, UnstakeRocketPool) {
 
     Data payload;
     {
-        auto funcData = ABI::Function::encodeParams("burn", ABI::BaseParams{
+        auto funcData = ABI::Function::encodeFunctionCall("burn", ABI::BaseParams{
             std::make_shared<ABI::ProtoUInt256>(uint256_t(0x21faa32ab2502b))
         });
         payload = funcData.value();

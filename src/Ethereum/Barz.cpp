@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "ABI.h"
+#include "ABI/Function.h"
 #include "AddressChecksum.h"
 #include "EIP1014.h"
 #include "Hash.h"
@@ -15,10 +15,8 @@
 
 namespace TW::Barz {
 
-static constexpr std::size_t FUNCTION_SIGNATURE_LEN = 4;
-
 std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
-    auto encoded = Ethereum::ABI::Function::encodeParams("", Ethereum::ABI::BaseParams {
+    auto encodedData = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
         std::make_shared<Ethereum::ABI::ProtoAddress>(input.account_facet()),
         std::make_shared<Ethereum::ABI::ProtoAddress>(input.verification_facet()),
         std::make_shared<Ethereum::ABI::ProtoAddress>(input.entry_point()),
@@ -26,14 +24,12 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
         std::make_shared<Ethereum::ABI::ProtoAddress>(input.default_fallback()),
         std::make_shared<Ethereum::ABI::ProtoByteArray>(parse_hex(input.public_key())),
     });
-    if (!encoded.has_value() || encoded.value().size() < FUNCTION_SIGNATURE_LEN) {
+    if (!encodedData.has_value()) {
         return {};
     }
 
-    // The encoded data includes the function call signature (4 bytes). Erase it.
-    Data encodedData = subData(encoded.value(), FUNCTION_SIGNATURE_LEN);
     Data initCode = parse_hex(input.bytecode());
-    append(initCode, encodedData);
+    append(initCode, encodedData.value());
 
     const Data initCodeHash = Hash::keccak256(initCode);
     Data salt = store(input.salt(), 32);
@@ -41,7 +37,7 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
 }
 
 Data getInitCode(const std::string& factoryAddress, const PublicKey& publicKey, const std::string& verificationFacet, const uint32_t salt) {
-    auto createAccountFuncEncoded = Ethereum::ABI::Function::encodeParams("createAccount", Ethereum::ABI::BaseParams {
+    auto createAccountFuncEncoded = Ethereum::ABI::Function::encodeFunctionCall("createAccount", Ethereum::ABI::BaseParams {
         std::make_shared<Ethereum::ABI::ProtoAddress>(verificationFacet),
         std::make_shared<Ethereum::ABI::ProtoByteArray>(publicKey.bytes),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(salt),
@@ -77,7 +73,7 @@ Data getFormattedSignature(const Data& signature, const Data challenge, const Da
     const Data rValue = subData(parsedSignature, 0, 32);
     const Data sValue = subData(parsedSignature, 32, 64);
 
-    auto encoded = Ethereum::ABI::Function::encodeParams("", Ethereum::ABI::BaseParams {
+    auto encoded = Ethereum::ABI::Function::encodeParams(Ethereum::ABI::BaseParams {
         std::make_shared<Ethereum::ABI::ProtoUInt256>(rValue),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(sValue),
         std::make_shared<Ethereum::ABI::ProtoByteArray>(authenticatorData),
@@ -85,12 +81,10 @@ Data getFormattedSignature(const Data& signature, const Data challenge, const Da
         std::make_shared<Ethereum::ABI::ProtoString>(clientDataJSONPost),
     });
 
-    if (!encoded.has_value() || encoded.value().size() < FUNCTION_SIGNATURE_LEN) {
-        return {};
+    if (encoded.has_value()) {
+        return encoded.value();
     }
-
-    // The encoded data includes the function call signature (4 bytes). Erase it.
-    return subData(encoded.value(), FUNCTION_SIGNATURE_LEN);
+    return {};
 }
 
 } // namespace TW::Barz

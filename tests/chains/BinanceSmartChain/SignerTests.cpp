@@ -48,7 +48,7 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
 
 TEST(BinanceSmartChain, SignTokenTransfer) {
     auto toAddress = "0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683";
-    auto funcData = Ethereum::ABI::Function::encodeParams("transfer", Ethereum::ABI::BaseParams{
+    auto funcData = Ethereum::ABI::Function::encodeFunctionCall("transfer", Ethereum::ABI::BaseParams{
         std::make_shared<Ethereum::ABI::ProtoAddress>(toAddress),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(10000000000000000))
     }).value();

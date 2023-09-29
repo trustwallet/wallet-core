@@ -485,7 +485,7 @@ TEST(THORChainSwap, SwapErc20Rune) {
     ASSERT_TRUE(tx.transaction().has_contract_generic());
 
     auto vaultAddress = "0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E";
-    auto funcData = Ethereum::ABI::Function::encodeParams("depositWithExpiry", Ethereum::ABI::BaseParams{
+    auto funcData = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", Ethereum::ABI::BaseParams{
         std::make_shared<Ethereum::ABI::ProtoAddress>(vaultAddress),
         std::make_shared<Ethereum::ABI::ProtoAddress>("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"),
         std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(1000000)),
