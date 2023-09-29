@@ -31,21 +31,21 @@ pub(crate) mod serde_common {
 
     #[derive(Deserialize)]
     #[serde(untagged)]
-    enum NumOrStr<'a, Num> {
+    enum NumOrStr<Num> {
         Num(Num),
-        Str(&'a str),
+        Str(String),
     }
 
-    pub(crate) fn from_i64_or_decimal_str<'de, T, Num, D>(deserializer: D) -> Result<T, D::Error>
+    pub(crate) fn from_num_or_decimal_str<'de, T, Num, D>(deserializer: D) -> Result<T, D::Error>
     where
         D: Deserializer<'de>,
         T: From<Num> + FromStr<Err = NumberError>,
         Num: Deserialize<'de>,
     {
-        let num_or_str: NumOrStr<'de, Num> = NumOrStr::deserialize(deserializer)?;
+        let num_or_str: NumOrStr<Num> = NumOrStr::deserialize(deserializer)?;
         match num_or_str {
             NumOrStr::Num(num) => Ok(T::from(num)),
-            NumOrStr::Str(s) => T::from_str(s).map_err(|e| DeError::custom(format!("{e:?}"))),
+            NumOrStr::Str(s) => T::from_str(&s).map_err(|e| DeError::custom(format!("{e:?}"))),
         }
     }
 }

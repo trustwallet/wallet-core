@@ -216,7 +216,7 @@ mod impl_serde {
         where
             D: Deserializer<'de>,
         {
-            crate::serde_common::from_i64_or_decimal_str::<'de, I256, i64, D>(deserializer)
+            crate::serde_common::from_num_or_decimal_str::<'de, I256, i64, D>(deserializer)
         }
     }
 

@@ -18,6 +18,7 @@ use tw_encoding::hex::ToHex;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::ecdsa::signature::VerifySignature;
 use tw_keypair::traits::{SigningKeyTrait, VerifyingKeyTrait};
+use tw_number::U256;
 use tw_proto::Ethereum::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 
@@ -111,7 +112,8 @@ impl EthMessageSigner {
             },
             Proto::MessageType::MessageType_typed
             | Proto::MessageType::MessageType_typed_eip155 => {
-                Ok(Eip712Message::new(input.message)?.into_boxed())
+                let expected_chain_id = U256::from(input.chain_id);
+                Ok(Eip712Message::new_checked(input.message, expected_chain_id)?.into_boxed())
             },
         }
     }

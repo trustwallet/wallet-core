@@ -16,7 +16,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use tw_encoding::hex::DecodeHex;
 use tw_hash::sha3::keccak256;
-use tw_hash::H256;
+use tw_hash::{H160, H256};
 use tw_memory::Data;
 use tw_number::{I256, U256};
 
@@ -48,6 +48,23 @@ impl Eip712Message {
             return Err(MessageSigningError::TypeValueMismatch);
         }
         Ok(eip712_msg)
+    }
+
+    pub fn new_checked<S: AsRef<str>>(
+        message_to_sign: S,
+        expected_chain_id: U256,
+    ) -> MessageSigningResult<Eip712Message> {
+        let msg = Eip712Message::new(message_to_sign)?;
+
+        // Check if `domain.chainId` is expected.
+        let chain_id_value = msg.domain["chainId"].clone();
+        let chain_id = U256::from_u64_or_decimal_str(chain_id_value)
+            .map_err(|_| MessageSigningError::TypeValueMismatch)?;
+        if chain_id != expected_chain_id {
+            return Err(MessageSigningError::InvalidChainId);
+        }
+
+        Ok(msg)
     }
 }
 
@@ -113,30 +130,26 @@ fn encode_string(value: &Json) -> MessageSigningResult<Data> {
 }
 
 fn encode_u256(value: &Json) -> MessageSigningResult<Data> {
-    let str = value
-        .as_str()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
-
-    let uint = U256::from_str(str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    let uint = U256::from_u64_or_decimal_str(value.clone())
+        .map_err(|_| MessageSigningError::InvalidParameterValue)?;
     Ok(encode_tokens([Token::u256(uint)]))
 }
 
 fn encode_i256(value: &Json) -> MessageSigningResult<Data> {
-    let str = value
-        .as_str()
-        .ok_or(MessageSigningError::InvalidParameterValue)?;
-
-    let int = I256::from_str(str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    let int = I256::from_i64_or_decimal_str(value.clone())
+        .map_err(|_| MessageSigningError::InvalidParameterValue)?;
     Ok(encode_tokens([Token::i256(int)]))
 }
 
 fn encode_address(value: &Json) -> MessageSigningResult<Data> {
-    let str = value
+    let addr_str = value
         .as_str()
         .ok_or(MessageSigningError::InvalidParameterValue)?;
-    // "0x" - 2 chars, 40 chars are 20 hexed bytes.
-    let address = Address::from_str(str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    Ok(encode_tokens([Token::Address(address)]))
+    // H160 doesn't require the string to be `0x` prefixed.
+    let addr_data =
+        H160::from_str(addr_str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    let addr = Address::from_bytes(addr_data);
+    Ok(encode_tokens([Token::Address(addr)]))
 }
 
 fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<Data> {

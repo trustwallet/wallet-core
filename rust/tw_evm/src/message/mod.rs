@@ -19,13 +19,17 @@ pub enum MessageSigningError {
     InvalidParameterType,
     InvalidParameterValue,
     TypeValueMismatch,
+    InvalidChainId,
     Internal,
 }
 
 impl From<MessageSigningError> for SigningError {
     fn from(err: MessageSigningError) -> Self {
         match err {
-            MessageSigningError::InvalidParameterType | MessageSigningError::InvalidParameterValue | MessageSigningError::TypeValueMismatch => {
+            MessageSigningError::InvalidParameterType
+            | MessageSigningError::InvalidParameterValue
+            | MessageSigningError::TypeValueMismatch
+            | MessageSigningError::InvalidChainId => {
                 SigningError(SigningErrorType::Error_invalid_params)
             },
             MessageSigningError::Internal => SigningError(SigningErrorType::Error_internal),

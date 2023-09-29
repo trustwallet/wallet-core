@@ -39,12 +39,10 @@ impl MessageSignature {
                 eip155_replay_protection(U256::from(chain_id), sign.v())
             },
         };
-        // `v` should fit `u8` integer.
-        let v = u8::try_from(v).map_err(|_| KeyPairError::InvalidSignature)?;
         Ok(MessageSignature {
             r: sign.r(),
             s: sign.s(),
-            v,
+            v: v.low_u8(),
         })
     }
 

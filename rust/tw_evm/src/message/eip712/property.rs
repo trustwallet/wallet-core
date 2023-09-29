@@ -123,10 +123,18 @@ mod tests {
 
     #[test]
     fn test_parse_bytes() {
-        let ints = ["bytes", "bytes8", "bytes32"];
-        for int in ints {
-            assert_eq!(PropertyType::from_str(int).unwrap(), PropertyType::Bytes);
-        }
+        assert_eq!(
+            PropertyType::from_str("bytes").unwrap(),
+            PropertyType::Bytes
+        );
+        assert_eq!(
+            PropertyType::from_str("bytes8").unwrap(),
+            PropertyType::FixBytes { len: 8 }
+        );
+        assert_eq!(
+            PropertyType::from_str("bytes31").unwrap(),
+            PropertyType::FixBytes { len: 31 }
+        );
     }
 
     #[test]

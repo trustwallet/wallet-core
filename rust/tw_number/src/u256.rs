@@ -123,6 +123,12 @@ impl U256 {
     }
 
     #[inline]
+    pub fn low_u8(&self) -> u8 {
+        let lowest_byte_idx = 0;
+        self.0.byte(lowest_byte_idx)
+    }
+
+    #[inline]
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
     }
@@ -214,7 +220,7 @@ mod impl_serde {
         where
             D: Deserializer<'de>,
         {
-            crate::serde_common::from_i64_or_decimal_str::<'de, U256, u64, D>(deserializer)
+            crate::serde_common::from_num_or_decimal_str::<'de, U256, u64, D>(deserializer)
         }
     }
 }
