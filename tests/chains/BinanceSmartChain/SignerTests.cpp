@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWAnySigner.h>
 #include "Ethereum/Address.h"
-#include "Ethereum/ABI.h"
+#include "Ethereum/ABI/Function.h"
 #include "proto/Ethereum.pb.h"
 #include "HexCoding.h"
 #include "uint256.h"

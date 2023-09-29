@@ -8,8 +8,6 @@
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "THORChain/Swap.h"
 #include "proto/Binance.pb.h"
