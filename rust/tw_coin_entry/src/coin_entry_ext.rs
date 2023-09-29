@@ -10,6 +10,7 @@ use crate::derivation::Derivation;
 use crate::error::SigningResult;
 use crate::error::{AddressResult, SigningError, SigningErrorType};
 use crate::modules::json_signer::JsonSigner;
+use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
@@ -84,6 +85,12 @@ pub trait CoinEntryExt {
 
     /// Plans a transaction (for UTXO chains only).
     fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+
+    /// Signs a message.
+    fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+
+    /// Verifies a signature for a message.
+    fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool>;
 }
 
 impl<T> CoinEntryExt for T
@@ -188,5 +195,26 @@ where
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
         let output = plan_builder.plan(coin, input);
         serialize(&output).map_err(SigningError::from)
+    }
+
+    fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
+        let Some(message_signer) = self.message_signer() else {
+            return Err(SigningError(SigningErrorType::Error_not_supported));
+        };
+
+        let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
+            deserialize(input)?;
+        let output = message_signer.sign_message(coin, input);
+        serialize(&output).map_err(SigningError::from)
+    }
+
+    fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool> {
+        let Some(message_signer) = self.message_signer() else {
+            return Err(SigningError(SigningErrorType::Error_not_supported));
+        };
+
+        let input: <T::MessageSigner as MessageSigner>::MessageVerifyingInput<'_> =
+            deserialize(input)?;
+        Ok(message_signer.verify_message(coin, input))
     }
 }
