@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::abi::{convert_address, convert_u256};
 use crate::address::Address;
 use crate::transaction::signature::Signature;
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
@@ -47,8 +46,8 @@ impl UnsignedTransaction for UserOperation {
 
         let tokens = [
             Token::FixedBytes(encode_hash),
-            Token::Address(convert_address(self.entry_point)),
-            Token::Uint(convert_u256(chain_id)),
+            Token::Address(self.entry_point.to_ethabi()),
+            Token::Uint(chain_id.to_ethabi()),
         ];
         let encoded = ethabi::encode(&tokens);
         let pre_hash = keccak256(&encoded);
@@ -61,15 +60,15 @@ impl UnsignedTransaction for UserOperation {
         let paymaster_and_data_hash = keccak256(&self.paymaster_and_data);
 
         let tokens = [
-            Token::Address(convert_address(self.sender)),
-            Token::Uint(convert_u256(self.nonce)),
+            Token::Address(self.sender.to_ethabi()),
+            Token::Uint(self.nonce.to_ethabi()),
             Token::FixedBytes(init_code_hash),
             Token::FixedBytes(payload_hash),
-            Token::Uint(convert_u256(self.gas_limit)),
-            Token::Uint(convert_u256(self.verification_gas_limit)),
-            Token::Uint(convert_u256(self.pre_verification_gas)),
-            Token::Uint(convert_u256(self.max_fee_per_gas)),
-            Token::Uint(convert_u256(self.max_inclusion_fee_per_gas)),
+            Token::Uint(self.gas_limit.to_ethabi()),
+            Token::Uint(self.verification_gas_limit.to_ethabi()),
+            Token::Uint(self.pre_verification_gas.to_ethabi()),
+            Token::Uint(self.max_fee_per_gas.to_ethabi()),
+            Token::Uint(self.max_inclusion_fee_per_gas.to_ethabi()),
             Token::FixedBytes(paymaster_and_data_hash),
         ];
 

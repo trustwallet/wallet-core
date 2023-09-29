@@ -1657,7 +1657,10 @@ dependencies = [
 name = "tw_number"
 version = "0.1.0"
 dependencies = [
+ "ethabi",
+ "lazy_static",
  "primitive-types",
+ "serde",
  "tw_encoding",
  "tw_hash",
  "tw_memory",
@@ -1757,6 +1760,7 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 name = "wallet-core-rs"
 version = "0.1.0"
 dependencies = [
+ "serde_json",
  "tw_any_coin",
  "tw_bitcoin",
  "tw_coin_entry",

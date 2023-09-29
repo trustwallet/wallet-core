@@ -4,38 +4,43 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::Address;
 use tw_coin_entry::error::{SigningError, SigningErrorType};
-use tw_number::U256;
 
+pub mod contract;
+pub mod decode;
+pub mod function;
+pub mod param;
+pub mod param_token;
+pub mod param_type;
 pub mod prebuild;
+pub mod token;
+pub mod uint;
+
+#[macro_export]
+macro_rules! abi_output_error {
+    ($output:ty, $error:expr) => {{
+        let err = $error;
+
+        let mut output = <$output>::default();
+        output.error = err.0;
+        output.error_message = std::borrow::Cow::from(format!("{err:?}"));
+
+        output
+    }};
+}
 
 pub type AbiResult<T> = Result<T, AbiError>;
+pub type AbiErrorKind = tw_proto::EthereumAbi::Proto::AbiError;
 
 #[derive(Debug)]
-pub enum AbiError {
-    InvalidParams,
-}
-
-impl From<ethabi::Error> for AbiError {
-    fn from(_err: ethabi::Error) -> Self {
-        AbiError::InvalidParams
-    }
-}
+pub struct AbiError(pub AbiErrorKind);
 
 impl From<AbiError> for SigningError {
-    fn from(_: AbiError) -> Self {
-        SigningError(SigningErrorType::Error_internal)
+    fn from(err: AbiError) -> Self {
+        match err.0 {
+            AbiErrorKind::OK => SigningError(SigningErrorType::OK),
+            AbiErrorKind::Error_internal => SigningError(SigningErrorType::Error_internal),
+            _ => SigningError(SigningErrorType::Error_invalid_params),
+        }
     }
-}
-
-/// TODO refactor this by implementing `RlpEncode` for `U256` at the next iteration.
-pub fn convert_u256(num: U256) -> ethabi::Uint {
-    let bytes = num.to_big_endian().take();
-    ethabi::Uint::from_big_endian(&bytes)
-}
-
-/// TODO refactor this by implementing `RlpEncode` for `Address` at the next iteration.
-pub fn convert_address(addr: Address) -> ethabi::Address {
-    ethabi::Address::from(addr.bytes().take())
 }

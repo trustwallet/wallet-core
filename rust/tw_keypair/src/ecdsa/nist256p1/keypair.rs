@@ -11,11 +11,14 @@ use crate::traits::{KeyPairTrait, SigningKeyTrait, VerifyingKeyTrait};
 use crate::{KeyPairError, KeyPairResult};
 use tw_encoding::hex;
 use tw_hash::H256;
+use zeroize::ZeroizeOnDrop;
 use zeroize::Zeroizing;
 
 /// Represents a pair of `nist256p1` private and public keys.
+#[derive(ZeroizeOnDrop)]
 pub struct KeyPair {
     private: PrivateKey,
+    #[zeroize(skip)]
     public: PublicKey,
 }
 

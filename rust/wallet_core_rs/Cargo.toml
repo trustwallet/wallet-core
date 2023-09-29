@@ -8,8 +8,9 @@ name = "wallet_core_rs"
 crate-type = ["staticlib", "rlib"] # Creates static lib
 
 [features]
-default = ["bitcoin-legacy", "ethereum-rlp"]
+default = ["bitcoin-legacy", "ethereum-abi", "ethereum-rlp"]
 bitcoin-legacy = []
+ethereum-abi = []
 ethereum-rlp = []
 
 [dependencies]
@@ -27,6 +28,7 @@ tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto" }
 
 [dev-dependencies]
+serde_json = "1.0.96"
 tw_any_coin = { path = "../tw_any_coin", features = ["test-utils"] }
 tw_memory = { path = "../tw_memory", features = ["test-utils"] }
 tw_number = { path = "../tw_number", features = ["helpers"] }
