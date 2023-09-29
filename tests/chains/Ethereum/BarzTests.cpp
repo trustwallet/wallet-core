@@ -279,6 +279,7 @@ TEST(Barz, SignR1BatchedTransferAccountDeployed) {
     TWEthereumAbiFunctionAddParamUInt256(approveFunc, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("8AC7230489E80000")).get())).get(), false);
     auto approveCallEncoded = WRAPD(TWEthereumAbiEncode(approveFunc));
     auto approveCall = data(TWDataBytes(approveCallEncoded.get()), TWDataSize(approveCallEncoded.get()));
+    EXPECT_EQ(hex(approveCall), "095ea7b30000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000");
 
     // transfer
     TWEthereumAbiFunction* transferFunc = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("transfer")).get());
@@ -286,6 +287,7 @@ TEST(Barz, SignR1BatchedTransferAccountDeployed) {
     TWEthereumAbiFunctionAddParamUInt256(transferFunc, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("8AC7230489E80000")).get())).get(), false);
     auto transferCallEncoded = WRAPD(TWEthereumAbiEncode(transferFunc));
     auto transferCall = data(TWDataBytes(transferCallEncoded.get()), TWDataSize(transferCallEncoded.get()));
+    EXPECT_EQ(hex(transferCall), "a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000");
 
     auto *batch = input.mutable_transaction()->mutable_batch();
     auto *c1 = batch->add_calls();

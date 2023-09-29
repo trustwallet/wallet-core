@@ -14,7 +14,7 @@ use tw_hash::H256;
 use tw_memory::Data;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
-pub struct U256(primitive_types::U256);
+pub struct U256(pub(crate) primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {
     #[inline]
@@ -33,6 +33,8 @@ impl From<U256> for primitive_types::U256 {
 impl U256 {
     pub const WORDS_COUNT: usize = 4;
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
+    pub const BITS: usize = 256;
+    pub const MAX: U256 = U256(primitive_types::U256::MAX);
 
     #[inline]
     pub fn zero() -> U256 {
@@ -133,6 +135,21 @@ impl U256 {
     }
 }
 
+#[cfg(feature = "ethabi")]
+impl U256 {
+    #[inline]
+    pub fn from_ethabi(u: ethabi::Uint) -> U256 {
+        let mut bytes = H256::new();
+        u.to_big_endian(bytes.as_mut_slice());
+        U256::from_big_endian(bytes)
+    }
+
+    #[inline]
+    pub fn to_ethabi(&self) -> ethabi::Uint {
+        ethabi::Uint::from_big_endian(self.to_big_endian().as_slice())
+    }
+}
+
 impl FromStr for U256 {
     type Err = NumberError;
 
@@ -161,6 +178,33 @@ where
     #[inline]
     fn add(self, rhs: T) -> Self::Output {
         U256(self.0 + rhs.into())
+    }
+}
+
+#[cfg(feature = "serde")]
+mod impl_serde {
+    use super::U256;
+    use serde::de::Error as DeError;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::str::FromStr;
+
+    impl<'de> Deserialize<'de> for U256 {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s: &str = Deserialize::deserialize(deserializer)?;
+            U256::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
+        }
+    }
+
+    impl Serialize for U256 {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            serializer.serialize_str(&self.to_string())
+        }
     }
 }
 

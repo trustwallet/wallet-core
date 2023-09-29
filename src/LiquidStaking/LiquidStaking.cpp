@@ -62,29 +62,35 @@ namespace internal {
     }
 
     void handleStake(const Proto::Stake& stake, const Proto::Blockchain& blockchain, Data& payload, uint256_t& amount, const Proto::Protocol protocol) {
-        Params params;
+        Ethereum::ABI::BaseParams params;
         if (protocol == Proto::Lido) {
-            params.emplace_back(std::make_shared<Ethereum::ABI::ParamAddress>());
+            params.emplace_back(std::make_shared<Ethereum::ABI::ProtoAddress>());
         }
-        auto func = Ethereum::ABI::Function(gEVMLiquidStakingRegistry.at(protocol).at({blockchain, Action::Stake}), params);
-        func.encode(payload);
+        auto funcData = Ethereum::ABI::Function::encodeParams(gEVMLiquidStakingRegistry.at(protocol).at({blockchain, Action::Stake}), params);
+        if (funcData.has_value()) {
+            payload = funcData.value();
+        }
         amount = uint256_t(stake.amount());
     }
 
     void handleUnstake(const Proto::Unstake& unstake, const Proto::Blockchain& blockchain, Data& payload) {
-        Params params;
-        params.emplace_back(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(unstake.amount())));
+        Ethereum::ABI::BaseParams params;
+        params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(unstake.amount())));
         auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Unstake});
-        auto func = Ethereum::ABI::Function(functionName, params);
-        func.encode(payload);
+        auto funcData = Ethereum::ABI::Function::encodeParams(functionName, params);
+        if (funcData.has_value()) {
+            payload = funcData.value();
+        }
     }
 
     void handleWithdraw(const Proto::Withdraw& withdraw, const Proto::Blockchain& blockchain, Data& payload) {
-        Params params;
-        params.emplace_back(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(withdraw.idx())));
+        Ethereum::ABI::BaseParams params;
+        params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(withdraw.idx())));
         auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Withdraw});
-        auto func = Ethereum::ABI::Function(functionName, params);
-        func.encode(payload);
+        auto funcData = Ethereum::ABI::Function::encodeParams(functionName, params);
+        if (funcData.has_value()) {
+            payload = funcData.value();
+        }
     }
 }
 

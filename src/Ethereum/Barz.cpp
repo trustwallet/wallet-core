@@ -15,23 +15,25 @@
 
 namespace TW::Barz {
 
-using ParamBasePtr = std::shared_ptr<Ethereum::ABI::ParamBase>;
-using ParamCollection = std::vector<ParamBasePtr>;
+static constexpr std::size_t FUNCTION_SIGNATURE_LEN = 4;
 
 std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
-    auto params = Ethereum::ABI::ParamTuple();
-    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.account_facet())));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.verification_facet())));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.entry_point())));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.facet_registry())));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(input.default_fallback())));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamByteArray>(parse_hex(input.public_key())));
+    auto encoded = Ethereum::ABI::Function::encodeParams("", Ethereum::ABI::BaseParams {
+        std::make_shared<Ethereum::ABI::ProtoAddress>(input.account_facet()),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(input.verification_facet()),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(input.entry_point()),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(input.facet_registry()),
+        std::make_shared<Ethereum::ABI::ProtoAddress>(input.default_fallback()),
+        std::make_shared<Ethereum::ABI::ProtoByteArray>(parse_hex(input.public_key())),
+    });
+    if (!encoded.has_value() || encoded.value().size() < FUNCTION_SIGNATURE_LEN) {
+        return {};
+    }
 
-    Data encoded;
-    params.encode(encoded);
-
+    // The encoded data includes the function call signature (4 bytes). Erase it.
+    Data encodedData = subData(encoded.value(), FUNCTION_SIGNATURE_LEN);
     Data initCode = parse_hex(input.bytecode());
-    append(initCode, encoded);
+    append(initCode, encodedData);
 
     const Data initCodeHash = Hash::keccak256(initCode);
     Data salt = store(input.salt(), 32);
@@ -39,16 +41,18 @@ std::string getCounterfactualAddress(const Proto::ContractAddressInput input) {
 }
 
 Data getInitCode(const std::string& factoryAddress, const PublicKey& publicKey, const std::string& verificationFacet, const uint32_t salt) {
-    auto createAccountFunc = Ethereum::ABI::Function("createAccount", ParamCollection{
-                                                                std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex(verificationFacet)),
-                                                                std::make_shared<Ethereum::ABI::ParamByteArray>(publicKey.bytes),
-                                                                std::make_shared<Ethereum::ABI::ParamUInt256>(salt)});
-    Data createAccountFuncEncoded;
-    createAccountFunc.encode(createAccountFuncEncoded);
+    auto createAccountFuncEncoded = Ethereum::ABI::Function::encodeParams("createAccount", Ethereum::ABI::BaseParams {
+        std::make_shared<Ethereum::ABI::ProtoAddress>(verificationFacet),
+        std::make_shared<Ethereum::ABI::ProtoByteArray>(publicKey.bytes),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(salt),
+    });
+    if (!createAccountFuncEncoded.has_value()) {
+        return {};
+    }
 
     Data envelope;
     append(envelope, parse_hex(factoryAddress));
-    append(envelope, createAccountFuncEncoded);
+    append(envelope, createAccountFuncEncoded.value());
     return envelope;
 }
 
@@ -67,22 +71,26 @@ Data getFormattedSignature(const Data& signature, const Data challenge, const Da
 
     const auto parsedSignatureOptional = ASN::AsnParser::ecdsa_signature_from_der(signature);
     if (!parsedSignatureOptional.has_value()) {
-        return Data();
+        return {};
     }
     const Data parsedSignature = parsedSignatureOptional.value();
     const Data rValue = subData(parsedSignature, 0, 32);
     const Data sValue = subData(parsedSignature, 32, 64);
 
-    auto params = Ethereum::ABI::ParamTuple();
-    params.addParam(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(hexEncoded(rValue))));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(hexEncoded(sValue))));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamByteArray>(authenticatorData));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamString>(clientDataJSONPre));
-    params.addParam(std::make_shared<Ethereum::ABI::ParamString>(clientDataJSONPost));
+    auto encoded = Ethereum::ABI::Function::encodeParams("", Ethereum::ABI::BaseParams {
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(rValue),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(sValue),
+        std::make_shared<Ethereum::ABI::ProtoByteArray>(authenticatorData),
+        std::make_shared<Ethereum::ABI::ProtoString>(clientDataJSONPre),
+        std::make_shared<Ethereum::ABI::ProtoString>(clientDataJSONPost),
+    });
 
-    Data encoded;
-    params.encode(encoded);
-    return encoded;
+    if (!encoded.has_value() || encoded.value().size() < FUNCTION_SIGNATURE_LEN) {
+        return {};
+    }
+
+    // The encoded data includes the function call signature (4 bytes). Erase it.
+    return subData(encoded.value(), FUNCTION_SIGNATURE_LEN);
 }
 
 } // namespace TW::Barz

@@ -12,9 +12,10 @@ use p256::ecdsa::SigningKey;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
-use zeroize::Zeroizing;
+use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents a `nist256p1` private key.
+#[derive(ZeroizeOnDrop)]
 pub struct PrivateKey {
     pub(crate) secret: SigningKey,
 }
