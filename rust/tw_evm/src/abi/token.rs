@@ -139,6 +139,13 @@ impl Token {
         }
     }
 
+    pub fn i256(int: I256) -> Token {
+        Token::Int {
+            bits: I256::BITS,
+            int,
+        }
+    }
+
     pub fn uint<UInt: Into<U256>>(bits: usize, uint: UInt) -> AbiResult<Token> {
         check_uint_bits(bits)?;
         Ok(Token::Uint {

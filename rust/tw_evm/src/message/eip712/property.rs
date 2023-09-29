@@ -5,15 +5,14 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::message::{MessageSigningError, MessageSigningResult};
-use serde::de::Error as DeError;
-use serde::{Deserialize, Deserializer};
+use serde::Deserialize;
 use std::str::FromStr;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Property {
     pub name: String,
     #[serde(rename = "type")]
-    pub property_type: PropertyType,
+    pub property_type: String,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -23,6 +22,9 @@ pub enum PropertyType {
     Int,
     Uint,
     Address,
+    FixBytes {
+        len: usize,
+    },
     Bytes,
     Custom(String),
     Array(Box<PropertyType>),
@@ -81,7 +83,11 @@ impl FromStr for PropertyType {
 
         // bytes, bytes32, ...
         if let Some(len_str) = s.strip_prefix("bytes") {
-            parse_len(len_str)?;
+            if let Some(len) = parse_len(len_str)? {
+                // Fixed-len bytes.
+                return Ok(PropertyType::FixBytes { len });
+            }
+            // Otherwise, dynamic-len bytes.
             return Ok(PropertyType::Bytes);
         }
 
@@ -92,16 +98,6 @@ impl FromStr for PropertyType {
             "string" => Ok(PropertyType::String),
             custom => Ok(PropertyType::Custom(custom.to_string())),
         }
-    }
-}
-
-impl<'de> Deserialize<'de> for PropertyType {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s: &str = Deserialize::deserialize(deserializer)?;
-        PropertyType::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
     }
 }
 

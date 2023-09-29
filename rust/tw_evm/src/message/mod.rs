@@ -17,6 +17,7 @@ pub type MessageSigningResult<T> = Result<T, MessageSigningError>;
 #[derive(Debug)]
 pub enum MessageSigningError {
     InvalidParameterType,
+    InvalidParameterValue,
     TypeValueMismatch,
     Internal,
 }
@@ -24,7 +25,7 @@ pub enum MessageSigningError {
 impl From<MessageSigningError> for SigningError {
     fn from(err: MessageSigningError) -> Self {
         match err {
-            MessageSigningError::InvalidParameterType | MessageSigningError::TypeValueMismatch => {
+            MessageSigningError::InvalidParameterType | MessageSigningError::InvalidParameterValue | MessageSigningError::TypeValueMismatch => {
                 SigningError(SigningErrorType::Error_invalid_params)
             },
             MessageSigningError::Internal => SigningError(SigningErrorType::Error_internal),

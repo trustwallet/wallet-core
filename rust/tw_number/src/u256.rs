@@ -30,6 +30,7 @@ impl From<U256> for primitive_types::U256 {
     }
 }
 
+// cbindgen:ignore
 impl U256 {
     pub const WORDS_COUNT: usize = 4;
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
@@ -155,8 +156,13 @@ impl FromStr for U256 {
 
     #[inline]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let inner = primitive_types::U256::from_dec_str(s)
-            .map_err(|_| NumberError::InvalidStringRepresentation)?;
+        let inner = if s.starts_with("0x") {
+            primitive_types::U256::from_str(s)
+                .map_err(|_| NumberError::InvalidStringRepresentation)?
+        } else {
+            primitive_types::U256::from_dec_str(s)
+                .map_err(|_| NumberError::InvalidStringRepresentation)?
+        };
         Ok(U256(inner))
     }
 }
@@ -235,3 +241,18 @@ impl_map_from!(U256, u8);
 impl_map_from!(U256, u16);
 impl_map_from!(U256, u32);
 impl_map_from!(U256, u64);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_u256_from_str() {
+        assert_eq!(U256::from_str("0x0"), Ok(U256::zero()));
+        assert_eq!(U256::from_str("0x00"), Ok(U256::zero()));
+        assert_eq!(U256::from_str("0x01"), Ok(U256::from(1_u64)));
+        assert_eq!(U256::from_str("0x2"), Ok(U256::from(2_u64)));
+        assert_eq!(U256::from_str("0x0000a"), Ok(U256::from(10_u64)));
+        assert_eq!(U256::from_str("4"), Ok(U256::from(4_u64)));
+    }
+}

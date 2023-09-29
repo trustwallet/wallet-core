@@ -22,7 +22,10 @@ lazy_static! {
 #[derive(Clone, PartialEq)]
 pub struct I256(BaseU256);
 
+// cbindgen:ignore
 impl I256 {
+    pub const BITS: usize = 256;
+
     pub fn max() -> I256 {
         I256(*MAX_POSITIVE_ABS)
     }

@@ -14,7 +14,7 @@ pub use u256::U256;
 
 pub type NumberResult<T> = Result<T, NumberError>;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum NumberError {
     IntegerOverflow,
     InvalidBinaryRepresentation,

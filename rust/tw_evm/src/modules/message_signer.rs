@@ -5,12 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::message::eip191::Eip191Message;
+use crate::message::eip712::eip712_message::Eip712Message;
 use crate::message::signature::{MessageSignature, SignatureType};
 use crate::message::{EthMessage, EthMessageBoxed};
 use std::borrow::Cow;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::modules::message_signer::MessageSigner;
 use tw_coin_entry::signing_output_error;
 use tw_encoding::hex::ToHex;
@@ -110,15 +111,16 @@ impl EthMessageSigner {
             },
             Proto::MessageType::MessageType_typed
             | Proto::MessageType::MessageType_typed_eip155 => {
-                // TODO
-                Err(SigningError(SigningErrorType::Error_not_supported))
+                Ok(Eip712Message::new(input.message)?.into_boxed())
             },
         }
     }
 
     fn message_from_str(user_message: &str) -> SigningResult<EthMessageBoxed> {
-        // TODO check if the message is a typed structured data.
-        Ok(Eip191Message::new(user_message).into_boxed())
+        match Eip712Message::new(user_message) {
+            Ok(typed_data) => Ok(typed_data.into_boxed()),
+            Err(_) => Ok(Eip191Message::new(user_message).into_boxed()),
+        }
     }
 
     fn signature_type_from_proto(msg_type: Proto::MessageType, chain_id: u32) -> SignatureType {
