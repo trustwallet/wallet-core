@@ -43,10 +43,6 @@ public:
     /// \param signature signature to verify the message against
     /// \return true if the message match the signature, false otherwise
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
-    static constexpr auto MessagePrefix = "Ethereum Signed Message:\n";
-    static constexpr std::uint8_t EthereumPrefix{0x19};
-    static Data generateMessage(const std::string& message);
-    static std::string signHash(const PrivateKey& privateKey, const Data& signableMessage, MessageType msgType, TW::Ethereum::MessageSigner::MaybeChainId chainId);
     static void prepareSignature(Data& signature, MessageType msgType, MaybeChainId chainId = std::nullopt) noexcept;
 };
 

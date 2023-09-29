@@ -75,7 +75,8 @@ impl EthMessageSigner {
         input: Proto::MessageSigningInput<'_>,
     ) -> SigningResult<Proto::MessageSigningOutput<'static>> {
         let private_key = secp256k1::PrivateKey::try_from(input.private_key.as_ref())?;
-        let signature_type = Self::signature_type_from_proto(input.message_type, input.chain_id);
+        let signature_type =
+            Self::signature_type_from_proto(input.message_type, input.chain_id.clone());
 
         let msg = Self::message_from_proto(input)?;
 
@@ -111,9 +112,12 @@ impl EthMessageSigner {
                 Ok(Eip191Message::new(input.message).into_boxed())
             },
             Proto::MessageType::MessageType_typed
-            | Proto::MessageType::MessageType_typed_eip155 => {
-                let expected_chain_id = U256::from(input.chain_id);
-                Ok(Eip712Message::new_checked(input.message, expected_chain_id)?.into_boxed())
+            | Proto::MessageType::MessageType_typed_eip155 => match input.chain_id {
+                Some(expected_chain_id) => {
+                    let expected_chain_id = U256::from(expected_chain_id.chain_id);
+                    Ok(Eip712Message::new_checked(input.message, expected_chain_id)?.into_boxed())
+                },
+                None => Ok(Eip712Message::new(input.message)?.into_boxed()),
             },
         }
     }
@@ -125,14 +129,20 @@ impl EthMessageSigner {
         }
     }
 
-    fn signature_type_from_proto(msg_type: Proto::MessageType, chain_id: u32) -> SignatureType {
+    fn signature_type_from_proto(
+        msg_type: Proto::MessageType,
+        maybe_chain_id: Option<Proto::MaybeChainId>,
+    ) -> SignatureType {
         match msg_type {
             Proto::MessageType::MessageType_immutable_x => SignatureType::Standard,
             Proto::MessageType::MessageType_legacy | Proto::MessageType::MessageType_typed => {
                 SignatureType::Legacy
             },
             Proto::MessageType::MessageType_eip155
-            | Proto::MessageType::MessageType_typed_eip155 => SignatureType::Eip155 { chain_id },
+            | Proto::MessageType::MessageType_typed_eip155 => {
+                let chain_id = maybe_chain_id.unwrap_or_default().chain_id;
+                SignatureType::Eip155 { chain_id }
+            },
         }
     }
 }

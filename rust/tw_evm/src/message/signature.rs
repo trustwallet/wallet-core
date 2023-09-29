@@ -17,7 +17,7 @@ use tw_number::U256;
 pub enum SignatureType {
     Standard,
     Legacy,
-    Eip155 { chain_id: u32 },
+    Eip155 { chain_id: u64 },
 }
 
 pub struct MessageSignature {

@@ -20,7 +20,7 @@ fn test_tw_message_signer_sign() {
             .unwrap()
             .into(),
         message: "Foo".into(),
-        chain_id: 0,
+        chain_id: None,
         message_type: Ethereum::Proto::MessageType::MessageType_legacy,
     };
 

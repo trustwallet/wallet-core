@@ -211,6 +211,11 @@ enum MessageType {
     MessageType_immutable_x = 4;
 }
 
+message MaybeChainId {
+    // Chain ID.
+    uint64 chain_id = 3;
+}
+
 message MessageSigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
@@ -219,9 +224,9 @@ message MessageSigningInput {
     // Message type should be declared at `message_type`.
     string message = 2;
 
-    // Optional. Used in replay protection.
-    // Eg. should be set if `message_type` is `MessageType_eip155` or `MessageType_typed_eip155`.
-    uint32 chain_id = 3;
+    // Optional. Used in replay protection and to check Typed Structured Data input.
+    // Eg. should be set if `message_type` is `MessageType_eip155`, or MessageType_typed, or `MessageType_typed_eip155`.
+    MaybeChainId chain_id = 3;
 
     // Message type.
     MessageType message_type = 4;
@@ -240,7 +245,6 @@ message MessageSigningOutput {
 
 message MessageVerifyingInput {
     // The message signed.
-    // TODO consider adding message type.
     string message = 1;
 
     // Public key that will verify and recover the message from the signature.
