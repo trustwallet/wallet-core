@@ -20,6 +20,13 @@ impl MessageSigner {
         entry.sign_message(&ctx, input)
     }
 
+    /// Computes preimage hashes of a message.
+    #[inline]
+    pub fn message_preimage_hashes(input: &[u8], coin: CoinType) -> SigningResult<Data> {
+        let (ctx, entry) = coin_dispatcher(coin)?;
+        entry.message_preimage_hashes(&ctx, input)
+    }
+
     /// Verifies a signature for a message.
     #[inline]
     pub fn verify_message(input: &[u8], coin: CoinType) -> SigningResult<bool> {

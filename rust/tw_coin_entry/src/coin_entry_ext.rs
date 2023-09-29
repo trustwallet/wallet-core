@@ -89,6 +89,9 @@ pub trait CoinEntryExt {
     /// Signs a message.
     fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
 
+    /// Computes preimage hashes of a message.
+    fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data>;
+
     /// Verifies a signature for a message.
     fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool>;
 }
@@ -205,6 +208,17 @@ where
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
             deserialize(input)?;
         let output = message_signer.sign_message(coin, input);
+        serialize(&output).map_err(SigningError::from)
+    }
+
+    fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
+        let Some(message_signer) = self.message_signer() else {
+            return Err(SigningError(SigningErrorType::Error_not_supported));
+        };
+
+        let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
+            deserialize(input)?;
+        let output = message_signer.message_preimage_hashes(coin, input);
         serialize(&output).map_err(SigningError::from)
     }
 

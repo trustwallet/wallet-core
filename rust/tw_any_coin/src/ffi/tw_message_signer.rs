@@ -35,3 +35,19 @@ pub unsafe extern "C" fn tw_message_signer_verify(input: *const TWData, coin: u3
     let input = try_or_false!(TWData::from_ptr_as_ref(input));
     MessageSigner::verify_message(input.as_slice(), coin).unwrap_or_default()
 }
+
+/// Computes preimage hashes of a message.
+///
+/// \param input The serialized data of a signing input (e.g. TW.Ethereum.Proto.MessageSigningInput).
+/// \param coin The given coin type to sign the transaction for.
+/// \return The serialized data of TW.TxCompiler.PreSigningOutput.
+#[no_mangle]
+pub unsafe extern "C" fn tw_message_signer_pre_image_hashes(
+    input: *const TWData,
+    coin: u32,
+) -> *mut TWData {
+    let input = try_or_else!(TWData::from_ptr_as_ref(input), std::ptr::null_mut);
+    MessageSigner::message_preimage_hashes(input.as_slice(), coin)
+        .map(|output| TWData::from(output).into_ptr())
+        .unwrap_or_else(|_| std::ptr::null_mut())
+}

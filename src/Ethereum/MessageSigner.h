@@ -43,6 +43,17 @@ public:
     /// \param signature signature to verify the message against
     /// \return true if the message match the signature, false otherwise
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
+
+    /// Computes a hash of the message following EIP-191.
+    /// \param message message to hash
+    /// \return hash of the tuped data.
+    static Data messagePreImageHash(const std::string& message) noexcept;
+
+    /// Computes a hash of the typed data according to EIP-712 V4.
+    /// \param data json data
+    /// \return hash of the tuped data.
+    static Data typedDataPreImageHash(const std::string& data) noexcept;
+
     static void prepareSignature(Data& signature, MessageType msgType, MaybeChainId chainId = std::nullopt) noexcept;
 };
 

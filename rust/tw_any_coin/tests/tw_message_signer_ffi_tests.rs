@@ -4,11 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use tw_any_coin::ffi::tw_message_signer::{tw_message_signer_sign, tw_message_signer_verify};
+use tw_any_coin::ffi::tw_message_signer::{
+    tw_message_signer_pre_image_hashes, tw_message_signer_sign, tw_message_signer_verify,
+};
 use tw_coin_entry::error::SigningErrorType;
-use tw_encoding::hex::DecodeHex;
+use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_memory::test_utils::tw_data_helper::TWDataHelper;
-use tw_proto::{deserialize, serialize, Ethereum};
+use tw_proto::{deserialize, serialize, Ethereum, TxCompiler};
 
 const ETHEREUM_COIN_TYPE: u32 = 60;
 
@@ -60,4 +62,32 @@ fn test_tw_message_signer_verify_invalid() {
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let verified = unsafe { tw_message_signer_verify(input_data.ptr(), ETHEREUM_COIN_TYPE) };
     assert!(!verified);
+}
+
+#[test]
+fn test_tw_message_signer_pre_image_hashes() {
+    let input = Ethereum::Proto::MessageSigningInput {
+        private_key: "03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        message: "Foo".into(),
+        chain_id: None,
+        message_type: Ethereum::Proto::MessageType::MessageType_legacy,
+    };
+
+    let input_data = TWDataHelper::create(serialize(&input).unwrap());
+    let output = TWDataHelper::wrap(unsafe {
+        tw_message_signer_pre_image_hashes(input_data.ptr(), ETHEREUM_COIN_TYPE)
+    })
+    .to_vec()
+    .expect("!tw_message_signer_sign returned nullptr");
+
+    let output: TxCompiler::Proto::PreSigningOutput = deserialize(&output).unwrap();
+    assert_eq!(output.error, SigningErrorType::OK);
+    assert!(output.error_message.is_empty());
+    assert_eq!(
+        output.data_hash.to_hex(),
+        "0af844076e792f9685560b2e597967da7403b00a5339b5801ea251ddde375f8a"
+    );
 }

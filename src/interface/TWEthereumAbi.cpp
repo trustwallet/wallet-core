@@ -8,8 +8,9 @@
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 #include "Data.h"
-#include "Ethereum/ABI.h"
+#include "Ethereum/ABI/Function.h"
 #include "Ethereum/ContractCall.h"
+#include "Ethereum/MessageSigner.h"
 #include "HexCoding.h"
 #include "uint256.h"
 
@@ -85,7 +86,7 @@ TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString*
 TWData* _Nonnull TWEthereumAbiEncodeTyped(TWString* _Nonnull messageJson) {
     Data data;
     try {
-        data = EthAbi::ParamStruct::hashStructJson(TWStringUTF8Bytes(messageJson));
+        data = Ethereum::MessageSigner::typedDataPreImageHash(TWStringUTF8Bytes(messageJson));
     } catch (...) {} // return empty
     return TWDataCreateWithBytes(data.data(), data.size());
 }

@@ -6,6 +6,7 @@
 
 #include "MessageSigner.h"
 #include <proto/Ethereum.pb.h>
+#include <proto/TransactionCompiler.pb.h>
 #include "rust/Wrapper.h"
 #include "TrustWalletCore/TWCoinType.h"
 
@@ -36,6 +37,28 @@ std::string signMessageRust(const PrivateKey& privateKey, const std::string& mes
         return {};
     }
     return output.signature();
+}
+
+Data messagePreImageHashRust(const std::string& message, Proto::MessageType msgType) {
+    Proto::MessageSigningInput input;
+    input.set_message(message);
+    input.set_message_type(msgType);
+
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWDataWrapper outputPtr = Rust::tw_message_signer_pre_image_hashes(inputData.get(), TWCoinTypeEthereum);
+
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
+        return {};
+    }
+
+    TxCompiler::Proto::PreSigningOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+    if (output.error() != Common::Proto::SigningError::OK) {
+        return {};
+    }
+    return data(output.data_hash());
 }
 
 bool verifyMessageRust(const PublicKey& publicKey, const std::string& message, const std::string& signature) {
@@ -84,6 +107,14 @@ std::string MessageSigner::signTypedData(const PrivateKey& privateKey, const std
 
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {
     return verifyMessageRust(publicKey, message, signature);
+}
+
+Data MessageSigner::messagePreImageHash(const std::string& message) noexcept {
+    return messagePreImageHashRust(message, Proto::MessageType::MessageType_legacy);
+}
+
+Data MessageSigner::typedDataPreImageHash(const std::string& data) noexcept {
+    return messagePreImageHashRust(data, Proto::MessageType::MessageType_typed);
 }
 
 void MessageSigner::prepareSignature(Data& signature, MessageType msgType, TW::Ethereum::MessageSigner::MaybeChainId chainId) noexcept {

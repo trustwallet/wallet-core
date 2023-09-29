@@ -19,8 +19,6 @@
 #include "../proto/Bitcoin.pb.h"
 // ETH
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "uint256.h"
 #include "../proto/Ethereum.pb.h"

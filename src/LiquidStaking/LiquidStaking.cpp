@@ -15,8 +15,6 @@
 
 // ETH
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "proto/Ethereum.pb.h"
 #include "uint256.h"
@@ -35,7 +33,6 @@ struct PairHash {
 using EVMLiquidStakingFunctionRegistry = std::unordered_map<BlockchainActionEnumPair, std::string, PairHash>;
 using EVMLiquidStakingParamsRegistry = std::unordered_map<BlockchainActionEnumPair, std::string, PairHash>;
 using EVMLiquidStakingRegistry = std::unordered_map<Proto::Protocol, EVMLiquidStakingFunctionRegistry>;
-using Params = std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>;
 
 static const EVMLiquidStakingFunctionRegistry gStraderFunctionRegistry =
     {{std::make_pair(Proto::POLYGON, Action::Stake), "swapMaticForMaticXViaInstantPool"},
