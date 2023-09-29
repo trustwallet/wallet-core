@@ -12,10 +12,8 @@
 #include "Ethereum/ContractCall.h"
 #include "Ethereum/MessageSigner.h"
 #include "HexCoding.h"
-#include "uint256.h"
 
 #include <cassert>
-#include <string>
 #include <vector>
 
 using namespace TW;

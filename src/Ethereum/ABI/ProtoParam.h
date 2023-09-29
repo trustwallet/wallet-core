@@ -7,6 +7,7 @@
 #pragma once
 
 #include "proto/EthereumAbi.pb.h"
+#include "uint256.h"
 
 namespace TW::Ethereum::ABI {
 

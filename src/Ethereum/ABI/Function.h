@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Bytes.h"
 #include "ProtoParam.h"
 #include "proto/EthereumAbi.pb.h"
 
