@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Bytes.h"
 #include "ProtoParam.h"
 #include "proto/EthereumAbi.pb.h"
 
@@ -72,7 +71,7 @@ public:
 
     /// Encodes a function call to Eth ABI binary.
     MaybeData encodeInput() const {
-        return encodeParams(name, inputValues);
+        return encodeFunctionCall(name, inputValues);
     }
 
     /// Decode binary, fill input or output parameters.
@@ -82,10 +81,13 @@ public:
     std::string getType() const;
 
     /// Encodes a function call to Eth ABI binary.
-    static MaybeData encodeParams(const std::string& functionName, const Tokens& params);
+    static MaybeData encodeFunctionCall(const std::string& functionName, const Tokens& params);
 
     /// Encodes a function call to Eth ABI binary.
-    static MaybeData encodeParams(const std::string& functionName, const BaseParams& params);
+    static MaybeData encodeFunctionCall(const std::string& functionName, const BaseParams& params);
+
+    /// Encodes params to Eth ABI binary.
+    static MaybeData encodeParams(const BaseParams& params);
 
 private:
     std::string name;

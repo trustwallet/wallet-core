@@ -11,6 +11,8 @@
 
 namespace TW::Ethereum::ABI {
 
+static constexpr std::size_t FUNCTION_SIGNATURE_LEN = 4;
+
 int Function::addParam(AbiProto::Param paramType, AbiProto::Token paramValue, bool isOutput) {
     if (isOutput) {
         auto idx = outputValues.size();
@@ -164,7 +166,7 @@ std::string Function::getType() const {
     return outputPtr.toStringOrDefault();
 }
 
-MaybeData Function::encodeParams(const std::string& functionName, const Tokens& tokens) {
+MaybeData Function::encodeFunctionCall(const std::string& functionName, const Tokens& tokens) {
     AbiProto::FunctionEncodingInput input;
     input.set_function_name(functionName);
     for (const auto& token : tokens) {
@@ -189,12 +191,22 @@ MaybeData Function::encodeParams(const std::string& functionName, const Tokens& 
     return data(output.encoded());
 }
 
-MaybeData Function::encodeParams(const std::string& functionName, const BaseParams& params) {
+MaybeData Function::encodeFunctionCall(const std::string& functionName, const BaseParams& params) {
     Tokens namedParams;
     for (const auto& param : params) {
         namedParams.push_back(param->toToken());
     }
-    return encodeParams(functionName, namedParams);
+    return encodeFunctionCall(functionName, namedParams);
+}
+
+MaybeData Function::encodeParams(const BaseParams& params) {
+    auto encoded = encodeFunctionCall("", params);
+    if (!encoded.has_value() || encoded.value().size() < FUNCTION_SIGNATURE_LEN) {
+        return {};
+    }
+
+    // The encoded data includes the function call signature (4 bytes). Erase it.
+    return subData(encoded.value(), FUNCTION_SIGNATURE_LEN);
 }
 
 } // namespace TW::Ethereum::ABI

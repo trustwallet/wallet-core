@@ -22,7 +22,10 @@ lazy_static! {
 #[derive(Clone, PartialEq)]
 pub struct I256(BaseU256);
 
+// cbindgen:ignore
 impl I256 {
+    pub const BITS: usize = 256;
+
     pub fn max() -> I256 {
         I256(*MAX_POSITIVE_ABS)
     }
@@ -190,25 +193,30 @@ impl fmt::Display for I256 {
 mod impl_serde {
     use super::I256;
     use serde::de::Error as DeError;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer};
     use std::str::FromStr;
 
-    impl<'de> Deserialize<'de> for I256 {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    impl I256 {
+        pub fn as_decimal_str<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            serializer.serialize_str(&self.to_string())
+        }
+
+        pub fn from_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
         {
             let s: &str = Deserialize::deserialize(deserializer)?;
             I256::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
         }
-    }
 
-    impl Serialize for I256 {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        pub fn from_i64_or_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
-            S: Serializer,
+            D: Deserializer<'de>,
         {
-            serializer.serialize_str(&self.to_string())
+            crate::serde_common::from_num_or_decimal_str::<'de, I256, i64, D>(deserializer)
         }
     }
 }

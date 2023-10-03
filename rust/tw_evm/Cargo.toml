@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 ethabi = { version = "18.0.0", features = ["full-serde"] }
+itertools = "0.10.5"
 lazy_static = "1.4.0"
 rlp = "0.5.2"
 serde = { version = "1.0.159", features = ["derive"] }
@@ -17,3 +18,6 @@ tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_number = { path = "../tw_number", features = ["ethabi"] }
 tw_proto = { path = "../tw_proto" }
+
+[dev-dependencies]
+tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }

@@ -16,6 +16,7 @@ use tw_coin_entry::prefix::NoPrefix;
 use tw_evm::evm_entry::EvmEntry;
 use tw_evm::modules::compiler::Compiler;
 use tw_evm::modules::json_signer::EthJsonSigner;
+use tw_evm::modules::message_signer::EthMessageSigner;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
@@ -33,6 +34,7 @@ impl CoinEntry for RoninEntry {
     // Optional modules:
     type JsonSigner = EthJsonSigner<RoninContext>;
     type PlanBuilder = NoPlanBuilder;
+    type MessageSigner = EthMessageSigner;
 
     #[inline]
     fn parse_address(
@@ -85,6 +87,11 @@ impl CoinEntry for RoninEntry {
     #[inline]
     fn json_signer(&self) -> Option<Self::JsonSigner> {
         Some(EthJsonSigner::default())
+    }
+
+    #[inline]
+    fn message_signer(&self) -> Option<Self::MessageSigner> {
+        Some(EthMessageSigner)
     }
 }
 

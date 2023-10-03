@@ -30,6 +30,7 @@ impl From<U256> for primitive_types::U256 {
     }
 }
 
+// cbindgen:ignore
 impl U256 {
     pub const WORDS_COUNT: usize = 4;
     pub const BYTES: usize = U256::WORDS_COUNT * 8;
@@ -122,6 +123,12 @@ impl U256 {
     }
 
     #[inline]
+    pub fn low_u8(&self) -> u8 {
+        let lowest_byte_idx = 0;
+        self.0.byte(lowest_byte_idx)
+    }
+
+    #[inline]
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
     }
@@ -155,8 +162,13 @@ impl FromStr for U256 {
 
     #[inline]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let inner = primitive_types::U256::from_dec_str(s)
-            .map_err(|_| NumberError::InvalidStringRepresentation)?;
+        let inner = if s.starts_with("0x") {
+            primitive_types::U256::from_str(s)
+                .map_err(|_| NumberError::InvalidStringRepresentation)?
+        } else {
+            primitive_types::U256::from_dec_str(s)
+                .map_err(|_| NumberError::InvalidStringRepresentation)?
+        };
         Ok(U256(inner))
     }
 }
@@ -185,25 +197,30 @@ where
 mod impl_serde {
     use super::U256;
     use serde::de::Error as DeError;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer};
     use std::str::FromStr;
 
-    impl<'de> Deserialize<'de> for U256 {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    impl U256 {
+        pub fn as_decimal_str<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            serializer.serialize_str(&self.to_string())
+        }
+
+        pub fn from_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
         {
             let s: &str = Deserialize::deserialize(deserializer)?;
             U256::from_str(s).map_err(|e| DeError::custom(format!("{e:?}")))
         }
-    }
 
-    impl Serialize for U256 {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        pub fn from_u64_or_decimal_str<'de, D>(deserializer: D) -> Result<Self, D::Error>
         where
-            S: Serializer,
+            D: Deserializer<'de>,
         {
-            serializer.serialize_str(&self.to_string())
+            crate::serde_common::from_num_or_decimal_str::<'de, U256, u64, D>(deserializer)
         }
     }
 }
@@ -215,6 +232,14 @@ macro_rules! impl_map_from {
                 <$u>::from(primitive_types::U256::from(int))
             }
         }
+
+        impl TryFrom<$u> for $int {
+            type Error = NumberError;
+
+            fn try_from(u: $u) -> Result<Self, Self::Error> {
+                <$int>::try_from(u.0).map_err(|_| NumberError::IntegerOverflow)
+            }
+        }
     };
 }
 
@@ -222,3 +247,18 @@ impl_map_from!(U256, u8);
 impl_map_from!(U256, u16);
 impl_map_from!(U256, u32);
 impl_map_from!(U256, u64);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_u256_from_str() {
+        assert_eq!(U256::from_str("0x0"), Ok(U256::zero()));
+        assert_eq!(U256::from_str("0x00"), Ok(U256::zero()));
+        assert_eq!(U256::from_str("0x01"), Ok(U256::from(1_u64)));
+        assert_eq!(U256::from_str("0x2"), Ok(U256::from(2_u64)));
+        assert_eq!(U256::from_str("0x0000a"), Ok(U256::from(10_u64)));
+        assert_eq!(U256::from_str("4"), Ok(U256::from(4_u64)));
+    }
+}

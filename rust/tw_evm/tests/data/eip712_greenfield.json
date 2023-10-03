@@ -1,0 +1,149 @@
+{
+    "types": {
+        "Coin": [
+            {
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "name": "denom",
+                "type": "string"
+            }
+        ],
+        "EIP712Domain": [
+            {
+                "name": "chainId",
+                "type": "uint256"
+            },
+            {
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "name": "salt",
+                "type": "string"
+            },
+            {
+                "name": "verifyingContract",
+                "type": "string"
+            },
+            {
+                "name": "version",
+                "type": "string"
+            }
+        ],
+        "Fee": [
+            {
+                "name": "amount",
+                "type": "Coin[]"
+            },
+            {
+                "name": "gas_limit",
+                "type": "uint256"
+            },
+            {
+                "name": "granter",
+                "type": "string"
+            },
+            {
+                "name": "payer",
+                "type": "string"
+            }
+        ],
+        "Msg1": [
+            {
+                "name": "amount",
+                "type": "TypeMsg1Amount[]"
+            },
+            {
+                "name": "from_address",
+                "type": "string"
+            },
+            {
+                "name": "to_address",
+                "type": "string"
+            },
+            {
+                "name": "type",
+                "type": "string"
+            }
+        ],
+        "Tx": [
+            {
+                "name": "account_number",
+                "type": "uint256"
+            },
+            {
+                "name": "chain_id",
+                "type": "uint256"
+            },
+            {
+                "name": "fee",
+                "type": "Fee"
+            },
+            {
+                "name": "memo",
+                "type": "string"
+            },
+            {
+                "name": "msg1",
+                "type": "Msg1"
+            },
+            {
+                "name": "sequence",
+                "type": "uint256"
+            },
+            {
+                "name": "timeout_height",
+                "type": "uint256"
+            }
+        ],
+        "TypeMsg1Amount": [
+            {
+                "name": "amount",
+                "type": "string"
+            },
+            {
+                "name": "denom",
+                "type": "string"
+            }
+        ]
+    },
+    "primaryType": "Tx",
+    "domain": {
+        "name": "Greenfield Tx",
+        "version": "1.0.0",
+        "chainId": "0x15e0",
+        "verifyingContract": "greenfield",
+        "salt": "0"
+    },
+    "message": {
+        "sequence": "2",
+        "account_number": "15560",
+        "chain_id": "5600",
+        "memo": "",
+        "fee": {
+            "amount": [
+                {
+                    "amount": "2000000000000000",
+                    "denom": "BNB"
+                }
+            ],
+            "gas_limit": "200000",
+            "payer": "0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1",
+            "granter": ""
+        },
+        "timeout_height": "0",
+        "msg1": {
+            "from_address": "0x9d1d97aDFcd324Bbd603D3872BD78e04098510b1",
+            "to_address": "0x280b27f3676db1C4475EE10F75D510Eb527fd155",
+            "amount": [
+                {
+                    "amount": "1000000000000000",
+                    "denom": "BNB"
+                }
+            ],
+            "type": "/cosmos.bank.v1beta1.MsgSend"
+        }
+    }
+}

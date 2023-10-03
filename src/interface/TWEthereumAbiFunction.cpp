@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
-#include "Ethereum/ABI.h"
+#include "Ethereum/ABI/Function.h"
 #include "Data.h"
 #include "HexCoding.h"
 

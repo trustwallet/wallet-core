@@ -14,7 +14,7 @@ mod canonical;
 pub mod der;
 pub mod nist256p1;
 pub mod secp256k1;
-mod signature;
+pub mod signature;
 
 /// This is an alias used for convenience.
 pub trait EcdsaCurve:
