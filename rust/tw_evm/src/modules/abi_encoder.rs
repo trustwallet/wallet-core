@@ -10,6 +10,7 @@ use crate::abi::param::Param;
 use crate::abi::param_token::NamedToken;
 use crate::abi::param_type::ParamType;
 use crate::abi::token::Token;
+use crate::abi::type_reader::TypeConstructor;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::abi_output_error;
 use crate::address::Address;
@@ -146,10 +147,10 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    pub fn decode_value_impl(
+    fn decode_value_impl(
         input: Proto::ValueDecodingInput<'_>,
     ) -> AbiResult<Proto::ValueDecodingOutput<'static>> {
-        let param_type = ParamType::try_from_type_short(&input.param_type)?;
+        let param_type = DecodingValueType::from_str(&input.param_type)?.0;
         let token = decode_value(&param_type, &input.encoded)?;
         let token_str = token.to_string();
         Ok(Proto::ValueDecodingOutput {
@@ -330,18 +331,12 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     fn param_type_from_proto(param_type: Proto::ParamType<'_>) -> AbiResult<ParamType> {
         match param_type.param {
             ProtoParamType::boolean(_) => Ok(ParamType::Bool),
-            ProtoParamType::number_int(i) => Ok(ParamType::Int {
-                bits: i.bits as usize,
-            }),
-            ProtoParamType::number_uint(u) => Ok(ParamType::Uint {
-                bits: u.bits as usize,
-            }),
+            ProtoParamType::number_int(i) => ParamType::int(i.bits as usize),
+            ProtoParamType::number_uint(u) => ParamType::uint(u.bits as usize),
             ProtoParamType::string_param(_) => Ok(ParamType::String),
             ProtoParamType::address(_) => Ok(ParamType::Address),
             ProtoParamType::byte_array(_) => Ok(ParamType::Bytes),
-            ProtoParamType::byte_array_fix(bytes) => Ok(ParamType::FixedBytes {
-                len: bytes.size as usize,
-            }),
+            ProtoParamType::byte_array_fix(bytes) => ParamType::fixed_bytes(bytes.size as usize),
             ProtoParamType::array(arr) => {
                 let element_type = arr
                     .element_type
@@ -356,10 +351,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                     .element_type
                     .ok_or(AbiError(AbiErrorKind::Error_missing_param_type))?;
                 let kind = Self::param_type_from_proto(*element_type)?;
-                Ok(ParamType::FixedArray {
-                    len: arr.size as usize,
-                    kind: Box::new(kind),
-                })
+                ParamType::fixed_array(arr.size as usize, kind)
             },
             ProtoParamType::tuple(tuple) => {
                 let params = tuple
@@ -367,6 +359,9 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                     .into_iter()
                     .map(Self::param_from_proto)
                     .collect::<AbiResult<Vec<_>>>()?;
+                if params.is_empty() {
+                    return Err(AbiError(AbiErrorKind::Error_invalid_abi));
+                }
                 Ok(ParamType::Tuple { params })
             },
             ProtoParamType::None => Err(AbiError(AbiErrorKind::Error_missing_param_type)),
@@ -380,7 +375,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         }
     }
 
-    fn token_to_proto(token: Token) -> Proto::Token<'static> {
+    pub fn token_to_proto(token: Token) -> Proto::Token<'static> {
         let value = match token {
             Token::Address(addr) => TokenEnum::address(Cow::Owned(addr.to_string())),
             Token::FixedBytes(bytes) => TokenEnum::byte_array_fix(Cow::Owned(bytes)),
@@ -450,4 +445,20 @@ struct SmartContractCallAbiJson {
 struct SmartContractCallDecodedInputJson<'a> {
     function: String,
     inputs: &'a [NamedToken],
+}
+
+/// A value type used on [`AbiEncoder::decode_value`].
+/// Please note [`AbiEncoder::decode_value`] doesn't support `ParamType::Tuple` for decoding.
+struct DecodingValueType(ParamType);
+
+impl FromStr for DecodingValueType {
+    type Err = AbiError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let param_type = ParamType::try_from_type_short(s)?;
+        if param_type.has_tuple_components() {
+            return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+        }
+        Ok(DecodingValueType(param_type))
+    }
 }

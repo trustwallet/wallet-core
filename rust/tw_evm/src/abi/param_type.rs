@@ -5,12 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::param::Param;
+use crate::abi::type_reader::{Reader, TypeConstructor};
+use crate::abi::uint::check_uint_bits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
-use ethabi::param_type::Reader;
 use ethabi::ParamType as EthAbiType;
 use serde::{de::Error as DeError, Deserialize, Deserializer};
+use tw_number::{I256, U256};
 
 #[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum ParamType {
     /// Address.
     ///
@@ -62,6 +65,75 @@ pub enum ParamType {
     Tuple { params: Vec<Param> },
 }
 
+impl TypeConstructor for ParamType {
+    fn address() -> Self {
+        ParamType::Address
+    }
+
+    fn bytes() -> Self {
+        ParamType::Bytes
+    }
+
+    fn fixed_bytes(len: usize) -> AbiResult<Self> {
+        if len == 0 {
+            return Err(AbiError(AbiErrorKind::Error_empty_type));
+        }
+        Ok(ParamType::FixedBytes { len })
+    }
+
+    fn int(bits: usize) -> AbiResult<Self> {
+        check_uint_bits(bits)?;
+        Ok(ParamType::Int { bits })
+    }
+
+    fn i256() -> Self {
+        ParamType::Int { bits: I256::BITS }
+    }
+
+    fn uint(bits: usize) -> AbiResult<Self> {
+        check_uint_bits(bits)?;
+        Ok(ParamType::Uint { bits })
+    }
+
+    fn u256() -> Self {
+        ParamType::Uint { bits: U256::BITS }
+    }
+
+    fn bool() -> Self {
+        ParamType::Bool
+    }
+
+    fn string() -> Self {
+        ParamType::String
+    }
+
+    fn array(element_type: Self) -> Self {
+        ParamType::Array {
+            kind: Box::new(element_type),
+        }
+    }
+
+    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self> {
+        if len == 0 {
+            return Err(AbiError(AbiErrorKind::Error_empty_type));
+        }
+        Ok(ParamType::FixedArray {
+            kind: Box::new(element_type),
+            len,
+        })
+    }
+
+    fn empty_tuple() -> AbiResult<Self> {
+        Ok(ParamType::Tuple {
+            params: Vec::default(),
+        })
+    }
+
+    fn custom(_s: &str) -> AbiResult<Self> {
+        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
+    }
+}
+
 impl ParamType {
     pub(crate) fn to_ethabi(&self) -> ethabi::ParamType {
         match self {
@@ -84,9 +156,7 @@ impl ParamType {
     }
 
     pub fn try_from_type_short(type_short: &str) -> AbiResult<ParamType> {
-        let eth_kind = Reader::read(type_short)
-            .map_err(|_| AbiError(AbiErrorKind::Error_missing_param_type))?;
-        ParamType::try_from_ethabi_incomplete(eth_kind)
+        Reader::parse_type(type_short)
     }
 
     pub(crate) fn has_tuple_components(&self) -> bool {
@@ -98,41 +168,6 @@ impl ParamType {
                 _ => return false,
             }
         }
-    }
-
-    fn try_from_ethabi_incomplete(ethabi_type: ethabi::ParamType) -> AbiResult<ParamType> {
-        let param_type = match ethabi_type {
-            EthAbiType::Address => ParamType::Address,
-            EthAbiType::Bytes => ParamType::Bytes,
-            EthAbiType::Int(bits) => ParamType::Int { bits },
-            EthAbiType::Uint(bits) => ParamType::Uint { bits },
-            EthAbiType::Bool => ParamType::Bool,
-            EthAbiType::String => ParamType::String,
-            EthAbiType::Array(elem_ty) => {
-                let kind = ParamType::try_from_ethabi_incomplete(*elem_ty)?;
-                ParamType::Array {
-                    kind: Box::new(kind),
-                }
-            },
-            EthAbiType::FixedBytes(len) => ParamType::FixedBytes { len },
-            EthAbiType::FixedArray(elem_ty, len) => {
-                let kind = ParamType::try_from_ethabi_incomplete(*elem_ty)?;
-                ParamType::FixedArray {
-                    kind: Box::new(kind),
-                    len,
-                }
-            },
-            EthAbiType::Tuple(tuple_params) => {
-                if !tuple_params.is_empty() {
-                    return Err(AbiError(AbiErrorKind::Error_missing_param_type));
-                }
-                ParamType::Tuple {
-                    params: Vec::default(),
-                }
-            },
-        };
-
-        Ok(param_type)
     }
 }
 

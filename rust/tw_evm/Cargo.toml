@@ -3,7 +3,11 @@ name = "tw_evm"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+arbitrary = ["dep:arbitrary", "tw_hash/arbitrary", "tw_number/arbitrary"]
+
 [dependencies]
+arbitrary = { version = "1", features = ["derive"], optional = true }
 ethabi = { version = "18.0.0", features = ["full-serde"] }
 itertools = "0.10.5"
 lazy_static = "1.4.0"

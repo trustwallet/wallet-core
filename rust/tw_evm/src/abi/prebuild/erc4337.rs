@@ -7,6 +7,7 @@
 use crate::abi::contract::Contract;
 use crate::abi::param_type::ParamType;
 use crate::abi::token::Token;
+use crate::abi::type_reader::TypeConstructor;
 use crate::abi::AbiResult;
 use crate::address::Address;
 use lazy_static::lazy_static;
@@ -64,7 +65,7 @@ impl Erc4337SimpleAccount {
 
         func.encode_input([
             Token::array(ParamType::Address, addresses),
-            Token::array(ParamType::Uint { bits: U256::BITS }, values),
+            Token::array(ParamType::u256(), values),
             Token::array(ParamType::Bytes, datas),
         ])
     }

@@ -17,7 +17,8 @@ use tw_encoding::hex::ToHex;
 use tw_memory::Data;
 use tw_number::{I256, U256};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Token {
     /// Address.
     ///

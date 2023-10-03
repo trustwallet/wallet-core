@@ -10,6 +10,7 @@ use serde::{de::Error as DeError, Deserialize, Deserializer};
 use std::fmt::Formatter;
 
 #[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Param {
     /// Param name.
     pub name: Option<String>,
@@ -104,6 +105,9 @@ fn set_tuple_components<E: DeError>(
 ) -> Result<(), E> {
     if let Some(tuple_components) = inner_tuple_mut(kind) {
         *tuple_components = components.ok_or_else(|| E::missing_field("components"))?;
+        if tuple_components.is_empty() {
+            return Err(DeError::custom("'components' cannot be empty"));
+        }
     }
     Ok(())
 }

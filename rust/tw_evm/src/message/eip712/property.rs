@@ -4,7 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::message::{MessageSigningError, MessageSigningResult};
+use crate::abi::type_reader::{Reader, TypeConstructor};
+use crate::abi::uint::check_uint_bits;
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use crate::message::MessageSigningError;
 use serde::Deserialize;
 use std::str::FromStr;
 
@@ -34,70 +37,76 @@ pub enum PropertyType {
     },
 }
 
-fn parse_len(len_str: &str) -> MessageSigningResult<Option<usize>> {
-    if len_str.is_empty() {
-        return Ok(None);
+impl TypeConstructor for PropertyType {
+    fn address() -> Self {
+        PropertyType::Address
     }
-    usize::from_str(len_str)
-        .map(Some)
-        .map_err(|_| MessageSigningError::InvalidParameterType)
+
+    fn bytes() -> Self {
+        PropertyType::Bytes
+    }
+
+    fn fixed_bytes(len: usize) -> AbiResult<Self> {
+        if len == 0 {
+            return Err(AbiError(AbiErrorKind::Error_empty_type));
+        }
+        Ok(PropertyType::FixBytes { len })
+    }
+
+    fn int(bits: usize) -> AbiResult<Self> {
+        check_uint_bits(bits)?;
+        Ok(PropertyType::Int)
+    }
+
+    fn i256() -> Self {
+        PropertyType::Int
+    }
+
+    fn uint(bits: usize) -> AbiResult<Self> {
+        check_uint_bits(bits)?;
+        Ok(PropertyType::Uint)
+    }
+
+    fn u256() -> Self {
+        PropertyType::Uint
+    }
+
+    fn bool() -> Self {
+        PropertyType::Bool
+    }
+
+    fn string() -> Self {
+        PropertyType::String
+    }
+
+    fn array(element_type: Self) -> Self {
+        PropertyType::Array(Box::new(element_type))
+    }
+
+    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self> {
+        if len == 0 {
+            return Err(AbiError(AbiErrorKind::Error_empty_type));
+        }
+        Ok(PropertyType::FixArray {
+            len,
+            element_type: Box::new(element_type),
+        })
+    }
+
+    fn empty_tuple() -> AbiResult<Self> {
+        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
+    }
+
+    fn custom(s: &str) -> AbiResult<Self> {
+        Ok(PropertyType::Custom(s.to_string()))
+    }
 }
 
 impl FromStr for PropertyType {
     type Err = MessageSigningError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // Array
-        if let Some(remaining) = s.strip_suffix(']') {
-            let Some((element_type_str, len_str)) = remaining.rsplit_once('[') else {
-                return Err(MessageSigningError::InvalidParameterType);
-            };
-
-            let element_type = Box::new(PropertyType::from_str(element_type_str)?);
-            if let Some(len) = parse_len(len_str)? {
-                return Ok(PropertyType::FixArray { len, element_type });
-            }
-            return Ok(PropertyType::Array(element_type));
-        }
-
-        let all_alphanumeric = s.chars().all(|ch| ch.is_ascii_alphanumeric());
-        if s.is_empty() || !all_alphanumeric {
-            return Err(MessageSigningError::InvalidParameterType);
-        }
-
-        if s.contains(['[', ']']) {
-            return Err(MessageSigningError::InvalidParameterType);
-        }
-
-        // uint, uint32, ...
-        if let Some(len_str) = s.strip_prefix("uint") {
-            parse_len(len_str)?;
-            return Ok(PropertyType::Uint);
-        }
-
-        // int, int32, ...
-        if let Some(len_str) = s.strip_prefix("int") {
-            parse_len(len_str)?;
-            return Ok(PropertyType::Int);
-        }
-
-        // bytes, bytes32, ...
-        if let Some(len_str) = s.strip_prefix("bytes") {
-            if let Some(len) = parse_len(len_str)? {
-                // Fixed-len bytes.
-                return Ok(PropertyType::FixBytes { len });
-            }
-            // Otherwise, dynamic-len bytes.
-            return Ok(PropertyType::Bytes);
-        }
-
-        // Handle other types.
-        match s {
-            "address" => Ok(PropertyType::Address),
-            "bool" => Ok(PropertyType::Bool),
-            "string" => Ok(PropertyType::String),
-            custom => Ok(PropertyType::Custom(custom.to_string())),
-        }
+        Reader::parse_type(s).map_err(|_| MessageSigningError::InvalidParameterType)
     }
 }
 
@@ -107,7 +116,7 @@ mod tests {
 
     #[test]
     fn test_parse_int() {
-        let ints = ["int", "int1", "int8", "int256"];
+        let ints = ["int", "int8", "int256"];
         for int in ints {
             assert_eq!(PropertyType::from_str(int).unwrap(), PropertyType::Int);
         }
@@ -115,7 +124,7 @@ mod tests {
 
     #[test]
     fn test_parse_uint() {
-        let ints = ["uint", "uint1", "uint8", "uint256"];
+        let ints = ["uint", "uint8", "uint256"];
         for int in ints {
             assert_eq!(PropertyType::from_str(int).unwrap(), PropertyType::Uint);
         }

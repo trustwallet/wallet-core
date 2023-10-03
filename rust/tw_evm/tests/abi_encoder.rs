@@ -605,6 +605,23 @@ fn test_decode_value() {
 }
 
 #[test]
+fn test_decode_value_error() {
+    #[track_caller]
+    fn test_decode_value_error_impl(kind: &str, encoded: &str) {
+        let input = Proto::ValueDecodingInput {
+            encoded: encoded.decode_hex().unwrap().into(),
+            param_type: kind.into(),
+        };
+        let output = AbiEncoder::<StandardEvmContext>::decode_value(input);
+        assert_ne!(output.error, AbiErrorKind::OK);
+        assert!(!output.error_message.is_empty());
+    }
+
+    test_decode_value_error_impl("tuple[7][][2][2]", "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000375696e742a6c");
+    test_decode_value_error_impl("bytes0[0][][2][6]", "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000375696e742a6c");
+}
+
+#[test]
 fn test_encode_params_invalid_address() {
     struct TestInput {
         token: TokenEnum<'static>,

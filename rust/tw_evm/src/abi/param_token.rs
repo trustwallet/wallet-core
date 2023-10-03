@@ -11,7 +11,8 @@ use ethabi::Token as EthAbiToken;
 use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct NamedToken {
     /// Optional param name.
     pub name: Option<String>,

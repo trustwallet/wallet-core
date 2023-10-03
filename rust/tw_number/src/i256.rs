@@ -20,6 +20,7 @@ lazy_static! {
 }
 
 #[derive(Clone, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct I256(BaseU256);
 
 // cbindgen:ignore

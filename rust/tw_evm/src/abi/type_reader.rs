@@ -1,0 +1,108 @@
+// Copyright © 2017-2023 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use std::str::FromStr;
+
+pub trait TypeConstructor: Sized {
+    fn address() -> Self;
+
+    fn bytes() -> Self;
+
+    fn fixed_bytes(len: usize) -> AbiResult<Self>;
+
+    fn int(bits: usize) -> AbiResult<Self>;
+
+    fn i256() -> Self;
+
+    fn uint(bits: usize) -> AbiResult<Self>;
+
+    fn u256() -> Self;
+
+    fn bool() -> Self;
+
+    fn string() -> Self;
+
+    fn array(element_type: Self) -> Self;
+
+    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self>;
+
+    fn empty_tuple() -> AbiResult<Self>;
+
+    fn custom(s: &str) -> AbiResult<Self>;
+}
+
+pub struct Reader;
+
+impl Reader {
+    /// Doesn't accept tuple types with specified parameters, e.g `(uint32, address)`.
+    pub fn parse_type<T: TypeConstructor>(s: &str) -> AbiResult<T> {
+        // Array
+        if let Some(remaining) = s.strip_suffix(']') {
+            let Some((element_type_str, len_str)) = remaining.rsplit_once('[') else {
+                return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+            };
+
+            let element_type = Reader::parse_type::<T>(element_type_str)?;
+            if let Some(len) = parse_len(len_str)? {
+                return T::fixed_array(len, element_type);
+            }
+            return Ok(T::array(element_type));
+        }
+
+        let all_alphanumeric = s.chars().all(|ch| ch.is_ascii_alphanumeric());
+        if s.is_empty() || !all_alphanumeric {
+            return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+        }
+
+        if s.contains(['[', ']']) {
+            return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+        }
+
+        // uint, uint32, ...
+        if let Some(len_str) = s.strip_prefix("uint") {
+            let bits = parse_len(len_str)?.unwrap_or(256);
+            return T::uint(bits);
+        }
+
+        // int, int32, ...
+        if let Some(len_str) = s.strip_prefix("int") {
+            let bits = parse_len(len_str)?.unwrap_or(256);
+            return T::int(bits);
+        }
+
+        // bytes, bytes32, ...
+        if let Some(len_str) = s.strip_prefix("bytes") {
+            if let Some(len) = parse_len(len_str)? {
+                // Fixed-len bytes.
+                return T::fixed_bytes(len);
+            }
+            // Otherwise, dynamic-len bytes.
+            return Ok(T::bytes());
+        }
+
+        // Handle other types.
+        match s {
+            "address" => Ok(T::address()),
+            "bool" => Ok(T::bool()),
+            "string" => Ok(T::string()),
+            "tuple" => T::empty_tuple(),
+            custom => T::custom(custom),
+        }
+    }
+}
+
+fn parse_len(len_str: &str) -> AbiResult<Option<usize>> {
+    if len_str.is_empty() {
+        return Ok(None);
+    }
+    if len_str.starts_with('0') {
+        return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+    }
+    usize::from_str(len_str)
+        .map(Some)
+        .map_err(|_| AbiError(AbiErrorKind::Error_invalid_param_type))
+}

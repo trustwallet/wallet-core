@@ -15,6 +15,7 @@ pub mod param_token;
 pub mod param_type;
 pub mod prebuild;
 pub mod token;
+pub mod type_reader;
 pub mod uint;
 
 #[macro_export]
