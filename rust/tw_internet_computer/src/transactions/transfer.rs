@@ -41,7 +41,7 @@ pub struct TransferArgs {
     pub current_timestamp_nanos: u64,
 }
 
-impl TryFrom<TransferArgs> for SendRequest<'_> {
+impl TryFrom<TransferArgs> for SendRequest {
     type Error = SignTransactionError;
 
     fn try_from(args: TransferArgs) -> Result<Self, Self::Error> {
