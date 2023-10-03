@@ -4463,7 +4463,7 @@
     "chainId": "3639",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://ichainscan.io",
+      "url": "https://ichainscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x2d6fc2b55529a1b556605d26fa8f68036f3f90e623a55f43974c34213624433b",
