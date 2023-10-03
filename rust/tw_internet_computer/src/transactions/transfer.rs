@@ -205,7 +205,8 @@ mod test {
 
         let signed_transaction = transfer(private_key, canister_id, transfer_args).unwrap();
         // Encode the signed transaction.
-        let cbor_encoded_signed_transaction = tw_cbor::serialize(&signed_transaction).unwrap();
+        let cbor_encoded_signed_transaction =
+            tw_encoding::cbor::encode(&signed_transaction).unwrap();
         let hex_encoded_signed_transaction = hex::encode(&cbor_encoded_signed_transaction, false);
         assert_eq!(hex_encoded_signed_transaction, SIGNED_TRANSACTION);
     }

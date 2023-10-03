@@ -8,7 +8,6 @@ edition = "2021"
 [dependencies]
 quick-protobuf = "0.8.1"
 serde = { version = "1.0.136", features = ["derive"] }
-tw_cbor = { path = "../tw_cbor" }
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_encoding = { path = "../tw_encoding" }
 tw_hash = { path = "../tw_hash" }

@@ -67,7 +67,7 @@ impl<Context: InternetComputerContext> Signer<Context> {
             sign_transaction(private_key, canister_id, &transaction.transaction_oneof)
                 .map_err(SigningError::from)?;
 
-        let cbor_encoded_signed_transaction = tw_cbor::serialize(&signed_transaction)
+        let cbor_encoded_signed_transaction = tw_encoding::cbor::encode(&signed_transaction)
             .map_err(|_| SigningError(CommonError::Error_internal))?;
 
         Ok(Proto::SigningOutput {
