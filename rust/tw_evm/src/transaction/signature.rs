@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::signature::replay_protection;
 use tw_hash::H520;
 use tw_keypair::ecdsa::secp256k1;
 use tw_number::U256;
@@ -91,16 +92,6 @@ impl EthSignature for SignatureEip155 {
     #[inline]
     fn s(&self) -> U256 {
         self.s
-    }
-}
-
-/// Embeds `chain_id` in `v` param, for replay protection, legacy (EIP155).
-#[inline]
-pub fn replay_protection(chain_id: U256, v: u8) -> U256 {
-    if chain_id.is_zero() {
-        U256::from(v + 27)
-    } else {
-        chain_id + chain_id + 35u8 + v
     }
 }
 

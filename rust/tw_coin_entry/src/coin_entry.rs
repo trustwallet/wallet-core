@@ -15,6 +15,7 @@ use tw_keypair::tw::PublicKey;
 use tw_memory::Data;
 use tw_proto::{MessageRead, MessageWrite};
 
+use crate::modules::message_signer::MessageSigner;
 pub use tw_proto::{ProtoError, ProtoResult};
 
 pub type PrivateKeyBytes = Data;
@@ -35,6 +36,7 @@ pub trait CoinEntry {
     // Optional modules:
     type JsonSigner: JsonSigner;
     type PlanBuilder: PlanBuilder;
+    type MessageSigner: MessageSigner;
 
     /// Tries to parse `Self::Address` from the given `address` string by `coin` type and address `prefix`.
     fn parse_address(
@@ -83,6 +85,13 @@ pub trait CoinEntry {
     /// Returns an optional `Plan` builder. Only UTXO chains need it.
     #[inline]
     fn plan_builder(&self) -> Option<Self::PlanBuilder> {
+        None
+    }
+
+    /// It is optional, Signing regular messages.
+    /// Returns `Ok(None)` if the chain doesn't support regular message signing.
+    #[inline]
+    fn message_signer(&self) -> Option<Self::MessageSigner> {
         None
     }
 }

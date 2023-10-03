@@ -8,6 +8,7 @@ use tw_coin_entry::error::{SigningError, SigningErrorType};
 
 pub mod contract;
 pub mod decode;
+pub mod encode;
 pub mod function;
 pub mod param;
 pub mod param_token;

@@ -1571,6 +1571,7 @@ name = "tw_evm"
 version = "0.1.0"
 dependencies = [
  "ethabi",
+ "itertools",
  "lazy_static",
  "rlp",
  "serde",

@@ -15,8 +15,6 @@
 
 // ETH
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "proto/Ethereum.pb.h"
 #include "uint256.h"
@@ -35,7 +33,6 @@ struct PairHash {
 using EVMLiquidStakingFunctionRegistry = std::unordered_map<BlockchainActionEnumPair, std::string, PairHash>;
 using EVMLiquidStakingParamsRegistry = std::unordered_map<BlockchainActionEnumPair, std::string, PairHash>;
 using EVMLiquidStakingRegistry = std::unordered_map<Proto::Protocol, EVMLiquidStakingFunctionRegistry>;
-using Params = std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>;
 
 static const EVMLiquidStakingFunctionRegistry gStraderFunctionRegistry =
     {{std::make_pair(Proto::POLYGON, Action::Stake), "swapMaticForMaticXViaInstantPool"},
@@ -66,7 +63,7 @@ namespace internal {
         if (protocol == Proto::Lido) {
             params.emplace_back(std::make_shared<Ethereum::ABI::ProtoAddress>());
         }
-        auto funcData = Ethereum::ABI::Function::encodeParams(gEVMLiquidStakingRegistry.at(protocol).at({blockchain, Action::Stake}), params);
+        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(gEVMLiquidStakingRegistry.at(protocol).at({blockchain, Action::Stake}), params);
         if (funcData.has_value()) {
             payload = funcData.value();
         }
@@ -77,7 +74,7 @@ namespace internal {
         Ethereum::ABI::BaseParams params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(unstake.amount())));
         auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Unstake});
-        auto funcData = Ethereum::ABI::Function::encodeParams(functionName, params);
+        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(functionName, params);
         if (funcData.has_value()) {
             payload = funcData.value();
         }
@@ -87,7 +84,7 @@ namespace internal {
         Ethereum::ABI::BaseParams params;
         params.emplace_back(std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(withdraw.idx())));
         auto functionName = gStraderFunctionRegistry.at({blockchain, Action::Withdraw});
-        auto funcData = Ethereum::ABI::Function::encodeParams(functionName, params);
+        auto funcData = Ethereum::ABI::Function::encodeFunctionCall(functionName, params);
         if (funcData.has_value()) {
             payload = funcData.value();
         }

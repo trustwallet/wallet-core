@@ -121,8 +121,8 @@ impl Serialize for Token {
             Token::Bytes(bytes) | Token::FixedBytes(bytes) => {
                 bytes.to_hex_prefixed().serialize(serializer)
             },
-            Token::Int { int, .. } => int.serialize(serializer),
-            Token::Uint { uint, .. } => uint.serialize(serializer),
+            Token::Int { int, .. } => int.as_decimal_str(serializer),
+            Token::Uint { uint, .. } => uint.as_decimal_str(serializer),
             Token::Bool(bool) => bool.serialize(serializer),
             Token::String(str) => str.serialize(serializer),
             Token::Array { arr, .. } | Token::FixedArray { arr, .. } => arr.serialize(serializer),
@@ -136,6 +136,13 @@ impl Token {
         Token::Uint {
             bits: U256::BITS,
             uint,
+        }
+    }
+
+    pub fn i256(int: I256) -> Token {
+        Token::Int {
+            bits: I256::BITS,
+            int,
         }
     }
 

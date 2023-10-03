@@ -19,8 +19,6 @@
 #include "../proto/Bitcoin.pb.h"
 // ETH
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "uint256.h"
 #include "../proto/Ethereum.pb.h"
@@ -275,7 +273,7 @@ SwapBundled SwapBuilder::buildEth(const uint256_t& amount, const std::string& me
         auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
 
         // Ethereum::ABI::AbiProto::NamedParam
-        auto payload = Ethereum::ABI::Function::encodeParams("depositWithExpiry", {
+        auto payload = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", {
             std::make_shared<Ethereum::ABI::ProtoAddress>(mVaultAddress),
             std::make_shared<Ethereum::ABI::ProtoAddress>(toTokenId),
             std::make_shared<Ethereum::ABI::ProtoUInt256>(amount),

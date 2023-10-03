@@ -16,6 +16,7 @@ use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::evm_entry::EvmEntry;
 use tw_evm::modules::compiler::Compiler;
 use tw_evm::modules::json_signer::EthJsonSigner;
+use tw_evm::modules::message_signer::EthMessageSigner;
 use tw_evm::modules::signer::Signer;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Ethereum::Proto;
@@ -33,6 +34,7 @@ impl CoinEntry for EthereumEntry {
     // Optional modules:
     type JsonSigner = EthJsonSigner<StandardEvmContext>;
     type PlanBuilder = NoPlanBuilder;
+    type MessageSigner = EthMessageSigner;
 
     #[inline]
     fn parse_address(
@@ -85,6 +87,11 @@ impl CoinEntry for EthereumEntry {
     #[inline]
     fn json_signer(&self) -> Option<Self::JsonSigner> {
         Some(EthJsonSigner::default())
+    }
+
+    #[inline]
+    fn message_signer(&self) -> Option<Self::MessageSigner> {
+        Some(EthMessageSigner)
     }
 }
 

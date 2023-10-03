@@ -8,7 +8,6 @@
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 #include <TrustWalletCore/TWString.h>
 
-#include "Ethereum/ABI.h"
 #include "Data.h"
 #include "HexCoding.h"
 #include "proto/EthereumAbi.pb.h"
