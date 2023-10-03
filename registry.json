@@ -4445,6 +4445,36 @@
       "source": "https://github.com/neonevm/neon-evm",
       "rpc": "https://neon-proxy-mainnet.solana.p2p.org/",
       "documentation": "https://docs.neonfoundation.io/docs/quick_start"
+    },
+    {
+    "id": "ichain",
+    "name": "iChain",
+    "coinId": 3639,
+    "symbol": "ISLAMI",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "3639",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://ichainscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x2d6fc2b55529a1b556605d26fa8f68036f3f90e623a55f43974c34213624433b",
+      "sampleAccount": "0xD39f287A11EDCaF1c20B236628300D5d9c2f009a"
+    },
+    "info": {
+      "url": "https://islamicoin.finance",
+      "source": "https://github.com/iChainBlock",
+      "rpc": "https://rpc.ichainscan.com",
+      "documentation": "https://github.com/iChainBlock/iChain-rpc"
     }
+  },
   }
 ]
