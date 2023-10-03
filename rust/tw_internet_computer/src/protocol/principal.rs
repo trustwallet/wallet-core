@@ -87,7 +87,7 @@ impl Principal {
     /// # Panics
     ///
     /// Panics if the slice is longer than 29 bytes.
-    pub const fn from_slice(slice: &[u8]) -> Self {
+    pub fn from_slice(slice: &[u8]) -> Self {
         match Self::try_from_slice(slice) {
             Ok(v) => v,
             _ => panic!("slice length exceeds capacity"),
@@ -95,23 +95,19 @@ impl Principal {
     }
 
     /// Construct a [`Principal`] from a slice of bytes.
-    pub const fn try_from_slice(slice: &[u8]) -> Result<Self, PrincipalError> {
+    pub fn try_from_slice(slice: &[u8]) -> Result<Self, PrincipalError> {
         const MAX_LENGTH_IN_BYTES: usize = Principal::MAX_LENGTH_IN_BYTES;
-        match slice.len() {
-            len @ 0..=MAX_LENGTH_IN_BYTES => {
-                let mut bytes = [0; MAX_LENGTH_IN_BYTES];
-                let mut i = 0;
-                while i < len {
-                    bytes[i] = slice[i];
-                    i += 1;
-                }
-                Ok(Self {
-                    len: len as u8,
-                    bytes,
-                })
-            },
-            _ => Err(PrincipalError::BytesTooLong),
+        if slice.len() > MAX_LENGTH_IN_BYTES {
+            return Err(PrincipalError::BytesTooLong);
         }
+
+        let mut bytes = [0; MAX_LENGTH_IN_BYTES];
+        bytes[0..slice.len()].copy_from_slice(slice);
+
+        Ok(Self {
+            len: slice.len() as u8,
+            bytes,
+        })
     }
 
     /// Parse a [`Principal`] from text representation.

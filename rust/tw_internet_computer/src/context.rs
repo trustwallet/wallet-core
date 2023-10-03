@@ -22,8 +22,8 @@ impl InternetComputerContext for StandardInternetComputerContext {
     type Address = AccountIdentifier;
 
     fn get_canister_id() -> Principal {
-        // ICP Ledger Canister: ryjl3-tyaaa-aaaaa-aaaba-cai
-        Principal::from_slice(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01, 0x01])
+        // ICP Ledger Canister
+        Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap()
     }
 }
 
