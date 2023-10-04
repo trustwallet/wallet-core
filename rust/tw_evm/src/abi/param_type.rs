@@ -74,6 +74,17 @@ impl ParamType {
             bits: UintBits::default(),
         }
     }
+
+    /// returns whether a ParamType is dynamic
+    /// used to decide how the ParamType should be encoded
+    pub fn is_dynamic(&self) -> bool {
+        match self {
+            ParamType::Bytes | ParamType::String | ParamType::Array { .. } => true,
+            ParamType::FixedArray { kind, .. } => kind.is_dynamic(),
+            ParamType::Tuple { params } => params.iter().any(|param| param.kind.is_dynamic()),
+            _ => false,
+        }
+    }
 }
 
 impl TypeConstructor for ParamType {

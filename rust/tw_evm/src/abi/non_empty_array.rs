@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
-use arbitrary::Unstructured;
 use core::fmt;
 use std::num::NonZeroUsize;
 use std::ops::Deref;
@@ -89,7 +88,7 @@ impl<'a, T> arbitrary::Arbitrary<'a> for NonEmptyArray<T>
 where
     T: arbitrary::Arbitrary<'a>,
 {
-    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> {
+    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
         let arr: Vec<T> = Vec::arbitrary(u)?;
         if arr.is_empty() {
             return Err(arbitrary::Error::EmptyChoose);
