@@ -15,9 +15,11 @@ use lazy_static::lazy_static;
 use tw_hash::{H160, H256};
 use tw_number::{I256, U256};
 
+const WORD_LEN: usize = 32;
+
 lazy_static! {
     // 0x0000000000000000000000000000000000000000000000000000000000000020
-    static ref DEFAULT_DYNAMIC_OFFSET: [u8; U256::BYTES] = U256::from(32u64).to_big_endian().take();
+    static ref DEFAULT_DYNAMIC_OFFSET: [u8; U256::BYTES] = U256::from(WORD_LEN).to_big_endian().take();
 }
 
 pub fn decode_params(params: &[Param], data: &[u8]) -> AbiResult<Vec<NamedToken>> {
@@ -88,7 +90,7 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             address.copy_from_slice(&slice[12..]);
             let result = DecodeResult {
                 token: Token::Address(Address::from_bytes(address)),
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
@@ -99,7 +101,7 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
                     int: I256::from_big_endian(slice),
                     bits: *bits,
                 },
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
@@ -110,7 +112,7 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
                     uint: U256::from_big_endian(slice),
                     bits: *bits,
                 },
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
@@ -118,7 +120,7 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             let b = as_bool(&peek_32_bytes(data, offset)?)?;
             let result = DecodeResult {
                 token: Token::Bool(b),
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
@@ -129,31 +131,35 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             let checked_bytes = NonEmptyBytes::new(bytes)?;
             let result = DecodeResult {
                 token: Token::FixedBytes(checked_bytes),
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
         ParamType::Bytes => {
             let dynamic_offset = as_usize(&peek_32_bytes(data, offset)?)?;
+            let bytes_offset = add_checked(dynamic_offset, WORD_LEN)?;
+
             let len = as_usize(&peek_32_bytes(data, dynamic_offset)?)?;
-            let bytes = take_bytes(data, dynamic_offset + 32, len)?;
+            let bytes = take_bytes(data, bytes_offset, len)?;
             let result = DecodeResult {
                 token: Token::Bytes(bytes),
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
         ParamType::String => {
             let dynamic_offset = as_usize(&peek_32_bytes(data, offset)?)?;
+            let bytes_offset = add_checked(dynamic_offset, WORD_LEN)?;
+
             let len = as_usize(&peek_32_bytes(data, dynamic_offset)?)?;
-            let bytes = take_bytes(data, dynamic_offset + 32, len)?;
+            let bytes = take_bytes(data, bytes_offset, len)?;
             let result = DecodeResult {
                 // NOTE: We're decoding strings using lossy UTF-8 decoding to
                 // prevent invalid strings written into contracts by either users or
                 // Solidity bugs from causing graph-node to fail decoding event
                 // data.
                 token: Token::String(String::from_utf8_lossy(&bytes).into()),
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
             Ok(result)
         },
@@ -161,7 +167,7 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
             let len_offset = as_usize(&peek_32_bytes(data, offset)?)?;
             let len = as_usize(&peek_32_bytes(data, len_offset)?)?;
 
-            let tail_offset = len_offset + 32;
+            let tail_offset = add_checked(len_offset, WORD_LEN)?;
             let tail = &data[tail_offset..];
 
             let mut tokens = vec![];
@@ -178,7 +184,7 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
                     kind: kind.as_ref().clone(),
                     arr: tokens,
                 },
-                new_offset: offset + 32,
+                new_offset: offset + WORD_LEN,
             };
 
             Ok(result)
@@ -210,7 +216,11 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
                     arr: checked_tokens,
                     kind: kind.as_ref().clone(),
                 },
-                new_offset: if is_dynamic { offset + 32 } else { new_offset },
+                new_offset: if is_dynamic {
+                    offset + WORD_LEN
+                } else {
+                    new_offset
+                },
             };
 
             Ok(result)
@@ -248,7 +258,11 @@ fn decode_param(param: &ParamType, data: &[u8], offset: usize) -> AbiResult<Deco
                 token: Token::Tuple {
                     params: named_tokens,
                 },
-                new_offset: if is_dynamic { offset + 32 } else { new_offset },
+                new_offset: if is_dynamic {
+                    offset + WORD_LEN
+                } else {
+                    new_offset
+                },
             };
 
             Ok(result)
@@ -278,27 +292,34 @@ fn as_bool(slice: &H256) -> AbiResult<bool> {
 }
 
 fn peek(data: &[u8], offset: usize, len: usize) -> AbiResult<&[u8]> {
-    if offset + len > data.len() {
+    let end = add_checked(offset, len)?;
+    if end > data.len() {
         Err(AbiError(AbiErrorKind::Error_decoding_data))
     } else {
-        Ok(&data[offset..(offset + len)])
+        Ok(&data[offset..end])
     }
 }
 
 fn peek_32_bytes(data: &[u8], offset: usize) -> AbiResult<H256> {
-    peek(data, offset, 32).map(|x| {
+    peek(data, offset, WORD_LEN).map(|x| {
         let mut out = H256::default();
-        out.copy_from_slice(&x[0..H256::LEN]);
+        out.copy_from_slice(&x[0..WORD_LEN]);
         out
     })
 }
 
 fn take_bytes(data: &[u8], offset: usize, len: usize) -> AbiResult<Vec<u8>> {
-    if offset + len > data.len() {
+    let end = add_checked(offset, len)?;
+    if end > data.len() {
         Err(AbiError(AbiErrorKind::Error_decoding_data))
     } else {
-        Ok(data[offset..(offset + len)].to_vec())
+        Ok(data[offset..end].to_vec())
     }
+}
+
+fn add_checked(left: usize, right: usize) -> AbiResult<usize> {
+    left.checked_add(right)
+        .ok_or(AbiError(AbiErrorKind::Error_decoding_data))
 }
 
 #[cfg(test)]
@@ -329,7 +350,7 @@ mod tests {
     }
 
     fn u256(byte: u8) -> Token {
-        let data = H256::from([byte; 32]);
+        let data = H256::from([byte; WORD_LEN]);
         Token::u256(U256::from_big_endian(data))
     }
 
