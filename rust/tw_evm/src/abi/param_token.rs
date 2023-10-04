@@ -9,7 +9,7 @@ use crate::abi::token::Token;
 use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct NamedToken {
     /// Optional param name.

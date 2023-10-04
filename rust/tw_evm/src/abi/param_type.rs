@@ -69,6 +69,12 @@ pub enum ParamType {
 }
 
 impl ParamType {
+    pub fn i256() -> ParamType {
+        ParamType::Int {
+            bits: UintBits::default(),
+        }
+    }
+
     pub fn u256() -> ParamType {
         ParamType::Uint {
             bits: UintBits::default(),

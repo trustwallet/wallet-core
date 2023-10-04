@@ -300,3 +300,554 @@ fn take_bytes(data: &[u8], offset: usize, len: usize) -> AbiResult<Vec<u8>> {
         Ok(data[offset..(offset + len)].to_vec())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::abi::non_empty_array::NonZeroLen;
+    use tw_encoding::hex::DecodeHex;
+
+    fn named_token(value: Token) -> NamedToken {
+        NamedToken {
+            name: None,
+            value,
+            internal_type: None,
+        }
+    }
+
+    fn param(kind: ParamType) -> Param {
+        Param {
+            name: None,
+            kind,
+            internal_type: None,
+        }
+    }
+
+    fn address(byte: u8) -> Token {
+        let data = H160::from([byte; 20]);
+        Token::Address(Address::from_bytes(data))
+    }
+
+    fn u256(byte: u8) -> Token {
+        let data = H256::from([byte; 32]);
+        Token::u256(U256::from_big_endian(data))
+    }
+
+    #[test]
+    fn decode_from_empty_byte_slice() {
+        // these can NOT be decoded from empty byte slice
+        assert!(decode_params_impl(&[ParamType::Address], &[]).is_err());
+        assert!(decode_params_impl(&[ParamType::Bytes], &[]).is_err());
+        assert!(decode_params_impl(&[ParamType::i256()], &[]).is_err());
+        assert!(decode_params_impl(&[ParamType::Bool], &[]).is_err());
+        assert!(decode_params_impl(&[ParamType::String], &[]).is_err());
+        let kind = Box::new(ParamType::Bool);
+        assert!(decode_params_impl(&[ParamType::Array { kind }], &[]).is_err());
+        let len = NonZeroLen::new(1).unwrap();
+        assert!(decode_params_impl(&[ParamType::FixedBytes { len }], &[]).is_err());
+        let kind = Box::new(ParamType::Bool);
+        let len = NonZeroLen::new(1).unwrap();
+        assert!(decode_params_impl(&[ParamType::FixedArray { kind, len }], &[]).is_err());
+    }
+
+    #[test]
+    fn decode_static_tuple_of_addresses_and_uints() {
+        let encoded = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "1111111111111111111111111111111111111111111111111111111111111111"
+        )
+        .decode_hex()
+        .unwrap();
+        let tuple = Token::Tuple {
+            params: vec![
+                named_token(address(0x11_u8)),
+                named_token(address(0x22_u8)),
+                named_token(u256(0x11_u8)),
+            ],
+        };
+        let expected = vec![tuple];
+
+        let tuple_type = ParamType::Tuple {
+            params: vec![
+                param(ParamType::Address),
+                param(ParamType::Address),
+                param(ParamType::u256()),
+            ],
+        };
+        let decoded = decode_params_impl(&[tuple_type], &encoded).unwrap();
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn decode_dynamic_tuple() {
+        let encoded = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000"
+        )
+        .decode_hex()
+        .unwrap();
+        let string1 = Token::String("gavofyork".to_owned());
+        let string2 = Token::String("gavofyork".to_owned());
+        let tuple = Token::Tuple {
+            params: vec![named_token(string1), named_token(string2)],
+        };
+        let decoded = decode_params_impl(
+            &[ParamType::Tuple {
+                params: vec![param(ParamType::String), param(ParamType::String)],
+            }],
+            &encoded,
+        )
+        .unwrap();
+        let expected = vec![tuple];
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn decode_nested_tuple() {
+        let encoded = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "00000000000000000000000000000000000000000000000000000000000000c0",
+            "0000000000000000000000000000000000000000000000000000000000000100",
+            "0000000000000000000000000000000000000000000000000000000000000004",
+            "7465737400000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000006",
+            "6379626f72670000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000060",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "00000000000000000000000000000000000000000000000000000000000000e0",
+            "0000000000000000000000000000000000000000000000000000000000000005",
+            "6e69676874000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000003",
+            "6461790000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000004",
+            "7765656500000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000008",
+            "66756e7465737473000000000000000000000000000000000000000000000000"
+        )
+        .decode_hex()
+        .unwrap();
+        let string1 = Token::String("test".to_owned());
+        let string2 = Token::String("cyborg".to_owned());
+        let string3 = Token::String("night".to_owned());
+        let string4 = Token::String("day".to_owned());
+        let string5 = Token::String("weee".to_owned());
+        let string6 = Token::String("funtests".to_owned());
+        let bool = Token::Bool(true);
+        let deep_tuple = Token::Tuple {
+            params: vec![named_token(string5), named_token(string6)],
+        };
+        let inner_tuple = Token::Tuple {
+            params: vec![
+                named_token(string3),
+                named_token(string4),
+                named_token(deep_tuple),
+            ],
+        };
+        let outer_tuple = Token::Tuple {
+            params: vec![
+                named_token(string1),
+                named_token(bool),
+                named_token(string2),
+                named_token(inner_tuple),
+            ],
+        };
+        let expected = vec![outer_tuple];
+
+        let inner_tuple_type = ParamType::Tuple {
+            params: vec![
+                param(ParamType::String),
+                param(ParamType::String),
+                param(ParamType::Tuple {
+                    params: vec![param(ParamType::String), param(ParamType::String)],
+                }),
+            ],
+        };
+        let decoded = decode_params_impl(
+            &[ParamType::Tuple {
+                params: vec![
+                    param(ParamType::String),
+                    param(ParamType::Bool),
+                    param(ParamType::String),
+                    param(inner_tuple_type),
+                ],
+            }],
+            &encoded,
+        )
+        .unwrap();
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn decode_complex_tuple_of_dynamic_and_static_types() {
+        let encoded = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "1111111111111111111111111111111111111111111111111111111111111111",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        let string = Token::String("gavofyork".to_owned());
+        let tuple = Token::Tuple {
+            params: vec![
+                named_token(u256(0x11_u8)),
+                named_token(string),
+                named_token(address(0x11_u8)),
+                named_token(address(0x22_u8)),
+            ],
+        };
+        let expected = vec![tuple];
+
+        let tuple_type = ParamType::Tuple {
+            params: vec![
+                param(ParamType::u256()),
+                param(ParamType::String),
+                param(ParamType::Address),
+                param(ParamType::Address),
+            ],
+        };
+        let decoded = decode_params_impl(&[tuple_type], &encoded).unwrap();
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn decode_params_containing_dynamic_tuple() {
+        let encoded = concat!(
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000060",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "7370616365736869700000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000006",
+            "6379626f72670000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        let bool1 = Token::Bool(true);
+        let string1 = Token::String("spaceship".to_owned());
+        let string2 = Token::String("cyborg".to_owned());
+        let tuple = Token::Tuple {
+            params: vec![
+                named_token(bool1),
+                named_token(string1),
+                named_token(string2),
+            ],
+        };
+        let bool2 = Token::Bool(false);
+        let expected = vec![
+            address(0x22_u8),
+            tuple,
+            address(0x33_u8),
+            address(0x44_u8),
+            bool2,
+        ];
+        let decoded = decode_params_impl(
+            &[
+                ParamType::Address,
+                ParamType::Tuple {
+                    params: vec![
+                        param(ParamType::Bool),
+                        param(ParamType::String),
+                        param(ParamType::String),
+                    ],
+                },
+                ParamType::Address,
+                ParamType::Address,
+                ParamType::Bool,
+            ],
+            &encoded,
+        )
+        .unwrap();
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn decode_params_containing_static_tuple() {
+        let encoded = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+        )
+        .decode_hex()
+        .unwrap();
+        let bool1 = Token::Bool(true);
+        let bool2 = Token::Bool(false);
+        let tuple = Token::Tuple {
+            params: vec![
+                named_token(address(0x22_u8)),
+                named_token(bool1),
+                named_token(bool2),
+            ],
+        };
+
+        let expected = vec![address(0x11_u8), tuple, address(0x33_u8), address(0x44_u8)];
+        let decoded = decode_params_impl(
+            &[
+                ParamType::Address,
+                ParamType::Tuple {
+                    params: vec![
+                        param(ParamType::Address),
+                        param(ParamType::Bool),
+                        param(ParamType::Bool),
+                    ],
+                },
+                ParamType::Address,
+                ParamType::Address,
+            ],
+            &encoded,
+        )
+        .unwrap();
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn decode_data_with_size_that_is_not_a_multiple_of_32() {
+        let encoded = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000152",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "000000000000000000000000000000000000000000000000000000000054840d",
+            "0000000000000000000000000000000000000000000000000000000000000092",
+            "3132323033393637623533326130633134633938306235616566666231373034",
+            "3862646661656632633239336139353039663038656233633662306635663866",
+            "3039343265376239636337366361353163636132366365353436393230343438",
+            "6533303866646136383730623565326165313261323430396439343264653432",
+            "3831313350373230703330667073313678390000000000000000000000000000",
+            "0000000000000000000000000000000000103933633731376537633061363531",
+            "3761",
+        )
+        .decode_hex()
+        .unwrap();
+
+        let types = [
+            ParamType::u256(),
+            ParamType::String,
+            ParamType::String,
+            ParamType::u256(),
+            ParamType::u256(),
+        ];
+        let expected = [
+            Token::u256(U256::default()),
+            Token::String(String::from("12203967b532a0c14c980b5aeffb17048bdfaef2c293a9509f08eb3c6b0f5f8f0942e7b9cc76ca51cca26ce546920448e308fda6870b5e2ae12a2409d942de428113P720p30fps16x9")),
+            Token::String(String::from("93c717e7c0a6517a")),
+            Token::u256(U256::from(1_u64)),
+            Token::u256(U256::from(5538829_u64)),
+        ];
+        assert_eq!(decode_params_impl(&types, &encoded,).unwrap(), expected);
+    }
+
+    #[test]
+    fn decode_after_fixed_bytes_with_less_than_32_bytes() {
+        let encoded = concat!(
+            "0000000000000000000000008497afefdc5ac170a664a231f6efb25526ef813f",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "000000000000000000000000000000000000000000000000000000000000000a",
+            "3078303030303030314600000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+
+        let types = [
+            ParamType::Address,
+            ParamType::FixedBytes {
+                len: NonZeroLen::new(32).unwrap(),
+            },
+            ParamType::FixedBytes {
+                len: NonZeroLen::new(4).unwrap(),
+            },
+            ParamType::String,
+        ];
+
+        let expected = [
+            Token::Address(Address::from("0x8497afefdc5ac170a664a231f6efb25526ef813f")),
+            Token::FixedBytes(NonEmptyBytes::new(vec![0u8; 32]).unwrap()),
+            Token::FixedBytes(NonEmptyBytes::new(vec![0u8; 4]).unwrap()),
+            Token::String("0x0000001F".into()),
+        ];
+        assert_eq!(decode_params_impl(&types, &encoded,).unwrap(), &expected);
+    }
+
+    #[test]
+    fn decode_broken_utf8() {
+        let encoded = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000004",
+            "e4b88de500000000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+
+        assert_eq!(
+            decode_params_impl(&[ParamType::String,], &encoded).unwrap(),
+            &[Token::String("不�".into())]
+        );
+    }
+
+    #[test]
+    fn decode_corrupted_dynamic_array() {
+        // line 1 at 0x00 =   0: tail offset of array
+        // line 2 at 0x20 =  32: length of array
+        // line 3 at 0x40 =  64: first word
+        // line 4 at 0x60 =  96: second word
+        let encoded = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "00000000000000000000000000000000000000000000000000000000ffffffff",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+        )
+        .decode_hex()
+        .unwrap();
+
+        let types = [ParamType::Array {
+            kind: Box::new(ParamType::u256()),
+        }];
+        assert!(decode_params_impl(&types, &encoded).is_err());
+    }
+
+    #[test]
+    fn decode_corrupted_nested_array_tuple() {
+        let input = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            //
+            "00000000000000000000000000000000000000000000000000000000000002a0",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            //
+            "00000000000000000000000000000000fffffffffffffffffffffffffffffffe",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "000000000000000000000000000000000000000000000000ffffffffffffffff",
+            //
+            "0008000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000020000000000000000",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000001000000000000000000000000000000000000",
+            //
+            "000000000000000000000000000000000000000000000000000000000000053a",
+            "0100000000000000000000000000000000000000000000000000000000000000",
+            //
+            "0000000000000010000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            //
+            "0000000000000000000000000000000000000000000000000000000002000000",
+            "0000000000000000000000000000000000000000000000000000000000100000",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000006",
+            "00000000000000000000000000000000000000000000000000000000000000c0",
+            //
+            "0000000000000000000000000000000000000000000000000000000000002ce0",
+            "0000000000000000000000000000000000000000000000000000000000005880",
+            //
+            "0000000000000000000000000000000000000000000000000000000000008280",
+            "000000000000000000000000000000000000000000000000000000000000acc0",
+            //
+            "000000000000000000000000000000000000000000000000000000000000d6e0",
+            "0000000000000000000000000000000000000000020000000000000000000000",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000120",
+            "0000000000000000000000000000000000000000000000000000000000000720",
+            //
+            "0000000000000000000000000000000000000000000000000000000000000b80",
+            "0000000000000000000000000000000000000000000000000000000000000fe0",
+        )
+        .decode_hex()
+        .unwrap();
+
+        let types = [
+            ParamType::Array {
+                kind: Box::new(ParamType::Tuple {
+                    params: vec![param(ParamType::u256()), param(ParamType::u256())],
+                }),
+            },
+            ParamType::Array {
+                kind: Box::new(ParamType::Tuple {
+                    params: vec![
+                        param(ParamType::u256()),
+                        param(ParamType::Array {
+                            kind: Box::new(ParamType::Tuple {
+                                params: vec![
+                                    param(ParamType::u256()),
+                                    param(ParamType::Array {
+                                        kind: Box::new(ParamType::String),
+                                    }),
+                                ],
+                            }),
+                        }),
+                    ],
+                }),
+            },
+        ];
+
+        assert!(decode_params_impl(&types, &input).is_err());
+    }
+
+    #[test]
+    fn decode_corrupted_fixed_array_of_strings() {
+        let input = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000001000040",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000008",
+            "5445535454455354000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000008",
+            "5445535454455354000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+
+        let types = [
+            ParamType::u256(),
+            ParamType::FixedArray {
+                len: NonZeroLen::new(2).unwrap(),
+                kind: Box::new(ParamType::String),
+            },
+        ];
+        assert!(decode_params_impl(&types, &input).is_err());
+    }
+
+    #[test]
+    fn decode_whole_addresses() {
+        let input = concat!(
+            "0000000000000000000000000000000000000000000000000000000000012345",
+            "0000000000000000000000000000000000000000000000000000000000054321",
+        )
+        .decode_hex()
+        .unwrap();
+        assert!(decode_params_impl(&[ParamType::Address], &input).is_ok());
+    }
+}
