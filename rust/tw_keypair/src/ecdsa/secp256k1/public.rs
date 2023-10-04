@@ -7,9 +7,9 @@
 use crate::ecdsa::secp256k1::{Signature, VerifySignature};
 use crate::traits::VerifyingKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
+use der::Document;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
-use k256::pkcs8::EncodePublicKey;
 use tw_encoding::hex;
 use tw_hash::{Hash, H256, H264, H512, H520};
 use tw_misc::traits::ToBytesVec;
@@ -61,10 +61,24 @@ impl PublicKey {
 
     /// Returns the public key as DER-encoded bytes.
     pub fn der_encoded(&self) -> Vec<u8> {
-        self.public
-            .to_public_key_der()
-            .expect("Failed to DER encode public key.")
-            .into_vec()
+        let compressed = false;
+        let public_key_bytes = self.public.to_encoded_point(compressed);
+        let subject_public_key =
+            der::asn1::BitStringRef::new(0, public_key_bytes.as_bytes()).unwrap();
+
+        let oid: pkcs8::ObjectIdentifier = pkcs8::ObjectIdentifier::new_unwrap("1.2.840.10045.2.1");
+        let associated_oid: pkcs8::ObjectIdentifier =
+            pkcs8::ObjectIdentifier::new_unwrap("1.3.132.0.10");
+        let spki = pkcs8::SubjectPublicKeyInfo {
+            algorithm: pkcs8::spki::AlgorithmIdentifier {
+                oid,
+                parameters: Some(associated_oid),
+            },
+            subject_public_key,
+        };
+
+        let doc = Document::try_from(&spki).unwrap();
+        doc.into_vec()
     }
 }
 

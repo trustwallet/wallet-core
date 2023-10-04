@@ -20,8 +20,9 @@ zeroize = "1.6.0"
 # ECDSA specific:
 ecdsa = "0.16.6"
 der = "0.7.3"
-k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "pem", "schnorr", "std"], default-features = false }
+k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "pkcs8", "schnorr", "std"], default-features = false }
 p256 = { version = "0.13.0", features = ["ecdsa", "std"], default-features = false }
+pkcs8 = "0.10.2"
 rfc6979 = "0.4.0"
 # ED25519 specific:
 blake2 = "0.9"
