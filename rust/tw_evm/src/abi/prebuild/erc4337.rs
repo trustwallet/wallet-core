@@ -7,7 +7,6 @@
 use crate::abi::contract::Contract;
 use crate::abi::param_type::ParamType;
 use crate::abi::token::Token;
-use crate::abi::type_reader::TypeConstructor;
 use crate::abi::AbiResult;
 use crate::address::Address;
 use lazy_static::lazy_static;

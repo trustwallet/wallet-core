@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param::Param;
 use crate::abi::type_reader::{Reader, TypeConstructor};
-use crate::abi::uint::check_uint_bits;
+use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use ethabi::ParamType as EthAbiType;
 use serde::{de::Error as DeError, Deserialize, Deserializer};
-use tw_number::{I256, U256};
 
 #[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -24,7 +24,7 @@ pub enum ParamType {
     ///
     /// solidity name eg.: bytes8, bytes32, bytes64, bytes1024
     /// Encoded to right padded [0u8; ((N + 31) / 32) * 32].
-    FixedBytes { len: usize },
+    FixedBytes { len: NonZeroLen },
     /// Vector of bytes of unknown size.
     ///
     /// solidity name: bytes
@@ -35,11 +35,11 @@ pub enum ParamType {
     /// Signed integer.
     ///
     /// solidity name: int
-    Int { bits: usize },
+    Int { bits: UintBits },
     /// Unsigned integer.
     ///
     /// solidity name: uint
-    Uint { bits: usize },
+    Uint { bits: UintBits },
     /// Boolean value.
     ///
     /// solidity name: bool
@@ -54,7 +54,10 @@ pub enum ParamType {
     ///
     /// solidity name eg.: int[3], bool[3], address[][8]
     /// Encoding of array is equal to encoding of consecutive elements of array.
-    FixedArray { kind: Box<ParamType>, len: usize },
+    FixedArray {
+        kind: Box<ParamType>,
+        len: NonZeroLen,
+    },
     /// Array of params with unknown size.
     ///
     /// solidity name eg. int[], bool[], address[5][]
@@ -63,6 +66,14 @@ pub enum ParamType {
     ///
     /// solidity name: tuple
     Tuple { params: Vec<Param> },
+}
+
+impl ParamType {
+    pub fn u256() -> ParamType {
+        ParamType::Uint {
+            bits: UintBits::default(),
+        }
+    }
 }
 
 impl TypeConstructor for ParamType {
@@ -74,29 +85,16 @@ impl TypeConstructor for ParamType {
         ParamType::Bytes
     }
 
-    fn fixed_bytes(len: usize) -> AbiResult<Self> {
-        if len == 0 {
-            return Err(AbiError(AbiErrorKind::Error_empty_type));
-        }
-        Ok(ParamType::FixedBytes { len })
+    fn fixed_bytes(len: NonZeroLen) -> Self {
+        ParamType::FixedBytes { len }
     }
 
-    fn int(bits: usize) -> AbiResult<Self> {
-        check_uint_bits(bits)?;
-        Ok(ParamType::Int { bits })
+    fn int(bits: UintBits) -> Self {
+        ParamType::Int { bits }
     }
 
-    fn i256() -> Self {
-        ParamType::Int { bits: I256::BITS }
-    }
-
-    fn uint(bits: usize) -> AbiResult<Self> {
-        check_uint_bits(bits)?;
-        Ok(ParamType::Uint { bits })
-    }
-
-    fn u256() -> Self {
-        ParamType::Uint { bits: U256::BITS }
+    fn uint(bits: UintBits) -> Self {
+        ParamType::Uint { bits }
     }
 
     fn bool() -> Self {
@@ -113,14 +111,11 @@ impl TypeConstructor for ParamType {
         }
     }
 
-    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self> {
-        if len == 0 {
-            return Err(AbiError(AbiErrorKind::Error_empty_type));
-        }
-        Ok(ParamType::FixedArray {
+    fn fixed_array(len: NonZeroLen, element_type: Self) -> Self {
+        ParamType::FixedArray {
             kind: Box::new(element_type),
             len,
-        })
+        }
     }
 
     fn empty_tuple() -> AbiResult<Self> {
@@ -139,15 +134,15 @@ impl ParamType {
         match self {
             ParamType::Address => EthAbiType::Address,
             ParamType::Bytes => EthAbiType::Bytes,
-            ParamType::Int { bits } => EthAbiType::Int(*bits),
-            ParamType::Uint { bits } => EthAbiType::Uint(*bits),
+            ParamType::Int { bits } => EthAbiType::Int(bits.get()),
+            ParamType::Uint { bits } => EthAbiType::Uint(bits.get()),
             ParamType::Bool => EthAbiType::Bool,
             ParamType::String => EthAbiType::String,
             ParamType::Array { kind } => EthAbiType::Array(Box::new(kind.to_ethabi())),
-            ParamType::FixedBytes { len } => EthAbiType::FixedBytes(*len),
+            ParamType::FixedBytes { len } => EthAbiType::FixedBytes(len.get()),
             ParamType::FixedArray { kind, len } => {
                 let elem_ty = Box::new(kind.to_ethabi());
-                EthAbiType::FixedArray(elem_ty, *len)
+                EthAbiType::FixedArray(elem_ty, len.get())
             },
             ParamType::Tuple { params } => {
                 EthAbiType::Tuple(params.iter().map(|param| param.ethabi_type()).collect())

@@ -9,6 +9,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
+serde_json = "1.0.95"
 tw_proto = { path = "../../tw_proto" }
 
 [dependencies.tw_evm]
@@ -31,5 +32,11 @@ doc = false
 [[bin]]
 name = "abi_decode_value"
 path = "fuzz_targets/abi_decode_value.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "abi_function_decode_input"
+path = "fuzz_targets/abi_function_decode_input.rs"
 test = false
 doc = false

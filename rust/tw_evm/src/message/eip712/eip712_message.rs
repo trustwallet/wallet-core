@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::encode::encode_tokens;
+use crate::abi::non_empty_array::NonEmptyBytes;
 use crate::abi::token::Token;
 use crate::address::Address;
 use crate::message::eip712::property::{Property, PropertyType};
@@ -104,12 +105,12 @@ fn encode_data(
         PropertyType::Int => encode_i256(data),
         PropertyType::Uint => encode_u256(data),
         PropertyType::Address => encode_address(data),
-        PropertyType::FixBytes { len } => encode_fix_bytes(data, len),
+        PropertyType::FixBytes { len } => encode_fix_bytes(data, len.get()),
         PropertyType::Bytes => encode_bytes(data),
         PropertyType::Custom(custom) => encode_custom(custom_types, &custom, data),
         PropertyType::Array(element_type) => encode_array(custom_types, *element_type, data, None),
         PropertyType::FixArray { len, element_type } => {
-            encode_array(custom_types, *element_type, data, Some(len))
+            encode_array(custom_types, *element_type, data, Some(len.get()))
         },
     }
 }
@@ -126,7 +127,8 @@ fn encode_string(value: &Json) -> MessageSigningResult<Data> {
         .as_str()
         .ok_or(MessageSigningError::InvalidParameterValue)?;
     let hash = keccak256(string.as_bytes());
-    Ok(encode_tokens([Token::FixedBytes(hash)]))
+    let checked_bytes = NonEmptyBytes::new(hash).expect("`hash` must not be empty");
+    Ok(encode_tokens([Token::FixedBytes(checked_bytes)]))
 }
 
 fn encode_u256(value: &Json) -> MessageSigningResult<Data> {
@@ -162,7 +164,9 @@ fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<D
     if fix_bytes.len() != expected_len {
         return Err(MessageSigningError::TypeValueMismatch);
     }
-    Ok(encode_tokens([Token::FixedBytes(fix_bytes)]))
+    let checked_bytes =
+        NonEmptyBytes::new(fix_bytes).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    Ok(encode_tokens([Token::FixedBytes(checked_bytes)]))
 }
 
 fn encode_bytes(value: &Json) -> MessageSigningResult<Data> {
@@ -210,7 +214,9 @@ fn encode_custom(
         .ok_or(MessageSigningError::TypeValueMismatch)?;
 
     let type_hash = encode_custom_type::type_hash(data_ident, custom_types)?;
-    let mut encoded_tokens = encode_tokens([Token::FixedBytes(type_hash)]);
+    let checked_bytes =
+        NonEmptyBytes::new(type_hash).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    let mut encoded_tokens = encode_tokens([Token::FixedBytes(checked_bytes)]);
 
     for field in data_properties.iter() {
         let field_value = &data[&field.name];

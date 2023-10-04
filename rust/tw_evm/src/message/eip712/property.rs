@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::type_reader::{Reader, TypeConstructor};
-use crate::abi::uint::check_uint_bits;
+use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::message::MessageSigningError;
 use serde::Deserialize;
@@ -26,13 +27,13 @@ pub enum PropertyType {
     Uint,
     Address,
     FixBytes {
-        len: usize,
+        len: NonZeroLen,
     },
     Bytes,
     Custom(String),
     Array(Box<PropertyType>),
     FixArray {
-        len: usize,
+        len: NonZeroLen,
         element_type: Box<PropertyType>,
     },
 }
@@ -46,28 +47,15 @@ impl TypeConstructor for PropertyType {
         PropertyType::Bytes
     }
 
-    fn fixed_bytes(len: usize) -> AbiResult<Self> {
-        if len == 0 {
-            return Err(AbiError(AbiErrorKind::Error_empty_type));
-        }
-        Ok(PropertyType::FixBytes { len })
+    fn fixed_bytes(len: NonZeroLen) -> Self {
+        PropertyType::FixBytes { len }
     }
 
-    fn int(bits: usize) -> AbiResult<Self> {
-        check_uint_bits(bits)?;
-        Ok(PropertyType::Int)
-    }
-
-    fn i256() -> Self {
+    fn int(_bits: UintBits) -> Self {
         PropertyType::Int
     }
 
-    fn uint(bits: usize) -> AbiResult<Self> {
-        check_uint_bits(bits)?;
-        Ok(PropertyType::Uint)
-    }
-
-    fn u256() -> Self {
+    fn uint(_bits: UintBits) -> Self {
         PropertyType::Uint
     }
 
@@ -83,14 +71,11 @@ impl TypeConstructor for PropertyType {
         PropertyType::Array(Box::new(element_type))
     }
 
-    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self> {
-        if len == 0 {
-            return Err(AbiError(AbiErrorKind::Error_empty_type));
-        }
-        Ok(PropertyType::FixArray {
+    fn fixed_array(len: NonZeroLen, element_type: Self) -> Self {
+        PropertyType::FixArray {
             len,
             element_type: Box::new(element_type),
-        })
+        }
     }
 
     fn empty_tuple() -> AbiResult<Self> {
@@ -138,11 +123,15 @@ mod tests {
         );
         assert_eq!(
             PropertyType::from_str("bytes8").unwrap(),
-            PropertyType::FixBytes { len: 8 }
+            PropertyType::FixBytes {
+                len: NonZeroLen::new(8).unwrap()
+            }
         );
         assert_eq!(
             PropertyType::from_str("bytes31").unwrap(),
-            PropertyType::FixBytes { len: 31 }
+            PropertyType::FixBytes {
+                len: NonZeroLen::new(31).unwrap()
+            }
         );
     }
 
@@ -171,7 +160,7 @@ mod tests {
 
         fn fix_array<const N: usize>(kind: PropertyType) -> PropertyType {
             PropertyType::FixArray {
-                len: N,
+                len: NonZeroLen::new(N).unwrap(),
                 element_type: Box::new(kind),
             }
         }
