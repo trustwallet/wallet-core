@@ -11,7 +11,9 @@ use tw_keypair::ecdsa::secp256k1::PrivateKey;
 use crate::{
     address::AccountIdentifier,
     protocol::{
-        envelope::{Envelope, EnvelopeContent, Label},
+        envelope::{
+            Envelope, EnvelopeCallContent, EnvelopeReadStateContent, Label, RepresentationHashable,
+        },
         get_ingress_expiry,
         identity::Identity,
         principal::Principal,
@@ -114,9 +116,9 @@ fn create_update_envelope(
     canister_id: Principal,
     arg: Vec<u8>,
     ingress_expiry: u64,
-) -> Result<(RequestId, Envelope), SignTransactionError> {
+) -> Result<(RequestId, Envelope<EnvelopeCallContent>), SignTransactionError> {
     let sender = identity.sender();
-    let content = EnvelopeContent::Call {
+    let content = EnvelopeCallContent {
         nonce: None,
         ingress_expiry,
         sender,
@@ -125,7 +127,7 @@ fn create_update_envelope(
         arg,
     };
 
-    let request_id = RequestId::from(&content);
+    let request_id = content.request_id();
     let signature = identity
         .sign(request_id.sig_data())
         .map_err(SignTransactionError::Identity)?;
@@ -143,10 +145,10 @@ fn create_read_state_envelope(
     identity: &Identity,
     update_request_id: RequestId,
     ingress_expiry: u64,
-) -> Result<(RequestId, Envelope), SignTransactionError> {
+) -> Result<(RequestId, Envelope<EnvelopeReadStateContent>), SignTransactionError> {
     let sender = identity.sender();
 
-    let content = EnvelopeContent::ReadState {
+    let content = EnvelopeReadStateContent {
         ingress_expiry,
         sender,
         paths: vec![vec![
@@ -155,7 +157,7 @@ fn create_read_state_envelope(
         ]],
     };
 
-    let request_id = RequestId::from(&content);
+    let request_id = content.request_id();
     let signature = identity
         .sign(request_id.sig_data())
         .map_err(SignTransactionError::Identity)?;
