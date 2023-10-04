@@ -40,6 +40,7 @@ impl From<&ArbitraryTransferArgs> for TransferArgs {
 
 #[derive(Debug, arbitrary::Arbitrary)]
 struct TWInternetComputerTransactionsTransferInput {
+    #[arbitrary(with = arbitrary_private_key)]
     private: Vec<u8>,
     #[arbitrary(with = arbitrary_canister_id)]
     canister_id: Principal,
@@ -53,6 +54,12 @@ fn arbitrary_canister_id(u: &mut arbitrary::Unstructured) -> arbitrary::Result<P
     Ok(principal)
 }
 
+fn arbitrary_private_key(u: &mut arbitrary::Unstructured) -> arbitrary::Result<Vec<u8>> {
+    let mut buf = [0 as u8; 32];
+    u.fill_buffer(&mut buf)?;
+    Ok(Vec::from(buf.as_slice()))
+}
+
 fuzz_target!(|input: TWInternetComputerTransactionsTransferInput| {
     let Ok(private_key) = secp256k1::PrivateKey::try_from(input.private.as_slice()) else {
         return;
@@ -61,3 +68,4 @@ fuzz_target!(|input: TWInternetComputerTransactionsTransferInput| {
     let args = TransferArgs::from(&input.args);
     transfer(private_key, input.canister_id, args).ok();
 });
+
