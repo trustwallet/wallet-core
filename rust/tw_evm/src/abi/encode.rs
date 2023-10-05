@@ -203,3 +203,886 @@ fn fixed_bytes_append(result: &mut Vec<H256>, bytes: &[u8]) {
         result.push(padded);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::abi::non_empty_array::{NonEmptyArray, NonEmptyBytes};
+    use crate::abi::param::Param;
+    use crate::abi::param_token::NamedToken;
+    use crate::abi::param_type::ParamType;
+    use crate::abi::type_reader::TypeConstructor;
+    use tw_encoding::hex::DecodeHex;
+    use tw_number::{I256, U256};
+
+    #[test]
+    fn encode_address() {
+        let address = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let encoded = encode_tokens(&[address]);
+        let expected = "0000000000000000000000001111111111111111111111111111111111111111"
+            .decode_hex()
+            .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_array_of_addresses() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let addresses = Token::Array {
+            arr: vec![address1, address2],
+            kind: ParamType::Address,
+        };
+        let encoded = encode_tokens(&[addresses]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_fixed_array_of_addresses() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let addresses = {
+            let arr = NonEmptyArray::new(vec![address1, address2]).unwrap();
+            let kind = ParamType::Address;
+            Token::FixedArray { arr, kind }
+        };
+
+        let encoded = encode_tokens(&[addresses]);
+        let expected = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_two_addresses() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let encoded = encode_tokens(&[address1, address2]);
+        let expected = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_fixed_array_of_dynamic_array_of_addresses() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let address3 = Token::Address("0x3333333333333333333333333333333333333333".into());
+        let address4 = Token::Address("0x4444444444444444444444444444444444444444".into());
+        let array0 = Token::Array {
+            arr: vec![address1, address2],
+            kind: ParamType::Address,
+        };
+        let array1 = Token::Array {
+            arr: vec![address3, address4],
+            kind: ParamType::Address,
+        };
+        let fixed = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![array0, array1]).unwrap(),
+            kind: ParamType::array(ParamType::Address),
+        };
+        let encoded = encode_tokens(&[fixed]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_array_of_fixed_array_of_addresses() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let address3 = Token::Address("0x3333333333333333333333333333333333333333".into());
+        let address4 = Token::Address("0x4444444444444444444444444444444444444444".into());
+        let array0 = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![address1, address2]).unwrap(),
+            kind: ParamType::Address,
+        };
+        let array1 = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![address3, address4]).unwrap(),
+            kind: ParamType::Address,
+        };
+        let dynamic = Token::Array {
+            arr: vec![array0, array1],
+            kind: ParamType::fixed_array(2, ParamType::Address).unwrap(),
+        };
+        let encoded = encode_tokens(&[dynamic]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_array_of_dynamic_arrays() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let array0 = Token::Array {
+            arr: vec![address1],
+            kind: ParamType::Address,
+        };
+        let array1 = Token::Array {
+            arr: vec![address2],
+            kind: ParamType::Address,
+        };
+        let dynamic = Token::Array {
+            arr: vec![array0, array1],
+            kind: ParamType::array(ParamType::Address),
+        };
+        let encoded = encode_tokens(&[dynamic]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_array_of_dynamic_arrays2() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let address3 = Token::Address("0x3333333333333333333333333333333333333333".into());
+        let address4 = Token::Address("0x4444444444444444444444444444444444444444".into());
+        let array0 = Token::Array {
+            arr: vec![address1, address2],
+            kind: ParamType::Address,
+        };
+        let array1 = Token::Array {
+            arr: vec![address3, address4],
+            kind: ParamType::Address,
+        };
+        let dynamic = Token::Array {
+            arr: vec![array0, array1],
+            kind: ParamType::array(ParamType::Address),
+        };
+        let encoded = encode_tokens(&[dynamic]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_fixed_array_of_fixed_arrays() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let address3 = Token::Address("0x3333333333333333333333333333333333333333".into());
+        let address4 = Token::Address("0x4444444444444444444444444444444444444444".into());
+        let array0 = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![address1, address2]).unwrap(),
+            kind: ParamType::Address,
+        };
+        let array1 = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![address3, address4]).unwrap(),
+            kind: ParamType::Address,
+        };
+        let fixed = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![array0, array1]).unwrap(),
+            kind: ParamType::fixed_array(2, ParamType::fixed_array(2, ParamType::Address).unwrap())
+                .unwrap(),
+        };
+        let encoded = encode_tokens(&[fixed]);
+        let expected = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_fixed_array_of_static_tuples_followed_by_dynamic_type() {
+        let tuple1 = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(Token::u256(93523141_u64.into())),
+                NamedToken::with_token(Token::u256(352332135_u64.into())),
+                NamedToken::with_token(Token::Address(
+                    "0x4444444444444444444444444444444444444444".into(),
+                )),
+            ],
+        };
+        let tuple2 = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(Token::u256(12411_u64.into())),
+                NamedToken::with_token(Token::u256(451_u64.into())),
+                NamedToken::with_token(Token::Address(
+                    "0x2222222222222222222222222222222222222222".into(),
+                )),
+            ],
+        };
+        let fixed = Token::FixedArray {
+            arr: NonEmptyArray::new(vec![tuple1, tuple2]).unwrap(),
+            kind: ParamType::Tuple {
+                params: vec![
+                    Param::with_type(ParamType::u256()),
+                    Param::with_type(ParamType::u256()),
+                    Param::with_type(ParamType::Address),
+                ],
+            },
+        };
+        let s = Token::String("gavofyork".to_owned());
+        let encoded = encode_tokens(&[fixed, s]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000005930cc5",
+            "0000000000000000000000000000000000000000000000000000000015002967",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+            "000000000000000000000000000000000000000000000000000000000000307b",
+            "00000000000000000000000000000000000000000000000000000000000001c3",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "00000000000000000000000000000000000000000000000000000000000000e0",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_empty_array() {
+        // Empty arrays
+        let encoded = encode_tokens(&[
+            Token::Array {
+                arr: vec![],
+                kind: ParamType::Bool,
+            },
+            Token::Array {
+                arr: vec![],
+                kind: ParamType::Address,
+            },
+        ]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000060",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+
+        // Nested empty arrays
+        let encoded = encode_tokens(&[
+            Token::Array {
+                arr: vec![Token::Array {
+                    arr: vec![],
+                    kind: ParamType::i256(),
+                }],
+                kind: ParamType::array(ParamType::i256()),
+            },
+            Token::Array {
+                arr: vec![Token::Array {
+                    arr: vec![],
+                    kind: ParamType::String,
+                }],
+                kind: ParamType::array(ParamType::String),
+            },
+        ]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_bytes() {
+        let bytes = Token::Bytes(vec![0x12, 0x34]);
+        let encoded = encode_tokens(&[bytes]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "1234000000000000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_fixed_bytes() {
+        let bytes = Token::FixedBytes(NonEmptyBytes::new(vec![0x12, 0x34]).unwrap());
+        let encoded = encode_tokens(&[bytes]);
+        let expected = "1234000000000000000000000000000000000000000000000000000000000000"
+            .decode_hex()
+            .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_string() {
+        let s = Token::String("gavofyork".to_owned());
+        let encoded = encode_tokens(&[s]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_bytes2() {
+        let bytes = Token::Bytes(
+            "10000000000000000000000000000000000000000000000000000000000002"
+                .decode_hex()
+                .unwrap(),
+        );
+        let encoded = encode_tokens(&[bytes]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "000000000000000000000000000000000000000000000000000000000000001f",
+            "1000000000000000000000000000000000000000000000000000000000000200",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_bytes3() {
+        let bytes = Token::Bytes(
+    		"10000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000".decode_hex().unwrap()
+        );
+        let encoded = encode_tokens(&[bytes]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "1000000000000000000000000000000000000000000000000000000000000000",
+            "1000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_two_bytes() {
+        let bytes1 = Token::Bytes(
+            "10000000000000000000000000000000000000000000000000000000000002"
+                .decode_hex()
+                .unwrap(),
+        );
+        let bytes2 = Token::Bytes(
+            "0010000000000000000000000000000000000000000000000000000000000002"
+                .decode_hex()
+                .unwrap(),
+        );
+        let encoded = encode_tokens(&[bytes1, bytes2]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "000000000000000000000000000000000000000000000000000000000000001f",
+            "1000000000000000000000000000000000000000000000000000000000000200",
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0010000000000000000000000000000000000000000000000000000000000002",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_uint() {
+        let mut uint = H256::default();
+        uint[31] = 4;
+        let encoded = encode_tokens(&[Token::u256(U256::from_big_endian(uint))]);
+        let expected = "0000000000000000000000000000000000000000000000000000000000000004"
+            .decode_hex()
+            .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_int() {
+        let mut int = H256::default();
+        int[31] = 4;
+        let encoded = encode_tokens(&[Token::i256(I256::from_big_endian(int))]);
+        let expected = "0000000000000000000000000000000000000000000000000000000000000004"
+            .decode_hex()
+            .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_bool() {
+        let encoded = encode_tokens(&[Token::Bool(true)]);
+        let expected = "0000000000000000000000000000000000000000000000000000000000000001"
+            .decode_hex()
+            .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_bool2() {
+        let encoded = encode_tokens(&[Token::Bool(false)]);
+        let expected = "0000000000000000000000000000000000000000000000000000000000000000"
+            .decode_hex()
+            .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn comprehensive_test() {
+        let bytes = concat!(
+            "131a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b",
+            "131a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b",
+        )
+        .decode_hex()
+        .unwrap();
+        let encoded = encode_tokens(&[
+            Token::i256(5_u64.into()),
+            Token::Bytes(bytes.clone()),
+            Token::i256(3_u64.into()),
+            Token::Bytes(bytes),
+        ]);
+
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000005",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000003",
+            "00000000000000000000000000000000000000000000000000000000000000e0",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "131a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b",
+            "131a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "131a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b",
+            "131a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn test_pad_u32() {
+        // this will fail if endianess is not supported
+        assert_eq!(pad_u32(0x1)[31], 1);
+        assert_eq!(pad_u32(0x100)[30], 1);
+    }
+
+    #[test]
+    fn comprehensive_test2() {
+        let encoded = encode_tokens(&vec![
+            Token::i256(1_u64.into()),
+            Token::String("gavofyork".to_owned()),
+            Token::i256(2_u64.into()),
+            Token::i256(3_u64.into()),
+            Token::i256(4_u64.into()),
+            Token::Array {
+                arr: vec![
+                    Token::i256(5_u64.into()),
+                    Token::i256(6_u64.into()),
+                    Token::i256(7_u64.into()),
+                ],
+                kind: ParamType::i256(),
+            },
+        ]);
+
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "00000000000000000000000000000000000000000000000000000000000000c0",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000000000000000000000000000000000000000000003",
+            "0000000000000000000000000000000000000000000000000000000000000004",
+            "0000000000000000000000000000000000000000000000000000000000000100",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000003",
+            "0000000000000000000000000000000000000000000000000000000000000005",
+            "0000000000000000000000000000000000000000000000000000000000000006",
+            "0000000000000000000000000000000000000000000000000000000000000007",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_array_of_bytes() {
+        let bytes = "019c80031b20d5e69c8093a571162299032018d913930d93ab320ae5ea44a4218a274f00d607"
+            .decode_hex()
+            .unwrap();
+        let encoded = encode_tokens(&[Token::Array {
+            arr: vec![Token::Bytes(bytes.to_vec())],
+            kind: ParamType::Bytes,
+        }]);
+
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000026",
+            "019c80031b20d5e69c8093a571162299032018d913930d93ab320ae5ea44a421",
+            "8a274f00d6070000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_array_of_bytes2() {
+        let bytes = "4444444444444444444444444444444444444444444444444444444444444444444444444444"
+            .decode_hex()
+            .unwrap();
+        let bytes2 = "6666666666666666666666666666666666666666666666666666666666666666666666666666"
+            .decode_hex()
+            .unwrap();
+        let encoded = encode_tokens(&[Token::Array {
+            arr: vec![Token::Bytes(bytes.to_vec()), Token::Bytes(bytes2.to_vec())],
+            kind: ParamType::Bytes,
+        }]);
+
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000026",
+            "4444444444444444444444444444444444444444444444444444444444444444",
+            "4444444444440000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000026",
+            "6666666666666666666666666666666666666666666666666666666666666666",
+            "6666666666660000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_static_tuple_of_addresses() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let encoded = encode_tokens(&[Token::Tuple {
+            params: vec![
+                NamedToken::with_token(address1),
+                NamedToken::with_token(address2),
+            ],
+        }]);
+
+        let expected = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_tuple() {
+        let string1 = Token::String("gavofyork".to_owned());
+        let string2 = Token::String("gavofyork".to_owned());
+        let tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(string1),
+                NamedToken::with_token(string2),
+            ],
+        };
+        let encoded = encode_tokens(&[tuple]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_tuple_of_bytes2() {
+        let bytes = "4444444444444444444444444444444444444444444444444444444444444444444444444444"
+            .decode_hex()
+            .unwrap();
+        let bytes2 = "6666666666666666666666666666666666666666666666666666666666666666666666666666"
+            .decode_hex()
+            .unwrap();
+        let encoded = encode_tokens(&[Token::Tuple {
+            params: vec![
+                NamedToken::with_token(Token::Bytes(bytes.to_vec())),
+                NamedToken::with_token(Token::Bytes(bytes2.to_vec())),
+            ],
+        }]);
+
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000026",
+            "4444444444444444444444444444444444444444444444444444444444444444",
+            "4444444444440000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000026",
+            "6666666666666666666666666666666666666666666666666666666666666666",
+            "6666666666660000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_complex_tuple() {
+        let uint_data =
+            H256::from("1111111111111111111111111111111111111111111111111111111111111111");
+        let uint = Token::u256(U256::from_big_endian(uint_data));
+        let string = Token::String("gavofyork".to_owned());
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(uint),
+                NamedToken::with_token(string),
+                NamedToken::with_token(address1),
+                NamedToken::with_token(address2),
+            ],
+        };
+        let encoded = encode_tokens(&[tuple]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "1111111111111111111111111111111111111111111111111111111111111111",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "6761766f66796f726b0000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_nested_tuple() {
+        let string1 = Token::String("test".to_owned());
+        let string2 = Token::String("cyborg".to_owned());
+        let string3 = Token::String("night".to_owned());
+        let string4 = Token::String("day".to_owned());
+        let string5 = Token::String("weee".to_owned());
+        let string6 = Token::String("funtests".to_owned());
+        let bool = Token::Bool(true);
+        let deep_tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(string5),
+                NamedToken::with_token(string6),
+            ],
+        };
+        let inner_tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(string3),
+                NamedToken::with_token(string4),
+                NamedToken::with_token(deep_tuple),
+            ],
+        };
+        let outer_tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(string1),
+                NamedToken::with_token(bool),
+                NamedToken::with_token(string2),
+                NamedToken::with_token(inner_tuple),
+            ],
+        };
+        let encoded = encode_tokens(&[outer_tuple]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "00000000000000000000000000000000000000000000000000000000000000c0",
+            "0000000000000000000000000000000000000000000000000000000000000100",
+            "0000000000000000000000000000000000000000000000000000000000000004",
+            "7465737400000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000006",
+            "6379626f72670000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000060",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "00000000000000000000000000000000000000000000000000000000000000e0",
+            "0000000000000000000000000000000000000000000000000000000000000005",
+            "6e69676874000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000003",
+            "6461790000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000040",
+            "0000000000000000000000000000000000000000000000000000000000000080",
+            "0000000000000000000000000000000000000000000000000000000000000004",
+            "7765656500000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000008",
+            "66756e7465737473000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_params_containing_dynamic_tuple() {
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let address3 = Token::Address("0x3333333333333333333333333333333333333333".into());
+        let address4 = Token::Address("0x4444444444444444444444444444444444444444".into());
+        let bool1 = Token::Bool(true);
+        let string1 = Token::String("spaceship".to_owned());
+        let string2 = Token::String("cyborg".to_owned());
+        let tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(bool1),
+                NamedToken::with_token(string1),
+                NamedToken::with_token(string2),
+            ],
+        };
+        let bool2 = Token::Bool(false);
+        let encoded = encode_tokens(&[address2, tuple, address3, address4, bool2]);
+        let expected = concat!(
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000060",
+            "00000000000000000000000000000000000000000000000000000000000000a0",
+            "0000000000000000000000000000000000000000000000000000000000000009",
+            "7370616365736869700000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000006",
+            "6379626f72670000000000000000000000000000000000000000000000000000",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_params_containing_static_tuple() {
+        let address1 = Token::Address("0x1111111111111111111111111111111111111111".into());
+        let address2 = Token::Address("0x2222222222222222222222222222222222222222".into());
+        let address3 = Token::Address("0x3333333333333333333333333333333333333333".into());
+        let address4 = Token::Address("0x4444444444444444444444444444444444444444".into());
+        let bool1 = Token::Bool(true);
+        let bool2 = Token::Bool(false);
+        let tuple = Token::Tuple {
+            params: vec![
+                NamedToken::with_token(address2),
+                NamedToken::with_token(bool1),
+                NamedToken::with_token(bool2),
+            ],
+        };
+        let encoded = encode_tokens(&[address1, tuple, address3, address4]);
+        let expected = concat!(
+            "0000000000000000000000001111111111111111111111111111111111111111",
+            "0000000000000000000000002222222222222222222222222222222222222222",
+            "0000000000000000000000000000000000000000000000000000000000000001",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000003333333333333333333333333333333333333333",
+            "0000000000000000000000004444444444444444444444444444444444444444",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+
+    #[test]
+    fn encode_dynamic_tuple_with_nested_static_tuples() {
+        let uint1 = Token::u256(0x777_u64.into());
+        let uint2 = Token::u256(0x42_u64.into());
+        let uint3 = Token::u256(0x1337_u64.into());
+        let token = {
+            Token::Tuple {
+                params: vec![
+                    NamedToken::with_token(Token::Tuple {
+                        params: vec![NamedToken::with_token(Token::Tuple {
+                            params: vec![
+                                NamedToken::with_token(Token::Bool(false)),
+                                NamedToken::with_token(uint1),
+                            ],
+                        })],
+                    }),
+                    NamedToken::with_token(Token::Array {
+                        arr: vec![uint2, uint3],
+                        kind: ParamType::u256(),
+                    }),
+                ],
+            }
+        };
+        let encoded = encode_tokens(&[token]);
+        let expected = concat!(
+            "0000000000000000000000000000000000000000000000000000000000000020",
+            "0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000777",
+            "0000000000000000000000000000000000000000000000000000000000000060",
+            "0000000000000000000000000000000000000000000000000000000000000002",
+            "0000000000000000000000000000000000000000000000000000000000000042",
+            "0000000000000000000000000000000000000000000000000000000000001337",
+        )
+        .decode_hex()
+        .unwrap();
+        assert_eq!(encoded, expected);
+    }
+}
