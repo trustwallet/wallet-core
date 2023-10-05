@@ -126,7 +126,7 @@ Defines the prefix byte used in P2PKH and P2SH addresses, Bitcoin style.
 Ex. `0` and `5` for Bitcoin.
 
 **`hrp`**
-Human Readable Prefix used to prefix an address, used to indicate type of address, to minimalize risk of accidental address mix-up across chains.
+Human Readable Prefix used to prefix an address, used to indicate type of address, to minimize risk of accidental address mix-up across chains.
 Ex. `'bc'` for Bitcoin, `'cosmos'` for Cosmos.
 
 **`chainId`**
@@ -150,7 +150,7 @@ Ex.: `'sha256d'` for Bitcoin, `'blake256d'` for Decred.
 
 **`addressHasher`**
 Hash method used in the publicKey -> address generation.
-Only some chain implementation use this setting, in most implementation this is fixed (and value here is only informative).
+Only some chain implementations use this setting, in most implementations this is fixed (and value here is only informative).
 Default is `sha256ripemd`.
 Ex.: missing ('sha256ripemd') for Bitcoin, `'keccak256'` for Ethereum, `'sha256ripemd'` for Cosmos, `'keccak256'` for Native Evmos, despite being a Cosmos fork.
 
