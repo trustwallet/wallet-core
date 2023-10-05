@@ -36,6 +36,15 @@ impl NamedToken {
             internal_type: self.internal_type.clone(),
         }
     }
+
+    #[cfg(test)]
+    pub fn with_token(value: Token) -> NamedToken {
+        NamedToken {
+            name: None,
+            value,
+            internal_type: None,
+        }
+    }
 }
 
 impl Serialize for NamedToken {

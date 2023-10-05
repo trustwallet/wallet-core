@@ -33,7 +33,7 @@ pub struct Erc4337SimpleAccount;
 impl Erc4337SimpleAccount {
     pub fn encode_execute(args: ExecuteArgs) -> AbiResult<Data> {
         let func = ERC4337_SIMPLE_ACCOUNT.function("execute")?;
-        func.encode_input([
+        func.encode_input(&[
             Token::Address(args.to),
             Token::u256(args.value),
             Token::Bytes(args.data),
@@ -62,7 +62,7 @@ impl Erc4337SimpleAccount {
             datas.push(Token::Bytes(arg.data));
         }
 
-        func.encode_input([
+        func.encode_input(&[
             Token::array(ParamType::Address, addresses),
             Token::array(ParamType::u256(), values),
             Token::array(ParamType::Bytes, datas),

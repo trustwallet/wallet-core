@@ -31,7 +31,7 @@ impl Erc1155 {
         data: Data,
     ) -> AbiResult<Data> {
         let func = ERC1155.function("safeTransferFrom")?;
-        func.encode_input([
+        func.encode_input(&[
             Token::Address(from),
             Token::Address(to),
             Token::u256(token_id),

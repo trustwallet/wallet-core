@@ -10,7 +10,6 @@ use crate::abi::param_type::ParamType;
 use crate::abi::uint::UintBits;
 use crate::abi::AbiResult;
 use crate::address::Address;
-use ethabi::param_type::Writer;
 use serde::{Serialize, Serializer};
 use std::fmt;
 use tw_encoding::hex::ToHex;
@@ -185,35 +184,16 @@ impl Token {
     }
 
     pub fn type_short(&self) -> String {
-        let ethabi_type = self.to_param_type().to_ethabi();
-        let serialize_tuple_contents = false;
-        Writer::write_for_abi(&ethabi_type, serialize_tuple_contents)
+        self.to_param_type().to_type_short()
     }
 
-    pub(crate) fn into_ethabi_token(self) -> ethabi::Token {
+    /// Check if the token is a dynamic type resulting in prefixed encoding.
+    pub fn is_dynamic(&self) -> bool {
         match self {
-            Token::Address(addr) => ethabi::Token::Address(addr.to_ethabi()),
-            Token::FixedBytes(bytes) => ethabi::Token::FixedBytes(bytes.into_vec()),
-            Token::Bytes(bytes) => ethabi::Token::Bytes(bytes),
-            Token::Int { int, .. } => ethabi::Token::Int(int.to_ethabi()),
-            Token::Uint { uint, .. } => ethabi::Token::Uint(uint.to_ethabi()),
-            Token::Bool(bool) => ethabi::Token::Bool(bool),
-            Token::String(str) => ethabi::Token::String(str),
-            Token::FixedArray { arr, .. } => {
-                let ethabi_arr = arr.into_iter().map(Token::into_ethabi_token).collect();
-                ethabi::Token::FixedArray(ethabi_arr)
-            },
-            Token::Array { arr, .. } => {
-                let ethabi_arr = arr.into_iter().map(Token::into_ethabi_token).collect();
-                ethabi::Token::Array(ethabi_arr)
-            },
-            Token::Tuple { params } => {
-                let params = params
-                    .into_iter()
-                    .map(|param| param.value.into_ethabi_token())
-                    .collect();
-                ethabi::Token::Tuple(params)
-            },
+            Token::Bytes(_) | Token::String(_) | Token::Array { .. } => true,
+            Token::FixedArray { arr, .. } => arr.iter().any(|token| token.is_dynamic()),
+            Token::Tuple { params } => params.iter().any(|token| token.value.is_dynamic()),
+            _ => false,
         }
     }
 

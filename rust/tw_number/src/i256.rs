@@ -127,21 +127,6 @@ impl I256 {
     }
 }
 
-#[cfg(feature = "ethabi")]
-impl I256 {
-    #[inline]
-    pub fn from_ethabi(u: ethabi::Uint) -> I256 {
-        let mut bytes = H256::new();
-        u.to_big_endian(bytes.as_mut_slice());
-        I256::from_big_endian(bytes)
-    }
-
-    #[inline]
-    pub fn to_ethabi(&self) -> ethabi::Uint {
-        ethabi::Uint::from_big_endian(self.to_big_endian().as_slice())
-    }
-}
-
 impl TryFrom<I256> for U256 {
     type Error = NumberError;
 

@@ -47,15 +47,15 @@ impl TypeConstructor for PropertyType {
         PropertyType::Bytes
     }
 
-    fn fixed_bytes(len: NonZeroLen) -> Self {
+    fn fixed_bytes_checked(len: NonZeroLen) -> Self {
         PropertyType::FixBytes { len }
     }
 
-    fn int(_bits: UintBits) -> Self {
+    fn int_checked(_bits: UintBits) -> Self {
         PropertyType::Int
     }
 
-    fn uint(_bits: UintBits) -> Self {
+    fn uint_checked(_bits: UintBits) -> Self {
         PropertyType::Uint
     }
 
@@ -71,7 +71,7 @@ impl TypeConstructor for PropertyType {
         PropertyType::Array(Box::new(element_type))
     }
 
-    fn fixed_array(len: NonZeroLen, element_type: Self) -> Self {
+    fn fixed_array_checked(len: NonZeroLen, element_type: Self) -> Self {
         PropertyType::FixArray {
             len,
             element_type: Box::new(element_type),

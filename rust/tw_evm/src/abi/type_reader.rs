@@ -14,11 +14,26 @@ pub trait TypeConstructor: Sized {
 
     fn bytes() -> Self;
 
-    fn fixed_bytes(len: NonZeroLen) -> Self;
+    fn fixed_bytes(len: usize) -> AbiResult<Self> {
+        let checked_len = NonZeroLen::new(len)?;
+        Ok(Self::fixed_bytes_checked(checked_len))
+    }
 
-    fn int(bits: UintBits) -> Self;
+    fn fixed_bytes_checked(len: NonZeroLen) -> Self;
 
-    fn uint(bits: UintBits) -> Self;
+    fn int(bits: usize) -> AbiResult<Self> {
+        let checked_bits = UintBits::new(bits)?;
+        Ok(Self::int_checked(checked_bits))
+    }
+
+    fn int_checked(bits: UintBits) -> Self;
+
+    fn uint(bits: usize) -> AbiResult<Self> {
+        let checked_bits = UintBits::new(bits)?;
+        Ok(Self::uint_checked(checked_bits))
+    }
+
+    fn uint_checked(bits: UintBits) -> Self;
 
     fn bool() -> Self;
 
@@ -26,7 +41,12 @@ pub trait TypeConstructor: Sized {
 
     fn array(element_type: Self) -> Self;
 
-    fn fixed_array(len: NonZeroLen, element_type: Self) -> Self;
+    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self> {
+        let checked_len = NonZeroLen::new(len)?;
+        Ok(Self::fixed_array_checked(checked_len, element_type))
+    }
+
+    fn fixed_array_checked(len: NonZeroLen, element_type: Self) -> Self;
 
     fn empty_tuple() -> AbiResult<Self>;
 
@@ -46,7 +66,7 @@ impl Reader {
 
             let element_type = Reader::parse_type::<T>(element_type_str)?;
             if let Some(len) = parse_len(len_str)? {
-                return Ok(T::fixed_array(len, element_type));
+                return Ok(T::fixed_array_checked(len, element_type));
             }
             return Ok(T::array(element_type));
         }
@@ -63,20 +83,20 @@ impl Reader {
         // uint, uint32, ...
         if let Some(len_str) = s.strip_prefix("uint") {
             let bits = parse_uint_bits(len_str)?.unwrap_or_default();
-            return Ok(T::uint(bits));
+            return Ok(T::uint_checked(bits));
         }
 
         // int, int32, ...
         if let Some(len_str) = s.strip_prefix("int") {
             let bits = parse_uint_bits(len_str)?.unwrap_or_default();
-            return Ok(T::int(bits));
+            return Ok(T::int_checked(bits));
         }
 
         // bytes, bytes32, ...
         if let Some(len_str) = s.strip_prefix("bytes") {
             if let Some(len) = parse_len(len_str)? {
                 // Fixed-len bytes.
-                return Ok(T::fixed_bytes(len));
+                return Ok(T::fixed_bytes_checked(len));
             }
             // Otherwise, dynamic-len bytes.
             return Ok(T::bytes());

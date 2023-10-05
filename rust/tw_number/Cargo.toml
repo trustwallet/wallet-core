@@ -10,7 +10,6 @@ helpers = []
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
-ethabi = { version = "18.0.0", optional = true }
 lazy_static = "1.4.0"
 primitive-types = "0.12.1"
 serde = { version = "1.0.159", features = ["derive"], optional = true }

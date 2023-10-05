@@ -25,7 +25,7 @@ pub struct Erc721;
 impl Erc721 {
     pub fn encode_transfer_from(from: Address, to: Address, token_id: U256) -> AbiResult<Data> {
         let func = ERC721.function("transferFrom")?;
-        func.encode_input([
+        func.encode_input(&[
             Token::Address(from),
             Token::Address(to),
             Token::u256(token_id),

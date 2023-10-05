@@ -195,7 +195,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             ..Function::default()
         };
 
-        let encoded = fun.encode_input(tokens)?;
+        let encoded = fun.encode_input(&tokens)?;
         Ok(Proto::FunctionEncodingOutput {
             function_type: fun.signature().into(),
             encoded: encoded.into(),

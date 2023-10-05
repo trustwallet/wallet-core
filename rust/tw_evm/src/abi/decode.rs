@@ -328,22 +328,6 @@ mod tests {
     use crate::abi::non_empty_array::NonZeroLen;
     use tw_encoding::hex::DecodeHex;
 
-    fn named_token(value: Token) -> NamedToken {
-        NamedToken {
-            name: None,
-            value,
-            internal_type: None,
-        }
-    }
-
-    fn param(kind: ParamType) -> Param {
-        Param {
-            name: None,
-            kind,
-            internal_type: None,
-        }
-    }
-
     fn address(byte: u8) -> Token {
         let data = H160::from([byte; 20]);
         Token::Address(Address::from_bytes(data))
@@ -382,18 +366,18 @@ mod tests {
         .unwrap();
         let tuple = Token::Tuple {
             params: vec![
-                named_token(address(0x11_u8)),
-                named_token(address(0x22_u8)),
-                named_token(u256(0x11_u8)),
+                NamedToken::with_token(address(0x11_u8)),
+                NamedToken::with_token(address(0x22_u8)),
+                NamedToken::with_token(u256(0x11_u8)),
             ],
         };
         let expected = vec![tuple];
 
         let tuple_type = ParamType::Tuple {
             params: vec![
-                param(ParamType::Address),
-                param(ParamType::Address),
-                param(ParamType::u256()),
+                Param::with_type(ParamType::Address),
+                Param::with_type(ParamType::Address),
+                Param::with_type(ParamType::u256()),
             ],
         };
         let decoded = decode_params_impl(&[tuple_type], &encoded).unwrap();
@@ -416,11 +400,17 @@ mod tests {
         let string1 = Token::String("gavofyork".to_owned());
         let string2 = Token::String("gavofyork".to_owned());
         let tuple = Token::Tuple {
-            params: vec![named_token(string1), named_token(string2)],
+            params: vec![
+                NamedToken::with_token(string1),
+                NamedToken::with_token(string2),
+            ],
         };
         let decoded = decode_params_impl(
             &[ParamType::Tuple {
-                params: vec![param(ParamType::String), param(ParamType::String)],
+                params: vec![
+                    Param::with_type(ParamType::String),
+                    Param::with_type(ParamType::String),
+                ],
             }],
             &encoded,
         )
@@ -465,41 +455,47 @@ mod tests {
         let string6 = Token::String("funtests".to_owned());
         let bool = Token::Bool(true);
         let deep_tuple = Token::Tuple {
-            params: vec![named_token(string5), named_token(string6)],
+            params: vec![
+                NamedToken::with_token(string5),
+                NamedToken::with_token(string6),
+            ],
         };
         let inner_tuple = Token::Tuple {
             params: vec![
-                named_token(string3),
-                named_token(string4),
-                named_token(deep_tuple),
+                NamedToken::with_token(string3),
+                NamedToken::with_token(string4),
+                NamedToken::with_token(deep_tuple),
             ],
         };
         let outer_tuple = Token::Tuple {
             params: vec![
-                named_token(string1),
-                named_token(bool),
-                named_token(string2),
-                named_token(inner_tuple),
+                NamedToken::with_token(string1),
+                NamedToken::with_token(bool),
+                NamedToken::with_token(string2),
+                NamedToken::with_token(inner_tuple),
             ],
         };
         let expected = vec![outer_tuple];
 
         let inner_tuple_type = ParamType::Tuple {
             params: vec![
-                param(ParamType::String),
-                param(ParamType::String),
-                param(ParamType::Tuple {
-                    params: vec![param(ParamType::String), param(ParamType::String)],
+                Param::with_type(ParamType::String),
+                Param::with_type(ParamType::String),
+                Param::with_type(ParamType::Tuple {
+                    params: vec![
+                        Param::with_type(ParamType::String),
+                        Param::with_type(ParamType::String),
+                    ],
                 }),
             ],
         };
         let decoded = decode_params_impl(
             &[ParamType::Tuple {
                 params: vec![
-                    param(ParamType::String),
-                    param(ParamType::Bool),
-                    param(ParamType::String),
-                    param(inner_tuple_type),
+                    Param::with_type(ParamType::String),
+                    Param::with_type(ParamType::Bool),
+                    Param::with_type(ParamType::String),
+                    Param::with_type(inner_tuple_type),
                 ],
             }],
             &encoded,
@@ -524,20 +520,20 @@ mod tests {
         let string = Token::String("gavofyork".to_owned());
         let tuple = Token::Tuple {
             params: vec![
-                named_token(u256(0x11_u8)),
-                named_token(string),
-                named_token(address(0x11_u8)),
-                named_token(address(0x22_u8)),
+                NamedToken::with_token(u256(0x11_u8)),
+                NamedToken::with_token(string),
+                NamedToken::with_token(address(0x11_u8)),
+                NamedToken::with_token(address(0x22_u8)),
             ],
         };
         let expected = vec![tuple];
 
         let tuple_type = ParamType::Tuple {
             params: vec![
-                param(ParamType::u256()),
-                param(ParamType::String),
-                param(ParamType::Address),
-                param(ParamType::Address),
+                Param::with_type(ParamType::u256()),
+                Param::with_type(ParamType::String),
+                Param::with_type(ParamType::Address),
+                Param::with_type(ParamType::Address),
             ],
         };
         let decoded = decode_params_impl(&[tuple_type], &encoded).unwrap();
@@ -567,9 +563,9 @@ mod tests {
         let string2 = Token::String("cyborg".to_owned());
         let tuple = Token::Tuple {
             params: vec![
-                named_token(bool1),
-                named_token(string1),
-                named_token(string2),
+                NamedToken::with_token(bool1),
+                NamedToken::with_token(string1),
+                NamedToken::with_token(string2),
             ],
         };
         let bool2 = Token::Bool(false);
@@ -585,9 +581,9 @@ mod tests {
                 ParamType::Address,
                 ParamType::Tuple {
                     params: vec![
-                        param(ParamType::Bool),
-                        param(ParamType::String),
-                        param(ParamType::String),
+                        Param::with_type(ParamType::Bool),
+                        Param::with_type(ParamType::String),
+                        Param::with_type(ParamType::String),
                     ],
                 },
                 ParamType::Address,
@@ -616,9 +612,9 @@ mod tests {
         let bool2 = Token::Bool(false);
         let tuple = Token::Tuple {
             params: vec![
-                named_token(address(0x22_u8)),
-                named_token(bool1),
-                named_token(bool2),
+                NamedToken::with_token(address(0x22_u8)),
+                NamedToken::with_token(bool1),
+                NamedToken::with_token(bool2),
             ],
         };
 
@@ -628,9 +624,9 @@ mod tests {
                 ParamType::Address,
                 ParamType::Tuple {
                     params: vec![
-                        param(ParamType::Address),
-                        param(ParamType::Bool),
-                        param(ParamType::Bool),
+                        Param::with_type(ParamType::Address),
+                        Param::with_type(ParamType::Bool),
+                        Param::with_type(ParamType::Bool),
                     ],
                 },
                 ParamType::Address,
@@ -811,18 +807,21 @@ mod tests {
         let types = [
             ParamType::Array {
                 kind: Box::new(ParamType::Tuple {
-                    params: vec![param(ParamType::u256()), param(ParamType::u256())],
+                    params: vec![
+                        Param::with_type(ParamType::u256()),
+                        Param::with_type(ParamType::u256()),
+                    ],
                 }),
             },
             ParamType::Array {
                 kind: Box::new(ParamType::Tuple {
                     params: vec![
-                        param(ParamType::u256()),
-                        param(ParamType::Array {
+                        Param::with_type(ParamType::u256()),
+                        Param::with_type(ParamType::Array {
                             kind: Box::new(ParamType::Tuple {
                                 params: vec![
-                                    param(ParamType::u256()),
-                                    param(ParamType::Array {
+                                    Param::with_type(ParamType::u256()),
+                                    Param::with_type(ParamType::Array {
                                         kind: Box::new(ParamType::String),
                                     }),
                                 ],

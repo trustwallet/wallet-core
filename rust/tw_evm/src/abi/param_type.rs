@@ -8,8 +8,8 @@ use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param::Param;
 use crate::abi::type_reader::{Reader, TypeConstructor};
 use crate::abi::uint::UintBits;
+use crate::abi::writer::Writer;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
-use ethabi::ParamType as EthAbiType;
 use serde::{de::Error as DeError, Deserialize, Deserializer};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -81,6 +81,18 @@ impl ParamType {
         }
     }
 
+    /// Tuples will be represented as list of inner types in parens, for example `(int256,bool)`.
+    pub fn to_type_long(&self) -> String {
+        let serialize_tuple_contents = true;
+        Writer::write_for_abi(self, serialize_tuple_contents)
+    }
+
+    /// Tuples will be represented as keyword `tuple`.
+    pub fn to_type_short(&self) -> String {
+        let serialize_tuple_contents = false;
+        Writer::write_for_abi(self, serialize_tuple_contents)
+    }
+
     /// returns whether a ParamType is dynamic
     /// used to decide how the ParamType should be encoded
     pub fn is_dynamic(&self) -> bool {
@@ -102,15 +114,15 @@ impl TypeConstructor for ParamType {
         ParamType::Bytes
     }
 
-    fn fixed_bytes(len: NonZeroLen) -> Self {
+    fn fixed_bytes_checked(len: NonZeroLen) -> Self {
         ParamType::FixedBytes { len }
     }
 
-    fn int(bits: UintBits) -> Self {
+    fn int_checked(bits: UintBits) -> Self {
         ParamType::Int { bits }
     }
 
-    fn uint(bits: UintBits) -> Self {
+    fn uint_checked(bits: UintBits) -> Self {
         ParamType::Uint { bits }
     }
 
@@ -128,7 +140,7 @@ impl TypeConstructor for ParamType {
         }
     }
 
-    fn fixed_array(len: NonZeroLen, element_type: Self) -> Self {
+    fn fixed_array_checked(len: NonZeroLen, element_type: Self) -> Self {
         ParamType::FixedArray {
             kind: Box::new(element_type),
             len,
@@ -147,26 +159,6 @@ impl TypeConstructor for ParamType {
 }
 
 impl ParamType {
-    pub(crate) fn to_ethabi(&self) -> ethabi::ParamType {
-        match self {
-            ParamType::Address => EthAbiType::Address,
-            ParamType::Bytes => EthAbiType::Bytes,
-            ParamType::Int { bits } => EthAbiType::Int(bits.get()),
-            ParamType::Uint { bits } => EthAbiType::Uint(bits.get()),
-            ParamType::Bool => EthAbiType::Bool,
-            ParamType::String => EthAbiType::String,
-            ParamType::Array { kind } => EthAbiType::Array(Box::new(kind.to_ethabi())),
-            ParamType::FixedBytes { len } => EthAbiType::FixedBytes(len.get()),
-            ParamType::FixedArray { kind, len } => {
-                let elem_ty = Box::new(kind.to_ethabi());
-                EthAbiType::FixedArray(elem_ty, len.get())
-            },
-            ParamType::Tuple { params } => {
-                EthAbiType::Tuple(params.iter().map(|param| param.ethabi_type()).collect())
-            },
-        }
-    }
-
     pub fn try_from_type_short(type_short: &str) -> AbiResult<ParamType> {
         Reader::parse_type(type_short)
     }

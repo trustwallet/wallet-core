@@ -119,7 +119,7 @@ fn encode_bool(value: &Json) -> MessageSigningResult<Data> {
     let bin = value
         .as_bool()
         .ok_or(MessageSigningError::InvalidParameterValue)?;
-    Ok(encode_tokens([Token::Bool(bin)]))
+    Ok(encode_tokens(&[Token::Bool(bin)]))
 }
 
 fn encode_string(value: &Json) -> MessageSigningResult<Data> {
@@ -128,19 +128,19 @@ fn encode_string(value: &Json) -> MessageSigningResult<Data> {
         .ok_or(MessageSigningError::InvalidParameterValue)?;
     let hash = keccak256(string.as_bytes());
     let checked_bytes = NonEmptyBytes::new(hash).expect("`hash` must not be empty");
-    Ok(encode_tokens([Token::FixedBytes(checked_bytes)]))
+    Ok(encode_tokens(&[Token::FixedBytes(checked_bytes)]))
 }
 
 fn encode_u256(value: &Json) -> MessageSigningResult<Data> {
     let uint = U256::from_u64_or_decimal_str(value.clone())
         .map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    Ok(encode_tokens([Token::u256(uint)]))
+    Ok(encode_tokens(&[Token::u256(uint)]))
 }
 
 fn encode_i256(value: &Json) -> MessageSigningResult<Data> {
     let int = I256::from_i64_or_decimal_str(value.clone())
         .map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    Ok(encode_tokens([Token::i256(int)]))
+    Ok(encode_tokens(&[Token::i256(int)]))
 }
 
 fn encode_address(value: &Json) -> MessageSigningResult<Data> {
@@ -151,7 +151,7 @@ fn encode_address(value: &Json) -> MessageSigningResult<Data> {
     let addr_data =
         H160::from_str(addr_str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
     let addr = Address::from_bytes(addr_data);
-    Ok(encode_tokens([Token::Address(addr)]))
+    Ok(encode_tokens(&[Token::Address(addr)]))
 }
 
 fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<Data> {
@@ -166,7 +166,7 @@ fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<D
     }
     let checked_bytes =
         NonEmptyBytes::new(fix_bytes).map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    Ok(encode_tokens([Token::FixedBytes(checked_bytes)]))
+    Ok(encode_tokens(&[Token::FixedBytes(checked_bytes)]))
 }
 
 fn encode_bytes(value: &Json) -> MessageSigningResult<Data> {
@@ -177,7 +177,7 @@ fn encode_bytes(value: &Json) -> MessageSigningResult<Data> {
         .decode_hex()
         .map_err(|_| MessageSigningError::InvalidParameterValue)?;
     let hash = keccak256(&bytes);
-    Ok(encode_tokens([Token::Bytes(hash)]))
+    Ok(encode_tokens(&[Token::Bytes(hash)]))
 }
 
 fn encode_array(
@@ -216,7 +216,7 @@ fn encode_custom(
     let type_hash = encode_custom_type::type_hash(data_ident, custom_types)?;
     let checked_bytes =
         NonEmptyBytes::new(type_hash).map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    let mut encoded_tokens = encode_tokens([Token::FixedBytes(checked_bytes)]);
+    let mut encoded_tokens = encode_tokens(&[Token::FixedBytes(checked_bytes)]);
 
     for field in data_properties.iter() {
         let field_value = &data[&field.name];

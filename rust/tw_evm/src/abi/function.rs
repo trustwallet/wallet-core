@@ -5,10 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::decode::decode_params;
+use crate::abi::encode::encode_tokens;
 use crate::abi::param::Param;
 use crate::abi::param_token::NamedToken;
+use crate::abi::signature::short_signature;
 use crate::abi::token::Token;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use itertools::Itertools;
 use serde::Deserialize;
 use tw_memory::Data;
 
@@ -20,9 +23,6 @@ pub struct Function {
     pub inputs: Vec<Param>,
     /// Function output.
     pub outputs: Vec<Param>,
-    /// Whether the function reads or modifies blockchain state.
-    #[serde(rename = "stateMutability", default)]
-    pub state_mutability: ethabi::StateMutability,
 }
 
 impl Function {
@@ -34,7 +34,14 @@ impl Function {
     /// - `functionName(bool):(uint256,string)`
     /// - `functionName(uint256,bytes32):(string,uint256)`
     pub fn signature(&self) -> String {
-        self.to_ethabi_function().signature()
+        let inputs = self.inputs.iter().map(|p| p.kind.to_type_long()).join(",");
+
+        let outputs = self.outputs.iter().map(|p| p.kind.to_type_long()).join(",");
+
+        match (inputs.len(), outputs.len()) {
+            (_, 0) => format!("{}({inputs})", self.name),
+            (_, _) => format!("{}({inputs}):({outputs})", self.name),
+        }
     }
 
     /// Parses the ABI function input to a list of tokens.
@@ -43,36 +50,18 @@ impl Function {
     }
 
     /// Encodes function input to Eth ABI binary.
-    pub fn encode_input<I>(&self, tokens: I) -> AbiResult<Data>
-    where
-        I: IntoIterator<Item = Token>,
-    {
-        let ethabi_tokens: Vec<_> = tokens.into_iter().map(Token::into_ethabi_token).collect();
-        self.to_ethabi_function()
-            .encode_input(&ethabi_tokens)
-            // Given tokens don't match the ABI.
-            .map_err(|_| AbiError(AbiErrorKind::Error_abi_mismatch))
-    }
-
-    pub(crate) fn to_ethabi_function(&self) -> ethabi::Function {
-        let inputs = self
-            .inputs
-            .iter()
-            .map(Param::to_ethabi_param)
-            .collect::<Vec<_>>();
-        let outputs = self
-            .outputs
-            .iter()
-            .map(Param::to_ethabi_param)
-            .collect::<Vec<_>>();
-
-        #[allow(deprecated)]
-        ethabi::Function {
-            name: self.name.clone(),
-            inputs,
-            outputs,
-            state_mutability: self.state_mutability,
-            constant: None,
+    pub fn encode_input(&self, tokens: &[Token]) -> AbiResult<Data> {
+        // Check if the given tokens match `Self::inputs` ABI.
+        let input_param_types: Vec<_> =
+            self.inputs.iter().map(|param| param.kind.clone()).collect();
+        for (token, kind) in tokens.iter().zip(input_param_types.iter()) {
+            if token.to_param_type() != *kind {
+                return Err(AbiError(AbiErrorKind::Error_abi_mismatch));
+            }
         }
+
+        let signed = short_signature(&self.name, &input_param_types);
+        let encoded = encode_tokens(tokens);
+        Ok(signed.into_iter().chain(encoded.into_iter()).collect())
     }
 }
