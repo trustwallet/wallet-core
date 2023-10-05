@@ -18,7 +18,6 @@ use reader::Reader;
 use writer::Writer;
 
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum ParamType {
     /// Address.
     ///

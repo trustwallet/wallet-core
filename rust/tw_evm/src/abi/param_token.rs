@@ -10,7 +10,6 @@ use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
 
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct NamedToken {
     /// Optional param name.
     pub name: Option<String>,

@@ -256,7 +256,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             },
             TokenEnum::byte_array(bytes) => Ok(Token::Bytes(bytes.to_vec())),
             TokenEnum::byte_array_fix(bytes) => {
-                let checked_bytes = NonEmptyBytes::new(bytes.iter().copied().collect())?;
+                let checked_bytes = NonEmptyBytes::new(bytes.to_vec())?;
                 Ok(Token::FixedBytes(checked_bytes))
             },
             TokenEnum::array(arr) => {

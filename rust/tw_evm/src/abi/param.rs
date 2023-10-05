@@ -10,7 +10,6 @@ use serde::{de::Error as DeError, Deserialize, Deserializer};
 use std::fmt::Formatter;
 
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Param {
     /// Param name.
     pub name: Option<String>,

@@ -11,17 +11,6 @@ use tw_number::U256;
 #[derive(Clone, Copy, PartialEq)]
 pub struct UintBits(usize);
 
-#[cfg(feature = "arbitrary")]
-impl<'a> arbitrary::Arbitrary<'a> for UintBits {
-    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-        let bits = usize::arbitrary(u)? % U256::BITS % 8;
-        if bits == 0 {
-            return Ok(UintBits(8));
-        }
-        Ok(UintBits(bits))
-    }
-}
-
 impl Default for UintBits {
     fn default() -> Self {
         UintBits::new(U256::BITS).expect("U256::BITS must be a valid number of bits")

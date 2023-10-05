@@ -15,7 +15,6 @@ tw_proto = { path = "../../tw_proto", features = ["fuzz"] }
 
 [dependencies.tw_evm]
 path = ".."
-features = ["arbitrary"]
 
 # Prevent this from interfering with workspaces
 [workspace]

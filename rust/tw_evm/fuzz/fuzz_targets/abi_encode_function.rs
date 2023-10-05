@@ -6,28 +6,11 @@
 
 #![no_main]
 
-use libfuzzer_sys::{arbitrary, fuzz_target};
-use tw_evm::abi::token::Token;
+use libfuzzer_sys::fuzz_target;
 use tw_evm::evm_context::StandardEvmContext;
 use tw_evm::modules::abi_encoder::AbiEncoder;
 use tw_proto::EthereumAbi::Proto;
 
-#[derive(arbitrary::Arbitrary, Debug)]
-struct FunctionEncodingInput<'a> {
-    function_name: &'a str,
-    tokens: Vec<Token>,
-}
-
-fuzz_target!(|data: FunctionEncodingInput<'_>| {
-    let tokens = data
-        .tokens
-        .into_iter()
-        .map(AbiEncoder::<StandardEvmContext>::token_to_proto)
-        .collect();
-
-    let input = Proto::FunctionEncodingInput {
-        function_name: data.function_name.into(),
-        tokens,
-    };
+fuzz_target!(|input: Proto::FunctionEncodingInput<'_>| {
     let _ = AbiEncoder::<StandardEvmContext>::encode_contract_call(input);
 });

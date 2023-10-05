@@ -31,7 +31,6 @@ pub trait EvmAddress: FromStr<Err = AddressError> + Into<Address> {
 
 /// Represents an Ethereum address.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Address {
     bytes: H160,
 }

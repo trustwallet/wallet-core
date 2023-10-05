@@ -17,7 +17,6 @@ use tw_memory::Data;
 use tw_number::{I256, U256};
 
 #[derive(Debug, Clone, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Token {
     /// Address.
     ///

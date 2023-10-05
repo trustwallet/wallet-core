@@ -13,7 +13,6 @@ pub type NonEmptyBytes = NonEmptyArray<u8>;
 
 /// A convenient wrapper over `NonZeroUsize`.
 #[derive(Copy, Clone, PartialEq)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct NonZeroLen(NonZeroUsize);
 
 impl NonZeroLen {
@@ -52,7 +51,7 @@ impl<T> NonEmptyArray<T> {
     }
 
     pub fn len(&self) -> NonZeroLen {
-        NonZeroLen::new(self.0.len()).expect("`FixedArray` must have at least one element")
+        NonZeroLen::new(self.0.len()).expect("`NonEmptyArray` must have at least one element")
     }
 
     pub fn into_vec(self) -> Vec<T> {
@@ -80,19 +79,5 @@ impl<T> Deref for NonEmptyArray<T> {
 impl AsRef<[u8]> for NonEmptyArray<u8> {
     fn as_ref(&self) -> &[u8] {
         &self.0
-    }
-}
-
-#[cfg(feature = "arbitrary")]
-impl<'a, T> arbitrary::Arbitrary<'a> for NonEmptyArray<T>
-where
-    T: arbitrary::Arbitrary<'a>,
-{
-    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-        let arr: Vec<T> = Vec::arbitrary(u)?;
-        if arr.is_empty() {
-            return Err(arbitrary::Error::EmptyChoose);
-        }
-        Ok(NonEmptyArray(arr))
     }
 }

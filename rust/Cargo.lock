@@ -1498,7 +1498,6 @@ dependencies = [
 name = "tw_evm"
 version = "0.1.0"
 dependencies = [
- "arbitrary",
  "itertools",
  "lazy_static",
  "rlp",
