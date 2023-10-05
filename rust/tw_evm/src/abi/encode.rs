@@ -210,8 +210,8 @@ mod tests {
     use crate::abi::non_empty_array::{NonEmptyArray, NonEmptyBytes};
     use crate::abi::param::Param;
     use crate::abi::param_token::NamedToken;
+    use crate::abi::param_type::constructor::TypeConstructor;
     use crate::abi::param_type::ParamType;
-    use crate::abi::type_reader::TypeConstructor;
     use tw_encoding::hex::DecodeHex;
     use tw_number::{I256, U256};
 

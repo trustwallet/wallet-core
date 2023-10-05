@@ -6,11 +6,16 @@
 
 use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param::Param;
-use crate::abi::type_reader::{Reader, TypeConstructor};
 use crate::abi::uint::UintBits;
-use crate::abi::writer::Writer;
-use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use crate::abi::AbiResult;
 use serde::{de::Error as DeError, Deserialize, Deserializer};
+
+pub mod constructor;
+pub mod reader;
+pub mod writer;
+
+use reader::Reader;
+use writer::Writer;
 
 #[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
@@ -102,59 +107,6 @@ impl ParamType {
             ParamType::Tuple { params } => params.iter().any(|param| param.kind.is_dynamic()),
             _ => false,
         }
-    }
-}
-
-impl TypeConstructor for ParamType {
-    fn address() -> Self {
-        ParamType::Address
-    }
-
-    fn bytes() -> Self {
-        ParamType::Bytes
-    }
-
-    fn fixed_bytes_checked(len: NonZeroLen) -> Self {
-        ParamType::FixedBytes { len }
-    }
-
-    fn int_checked(bits: UintBits) -> Self {
-        ParamType::Int { bits }
-    }
-
-    fn uint_checked(bits: UintBits) -> Self {
-        ParamType::Uint { bits }
-    }
-
-    fn bool() -> Self {
-        ParamType::Bool
-    }
-
-    fn string() -> Self {
-        ParamType::String
-    }
-
-    fn array(element_type: Self) -> Self {
-        ParamType::Array {
-            kind: Box::new(element_type),
-        }
-    }
-
-    fn fixed_array_checked(len: NonZeroLen, element_type: Self) -> Self {
-        ParamType::FixedArray {
-            kind: Box::new(element_type),
-            len,
-        }
-    }
-
-    fn empty_tuple() -> AbiResult<Self> {
-        Ok(ParamType::Tuple {
-            params: Vec::default(),
-        })
-    }
-
-    fn custom(_s: &str) -> AbiResult<Self> {
-        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
     }
 }
 

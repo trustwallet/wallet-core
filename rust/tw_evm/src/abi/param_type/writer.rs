@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-// TODO move the file to `param_type` directory.
-
 use crate::abi::param_type::ParamType;
 
 /// Output formatter for param type.
@@ -62,7 +60,7 @@ mod tests {
     use super::*;
     use crate::abi::non_empty_array::NonZeroLen;
     use crate::abi::param::Param;
-    use crate::abi::type_reader::TypeConstructor;
+    use crate::abi::param_type::constructor::TypeConstructor;
 
     #[test]
     fn test_write_param() {

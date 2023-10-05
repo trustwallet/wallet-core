@@ -17,9 +17,7 @@ pub mod param_type;
 pub mod prebuild;
 pub mod signature;
 pub mod token;
-pub mod type_reader;
 pub mod uint;
-pub mod writer;
 
 #[macro_export]
 macro_rules! abi_output_error {

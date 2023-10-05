@@ -5,7 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::non_empty_array::NonZeroLen;
-use crate::abi::type_reader::{Reader, TypeConstructor};
+use crate::abi::param_type::constructor::TypeConstructor;
+use crate::abi::param_type::reader::Reader;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use crate::message::MessageSigningError;

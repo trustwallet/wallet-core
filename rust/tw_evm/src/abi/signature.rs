@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::param_type::ParamType;
-use crate::abi::writer::Writer;
 use tw_hash::sha3::keccak256;
 use tw_hash::{H256, H32};
 
@@ -26,7 +25,7 @@ pub fn long_signature(name: &str, params: &[ParamType]) -> H256 {
 fn fill_signature(name: &str, params: &[ParamType], result: &mut [u8]) {
     let types = params
         .iter()
-        .map(Writer::write)
+        .map(ParamType::to_type_long)
         .collect::<Vec<String>>()
         .join(",");
 

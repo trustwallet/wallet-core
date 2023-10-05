@@ -5,53 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::abi::non_empty_array::NonZeroLen;
+use crate::abi::param_type::constructor::TypeConstructor;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use std::str::FromStr;
-
-pub trait TypeConstructor: Sized {
-    fn address() -> Self;
-
-    fn bytes() -> Self;
-
-    fn fixed_bytes(len: usize) -> AbiResult<Self> {
-        let checked_len = NonZeroLen::new(len)?;
-        Ok(Self::fixed_bytes_checked(checked_len))
-    }
-
-    fn fixed_bytes_checked(len: NonZeroLen) -> Self;
-
-    fn int(bits: usize) -> AbiResult<Self> {
-        let checked_bits = UintBits::new(bits)?;
-        Ok(Self::int_checked(checked_bits))
-    }
-
-    fn int_checked(bits: UintBits) -> Self;
-
-    fn uint(bits: usize) -> AbiResult<Self> {
-        let checked_bits = UintBits::new(bits)?;
-        Ok(Self::uint_checked(checked_bits))
-    }
-
-    fn uint_checked(bits: UintBits) -> Self;
-
-    fn bool() -> Self;
-
-    fn string() -> Self;
-
-    fn array(element_type: Self) -> Self;
-
-    fn fixed_array(len: usize, element_type: Self) -> AbiResult<Self> {
-        let checked_len = NonZeroLen::new(len)?;
-        Ok(Self::fixed_array_checked(checked_len, element_type))
-    }
-
-    fn fixed_array_checked(len: NonZeroLen, element_type: Self) -> Self;
-
-    fn empty_tuple() -> AbiResult<Self>;
-
-    fn custom(s: &str) -> AbiResult<Self>;
-}
 
 pub struct Reader;
 
