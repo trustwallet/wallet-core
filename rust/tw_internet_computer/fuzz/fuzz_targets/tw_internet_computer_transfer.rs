@@ -40,10 +40,17 @@ impl From<&ArbitraryTransferArgs> for TransferArgs {
 
 #[derive(Debug, arbitrary::Arbitrary)]
 struct TWInternetComputerTransactionsTransferInput {
+    #[arbitrary(with = arbitrary_private_key)]
     private: Vec<u8>,
     #[arbitrary(with = arbitrary_canister_id)]
     canister_id: Principal,
     args: ArbitraryTransferArgs,
+}
+
+fn arbitrary_private_key(u: &mut arbitrary::Unstructured) -> arbitrary::Result<Vec<u8>> {
+    let mut buf = [0; 32];
+    u.fill_buffer(&mut buf)?;
+    Ok(Vec::from(buf.as_slice()))
 }
 
 fn arbitrary_canister_id(u: &mut arbitrary::Unstructured) -> arbitrary::Result<Principal> {
