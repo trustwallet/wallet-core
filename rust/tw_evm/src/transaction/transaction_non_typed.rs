@@ -8,6 +8,7 @@ use crate::address::Address;
 use crate::rlp::list::RlpList;
 use crate::transaction::signature::{EthSignature, SignatureEip155};
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
+use tw_coin_entry::error::SigningResult;
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
@@ -38,16 +39,16 @@ impl UnsignedTransaction for TransactionNonTyped {
     }
 
     #[inline]
-    fn into_signed(
+    fn try_into_signed(
         self,
         signature: secp256k1::Signature,
         chain_id: U256,
-    ) -> Self::SignedTransaction {
-        SignedTransactionNonTyped {
+    ) -> SigningResult<Self::SignedTransaction> {
+        Ok(SignedTransactionNonTyped {
             unsigned: self,
-            signature: SignatureEip155::new(signature, chain_id),
+            signature: SignatureEip155::new(signature, chain_id)?,
             chain_id,
-        }
+        })
     }
 }
 

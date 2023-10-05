@@ -20,6 +20,7 @@ lazy_static! {
 }
 
 #[derive(Clone, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct I256(BaseU256);
 
 // cbindgen:ignore
@@ -123,21 +124,6 @@ impl I256 {
     #[inline]
     pub fn encode_be_compact(num: i64) -> Cow<'static, [u8]> {
         I256::from(num).to_big_endian_compact().into()
-    }
-}
-
-#[cfg(feature = "ethabi")]
-impl I256 {
-    #[inline]
-    pub fn from_ethabi(u: ethabi::Uint) -> I256 {
-        let mut bytes = H256::new();
-        u.to_big_endian(bytes.as_mut_slice());
-        I256::from_big_endian(bytes)
-    }
-
-    #[inline]
-    pub fn to_ethabi(&self) -> ethabi::Uint {
-        ethabi::Uint::from_big_endian(self.to_big_endian().as_slice())
     }
 }
 

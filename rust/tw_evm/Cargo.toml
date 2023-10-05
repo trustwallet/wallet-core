@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ethabi = { version = "18.0.0", features = ["full-serde"] }
 itertools = "0.10.5"
 lazy_static = "1.4.0"
 rlp = "0.5.2"
@@ -16,7 +15,7 @@ tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
-tw_number = { path = "../tw_number", features = ["ethabi"] }
+tw_number = { path = "../tw_number" }
 tw_proto = { path = "../tw_proto" }
 
 [dev-dependencies]

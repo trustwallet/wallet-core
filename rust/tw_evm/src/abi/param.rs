@@ -20,16 +20,14 @@ pub struct Param {
 }
 
 impl Param {
-    pub(crate) fn to_ethabi_param(&self) -> ethabi::Param {
-        ethabi::Param {
-            name: self.name.clone().unwrap_or_default(),
-            kind: self.ethabi_type(),
-            internal_type: self.internal_type.clone(),
+    /// Should be used in tests only.
+    #[cfg(test)]
+    pub(crate) fn with_type(kind: ParamType) -> Param {
+        Param {
+            name: None,
+            kind,
+            internal_type: None,
         }
-    }
-
-    pub(crate) fn ethabi_type(&self) -> ethabi::ParamType {
-        self.kind.to_ethabi()
     }
 }
 
@@ -104,6 +102,9 @@ fn set_tuple_components<E: DeError>(
 ) -> Result<(), E> {
     if let Some(tuple_components) = inner_tuple_mut(kind) {
         *tuple_components = components.ok_or_else(|| E::missing_field("components"))?;
+        if tuple_components.is_empty() {
+            return Err(DeError::custom("'components' cannot be empty"));
+        }
     }
     Ok(())
 }

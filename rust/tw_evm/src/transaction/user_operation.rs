@@ -4,11 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::abi::encode::encode_tokens;
+use crate::abi::non_empty_array::NonEmptyBytes;
+use crate::abi::token::Token;
 use crate::address::Address;
 use crate::transaction::signature::Signature;
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
-use ethabi::Token;
 use serde::Serialize;
+use tw_coin_entry::error::SigningResult;
 use tw_encoding::hex;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
@@ -43,48 +46,58 @@ impl UnsignedTransaction for UserOperation {
 
     fn pre_hash(&self, chain_id: U256) -> H256 {
         let encode_hash = keccak256(&self.encode(chain_id));
+        let encode_hash =
+            NonEmptyBytes::new(encode_hash).expect("keccak256 must not return an empty hash");
 
         let tokens = [
             Token::FixedBytes(encode_hash),
-            Token::Address(self.entry_point.to_ethabi()),
-            Token::Uint(chain_id.to_ethabi()),
+            Token::Address(self.entry_point),
+            Token::u256(chain_id),
         ];
-        let encoded = ethabi::encode(&tokens);
+        let encoded = encode_tokens(&tokens);
         let pre_hash = keccak256(&encoded);
         H256::try_from(pre_hash.as_slice()).expect("keccak256 returns 32 bytes")
     }
 
     fn encode(&self, _chain_id: U256) -> Data {
         let init_code_hash = keccak256(&self.init_code);
+        let init_code_hash =
+            NonEmptyBytes::new(init_code_hash).expect("keccak256 must not return an empty hash");
+
         let payload_hash = keccak256(&self.payload);
+        let payload_hash =
+            NonEmptyBytes::new(payload_hash).expect("keccak256 must not return an empty hash");
+
         let paymaster_and_data_hash = keccak256(&self.paymaster_and_data);
+        let paymaster_and_data_hash = NonEmptyBytes::new(paymaster_and_data_hash)
+            .expect("keccak256 must not return an empty hash");
 
         let tokens = [
-            Token::Address(self.sender.to_ethabi()),
-            Token::Uint(self.nonce.to_ethabi()),
+            Token::Address(self.sender),
+            Token::u256(self.nonce),
             Token::FixedBytes(init_code_hash),
             Token::FixedBytes(payload_hash),
-            Token::Uint(self.gas_limit.to_ethabi()),
-            Token::Uint(self.verification_gas_limit.to_ethabi()),
-            Token::Uint(self.pre_verification_gas.to_ethabi()),
-            Token::Uint(self.max_fee_per_gas.to_ethabi()),
-            Token::Uint(self.max_inclusion_fee_per_gas.to_ethabi()),
+            Token::u256(self.gas_limit),
+            Token::u256(self.verification_gas_limit),
+            Token::u256(self.pre_verification_gas),
+            Token::u256(self.max_fee_per_gas),
+            Token::u256(self.max_inclusion_fee_per_gas),
             Token::FixedBytes(paymaster_and_data_hash),
         ];
 
-        ethabi::encode(&tokens)
+        encode_tokens(&tokens)
     }
 
     #[inline]
-    fn into_signed(
+    fn try_into_signed(
         self,
         signature: tw_keypair::ecdsa::secp256k1::Signature,
         _chain_id: U256,
-    ) -> Self::SignedTransaction {
-        SignedUserOperation {
+    ) -> SigningResult<Self::SignedTransaction> {
+        Ok(SignedUserOperation {
             unsigned: self,
             signature: Signature::new(signature),
-        }
+        })
     }
 }
 

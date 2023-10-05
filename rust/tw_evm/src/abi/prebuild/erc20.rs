@@ -25,11 +25,11 @@ pub struct Erc20;
 impl Erc20 {
     pub fn transfer(recipient: Address, amount: U256) -> AbiResult<Data> {
         let func = ERC20.function("transfer")?;
-        func.encode_input([Token::Address(recipient), Token::u256(amount)])
+        func.encode_input(&[Token::Address(recipient), Token::u256(amount)])
     }
 
     pub fn approve(spender: Address, amount: U256) -> AbiResult<Data> {
         let func = ERC20.function("approve")?;
-        func.encode_input([Token::Address(spender), Token::u256(amount)])
+        func.encode_input(&[Token::Address(spender), Token::u256(amount)])
     }
 }

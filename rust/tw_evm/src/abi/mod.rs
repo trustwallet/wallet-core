@@ -10,10 +10,12 @@ pub mod contract;
 pub mod decode;
 pub mod encode;
 pub mod function;
+pub mod non_empty_array;
 pub mod param;
 pub mod param_token;
 pub mod param_type;
 pub mod prebuild;
+pub mod signature;
 pub mod token;
 pub mod uint;
 

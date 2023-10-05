@@ -34,9 +34,12 @@ impl MessageSignature {
     pub fn prepared(sign: secp256k1::Signature, sign_type: SignatureType) -> KeyPairResult<Self> {
         let v = match sign_type {
             SignatureType::Standard => U256::from(sign.v()),
-            SignatureType::Legacy => legacy_replay_protection(sign.v()),
+            SignatureType::Legacy => {
+                legacy_replay_protection(sign.v()).map_err(|_| KeyPairError::InvalidSignature)?
+            },
             SignatureType::Eip155 { chain_id } => {
                 eip155_replay_protection(U256::from(chain_id), sign.v())
+                    .map_err(|_| KeyPairError::InvalidSignature)?
             },
         };
         Ok(MessageSignature {

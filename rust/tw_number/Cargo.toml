@@ -3,8 +3,13 @@ name = "tw_number"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+arbitrary = ["dep:arbitrary", "primitive-types/arbitrary"]
+default = ["helpers", "serde"]
+helpers = []
+
 [dependencies]
-ethabi = { version = "18.0.0", optional = true }
+arbitrary = { version = "1", features = ["derive"], optional = true }
 lazy_static = "1.4.0"
 primitive-types = "0.12.1"
 serde = { version = "1.0.159", features = ["derive"], optional = true }
@@ -13,7 +18,3 @@ tw_memory = { path = "../tw_memory" }
 
 [dev-dependencies]
 tw_encoding = { path = "../tw_encoding" }
-
-[features]
-default = ["helpers", "serde"]
-helpers = []

@@ -6,12 +6,10 @@
 
 use crate::abi::param::Param;
 use crate::abi::token::Token;
-use crate::abi::AbiResult;
-use ethabi::Token as EthAbiToken;
 use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NamedToken {
     /// Optional param name.
     pub name: Option<String>,
@@ -22,6 +20,14 @@ pub struct NamedToken {
 }
 
 impl NamedToken {
+    pub fn with_param_and_token(param: &Param, value: Token) -> NamedToken {
+        NamedToken {
+            name: param.name.clone(),
+            value,
+            internal_type: param.internal_type.clone(),
+        }
+    }
+
     pub fn to_param(&self) -> Param {
         Param {
             name: self.name.clone(),
@@ -30,12 +36,13 @@ impl NamedToken {
         }
     }
 
-    pub(crate) fn with_ethabi_token(param: &Param, token: EthAbiToken) -> AbiResult<NamedToken> {
-        Ok(NamedToken {
-            name: param.name.clone(),
-            value: Token::with_ethabi_token(&param.kind, token)?,
-            internal_type: param.internal_type.clone(),
-        })
+    #[cfg(test)]
+    pub fn with_token(value: Token) -> NamedToken {
+        NamedToken {
+            name: None,
+            value,
+            internal_type: None,
+        }
     }
 }
 

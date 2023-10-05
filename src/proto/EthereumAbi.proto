@@ -26,6 +26,9 @@ enum AbiError {
     Error_missing_param_value = 8;
     // Invalid encoded data.
     Error_decoding_data = 9;
+    // Invalid empty type.
+    // For example, bytes0, address[0].
+    Error_empty_type = 10;
 }
 
 // ABI type parameters excluding values.

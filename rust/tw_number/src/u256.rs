@@ -14,6 +14,7 @@ use tw_hash::H256;
 use tw_memory::Data;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct U256(pub(crate) primitive_types::U256);
 
 impl From<primitive_types::U256> for U256 {
@@ -128,6 +129,19 @@ impl U256 {
         self.0.byte(lowest_byte_idx)
     }
 
+    /// Checked addition. Returns `NumberError::IntegerOverflow` if overflow occurred.
+    #[inline]
+    pub fn checked_add<T>(&self, rhs: T) -> NumberResult<U256>
+    where
+        T: Into<primitive_types::U256>,
+    {
+        let rhs = rhs.into();
+        self.0
+            .checked_add(rhs)
+            .map(U256)
+            .ok_or(NumberError::IntegerOverflow)
+    }
+
     #[inline]
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
@@ -139,21 +153,6 @@ impl U256 {
     #[inline]
     pub fn encode_be_compact(num: u64) -> Cow<'static, [u8]> {
         U256::from(num).to_big_endian_compact().into()
-    }
-}
-
-#[cfg(feature = "ethabi")]
-impl U256 {
-    #[inline]
-    pub fn from_ethabi(u: ethabi::Uint) -> U256 {
-        let mut bytes = H256::new();
-        u.to_big_endian(bytes.as_mut_slice());
-        U256::from_big_endian(bytes)
-    }
-
-    #[inline]
-    pub fn to_ethabi(&self) -> ethabi::Uint {
-        ethabi::Uint::from_big_endian(self.to_big_endian().as_slice())
     }
 }
 
@@ -247,6 +246,7 @@ impl_map_from!(U256, u8);
 impl_map_from!(U256, u16);
 impl_map_from!(U256, u32);
 impl_map_from!(U256, u64);
+impl_map_from!(U256, usize);
 
 #[cfg(test)]
 mod tests {
