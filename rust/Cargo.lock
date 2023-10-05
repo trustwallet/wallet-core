@@ -1600,6 +1600,7 @@ dependencies = [
 name = "tw_proto"
 version = "0.1.0"
 dependencies = [
+ "arbitrary",
  "pb-rs",
  "quick-protobuf",
  "tw_encoding",

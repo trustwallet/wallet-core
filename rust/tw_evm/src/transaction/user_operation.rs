@@ -11,6 +11,7 @@ use crate::address::Address;
 use crate::transaction::signature::Signature;
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
 use serde::Serialize;
+use tw_coin_entry::error::SigningResult;
 use tw_encoding::hex;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
@@ -88,15 +89,15 @@ impl UnsignedTransaction for UserOperation {
     }
 
     #[inline]
-    fn into_signed(
+    fn try_into_signed(
         self,
         signature: tw_keypair::ecdsa::secp256k1::Signature,
         _chain_id: U256,
-    ) -> Self::SignedTransaction {
-        SignedUserOperation {
+    ) -> SigningResult<Self::SignedTransaction> {
+        Ok(SignedUserOperation {
             unsigned: self,
             signature: Signature::new(signature),
-        }
+        })
     }
 }
 

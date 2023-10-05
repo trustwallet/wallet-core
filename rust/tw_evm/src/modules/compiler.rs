@@ -72,7 +72,7 @@ impl<Context: EvmContext> Compiler<Context> {
 
         let pre_hash = unsigned.pre_hash(chain_id);
 
-        let signed = unsigned.into_signed(signature, chain_id);
+        let signed = unsigned.try_into_signed(signature, chain_id)?;
 
         let eth_signature = signed.signature();
 

@@ -129,6 +129,19 @@ impl U256 {
         self.0.byte(lowest_byte_idx)
     }
 
+    /// Checked addition. Returns `NumberError::IntegerOverflow` if overflow occurred.
+    #[inline]
+    pub fn checked_add<T>(&self, rhs: T) -> NumberResult<U256>
+    where
+        T: Into<primitive_types::U256>,
+    {
+        let rhs = rhs.into();
+        self.0
+            .checked_add(rhs)
+            .map(U256)
+            .ok_or(NumberError::IntegerOverflow)
+    }
+
     #[inline]
     fn leading_zero_bytes(&self) -> usize {
         U256::BYTES - (self.0.bits() + 7) / 8
