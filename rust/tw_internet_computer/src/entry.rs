@@ -10,7 +10,9 @@ use tw_coin_entry::{
     coin_context::CoinContext,
     coin_entry::CoinEntry,
     error::{AddressError, AddressResult, SigningError},
-    modules::{json_signer::NoJsonSigner, plan_builder::NoPlanBuilder},
+    modules::{
+        json_signer::NoJsonSigner, message_signer::NoMessageSigner, plan_builder::NoPlanBuilder,
+    },
     prefix::NoPrefix,
     signing_output_error,
 };
@@ -38,6 +40,8 @@ impl CoinEntry for InternetComputerEntry {
     type JsonSigner = NoJsonSigner;
 
     type PlanBuilder = NoPlanBuilder;
+
+    type MessageSigner = NoMessageSigner;
 
     #[inline]
     fn parse_address(
