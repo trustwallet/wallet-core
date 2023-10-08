@@ -147,12 +147,32 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
+        return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
+        return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeED25519:
+        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
-    case TWPublicKeyTypeCURVE25519:
-    case TWPublicKeyTypeED25519Cardano:
+        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+    case TWPublicKeyTypeED25519Cardano: {
+        const auto key = subData(bytes, 0, ed25519Size);
+        return ed25519_sign_open(message.data(), message.size(), key.data(), signature.data()) == 0;
+    }
+    case TWPublicKeyTypeCURVE25519: {
+        auto ed25519PublicKey = Data();
+        ed25519PublicKey.resize(PublicKey::ed25519Size);
+        curve25519_pk_to_ed25519(ed25519PublicKey.data(), bytes.data());
+
+        ed25519PublicKey[31] &= 0x7F;
+        ed25519PublicKey[31] |= signature[63] & 0x80;
+
+        // remove sign bit
+        auto verifyBuffer = Data();
+        append(verifyBuffer, signature);
+        verifyBuffer[63] &= 127;
+        return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(), verifyBuffer.data()) == 0;
+    }
     case TWPublicKeyTypeStarkex:
         return rust_public_key_verify(bytes, type, signature, message);
     default:
