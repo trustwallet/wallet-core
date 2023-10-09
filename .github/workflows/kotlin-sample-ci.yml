@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [ self-hosted, macOS, ARM64, wallet-core ]
+    runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
