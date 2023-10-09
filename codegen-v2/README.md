@@ -2,7 +2,7 @@
 
 This is a _work-in-progress_ parser meant to deprecate the existing Ruby parser
 in `codegen/`. As of now, we only support Swift binding generation. This project
-will progess over multiple stages (PRs).
+will progress over multiple stages (PRs).
 
 ## Execution
 
