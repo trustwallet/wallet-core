@@ -11,6 +11,10 @@ ANDROID_CMDTOOLS=$(find_android_cmdline_tools)
 AVD_NAME="integration-tests"
 PORT=5556
 
+if [[ `uname` == "Darwin" ]]; then
+    export BOOST_ROOT=$(brew --prefix boost)
+fi
+
 # Make sure it builds before starting an emulator
 pushd android
 ./gradlew assembleAndroidTest
