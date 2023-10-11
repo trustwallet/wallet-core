@@ -290,5 +290,5 @@ Data PrivateKey::signZilliqa(const Data& message) const {
 }
 
 void PrivateKey::cleanup() {
-    std::fill(bytes.begin(), bytes.end(), 0);
+    memzero(bytes.data(), bytes.size());
 }
