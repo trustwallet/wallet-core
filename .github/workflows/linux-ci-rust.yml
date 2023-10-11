@@ -1,3 +1,4 @@
+[![Linux CI Rust](https://github.com/trustwallet/wallet-core/actions/workflows/linux-ci-rust.yml/badge.svg)](https://github.com/trustwallet/wallet-core/actions/workflows/linux-ci-rust.yml)
 name: Linux CI Rust
 
 on:
