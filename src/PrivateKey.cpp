@@ -172,24 +172,6 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     return PublicKey(result, type);
 }
 
-Data PrivateKey::getSharedKey(const PublicKey& pubKey, TWCurve curve) const {
-    if (curve != TWCurveSECP256k1) {
-        return {};
-    }
-
-    Data result(PublicKey::secp256k1ExtendedSize);
-    bool success = ecdh_multiply(&secp256k1, key().data(),
-                                 pubKey.bytes.data(), result.data()) == 0;
-
-    if (success) {
-        PublicKey sharedKey(result, TWPublicKeyTypeSECP256k1Extended);
-        auto hash = Hash::sha256(sharedKey.compressed().bytes);
-        return hash;
-    }
-
-    return {};
-}
-
 int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key, const uint8_t* digest, size_t digest_size, uint8_t* sig, uint8_t* pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
     if (digest_size < 32) {
         return -1;
@@ -308,5 +290,5 @@ Data PrivateKey::signZilliqa(const Data& message) const {
 }
 
 void PrivateKey::cleanup() {
-    std::fill(bytes.begin(), bytes.end(), 0);
+    memzero(bytes.data(), bytes.size());
 }
