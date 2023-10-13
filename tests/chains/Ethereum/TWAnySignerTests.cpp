@@ -9,10 +9,7 @@
 #include "HexCoding.h"
 #include "uint256.h"
 #include "proto/Ethereum.pb.h"
-#include "Ethereum/Address.h"
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamBase.h"
-#include "Ethereum/ABI/ParamAddress.h"
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>
@@ -111,10 +108,10 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     // expected payload
     Data payload;
     {
-        auto func = ABI::Function("transfer", std::vector<std::shared_ptr<ABI::ParamBase>>{
-                                             std::make_shared<ABI::ParamAddress>(parse_hex(toAddress)),
-                                             std::make_shared<ABI::ParamUInt256>(amount)});
-        func.encode(payload);
+        payload = ABI::Function::encodeFunctionCall("transfer", Ethereum::ABI::BaseParams{
+                                             std::make_shared<ABI::ProtoAddress>(toAddress),
+                                             std::make_shared<ABI::ProtoUInt256>(amount)
+        }).value();
     }
     ASSERT_EQ(hex(output.data()), hex(payload));
     ASSERT_EQ(hex(output.data()), "a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
@@ -285,13 +282,13 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer) {
     // expected payload
     Data payload;
     {
-        auto func = ABI::Function("safeTransferFrom", std::vector<std::shared_ptr<ABI::ParamBase>>{
-                                                     std::make_shared<ABI::ParamAddress>(parse_hex(fromAddress)),
-                                                     std::make_shared<ABI::ParamAddress>(parse_hex(toAddress)),
-                                                     std::make_shared<ABI::ParamUInt256>(uint256_t(0x23c47ee5)),
-                                                     std::make_shared<ABI::ParamUInt256>(value),
-                                                     std::make_shared<ABI::ParamByteArray>(data)});
-        func.encode(payload);
+        auto funcData = ABI::Function::encodeFunctionCall("safeTransferFrom", Ethereum::ABI::BaseParams{
+                                                     std::make_shared<ABI::ProtoAddress>(fromAddress),
+                                                     std::make_shared<ABI::ProtoAddress>(toAddress),
+                                                     std::make_shared<ABI::ProtoUInt256>(uint256_t(0x23c47ee5)),
+                                                     std::make_shared<ABI::ProtoUInt256>(value),
+                                                     std::make_shared<ABI::ProtoByteArray>(data)});
+        payload = funcData.value();
     }
     ASSERT_EQ(hex(output.data()), hex(payload));
     ASSERT_EQ(hex(output.data()), "f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000");
@@ -503,8 +500,8 @@ TEST(TWAnySignerEthereum, StakeRocketPool) {
 
     Data payload;
     {
-        auto func = ABI::Function("deposit", std::vector<std::shared_ptr<ABI::ParamBase>>{ });
-        func.encode(payload);
+        auto funcData = ABI::Function::encodeFunctionCall("deposit", Ethereum::ABI::BaseParams{ });
+        payload = funcData.value();
     }
 
 
@@ -551,9 +548,10 @@ TEST(TWAnySignerEthereum, UnstakeRocketPool) {
 
     Data payload;
     {
-        auto func = ABI::Function("burn", std::vector<std::shared_ptr<ABI::ParamBase>>{
-                                                          std::make_shared<ABI::ParamUInt256>(uint256_t(0x21faa32ab2502b))});
-        func.encode(payload);
+        auto funcData = ABI::Function::encodeFunctionCall("burn", ABI::BaseParams{
+            std::make_shared<ABI::ProtoUInt256>(uint256_t(0x21faa32ab2502b))
+        });
+        payload = funcData.value();
     }
 
     Proto::SigningInput input;

@@ -7,7 +7,9 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include <TrezorCrypto/rand.h>
 #include "PublicKey.h"
+#include "PublicKeyLegacy.h"
 
 #include <gtest/gtest.h>
 
@@ -265,6 +267,25 @@ TEST(PrivateKey, SignNIST256p1) {
     EXPECT_EQ(
         "8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401",
         hex(actual));
+}
+
+TEST(PrivateKey, SignNIST256p1VerifyLegacy) {
+    for (auto i = 0; i < 1000; ++i) {
+        Data secret(32);
+        random_buffer(secret.data(), 32);
+
+        Data msg(32);
+        random_buffer(msg.data(), 32);
+
+        PrivateKey privateKey(secret);
+        auto signature = privateKey.sign(msg, TWCurveNIST256p1);
+
+        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+        EXPECT_TRUE(TrezorCrypto::verifyNist256p1Signature(publicKey.bytes, signature, msg))
+            << "Error verifying nist256p1 signature" << std::endl
+            << "Private key: " << hex(secret) << std::endl
+            << "Message: " << hex(msg);
+    }
 }
 
 int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] uint8_t sig[64]) {

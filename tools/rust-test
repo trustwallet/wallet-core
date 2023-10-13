@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# To run Rust tests (home architecture):
+# - run unit tests without additional flags:
+#   ./tools/rust-test
+#
+# To run Rust tests in WASM:
+# - install wasm dependencies
+#   ./tools/install-wasm-dependencies
+# - run unit tests with `wasm` flag:
+#   ./tools/rust-test wasm
+
+set -e
+
+pushd rust
+
+if [[ "$1" == "wasm" ]]; then
+  source ../emsdk/emsdk_env.sh
+  export CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER=node
+
+  cargo test --target wasm32-unknown-emscripten --profile wasm-test
+else
+  cargo test --all
+fi
+
+popd # rust

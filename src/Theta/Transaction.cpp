@@ -12,43 +12,61 @@ namespace TW::Theta {
 
 using RLP = Ethereum::RLP;
 
-Data encode(const Coins& coins) noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(coins.thetaWei));
-    append(encoded, RLP::encode(coins.tfuelWei));
-    return RLP::encodeList(encoded);
+EthereumRlp::Proto::RlpItem prepare(const Coins& coins) noexcept {
+    auto thetaWei = store(coins.thetaWei);
+    auto tfuelWei = store(coins.tfuelWei);
+
+    EthereumRlp::Proto::RlpItem item;
+    auto* rlpList = item.mutable_list();
+
+    rlpList->add_items()->set_number_u256(thetaWei.data(), thetaWei.size());
+    rlpList->add_items()->set_number_u256(tfuelWei.data(), tfuelWei.size());
+
+    return item;
 }
 
-Data encode(const TxInput& input) noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(input.address.bytes));
-    append(encoded, encode(input.coins));
-    append(encoded, RLP::encode(input.sequence));
-    append(encoded, RLP::encode(input.signature));
-    return RLP::encodeList(encoded);
+EthereumRlp::Proto::RlpItem prepare(const TxInput& input) noexcept {
+    EthereumRlp::Proto::RlpItem item;
+    auto* rlpList = item.mutable_list();
+
+    rlpList->add_items()->set_data(input.address.bytes.data(), input.address.bytes.size());
+    *rlpList->add_items() = prepare(input.coins);
+    rlpList->add_items()->set_number_u64(input.sequence);
+    rlpList->add_items()->set_data(input.signature.data(), input.signature.size());
+
+    return item;
 }
 
-Data encode(const std::vector<TxInput>& inputs) noexcept {
-    auto encoded = Data();
+EthereumRlp::Proto::RlpItem prepare(const std::vector<TxInput>& inputs) noexcept {
+    EthereumRlp::Proto::RlpItem item;
+    auto* rlpList = item.mutable_list();
+
     for (const auto& input : inputs) {
-        append(encoded, encode(input));
+        *rlpList->add_items() = prepare(input);
     }
-    return RLP::encodeList(encoded);
+
+    return item;
 }
 
-Data encode(const TxOutput& output) noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(output.address.bytes));
-    append(encoded, encode(output.coins));
-    return RLP::encodeList(encoded);
+EthereumRlp::Proto::RlpItem prepare(const TxOutput& output) noexcept {
+    EthereumRlp::Proto::RlpItem item;
+    auto* rlpList = item.mutable_list();
+
+    rlpList->add_items()->set_data(output.address.bytes.data(), output.address.bytes.size());
+    *rlpList->add_items() = prepare(output.coins);
+
+    return item;
 }
 
-Data encode(const std::vector<TxOutput>& outputs) noexcept {
-    auto encoded = Data();
+EthereumRlp::Proto::RlpItem prepare(const std::vector<TxOutput>& outputs) noexcept {
+    EthereumRlp::Proto::RlpItem item;
+    auto* rlpList = item.mutable_list();
+
     for (const auto& output : outputs) {
-        append(encoded, encode(output));
+        *rlpList->add_items() = prepare(output);
     }
-    return RLP::encodeList(encoded);
+
+    return item;
 }
 
 Transaction::Transaction(Ethereum::Address from, Ethereum::Address to,
@@ -65,15 +83,29 @@ Transaction::Transaction(Ethereum::Address from, Ethereum::Address to,
     this->outputs.push_back(output);
 }
 
-Data Transaction::encode() const noexcept {
-    auto encoded = Data();
-    uint16_t txType = 2; // TxSend
-    append(encoded, RLP::encode(txType));
-    auto encodedData = Data();
-    append(encodedData, Theta::encode(_fee));
-    append(encodedData, Theta::encode(inputs));
-    append(encodedData, Theta::encode(outputs));
-    append(encoded, RLP::encodeList(encodedData));
+Data Transaction::encodePayload() const noexcept {
+    const uint64_t txType = 2; // TxSend
+
+    EthereumRlp::Proto::EncodingInput txInput;
+    auto* txPropertiesList = txInput.mutable_item()->mutable_list();
+
+    *txPropertiesList->add_items() = prepare(_fee);
+    *txPropertiesList->add_items() = prepare(inputs);
+    *txPropertiesList->add_items() = prepare(outputs);
+
+    auto txPropertiesEncoded = RLP::encode(txInput);
+
+    Data payload;
+    append(payload, RLP::encodeU256(static_cast<uint256_t>(txType)));
+    append(payload, txPropertiesEncoded);
+
+    return payload;
+}
+
+Data Transaction::encode(const std::string& chainId) const noexcept {
+    Data encoded;
+    append(encoded, RLP::encodeString(chainId));
+    append(encoded, encodePayload());
     return encoded;
 }
 

@@ -19,8 +19,6 @@
 #include "../proto/Bitcoin.pb.h"
 // ETH
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "uint256.h"
 #include "../proto/Ethereum.pb.h"
@@ -273,15 +271,19 @@ SwapBundled SwapBuilder::buildEth(const uint256_t& amount, const std::string& me
             mExpirationPolicy = std::chrono::duration_cast<std::chrono::seconds>(in_15_minutes.time_since_epoch()).count();
         }
         auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
-        auto func = Ethereum::ABI::Function("depositWithExpiry", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-                                                                     std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                                     std::make_shared<Ethereum::ABI::ParamAddress>(toAssetAddressBin),
-                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(amount)),
-                                                                     std::make_shared<Ethereum::ABI::ParamString>(memo),
-                                                                     std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(*mExpirationPolicy))});
-        Data payload;
-        func.encode(payload);
-        transfer.set_data(payload.data(), payload.size());
+
+        // Ethereum::ABI::AbiProto::NamedParam
+        auto payload = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", {
+            std::make_shared<Ethereum::ABI::ProtoAddress>(mVaultAddress),
+            std::make_shared<Ethereum::ABI::ProtoAddress>(toTokenId),
+            std::make_shared<Ethereum::ABI::ProtoUInt256>(amount),
+            std::make_shared<Ethereum::ABI::ProtoString>(memo),
+            std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(*mExpirationPolicy)),
+        });
+        if (payload.has_value()) {
+            transfer.set_data(payload.value().data(), payload.value().size());
+        }
+
         Data amountData = store(uint256_t(0));
         // if tokenId is set to 0x0000000000000000000000000000000000000000 this means we are sending ethereum and transfer amount also need to be set
         if (toTokenId == "0x0000000000000000000000000000000000000000") {

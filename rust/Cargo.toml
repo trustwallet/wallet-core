@@ -1,13 +1,31 @@
 [workspace]
 members = [
+    "tw_any_coin",
     "tw_bitcoin",
+    "tw_coin_entry",
+    "tw_coin_registry",
     "tw_encoding",
+    "tw_ethereum",
+    "tw_evm",
     "tw_hash",
     "tw_keypair",
     "tw_memory",
     "tw_misc",
     "tw_move_parser",
+    "tw_number",
     "tw_proto",
-    "tw_starknet",
+    "tw_ronin",
+    "tw_utxo",
     "wallet_core_rs",
 ]
+
+[profile.wasm-test]
+inherits = "release"
+# Fixes an incredibly slow compilation of `curve25519-dalek` package.
+opt-level = 1
+debug = true
+debug-assertions = true
+overflow-checks = true
+
+[profile.release.package.curve25519-dalek]
+opt-level = 2

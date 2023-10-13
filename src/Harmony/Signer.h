@@ -12,6 +12,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../proto/Harmony.pb.h"
+#include "../proto/EthereumRlp.pb.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
@@ -96,11 +97,16 @@ class Signer {
     template <typename Directive>
     Data rlpNoHash(const Staking<Directive> &transaction, const bool) const noexcept;
 
-    Data rlpNoHashDirective(const Staking<CreateValidator> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<EditValidator> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<Delegate> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<Undelegate> &transaction) const noexcept;
-    Data rlpNoHashDirective(const Staking<CollectRewards> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<CreateValidator> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<EditValidator> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<Delegate> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<Undelegate> &transaction) const noexcept;
+    EthereumRlp::Proto::RlpItem rlpNoHashDirective(const Staking<CollectRewards> &transaction) const noexcept;
+
+    template <typename Directive>
+    EthereumRlp::Proto::RlpItem rlpPrepareDescription(const Staking<Directive>& transaction) const noexcept;
+
+    static EthereumRlp::Proto::RlpItem rlpPrepareCommissionRates(const Staking<CreateValidator> &transaction) noexcept;
 };
 
 } // namespace TW::Harmony

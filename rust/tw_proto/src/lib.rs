@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
+use quick_protobuf::{BytesReader, Writer};
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]
@@ -15,7 +15,7 @@ mod generated {
 pub use generated::TW::*;
 pub use quick_protobuf::{
     deserialize_from_slice as deserialize_prefixed, serialize_into_vec as serialize_prefixed,
-    Error as ProtoError, Result as ProtoResult,
+    Error as ProtoError, MessageRead, MessageWrite, Result as ProtoResult,
 };
 
 pub mod ffi;
@@ -36,4 +36,20 @@ pub fn serialize<T: MessageWrite>(message: &T) -> ProtoResult<Vec<u8>> {
 pub fn deserialize<'a, T: MessageRead<'a>>(data: &'a [u8]) -> ProtoResult<T> {
     let mut reader = BytesReader::from_bytes(data);
     T::from_reader(&mut reader, data)
+}
+
+/// There is no way to create an instance of the `NoMessage` enum as it doesn't has variants.
+pub enum NoMessage {}
+
+impl MessageWrite for NoMessage {}
+
+/// `DummyMessage` has no effect on `MessageWrite` and `MessageRead`.
+pub struct DummyMessage;
+
+impl MessageWrite for DummyMessage {}
+
+impl<'a> MessageRead<'a> for DummyMessage {
+    fn from_reader(_r: &mut BytesReader, _bytes: &'a [u8]) -> ProtoResult<Self> {
+        Ok(DummyMessage)
+    }
 }

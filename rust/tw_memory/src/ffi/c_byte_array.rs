@@ -28,8 +28,22 @@ impl Drop for CByteArray {
 }
 
 impl From<Vec<u8>> for CByteArray {
-    fn from(data: Vec<u8>) -> Self {
-        CByteArray::new(data)
+    fn from(mut mut_vec: Vec<u8>) -> Self {
+        let data = mut_vec.as_mut_ptr();
+        let size = mut_vec.len();
+        let capacity = mut_vec.capacity();
+        std::mem::forget(mut_vec);
+        CByteArray {
+            data,
+            size,
+            capacity,
+        }
+    }
+}
+
+impl Default for CByteArray {
+    fn default() -> Self {
+        CByteArray::new()
     }
 }
 
@@ -43,17 +57,9 @@ impl CByteArray {
         }
     }
 
-    /// Returns a `CByteArray` instance from the given `mut_vec` bytes.
-    pub fn new(mut mut_vec: Vec<u8>) -> CByteArray {
-        let data = mut_vec.as_mut_ptr();
-        let size = mut_vec.len();
-        let capacity = mut_vec.capacity();
-        std::mem::forget(mut_vec);
-        CByteArray {
-            data,
-            size,
-            capacity,
-        }
+    /// Returns an empty `CByteArray` instance.
+    pub fn new() -> CByteArray {
+        CByteArray::from(Vec::new())
     }
 
     /// Converts `CByteArray` into `Vec<u8>` without additional allocation.
@@ -94,6 +100,11 @@ impl CByteArray {
     /// Returns the data length.
     pub fn size(&self) -> usize {
         self.size
+    }
+
+    /// Returns the data slice.
+    pub unsafe fn as_slice(&self) -> &[u8] {
+        std::slice::from_raw_parts(self.data, self.size)
     }
 }
 

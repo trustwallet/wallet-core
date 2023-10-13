@@ -9,7 +9,6 @@
 #include "HexCoding.h"
 #include "uint256.h"
 #include "proto/Ethereum.pb.h"
-#include "Ethereum/ABI/ParamBase.h"
 
 #include <gtest/gtest.h>
 
