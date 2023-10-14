@@ -6,5 +6,27 @@ namespaces = ["TW", "Rust"]
 
 [parse]
 parse_deps = true
-extra_bindings = ["tw_bitcoin", "tw_memory", "tw_encoding", "tw_hash", "tw_keypair", "tw_move_parser", "tw_proto", "tw_starknet"]
-include = ["tw_bitcoin", "tw_memory", "tw_encoding", "tw_hash", "tw_keypair", "tw_move_parser", "tw_proto", "tw_starknet"]
+extra_bindings = [
+    "tw_any_coin",
+    "tw_bitcoin",
+    "tw_coin_registry",
+    "tw_encoding",
+    "tw_ethereum",
+    "tw_hash",
+    "tw_keypair",
+    "tw_memory",
+    "tw_move_parser",
+    "tw_proto"
+]
+include = [
+    "tw_any_coin",
+    "tw_bitcoin",
+    "tw_coin_registry",
+    "tw_encoding",
+    "tw_ethereum",
+    "tw_hash",
+    "tw_keypair",
+    "tw_memory",
+    "tw_move_parser",
+    "tw_proto"
+]

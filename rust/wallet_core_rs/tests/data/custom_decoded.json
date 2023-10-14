@@ -1,0 +1,20 @@
+{
+    "function": "setName(string,uint256,int32)",
+    "inputs": [
+        {
+            "name": "name",
+            "type": "string",
+            "value": "trusty"
+        },
+        {
+            "name": "age",
+            "type": "uint256",
+            "value": "3"
+        },
+        {
+            "name": "height",
+            "type": "int32",
+            "value": "100"
+        }
+    ]
+}

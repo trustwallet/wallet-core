@@ -120,7 +120,7 @@ namespace TW::Ethereum {
                 }
             })";
         auto signature = Ethereum::MessageSigner::signTypedData(ethKey, msg, MessageType::Eip155, 0);
-        ASSERT_EQ(signature, "EIP712 chainId is different than the current chainID.");
+        ASSERT_EQ(signature, "");
     }
 
     TEST(EthereumEip191, SignMessageAndVerifyLegacy) {

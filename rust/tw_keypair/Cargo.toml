@@ -3,7 +3,34 @@ name = "tw_keypair"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+test-utils = []
+
 [dependencies]
+arbitrary = { version = "1", features = ["derive"], optional = true }
+lazy_static = "1.4.0"
+serde = { version = "1.0.159", features = ["derive"] }
+starknet-crypto = "0.5.0"
+starknet-ff = "0.3.2"
 tw_encoding = { path = "../tw_encoding" }
+tw_hash = { path = "../tw_hash" }
 tw_memory = { path = "../tw_memory" }
+tw_misc = { path = "../tw_misc" }
+zeroize = "1.6.0"
+# ECDSA specific:
+ecdsa = "0.16.6"
 der = "0.7.3"
+k256 = { version = "0.13.0", features = ["ecdh", "ecdsa", "schnorr", "std"], default-features = false }
+p256 = { version = "0.13.0", features = ["ecdsa", "std"], default-features = false }
+rfc6979 = "0.4.0"
+# ED25519 specific:
+blake2 = "0.9"
+curve25519-dalek = "3"
+digest = "0.9.0"
+sha2 = "0.9"
+
+[dev-dependencies]
+serde_json = "1.0.95"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+ring = "0.16.20"

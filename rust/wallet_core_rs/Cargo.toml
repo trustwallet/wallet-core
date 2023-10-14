@@ -5,14 +5,30 @@ edition = "2021"
 
 [lib]
 name = "wallet_core_rs"
-crate-type = ["staticlib"] # Creates static lib
+crate-type = ["staticlib", "rlib"] # Creates static lib
+
+[features]
+default = ["bitcoin-legacy", "ethereum-abi", "ethereum-rlp"]
+bitcoin-legacy = []
+ethereum-abi = []
+ethereum-rlp = []
 
 [dependencies]
+tw_any_coin = { path = "../tw_any_coin" }
+tw_bitcoin = { path = "../tw_bitcoin" }
+tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
+tw_coin_registry = { path = "../tw_coin_registry" }
 tw_encoding = { path = "../tw_encoding" }
+tw_ethereum = { path = "../tw_ethereum" }
 tw_hash = { path = "../tw_hash" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_move_parser = { path = "../tw_move_parser" }
+tw_misc = { path = "../tw_misc" }
 tw_proto = { path = "../tw_proto" }
-tw_bitcoin = { path = "../tw_bitcoin" }
-tw_starknet = { path = "../tw_starknet" }
+
+[dev-dependencies]
+serde_json = "1.0.96"
+tw_any_coin = { path = "../tw_any_coin", features = ["test-utils"] }
+tw_memory = { path = "../tw_memory", features = ["test-utils"] }
+tw_number = { path = "../tw_number", features = ["helpers"] }

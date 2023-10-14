@@ -8,8 +8,6 @@
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/ABI/Function.h"
-#include "Ethereum/ABI/ParamAddress.h"
-#include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/Address.h"
 #include "THORChain/Swap.h"
 #include "proto/Binance.pb.h"
@@ -484,19 +482,17 @@ TEST(THORChainSwap, SwapErc20Rune) {
     EXPECT_EQ(tx.to_address(), "0x8f66c4ae756bebc49ec8b81966dd8bba9f127549");
     ASSERT_TRUE(tx.transaction().has_contract_generic());
 
-    Data vaultAddressBin = SwapTest_ethAddressStringToData("0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E");
-    EXPECT_EQ(hex(vaultAddressBin), "a56f6cb1d66cd80150b1ea79643b4c5900d6e36e");
-    auto func = Ethereum::ABI::Function("depositWithExpiry", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
-                                                       std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E")),
-                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(1000000)),
-                                                       std::make_shared<Ethereum::ABI::ParamString>("=:THOR.RUNE:thor1ad6hapypumu7su5ad9qry2d74yt9d56fssa774:51638857:t:0"),
-                                                       std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(1775669796))});
-    Data payload;
-    func.encode(payload);
-    EXPECT_EQ(hex(payload), "44bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000");
+    auto vaultAddress = "0xa56f6Cb1D66cd80150b1ea79643b4C5900D6E36E";
+    auto funcData = Ethereum::ABI::Function::encodeFunctionCall("depositWithExpiry", Ethereum::ABI::BaseParams{
+        std::make_shared<Ethereum::ABI::ProtoAddress>(vaultAddress),
+        std::make_shared<Ethereum::ABI::ProtoAddress>("0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(1000000)),
+        std::make_shared<Ethereum::ABI::ProtoString>("=:THOR.RUNE:thor1ad6hapypumu7su5ad9qry2d74yt9d56fssa774:51638857:t:0"),
+        std::make_shared<Ethereum::ABI::ProtoUInt256>(uint256_t(1775669796))
+    }).value();
+    EXPECT_EQ(hex(funcData), "44bc937b000000000000000000000000a56f6cb1d66cd80150b1ea79643b4c5900d6e36e000000000000000000000000b97ef9ef8734c71904d8002f8b6bc66dd9c48a6e00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000069d6922400000000000000000000000000000000000000000000000000000000000000443d3a54484f522e52554e453a74686f72316164366861707970756d753773753561643971727932643734797439643536667373613737343a35313633383835373a743a3000000000000000000000000000000000000000000000000000000000");
     EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().amount())), "00");
-    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(payload));
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(funcData));
 
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
