@@ -4148,7 +4148,7 @@
     "coinId": 5600,
     "symbol": "BNB",
     "decimals": 18,
-    "chainId": "5600",
+    "chainId": "9000",
     "blockchain": "Greenfield",
     "derivation": [
       {
@@ -4162,8 +4162,8 @@
       "url": "https://greenfieldscan.com",
       "txPath": "/tx/",
       "accountPath": "/account/",
-      "sampleTx": "9F895CF2DD64FB1F428CEFCF2A6585A813C3540FC9FE1EF42DB1DA2CB1DF55AB",
-      "sampleAccount": "0x9d1d97adfcd324bbd603d3872bd78e04098510b1"
+      "sampleTx": "0x150eac42070957115fd538b1f348fadd78d710fb641c248120efcf35d1e7e4f3",
+      "sampleAccount": "0xcf0f6b88ed72653b00fdebbffc90b98072cb3285"
     },
     "info": {
       "url": "https://greenfield.bnbchain.org",

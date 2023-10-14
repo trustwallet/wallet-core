@@ -14,4 +14,24 @@ pub mod sha1;
 pub mod sha2;
 pub mod sha3;
 
+mod hash_array;
 mod hash_wrapper;
+
+pub use hash_array::{concat, Hash, H160, H256, H264, H32, H512, H520};
+
+use tw_encoding::hex::FromHexError;
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug)]
+pub enum Error {
+    FromHexError(FromHexError),
+    InvalidHashLength,
+    InvalidArgument,
+}
+
+impl From<FromHexError> for Error {
+    fn from(e: FromHexError) -> Self {
+        Error::FromHexError(e)
+    }
+}

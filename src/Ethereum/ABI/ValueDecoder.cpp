@@ -5,8 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "ValueDecoder.h"
-#include "Array.h"
-#include "ParamFactory.h"
+#include "proto/EthereumAbi.pb.h"
+#include "rust/Wrapper.h"
+#include "TrustWalletCore/TWCoinType.h"
 
 namespace TW::Ethereum::ABI {
 
@@ -17,29 +18,27 @@ uint256_t ValueDecoder::decodeUInt256(const Data& data) {
     return load(data);
 }
 
-std::string ValueDecoder::decodeValue(const Data& data, const std::string& type) {
-    auto param = ParamFactory::make(type);
-    if (!param) {
-        return "";
-    }
-    size_t offset = 0;
-    if (!param->decode(data, offset)) {
-        return "";
-    }
-    return ParamFactory::getValue(param, param->getType());
-}
+std::string ValueDecoder::decodeValue(const Data& encoded, const std::string& type) {
+    EthereumAbi::Proto::ValueDecodingInput input;
+    input.set_encoded(encoded.data(), encoded.size());
+    input.set_param_type(type);
 
-std::vector<std::string> ValueDecoder::decodeArray(const Data& data, const std::string& type) {
-    auto param = ParamFactory::make(type);
-    if (!param) {
-        return std::vector<std::string>{};
+    Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
+    Rust::TWDataWrapper outputPtr = Rust::tw_ethereum_abi_decode_value(TWCoinTypeEthereum, inputData.get());
+
+    auto outputData = outputPtr.toDataOrDefault();
+    if (outputData.empty()) {
+        return "";
     }
-    size_t offset = 0;
-    if (!param->decode(data, offset)) {
-        return std::vector<std::string>{};
+
+    EthereumAbi::Proto::ValueDecodingOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+    if (output.error() != EthereumAbi::Proto::AbiError::OK) {
+        return "";
     }
-    auto values = ParamFactory::getArrayValue(param, type);
-    return values;
+
+    return output.param_str();
 }
 
 } // namespace TW::Ethereum::ABI

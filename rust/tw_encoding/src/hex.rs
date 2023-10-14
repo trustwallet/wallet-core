@@ -6,13 +6,42 @@
 
 pub use hex::FromHexError;
 
+pub trait ToHex {
+    fn to_hex(&self) -> String;
+
+    fn to_hex_prefixed(&self) -> String;
+}
+
+impl<T> ToHex for T
+where
+    T: AsRef<[u8]>,
+{
+    fn to_hex(&self) -> String {
+        encode(self, false)
+    }
+
+    fn to_hex_prefixed(&self) -> String {
+        encode(self, true)
+    }
+}
+
+pub trait DecodeHex {
+    fn decode_hex(&self) -> Result<Vec<u8>, FromHexError>;
+}
+
+impl<'a> DecodeHex for &'a str {
+    fn decode_hex(&self) -> Result<Vec<u8>, FromHexError> {
+        decode(self)
+    }
+}
+
 pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
     let hex_string = data.trim_start_matches("0x");
     hex::decode(hex_string)
 }
 
-pub fn encode(data: &[u8], prefixed: bool) -> String {
-    let encoded = hex::encode(data);
+pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
+    let encoded = hex::encode(data.as_ref());
     if prefixed {
         return format!("0x{encoded}");
     }

@@ -40,6 +40,9 @@ jobs:
         run: |
           tools/install-rust-dependencies dev
 
+      - name: Install emsdk
+        run: tools/install-wasm-dependencies
+
       - name: Check code formatting
         run: |
           cargo fmt --check
@@ -54,6 +57,9 @@ jobs:
         run: |
           cargo llvm-cov nextest --profile ci --no-fail-fast --lcov --output-path coverage.info
         working-directory: rust
+
+      - name: Run tests in WASM
+        run: tools/rust-test wasm
 
       - name: Rust Test Report
         uses: dorny/test-reporter@v1

@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "PublicKey.h"
 #include "HexCoding.h"
+#include "PublicKey.h"
+#include "PublicKeyLegacy.h"
 #include "NEO/Address.h"
 #include "NEO/Signer.h"
 
@@ -51,7 +52,8 @@ TEST(NEOAccount, validity) {
 }
 
 TEST(NEOSigner, SigningTransaction) {
-    auto signer = Signer(PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128")));
+    auto privateKey = PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
+    auto signer = Signer(privateKey);
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_ContractTransaction;
     transaction.version = 0x00;
@@ -78,9 +80,12 @@ TEST(NEOSigner, SigningTransaction) {
         out.scriptHash = load(scriptHash);
         transaction.outputs.push_back(out);
     }
+
     signer.sign(transaction);
     auto signedTx = transaction.serialize();
     EXPECT_EQ(hex(signedTx), "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc414000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac");
+    // TODO uncomment when nist256p1 Rust implementation is enabled.
+    // EXPECT_EQ(hex(signedTx), "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc414000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb281e03fe2e7a7a89ed70e01073f6ba574e65071c87cc8cce59833d4d30479c37a232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac");
 }
 
 } // namespace TW::NEO::tests

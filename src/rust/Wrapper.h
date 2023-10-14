@@ -6,12 +6,101 @@
 
 #pragma once
 
+#include <memory>
 #include <optional>
 
-#include "Data.h"
-#include "rust/bindgen/WalletCoreRSBindgen.h"
+#include "../Data.h"
+#include "bindgen/WalletCoreRSBindgen.h"
 
 namespace TW::Rust {
+
+inline std::shared_ptr<TWAnyAddress> wrapTWAnyAddress(TWAnyAddress* anyAddress) {
+    return std::shared_ptr<TWAnyAddress>(anyAddress, tw_any_address_delete);
+}
+
+inline std::shared_ptr<TWPublicKey> wrapTWPublicKey(TWPublicKey* publicKey) {
+    return std::shared_ptr<TWPublicKey>(publicKey, tw_public_key_delete);
+}
+
+struct TWDataVectorWrapper {
+    /// Implicit constructor.
+    TWDataVectorWrapper(const std::vector<Data>& vec) {
+        ptr = std::shared_ptr<TWDataVector>(tw_data_vector_create(), Rust::tw_data_vector_delete);
+
+        for (const auto& item : vec) {
+            auto* itemData = tw_data_create_with_bytes(item.data(), item.size());
+            Rust::tw_data_vector_add(ptr.get(), itemData);
+            Rust::tw_data_delete(itemData);
+        }
+    }
+
+    ~TWDataVectorWrapper() = default;
+
+    TWDataVector* get() const {
+        return ptr.get();
+    }
+
+    std::shared_ptr<TWDataVector> ptr;
+};
+
+struct TWDataWrapper {
+    /// Implicit constructor.
+    TWDataWrapper(const Data& bytes) {
+        auto* dataRaw = tw_data_create_with_bytes(bytes.data(), bytes.size());
+        ptr = std::shared_ptr<TWData>(dataRaw, tw_data_delete);
+    }
+
+    /// Implicit constructor.
+    TWDataWrapper(TWData *ptr): ptr(std::shared_ptr<TWData>(ptr, tw_data_delete)) {
+    }
+
+    ~TWDataWrapper() = default;
+
+    TWData* get() const {
+        return ptr.get();
+    }
+
+    Data toDataOrDefault() const {
+        if (!ptr) {
+            return {};
+        }
+
+        auto* bytes = tw_data_bytes(ptr.get());
+        Data out(bytes, bytes + tw_data_size(ptr.get()));
+        return out;
+    }
+
+    std::shared_ptr<TWData> ptr;
+};
+
+struct TWStringWrapper {
+    /// Implicit constructor.
+    TWStringWrapper(const std::string& string) {
+        auto* stringRaw = tw_string_create_with_utf8_bytes(string.c_str());
+        ptr = std::shared_ptr<TWString>(stringRaw, tw_string_delete);
+    }
+
+    /// Implicit constructor.
+    TWStringWrapper(TWString *ptr): ptr(std::shared_ptr<TWString>(ptr, tw_string_delete)) {
+    }
+
+    ~TWStringWrapper() = default;
+
+    TWString* get() const {
+        return ptr.get();
+    }
+
+    std::string toStringOrDefault() const {
+        if (!ptr) {
+            return {};
+        }
+
+        auto* bytes = tw_string_utf8_bytes(ptr.get());
+        return {bytes};
+    }
+
+    std::shared_ptr<TWString> ptr;
+};
 
 struct CByteArrayWrapper {
     CByteArrayWrapper() = default;

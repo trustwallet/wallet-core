@@ -12,21 +12,44 @@
 
 namespace TW::Aeternity {
 
+/// Aeternity network does not accept zero int values as rlp param,
+/// instead empty byte array should be encoded
+/// see https://forum.aeternity.com/t/invalid-tx-error-on-mainnet-goggle-says-it-looks-good/4118/5?u=defuera
+EthereumRlp::Proto::RlpItem prepareSafeZero(const uint256_t& value) {
+    EthereumRlp::Proto::RlpItem item;
+
+    if (value == 0) {
+        Data zeroValue{0};
+        item.set_data(zeroValue.data(), zeroValue.size());
+    } else {
+        auto valueData = store(value);
+        item.set_number_u256(valueData.data(), valueData.size());
+    }
+
+    return item;
+}
+
 /// RLP returns a byte serialized representation
 Data Transaction::encode() {
-    auto encoded = Data();
-    append(encoded, Ethereum::RLP::encode(Identifiers::objectTagSpendTransaction));
-    append(encoded, Ethereum::RLP::encode(Identifiers::rlpMessageVersion));
-    append(encoded, Ethereum::RLP::encode(buildTag(sender_id)));
-    append(encoded, Ethereum::RLP::encode(buildTag(recipient_id)));
-    append(encoded, encodeSafeZero(amount));
-    append(encoded, encodeSafeZero(fee));
-    append(encoded, encodeSafeZero(ttl));
-    append(encoded, encodeSafeZero(nonce));
-    append(encoded, Ethereum::RLP::encode(payload));
+    EthereumRlp::Proto::EncodingInput input;
+    auto* rlpList = input.mutable_item()->mutable_list();
 
-    const Data& raw = Ethereum::RLP::encodeList(encoded);
-    return raw;
+    auto senderIdTag = buildTag(sender_id);
+    auto recipientIdTag = buildTag(recipient_id);
+
+    rlpList->add_items()->set_number_u64(Identifiers::objectTagSpendTransaction);
+    rlpList->add_items()->set_number_u64(Identifiers::rlpMessageVersion);
+    rlpList->add_items()->set_data(senderIdTag.data(), senderIdTag.size());
+    rlpList->add_items()->set_data(recipientIdTag.data(), recipientIdTag.size());
+
+    *rlpList->add_items() = prepareSafeZero(amount);
+    *rlpList->add_items() = prepareSafeZero(fee);
+    *rlpList->add_items() = prepareSafeZero(ttl);
+    *rlpList->add_items() = prepareSafeZero(nonce);
+
+    rlpList->add_items()->set_data(payload.data(), payload.size());
+
+    return Ethereum::RLP::encode(input);
 }
 
 TW::Data Transaction::buildTag(const std::string& address) {
@@ -37,13 +60,6 @@ TW::Data Transaction::buildTag(const std::string& address) {
     append(data, Base58::decodeCheck(payload));
 
     return data;
-}
-
-TW::Data Transaction::encodeSafeZero(uint256_t value) {
-    if (value == 0) {
-        return Ethereum::RLP::encode(Data{0});
-    }
-    return Ethereum::RLP::encode(value);
 }
 
 } // namespace TW::Aeternity
