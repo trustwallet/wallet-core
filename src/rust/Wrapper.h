@@ -196,6 +196,10 @@ public:
         return !isOk();
     }
 
+    ErrorCode err() const {
+        return code;
+    }
+
 private:
     ErrorCode code;
     std::optional<T> inner;

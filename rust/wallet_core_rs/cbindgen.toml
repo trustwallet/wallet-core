@@ -14,6 +14,7 @@ extra_bindings = [
     "tw_ethereum",
     "tw_hash",
     "tw_keypair",
+    "tw_keystore",
     "tw_memory",
     "tw_move_parser",
     "tw_proto"
@@ -26,6 +27,7 @@ include = [
     "tw_ethereum",
     "tw_hash",
     "tw_keypair",
+    "tw_keystore",
     "tw_memory",
     "tw_move_parser",
     "tw_proto"

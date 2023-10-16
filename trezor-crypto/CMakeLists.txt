@@ -51,7 +51,6 @@ add_library(TrezorCrypto
     crypto/nem.c
     crypto/cash_addr.c
     crypto/memzero.c
-    crypto/scrypt.c
     crypto/nist256p1.c
     crypto/groestl.c
     crypto/hmac_drbg.c
