@@ -3274,7 +3274,7 @@
     "chainId": "534353",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://blockscout.scroll.io",
+      "url": "https://scrollscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d",
@@ -3283,7 +3283,7 @@
     "info": {
       "url": "https://scroll.io",
       "source": "https://github.com/scroll-tech",
-      "rpc": "https://alpha-rpc.scroll.io/l2",
+      "rpc": "https://rpc.scroll.io",
       "documentation": "https://guide.scroll.io"
     }
   },
