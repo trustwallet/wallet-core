@@ -24,7 +24,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Android SDK
-      uses: amyu/setup-android@v3
+      uses: android-actions/setup-android@v3
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
@@ -64,7 +64,15 @@ jobs:
       run: tools/kotlin-doc
 
     - name: Run test
-      run: tools/android-test
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 33
+        ndk: 23.1.7779620
+        cmake: 3.18.1
+        arch: arm64-v8a
+        script: cd android &
+                ./gradlew assembleAndroidTest &
+                ./gradlew connectedAndroidTest
 
     - name: Build sample app
       run: tools/samples-build android
