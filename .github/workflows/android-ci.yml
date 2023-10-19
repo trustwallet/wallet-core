@@ -43,25 +43,25 @@ jobs:
       run: |
         tools/install-rust-dependencies
 
-    - name: Install Android Dependencies
-      run: tools/install-android-dependencies
+#    - name: Install Android Dependencies
+#      run: tools/install-android-dependencies
 
-    - name: Cache internal dependencies
-      id: internal_cache
-      uses: actions/cache@v3
-      with:
-        path: build/local
-        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+#    - name: Cache internal dependencies
+#      id: internal_cache
+#      uses: actions/cache@v3
+#      with:
+#        path: build/local
+#        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
 
-    - name: Install internal dependencies
-      run: tools/install-dependencies
-      if: steps.internal_cache.outputs.cache-hit != 'true'
+#    - name: Install internal dependencies
+#      run: tools/install-dependencies
+#      if: steps.internal_cache.outputs.cache-hit != 'true'
 
-    - name: Generate files
-      run: tools/generate-files android
+#    - name: Generate files
+#      run: tools/generate-files android
 
-    - name: Build Kotlin doc
-      run: tools/kotlin-doc
+#    - name: Build Kotlin doc
+#      run: tools/kotlin-doc
 
     - name: Run test
       uses: reactivecircus/android-emulator-runner@v2
@@ -70,7 +70,10 @@ jobs:
         ndk: 23.1.7779620
         cmake: 3.18.1
         arch: arm64-v8a
-        script: cd android &
+        script: tools/install-dependencies &
+                tools/generate-files android &
+                tools/kotlin-doc &
+                cd android &
                 ./gradlew assembleAndroidTest &
                 ./gradlew connectedAndroidTest
 
