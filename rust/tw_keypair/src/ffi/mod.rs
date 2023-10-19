@@ -5,3 +5,5 @@
 // file LICENSE at the root of the source code distribution tree.
 
 pub mod asn;
+pub mod privkey;
+pub mod pubkey;

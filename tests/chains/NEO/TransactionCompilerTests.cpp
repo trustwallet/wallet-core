@@ -75,6 +75,10 @@ TEST(NEOCompiler, CompileWithSignatures) {
     const auto signature =
         parse_hex("5046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c18585762"
                   "28f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7");
+    // TODO uncomment when nist256p1 Rust implementation is enabled.
+    // const auto signature =
+    //     parse_hex("5046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb281e03fe2e7a7a89e"
+    //               "d70e01073f6ba574e65071c87cc8cce59833d4d30479c37a");
 
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
@@ -87,6 +91,14 @@ TEST(NEOCompiler, CompileWithSignatures) {
         "14000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc"
         "057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961"
         "d7232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac";
+    // TODO uncomment when nist256p1 Rust implementation is enabled.
+    // auto expectedTx =
+    //     "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674"
+    //     "beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9"
+    //     "569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc4"
+    //     "14000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc"
+    //     "057294eb16b2d5e55c105bf32eb281e03fe2e7a7a89ed70e01073f6ba574e65071c87cc8cce59833d4d30479c3"
+    //     "7a232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac";
 
     auto outputData =
         TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {publicKeyData});

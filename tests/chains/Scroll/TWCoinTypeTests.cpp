@@ -32,6 +32,6 @@ TEST(TWScrollCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(chainId, "534353");
-    assertStringsEqual(txUrl, "https://blockscout.scroll.io/tx/0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d");
-    assertStringsEqual(accUrl, "https://blockscout.scroll.io/address/0xFE993660cd35d68D94b6Eba29F4D928d979cd65B");
+    assertStringsEqual(txUrl, "https://scrollscan.com/tx/0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d");
+    assertStringsEqual(accUrl, "https://scrollscan.com/address/0xFE993660cd35d68D94b6Eba29F4D928d979cd65B");
 }

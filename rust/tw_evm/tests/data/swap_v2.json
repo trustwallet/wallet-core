@@ -1,0 +1,69 @@
+{
+    "846a1bc6": {
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "name": "callType",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "name": "value",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "callData",
+                        "type": "bytes"
+                    },
+                    {
+                        "name": "payload",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "calls",
+                "type": "tuple[]"
+            },
+            {
+                "name": "bridgedTokenSymbol",
+                "type": "string"
+            },
+            {
+                "name": "destinationChain",
+                "type": "string"
+            },
+            {
+                "name": "destinationAddress",
+                "type": "string"
+            },
+            {
+                "name": "payload",
+                "type": "bytes"
+            },
+            {
+                "name": "gasRefundRecipient",
+                "type": "address"
+            },
+            {
+                "name": "enableExpress",
+                "type": "bool"
+            }
+        ],
+        "name": "callBridgeCall",
+        "outputs": [
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+}
