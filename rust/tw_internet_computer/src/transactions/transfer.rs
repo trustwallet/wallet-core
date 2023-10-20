@@ -61,9 +61,7 @@ impl TryFrom<TransferArgs> for SendRequest {
             }),
             max_fee: args.max_fee.map(|fee| Tokens { e8s: fee }),
             from_subaccount: None,
-            to: Some(ProtoAccountIdentifier {
-                hash: to_hash.into(),
-            }),
+            to: Some(ProtoAccountIdentifier { hash: to_hash }),
             created_at: None,
             created_at_time: Some(TimeStamp { timestamp_nanos }),
         };
