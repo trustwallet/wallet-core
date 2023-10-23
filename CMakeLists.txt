@@ -42,11 +42,6 @@ if (TW_COMPILE_WASM)
 endif ()
 
 find_host_package(Boost REQUIRED)
-message("Path to Boost: " ${Boost_INCLUDE_DIRS})
-execute_process(COMMAND ls
-        WORKING_DIRECTORY ${Boost_INCLUDE_DIRS}/boost
-        OUTPUT_VARIABLE LS_OUTPUT)
-MESSAGE("CMD_OUTPUT:" ${LS_OUTPUT})
 
 include(ExternalProject)
 
@@ -96,7 +91,7 @@ elseif (${TW_COMPILE_JAVA})
     set(sources ${core_sources} ${specific_sources})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_package(JNI REQUIRED)
-    target_include_directories(TrustWalletCore PRIVATE ${JNI_INCLUDE_DIRS})
+    target_include_directories(TrustWalletCore PRIVATE ${JNI_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
     target_link_libraries(TrustWalletCore PUBLIC ${WALLET_CORE_BINDGEN} ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
 else ()
     message("Configuring standalone")
