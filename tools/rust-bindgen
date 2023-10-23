@@ -29,13 +29,13 @@ if [[ "$1" == "native" ]] || [[ "$1" == "" ]]; then
   NATIVE="true"
 fi
 
-# Generate bindings for mobile platforms on MacOS only.
-if [[ `uname` == "Darwin" ]]; then
-  # Whether to generate bindings for Android.
+# Whether to generate bindings for Android.
   if [[ "$1" == "android" ]] || [[ "$1" == "" ]]; then
     ANDROID="true"
   fi
 
+# Generate bindings for ios platforms on MacOS only.
+if [[ `uname` == "Darwin" ]]; then
 # Whether to generate bindings for iOS.
   if [[ "$1" == "ios" ]] || [[ "$1" == "" ]]; then
     IOS="true"
