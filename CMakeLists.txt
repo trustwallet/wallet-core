@@ -43,6 +43,10 @@ endif ()
 
 find_host_package(Boost REQUIRED)
 message("Path to Boost: " ${Boost_INCLUDE_DIRS})
+execute_process(COMMAND ls
+        WORKING_DIRECTORY ${Boost_INCLUDE_DIRS}/boost
+        OUTPUT_VARIABLE LS_OUTPUT)
+MESSAGE( STATUS "CMD_OUTPUT:" ${LS_OUTPUT})
 
 include(ExternalProject)
 
