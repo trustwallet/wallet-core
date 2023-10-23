@@ -13,8 +13,6 @@ PORT=5556
 
 if [[ `uname` == "Darwin" ]]; then
     export BOOST_ROOT=$(brew --prefix boost)
-else
-    export BOOST_ROOT="/usr/"
 fi
 
 # Make sure it builds before starting an emulator
