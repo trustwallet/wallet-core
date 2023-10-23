@@ -11,6 +11,7 @@ tw_bitcoin = { path = "../tw_bitcoin" }
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_ethereum = { path = "../tw_ethereum" }
 tw_evm = { path = "../tw_evm" }
+tw_internet_computer = { path = "../tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }

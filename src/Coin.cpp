@@ -65,6 +65,7 @@
 #include "TheOpenNetwork/Entry.h"
 #include "Sui/Entry.h"
 #include "Greenfield/Entry.h"
+#include "InternetComputer/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -121,6 +122,7 @@ Hedera::Entry HederaDP;
 TheOpenNetwork::Entry tonDP;
 Sui::Entry SuiDP;
 Greenfield::Entry GreenfieldDP;
+InternetComputer::Entry InternetComputerDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -179,6 +181,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainTheOpenNetwork: entry = &tonDP; break;
         case TWBlockchainSui: entry = &SuiDP; break;
         case TWBlockchainGreenfield: entry = &GreenfieldDP; break;
+        case TWBlockchainInternetComputer: entry = &InternetComputerDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
@@ -237,7 +240,7 @@ namespace TW::internal {
         assert(dispatcher != nullptr);
         return dispatcher->normalizeAddress(coin, address);
     }
-}
+} // namespace TW::internal
 
 std::string TW::normalizeAddress(TWCoinType coin, const string& address) {;
     if (!TW::validateAddress(coin, address)) {

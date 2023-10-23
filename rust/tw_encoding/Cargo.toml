@@ -6,6 +6,11 @@ edition = "2021"
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
 bs58 = "0.4.0"
+ciborium = "0.2.1"
 data-encoding = "2.3.3"
 hex = "0.4.3"
+serde = { version = "1.0.136", features = ["derive"] }
 tw_memory = { path = "../tw_memory" }
+
+[dev-dependencies]
+serde_bytes = "0.11.12"

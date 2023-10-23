@@ -7,6 +7,7 @@
 use crate::ecdsa::secp256k1::{Signature, VerifySignature};
 use crate::traits::VerifyingKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
+use der::Document;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
@@ -56,6 +57,28 @@ impl PublicKey {
     pub fn uncompressed_without_prefix(&self) -> H512 {
         let (_prefix, public): (Hash<1>, H512) = self.uncompressed().split();
         public
+    }
+
+    /// Returns the public key as DER-encoded bytes.
+    pub fn der_encoded(&self) -> Vec<u8> {
+        let compressed = false;
+        let public_key_bytes = self.public.to_encoded_point(compressed);
+        let subject_public_key =
+            der::asn1::BitStringRef::new(0, public_key_bytes.as_bytes()).unwrap();
+
+        let oid: pkcs8::ObjectIdentifier = pkcs8::ObjectIdentifier::new_unwrap("1.2.840.10045.2.1");
+        let associated_oid: pkcs8::ObjectIdentifier =
+            pkcs8::ObjectIdentifier::new_unwrap("1.3.132.0.10");
+        let spki = pkcs8::SubjectPublicKeyInfo {
+            algorithm: pkcs8::spki::AlgorithmIdentifier {
+                oid,
+                parameters: Some(associated_oid),
+            },
+            subject_public_key,
+        };
+
+        let doc = Document::try_from(&spki).unwrap();
+        doc.into_vec()
     }
 }
 
