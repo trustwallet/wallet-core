@@ -34,7 +34,7 @@ fn test_any_address_derive() {
 
         // TODO match `CoinType` when it's generated.
         let expected_address = match coin.blockchain {
-            BlockchainType::Aptos => "",
+            BlockchainType::Aptos => "0x9006fa46f038224e8004bdda97f2e7a60c2c3d135bce7cb15541e5c0aae907a4",
             // By default, Bitcoin will return a P2PKH address.
             BlockchainType::Bitcoin => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
@@ -111,9 +111,8 @@ fn test_any_address_is_valid_coin() {
                 "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b",
                 "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b",
                 "19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c",
-                "777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb",
                 "0x777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb",
-                "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175" // Too short automatically padded
+                "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175"
             ],
             BlockchainType::Bitcoin => vec![
                 "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx",

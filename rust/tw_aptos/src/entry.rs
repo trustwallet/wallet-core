@@ -9,7 +9,7 @@ use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressResult};
+use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
@@ -51,7 +51,10 @@ impl CoinEntry for AptosEntry {
         _derivation: Derivation,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        let public_key = public_key
+            .to_ed25519()
+            .ok_or(AddressError::PublicKeyTypeMismatch)?;
+        Address::with_ed25519_pubkey(public_key)
     }
 
     #[inline]

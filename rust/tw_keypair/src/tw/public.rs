@@ -135,4 +135,13 @@ impl PublicKey {
             _ => None,
         }
     }
+
+    pub fn to_ed25519(&self) -> Option<&ed25519::sha512::PublicKey> {
+        match self {
+            PublicKey::Ed25519(ed25519) => {
+                Some(ed25519)
+            },
+            _ => None,
+        }
+    }
 }
