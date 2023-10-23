@@ -18,7 +18,7 @@ pub struct Address {
 
 impl Display for Address {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.addr)
+        write!(f, "{}", self.addr.to_hex_literal())
     }
 }
 

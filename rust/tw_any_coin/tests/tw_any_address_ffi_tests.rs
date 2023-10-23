@@ -64,8 +64,8 @@ fn test_any_address_normalize_eth() {
     for coin in supported_coin_items() {
         let (denormalized, expected_normalized) = match coin.blockchain {
             BlockchainType::Aptos => (
-                "",
-                "",
+                "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
             ),
             BlockchainType::Bitcoin => (
                 "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
@@ -106,6 +106,15 @@ fn test_any_address_normalize_eth() {
 fn test_any_address_is_valid_coin() {
     for coin in supported_coin_items() {
         let valid = match coin.blockchain {
+            BlockchainType::Aptos => vec![
+                "0x1",
+                "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b",
+                "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b",
+                "19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c",
+                "777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb",
+                "0x777821c78442e17d82c3d7a371f42de7189e4248e529fe6eee6bca40ddbb",
+                "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175" // Too short automatically padded
+            ],
             BlockchainType::Bitcoin => vec![
                 "1MrZNGN7mfWZiZNQttrzHjfw72jnJC2JNx",
                 "bc1qunq74p3h8425hr6wllevlvqqr6sezfxj262rff",
@@ -142,7 +151,9 @@ fn test_any_address_is_valid_coin_invalid() {
     for coin in supported_coin_items() {
         let invalid = match coin.blockchain {
             BlockchainType::Aptos => {
-                vec![""]
+                vec!["", // Empty
+                     "Seff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", // Invalid Hex
+                     "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb" ] // Too long
             }
             BlockchainType::Bitcoin => {
                 vec!["0xb16db98b365b1f89191996942612b14f1da4bd5f"]

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::fmt::{Display};
+use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
@@ -40,7 +41,7 @@ impl CoinEntry for AptosEntry {
         address: &str,
         _prefix: Option<Self::AddressPrefix>,
     ) -> AddressResult<Self::Address> {
-        todo!()
+        Address::from_str(address)
     }
 
     fn derive_address(
