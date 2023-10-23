@@ -4,6 +4,7 @@ members = [
     "tw_bitcoin",
     "tw_coin_entry",
     "tw_coin_registry",
+    "tw_cosmos_sdk",
     "tw_encoding",
     "tw_ethereum",
     "tw_evm",

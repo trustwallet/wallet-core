@@ -12,6 +12,7 @@ mod generated {
     include!(concat!(env!("OUT_DIR"), "/proto/mod.rs"));
 }
 
+pub use generated::google;
 pub use generated::TW::*;
 pub use quick_protobuf::{
     deserialize_from_slice as deserialize_prefixed, serialize_into_vec as serialize_prefixed,

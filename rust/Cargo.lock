@@ -1506,6 +1506,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_cosmos_sdk"
+version = "0.1.0"
+dependencies = [
+ "pb-rs",
+ "quick-protobuf",
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+ "tw_number",
+ "tw_proto",
+]
+
+[[package]]
 name = "tw_encoding"
 version = "0.1.0"
 dependencies = [
