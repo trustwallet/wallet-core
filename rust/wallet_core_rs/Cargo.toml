@@ -15,6 +15,7 @@ ethereum-rlp = []
 
 [dependencies]
 tw_any_coin = { path = "../tw_any_coin" }
+tw_aptos = { path = "../tw_aptos" }
 tw_bitcoin = { path = "../tw_bitcoin" }
 tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
 tw_coin_registry = { path = "../tw_coin_registry" }
