@@ -13,14 +13,10 @@ use tw_keypair::ed25519;
 use tw_memory::Data;
 use tw_hash::sha3::sha3_256;
 
-
-#[derive(Debug)]
 #[repr(u8)]
 pub enum Scheme {
     Ed25519 = 0,
 }
-
-#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Address {
     addr: AccountAddress,
 }
