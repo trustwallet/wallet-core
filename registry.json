@@ -4475,5 +4475,35 @@
       "rpc": "",
       "documentation": "https://internetcomputer.org/docs"
     }
+  },
+  {
+    "id": "canto",
+    "name": "Canto",
+    "coinId": 7700,
+    "symbol": "CANTO",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "7700",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://cantoscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x4d4efd19e7e9b0e45451ab4ea0985592affee641dfdf46478ffb37ff76843662",
+      "sampleAccount": "0xe93685f3bba03016f02bd1828badd6195988d950"
+    },
+    "info": {
+      "url": "https://canto.io",
+      "source": "https://github.com/Canto-Network/Canto",
+      "rpc": "https://canto.slingshot.finance",
+      "documentation": "https://docs.canto.io/evm-development/quickstart-guide"
+    }
   }
 ]
