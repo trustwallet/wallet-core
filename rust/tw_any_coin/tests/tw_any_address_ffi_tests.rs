@@ -34,6 +34,7 @@ fn test_any_address_derive() {
 
         // TODO match `CoinType` when it's generated.
         let expected_address = match coin.blockchain {
+            BlockchainType::Aptos => "",
             // By default, Bitcoin will return a P2PKH address.
             BlockchainType::Bitcoin => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
@@ -62,6 +63,10 @@ fn test_any_address_derive() {
 fn test_any_address_normalize_eth() {
     for coin in supported_coin_items() {
         let (denormalized, expected_normalized) = match coin.blockchain {
+            BlockchainType::Aptos => (
+                "",
+                "",
+            ),
             BlockchainType::Bitcoin => (
                 "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
                 "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
@@ -136,6 +141,9 @@ fn test_any_address_is_valid_coin() {
 fn test_any_address_is_valid_coin_invalid() {
     for coin in supported_coin_items() {
         let invalid = match coin.blockchain {
+            BlockchainType::Aptos => {
+                vec![""]
+            }
             BlockchainType::Bitcoin => {
                 vec!["0xb16db98b365b1f89191996942612b14f1da4bd5f"]
             },

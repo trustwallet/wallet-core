@@ -13,6 +13,7 @@ use std::str::FromStr;
 /// Extend this enum when adding new blockchains.
 #[derive(Copy, Clone, Debug)]
 pub enum BlockchainType {
+    Aptos,
     Bitcoin,
     Ethereum,
     InternetComputer,
@@ -35,6 +36,7 @@ impl FromStr for BlockchainType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
+            "Aptos" => Ok(BlockchainType::Aptos),
             "Bitcoin" => Ok(BlockchainType::Bitcoin),
             "Ethereum" => Ok(BlockchainType::Ethereum),
             "InternetComputer" => Ok(BlockchainType::InternetComputer),

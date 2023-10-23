@@ -4,40 +4,22 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::fmt::{Display, Formatter};
-use std::ops::Add;
+use std::fmt::{Display};
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
+use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::{AddressResult};
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
-use tw_hash::H160;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
-use tw_memory::Data;
+use crate::address::Address;
+
 
 pub struct AptosEntry;
-
-pub struct Address {
-    bytes: H160,
-}
-
-impl Display for Address {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
-    }
-}
-
-impl CoinAddress for Address {
-    #[inline]
-    fn data(&self) -> Data {
-        todo!()
-    }
-}
 
 impl CoinEntry for AptosEntry {
     type AddressPrefix = NoPrefix;
