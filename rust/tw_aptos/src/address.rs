@@ -57,6 +57,7 @@ fn from_account_error(_err: AccountAddressParseError) -> AddressError {
 impl FromStr for Address {
     type Err = AddressError;
 
+    // https://github.com/aptos-labs/aptos-core/blob/261019cbdafe1c514c60c2b74357ea2c77d25e67/types/src/account_address.rs#L44
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         const NUM_CHARS: usize = AccountAddress::LENGTH * 2;
         let mut has_0x = false;
