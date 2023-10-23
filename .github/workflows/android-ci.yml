@@ -28,7 +28,7 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        tools/install-sys-dependencies-mac
+        tools/install-sys-dependencies-linux
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
