@@ -42,6 +42,7 @@ if (TW_COMPILE_WASM)
 endif ()
 
 find_host_package(Boost REQUIRED)
+message("Path to Boost: " ${Boost_INCLUDE_DIRS})
 
 include(ExternalProject)
 
