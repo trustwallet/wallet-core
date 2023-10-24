@@ -12,8 +12,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-latest
-    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+#    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
 
@@ -28,7 +28,7 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        tools/install-sys-dependencies-mac
+        tools/install-sys-dependencies-linux
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
