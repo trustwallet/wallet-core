@@ -33,7 +33,7 @@ TEST(CosmosProtobuf, SendMsg) {
     coin->set_denom("muon");
     coin->set_amount("1");
 
-    auto txBody = cosmos::TxBody();
+    auto txBody = cosmos::tx::v1beta1::TxBody();
     txBody.add_messages()->PackFrom(msgSend);
     txBody.set_memo("");
     txBody.set_timeout_height(0);

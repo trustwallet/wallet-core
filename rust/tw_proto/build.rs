@@ -38,7 +38,6 @@ fn main() {
             println!("cargo:rerun-if-changed={}", path_str);
             Some(path)
         })
-        .chain(std::iter::once(PathBuf::from("proto").join("Any.proto")))
         .collect();
 
     // Delete all old generated files before re-generating new ones

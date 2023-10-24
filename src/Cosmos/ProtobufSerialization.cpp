@@ -397,7 +397,7 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) {
         throw std::invalid_argument("No message found");
     }
     assert(input.messages_size() >= 1);
-    auto txBody = cosmos::TxBody();
+    auto txBody = cosmos::tx::v1beta1::TxBody();
     for (auto i = 0; i < input.messages_size(); ++i) {
         const auto msgAny = convertMessage(input.messages(i));
         *txBody.add_messages() = msgAny;
@@ -422,7 +422,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& pub
         return input.messages(0).sign_direct_message().auth_info_bytes();
     }
     // AuthInfo
-    auto authInfo = cosmos::AuthInfo();
+    auto authInfo = cosmos::tx::v1beta1::AuthInfo();
     auto* signerInfo = authInfo.add_signer_infos();
 
     signerInfo->mutable_mode_info()->mutable_single()->set_mode(cosmos::signing::v1beta1::SIGN_MODE_DIRECT);
@@ -461,7 +461,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& pub
 
 Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin) {
     // SignDoc Preimage
-    auto signDoc = cosmos::SignDoc();
+    auto signDoc = cosmos::tx::v1beta1::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
     signDoc.set_auth_info_bytes(serializedAuthInfo);
     signDoc.set_chain_id(input.chain_id());
@@ -487,7 +487,7 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
 }
 
 std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) {
-    auto txRaw = cosmos::TxRaw();
+    auto txRaw = cosmos::tx::v1beta1::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
     txRaw.set_auth_info_bytes(serializedAuthInfo);
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
@@ -499,7 +499,7 @@ std::string signaturePreimageProto(const Proto::SigningInput& input, const Publi
     const auto serializedTxBody = buildProtoTxBody(input);
     const auto serializedAuthInfo = buildAuthInfo(input, publicKey, coin);
 
-    auto signDoc = cosmos::SignDoc();
+    auto signDoc = cosmos::tx::v1beta1::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
     signDoc.set_auth_info_bytes(serializedAuthInfo);
     signDoc.set_chain_id(input.chain_id());
@@ -511,7 +511,7 @@ std::string buildProtoTxRaw(const Proto::SigningInput& input, const PublicKey& p
     const auto serializedTxBody = buildProtoTxBody(input);
     const auto serializedAuthInfo = buildAuthInfo(input, publicKey, coin);
 
-    auto txRaw = cosmos::TxRaw();
+    auto txRaw = cosmos::tx::v1beta1::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
     txRaw.set_auth_info_bytes(serializedAuthInfo);
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());

@@ -29,6 +29,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Source: https://github.com/protocolbuffers/protobuf/blob/538a8e9a0d90b0bd8aea7b10f8e17ba76585b2e8/src/google/protobuf/timestamp.proto
+// To recompile the file use the following command inside `wallet-core` directory:
+// ```
+// cargo install pb-rs
+// pb-rs --dont_use_cow --single-mod --output_directory rust/tw_proto/common_proto/google/protobuf/ rust/tw_proto/common_proto/google/protobuf/any.proto
+// ```
 
 syntax = "proto3";
 
