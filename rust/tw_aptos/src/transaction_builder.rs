@@ -5,9 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use move_core_types::account_address::AccountAddress;
+use tw_keypair::traits::KeyPairTrait;
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
+use tw_proto::Aptos::Proto;
+use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
+use tw_proto::Aptos::Proto::SigningInput;
+use crate::address::Address;
+use crate::aptos_move_packages::aptos_account_transfer;
 
 pub struct TransactionBuilder {
     sender: Option<AccountAddress>,
@@ -98,6 +104,27 @@ impl TransactionFactory {
         }
     }
 
+    pub fn new_from_protobuf(input: SigningInput) -> TransactionBuilder {
+        let factory = TransactionFactory::new(input.chain_id as u8)
+            .with_gas_unit_price(input.gas_unit_price)
+            .with_max_gas_amount(input.max_gas_amount)
+            .with_transaction_expiration_time(input.expiration_timestamp_secs);
+        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from(input.private_key.to_vec().as_slice()).unwrap();
+        match input.transaction_payload {
+            OneOftransaction_payload::transfer(transfer) => {
+                return factory.implicitly_create_user_account_and_transfer(keypair.public(), transfer.amount)
+            }
+            OneOftransaction_payload::token_transfer(_) => {}
+            OneOftransaction_payload::create_account(_) => {}
+            OneOftransaction_payload::nft_message(_) => {}
+            OneOftransaction_payload::register_token(_) => {}
+            OneOftransaction_payload::liquid_staking_message(_) => {}
+            OneOftransaction_payload::token_transfer_coins(_) => {}
+            OneOftransaction_payload::None => {}
+        }
+        todo!()
+    }
+
     pub fn with_max_gas_amount(mut self, max_gas_amount: u64) -> Self {
         self.max_gas_amount = max_gas_amount;
         self
@@ -147,7 +174,7 @@ impl TransactionFactory {
         public_key: &tw_keypair::ed25519::sha512::PublicKey,
         amount: u64,
     ) -> TransactionBuilder {
-        todo!()
+        self.payload(aptos_account_transfer(Address::with_ed25519_pubkey(public_key).unwrap().inner(), amount))
     }
 
     pub fn transfer(&self, to: AccountAddress, amount: u64) -> TransactionBuilder {

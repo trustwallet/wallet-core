@@ -18,6 +18,7 @@ use tw_keypair::tw::PublicKey;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::address::Address;
+use crate::transaction_builder;
 
 
 pub struct AptosEntry;
@@ -59,6 +60,9 @@ impl CoinEntry for AptosEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
+        let mut builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone());
+        builder = builder.sender(Address::from_str(&input.sender).unwrap().inner()).sequence_number(input.sequence_number as u64);
+        let rax_tx = builder.build();
         todo!()
     }
 

@@ -5,7 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use move_core_types::account_address::AccountAddress;
-use tw_keypair::ed25519::sha512::PublicKey;
+use serde::Serialize;
+use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
+use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
+use tw_number::Sign;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 #[derive(Clone)]
@@ -18,7 +21,7 @@ pub enum TransactionAuthenticator {
 }
 
 /// RawTransaction is the portion of a transaction that a client signs.
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct RawTransaction {
     /// Sender's address.
     sender: AccountAddress,
@@ -91,6 +94,20 @@ impl RawTransaction {
             expiration_timestamp_secs,
             chain_id,
         }
+    }
+
+    pub fn sign(
+        self,
+        key_pair: KeyPair
+    ) -> Result<SignedTransaction, String> {
+        let mut serialized = bcs::to_bytes(&self).unwrap();
+        let mut to_sign = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
+        to_sign.extend_from_slice(serialized.as_slice());
+        let signed = key_pair.private().sign(to_sign).unwrap();
+        Ok(SignedTransaction{ raw_txn: self.clone(), authenticator: TransactionAuthenticator::Ed25519 {
+            public_key: key_pair.public().clone(),
+            signature: signed.to_bytes().into_vec(),
+        } })
     }
 }
 
