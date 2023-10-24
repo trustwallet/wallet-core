@@ -36,6 +36,11 @@ echo -e "\nAVD ${AVD_NAME} created."
     -avd ${AVD_NAME} \
     -netspeed full \
     -netdelay none \
+    -no-window \
+    -gpu swiftshader_indirect \
+    -no-snapshot \
+    -noaudio \
+    -no-boot-anim \
     -port ${PORT} &
 
 # Ensure Android Emulator has booted successfully before continuing

@@ -7,7 +7,7 @@
 #include "Asset.h"
 
 #include <boost/algorithm/string/trim.hpp>
-// #include <boost/lexical_cast.hpp>
+#include <boost/lexical_cast.hpp>
 #include <stdexcept>
 
 namespace TW::EOS {
@@ -67,13 +67,13 @@ Asset Asset::fromString(std::string assetString) {
     // Parse amount
     int64_t intPart, fractPart = 0;
     if (dotPosition != string::npos) {
-        // intPart = boost::lexical_cast<int64_t>(amountString.data(), dotPosition);
-        // fractPart = boost::lexical_cast<int64_t>(amountString.data() + dotPosition + 1, decimals);
+        intPart = boost::lexical_cast<int64_t>(amountString.data(), dotPosition);
+        fractPart = boost::lexical_cast<int64_t>(amountString.data() + dotPosition + 1, decimals);
         if (amountString[0] == '-') {
             fractPart *= -1;
         }
     } else {
-        // intPart = boost::lexical_cast<int64_t>(amountString);
+        intPart = boost::lexical_cast<int64_t>(amountString);
     }
 
     int64_t amount = intPart;

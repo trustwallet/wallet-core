@@ -13,7 +13,7 @@
 
 #define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
 
-// #include <boost/lexical_cast.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
@@ -74,7 +74,7 @@ StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password,
     const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
     payload = EncryptedPayload(password, data, encryptionParams);
     boost::uuids::random_generator gen;
-    // id = boost::lexical_cast<std::string>(gen());
+    id = boost::lexical_cast<std::string>(gen());
 }
 
 const HDWallet<> StoredKey::wallet(const Data& password) const {
