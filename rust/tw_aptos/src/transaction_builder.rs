@@ -7,13 +7,11 @@
 use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
 use tw_keypair::traits::KeyPairTrait;
+use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
-use tw_proto::Aptos::Proto;
-use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
 use tw_proto::Aptos::Proto::SigningInput;
-use crate::address::Address;
 use crate::aptos_move_packages::aptos_account_transfer;
 
 pub struct TransactionBuilder {
@@ -211,12 +209,12 @@ mod tests {
 
     #[test]
     fn test_aptos_account_transfer() {
+        let to = AccountAddress::from_str("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30").unwrap();
+        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec").unwrap();
         let factory = TransactionFactory::new(33u8)
             .with_max_gas_amount(3296766)
             .with_gas_unit_price(100)
             .with_transaction_expiration_time(3664390082);
-        let to = AccountAddress::from_str("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30").unwrap();
-        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec").unwrap();
         let mut builder = factory.implicitly_create_user_account_and_transfer(to.clone(), 1000);
         builder = builder.sender(to.clone()).sequence_number(99);
         let res = builder.build().sign(keypair).unwrap();
