@@ -36,7 +36,6 @@ class KeyStoreTests: XCTestCase {
     var keyDirectory: URL!
 
     override func setUp() {
-        print("setUp()")
         super.setUp()
 
         let fileManager = FileManager.default
@@ -77,14 +76,12 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testLoadKeyStore() {
-        print("testLoadKeyStore()")
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
         XCTAssertEqual(keyStore.wallets.count, 4)
         XCTAssertEqual(keyStore.watches.count, 1)
     }
 
     func testCreateHDWallet() throws {
-        print("testCreateHDWallet()")
         let coins = [CoinType.ethereum, .binance, .smartChain]
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let newWallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
@@ -97,7 +94,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testUpdateKey() throws {
-        print("testUpdateKey()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
@@ -118,7 +114,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testUpdateName() throws {
-        print("testUpdateName()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
@@ -139,7 +134,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testAddAccounts() throws {
-        print("testAddAccounts()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.hdWallet!
         _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poanetwork], password: "password")
@@ -150,7 +144,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testRemoveAccounts() throws {
-        print("testRemoveAccounts()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork, .bitcoin]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
@@ -164,7 +157,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testDeleteKey() throws {
-        print("testDeleteKey()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.keyWallet!
         try keyStore.delete(wallet: wallet, password: "testpassword")
@@ -172,7 +164,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testDeleteWallet() throws {
-        print("testDeleteWallet()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.hdWallet!
         try keyStore.delete(wallet: wallet, password: "password")
@@ -180,7 +171,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testImportKey() throws {
-        print("testImportKey()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
         let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: Data("password".utf8), coin: .ethereum)!
@@ -195,7 +185,6 @@ class KeyStoreTests: XCTestCase {
     }
     
     func testImportPrivateKeyAES256() throws {
-        print("testImportPrivateKeyAES256()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
         let key = StoredKey.importPrivateKeyWithEncryption(privateKey: privateKeyData, name: "name", password: Data("password".utf8), coin: .ethereum, encryption: StoredKeyEncryption.aes256Ctr)!
@@ -210,7 +199,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testImportPrivateKey() throws {
-        print("testImportPrivateKey()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKey = PrivateKey(data: Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!)!
 
@@ -226,7 +214,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testImportWallet() throws {
-        print("testImportWallet()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptMnemonic(password: Data("newPassword".utf8))
@@ -237,7 +224,6 @@ class KeyStoreTests: XCTestCase {
     }
     
     func testImportWalletAES256() throws {
-        print("testImportWalletAES256()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum], encryption: .aes256Ctr)
         let storedData = wallet.key.decryptMnemonic(password: Data("newPassword".utf8))
@@ -248,8 +234,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testImportJSON() throws {
-        print("testImportJSON()")
-
         let expected = """
         {
             "activeAccounts": [{
@@ -342,7 +326,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testExportMnemonic() throws {
-        print("testExportMnemonic()")
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
         let exported = try keyStore.exportMnemonic(wallet: wallet, password: "newPassword")
@@ -351,7 +334,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testFileName() {
-        print("testFileName()")
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
 
         let timeZone = TimeZone(secondsFromGMT: -480)!
@@ -362,7 +344,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testFileNameUTC() {
-        print("testFileNameUTC()")
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
 
         let timeZone = TimeZone(abbreviation: "UTC")!
@@ -373,7 +354,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testDeriveActiveAccounts() {
-        print("testDeriveActiveAccounts()")
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
         let wallet = try! keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
         let coins = CoinType.allCases
@@ -387,7 +367,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testMissingBitcoinAddressDerivation() {
-        print("testMissingBitcoinAddressDerivation()")
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.bitcoinWallet
         let coins = CoinType.allCases
@@ -403,7 +382,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testSave() throws {
-        print("testSave()")
         let dir = try createTempDirURL()
         let keyStore = try KeyStore(keyDirectory: dir)
         try keyStore.watch([
@@ -416,7 +394,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testImportError() throws {
-        print("testStestImportErrorave()")
         let url = try createTempDirURL()
         let keystore = try KeyStore(keyDirectory: url)
 
@@ -446,7 +423,6 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testCreateMultiAccount() throws {
-        print("testCreateMultiAccount()")
         let mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
         let password = "password"
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
