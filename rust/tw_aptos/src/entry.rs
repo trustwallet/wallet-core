@@ -15,6 +15,7 @@ use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
 use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
+use tw_keypair::ed25519::sha512::KeyPair;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::address::Address;
@@ -61,8 +62,9 @@ impl CoinEntry for AptosEntry {
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
         let mut builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone());
-        builder = builder.sender(Address::from_str(&input.sender).unwrap().inner()).sequence_number(input.sequence_number as u64);
-        let rax_tx = builder.build();
+        let sender = Address::from_str(&input.sender).unwrap().inner();
+        let key_pair = KeyPair::try_from(input.private_key.to_vec().as_slice()).unwrap();
+        let raw_tx = builder.sender(sender).sequence_number(input.sequence_number as u64).build().sign(key_pair).unwrap();
         todo!()
     }
 
