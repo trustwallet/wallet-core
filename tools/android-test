@@ -38,7 +38,6 @@ echo -e "\nAVD ${AVD_NAME} created."
     -netdelay none \
     -no-window \
     -gpu swiftshader_indirect \
-    -no-snapshot \
     -noaudio \
     -no-boot-anim \
     -port ${PORT} &
