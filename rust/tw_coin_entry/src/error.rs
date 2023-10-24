@@ -26,7 +26,7 @@ macro_rules! signing_output_error {
 
 pub type AddressResult<T> = Result<T, AddressError>;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum AddressError {
     UnknownCoinType,
     MissingPrefix,

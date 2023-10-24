@@ -152,7 +152,8 @@ fn test_any_address_is_valid_coin_invalid() {
             BlockchainType::Aptos => {
                 vec!["", // Empty
                      "Seff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", // Invalid Hex
-                     "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb" ] // Too long
+                     "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb", // Too long
+                     "0xSeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"]
             }
             BlockchainType::Bitcoin => {
                 vec!["0xb16db98b365b1f89191996942612b14f1da4bd5f"]

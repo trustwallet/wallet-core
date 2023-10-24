@@ -17,11 +17,13 @@ use tw_hash::sha3::sha3_256;
 pub enum Scheme {
     Ed25519 = 0,
 }
+#[derive(Clone)]
 pub struct Address {
     addr: AccountAddress,
 }
 
 impl Address {
+    pub const LENGTH: usize = AccountAddress::LENGTH;
     /// Initializes an address with a `ed25519` public key.
     pub fn with_ed25519_pubkey(pubkey: &ed25519::sha512::PublicKey) -> Result<Address, AddressError> {
         let mut to_hash = pubkey.as_slice().to_vec();
@@ -99,8 +101,14 @@ mod tests {
         let public = private.public();
         let addr = Address::with_ed25519_pubkey(&public);
         assert_eq!(
-            addr.unwrap().to_string(),
+            addr.as_ref().unwrap().to_string(),
             "0x9006fa46f038224e8004bdda97f2e7a60c2c3d135bce7cb15541e5c0aae907a4"
         );
+        assert_eq!(addr.unwrap().data().len(), Address::LENGTH);
+    }
+
+    #[test]
+    fn test_from_account_error() {
+        assert_eq!(from_account_error(AccountAddressParseError{}), AddressError::InvalidInput);
     }
 }
