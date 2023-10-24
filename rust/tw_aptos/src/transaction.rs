@@ -11,12 +11,18 @@ use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_number::Sign;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub enum TransactionAuthenticator {
     /// Single Ed25519 signature
     Ed25519 {
-        public_key: PublicKey,
+        public_key: Vec<u8>,
         signature: Vec<u8>,
+    }
+}
+
+impl TransactionAuthenticator {
+    pub fn get_signature(&self) -> Vec<u8> {
+        match self { TransactionAuthenticator::Ed25519 { public_key: _public_key, signature } => { signature.clone() } }
     }
 }
 
@@ -98,16 +104,24 @@ impl RawTransaction {
 
     pub fn sign(
         self,
-        key_pair: KeyPair
+        key_pair: KeyPair,
     ) -> Result<SignedTransaction, String> {
         let mut serialized = bcs::to_bytes(&self).unwrap();
         let mut to_sign = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
         to_sign.extend_from_slice(serialized.as_slice());
-        let signed = key_pair.private().sign(to_sign).unwrap();
-        Ok(SignedTransaction{ raw_txn: self.clone(), authenticator: TransactionAuthenticator::Ed25519 {
-            public_key: key_pair.public().clone(),
+        let signed = key_pair.private().sign(to_sign.clone()).unwrap();
+        let auth = TransactionAuthenticator::Ed25519 {
+            public_key: key_pair.public().as_slice().to_vec(),
             signature: signed.to_bytes().into_vec(),
-        } })
+        };
+        let mut encoded = serialized.clone();
+        encoded.extend_from_slice(bcs::to_bytes(&auth).unwrap().as_slice());
+        Ok(SignedTransaction {
+            raw_txn: self.clone(),
+            authenticator: auth.clone(),
+            raw_txn_bytes: serialized.to_vec(),
+            encoded,
+        })
     }
 }
 
@@ -116,14 +130,34 @@ impl RawTransaction {
 /// A `SignedTransaction` is a single transaction that can be atomically executed. Clients submit
 /// these to validator nodes, and the validator and executor submits these to the VM.
 ///
-/// **IMPORTANT:** The signature of a `SignedTransaction` is not guaranteed to be verified. For a
-/// transaction whose signature is statically guaranteed to be verified, see
-/// [`SignatureCheckedTransaction`].
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct SignedTransaction {
     /// The raw transaction
     raw_txn: RawTransaction,
 
     /// Public key and signature to authenticate
     authenticator: TransactionAuthenticator,
+
+    #[serde(skip_serializing)]
+    /// Raw txs bytes
+    raw_txn_bytes: Vec<u8>,
+
+    #[serde(skip_serializing)]
+    /// Encoded bytes to be broadcast
+    encoded: Vec<u8>,
+}
+
+impl SignedTransaction {
+    pub fn raw_txn(&self) -> &RawTransaction {
+        &self.raw_txn
+    }
+    pub fn authenticator(&self) -> &TransactionAuthenticator {
+        &self.authenticator
+    }
+    pub fn raw_txn_bytes(&self) -> &Vec<u8> {
+        &self.raw_txn_bytes
+    }
+    pub fn encoded(&self) -> &Vec<u8> {
+        &self.encoded
+    }
 }

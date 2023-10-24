@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
 use tw_keypair::traits::KeyPairTrait;
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
@@ -112,7 +113,7 @@ impl TransactionFactory {
         let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from(input.private_key.to_vec().as_slice()).unwrap();
         match input.transaction_payload {
             OneOftransaction_payload::transfer(transfer) => {
-                return factory.implicitly_create_user_account_and_transfer(keypair.public(), transfer.amount)
+                return factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount);
             }
             OneOftransaction_payload::token_transfer(_) => {}
             OneOftransaction_payload::create_account(_) => {}
@@ -171,10 +172,10 @@ impl TransactionFactory {
 
     pub fn implicitly_create_user_account_and_transfer(
         &self,
-        public_key: &tw_keypair::ed25519::sha512::PublicKey,
+        to: AccountAddress,
         amount: u64,
     ) -> TransactionBuilder {
-        self.payload(aptos_account_transfer(Address::with_ed25519_pubkey(public_key).unwrap().inner(), amount))
+        self.payload(aptos_account_transfer(to, amount))
     }
 
     pub fn transfer(&self, to: AccountAddress, amount: u64) -> TransactionBuilder {
@@ -198,10 +199,30 @@ impl TransactionFactory {
     }
 
     fn expiration_timestamp(&self) -> u64 {
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_secs()
-            + self.transaction_expiration_time
+        self.transaction_expiration_time
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+    use move_core_types::account_address::AccountAddress;
+    use tw_encoding::hex;
+    use crate::transaction_builder::TransactionFactory;
+
+    #[test]
+    fn test_aptos_account_transfer() {
+        let factory = TransactionFactory::new(33u8)
+            .with_max_gas_amount(3296766)
+            .with_gas_unit_price(100)
+            .with_transaction_expiration_time(3664390082);
+        let to = AccountAddress::from_str("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30").unwrap();
+        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec").unwrap();
+        let mut builder = factory.implicitly_create_user_account_and_transfer(to.clone(), 1000);
+        builder = builder.sender(to.clone()).sequence_number(99);
+        let res = builder.build().sign(keypair).unwrap();
+        assert_eq!(hex::encode(res.raw_txn_bytes(), false), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada0000000021");
+        assert_eq!(hex::encode(res.authenticator().get_signature(), false), "5707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01");
+        assert_eq!(hex::encode(res.encoded(), false), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c405707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01");
     }
 }
