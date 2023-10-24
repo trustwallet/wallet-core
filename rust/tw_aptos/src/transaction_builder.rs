@@ -110,7 +110,6 @@ impl TransactionFactory {
             .with_gas_unit_price(input.gas_unit_price)
             .with_max_gas_amount(input.max_gas_amount)
             .with_transaction_expiration_time(input.expiration_timestamp_secs);
-        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from(input.private_key.to_vec().as_slice()).unwrap();
         match input.transaction_payload {
             OneOftransaction_payload::transfer(transfer) => {
                 return factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount);
