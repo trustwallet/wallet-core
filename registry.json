@@ -4475,6 +4475,5 @@
       "rpc": "https://rpc.ichainscan.com",
       "documentation": "https://github.com/iChainBlock/iChain-rpc"
     }
-  },
   }
 ]
