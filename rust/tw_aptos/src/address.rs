@@ -25,12 +25,17 @@ pub struct Address {
 impl Address {
     pub const LENGTH: usize = AccountAddress::LENGTH;
     /// Initializes an address with a `ed25519` public key.
+
     pub fn with_ed25519_pubkey(pubkey: &ed25519::sha512::PublicKey) -> Result<Address, AddressError> {
         let mut to_hash = pubkey.as_slice().to_vec();
         to_hash.push(Scheme::Ed25519 as u8);
         let hashed = sha3_256(to_hash.as_slice());
         let addr = AccountAddress::from_bytes(hashed).map_err(from_account_error)?;
         Ok(Address{addr})
+    }
+
+    pub fn inner(&self) -> AccountAddress {
+        self.addr
     }
 }
 
