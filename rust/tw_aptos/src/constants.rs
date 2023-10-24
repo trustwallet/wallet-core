@@ -4,10 +4,5 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-mod serde_helper;
-pub mod address;
-pub mod constants;
-pub mod entry;
-pub mod transaction;
-pub mod transaction_builder;
-pub mod transaction_payload;
+pub const GAS_UNIT_PRICE: u64 = 100;
+pub const MAX_GAS_AMOUNT: u64 = 100_000_000;

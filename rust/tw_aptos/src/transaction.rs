@@ -48,6 +48,30 @@ pub struct RawTransaction {
 }
 
 impl RawTransaction {
+    /// Create a new `RawTransaction` with a payload.
+    ///
+    /// It can be either to publish a module, to execute a script, or to issue a writeset
+    /// transaction.
+    pub fn new(
+        sender: AccountAddress,
+        sequence_number: u64,
+        payload: TransactionPayload,
+        max_gas_amount: u64,
+        gas_unit_price: u64,
+        expiration_timestamp_secs: u64,
+        chain_id: u8,
+    ) -> Self {
+        RawTransaction {
+            sender,
+            sequence_number,
+            payload,
+            max_gas_amount,
+            gas_unit_price,
+            expiration_timestamp_secs,
+            chain_id,
+        }
+    }
+
     /// Create a new `RawTransaction` with an entry function.
     pub fn new_entry_function(
         sender: AccountAddress,
