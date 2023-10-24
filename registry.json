@@ -1763,7 +1763,6 @@
       "documentation": "https://developer.algorand.org/docs/algod-rest-paths"
     }
   },
-
   {
     "id": "iotex",
     "name": "IoTeX",
@@ -4445,6 +4444,36 @@
       "source": "https://github.com/neonevm/neon-evm",
       "rpc": "https://neon-proxy-mainnet.solana.p2p.org/",
       "documentation": "https://docs.neonfoundation.io/docs/quick_start"
+    }
+  },
+  {
+    "id": "internet_computer",
+    "name": "Internet Computer",
+    "coinId": 223,
+    "symbol": "ICP",
+    "decimals": 8,
+    "blockchain": "InternetComputer",
+    "derivation": [
+      {
+        "path": "m/44'/223'/1'/0/0",
+        "xpub": "xpub",
+        "xpriv": "xpriv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://dashboard.internetcomputer.org",
+      "txPath": "/transaction/",
+      "accountPath": "/account/",
+      "sampleTx": "9e32c54975adf84a1d98f19df41bbc34a752a899c32cc9c0000200b2c4308f85",
+      "sampleAccount": "529ea51c22e8d66e8302eabd9297b100fdb369109822248bb86939a671fbc55b"
+    },
+    "info": {
+      "url": "https://internetcomputer.org",
+      "source": "https://github.com/dfinity/ic",
+      "rpc": "",
+      "documentation": "https://internetcomputer.org/docs"
     }
   }
 ]

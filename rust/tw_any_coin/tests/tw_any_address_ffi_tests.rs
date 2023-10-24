@@ -38,6 +38,9 @@ fn test_any_address_derive() {
             BlockchainType::Bitcoin => "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X",
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::Ronin => "ronin:Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309",
+            BlockchainType::InternetComputer => {
+                "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa"
+            },
             BlockchainType::Unsupported => unreachable!(),
         };
 
@@ -70,6 +73,10 @@ fn test_any_address_normalize_eth() {
             BlockchainType::Ronin => (
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
                 "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
+            ),
+            BlockchainType::InternetComputer => (
+                "290CC7C359F44C8516FC169C5ED4F0F3AE2E24BF5DE0D4C51F5E7545B5474FAA",
+                "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa",
             ),
             BlockchainType::Unsupported => unreachable!(),
         };
@@ -109,6 +116,12 @@ fn test_any_address_is_valid_coin() {
                 "ronin:b16db98b365b1f89191996942612b14f1da4bd5f",
                 "ronin:b16Db98B365B1f89191996942612B14F1Da4Bd5f",
             ],
+            BlockchainType::InternetComputer => vec![
+                "fb257577279ecac604d4780214af95aa6adc3a814f6f3d6d7ac844d1deca500a",
+                "e90c48d54847f4758f1d6b589a1db2500757a49a6722d4f775e050107b4b752d",
+                "a7c5baf393aed527ef6fb3869fbf84dd4e562edf9b04bd8f9bfbd6b8e6a22776",
+                "4cb2ca5cfcfa1d952f8cd7f0ec46c96e1023ab057b83a2c7ce236b9e71ccca0b",
+            ],
             _ => unreachable!(),
         };
 
@@ -129,6 +142,11 @@ fn test_any_address_is_valid_coin_invalid() {
             BlockchainType::Ethereum | BlockchainType::Ronin => {
                 vec!["b16Db98B365B1f89191996942612B14F1Da4Bd5f"]
             },
+            BlockchainType::InternetComputer => vec![
+                "3357cba483f268d044d4bbd4639f82c16028a76eebdf62c51bc11fc918d278b",
+                "3357cba483f268d044d4bbd4639f82c16028a76eebdf62c51bc11fc918d278bce",
+                "553357cba483f268d044d4bbd4639f82c16028a76eebdf62c51bc11fc918d278",
+            ],
             BlockchainType::Unsupported => unreachable!(),
         };
 

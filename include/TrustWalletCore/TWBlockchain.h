@@ -64,6 +64,7 @@ enum TWBlockchain {
     TWBlockchainTheOpenNetwork = 49,
     TWBlockchainSui = 50,
     TWBlockchainGreenfield = 51,
+    TWBlockchainInternetComputer = 52,
 };
 
 TW_EXTERN_C_END
