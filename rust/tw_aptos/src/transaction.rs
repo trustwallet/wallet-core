@@ -4,11 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::borrow::Cow;
 use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
+use tw_coin_entry::error::SigningResult;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_number::Sign;
+use tw_proto::Aptos::Proto;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 #[derive(Clone, Serialize)]
@@ -20,9 +23,22 @@ pub enum TransactionAuthenticator {
     }
 }
 
+impl From<TransactionAuthenticator> for Proto::TransactionAuthenticator<'_> {
+    fn from(from: TransactionAuthenticator) -> Self {
+        Proto::TransactionAuthenticator {
+            signature: Cow::from(from.get_signature()),
+            public_key: Cow::from(from.get_public_key()),
+        }
+    }
+}
+
 impl TransactionAuthenticator {
     pub fn get_signature(&self) -> Vec<u8> {
         match self { TransactionAuthenticator::Ed25519 { public_key: _public_key, signature } => { signature.clone() } }
+    }
+
+    pub fn get_public_key(&self) -> Vec<u8> {
+        match self { TransactionAuthenticator::Ed25519 { public_key, signature: _signature } => { public_key.clone() } }
     }
 }
 
@@ -105,7 +121,7 @@ impl RawTransaction {
     pub fn sign(
         self,
         key_pair: KeyPair,
-    ) -> Result<SignedTransaction, String> {
+    ) -> SigningResult<SignedTransaction> {
         let mut serialized = bcs::to_bytes(&self).unwrap();
         let mut to_sign = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
         to_sign.extend_from_slice(serialized.as_slice());

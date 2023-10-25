@@ -19,6 +19,7 @@ use tw_keypair::ed25519::sha512::KeyPair;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::address::Address;
+use crate::signer::{AptosContext, Signer, StandardAptosContext};
 use crate::transaction_builder;
 
 
@@ -61,11 +62,7 @@ impl CoinEntry for AptosEntry {
 
     #[inline]
     fn sign(&self, _coin: &dyn CoinContext, input: Self::SigningInput<'_>) -> Self::SigningOutput {
-        let mut builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone());
-        let sender = Address::from_str(&input.sender).unwrap().inner();
-        let key_pair = KeyPair::try_from(input.private_key.to_vec().as_slice()).unwrap();
-        let raw_tx = builder.sender(sender).sequence_number(input.sequence_number as u64).build().sign(key_pair).unwrap();
-        todo!()
+        Signer::<StandardAptosContext>::sign_proto(input)
     }
 
     #[inline]

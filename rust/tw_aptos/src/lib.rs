@@ -9,6 +9,8 @@ pub mod address;
 pub mod aptos_move_packages;
 pub mod constants;
 pub mod entry;
+
+pub mod signer;
 pub mod transaction;
 pub mod transaction_builder;
 pub mod transaction_payload;
