@@ -60,21 +60,8 @@ jobs:
     - name: Build Kotlin doc
       run: tools/kotlin-doc
 
-    - name: Build tests
-      run: |
-        pushd android
-        ./gradlew assembleAndroidTest
-        popd
-
-    - name: Run tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 30
-        target: google_apis
-        arch: x86
-        ndk: 23.1.7779620
-        cmake: 3.18.1
-        script: cd android; ./gradlew connectedAndroidTest
+    - name: Run test
+      run: tools/android-test
 
     - name: Build sample app
       run: tools/samples-build android

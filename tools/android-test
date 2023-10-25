@@ -30,7 +30,8 @@ SERIAL=emulator-${PORT}
 echo -e "\nCreating Android emulator...\n"
 echo "no" | "$ANDROID_CMDTOOLS/avdmanager" create avd \
     -n "${AVD_NAME}" \
-    -k "system-images;android-26;google_apis;x86" \
+    --device "Nexus 5X"
+    -k "system-images;android-29;google_apis;x86" \
 	-f
 echo -e "\nAVD ${AVD_NAME} created."
 
@@ -39,10 +40,6 @@ echo -e "\nAVD ${AVD_NAME} created."
     -avd ${AVD_NAME} \
     -netspeed full \
     -netdelay none \
-    -no-window \
-    -gpu swiftshader_indirect \
-    -noaudio \
-    -no-boot-anim \
     -port ${PORT} &
 
 # Ensure Android Emulator has booted successfully before continuing
@@ -50,7 +47,7 @@ echo -e "\nWaiting for emulator to boot...\n"
 EMU_BOOTED='unknown'
 while [[ ${EMU_BOOTED} != *"stopped"* ]]; do
     sleep 5
-    EMU_BOOTED=`adb -s ${SERIAL} shell getprop init.svc.bootanim || echo unknown`
+    EMU_BOOTED=`${ANDROID_HOME}/platform-tools/adb -s ${SERIAL} shell getprop init.svc.bootanim || echo unknown`
 done
 
 duration=$(( SECONDS - start ))
