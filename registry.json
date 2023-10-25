@@ -1167,6 +1167,36 @@
     }
   },
   {
+    "id": "tia",
+    "name": "Tia",
+    "displayName": "Celestia",
+    "coinId": 21000118,
+    "symbol": "TIA",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "chainId": "mocha-4",
+    "derivation": [
+      {
+        "path": "m/44'/118'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "celestia",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://www.mintscan.io/tia",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "943B1A59EB724A1258CF167834A83558DE5A31E8C1E31FCBCBB99404222E5FBF",
+      "sampleAccount": "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
+    },
+    "info": {
+      "url": "https://celestia.org/",
+      "documentation": "https://docs.celestia.org/"
+    }
+  },
+  {
     "id": "coreum",
     "name": "Coreum",
     "displayName": "Coreum",
