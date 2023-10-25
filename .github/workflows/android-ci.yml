@@ -69,7 +69,7 @@ jobs:
     - name: Run tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 26
+        api-level: 33
         target: google_apis
         arch: x86
         ndk: 23.1.7779620
