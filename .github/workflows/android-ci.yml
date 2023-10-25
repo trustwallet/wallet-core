@@ -71,7 +71,7 @@ jobs:
       with:
         api-level: 33
         target: google_apis
-        arch: x86
+        arch: x86_64
         ndk: 23.1.7779620
         cmake: 3.18.1
         script: cd android; ./gradlew connectedAndroidTest

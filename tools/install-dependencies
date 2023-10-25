@@ -99,13 +99,13 @@ function build_boost_for_android() {
     mkdir -p "$BOOST_TEMP_DIR"
 
     pushd $BOOST_DIR
-    ./build-android.sh --prefix=$BOOST_TEMP_DIR --without-libraries=program_options,thread,atomic,chrono,filesystem,iostreams,json,log,python,random,regex,test,timer --arch=x86 $NDK_PATH
+    ./build-android.sh --prefix=$BOOST_TEMP_DIR --without-libraries=program_options,thread,atomic,chrono,filesystem,iostreams,json,log,python,random,regex,test,timer --arch=x86_64 $NDK_PATH
     popd
 
     mkdir -p "$PREFIX/include"
     mkdir -p "$PREFIX/lib"
-    mv "$BOOST_TEMP_DIR/x86/include/boost-1_82/boost" "$PREFIX/include"
-    cp -r "$BOOST_TEMP_DIR/x86/lib/" "$PREFIX/lib"
+    mv "$BOOST_TEMP_DIR/x86_64/include/boost-1_82/boost" "$PREFIX/include"
+    cp -r "$BOOST_TEMP_DIR/x86_64/lib/" "$PREFIX/lib"
 }
 
 download_dependencies $1
