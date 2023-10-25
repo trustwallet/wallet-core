@@ -52,7 +52,7 @@ jobs:
 
     - name: Install internal dependencies
       run: tools/install-dependencies android
-#      if: steps.internal_cache.outputs.cache-hit != 'true'
+      if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Generate files
       run: tools/generate-files android
@@ -60,8 +60,22 @@ jobs:
     - name: Build Kotlin doc
       run: tools/kotlin-doc
 
-    - name: Run test
-      run: tools/android-test
+    - name: Build tests
+      run: |
+        cd android
+        ./gradlew assembleAndroidTest
+
+    - name: Run tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 26
+        target: google_apis
+        arch: x86
+        ndk: 23.1.7779620
+        cmake: 3.18.1
+        script: |
+          cd android
+          ./gradlew connectedAndroidTest
 
     - name: Build sample app
       run: tools/samples-build android
