@@ -14,8 +14,7 @@ find_android_ndk_path() {
         ANDROID_NDK_HOME="$HOME/Library/Android/sdk/ndk"
     fi
 
-    PATH_TO_NDK="$ANDROID_NDK_HOME/23.1.7779620"
-    echo $PATH_TO_NDK
+    echo $ANDROID_NDK_HOME
 }
 
 find_android_ndk() {
