@@ -30,7 +30,6 @@ SERIAL=emulator-${PORT}
 echo -e "\nCreating Android emulator...\n"
 echo "no" | "$ANDROID_CMDTOOLS/avdmanager" create avd \
     -n "${AVD_NAME}" \
-    --device "Nexus 5X"
     -k "system-images;android-29;google_apis;x86" \
 	-f
 echo -e "\nAVD ${AVD_NAME} created."
