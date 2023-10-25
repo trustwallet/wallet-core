@@ -34,7 +34,9 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
 
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
     StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
-    memzero(mnemonicData.data(), mnemonic.size());
+    if (!mnemonicData.empty()) {
+        memzero(mnemonicData.data(), mnemonic.size());
+    }
     return key;
 }
 

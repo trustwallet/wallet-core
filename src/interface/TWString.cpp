@@ -40,7 +40,9 @@ void TWStringDelete(TWString *_Nonnull string) {
     // `const_cast` is safe here despite that the pointer to the string is const
     // but `std::string` is not a constant value.
     auto *s = const_cast<std::string*>(sConst);
-    memzero(s->data(), s->size());
+    if (!s->empty()) {
+        memzero(s->data(), s->size());
+    }
     delete s;
 }
 
