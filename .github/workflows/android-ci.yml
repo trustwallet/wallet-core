@@ -30,17 +30,6 @@ jobs:
       run: |
         tools/install-sys-dependencies-linux
 
-    # TODO remove this
-    - name: Run tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 26
-        target: google_apis
-        arch: x86
-        ndk: 23.1.7779620
-        cmake: 3.18.1
-        script: cd android; ./gradlew connectedAndroidTest
-
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
       with:
@@ -77,15 +66,15 @@ jobs:
         ./gradlew assembleAndroidTest
         popd
 
-#    - name: Run tests
-#      uses: reactivecircus/android-emulator-runner@v2
-#      with:
-#        api-level: 26
-#        target: google_apis
-#        arch: x86
-#        ndk: 23.1.7779620
-#        cmake: 3.18.1
-#        script: cd android; ./gradlew connectedAndroidTest
+    - name: Run tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 26
+        target: google_apis
+        arch: x86
+        ndk: 23.1.7779620
+        cmake: 3.18.1
+        script: cd android; ./gradlew connectedAndroidTest
 
     - name: Build sample app
       run: tools/samples-build android
