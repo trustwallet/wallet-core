@@ -178,6 +178,7 @@ enum TWCoinType {
     TWCoinTypeMantle = 5000,
     TWCoinTypeZenEON = 7332,
     TWCoinTypeInternetComputer = 223,
+    TWCoinTypeGateChain = 10000086,
 };
 
 /// Returns the blockchain for a coin type.
