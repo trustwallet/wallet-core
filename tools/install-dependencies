@@ -12,6 +12,7 @@ MAKE=make
 # Load dependencies version
 BASE_DIR=$(cd `dirname $0`; pwd)
 source ${BASE_DIR}/dependencies-version
+source ${BASE_DIR}/android-sdk
 
 # Setup up folders
 export PATH="$PREFIX/bin":$PATH
@@ -22,7 +23,7 @@ export LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_RUN_PATH="$PREFIX/lib"
 
 function download_dependencies() {
-    ${BASE_DIR}/download-dependencies
+    ${BASE_DIR}/download-dependencies $1
 }
 
 function build_gtest() {
@@ -87,10 +88,34 @@ function build_swift_plugin() {
     $PREFIX/bin/protoc-gen-swift --version
 }
 
-download_dependencies
+# TODO make this better
+function build_boost_for_android() {
+    NDK_PATH=$(find_android_ndk_path)
+    echo $NDK_PATH
+
+    BOOST_DIR="$ROOT/build/local/src/Boost-for-Android"
+    BOOST_TEMP_DIR="$BOOST_DIR/release"
+
+    mkdir -p "$BOOST_TEMP_DIR"
+
+    pushd $BOOST_DIR
+    ./build-android.sh --prefix=$BOOST_TEMP_DIR --without-libraries=program_options,thread,atomic,chrono,filesystem,iostreams,json,log,python,random,regex,test,timer --arch=x86 $NDK_PATH
+    popd
+
+    mkdir -p "$PREFIX/include"
+    mkdir -p "$PREFIX/lib"
+    mv "$BOOST_TEMP_DIR/x86/include/boost-1_82/boost" "$PREFIX/include"
+    cp -r "$BOOST_TEMP_DIR/x86/lib/" "$PREFIX/lib"
+}
+
+download_dependencies $1
 
 build_gtest
 build_libcheck
 build_protobuf
+
+if [[ "$1" == "android" ]]; then
+    build_boost_for_android
+fi
 
 cd "$ROOT"
