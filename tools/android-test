@@ -28,7 +28,6 @@ echo -e "\nCreating Android emulator...\n"
 echo "no" | "$ANDROID_CMDTOOLS/avdmanager" create avd \
     -n "${AVD_NAME}" \
     -k "system-images;android-26;google_apis;x86" \
-    -no-snapshot -no-audio -no-boot-anim -no-window \
 	-f
 echo -e "\nAVD ${AVD_NAME} created."
 
@@ -37,6 +36,7 @@ echo -e "\nAVD ${AVD_NAME} created."
     -avd ${AVD_NAME} \
     -netspeed full \
     -netdelay none \
+    -no-snapshot -no-audio -no-boot-anim -no-window \
     -port ${PORT} &
 
 # Ensure Android Emulator has booted successfully before continuing
