@@ -53,24 +53,9 @@ function download_protobuf() {
     tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
 }
 
-function download_boost_for_android() {
-    echo "Downloading Boost-for-Android..."
-    SRC_DIR="$ROOT/build/local/src"
-    mkdir -p "$SRC_DIR"
-    cd "$SRC_DIR"
-
-    if [ ! -d "$SRC_DIR/Boost-for-Android" ];then
-        git clone https://github.com/moritz-wundke/Boost-for-Android.git
-    fi
-}
-
 download_gtest
 download_libcheck
 download_nolhmann_json
 download_protobuf
-
-if [[ "$1" == "android" ]]; then
-    download_boost_for_android
-fi
 
 echo "done."

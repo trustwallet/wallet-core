@@ -2,21 +2,6 @@
 
 export NDK_API_LEVEL=21
 
-# TODO Make this better
-find_android_ndk_path() {
-    if [[ "$ANDROID_NDK_HOME" != "" ]]; then
-        >&2 echo "Use ANDROID_NDK_HOME"
-    elif [[ "$ANDROID_HOME" != "" ]]; then
-        >&2 echo "ANDROID_NDK_HOME is not set. Use ANDROID_HOME value instead"
-        ANDROID_NDK_HOME="$ANDROID_HOME/ndk"
-    else
-        >&2 echo "WARNING: ANDROID_HOME is not set. Use a default path"
-        ANDROID_NDK_HOME="$HOME/Library/Android/sdk/ndk"
-    fi
-
-    echo $ANDROID_NDK_HOME
-}
-
 find_android_ndk() {
     if [[ "$ANDROID_NDK_HOME" != "" ]]; then
         >&2 echo "Use ANDROID_NDK_HOME"

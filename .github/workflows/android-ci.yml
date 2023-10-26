@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest-large
 #    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
@@ -28,7 +28,7 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        tools/install-sys-dependencies-linux
+        tools/install-sys-dependencies-mac
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
@@ -51,7 +51,7 @@ jobs:
         key: ${{ runner.os }}-${{ runner.arch }}-internal-${{ hashFiles('tools/install-dependencies') }}
 
     - name: Install internal dependencies
-      run: tools/install-dependencies android
+      run: tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Generate files
