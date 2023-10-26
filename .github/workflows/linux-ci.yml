@@ -28,6 +28,7 @@ jobs:
         key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
     - name: Install internal dependencies
       run: |
+        rm -r build/local
         tools/install-dependencies
       env:
         CC: /usr/bin/clang
