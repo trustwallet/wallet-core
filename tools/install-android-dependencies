@@ -21,7 +21,7 @@ https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.31/freemarker-2.3.3
 )
 
 $ANDROID_CMDTOOLS/sdkmanager --verbose "cmake;3.18.1" "ndk;23.1.7779620"
-$ANDROID_CMDTOOLS/sdkmanager "system-images;android-26;google_apis;x86"
+$ANDROID_CMDTOOLS/sdkmanager "system-images;android-30;google_apis;x86"
 
 echo -e "y\ny\ny\ny\ny\n" | $ANDROID_CMDTOOLS/sdkmanager --licenses
 
