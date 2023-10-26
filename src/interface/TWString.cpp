@@ -43,7 +43,7 @@ void TWStringDelete(TWString *_Nonnull string) {
     if (!s->empty()) {
         memzero(s->data(), s->size());
     }
-    delete s;
+    delete sConst;
 }
 
 bool TWStringEqual(TWString *_Nonnull lhs, TWString *_Nonnull rhs) {
