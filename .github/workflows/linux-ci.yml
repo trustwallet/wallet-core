@@ -32,7 +32,7 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-      if: steps.internal_cache.outputs.cache-hit != 'true'
+#      if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
