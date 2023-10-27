@@ -2,5 +2,12 @@
 
 set -e
 
- # build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
- sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev rustc --fix-missing
+# build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
+sudo apt-get update && sudo apt-get install ninja-build lcov libboost-all-dev rustc --fix-missing
+
+mkdir -p build/local
+wget https://apt.llvm.org/llvm.sh -P build/local
+chmod +x build/local/llvm.sh
+sudo build/local/llvm.sh 14
+
+sudo apt-get update && sudo apt-get install clang-tidy-14
