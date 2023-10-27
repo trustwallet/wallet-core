@@ -3,7 +3,10 @@
 set -e
 
 # build-essential clang-15 libc++-dev libc++abi-dev ruby-full cmake
-sudo apt-get update && sudo apt-get install ninja-build lcov lld lld-15 clang-15 libboost-all-dev rustc--fix-missing
+sudo apt-get update && sudo apt-get install ninja-build lcov lld lld-15 clang-15 libboost-all-dev rustc --fix-missing
+
+sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100
+sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
 
 #mkdir -p build/local
 #wget https://apt.llvm.org/llvm.sh -P build/local
