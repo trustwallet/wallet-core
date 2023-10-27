@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 #    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
@@ -30,9 +30,9 @@ jobs:
       run: |
         tools/install-dependencies
       env:
-        CC: /usr/bin/clang-14
-        CXX: /usr/bin/clang++-14
-#      if: steps.internal_cache.outputs.cache-hit != 'true'
+        CC: /usr/bin/clang-15
+        CXX: /usr/bin/clang++-15
+      if: steps.internal_cache.outputs.cache-hit != 'true'
 
 #    - name: Cache Rust
 #      uses: Swatinem/rust-cache@v2
@@ -44,22 +44,22 @@ jobs:
       run: |
         tools/generate-files native
       env:
-        CC: /usr/bin/clang-14
-        CXX: /usr/bin/clang++-14
+        CC: /usr/bin/clang-15
+        CXX: /usr/bin/clang++-15
     - name: CMake (coverage/clang-tidy/clang-asan)
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
       env:
-        CC: /usr/bin/clang-14
-        CXX: /usr/bin/clang++-14
+        CC: /usr/bin/clang-15
+        CXX: /usr/bin/clang++-15
     - name: Build and test
       run: |
         ninja -Cbuild tests TrezorCryptoTests
         build/trezor-crypto/crypto/tests/TrezorCryptoTests
         build/tests/tests --gtest_output=xml
       env:
-        CC: /usr/bin/clang-14
-        CXX: /usr/bin/clang++-14
+        CC: /usr/bin/clang-15
+        CXX: /usr/bin/clang++-15
         CK_TIMEOUT_MULTIPLIER: 4
     - name: Gather and check code coverage
       run: |

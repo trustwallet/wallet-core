@@ -2,15 +2,12 @@
 
 set -e
 
-# build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
-sudo apt-get update && sudo apt-get install ninja-build lcov rustc --fix-missing
+# build-essential clang-15 libc++-dev libc++abi-dev ruby-full cmake
+sudo apt-get update && sudo apt-get install ninja-build lcov lld lld-15 clang-15 rustc --fix-missing
 
-mkdir -p build/local
-wget https://apt.llvm.org/llvm.sh -P build/local
-chmod +x build/local/llvm.sh
-sudo build/local/llvm.sh 14
-
-sudo apt-get update && sudo apt-get install clang-tidy-14
-
-sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu jammy main'
-sudo apt -t jammy install libboost-all-dev
+#mkdir -p build/local
+#wget https://apt.llvm.org/llvm.sh -P build/local
+#chmod +x build/local/llvm.sh
+#sudo build/local/llvm.sh 14
+#
+#sudo apt-get update && sudo apt-get install clang-tidy-14
