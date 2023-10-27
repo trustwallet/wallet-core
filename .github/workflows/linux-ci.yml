@@ -30,36 +30,36 @@ jobs:
       run: |
         tools/install-dependencies
       env:
-        CC: /usr/bin/clang
-        CXX: /usr/bin/clang++
+        CC: /usr/bin/clang-14
+        CXX: /usr/bin/clang++-14
 #      if: steps.internal_cache.outputs.cache-hit != 'true'
 
-    - name: Cache Rust
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: |
-          rust
+#    - name: Cache Rust
+#      uses: Swatinem/rust-cache@v2
+#      with:
+#        workspaces: |
+#          rust
 
     - name: Code generation
       run: |
         tools/generate-files native
       env:
-        CC: /usr/bin/clang
-        CXX: /usr/bin/clang++
+        CC: /usr/bin/clang-14
+        CXX: /usr/bin/clang++-14
     - name: CMake (coverage/clang-tidy/clang-asan)
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
       env:
-        CC: /usr/bin/clang
-        CXX: /usr/bin/clang++
+        CC: /usr/bin/clang-14
+        CXX: /usr/bin/clang++-14
     - name: Build and test
       run: |
         ninja -Cbuild tests TrezorCryptoTests
         build/trezor-crypto/crypto/tests/TrezorCryptoTests
         build/tests/tests --gtest_output=xml
       env:
-        CC: /usr/bin/clang
-        CXX: /usr/bin/clang++
+        CC: /usr/bin/clang-14
+        CXX: /usr/bin/clang++-14
         CK_TIMEOUT_MULTIPLIER: 4
     - name: Gather and check code coverage
       run: |
