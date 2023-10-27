@@ -34,11 +34,11 @@ jobs:
         CXX: /usr/bin/clang++-15
       if: steps.internal_cache.outputs.cache-hit != 'true'
 
-#    - name: Cache Rust
-#      uses: Swatinem/rust-cache@v2
-#      with:
-#        workspaces: |
-#          rust
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: |
+          rust
 
     - name: Code generation
       run: |
