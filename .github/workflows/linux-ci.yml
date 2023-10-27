@@ -20,19 +20,19 @@ jobs:
       run: |
         tools/install-sys-dependencies-linux
         tools/install-rust-dependencies
-    - name: Cache internal dependencies
-      id: internal_cache
-      uses: actions/cache@v3
-      with:
-        path: build/local
-        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+#    - name: Cache internal dependencies
+#      id: internal_cache
+#      uses: actions/cache@v3
+#      with:
+#        path: build/local
+#        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-      if: steps.internal_cache.outputs.cache-hit != 'true'
+#      if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
