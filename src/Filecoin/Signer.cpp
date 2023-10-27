@@ -24,7 +24,7 @@ Proto::SigningOutput signingOutputError(Common::Proto::SigningError error) {
 
 // ChainId defines the chain ID used in the Ethereum JSON-RPC endpoint.
 // As per https://github.com/ethereum-lists/chains
-static constexpr uint256_t FILECOIN_EIP155_CHAIN_ID = 314;
+static constexpr uint64_t FILECOIN_EIP155_CHAIN_ID = 314;
 
 static Proto::SigningOutput errorOutput(const char* error) {
     Proto::SigningOutput output;
@@ -144,7 +144,7 @@ Proto::SigningOutput Signer::signDelegated(const Proto::SigningInput& input) {
 
     Ethereum::Proto::SigningInput ethInput;
 
-    auto chainId = store(FILECOIN_EIP155_CHAIN_ID);
+    auto chainId = store(uint256_t(FILECOIN_EIP155_CHAIN_ID));
     auto nonce = store(uint256_t(input.nonce()));
     auto gasLimit = store(uint256_t(input.gas_limit()));
 
