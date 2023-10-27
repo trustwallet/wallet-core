@@ -20,11 +20,6 @@ jobs:
       run: |
         tools/install-sys-dependencies-linux
         tools/install-rust-dependencies
-    - name: Install newer Clang
-      run: |
-        wget https://apt.llvm.org/llvm.sh
-        chmod +x ./llvm.sh
-        sudo ./llvm.sh 17
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v3
