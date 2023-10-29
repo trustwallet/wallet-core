@@ -18,7 +18,7 @@ namespace TW::Scroll::tests {
 /// https://blockscout.scroll.io/tx/0x5a7ba291e0490079bddda54ca5592e5990d6b0eb49f8d239202941e3f63d32bc
 TEST(TWAnySignerScroll, Sign) {
     Ethereum::Proto::SigningInput input;
-    auto chainId = store(uint256_t(534353));
+    auto chainId = store(uint256_t(534352));
     auto nonce = store(uint256_t(1));
     auto gasPrice = store(uint256_t(1000000));
     auto gasLimit = store(uint256_t(200000));
