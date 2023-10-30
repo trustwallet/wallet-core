@@ -37,7 +37,14 @@ impl<'a> DecodeHex for &'a str {
 
 pub fn decode(data: &str) -> Result<Vec<u8>, FromHexError> {
     let hex_string = data.trim_start_matches("0x");
-    hex::decode(hex_string)
+
+    if hex_string.len() % 2 == 0 {
+        hex::decode(hex_string)
+    } else {
+        // Insert a leading 0.
+        let standard_hex = format!("0{hex_string}");
+        hex::decode(standard_hex)
+    }
 }
 
 pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {

@@ -161,7 +161,7 @@ fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<D
     let fix_bytes = str
         .decode_hex()
         .map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    if fix_bytes.len() != expected_len {
+    if fix_bytes.len() > expected_len {
         return Err(MessageSigningError::TypeValueMismatch);
     }
     let checked_bytes =
