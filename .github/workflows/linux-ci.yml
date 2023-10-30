@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 #    if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@v3
@@ -20,12 +20,12 @@ jobs:
       run: |
         tools/install-sys-dependencies-linux
         tools/install-rust-dependencies
-#    - name: Cache internal dependencies
-#      id: internal_cache
-#      uses: actions/cache@v3
-#      with:
-#        path: build/local
-#        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v3
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
@@ -48,7 +48,7 @@ jobs:
         CXX: /usr/bin/clang++-15
     - name: CMake (coverage/clang-tidy/clang-asan)
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -DCMAKE_CXX_FLAGS="-stdlib=libc++ -std=c++20" -GNinja
       env:
         CC: /usr/bin/clang-15
         CXX: /usr/bin/clang++-15
