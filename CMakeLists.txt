@@ -18,6 +18,14 @@ else ()
     set(PREFIX "$ENV{PREFIX}")
 endif ()
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+if (LINUX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++20")
+endif ()
+
 include(GNUInstallDirs)
 include(cmake/StandardSettings.cmake)
 include(cmake/CompilerWarnings.cmake)
