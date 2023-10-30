@@ -1,11 +1,9 @@
-use std::borrow::Cow;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ed25519;
 use tw_proto::Aptos::Proto;
-use tw_proto::Aptos::Proto::TransactionAuthenticator;
 use crate::address::{Address, AptosAddress};
 use crate::transaction_builder;
 
