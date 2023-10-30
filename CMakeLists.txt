@@ -23,6 +23,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (LINUX)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++20")
 endif ()
 
