@@ -3258,7 +3258,7 @@
     "id": "scroll",
     "name": "Scroll",
     "displayName": "Scroll",
-    "coinId": 534353,
+    "coinId": 534352,
     "slip44": 60,
     "symbol": "ETH",
     "decimals": 18,
@@ -3270,14 +3270,14 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "534353",
+    "chainId": "534352",
     "addressHasher": "keccak256",
     "explorer": {
       "url": "https://scrollscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
-      "sampleTx": "0xee9196d6840c8d31626324d91c886d20e65711c2026c559133fb23741d3b2f9d",
-      "sampleAccount": "0xFE993660cd35d68D94b6Eba29F4D928d979cd65B"
+      "sampleTx": "0xa2062a4530b194a438bb9f9e87cdce59f70775a52e8336892364445847c43ca2",
+      "sampleAccount": "0xf9062b8a30e0d7722960e305049fa50b86ba6253"
     },
     "info": {
       "url": "https://scroll.io",
