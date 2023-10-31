@@ -1185,8 +1185,8 @@
     "hrp": "celestia",
     "addressHasher": "sha256ripemd",
     "explorer": {
-      "url": "https://www.mintscan.io/tia",
-      "txPath": "/tx/",
+      "url": "https://www.mintscan.io/celestia",
+      "txPath": "/txs/",
       "accountPath": "/account/",
       "sampleTx": "FF370C65D8D67B8236F9D3A8D2B1256337C60C1965092CADD1FA970288FCE99B",
       "sampleAccount": "celestia1tt4tv4jrs4twdtzwywxd8u65duxgk8y73wvfu2"
