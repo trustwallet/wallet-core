@@ -18,7 +18,7 @@ namespace TW::Scroll::tests {
 /// https://blockscout.scroll.io/tx/0x5a7ba291e0490079bddda54ca5592e5990d6b0eb49f8d239202941e3f63d32bc
 TEST(TWAnySignerScroll, Sign) {
     Ethereum::Proto::SigningInput input;
-    auto chainId = store(uint256_t(534353));
+    auto chainId = store(uint256_t(534352));
     auto nonce = store(uint256_t(1));
     auto gasPrice = store(uint256_t(1000000));
     auto gasLimit = store(uint256_t(200000));
@@ -35,7 +35,7 @@ TEST(TWAnySignerScroll, Sign) {
     auto amount = store(uint256_t(200000000000000));
     transfer.set_amount(amount.data(), amount.size());
 
-    std::string expected = "f86c01830f424083030d4094a6bc5ee0b1e904dd0773c5555d2f6833fe937a6886b5e620f480008083104ec6a0a30f1e29c3d1447d7f7f76c7112af3fb86eb3cb7cc536c932e720cd9813ae274a048ffcadba06d3645829d74fa1cf28744111cfc35893761239fa6b510c84c396e";
+    std::string expected = "f86c01830f424083030d4094a6bc5ee0b1e904dd0773c5555d2f6833fe937a6886b5e620f480008083104ec3a0c43ee3d34f7758e05e2f54df227eb7780ad97d06e91e03ef6a3c91d4bea6e42fa07d075f20776f7f485faca6f057110fd2745a5cdd6cf121682ef7791619a03ade";
 
     // sign test
     Ethereum::Proto::SigningOutput output;
