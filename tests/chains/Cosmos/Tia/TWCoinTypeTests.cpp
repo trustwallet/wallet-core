@@ -30,8 +30,8 @@ namespace TW::Cosmos::tests {
         ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainCosmos);
         ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
         ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-        assertStringsEqual(chainId, "mocha-4");
-        assertStringsEqual(txUrl, "https://www.mintscan.io/tia/txs/943B1A59EB724A1258CF167834A83558DE5A31E8C1E31FCBCBB99404222E5FBF");
-        assertStringsEqual(accUrl, "https://www.mintscan.io/tia/account/celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7");
+        assertStringsEqual(chainId, "celestia");
+        assertStringsEqual(txUrl, "https://www.mintscan.io/celestia/tx/FF370C65D8D67B8236F9D3A8D2B1256337C60C1965092CADD1FA970288FCE99B");
+        assertStringsEqual(accUrl, "https://www.mintscan.io/celestia/address/celestia1tt4tv4jrs4twdtzwywxd8u65duxgk8y73wvfu2");
     }
 }
