@@ -162,7 +162,7 @@ enum TWCoinType {
     TWCoinTypePersistence = 16000118,
     TWCoinTypeAkash = 17000118,
     TWCoinTypeNoble = 18000118,
-    TWCoinTypeScroll = 534353,
+    TWCoinTypeScroll = 534352,
     TWCoinTypeRootstock = 137,
     TWCoinTypeThetaFuel = 361,
     TWCoinTypeConfluxeSpace = 1030,
