@@ -15,7 +15,7 @@ use serde::Deserialize;
 use serde_json::Value as Json;
 use std::collections::HashMap;
 use std::str::FromStr;
-use tw_encoding::hex::DecodeHex;
+use tw_encoding::hex::{self, DecodeHex};
 use tw_hash::sha3::keccak256;
 use tw_hash::{H160, H256};
 use tw_memory::Data;
@@ -158,10 +158,9 @@ fn encode_fix_bytes(value: &Json, expected_len: usize) -> MessageSigningResult<D
     let str = value
         .as_str()
         .ok_or(MessageSigningError::InvalidParameterValue)?;
-    let fix_bytes = str
-        .decode_hex()
-        .map_err(|_| MessageSigningError::InvalidParameterValue)?;
-    if fix_bytes.len() != expected_len {
+    let fix_bytes =
+        hex::decode_lenient(str).map_err(|_| MessageSigningError::InvalidParameterValue)?;
+    if fix_bytes.len() > expected_len {
         return Err(MessageSigningError::TypeValueMismatch);
     }
     let checked_bytes =
