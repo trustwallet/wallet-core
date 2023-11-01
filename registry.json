@@ -1174,7 +1174,7 @@
     "symbol": "TIA",
     "decimals": 6,
     "blockchain": "Cosmos",
-    "chainId": "mocha-4",
+    "chainId": "celestia",
     "derivation": [
       {
         "path": "m/44'/118'/0'/0/0"
@@ -1185,11 +1185,11 @@
     "hrp": "celestia",
     "addressHasher": "sha256ripemd",
     "explorer": {
-      "url": "https://www.mintscan.io/tia",
+      "url": "https://www.mintscan.io/celestia",
       "txPath": "/txs/",
       "accountPath": "/account/",
-      "sampleTx": "943B1A59EB724A1258CF167834A83558DE5A31E8C1E31FCBCBB99404222E5FBF",
-      "sampleAccount": "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
+      "sampleTx": "FF370C65D8D67B8236F9D3A8D2B1256337C60C1965092CADD1FA970288FCE99B",
+      "sampleAccount": "celestia1tt4tv4jrs4twdtzwywxd8u65duxgk8y73wvfu2"
     },
     "info": {
       "url": "https://celestia.org/",
