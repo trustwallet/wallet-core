@@ -162,7 +162,7 @@ enum TWCoinType {
     TWCoinTypePersistence = 16000118,
     TWCoinTypeAkash = 17000118,
     TWCoinTypeNoble = 18000118,
-    TWCoinTypeScroll = 534353,
+    TWCoinTypeScroll = 534352,
     TWCoinTypeRootstock = 137,
     TWCoinTypeThetaFuel = 361,
     TWCoinTypeConfluxeSpace = 1030,
@@ -178,7 +178,8 @@ enum TWCoinType {
     TWCoinTypeMantle = 5000,
     TWCoinTypeZenEON = 7332,
     TWCoinTypeInternetComputer = 223,
-    TWCoinTypeGateChain = 10000086,
+    TWCoinTypeTia = 21000118,
+    TWCoinTypeGateChain = 10000086
 };
 
 /// Returns the blockchain for a coin type.

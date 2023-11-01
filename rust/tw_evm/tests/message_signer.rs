@@ -19,6 +19,7 @@ const EIP712_WITH_CUSTOM_ARRAY: &str = include_str!("data/eip712_with_custom_arr
 const EIP712_UNEQUAL_ARRAY_LEN: &str = include_str!("data/eip712_unequal_array_lengths.json");
 const EIP712_WITH_CHAIN_ID_STR: &str = include_str!("data/eip712_with_chain_id_string.json");
 const EIP712_GREENFIELD: &str = include_str!("data/eip712_greenfield.json");
+const EIP712_FIXED_BYTES: &str = include_str!("data/eip712_fixed_bytes.json");
 
 struct SignVerifyTestInput {
     private_key: &'static str,
@@ -254,5 +255,17 @@ fn test_message_signer_sign_verify_eip712_greenfield() {
         msg_type: Proto::MessageType::MessageType_typed,
         chain_id: None,
         signature: "cb3a4684a991014a387a04a85b59227ebb79567c2025addcb296b4ca856e9f810d3b526f2a0d0fad6ad1b126b3b9516f8b3be020a7cca9c03ce3cf47f4199b6d1b",
+    });
+}
+
+// The test checks if `0x0` is a valid `bytes32` value.
+#[test]
+fn test_message_signer_sign_verify_eip712_fixed_bytes() {
+    test_message_signer_sign_verify(SignVerifyTestInput {
+        private_key: "c85ef7d79691fe79573b1a7064c19c1a9819ebdbd1faaab1a8ec92344438aaf4",
+        msg: EIP712_FIXED_BYTES,
+        msg_type: Proto::MessageType::MessageType_typed,
+        chain_id: None,
+        signature: "7ee9b54fedf355e40fa86bbe23e63b318ef797bd8fdbc5bb714edbace042d4cb60111912218234e856f2cf300b3b47c91383b98e263ecf69c6c10193fef6c9581b",
     });
 }
