@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "tw_any_coin",
+    "tw_bech32_address",
     "tw_bitcoin",
     "tw_coin_entry",
     "tw_coin_registry",

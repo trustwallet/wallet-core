@@ -4,7 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod serializer;
+pub mod hasher;
+pub mod modules;
+pub mod private_key;
+pub mod public_key;
+pub mod transaction;
+
+pub type Address = tw_bech32_address::Bech32Address;
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]

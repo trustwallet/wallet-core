@@ -4,18 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod base32;
-pub mod base58;
-pub mod base64;
-pub mod bech32;
-pub mod cbor;
-pub mod ffi;
-pub mod hex;
+use tw_coin_entry::error::SigningResult;
+use tw_memory::Data;
+use crate::private_key::CosmosPrivateKey;
 
-pub type EncodingResult<T> = Result<T, EncodingError>;
+pub struct Secp256PrivateKey {
 
-#[derive(Debug, PartialEq)]
-pub enum EncodingError {
-    InvalidInput,
-    InvalidAlphabet,
+}
+
+impl CosmosPrivateKey for Secp256PrivateKey {
+    fn sign_tx_hash(&self, hash: &[u8]) -> SigningResult<Data> {
+
+    }
 }

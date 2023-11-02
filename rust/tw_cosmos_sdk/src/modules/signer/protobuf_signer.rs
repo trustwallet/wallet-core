@@ -4,4 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod protobuf_serializer;
+use crate::transaction::protobuf_tx::ProtobufTransaction;
+
+pub struct ProtobufSigningInput {
+    tx: ProtobufTransaction
+}
+
+pub struct ProtobufSigner;
+
+impl ProtobufSigner {
+    // pub fn sign(tx: ProtobufTransaction) ->
+}

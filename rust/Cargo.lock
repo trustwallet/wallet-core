@@ -1458,6 +1458,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tw_bech32_address"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_encoding",
+ "tw_hash",
+ "tw_keypair",
+ "tw_memory",
+]
+
+[[package]]
 name = "tw_bitcoin"
 version = "0.1.0"
 dependencies = [
@@ -1480,6 +1491,7 @@ name = "tw_coin_entry"
 version = "0.1.0"
 dependencies = [
  "serde_json",
+ "tw_hash",
  "tw_keypair",
  "tw_memory",
  "tw_misc",
@@ -1498,6 +1510,7 @@ dependencies = [
  "tw_coin_entry",
  "tw_ethereum",
  "tw_evm",
+ "tw_hash",
  "tw_internet_computer",
  "tw_keypair",
  "tw_memory",
@@ -1511,6 +1524,7 @@ version = "0.1.0"
 dependencies = [
  "pb-rs",
  "quick-protobuf",
+ "tw_bech32_address",
  "tw_coin_entry",
  "tw_encoding",
  "tw_hash",
@@ -1525,6 +1539,7 @@ name = "tw_encoding"
 version = "0.1.0"
 dependencies = [
  "arbitrary",
+ "bech32",
  "bs58",
  "ciborium",
  "data-encoding",

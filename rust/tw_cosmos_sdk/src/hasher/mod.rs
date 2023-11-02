@@ -4,18 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod base32;
-pub mod base58;
-pub mod base64;
-pub mod bech32;
-pub mod cbor;
-pub mod ffi;
-pub mod hex;
+use crate::proto::cosmos::tx::v1beta1::SignDoc;
+use tw_memory::Data;
 
-pub type EncodingResult<T> = Result<T, EncodingError>;
+pub mod sha256_hasher;
 
-#[derive(Debug, PartialEq)]
-pub enum EncodingError {
-    InvalidInput,
-    InvalidAlphabet,
+pub trait ProtobufHasher {
+    fn hash_sign_doc(&self, sign_doc: &[u8]) -> Data;
+}
+
+pub trait JsonHasher {
+    fn hash_json_tx(&self, json: &str) -> Data;
 }

@@ -4,18 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod base32;
-pub mod base58;
-pub mod base64;
-pub mod bech32;
-pub mod cbor;
-pub mod ffi;
-pub mod hex;
+use crate::Address;
+use tw_number::U256;
 
-pub type EncodingResult<T> = Result<T, EncodingError>;
+pub struct Fee {
+    amounts: Vec<Coin>,
+    gas_limit: U256,
+    payer: Address,
+}
 
-#[derive(Debug, PartialEq)]
-pub enum EncodingError {
-    InvalidInput,
-    InvalidAlphabet,
+pub struct Coin {
+    pub denom: String,
+    pub amount: U256,
 }
