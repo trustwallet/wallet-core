@@ -71,10 +71,12 @@ if (${ANDROID})
                 kotlin/wallet-core-kotlin/src/androidMain/cpp/generated/*.c
                 )
     else ()
+        file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c)
         # TANGEM don't remove "jni/android/*.cpp" while syncing fork
-        file(GLOB_RECURSE specific_sources jni/android/*.h jni/android/*.c jni/android/*.cpp)
+        file(GLOB_RECURSE tangem_sources jni/android/*.cpp)
     endif ()
     set(sources ${core_sources} ${specific_sources})
+    set(sources ${sources} ${tangem_sources})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_library(log-lib log)
     if (${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
