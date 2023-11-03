@@ -1,0 +1,38 @@
+name: Tangem - Check if tag exists
+
+on:
+  pull_request:
+    branches:
+      - 'master'
+  workflow_dispatch:
+
+jobs:
+  check-tag:
+    name: Check if tag exists
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Read version.properties file
+        uses: BrycensRanch/read-properties-action@v1
+        id: version
+        with:
+          file: version.properties
+          property: tangem
+          default: 0.0.1-tangem1
+
+      - name: Echo version.properties
+        run: echo ${{ steps.version.outputs.tangem }}
+
+      - name: Check for Tag
+        run: |
+          TAG=${{ steps.version.outputs.tangem }}
+          if [ $(git tag -l "${TAG}") ]; then
+            echo "Tag ${TAG} exists. Please upgrade version in version.properties file"
+            exit 1
+          else
+            echo "Tag ${TAG} does not exist"
+          fi

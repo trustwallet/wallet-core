@@ -1,0 +1,79 @@
+name: Tangem - Publish
+
+on:
+  push:
+    branches:
+      - 'master'
+  workflow_dispatch:
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DVELOPMENT_ANDROID }}
+
+jobs:
+  publish:
+    name: Create tag and publish
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Read version.properties file
+        uses: BrycensRanch/read-properties-action@v1
+        id: version
+        with:
+          file: version.properties
+          property: tangem
+          default: 0.0.1-tangem1
+
+      - name: Echo version.properties
+        run: echo ${{ steps.version.outputs.tangem }}
+
+      - name: Create tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.version.outputs.tangem }}",
+              sha: context.sha
+            })
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Install system dependencies
+        run: |
+          tools/install-sys-dependencies-mac
+          tools/install-rust-dependencies
+      - name: Install Android Dependencies
+        run: tools/install-android-dependencies
+
+      - name: Cache internal dependencies
+        id: internal_cache
+        uses: actions/cache@v3
+        with:
+          path: build/local
+          key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
+      - name: Install internal dependencies
+        run: tools/install-dependencies
+        if: steps.internal_cache.outputs.cache-hit != 'true'
+
+      - name: Generate files
+        run: tools/generate-files android
+
+      - name: Build and publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+        run: |
+          cd android/
+          echo sdk.dir = $ANDROID_HOME > local.properties
+          GITHUB_USER=${{ secrets.GITHUB_ACTOR }} GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} ./gradlew build assembleRelease publish -Pversion=${{ steps.version.outputs.tangem }}
