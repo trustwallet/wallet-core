@@ -43,7 +43,7 @@ pub fn deserialize<'a, T: MessageRead<'a>>(data: &'a [u8]) -> ProtoResult<T> {
     T::from_reader(&mut reader, data)
 }
 
-pub fn to_any<'a, T>(message: &T) -> google::protobuf::Any
+pub fn to_any<T>(message: &T) -> google::protobuf::Any
 where
     T: MessageInfo + MessageWrite,
 {

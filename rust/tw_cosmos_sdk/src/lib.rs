@@ -9,8 +9,7 @@ pub mod modules;
 pub mod private_key;
 pub mod public_key;
 pub mod transaction;
-
-pub type Address = tw_bech32_address::Bech32Address;
+pub mod address;
 
 #[allow(non_snake_case)]
 #[rustfmt::skip]

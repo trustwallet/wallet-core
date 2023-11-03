@@ -7,3 +7,22 @@
 pub mod protobuf_signer;
 
 pub struct TransactionSigner;
+
+// TODO move to a module.
+
+// pub trait BroadcastMode: ToString {}
+//
+// pub struct BroadcastJson {
+//     tx_bytes: String,
+//     mode: String,
+// }
+//
+// pub fn encode_broadcast_json<Mode>(&self, broadcast_mode: Mode) -> BroadcastJson
+// where
+//     Mode: BroadcastMode,
+// {
+//     BroadcastJson {
+//         tx_bytes: self.encode(),
+//         mode: broadcast_mode.to_string(),
+//     }
+// }

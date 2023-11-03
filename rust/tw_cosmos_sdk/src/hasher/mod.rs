@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::proto::cosmos::tx::v1beta1::SignDoc;
 use tw_memory::Data;
 
 pub mod sha256_hasher;

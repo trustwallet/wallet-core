@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::hasher::{JsonHasher, ProtobufHasher};
-use crate::proto::cosmos::tx::v1beta1::SignDoc;
 use tw_hash::sha2::sha256;
 use tw_memory::Data;
 
