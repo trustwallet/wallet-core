@@ -33,6 +33,6 @@ impl Serialize for Base64Encoded {
         S: Serializer,
     {
         let is_url = false;
-        serializer.serialize_str(&encode(data, is_url))
+        serializer.serialize_str(&encode(&self.0, is_url))
     }
 }

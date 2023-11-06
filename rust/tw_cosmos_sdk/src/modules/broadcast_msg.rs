@@ -9,9 +9,7 @@ use serde::Serialize;
 use serde_json::Value as Json;
 use std::fmt;
 use std::fmt::Formatter;
-use tw_encoding::base64::impl_serde::as_base64;
 use tw_encoding::base64::Base64Encoded;
-use tw_memory::Data;
 use tw_proto::serialize;
 
 pub enum BroadcastMode {
@@ -57,7 +55,7 @@ impl BroadcastMsg {
         }
     }
 
-    pub fn serialize_json(&self) -> String {
+    pub fn to_json_string(&self) -> String {
         // It's safe to unwrap here because `BroadcastMsg` consists of checked fields only.
         serde_json::to_string(self).expect("Unexpected error on serializing a BroadcastMsg")
     }

@@ -33,6 +33,10 @@ impl CosmosPublicKey for EthermintEthSecp256PublicKey {
         let public_key = prepare_secp256k1_public_key(coin, public_key_bytes)?;
         Ok(EthermintEthSecp256PublicKey { public_key })
     }
+
+    fn to_bytes(&self) -> Data {
+        self.public_key.clone()
+    }
 }
 
 impl ProtobufPublicKey for EthermintEthSecp256PublicKey {

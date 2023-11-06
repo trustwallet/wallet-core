@@ -7,9 +7,7 @@
 use crate::private_key::SignatureData;
 use crate::public_key::JsonPublicKey;
 use serde::Serialize;
-use serde_json::Value as Json;
 use std::marker::PhantomData;
-use tw_encoding::base64;
 use tw_encoding::base64::Base64Encoded;
 
 /// `JsonSerializer` serializes transaction to JSON in Cosmos specific way.
@@ -28,6 +26,13 @@ pub struct AnyMsg<Value> {
 pub struct SignatureJson {
     pub_key: AnyMsg<Base64Encoded>,
     signature: Base64Encoded,
+}
+
+impl SignatureJson {
+    pub fn to_json_string(&self) -> String {
+        // It's safe to unwrap here because `SignatureJson` consists of checked fields only.
+        serde_json::to_string(self).expect("Unexpected error on serializing a SignatureJson")
+    }
 }
 
 impl<Address, PublicKey> JsonSerializer<Address, PublicKey>

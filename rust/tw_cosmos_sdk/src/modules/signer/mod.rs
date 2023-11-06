@@ -4,35 +4,33 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::address::CosmosAddress;
+use crate::address::Address;
 use crate::hasher::CosmosHasher;
 use crate::modules::broadcast_msg::{BroadcastMode, BroadcastMsg};
 use crate::modules::serializer::json_serializer::JsonSerializer;
 use crate::modules::serializer::protobuf_serializer::ProtobufSerializer;
 use crate::modules::tx_builder::TxBuilder;
 use crate::private_key::CosmosPrivateKey;
-use crate::public_key::CosmosPublicKey;
+use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use crate::transaction::{SignedTransaction, UnsignedTransaction};
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::SigningResult;
 use tw_coin_entry::signing_output_error;
 use tw_proto::serialize;
 use tw_proto::Cosmos::Proto;
 
 pub mod protobuf_signer;
 
-pub struct TransactionSigner<Address, PrivateKey, PublicKey, Hasher> {
-    _phantom: PhantomData<(Address, PrivateKey, PublicKey, Hasher)>,
+pub struct TWSigner<PrivateKey, PublicKey, Hasher> {
+    _phantom: PhantomData<(PrivateKey, PublicKey, Hasher)>,
 }
 
-impl<Address, PrivateKey, PublicKey, Hasher>
-    TransactionSigner<Address, PrivateKey, PublicKey, Hasher>
+impl<PrivateKey, PublicKey, Hasher> TWSigner<PrivateKey, PublicKey, Hasher>
 where
-    Address: CosmosAddress,
     PrivateKey: CosmosPrivateKey,
-    PublicKey: CosmosPublicKey,
+    PublicKey: CosmosPublicKey + JsonPublicKey + ProtobufPublicKey,
     Hasher: CosmosHasher,
 {
     #[inline]
@@ -40,7 +38,7 @@ where
         coin: &dyn CoinContext,
         input: Proto::SigningInput<'_>,
     ) -> Proto::SigningOutput<'static> {
-        Self::sign_proto_impl(coin, input)
+        Self::sign_impl(coin, input)
             .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
     }
 
@@ -67,12 +65,16 @@ where
                 let signed_tx = Self::sign_protobuf_tx(&private_key, unsigned_tx)?;
                 let signed_tx_raw = ProtobufSerializer::build_signed_tx(&signed_tx);
                 let broadcast_tx =
-                    BroadcastMsg::raw(broadcast_mode, &signed_tx_raw).serialize_json();
+                    BroadcastMsg::raw(broadcast_mode, &signed_tx_raw).to_json_string();
 
-                let signature_json =
-                    JsonSerializer::serialize_signature(&public_key, signed_tx.signature);
+                let signature_json = JsonSerializer::<Address, PublicKey>::serialize_signature(
+                    &public_key,
+                    signed_tx.signature.clone(),
+                )
+                .to_json_string();
+
                 Ok(Proto::SigningOutput {
-                    signature: Cow::from(signed_tx.signature.clone()),
+                    signature: Cow::from(signed_tx.signature),
                     signature_json: Cow::from(signature_json),
                     serialized: Cow::from(broadcast_tx),
                     ..Proto::SigningOutput::default()
