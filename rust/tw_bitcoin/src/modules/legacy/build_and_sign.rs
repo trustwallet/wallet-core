@@ -5,7 +5,7 @@ use bitcoin::taproot::{LeafVersion, NodeInfo, TaprootSpendInfo};
 use bitcoin::{Network, PrivateKey, PublicKey, ScriptBuf};
 use secp256k1::XOnlyPublicKey;
 use tw_coin_entry::coin_entry::CoinEntry;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex;
 use tw_misc::traits::ToBytesVec;
 use tw_proto::Bitcoin::Proto as LegacyProto;
@@ -19,6 +19,8 @@ use tw_proto::Utxo::Proto as UtxoProto;
 pub fn taproot_build_and_sign_transaction(
     legacy: LegacyProto::SigningInput,
 ) -> Result<LegacyProto::SigningOutput> {
+    let coin = TestCoinContext::default();
+
     // Convert the appropriate lock time.
     let native_lock_time = LockTime::from_consensus(legacy.lock_time);
     let lock_time = match native_lock_time {
@@ -91,7 +93,7 @@ pub fn taproot_build_and_sign_transaction(
     };
 
     // Build and sign the Bitcoin transaction.
-    let signed = crate::entry::BitcoinEntry.sign(&EmptyCoinContext, signing_input);
+    let signed = crate::entry::BitcoinEntry.sign(&coin, signing_input);
 
     // Check for error.
     if signed.error != Proto::Error::OK {

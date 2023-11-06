@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::{Address, CosmosAddress};
+use crate::context::CosmosContext;
 use crate::public_key::CosmosPublicKey;
 use crate::transaction::message::standard_cosmos_message::SendMessage;
 use crate::transaction::message::{SerializeMessage, SerializeMessageBox};
@@ -18,20 +19,20 @@ use tw_proto::Cosmos::Proto;
 
 const DEFAULT_TIMEOUT_HEIGHT: u64 = 0;
 
-pub struct TxBuilder<PublicKey> {
-    _phantom: PhantomData<PublicKey>,
+pub struct TxBuilder<Context> {
+    _phantom: PhantomData<Context>,
 }
 
-impl<PublicKey> TxBuilder<PublicKey>
+impl<Context> TxBuilder<Context>
 where
-    PublicKey: CosmosPublicKey,
+    Context: CosmosContext,
 {
     /// Please note that [`Proto::SigningInput::public_key`] must be set.
     /// If the public key should be derived from a private key, please do it before this method is called.
     pub fn unsigned_tx_from_proto(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput<'_>,
-    ) -> SigningResult<UnsignedTransaction<Address, PublicKey>> {
+    ) -> SigningResult<UnsignedTransaction<Context>> {
         let fee = input
             .fee
             .as_ref()
@@ -50,8 +51,8 @@ where
     pub fn signer_info_from_proto(
         coin: &dyn CoinContext,
         input: &Proto::SigningInput,
-    ) -> SigningResult<SignerInfo<PublicKey>> {
-        let public_key = PublicKey::from_bytes(coin, &input.public_key)?;
+    ) -> SigningResult<SignerInfo<Context::PublicKey>> {
+        let public_key = Context::PublicKey::from_bytes(coin, &input.public_key)?;
         Ok(SignerInfo {
             public_key,
             sequence: input.sequence,
@@ -60,7 +61,7 @@ where
         })
     }
 
-    fn fee_from_proto(input: &Proto::Fee) -> SigningResult<Fee<Address>> {
+    fn fee_from_proto(input: &Proto::Fee) -> SigningResult<Fee<Context::Address>> {
         let amounts = input
             .amounts
             .iter()
@@ -122,7 +123,7 @@ where
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
             from: Address::from_str_with_coin(coin, &send.from_address)?,
-            to: Address::from_str_with_coin(coin, &send.from_address)?,
+            to: Address::from_str_with_coin(coin, &send.to_address)?,
             amounts,
         };
         Ok(msg.into_boxed())

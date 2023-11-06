@@ -3,5 +3,10 @@ name = "tw_misc"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+test-utils = ["serde", "serde_json"]
+
 [dependencies]
+serde = { version = "1.0.163", features = ["derive"], optional = true }
+serde_json = { version = "1.0.96", optional = true }
 zeroize = "1.6.0"

@@ -7,7 +7,7 @@
 use std::borrow::Cow;
 use tw_coin_entry::coin_entry_ext::CoinEntryExt;
 use tw_coin_entry::error::SigningErrorType;
-use tw_coin_entry::test_utils::empty_context::EmptyCoinContext;
+use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::tw;
@@ -19,6 +19,8 @@ use tw_ronin::entry::RoninEntry;
 
 #[test]
 fn test_ronin_preimage_hashes_and_compile() {
+    let coin = TestCoinContext::default();
+
     let transfer = Proto::mod_Transaction::Transfer {
         amount: U256::encode_be_compact(1_000_000_000_000_000_000),
         data: Cow::default(),
@@ -38,7 +40,7 @@ fn test_ronin_preimage_hashes_and_compile() {
     let input_data = serialize(&input).unwrap();
 
     let res = RoninEntry
-        .preimage_hashes(&EmptyCoinContext, &input_data)
+        .preimage_hashes(&coin, &input_data)
         .expect("!preimage_hashes");
     let preimage: CompilerProto::PreSigningOutput =
         deserialize(res.as_slice()).expect("Coin entry returned an invalid output");
@@ -61,7 +63,7 @@ fn test_ronin_preimage_hashes_and_compile() {
     // Step 3: Compile transaction info
     let output_data = RoninEntry
         .compile(
-            &EmptyCoinContext,
+            &coin,
             &input_data,
             vec![signature],
             vec![public_key.to_bytes()],

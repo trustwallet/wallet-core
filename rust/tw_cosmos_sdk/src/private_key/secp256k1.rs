@@ -5,8 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::private_key::CosmosPrivateKey;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_hash::H520;
 use tw_keypair::tw;
+use tw_keypair::tw::Curve;
 use tw_keypair::KeyPairError;
 use tw_memory::Data;
 
@@ -27,7 +29,14 @@ impl<'a> TryFrom<&'a [u8]> for Secp256PrivateKey {
 }
 
 impl CosmosPrivateKey for Secp256PrivateKey {
-    fn sign_tx_hash(&self, _hash: &[u8]) -> SigningResult<Data> {
-        todo!()
+    fn sign_tx_hash(&self, hash: &[u8]) -> SigningResult<Data> {
+        let mut signature_data = self.0.sign(hash, Curve::Secp256k1)?;
+        if signature_data.len() != H520::LEN {
+            // We expect that secp256k1 signature has 65 bytes.
+            return Err(SigningError(SigningErrorType::Error_internal));
+        }
+        // Remove the last `v` byte.
+        signature_data.pop();
+        Ok(signature_data)
     }
 }

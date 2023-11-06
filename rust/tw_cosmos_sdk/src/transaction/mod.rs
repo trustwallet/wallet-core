@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::context::CosmosContext;
 use crate::private_key::SignatureData;
 use tw_number::U256;
 
@@ -41,19 +42,16 @@ pub struct TxBody {
     pub timeout_height: u64,
 }
 
-pub struct UnsignedTransaction<Address, PublicKey> {
-    pub signer: SignerInfo<PublicKey>,
-    pub fee: Fee<Address>,
+pub struct UnsignedTransaction<Context: CosmosContext> {
+    pub signer: SignerInfo<Context::PublicKey>,
+    pub fee: Fee<Context::Address>,
     pub chain_id: String,
     pub account_number: u64,
     pub tx_body: TxBody,
 }
 
-impl<Address, PublicKey> UnsignedTransaction<Address, PublicKey> {
-    pub fn into_signed(
-        self,
-        signature: SignatureData,
-    ) -> SignedTransaction<Address, PublicKey> {
+impl<Context: CosmosContext> UnsignedTransaction<Context> {
+    pub fn into_signed(self, signature: SignatureData) -> SignedTransaction<Context> {
         SignedTransaction {
             signer: self.signer,
             fee: self.fee,
@@ -63,9 +61,9 @@ impl<Address, PublicKey> UnsignedTransaction<Address, PublicKey> {
     }
 }
 
-pub struct SignedTransaction<Address, PublicKey> {
-    pub signer: SignerInfo<PublicKey>,
-    pub fee: Fee<Address>,
+pub struct SignedTransaction<Context: CosmosContext> {
+    pub signer: SignerInfo<Context::PublicKey>,
+    pub fee: Fee<Context::Address>,
     pub tx_body: TxBody,
     pub signature: SignatureData,
 }

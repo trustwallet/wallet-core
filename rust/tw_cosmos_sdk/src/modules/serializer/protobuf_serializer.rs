@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::context::CosmosContext;
 use crate::proto::cosmos::base::v1beta1 as base_proto;
 use crate::proto::cosmos::signing::v1beta1 as signing_proto;
 use crate::proto::cosmos::tx::v1beta1 as tx_proto;
@@ -22,19 +23,19 @@ pub fn build_coin(coin: &Coin) -> base_proto::Coin {
 }
 
 /// `ProtobufSerializer` serializes Cosmos specific Protobuf messages.
-pub struct ProtobufSerializer<Address, PublicKey> {
-    _phantom: PhantomData<(Address, PublicKey)>,
+pub struct ProtobufSerializer<Context> {
+    _phantom: PhantomData<Context>,
 }
 
-impl<Address, PublicKey> ProtobufSerializer<Address, PublicKey>
+impl<Context> ProtobufSerializer<Context>
 where
-    Address: ToString,
-    PublicKey: ProtobufPublicKey,
+    Context: CosmosContext,
+    Context::PublicKey: ProtobufPublicKey,
 {
     /// Serializes a signed transaction into the Cosmos [`tx_proto::TxRaw`] message.
     /// [`tx_proto::TxRaw`] can be broadcasted to the network.
     /// TODO rename
-    pub fn build_signed_tx(signed: &SignedTransaction<Address, PublicKey>) -> tx_proto::TxRaw {
+    pub fn build_signed_tx(signed: &SignedTransaction<Context>) -> tx_proto::TxRaw {
         let tx_body = Self::build_tx_body(&signed.tx_body);
         let body_bytes = serialize(&tx_body).expect("Unexpected error on tx_body serialization");
 
@@ -51,7 +52,7 @@ where
 
     /// Serializes an unsigned transaction into the Cosmos [`tx_proto::SignDoc`] message.
     /// [`tx_proto::SignDoc`] is used to generate a transaction prehash and sign it.
-    pub fn build_sign_doc(unsigned: &UnsignedTransaction<Address, PublicKey>) -> tx_proto::SignDoc {
+    pub fn build_sign_doc(unsigned: &UnsignedTransaction<Context>) -> tx_proto::SignDoc {
         let tx_body = Self::build_tx_body(&unsigned.tx_body);
         let body_bytes = serialize(&tx_body).expect("Unexpected error on tx_body serialization");
 
@@ -68,8 +69,8 @@ where
     }
 
     pub fn build_auth_info(
-        signer: &SignerInfo<PublicKey>,
-        fee: &Fee<Address>,
+        signer: &SignerInfo<Context::PublicKey>,
+        fee: &Fee<Context::Address>,
     ) -> tx_proto::AuthInfo {
         tx_proto::AuthInfo {
             signer_infos: vec![Self::build_signer_info(signer)],
@@ -80,7 +81,7 @@ where
     }
 
     pub fn build_tx_body(tx_body: &TxBody) -> tx_proto::TxBody {
-        let messages = tx_body.messages.iter().map(|msg| msg.to_proto()).collect();
+        let messages: Vec<_> = tx_body.messages.iter().map(|msg| msg.to_proto()).collect();
         tx_proto::TxBody {
             messages,
             memo: tx_body.memo.clone(),
@@ -90,7 +91,7 @@ where
         }
     }
 
-    pub fn build_signer_info(signer: &SignerInfo<PublicKey>) -> tx_proto::SignerInfo {
+    pub fn build_signer_info(signer: &SignerInfo<Context::PublicKey>) -> tx_proto::SignerInfo {
         use tx_proto::mod_ModeInfo::{self as mode_info, OneOfsum as SumEnum};
 
         // Single is the mode info for a single signer. It is structured as a message
@@ -108,16 +109,16 @@ where
         }
     }
 
-    fn build_fee(fee: &Fee<Address>) -> tx_proto::Fee {
+    fn build_fee(fee: &Fee<Context::Address>) -> tx_proto::Fee {
         let payer = fee
             .payer
             .as_ref()
-            .map(Address::to_string)
+            .map(Context::Address::to_string)
             .unwrap_or_default();
         let granter = fee
             .granter
             .as_ref()
-            .map(Address::to_string)
+            .map(Context::Address::to_string)
             .unwrap_or_default();
 
         tx_proto::Fee {
