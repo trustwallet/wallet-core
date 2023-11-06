@@ -1524,6 +1524,8 @@ version = "0.1.0"
 dependencies = [
  "pb-rs",
  "quick-protobuf",
+ "serde",
+ "serde_json",
  "tw_bech32_address",
  "tw_coin_entry",
  "tw_encoding",

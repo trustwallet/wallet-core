@@ -6,6 +6,7 @@
 
 use tw_coin_entry::coin_context::CoinContext;
 use tw_keypair::{tw, KeyPairResult};
+use tw_memory::Data;
 use tw_proto::google;
 
 pub mod ethermint_eth_secp256k1;
@@ -19,10 +20,17 @@ pub trait CosmosPublicKey: Sized {
     ) -> KeyPairResult<Self>;
 
     fn from_bytes(coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self>;
+
+    fn to_bytes(&self) -> Data;
 }
 
 pub trait ProtobufPublicKey: CosmosPublicKey {
     fn to_proto(&self) -> google::protobuf::Any;
+}
+
+pub trait JsonPublicKey: CosmosPublicKey {
+    /// In most cases, [`JsonPublicKey::public_key_type`] returns a corresponding protobuf message type.
+    fn public_key_type(&self) -> String;
 }
 
 // pub trait JsonPublicKey {

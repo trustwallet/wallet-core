@@ -8,7 +8,9 @@ use crate::proto::cosmos::base::v1beta1 as base_proto;
 use crate::proto::cosmos::signing::v1beta1 as signing_proto;
 use crate::proto::cosmos::tx::v1beta1 as tx_proto;
 use crate::public_key::ProtobufPublicKey;
-use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
+use crate::transaction::{
+    Coin, Fee, SignMode, SignedTransaction, SignerInfo, TxBody, UnsignedTransaction,
+};
 use std::marker::PhantomData;
 use tw_proto::serialize;
 
@@ -29,12 +31,31 @@ where
     Address: ToString,
     PublicKey: ProtobufPublicKey,
 {
+    /// Serializes a signed transaction into the Cosmos [`tx_proto::TxRaw`] message.
+    /// [`tx_proto::TxRaw`] can be broadcasted to the network.
+    /// TODO rename
+    pub fn build_signed_tx(signed: &SignedTransaction<Address, PublicKey>) -> tx_proto::TxRaw {
+        let tx_body = Self::build_tx_body(&signed.tx_body);
+        let body_bytes = serialize(&tx_body).expect("Unexpected error on tx_body serialization");
+
+        let auth_info = Self::build_auth_info(&signed.signers, &signed.fee);
+        let auth_info_bytes =
+            serialize(&auth_info).expect("Unexpected error on auth_info serialization");
+
+        tx_proto::TxRaw {
+            body_bytes,
+            auth_info_bytes,
+            signatures: signed.signatures.clone(),
+        }
+    }
+
+    /// Serializes an unsigned transaction into the Cosmos [`tx_proto::SignDoc`] message.
     /// [`tx_proto::SignDoc`] is used to generate a transaction prehash and sign it.
     pub fn build_sign_doc(unsigned: &UnsignedTransaction<Address, PublicKey>) -> tx_proto::SignDoc {
         let tx_body = Self::build_tx_body(&unsigned.tx_body);
         let body_bytes = serialize(&tx_body).expect("Unexpected error on tx_body serialization");
 
-        let auth_info = Self::build_auth_info(unsigned);
+        let auth_info = Self::build_auth_info(&signed.signers, &signed.fee);
         let auth_info_bytes =
             serialize(&auth_info).expect("Unexpected error on auth_info serialization");
 
@@ -47,15 +68,12 @@ where
     }
 
     pub fn build_auth_info(
-        unsigned: &UnsignedTransaction<Address, PublicKey>,
+        signers: &[SignerInfo<PublicKey>],
+        fee: &Fee<Address>,
     ) -> tx_proto::AuthInfo {
         tx_proto::AuthInfo {
-            signer_infos: unsigned
-                .signers
-                .iter()
-                .map(Self::build_signer_info)
-                .collect(),
-            fee: Some(Self::build_fee(&unsigned.fee)),
+            signer_infos: signers.iter().map(Self::build_signer_info).collect(),
+            fee: Some(Self::build_fee(fee)),
             // At this moment, we do not support transaction tip.
             tip: None,
         }

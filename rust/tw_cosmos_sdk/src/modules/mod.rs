@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+pub mod broadcast_msg;
 pub mod serializer;
 pub mod signer;
 pub mod tx_builder;

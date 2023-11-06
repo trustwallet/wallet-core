@@ -8,10 +8,8 @@ use tw_memory::Data;
 
 pub mod sha256_hasher;
 
-pub trait ProtobufHasher {
-    fn hash_sign_doc(&self, sign_doc: &[u8]) -> Data;
-}
+pub trait CosmosHasher {
+    fn hash_sign_doc(sign_doc: &[u8]) -> Data;
 
-pub trait JsonHasher {
-    fn hash_json_tx(&self, json: &str) -> Data;
+    fn hash_json_tx(json: &str) -> Data;
 }

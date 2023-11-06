@@ -42,7 +42,7 @@ pub struct TxBody {
 }
 
 pub struct UnsignedTransaction<Address, PublicKey> {
-    pub signers: Vec<SignerInfo<PublicKey>>,
+    pub signer: SignerInfo<PublicKey>,
     pub fee: Fee<Address>,
     pub chain_id: String,
     pub account_number: u64,
@@ -52,20 +52,20 @@ pub struct UnsignedTransaction<Address, PublicKey> {
 impl<Address, PublicKey> UnsignedTransaction<Address, PublicKey> {
     pub fn into_signed(
         self,
-        signatures: Vec<SignatureData>,
+        signature: SignatureData,
     ) -> SignedTransaction<Address, PublicKey> {
         SignedTransaction {
-            signers: self.signers,
+            signer: self.signer,
             fee: self.fee,
             tx_body: self.tx_body,
-            signatures,
+            signature,
         }
     }
 }
 
 pub struct SignedTransaction<Address, PublicKey> {
-    pub signers: Vec<SignerInfo<PublicKey>>,
+    pub signer: SignerInfo<PublicKey>,
     pub fee: Fee<Address>,
     pub tx_body: TxBody,
-    pub signatures: Vec<SignatureData>,
+    pub signature: SignatureData,
 }

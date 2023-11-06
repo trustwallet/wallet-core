@@ -39,7 +39,7 @@ where
         let signer = Self::signer_info_from_proto(coin, input)?;
 
         Ok(UnsignedTransaction {
-            signers: vec![signer],
+            signer,
             fee: Self::fee_from_proto(fee)?,
             chain_id: input.chain_id.to_string(),
             account_number: input.account_number,
