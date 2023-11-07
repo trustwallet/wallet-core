@@ -6,7 +6,6 @@
 
 use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
-use tw_keypair::traits::KeyPairTrait;
 use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
@@ -163,7 +162,7 @@ impl TransactionFactory {
         self.payload(TransactionPayload::EntryFunction(func))
     }
 
-    pub fn create_user_account(&self, public_key: &tw_keypair::ed25519::sha512::PublicKey) -> TransactionBuilder {
+    pub fn create_user_account(&self, _public_key: &tw_keypair::ed25519::sha512::PublicKey) -> TransactionBuilder {
         todo!()
     }
 
@@ -175,11 +174,11 @@ impl TransactionFactory {
         self.payload(aptos_account_transfer(to, amount))
     }
 
-    pub fn transfer(&self, to: AccountAddress, amount: u64) -> TransactionBuilder {
+    pub fn transfer(&self, _to: AccountAddress, _amount: u64) -> TransactionBuilder {
         todo!()
     }
 
-    pub fn account_transfer(&self, to: AccountAddress, amount: u64) -> TransactionBuilder {
+    pub fn account_transfer(&self, _to: AccountAddress, _amount: u64) -> TransactionBuilder {
         todo!()
     }
 

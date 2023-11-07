@@ -9,7 +9,7 @@ use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
 use serde_json::{json, Value};
 use tw_coin_entry::error::SigningResult;
-use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
+use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_encoding::hex::encode;
 use tw_proto::Aptos::Proto;
@@ -133,7 +133,7 @@ impl RawTransaction {
         self,
         key_pair: KeyPair,
     ) -> SigningResult<SignedTransaction> {
-        let mut serialized = bcs::to_bytes(&self).unwrap();
+        let serialized = bcs::to_bytes(&self).unwrap();
         let mut to_sign = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
         to_sign.extend_from_slice(serialized.as_slice());
         let signed = key_pair.private().sign(to_sign.clone()).unwrap();

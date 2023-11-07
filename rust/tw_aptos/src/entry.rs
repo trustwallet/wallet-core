@@ -66,7 +66,7 @@ impl CoinEntry for AptosEntry {
     fn preimage_hashes(
         &self,
         _coin: &dyn CoinContext,
-        input: Self::SigningInput<'_>,
+        _input: Self::SigningInput<'_>,
     ) -> Self::PreSigningOutput {
         todo!()
     }
@@ -75,9 +75,9 @@ impl CoinEntry for AptosEntry {
     fn compile(
         &self,
         _coin: &dyn CoinContext,
-        input: Self::SigningInput<'_>,
-        signatures: Vec<SignatureBytes>,
-        public_keys: Vec<PublicKeyBytes>,
+        _input: Self::SigningInput<'_>,
+        _signatures: Vec<SignatureBytes>,
+        _public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
         todo!()
     }
