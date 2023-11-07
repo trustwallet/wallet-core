@@ -24,3 +24,19 @@ pub fn aptos_account_transfer(to: AccountAddress, amount: u64) -> TransactionPay
         json!([to.to_hex_literal(), amount.to_string()]),
     ))
 }
+
+pub fn aptos_account_create_account(auth_key: AccountAddress) -> TransactionPayload {
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            AccountAddress::new([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1,
+            ]),
+            ident_str!("aptos_account").to_owned(),
+        ),
+        ident_str!("create_account").to_owned(),
+        vec![],
+        vec![bcs::to_bytes(&auth_key).unwrap()],
+        json!([auth_key.to_hex_literal()]),
+    ))
+}

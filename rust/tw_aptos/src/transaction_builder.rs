@@ -11,7 +11,7 @@ use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
-use crate::aptos_move_packages::aptos_account_transfer;
+use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer};
 
 pub struct TransactionBuilder {
     sender: Option<AccountAddress>,
@@ -162,8 +162,8 @@ impl TransactionFactory {
         self.payload(TransactionPayload::EntryFunction(func))
     }
 
-    pub fn create_user_account(&self, _public_key: &tw_keypair::ed25519::sha512::PublicKey) -> TransactionBuilder {
-        todo!()
+    pub fn create_user_account(&self, to: AccountAddress) -> TransactionBuilder {
+        self.payload(aptos_account_create_account(to))
     }
 
     pub fn implicitly_create_user_account_and_transfer(
@@ -203,43 +203,106 @@ impl TransactionFactory {
 mod tests {
     use std::str::FromStr;
     use move_core_types::account_address::AccountAddress;
-    use serde_json::{Value};
     use tw_encoding::hex;
     use crate::transaction_builder::TransactionFactory;
 
-    #[test]
-    fn test_aptos_account_transfer() {
-        let to = AccountAddress::from_str("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30").unwrap();
-        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec").unwrap();
+    fn setup_transaction(
+        sender: &str,
+        keypair_str: &str,
+        transaction_type: &str,
+        sequence_number: u64,
+        to: &str,
+        expected_raw_txn_bytes_str: &str,
+        expected_signature_str: &str,
+        expected_encoded_txn_str: &str,
+        json_literal: &str,
+    ) {
+        let account_address = AccountAddress::from_str(sender).unwrap();
+        let to = AccountAddress::from_str(to).unwrap();
+        let keypair = tw_keypair::ed25519::sha512::KeyPair::try_from(keypair_str).unwrap();
         let factory = TransactionFactory::new(33u8)
             .with_max_gas_amount(3296766)
             .with_gas_unit_price(100)
             .with_transaction_expiration_time(3664390082);
-        let mut builder = factory.implicitly_create_user_account_and_transfer(to.clone(), 1000);
-        builder = builder.sender(to.clone()).sequence_number(99);
-        let res = builder.build().sign(keypair).unwrap();
-        assert_eq!(hex::encode(res.raw_txn_bytes(), false), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada0000000021");
-        assert_eq!(hex::encode(res.authenticator().get_signature(), false), "5707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01");
-        assert_eq!(hex::encode(res.encoded(), false), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c405707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01");
-        let json_literal = r#"{
-                    "expiration_timestamp_secs": "3664390082",
-                    "gas_unit_price": "100",
-                    "max_gas_amount": "3296766",
-                    "payload": {
-                        "arguments": ["0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
-                        "function": "0x1::aptos_account::transfer",
-                        "type": "entry_function_payload",
-                        "type_arguments": []
-                    },
-                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
-                    "sequence_number": "99",
-                    "signature": {
-                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
-                        "signature": "0x5707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01",
-                        "type": "ed25519_signature"
-                    }
-                }"#;
-        assert_eq!(res.to_json(),  Value::from_str(json_literal).unwrap());
 
+        let mut builder = match transaction_type {
+            "transfer" => factory.implicitly_create_user_account_and_transfer(to.clone(), 1000),
+            "create_account" => { factory.create_user_account(to.clone()) },
+            _ => panic!("Unsupported transaction type"),
+        };
+
+        builder = builder.sender(account_address).sequence_number(sequence_number);
+        let res = builder.build().sign(keypair).unwrap();
+
+        assert_eq!(hex::encode(res.raw_txn_bytes(), false), expected_raw_txn_bytes_str);
+        assert_eq!(hex::encode(res.authenticator().get_signature(), false), expected_signature_str);
+        assert_eq!(hex::encode(res.encoded(), false), expected_encoded_txn_str);
+
+        let json_value: serde_json::Value = serde_json::from_str(json_literal).unwrap();
+        assert_eq!(res.to_json(), json_value);
+    }
+
+    #[test]
+    fn test_aptos_account_transfer() {
+        setup_transaction(
+            "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+            "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",
+            "transfer",
+            99,
+            "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+            "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada0000000021",
+            "5707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01",
+            "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c405707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01",
+            r#"{
+            "expiration_timestamp_secs": "3664390082",
+            "gas_unit_price": "100",
+            "max_gas_amount": "3296766",
+            "payload": {
+                "arguments": ["0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
+                "function": "0x1::aptos_account::transfer",
+                "type": "entry_function_payload",
+                "type_arguments": []
+            },
+            "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+            "sequence_number": "99",
+            "signature": {
+                "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                "signature": "0x5707246db31e2335edc4316a7a656a11691d1d1647f6e864d1ab12f43428aaaf806cf02120d0b608cdd89c5c904af7b137432aacdd60cc53f9fad7bd33578e01",
+                "type": "ed25519_signature"
+            }
+        }"#
+        );
+    }
+
+    #[test]
+    fn test_aptos_create_account() {
+        setup_transaction(
+            "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+            "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
+            "create_account",
+            0, // Sequence number
+            "0x3aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30e",
+            "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3000000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e6372656174655f6163636f756e740001203aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30efe4d3200000000006400000000000000c2276ada0000000021", // Expected raw transaction bytes
+            "fcba3dfbec76721454ef414955f09f159660a13886b4edd8c579e3c779c29073afe7b25efa3fef9b21c2efb1cf16b4247fc0e5c8f63fdcd1c8d87f5d59f44501", // Expected signature
+            "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3000000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e6372656174655f6163636f756e740001203aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30efe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40fcba3dfbec76721454ef414955f09f159660a13886b4edd8c579e3c779c29073afe7b25efa3fef9b21c2efb1cf16b4247fc0e5c8f63fdcd1c8d87f5d59f44501", // Expected encoded transaction
+            r#"{
+            "expiration_timestamp_secs": "3664390082",
+            "gas_unit_price": "100",
+            "max_gas_amount": "3296766",
+            "payload": {
+                "arguments": ["0x3aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30e"],
+                "function": "0x1::aptos_account::create_account",
+                "type": "entry_function_payload",
+                "type_arguments": []
+            },
+            "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+            "sequence_number": "0",
+            "signature": {
+                "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                "signature": "0xfcba3dfbec76721454ef414955f09f159660a13886b4edd8c579e3c779c29073afe7b25efa3fef9b21c2efb1cf16b4247fc0e5c8f63fdcd1c8d87f5d59f44501",
+                "type": "ed25519_signature"
+            }
+        }"# // Expected JSON literal
+        );
     }
 }
