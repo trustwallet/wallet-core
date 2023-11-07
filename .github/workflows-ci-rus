@@ -1,4 +1,4 @@
-name: Linux CI Rust
+name: Linux CI Rus
 
 on:
   push:
