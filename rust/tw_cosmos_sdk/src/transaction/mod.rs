@@ -11,7 +11,7 @@ use tw_number::U256;
 
 pub mod message;
 
-use message::SerializeMessageBox;
+use message::CosmosMessageBox;
 
 /// At this moment, TW only supports the Direct signing mode.
 #[derive(Clone, Copy, Debug)]
@@ -40,7 +40,7 @@ pub struct SignerInfo<PublicKey> {
 }
 
 pub struct TxBody {
-    pub messages: Vec<SerializeMessageBox>,
+    pub messages: Vec<CosmosMessageBox>,
     pub memo: String,
     pub timeout_height: u64,
 }

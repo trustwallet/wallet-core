@@ -26,7 +26,7 @@ where
         private_key: &Context::PrivateKey,
         unsigned: UnsignedTransaction<Context>,
     ) -> SigningResult<SignedTransaction<Context>> {
-        let tx_to_sign = ProtobufSerializer::build_sign_doc(&unsigned);
+        let tx_to_sign = ProtobufSerializer::build_sign_doc(&unsigned)?;
         let encoded_tx = serialize(&tx_to_sign)?;
 
         let hash_to_sign = Context::TxHasher::hash_sign_doc(&encoded_tx);

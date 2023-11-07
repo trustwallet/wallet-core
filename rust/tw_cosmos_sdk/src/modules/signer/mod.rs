@@ -56,7 +56,7 @@ where
         let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
 
         let signed_tx = ProtobufSigner::sign_tx(&private_key, unsigned_tx)?;
-        let signed_tx_raw = ProtobufSerializer::build_signed_tx(&signed_tx);
+        let signed_tx_raw = ProtobufSerializer::build_signed_tx(&signed_tx)?;
         let broadcast_tx = BroadcastMsg::raw(broadcast_mode, &signed_tx_raw).to_json_string();
 
         let signature_json = JsonSerializer::<Context>::serialize_signature(

@@ -13,6 +13,7 @@ use crate::transaction::{
     Coin, Fee, SignMode, SignedTransaction, SignerInfo, TxBody, UnsignedTransaction,
 };
 use std::marker::PhantomData;
+use tw_coin_entry::error::SigningResult;
 use tw_proto::serialize;
 
 pub fn build_coin(coin: &Coin) -> base_proto::Coin {
@@ -34,38 +35,39 @@ where
 {
     /// Serializes a signed transaction into the Cosmos [`tx_proto::TxRaw`] message.
     /// [`tx_proto::TxRaw`] can be broadcasted to the network.
-    /// TODO rename
-    pub fn build_signed_tx(signed: &SignedTransaction<Context>) -> tx_proto::TxRaw {
-        let tx_body = Self::build_tx_body(&signed.tx_body);
+    pub fn build_signed_tx(signed: &SignedTransaction<Context>) -> SigningResult<tx_proto::TxRaw> {
+        let tx_body = Self::build_tx_body(&signed.tx_body)?;
         let body_bytes = serialize(&tx_body).expect("Unexpected error on tx_body serialization");
 
         let auth_info = Self::build_auth_info(&signed.signer, &signed.fee);
         let auth_info_bytes =
             serialize(&auth_info).expect("Unexpected error on auth_info serialization");
 
-        tx_proto::TxRaw {
+        Ok(tx_proto::TxRaw {
             body_bytes,
             auth_info_bytes,
             signatures: vec![signed.signature.clone()],
-        }
+        })
     }
 
     /// Serializes an unsigned transaction into the Cosmos [`tx_proto::SignDoc`] message.
     /// [`tx_proto::SignDoc`] is used to generate a transaction prehash and sign it.
-    pub fn build_sign_doc(unsigned: &UnsignedTransaction<Context>) -> tx_proto::SignDoc {
-        let tx_body = Self::build_tx_body(&unsigned.tx_body);
+    pub fn build_sign_doc(
+        unsigned: &UnsignedTransaction<Context>,
+    ) -> SigningResult<tx_proto::SignDoc> {
+        let tx_body = Self::build_tx_body(&unsigned.tx_body)?;
         let body_bytes = serialize(&tx_body).expect("Unexpected error on tx_body serialization");
 
         let auth_info = Self::build_auth_info(&unsigned.signer, &unsigned.fee);
         let auth_info_bytes =
             serialize(&auth_info).expect("Unexpected error on auth_info serialization");
 
-        tx_proto::SignDoc {
+        Ok(tx_proto::SignDoc {
             body_bytes,
             auth_info_bytes,
             chain_id: unsigned.chain_id.clone(),
             account_number: unsigned.account_number,
-        }
+        })
     }
 
     pub fn build_auth_info(
@@ -80,15 +82,20 @@ where
         }
     }
 
-    pub fn build_tx_body(tx_body: &TxBody) -> tx_proto::TxBody {
-        let messages: Vec<_> = tx_body.messages.iter().map(|msg| msg.to_proto()).collect();
-        tx_proto::TxBody {
+    pub fn build_tx_body(tx_body: &TxBody) -> SigningResult<tx_proto::TxBody> {
+        let messages: Vec<_> = tx_body
+            .messages
+            .iter()
+            .map(|msg| msg.to_proto())
+            .collect::<SigningResult<_>>()?;
+
+        Ok(tx_proto::TxBody {
             messages,
             memo: tx_body.memo.clone(),
             timeout_height: tx_body.timeout_height,
             extension_options: Vec::default(),
             non_critical_extension_options: Vec::default(),
-        }
+        })
     }
 
     pub fn build_signer_info(signer: &SignerInfo<Context::PublicKey>) -> tx_proto::SignerInfo {

@@ -8,8 +8,10 @@ use crate::address::{Address, CosmosAddress};
 use crate::context::CosmosContext;
 use crate::public_key::CosmosPublicKey;
 use crate::transaction::message::standard_cosmos_message::SendMessage;
-use crate::transaction::message::{SerializeMessage, SerializeMessageBox};
+use crate::transaction::message::terra_wasm_message::{ExecuteContractMessage, ExecuteMsg};
+use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
+use serde_json::json;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -103,7 +105,7 @@ where
     fn tx_message(
         coin: &dyn CoinContext,
         input: &Proto::Message,
-    ) -> SigningResult<SerializeMessageBox> {
+    ) -> SigningResult<CosmosMessageBox> {
         use Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
 
         match input.message_oneof {
@@ -114,8 +116,8 @@ where
 
     pub fn send_msg_from_proto(
         coin: &dyn CoinContext,
-        send: &Proto::mod_Message::Send,
-    ) -> SigningResult<SerializeMessageBox> {
+        send: &Proto::mod_Message::Send<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
         let amounts = send
             .amounts
             .iter()
@@ -125,6 +127,48 @@ where
             from_address: Address::from_str_with_coin(coin, &send.from_address)?,
             to_address: Address::from_str_with_coin(coin, &send.to_address)?,
             amount: amounts,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_execute_contract_msg_from_proto(
+        coin: &dyn CoinContext,
+        execute: &Proto::mod_Message::ExecuteContract<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let coins = execute
+            .coins
+            .iter()
+            .map(Self::coin_from_proto)
+            .collect::<SigningResult<_>>()?;
+        let msg = ExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &execute.sender)?,
+            contract: Address::from_str_with_coin(coin, &execute.contract)?,
+            execute_msg: ExecuteMsg::RegularString(execute.execute_msg.to_string()),
+            coins,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_execute_contract_transfer_msg_from_proto(
+        coin: &dyn CoinContext,
+        transfer: &Proto::mod_Message::WasmTerraExecuteContractTransfer<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let transfer_amount = U256::from_big_endian_slice(&transfer.amount)?;
+        let recipient_address = Address::from_str_with_coin(coin, &transfer.recipient_address)?;
+
+        let execute_msg = json!({
+            "transfer": {
+                "amount": transfer_amount.to_string(),
+                "recipient": recipient_address,
+            }
+        });
+
+        let msg = ExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &transfer.sender_address)?,
+            contract: Address::from_str_with_coin(coin, &transfer.contract_address)?,
+            execute_msg: ExecuteMsg::Json(execute_msg),
+            // Used in case you are sending native tokens along with this message.
+            coins: Vec::default(),
         };
         Ok(msg.into_boxed())
     }

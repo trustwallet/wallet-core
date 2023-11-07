@@ -7,7 +7,6 @@
 use crate::context::CosmosContext;
 use crate::private_key::SignatureData;
 use crate::public_key::{CosmosPublicKey, JsonPublicKey};
-use crate::transaction::message::SerializeMessageBox;
 use crate::transaction::{Coin, Fee, SignedTransaction, UnsignedTransaction};
 use serde::Serialize;
 use serde_json::Value as Json;
@@ -74,7 +73,7 @@ where
             .tx_body
             .messages
             .iter()
-            .map(Self::build_message)
+            .map(|msg| msg.to_json())
             .collect::<SigningResult<_>>()?;
         let signature =
             Self::serialize_signature(&signed.signer.public_key, signed.signature.clone());
@@ -94,7 +93,7 @@ where
             .tx_body
             .messages
             .iter()
-            .map(Self::build_message)
+            .map(|msg| msg.to_json())
             .collect::<SigningResult<_>>()?;
 
         Ok(UnsignedTxJson {
@@ -122,14 +121,6 @@ where
             msg_type: public_key.public_key_type(),
             value: Base64Encoded(public_key.to_bytes()),
         }
-    }
-
-    pub fn build_message(message: &SerializeMessageBox) -> SigningResult<AnyMsg<Json>> {
-        let value = message.to_json()?;
-        Ok(AnyMsg {
-            msg_type: message.message_type(),
-            value,
-        })
     }
 
     pub fn build_fee(fee: &Fee<Context::Address>) -> FeeJson {

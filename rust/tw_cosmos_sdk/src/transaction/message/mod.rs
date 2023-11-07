@@ -4,33 +4,45 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::modules::serializer::json_serializer::AnyMsg;
+use serde::Serialize;
 use serde_json::Value as Json;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_proto::google;
 
 pub mod standard_cosmos_message;
+pub mod terra_wasm_message;
 
 pub type ProtobufMessage = google::protobuf::Any;
+pub type CosmosMessageBox = Box<dyn CosmosMessage>;
+pub type JsonMessage = AnyMsg<Json>;
 
-pub type SerializeMessageBox = Box<dyn SerializeMessage>;
-
-pub trait ToJsonMessage {
-    fn message_type(&self) -> String;
-
-    fn to_json(&self) -> SigningResult<Json>;
-}
-
-pub trait ToProtobufMessage {
-    fn to_proto(&self) -> ProtobufMessage;
-}
-
-pub trait SerializeMessage: ToJsonMessage + ToProtobufMessage {
-    fn into_boxed(self) -> SerializeMessageBox
+pub trait CosmosMessage {
+    fn into_boxed(self) -> CosmosMessageBox
     where
         Self: 'static + Sized,
     {
         Box::new(self)
     }
+
+    /// Override the method if the message can be represented as a Protobuf message.
+    fn to_proto(&self) -> SigningResult<ProtobufMessage> {
+        Err(SigningError(SigningErrorType::Error_not_supported))
+    }
+
+    /// Override the method if the message can be represented as a JSON object.
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        Err(SigningError(SigningErrorType::Error_not_supported))
+    }
 }
 
-impl<T> SerializeMessage for T where T: ToJsonMessage + ToProtobufMessage {}
+/// A standard implementation of the [`CosmosMessage::to_json`] method.
+/// This suits any message type that implements the `serialize` trait.
+pub fn message_to_json<T: Serialize>(msg_type: &str, msg: &T) -> SigningResult<JsonMessage> {
+    let value =
+        serde_json::to_value(msg).map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+    Ok(JsonMessage {
+        msg_type: msg_type.to_string(),
+        value,
+    })
+}
