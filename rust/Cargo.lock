@@ -1358,9 +1358,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.96"
+version = "1.0.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "057d394a50403bcac12672b2b18fb387ab6d289d957dab67dd201875391e52f1"
+checksum = "3d1c7e3eac408d115102c4c24ad393e0821bb3a5df4d506a80f85f7a742a526b"
 dependencies = [
  "itoa",
  "ryu",
@@ -1628,6 +1628,7 @@ dependencies = [
  "move-core-types 0.0.4 (git+https://github.com/move-language/move?rev=ea70797099baea64f05194a918cebd69ed02b285)",
  "serde",
  "serde_bytes",
+ "serde_json",
  "tw_coin_entry",
  "tw_encoding",
  "tw_hash",

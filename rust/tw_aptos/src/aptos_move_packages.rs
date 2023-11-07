@@ -7,6 +7,7 @@
 use move_core_types::account_address::AccountAddress;
 use move_core_types::ident_str;
 use move_core_types::language_storage::ModuleId;
+use serde_json::json;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 pub fn aptos_account_transfer(to: AccountAddress, amount: u64) -> TransactionPayload {
@@ -14,12 +15,12 @@ pub fn aptos_account_transfer(to: AccountAddress, amount: u64) -> TransactionPay
         ModuleId::new(
             AccountAddress::new([
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 1,
-            ]),
+                0, 0, 0, 1, ]),
             ident_str!("aptos_account").to_owned(),
         ),
         ident_str!("transfer").to_owned(),
         vec![],
         vec![bcs::to_bytes(&to).unwrap(), bcs::to_bytes(&amount).unwrap()],
+        json!([to.to_hex_literal(), amount.to_string()]),
     ))
 }
