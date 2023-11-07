@@ -112,7 +112,9 @@ impl TransactionFactory {
                 return factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount);
             }
             OneOftransaction_payload::token_transfer(_) => {}
-            OneOftransaction_payload::create_account(_) => {}
+            OneOftransaction_payload::create_account(create_account) => {
+                return factory.create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap());
+            }
             OneOftransaction_payload::nft_message(_) => {}
             OneOftransaction_payload::register_token(_) => {}
             OneOftransaction_payload::liquid_staking_message(_) => {}
