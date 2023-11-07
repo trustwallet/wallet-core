@@ -10,6 +10,7 @@ pub mod aptos_move_packages;
 pub mod constants;
 pub mod entry;
 
+pub mod nft;
 pub mod signer;
 pub mod transaction;
 pub mod transaction_builder;
