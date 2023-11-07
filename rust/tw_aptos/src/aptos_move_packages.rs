@@ -142,3 +142,19 @@ pub fn token_transfers_claim_script(
         json!([sender.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()])
     ))
 }
+
+pub fn managed_coin_register(coin_type: TypeTag) -> TransactionPayload {
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            AccountAddress::new([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1,
+            ]),
+            ident_str!("managed_coin").to_owned(),
+        ),
+        ident_str!("register").to_owned(),
+        vec![coin_type],
+        vec![],
+        json!([])
+    ))
+}
