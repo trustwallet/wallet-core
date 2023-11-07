@@ -6,7 +6,7 @@
 
 use move_core_types::account_address::AccountAddress;
 use move_core_types::ident_str;
-use move_core_types::language_storage::ModuleId;
+use move_core_types::language_storage::{ModuleId, TypeTag};
 use serde_json::json;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
@@ -38,5 +38,21 @@ pub fn aptos_account_create_account(auth_key: AccountAddress) -> TransactionPayl
         vec![],
         vec![bcs::to_bytes(&auth_key).unwrap()],
         json!([auth_key.to_hex_literal()]),
+    ))
+}
+
+pub fn coin_transfer(coin_type: TypeTag, to: AccountAddress, amount: u64) -> TransactionPayload {
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            AccountAddress::new([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1,
+            ]),
+            ident_str!("coin").to_owned(),
+        ),
+        ident_str!("transfer").to_owned(),
+        vec![coin_type],
+        vec![bcs::to_bytes(&to).unwrap(), bcs::to_bytes(&amount).unwrap()],
+        json!([to.to_hex_literal(), amount.to_string()]),
     ))
 }
