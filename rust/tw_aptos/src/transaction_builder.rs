@@ -12,7 +12,7 @@ use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
 use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
-use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, coin_transfer, managed_coin_register, token_transfers_cancel_offer_script, token_transfers_claim_script, token_transfers_offer_script};
+use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins, coin_transfer, managed_coin_register, token_transfers_cancel_offer_script, token_transfers_claim_script, token_transfers_offer_script};
 use crate::nft::NftOperation;
 
 pub struct TransactionBuilder {
@@ -209,6 +209,11 @@ impl TransactionFactory {
                           amount: u64, coin_type: TypeTag) -> TransactionBuilder {
         self.payload(coin_transfer(coin_type, to, amount))
     }
+
+    pub fn implicitly_create_user_and_coins_transfer(&self, to: AccountAddress,
+                          amount: u64, coin_type: TypeTag) -> TransactionBuilder {
+        self.payload(aptos_account_transfer_coins(coin_type, to, amount))
+    }
     pub fn transfer(&self, _to: AccountAddress, _amount: u64) -> TransactionBuilder {
         todo!()
     }
@@ -266,6 +271,7 @@ mod tests {
         AccountCreation(AccountCreation),
         Transfer(Transfer),
         TokenTransfer(TokenTransfer),
+        ImplicitTokenTransfer(TokenTransfer),
         NftOps(NftOperation),
     }
 
@@ -311,14 +317,21 @@ mod tests {
                 } else {
                     panic!("Unsupported arguments")
                 }
-            }
+            },
+            "implicit_coin_transfer" => {
+                if let OpsDetails::ImplicitTokenTransfer(token_transfer) = ops_details.unwrap() {
+                    factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer.transfer.to).unwrap(), token_transfer.transfer.amount, token_transfer.tag)
+                } else {
+                    panic!("Unsupported arguments")
+                }
+            },
             "nft_ops" => {
                 if let OpsDetails::NftOps(nft) = ops_details.unwrap() {
                     factory.nft_ops(nft)
                 } else {
                     panic!("Unsupported arguments")
                 }
-            }
+            },
             "register_token" => {
                 if let OpsDetails::RegisterToken(register_token) = ops_details.unwrap() {
                     factory.register_token(register_token.coin_type)
@@ -610,5 +623,39 @@ mod tests {
                 }"#, // Expected JSON literal
             Some(OpsDetails::RegisterToken(RegisterToken { coin_type: TypeTag::from_str("0xe4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379::move_coin::MoveCoin").unwrap() })),
         )
+    }
+
+    #[test]
+    fn test_implicit_aptos_coin_transfer() {
+        setup_transaction(
+            "0x1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf25", // Sender's address
+            "e7f56c77189e03699a75d8ec5c090e41f3d9d4783bc49c33df8a93d915e10de8", // Keypair
+            "implicit_coin_transfer",
+            2, // Sequence number
+            1,
+            2000,
+            "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
+            "30ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d", // Expected signature
+            "1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf2502000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e7472616e736665725f636f696e730107e9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9086d65655f636f696e074d6565436f696e000220b7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c081027000000000000d0070000000000006400000000000000c2276ada0000000001002062e7a6a486553b56a53e89dfae3f780693e537e5b0a7ed33290780e581ca83694030ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d", // Expected encoded transaction
+            r#"{
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "2000",
+                    "payload": {
+                        "arguments": ["0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c","10000"],
+                        "function": "0x1::aptos_account::transfer_coins",
+                        "type": "entry_function_payload",
+                        "type_arguments": ["0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9::mee_coin::MeeCoin"]
+                    },
+                    "sender": "0x1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf25",
+                    "sequence_number": "2",
+                    "signature": {
+                        "public_key": "0x62e7a6a486553b56a53e89dfae3f780693e537e5b0a7ed33290780e581ca8369",
+                        "signature": "0x30ebd7e95cb464677f411868e2cbfcb22bc01cc63cded36c459dff45e6d2f1354ae4e090e7dfbb509851c0368b343e0e5ecaf6b08e7c1b94c186530b0f7dee0d",
+                        "type": "ed25519_signature"
+                    }
+                }"#, // Expected JSON literal
+            Some(OpsDetails::ImplicitTokenTransfer(TokenTransfer { transfer: Transfer { to: "0xb7c7d12080209e9dc14498c80200706e760363fb31782247e82cf57d1d6e5d6c".to_string(), amount: 10000 }, tag: TypeTag::from_str("0xe9c192ff55cffab3963c695cff6dbf9dad6aff2bb5ac19a6415cad26a81860d9::mee_coin::MeeCoin").unwrap() })),
+        );
     }
 }
