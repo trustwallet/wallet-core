@@ -17,7 +17,7 @@ use tw_keypair::tw::PublicKey;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::address::Address;
-use crate::signer::{AptosContext, Signer, StandardAptosContext};
+use crate::signer::{Signer, StandardAptosContext};
 
 
 pub struct AptosEntry;

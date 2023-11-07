@@ -7,10 +7,11 @@
 use std::borrow::Cow;
 use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
+use serde_json::{json, Value};
 use tw_coin_entry::error::SigningResult;
 use tw_keypair::ed25519::sha512::{KeyPair, PublicKey};
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
-use tw_number::Sign;
+use tw_encoding::hex::encode;
 use tw_proto::Aptos::Proto;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
@@ -39,6 +40,17 @@ impl TransactionAuthenticator {
 
     pub fn get_public_key(&self) -> Vec<u8> {
         match self { TransactionAuthenticator::Ed25519 { public_key, signature: _signature } => { public_key.clone() } }
+    }
+
+    pub fn to_json(&self) -> Value {
+        match self {
+            TransactionAuthenticator::Ed25519 { public_key, signature } => {
+
+                json!({"public_key": encode(&public_key, true),
+                       "signature": encode(&signature, true),
+                       "type": "ed25519_signature"})
+            }
+        }
     }
 }
 
@@ -71,7 +83,6 @@ pub struct RawTransaction {
     /// Chain ID of the Aptos network this transaction is intended for.
     chain_id: u8,
 }
-
 impl RawTransaction {
     /// Create a new `RawTransaction` with a payload.
     ///
@@ -139,6 +150,17 @@ impl RawTransaction {
             encoded,
         })
     }
+
+    pub fn to_json(&self) -> Value {
+        json!({
+            "expiration_timestamp_secs": self.expiration_timestamp_secs.to_string(),
+            "gas_unit_price": self.gas_unit_price.to_string(),
+            "max_gas_amount": self.max_gas_amount.to_string(),
+            "payload": self.payload.to_json(),
+            "sender": self.sender.to_hex_literal(),
+            "sequence_number": self.sequence_number.to_string()
+        })
+    }
 }
 
 /// A transaction that has been signed.
@@ -162,7 +184,6 @@ pub struct SignedTransaction {
     /// Encoded bytes to be broadcast
     encoded: Vec<u8>,
 }
-
 impl SignedTransaction {
     pub fn raw_txn(&self) -> &RawTransaction {
         &self.raw_txn
@@ -175,5 +196,11 @@ impl SignedTransaction {
     }
     pub fn encoded(&self) -> &Vec<u8> {
         &self.encoded
+    }
+
+    pub fn to_json(&self) -> Value {
+        let mut json_value = self.raw_txn.to_json();
+        json_value.as_object_mut().unwrap().insert("signature".to_string(), self.authenticator.to_json());
+        json_value
     }
 }

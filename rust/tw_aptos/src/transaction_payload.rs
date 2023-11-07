@@ -27,11 +27,7 @@ impl EntryFunction {
         // the items that match `TypeTag::Struct` to their string representation.
         let type_arguments: Value = self.ty_args.iter()
             .filter_map(|item| {
-                if let TypeTag::Struct(value) = item {
-                    Some(json!(value.to_string()))
-                } else {
-                    None
-                }
+                Some(json!(item.to_string()))
             })
             .collect();
 
@@ -54,11 +50,11 @@ pub enum TransactionPayload {
 }
 
 impl TransactionPayload {
-    fn to_json(&self) -> Value {
+    pub fn to_json(&self) -> Value {
         match self {
             TransactionPayload::Script => { Value::default() }
             TransactionPayload::ModuleBundle => { Value::default() }
-            TransactionPayload::EntryFunction(entry) => { json!({"payload": entry.to_json()}) }
+            TransactionPayload::EntryFunction(entry) => { entry.to_json() }
         }
     }
 }
@@ -105,12 +101,10 @@ mod tests {
         let serialized = bcs::to_bytes(&tp).unwrap();
         assert_eq!(hex::encode(serialized, false), "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000");
         let payload_value: Value = json!({
-            "payload": {
                 "function": "0x1::coin::transfer",
                 "type": "entry_function_payload",
                 "arguments": ["0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", "1000"],
                 "type_arguments": ["0x1::aptos_coin::AptosCoin"]
-            }
         });
         assert_eq!(tp.to_json(), payload_value);
     }
