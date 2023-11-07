@@ -6,10 +6,11 @@
 
 use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
+use tw_coin_entry::derivation::Derivation::Default;
 use tw_proto::Aptos::Proto::mod_NftMessage::OneOfnft_transaction_payload;
-use tw_proto::Aptos::Proto::{NftMessage, OfferNftMessage};
+use tw_proto::Aptos::Proto::{CancelOfferNftMessage, NftMessage, OfferNftMessage};
 
-pub struct NftOffer {
+pub struct Offer {
     pub receiver: AccountAddress,
     pub creator: AccountAddress,
     pub collection: Vec<u8>,
@@ -20,29 +21,43 @@ pub struct NftOffer {
 
 pub enum NftOperation {
     Claim,
-    Offer(NftOffer)
+    Offer(Offer),
+    Cancel(Offer)
 }
 
 impl From<NftMessage<'_>> for NftOperation {
     fn from(value: NftMessage) -> Self {
         match value.nft_transaction_payload {
             OneOfnft_transaction_payload::offer_nft(msg) => { NftOperation::Offer(msg.into()) }
-            OneOfnft_transaction_payload::cancel_offer_nft(_) => { todo!() }
+            OneOfnft_transaction_payload::cancel_offer_nft(msg) => { NftOperation::Cancel(msg.into()) }
             OneOfnft_transaction_payload::claim_nft(_) => { todo!() }
             OneOfnft_transaction_payload::None => { todo!() }
         }
     }
 }
 
-impl From<OfferNftMessage<'_>> for NftOffer {
+impl From<OfferNftMessage<'_>> for Offer {
     fn from(value: OfferNftMessage) -> Self {
-        NftOffer {
+        Offer {
             receiver: AccountAddress::from_str(&value.receiver).unwrap(),
             creator: AccountAddress::from_str(&value.creator).unwrap(),
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
             amount: value.amount,
+        }
+    }
+}
+
+impl From<CancelOfferNftMessage<'_>> for Offer {
+    fn from(value: CancelOfferNftMessage) -> Self {
+        Offer {
+            receiver: AccountAddress::from_str(&value.receiver).unwrap(),
+            creator: AccountAddress::from_str(&value.creator).unwrap(),
+            collection: value.collectionName.as_bytes().to_vec(),
+            name: value.name.as_bytes().to_vec(),
+            property_version: value.property_version,
+            amount: 0,
         }
     }
 }

@@ -14,7 +14,7 @@ use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
 use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
-use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, coin_transfer, token_transfers_offer_script};
+use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, coin_transfer, token_transfers_cancel_offer_script, token_transfers_offer_script};
 use crate::nft::NftOperation;
 
 pub struct TransactionBuilder {
@@ -182,6 +182,9 @@ impl TransactionFactory {
     pub fn nft_ops(&self, operation: NftOperation) -> TransactionBuilder {
         match operation {
             NftOperation::Claim => { todo!() }
+            NftOperation::Cancel(offer) => {
+                self.payload(token_transfers_cancel_offer_script(offer.receiver, offer.creator, offer.collection, offer.name, offer.property_version))
+            }
             NftOperation::Offer(offer) => {
                 self.payload(token_transfers_offer_script(offer.receiver, offer.creator, offer.collection, offer.name, offer.property_version, offer.amount))
             }
@@ -231,7 +234,7 @@ mod tests {
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::TypeTag;
     use tw_encoding::hex;
-    use crate::nft::{NftOffer, NftOperation};
+    use crate::nft::{Offer, NftOperation};
     use crate::transaction_builder::TransactionFactory;
 
 
@@ -454,13 +457,56 @@ mod tests {
                         "type": "ed25519_signature"
                     }
                 }"#, // Expected JSON literal
-            Some(OpsDetails::NftOps(NftOperation::Offer(NftOffer {
+            Some(OpsDetails::NftOps(NftOperation::Offer(Offer {
                 receiver: AccountAddress::from_str("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30").unwrap(),
                 creator: AccountAddress::from_str("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac").unwrap(),
                 collection: "Topaz Troopers".as_bytes().to_vec(),
                 name: "Topaz Trooper #20068".as_bytes().to_vec(),
                 property_version: 0,
                 amount: 1,
+            }))),
+        )
+    }
+
+    #[test]
+    fn test_cancel_nft_offer() {
+        setup_transaction(
+            "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+            "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
+            "nft_ops",
+            21, // Sequence number
+            2,
+            "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada0000000002", // Expected raw transaction bytes
+            "826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a", // Expected signature
+            "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada00000000020020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a", // Expected encoded transaction
+            r#"{
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": [
+                                      "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+                                      "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+                                      "Topaz Troopers", "Topaz Trooper #20068", "0"],
+                        "function": "0x3::token_transfers::cancel_offer_script",
+                        "type": "entry_function_payload",
+                        "type_arguments": []
+                    },
+                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "21",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0x826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a",
+                        "type": "ed25519_signature"
+                    }
+                }"#, // Expected JSON literal
+            Some(OpsDetails::NftOps(NftOperation::Cancel(Offer {
+                receiver: AccountAddress::from_str("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee").unwrap(),
+                creator: AccountAddress::from_str("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac").unwrap(),
+                collection: "Topaz Troopers".as_bytes().to_vec(),
+                name: "Topaz Trooper #20068".as_bytes().to_vec(),
+                property_version: 0,
+                amount: 0,
             }))),
         )
     }
