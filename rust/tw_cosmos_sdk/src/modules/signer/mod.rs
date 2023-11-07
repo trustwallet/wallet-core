@@ -8,16 +8,18 @@ use crate::context::CosmosContext;
 use crate::modules::broadcast_msg::{BroadcastMode, BroadcastMsg};
 use crate::modules::serializer::json_serializer::JsonSerializer;
 use crate::modules::serializer::protobuf_serializer::ProtobufSerializer;
+use crate::modules::signer::json_signer::JsonSigner;
 use crate::modules::signer::protobuf_signer::ProtobufSigner;
 use crate::modules::tx_builder::TxBuilder;
 use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_coin_entry::signing_output_error;
 use tw_proto::Cosmos::Proto;
 
+pub mod json_signer;
 pub mod protobuf_signer;
 
 pub struct TWSigner<Context> {
@@ -35,7 +37,7 @@ where
         input: Proto::SigningInput<'_>,
     ) -> Proto::SigningOutput<'static> {
         match input.signing_mode {
-            Proto::SigningMode::JSON => todo!(),
+            Proto::SigningMode::JSON => Self::sign_as_json(coin, input),
             Proto::SigningMode::Protobuf => Self::sign_as_protobuf(coin, input),
         }
         .unwrap_or_else(|e| signing_output_error!(Proto::SigningOutput, e))
@@ -62,6 +64,37 @@ where
             signed_tx.signature.clone(),
         )
         .to_json_string();
+
+        Ok(Proto::SigningOutput {
+            signature: Cow::from(signed_tx.signature),
+            signature_json: Cow::from(signature_json),
+            serialized: Cow::from(broadcast_tx),
+            ..Proto::SigningOutput::default()
+        })
+    }
+
+    pub fn sign_as_json(
+        coin: &dyn CoinContext,
+        mut input: Proto::SigningInput<'_>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let private_key = Context::PrivateKey::try_from(&input.private_key)?;
+        let public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref())?;
+        let broadcast_mode = Self::broadcast_mode(input.mode);
+
+        // Set the public key. It will be used to construct a signer info.
+        input.public_key = Cow::from(public_key.to_bytes());
+        let unsigned_tx = TxBuilder::<Context>::unsigned_tx_from_proto(coin, &input)?;
+
+        let signed_tx = JsonSigner::sign_tx(&private_key, unsigned_tx)?;
+        let signed_tx_json = JsonSerializer::build_signed_tx(&signed_tx)?;
+        let broadcast_tx = BroadcastMsg::json(broadcast_mode, &signed_tx_json)?.to_json_string();
+
+        // There should be at least one signature.
+        let signature_json = signed_tx_json
+            .signatures
+            .first()
+            .ok_or(SigningError(SigningErrorType::Error_internal))?
+            .to_json_string();
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signed_tx.signature),

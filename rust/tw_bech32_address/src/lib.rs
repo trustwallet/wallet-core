@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use serde::{Serialize, Serializer};
 use std::fmt;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
@@ -12,8 +13,6 @@ use tw_hash::hasher::Hasher;
 use tw_hash::H160;
 use tw_keypair::tw::{PrivateKey, PublicKey, PublicKeyType};
 use tw_memory::Data;
-
-// pub struct
 
 pub struct Bech32Address {
     hrp: String,
@@ -109,6 +108,15 @@ impl fmt::Display for Bech32Address {
 impl fmt::Debug for Bech32Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{self}")
+    }
+}
+
+impl Serialize for Bech32Address {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
     }
 }
 

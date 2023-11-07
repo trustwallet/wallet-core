@@ -6,6 +6,7 @@
 
 use crate::context::CosmosContext;
 use crate::private_key::SignatureData;
+use serde::Serialize;
 use tw_number::U256;
 
 pub mod message;
@@ -25,9 +26,11 @@ pub struct Fee<Address> {
     pub granter: Option<Address>,
 }
 
+#[derive(Clone, Serialize)]
 pub struct Coin {
-    pub denom: String,
+    #[serde(serialize_with = "U256::as_decimal_str")]
     pub amount: U256,
+    pub denom: String,
 }
 
 pub struct SignerInfo<PublicKey> {

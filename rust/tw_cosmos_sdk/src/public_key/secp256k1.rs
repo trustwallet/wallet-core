@@ -6,7 +6,6 @@
 
 use crate::proto::cosmos;
 use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
-use quick_protobuf::MessageInfo;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::tw::{self, PublicKeyType};
@@ -51,7 +50,7 @@ impl ProtobufPublicKey for Secp256PublicKey {
 
 impl JsonPublicKey for Secp256PublicKey {
     fn public_key_type(&self) -> String {
-        cosmos::crypto::secp256k1::PubKey::PATH.to_string()
+        "tendermint/PubKeySecp256k1".to_string()
     }
 }
 

@@ -7,21 +7,49 @@
 use crate::context::CosmosContext;
 use crate::private_key::SignatureData;
 use crate::public_key::{CosmosPublicKey, JsonPublicKey};
+use crate::transaction::message::SerializeMessageBox;
+use crate::transaction::{Coin, Fee, SignedTransaction, UnsignedTransaction};
 use serde::Serialize;
+use serde_json::Value as Json;
 use std::marker::PhantomData;
+use tw_coin_entry::error::SigningResult;
 use tw_encoding::base64::Base64Encoded;
 
 #[derive(Serialize)]
-pub struct AnyMsg<Value> {
-    #[serde(rename = "type")]
-    msg_type: String,
-    value: Value,
+pub struct SignedTxJson {
+    pub fee: FeeJson,
+    pub memo: String,
+    pub msg: Vec<AnyMsg<Json>>,
+    pub signatures: Vec<SignatureJson>,
 }
 
 #[derive(Serialize)]
+pub struct UnsignedTxJson {
+    pub account_number: String,
+    pub chain_id: String,
+    pub fee: FeeJson,
+    pub memo: String,
+    pub msgs: Vec<AnyMsg<Json>>,
+    pub sequence: String,
+}
+
+#[derive(Serialize)]
+pub struct FeeJson {
+    pub amount: Vec<Coin>,
+    pub gas: String,
+}
+
+#[derive(Clone, Serialize)]
+pub struct AnyMsg<Value> {
+    #[serde(rename = "type")]
+    pub msg_type: String,
+    pub value: Value,
+}
+
+#[derive(Clone, Serialize)]
 pub struct SignatureJson {
-    pub_key: AnyMsg<Base64Encoded>,
-    signature: Base64Encoded,
+    pub pub_key: AnyMsg<Base64Encoded>,
+    pub signature: Base64Encoded,
 }
 
 impl SignatureJson {
@@ -41,6 +69,44 @@ where
     Context: CosmosContext,
     Context::PublicKey: JsonPublicKey,
 {
+    pub fn build_signed_tx(signed: &SignedTransaction<Context>) -> SigningResult<SignedTxJson> {
+        let msg = signed
+            .tx_body
+            .messages
+            .iter()
+            .map(Self::build_message)
+            .collect::<SigningResult<_>>()?;
+        let signature =
+            Self::serialize_signature(&signed.signer.public_key, signed.signature.clone());
+
+        Ok(SignedTxJson {
+            fee: Self::build_fee(&signed.fee),
+            memo: signed.tx_body.memo.clone(),
+            msg,
+            signatures: vec![signature],
+        })
+    }
+
+    pub fn build_unsigned_tx(
+        unsigned: &UnsignedTransaction<Context>,
+    ) -> SigningResult<UnsignedTxJson> {
+        let msgs = unsigned
+            .tx_body
+            .messages
+            .iter()
+            .map(Self::build_message)
+            .collect::<SigningResult<_>>()?;
+
+        Ok(UnsignedTxJson {
+            account_number: unsigned.account_number.to_string(),
+            chain_id: unsigned.chain_id.clone(),
+            fee: Self::build_fee(&unsigned.fee),
+            memo: unsigned.tx_body.memo.clone(),
+            msgs,
+            sequence: unsigned.signer.sequence.to_string(),
+        })
+    }
+
     pub fn serialize_signature(
         public_key: &Context::PublicKey,
         signature: SignatureData,
@@ -55,6 +121,21 @@ where
         AnyMsg {
             msg_type: public_key.public_key_type(),
             value: Base64Encoded(public_key.to_bytes()),
+        }
+    }
+
+    pub fn build_message(message: &SerializeMessageBox) -> SigningResult<AnyMsg<Json>> {
+        let value = message.to_json()?;
+        Ok(AnyMsg {
+            msg_type: message.message_type(),
+            value,
+        })
+    }
+
+    pub fn build_fee(fee: &Fee<Context::Address>) -> FeeJson {
+        FeeJson {
+            gas: fee.gas_limit.to_string(),
+            amount: fee.amounts.clone(),
         }
     }
 }

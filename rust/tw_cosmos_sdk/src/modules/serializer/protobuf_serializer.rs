@@ -17,8 +17,8 @@ use tw_proto::serialize;
 
 pub fn build_coin(coin: &Coin) -> base_proto::Coin {
     base_proto::Coin {
-        denom: coin.denom.clone(),
         amount: coin.amount.to_string(),
+        denom: coin.denom.clone(),
     }
 }
 

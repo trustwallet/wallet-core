@@ -25,6 +25,7 @@ pub fn decode(data: &str, is_url: bool) -> EncodingResult<Vec<u8>> {
     .map_err(|_| EncodingError::InvalidInput)
 }
 
+#[derive(Clone, Debug)]
 pub struct Base64Encoded(pub Data);
 
 impl Serialize for Base64Encoded {

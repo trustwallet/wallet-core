@@ -4,12 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use serde::Serialize;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
 
 pub type Address = tw_bech32_address::Bech32Address;
 
-pub trait CosmosAddress: ToString {
+pub trait CosmosAddress: Serialize + ToString {
     fn from_str_with_coin(coin: &dyn CoinContext, addr: &str) -> AddressResult<Self>
     where
         Self: Sized;

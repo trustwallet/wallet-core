@@ -78,8 +78,8 @@ where
     fn coin_from_proto(input: &Proto::Amount<'_>) -> SigningResult<Coin> {
         let amount = U256::from_str(&input.amount)?;
         Ok(Coin {
-            denom: input.denom.to_string(),
             amount,
+            denom: input.denom.to_string(),
         })
     }
 
@@ -122,9 +122,9 @@ where
             .map(Self::coin_from_proto)
             .collect::<SigningResult<_>>()?;
         let msg = SendMessage {
-            from: Address::from_str_with_coin(coin, &send.from_address)?,
-            to: Address::from_str_with_coin(coin, &send.to_address)?,
-            amounts,
+            from_address: Address::from_str_with_coin(coin, &send.from_address)?,
+            to_address: Address::from_str_with_coin(coin, &send.to_address)?,
+            amount: amounts,
         };
         Ok(msg.into_boxed())
     }
