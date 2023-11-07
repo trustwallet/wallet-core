@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::str::FromStr;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, TypeTag};
 use serde::{Deserialize, Serialize};
@@ -19,6 +20,10 @@ pub struct EntryFunction {
     args: Vec<Vec<u8>>,
     #[serde(skip_serializing)]
     json_args: Value
+}
+
+pub fn convert_proto_struct_tag_to_type_tag(struct_tag: tw_proto::Aptos::Proto::StructTag) -> TypeTag {
+    TypeTag::from_str(&format!("{}::{}::{}", struct_tag.account_address, struct_tag.module, struct_tag.name)).unwrap()
 }
 
 impl EntryFunction {

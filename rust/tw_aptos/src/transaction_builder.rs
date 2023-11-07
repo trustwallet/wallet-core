@@ -10,7 +10,7 @@ use move_core_types::language_storage::TypeTag;
 use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
-use crate::transaction_payload::{EntryFunction, TransactionPayload};
+use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
 use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, coin_transfer};
 
@@ -112,7 +112,12 @@ impl TransactionFactory {
             OneOftransaction_payload::transfer(transfer) => {
                 return factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount);
             }
-            OneOftransaction_payload::token_transfer(_) => {}
+            OneOftransaction_payload::token_transfer(token_transfer) => {
+                let func = token_transfer.function.unwrap();
+                return factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
+                                              convert_proto_struct_tag_to_type_tag(func)
+                )
+            }
             OneOftransaction_payload::create_account(create_account) => {
                 return factory.create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap());
             }
