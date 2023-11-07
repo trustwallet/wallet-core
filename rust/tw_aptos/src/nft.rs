@@ -6,9 +6,8 @@
 
 use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
-use tw_coin_entry::derivation::Derivation::Default;
 use tw_proto::Aptos::Proto::mod_NftMessage::OneOfnft_transaction_payload;
-use tw_proto::Aptos::Proto::{CancelOfferNftMessage, NftMessage, OfferNftMessage};
+use tw_proto::Aptos::Proto::{CancelOfferNftMessage, ClaimNftMessage, NftMessage, OfferNftMessage};
 
 pub struct Offer {
     pub receiver: AccountAddress,
@@ -19,8 +18,16 @@ pub struct Offer {
     pub amount: u64
 }
 
+pub struct Claim {
+    pub sender: AccountAddress,
+    pub creator: AccountAddress,
+    pub collection: Vec<u8>,
+    pub name: Vec<u8>,
+    pub property_version: u64,
+}
+
 pub enum NftOperation {
-    Claim,
+    Claim(Claim),
     Offer(Offer),
     Cancel(Offer)
 }
@@ -30,7 +37,7 @@ impl From<NftMessage<'_>> for NftOperation {
         match value.nft_transaction_payload {
             OneOfnft_transaction_payload::offer_nft(msg) => { NftOperation::Offer(msg.into()) }
             OneOfnft_transaction_payload::cancel_offer_nft(msg) => { NftOperation::Cancel(msg.into()) }
-            OneOfnft_transaction_payload::claim_nft(_) => { todo!() }
+            OneOfnft_transaction_payload::claim_nft(msg) => { NftOperation::Claim(msg.into()) }
             OneOfnft_transaction_payload::None => { todo!() }
         }
     }
@@ -58,6 +65,18 @@ impl From<CancelOfferNftMessage<'_>> for Offer {
             name: value.name.as_bytes().to_vec(),
             property_version: value.property_version,
             amount: 0,
+        }
+    }
+}
+
+impl From<ClaimNftMessage<'_>> for Claim {
+    fn from(value: ClaimNftMessage) -> Self {
+        Claim {
+            sender: AccountAddress::from_str(&value.sender).unwrap(),
+            creator: AccountAddress::from_str(&value.creator).unwrap(),
+            collection: value.collectionName.as_bytes().to_vec(),
+            name: value.name.as_bytes().to_vec(),
+            property_version: value.property_version,
         }
     }
 }
