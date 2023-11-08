@@ -10,6 +10,7 @@ use crate::proto::cosmos;
 use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
+use serde_json::Value as Json;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::to_any;
 
@@ -146,5 +147,20 @@ impl<Address: CosmosAddress> CosmosMessage for SetWithdrawAddressMessage<Address
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
         message_to_json("cosmos-sdk/MsgSetWithdrawAddress", self)
+    }
+}
+
+/// Any raw JSON message.
+pub struct JsonRawMessage {
+    pub msg_type: String,
+    pub value: Json,
+}
+
+impl CosmosMessage for JsonRawMessage {
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        Ok(JsonMessage {
+            msg_type: self.msg_type.clone(),
+            value: self.value.clone(),
+        })
     }
 }

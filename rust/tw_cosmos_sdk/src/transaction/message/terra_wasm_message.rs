@@ -11,7 +11,8 @@ use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, P
 use crate::transaction::Coin;
 use serde::Serialize;
 use serde_json::Value as Json;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_number::U256;
 use tw_proto::to_any;
 
 #[derive(Serialize)]
@@ -19,10 +20,20 @@ use tw_proto::to_any;
 pub enum ExecuteMsg {
     /// Either a regular string or a stringified JSON object.
     RegularString(String),
-    /// JSON object.
+    /// JSON object with a type.
     Json(Json),
 }
 
+impl ExecuteMsg {
+    pub fn json<Payload: Serialize>(payload: Payload) -> SigningResult<ExecuteMsg> {
+        let payload = serde_json::to_value(payload)
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+        Ok(ExecuteMsg::Json(payload))
+    }
+}
+
+/// This method not only support token transfer, but also support all other types of contract call.
+/// https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
 #[derive(Serialize)]
 pub struct ExecuteContractMessage<Address: CosmosAddress> {
     pub sender: Address,
@@ -50,4 +61,21 @@ impl<Address: CosmosAddress> CosmosMessage for ExecuteContractMessage<Address> {
     fn to_json(&self) -> SigningResult<JsonMessage> {
         message_to_json("wasm/MsgExecuteContract", self)
     }
+}
+
+#[derive(Serialize)]
+pub enum ExecutePayload<Address: CosmosAddress> {
+    #[serde(rename = "transfer")]
+    Transfer {
+        #[serde(serialize_with = "U256::as_decimal_str")]
+        amount: U256,
+        recipient: Address,
+    },
+    #[serde(rename = "send")]
+    Send {
+        #[serde(serialize_with = "U256::as_decimal_str")]
+        amount: U256,
+        contract: Address,
+        msg: String,
+    },
 }

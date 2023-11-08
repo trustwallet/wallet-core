@@ -7,11 +7,15 @@
 use crate::address::{Address, CosmosAddress};
 use crate::context::CosmosContext;
 use crate::public_key::CosmosPublicKey;
-use crate::transaction::message::standard_cosmos_message::SendMessage;
-use crate::transaction::message::terra_wasm_message::{ExecuteContractMessage, ExecuteMsg};
+use crate::transaction::message::standard_cosmos_message::{
+    BeginRedelegateMessage, DelegateMessage, JsonRawMessage, SendMessage,
+    SetWithdrawAddressMessage, UndelegateMessage, WithdrawDelegationRewardMessage,
+};
+use crate::transaction::message::terra_wasm_message::{
+    ExecuteContractMessage, ExecuteMsg, ExecutePayload,
+};
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
-use serde_json::json;
 use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
@@ -110,6 +114,30 @@ where
 
         match input.message_oneof {
             MessageEnum::send_coins_message(ref send) => Self::send_msg_from_proto(coin, send),
+            MessageEnum::stake_message(ref delegate) => {
+                Self::delegate_msg_from_proto(coin, delegate)
+            },
+            MessageEnum::unstake_message(ref undelegate) => {
+                Self::undelegate_msg_from_proto(coin, undelegate)
+            },
+            MessageEnum::withdraw_stake_reward_message(ref withdraw) => {
+                Self::withdraw_reward_msg_from_proto(coin, withdraw)
+            },
+            MessageEnum::set_withdraw_address_message(ref set) => {
+                Self::set_withdraw_address_msg_from_proto(coin, set)
+            },
+            MessageEnum::restake_message(ref redelegate) => {
+                Self::redelegate_msg_from_proto(coin, redelegate)
+            },
+            MessageEnum::raw_json_message(ref raw_json) => {
+                Self::wasm_raw_msg_from_proto(coin, raw_json)
+            },
+            MessageEnum::execute_contract_message(ref execute) => {
+                Self::wasm_execute_contract_msg_from_proto(coin, execute)
+            },
+            MessageEnum::wasm_terra_execute_contract_transfer_message(ref transfer) => {
+                Self::wasm_execute_contract_transfer_msg_from_proto(coin, transfer)
+            },
             _ => todo!(),
         }
     }
@@ -127,6 +155,100 @@ where
             from_address: Address::from_str_with_coin(coin, &send.from_address)?,
             to_address: Address::from_str_with_coin(coin, &send.to_address)?,
             amount: amounts,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn delegate_msg_from_proto(
+        coin: &dyn CoinContext,
+        delegate: &Proto::mod_Message::Delegate<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let amount = delegate
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        let amount = Self::coin_from_proto(amount)?;
+        let msg = DelegateMessage {
+            amount,
+            delegator_address: Address::from_str_with_coin(coin, &delegate.delegator_address)?,
+            validator_address: Address::from_str_with_coin(coin, &delegate.validator_address)?,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn undelegate_msg_from_proto(
+        coin: &dyn CoinContext,
+        undelegate: &Proto::mod_Message::Undelegate<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let amount = undelegate
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        let amount = Self::coin_from_proto(amount)?;
+
+        let msg = UndelegateMessage {
+            amount,
+            delegator_address: Address::from_str_with_coin(coin, &undelegate.delegator_address)?,
+            validator_address: Address::from_str_with_coin(coin, &undelegate.validator_address)?,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn withdraw_reward_msg_from_proto(
+        coin: &dyn CoinContext,
+        withdraw: &Proto::mod_Message::WithdrawDelegationReward<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let msg = WithdrawDelegationRewardMessage {
+            delegator_address: Address::from_str_with_coin(coin, &withdraw.delegator_address)?,
+            validator_address: Address::from_str_with_coin(coin, &withdraw.validator_address)?,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn set_withdraw_address_msg_from_proto(
+        coin: &dyn CoinContext,
+        set: &Proto::mod_Message::SetWithdrawAddress<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let msg = SetWithdrawAddressMessage {
+            delegator_address: Address::from_str_with_coin(coin, &set.delegator_address)?,
+            withdraw_address: Address::from_str_with_coin(coin, &set.withdraw_address)?,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn redelegate_msg_from_proto(
+        coin: &dyn CoinContext,
+        redelegate: &Proto::mod_Message::BeginRedelegate<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let amount = redelegate
+            .amount
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        let amount = Self::coin_from_proto(amount)?;
+        let validator_src_address =
+            Address::from_str_with_coin(coin, &redelegate.validator_src_address)?;
+        let validator_dst_address =
+            Address::from_str_with_coin(coin, &redelegate.validator_dst_address)?;
+
+        let msg = BeginRedelegateMessage {
+            amount,
+            delegator_address: Address::from_str_with_coin(coin, &redelegate.delegator_address)?,
+            validator_src_address,
+            validator_dst_address,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_raw_msg_from_proto(
+        _coin: &dyn CoinContext,
+        raw: &Proto::mod_Message::RawJSON<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let value = serde_json::from_str(&raw.value)
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+
+        let msg = JsonRawMessage {
+            msg_type: raw.type_pb.to_string(),
+            value,
         };
         Ok(msg.into_boxed())
     }
@@ -153,20 +275,15 @@ where
         coin: &dyn CoinContext,
         transfer: &Proto::mod_Message::WasmTerraExecuteContractTransfer<'_>,
     ) -> SigningResult<CosmosMessageBox> {
-        let transfer_amount = U256::from_big_endian_slice(&transfer.amount)?;
-        let recipient_address = Address::from_str_with_coin(coin, &transfer.recipient_address)?;
-
-        let execute_msg = json!({
-            "transfer": {
-                "amount": transfer_amount.to_string(),
-                "recipient": recipient_address,
-            }
-        });
+        let execute_payload = ExecutePayload::Transfer {
+            amount: U256::from_big_endian_slice(&transfer.amount)?,
+            recipient: Address::from_str_with_coin(coin, &transfer.recipient_address)?,
+        };
 
         let msg = ExecuteContractMessage {
             sender: Address::from_str_with_coin(coin, &transfer.sender_address)?,
             contract: Address::from_str_with_coin(coin, &transfer.contract_address)?,
-            execute_msg: ExecuteMsg::Json(execute_msg),
+            execute_msg: ExecuteMsg::json(execute_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
         };
