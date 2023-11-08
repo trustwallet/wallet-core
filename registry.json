@@ -4505,5 +4505,35 @@
       "rpc": "",
       "documentation": "https://internetcomputer.org/docs"
     }
+  },
+  {
+    "id": "bitci",
+    "name": "Bitcichain",
+    "coinId": 1907,
+    "chainId": "1907",
+    "symbol": "BITCI",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://bitciexplorer.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x80182de025388527842b904febafba36c9b64541e0752cc283f874e14b04637b",
+      "sampleAccount": "0xbc48486A686853d59242dbDBc815b30ccF69CFa4"
+    },
+    "info": {
+      "url": "https://bitcichain.com",
+      "source": "https://github.com/BitciTeknoloji/go-bitcicoin",
+      "rpc": "https://rpc.bitci.com",
+      "documentation": "https://eth.wiki/json-rpc/API"
+    }
   }
 ]
