@@ -7,12 +7,16 @@
 use crate::address::{Address, CosmosAddress};
 use crate::context::CosmosContext;
 use crate::public_key::CosmosPublicKey;
+use crate::transaction::message::cosmos_staking_message::AuthGrantMessage;
+use crate::transaction::message::ibc_message::{Height, TransferTokensMessage};
 use crate::transaction::message::standard_cosmos_message::{
     BeginRedelegateMessage, DelegateMessage, JsonRawMessage, SendMessage,
     SetWithdrawAddressMessage, UndelegateMessage, WithdrawDelegationRewardMessage,
 };
-use crate::transaction::message::terra_wasm_message::{
-    ExecuteContractMessage, ExecuteMsg, ExecutePayload,
+use crate::transaction::message::terra_wasm_message::TerraExecuteContractMessage;
+use crate::transaction::message::thorchain_message::ThorchainSendMessage;
+use crate::transaction::message::wasm_message::{
+    ExecuteMsg, WasmExecuteContractMessage, WasmExecutePayload,
 };
 use crate::transaction::message::{CosmosMessage, CosmosMessageBox};
 use crate::transaction::{Coin, Fee, SignMode, SignerInfo, TxBody, UnsignedTransaction};
@@ -20,8 +24,10 @@ use std::marker::PhantomData;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_misc::traits::ToBytesVec;
 use tw_number::U256;
 use tw_proto::Cosmos::Proto;
+use tw_proto::{google, serialize};
 
 const DEFAULT_TIMEOUT_HEIGHT: u64 = 0;
 
@@ -114,6 +120,9 @@ where
 
         match input.message_oneof {
             MessageEnum::send_coins_message(ref send) => Self::send_msg_from_proto(coin, send),
+            MessageEnum::transfer_tokens_message(ref transfer) => {
+                Self::transfer_tokens_msg_from_proto(coin, transfer)
+            },
             MessageEnum::stake_message(ref delegate) => {
                 Self::delegate_msg_from_proto(coin, delegate)
             },
@@ -132,12 +141,31 @@ where
             MessageEnum::raw_json_message(ref raw_json) => {
                 Self::wasm_raw_msg_from_proto(coin, raw_json)
             },
-            MessageEnum::execute_contract_message(ref execute) => {
-                Self::wasm_execute_contract_msg_from_proto(coin, execute)
-            },
             MessageEnum::wasm_terra_execute_contract_transfer_message(ref transfer) => {
+                Self::wasm_terra_execute_contract_transfer_msg_from_proto(coin, transfer)
+            },
+            MessageEnum::wasm_terra_execute_contract_send_message(ref send) => {
+                Self::wasm_terra_execute_contract_send_msg_from_proto(coin, send)
+            },
+            MessageEnum::thorchain_send_message(ref send) => {
+                Self::thorchain_send_msg_from_proto(coin, send)
+            },
+            MessageEnum::wasm_terra_execute_contract_generic(ref generic) => {
+                Self::wasm_terra_execute_contract_generic_msg_from_proto(coin, generic)
+            },
+            MessageEnum::wasm_execute_contract_transfer_message(ref transfer) => {
                 Self::wasm_execute_contract_transfer_msg_from_proto(coin, transfer)
             },
+            MessageEnum::wasm_execute_contract_send_message(ref send) => {
+                Self::wasm_execute_contract_send_msg_from_proto(coin, send)
+            },
+            MessageEnum::wasm_execute_contract_generic(ref generic) => {
+                Self::wasm_execute_contract_generic_msg_from_proto(coin, generic)
+            },
+            MessageEnum::sign_direct_message(ref _sign) => {
+                todo!()
+            },
+            MessageEnum::auth_grant(ref auth) => Self::auth_grant_msg_from_proto(coin, auth),
             _ => todo!(),
         }
     }
@@ -155,6 +183,35 @@ where
             from_address: Address::from_str_with_coin(coin, &send.from_address)?,
             to_address: Address::from_str_with_coin(coin, &send.to_address)?,
             amount: amounts,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn transfer_tokens_msg_from_proto(
+        coin: &dyn CoinContext,
+        transfer: &Proto::mod_Message::Transfer<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let token = transfer
+            .token
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+        let token = Self::coin_from_proto(token)?;
+        let height = transfer
+            .timeout_height
+            .as_ref()
+            .ok_or(SigningError(SigningErrorType::Error_invalid_params))?;
+
+        let msg = TransferTokensMessage {
+            source_port: transfer.source_port.to_string(),
+            source_channel: transfer.source_channel.to_string(),
+            token,
+            sender: Address::from_str_with_coin(coin, &transfer.sender)?,
+            receiver: Address::from_str_with_coin(coin, &transfer.receiver)?,
+            timeout_height: Height {
+                revision_number: height.revision_number,
+                revision_height: height.revision_height,
+            },
+            timeout_timestamp: transfer.timeout_timestamp,
         };
         Ok(msg.into_boxed())
     }
@@ -253,19 +310,59 @@ where
         Ok(msg.into_boxed())
     }
 
-    pub fn wasm_execute_contract_msg_from_proto(
+    pub fn wasm_terra_execute_contract_transfer_msg_from_proto(
         coin: &dyn CoinContext,
-        execute: &Proto::mod_Message::ExecuteContract<'_>,
+        transfer: &Proto::mod_Message::WasmTerraExecuteContractTransfer<'_>,
     ) -> SigningResult<CosmosMessageBox> {
-        let coins = execute
+        let execute_payload = WasmExecutePayload::Transfer {
+            amount: U256::from_big_endian_slice(&transfer.amount)?,
+            recipient: Address::from_str_with_coin(coin, &transfer.recipient_address)?,
+        };
+
+        let msg = TerraExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &transfer.sender_address)?,
+            contract: Address::from_str_with_coin(coin, &transfer.contract_address)?,
+            execute_msg: ExecuteMsg::json(execute_payload)?,
+            // Used in case you are sending native tokens along with this message.
+            coins: Vec::default(),
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_terra_execute_contract_send_msg_from_proto(
+        coin: &dyn CoinContext,
+        send: &Proto::mod_Message::WasmTerraExecuteContractSend<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let execute_payload = WasmExecutePayload::Send {
+            amount: U256::from_big_endian_slice(&send.amount)?,
+            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            msg: send.msg.to_string(),
+        };
+
+        let msg = TerraExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &send.sender_address)?,
+            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            execute_msg: ExecuteMsg::json(execute_payload)?,
+            // Used in case you are sending native tokens along with this message.
+            coins: Vec::default(),
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_terra_execute_contract_generic_msg_from_proto(
+        coin: &dyn CoinContext,
+        generic: &Proto::mod_Message::WasmTerraExecuteContractGeneric<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let coins = generic
             .coins
             .iter()
             .map(Self::coin_from_proto)
             .collect::<SigningResult<_>>()?;
-        let msg = ExecuteContractMessage {
-            sender: Address::from_str_with_coin(coin, &execute.sender)?,
-            contract: Address::from_str_with_coin(coin, &execute.contract)?,
-            execute_msg: ExecuteMsg::RegularString(execute.execute_msg.to_string()),
+
+        let msg = TerraExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &generic.sender_address)?,
+            contract: Address::from_str_with_coin(coin, &generic.contract_address)?,
+            execute_msg: ExecuteMsg::RegularString(generic.execute_msg.to_string()),
             coins,
         };
         Ok(msg.into_boxed())
@@ -273,19 +370,104 @@ where
 
     pub fn wasm_execute_contract_transfer_msg_from_proto(
         coin: &dyn CoinContext,
-        transfer: &Proto::mod_Message::WasmTerraExecuteContractTransfer<'_>,
+        transfer: &Proto::mod_Message::WasmExecuteContractTransfer<'_>,
     ) -> SigningResult<CosmosMessageBox> {
-        let execute_payload = ExecutePayload::Transfer {
+        let transfer_payload = WasmExecutePayload::Transfer {
             amount: U256::from_big_endian_slice(&transfer.amount)?,
             recipient: Address::from_str_with_coin(coin, &transfer.recipient_address)?,
         };
 
-        let msg = ExecuteContractMessage {
+        let msg = WasmExecuteContractMessage {
             sender: Address::from_str_with_coin(coin, &transfer.sender_address)?,
             contract: Address::from_str_with_coin(coin, &transfer.contract_address)?,
-            execute_msg: ExecuteMsg::json(execute_payload)?,
+            msg: ExecuteMsg::json(transfer_payload)?,
             // Used in case you are sending native tokens along with this message.
             coins: Vec::default(),
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_execute_contract_send_msg_from_proto(
+        coin: &dyn CoinContext,
+        send: &Proto::mod_Message::WasmExecuteContractSend<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let execute_payload = WasmExecutePayload::Send {
+            amount: U256::from_big_endian_slice(&send.amount)?,
+            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            msg: send.msg.to_string(),
+        };
+
+        let msg = WasmExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &send.sender_address)?,
+            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            msg: ExecuteMsg::json(execute_payload)?,
+            // Used in case you are sending native tokens along with this message.
+            coins: Vec::default(),
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn wasm_execute_contract_generic_msg_from_proto(
+        coin: &dyn CoinContext,
+        generic: &Proto::mod_Message::WasmExecuteContractGeneric<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let coins = generic
+            .coins
+            .iter()
+            .map(Self::coin_from_proto)
+            .collect::<SigningResult<_>>()?;
+
+        let msg = WasmExecuteContractMessage {
+            sender: Address::from_str_with_coin(coin, &generic.sender_address)?,
+            contract: Address::from_str_with_coin(coin, &generic.contract_address)?,
+            msg: ExecuteMsg::RegularString(generic.execute_msg.to_string()),
+            coins,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn thorchain_send_msg_from_proto(
+        _coin: &dyn CoinContext,
+        send: &Proto::mod_Message::THORChainSend<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let amount = send
+            .amounts
+            .iter()
+            .map(Self::coin_from_proto)
+            .collect::<SigningResult<_>>()?;
+
+        let msg = ThorchainSendMessage {
+            from_address: send.from_address.to_vec(),
+            to_address: send.to_address.to_vec(),
+            amount,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn auth_grant_msg_from_proto(
+        coin: &dyn CoinContext,
+        auth: &Proto::mod_Message::AuthGrant<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        use Proto::mod_Message::mod_AuthGrant::OneOfgrant_type as ProtoGrantType;
+
+        const STAKE_AUTHORIZATION_MSG_TYPE: &str = "/cosmos.staking.v1beta1.StakeAuthorization";
+
+        let grant_msg = match auth.grant_type {
+            ProtoGrantType::grant_stake(ref stake) => google::protobuf::Any {
+                type_url: STAKE_AUTHORIZATION_MSG_TYPE.to_string(),
+                value: serialize(stake)
+                    .map_err(|_| SigningError(SigningErrorType::Error_invalid_params))?,
+            },
+            ProtoGrantType::None => {
+                return Err(SigningError(SigningErrorType::Error_invalid_params))
+            },
+        };
+
+        let msg = AuthGrantMessage {
+            granter: Address::from_str_with_coin(coin, &auth.granter)?,
+            grantee: Address::from_str_with_coin(coin, &auth.grantee)?,
+            grant_msg,
+            expiration_secs: auth.expiration,
         };
         Ok(msg.into_boxed())
     }

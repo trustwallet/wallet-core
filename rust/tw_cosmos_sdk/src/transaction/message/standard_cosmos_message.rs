@@ -14,7 +14,7 @@ use serde_json::Value as Json;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::to_any;
 
-// cosmos-sdk/MsgSend
+/// cosmos-sdk/MsgSend
 #[derive(Serialize)]
 pub struct SendMessage<Address: CosmosAddress> {
     pub from_address: Address,
@@ -37,7 +37,7 @@ impl<Address: CosmosAddress> CosmosMessage for SendMessage<Address> {
     }
 }
 
-// cosmos-sdk/MsgDelegate
+/// cosmos-sdk/MsgDelegate
 #[derive(Serialize)]
 pub struct DelegateMessage<Address: CosmosAddress> {
     pub amount: Coin,
@@ -60,7 +60,7 @@ impl<Address: CosmosAddress> CosmosMessage for DelegateMessage<Address> {
     }
 }
 
-// cosmos-sdk/MsgUndelegate
+/// cosmos-sdk/MsgUndelegate
 #[derive(Serialize)]
 pub struct UndelegateMessage<Address: CosmosAddress> {
     pub amount: Coin,
@@ -83,7 +83,7 @@ impl<Address: CosmosAddress> CosmosMessage for UndelegateMessage<Address> {
     }
 }
 
-// cosmos-sdk/MsgBeginRedelegate
+/// cosmos-sdk/MsgBeginRedelegate
 #[derive(Serialize)]
 pub struct BeginRedelegateMessage<Address: CosmosAddress> {
     pub amount: Coin,
@@ -108,7 +108,7 @@ impl<Address: CosmosAddress> CosmosMessage for BeginRedelegateMessage<Address> {
     }
 }
 
-// cosmos-sdk/MsgWithdrawDelegationReward
+/// cosmos-sdk/MsgWithdrawDelegationReward
 #[derive(Serialize)]
 pub struct WithdrawDelegationRewardMessage<Address: CosmosAddress> {
     pub delegator_address: Address,
@@ -129,7 +129,7 @@ impl<Address: CosmosAddress> CosmosMessage for WithdrawDelegationRewardMessage<A
     }
 }
 
-// cosmos-sdk/MsgSetWithdrawAddress
+/// cosmos-sdk/MsgSetWithdrawAddress
 #[derive(Serialize)]
 pub struct SetWithdrawAddressMessage<Address: CosmosAddress> {
     pub delegator_address: Address,
@@ -151,6 +151,7 @@ impl<Address: CosmosAddress> CosmosMessage for SetWithdrawAddressMessage<Address
 }
 
 /// Any raw JSON message.
+/// Supports JSON serialization only.
 pub struct JsonRawMessage {
     pub msg_type: String,
     pub value: Json,
