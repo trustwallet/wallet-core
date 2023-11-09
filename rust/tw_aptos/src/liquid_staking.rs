@@ -45,6 +45,22 @@ pub fn tortuga_unstake(
     ))
 }
 
+pub fn tortuga_claim(
+    smart_contract_address: AccountAddress,
+    idx: u64,
+) -> TransactionPayload {
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            smart_contract_address,
+            ident_str!("stake_router").to_owned(),
+        ),
+        ident_str!("claim").to_owned(),
+        vec![],
+        vec![bcs::to_bytes(&idx).unwrap()],
+        json!([idx.to_string()]),
+    ))
+}
+
 pub struct Stake {
     pub amount: u64,
     pub smart_contract_address: AccountAddress,
@@ -55,10 +71,15 @@ pub struct Unstake {
     pub smart_contract_address: AccountAddress,
 }
 
+pub struct Claim {
+    pub idx: u64,
+    pub smart_contract_address: AccountAddress,
+}
+
 pub enum LiquidStakingOperation {
     Stake(Stake),
     Unstake(Unstake),
-    Claim,
+    Claim(Claim),
 }
 
 impl From<LiquidStaking<'_>> for LiquidStakingOperation {
@@ -70,7 +91,9 @@ impl From<LiquidStaking<'_>> for LiquidStakingOperation {
             OneOfliquid_stake_transaction_payload::unstake(unstake_msg) => {
                 LiquidStakingOperation::Unstake(Unstake { amount: unstake_msg.amount, smart_contract_address: AccountAddress::from_str(&value.smart_contract_address).unwrap() })
             }
-            OneOfliquid_stake_transaction_payload::claim(_) => { todo!() }
+            OneOfliquid_stake_transaction_payload::claim(claim) => {
+                LiquidStakingOperation::Claim(Claim { idx: claim.idx, smart_contract_address: AccountAddress::from_str(&value.smart_contract_address).unwrap() })
+            }
             OneOfliquid_stake_transaction_payload::None => { todo!() }
         }
     }

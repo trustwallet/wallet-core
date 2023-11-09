@@ -13,7 +13,7 @@ use crate::transaction::RawTransaction;
 use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
 use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins, coin_transfer, managed_coin_register, token_transfers_cancel_offer_script, token_transfers_claim_script, token_transfers_offer_script};
-use crate::liquid_staking::{LiquidStakingOperation, tortuga_stake, tortuga_unstake};
+use crate::liquid_staking::{LiquidStakingOperation, tortuga_claim, tortuga_stake, tortuga_unstake};
 use crate::nft::NftOperation;
 
 pub struct TransactionBuilder {
@@ -117,7 +117,7 @@ impl TransactionFactory {
             OneOftransaction_payload::token_transfer(token_transfer) => {
                 let func = token_transfer.function.unwrap();
                 factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
-                                              convert_proto_struct_tag_to_type_tag(func),
+                                       convert_proto_struct_tag_to_type_tag(func),
                 )
             }
             OneOftransaction_payload::create_account(create_account) => {
@@ -135,9 +135,9 @@ impl TransactionFactory {
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
                 let func = token_transfer_coins.function.unwrap();
                 factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
-                                                                         convert_proto_struct_tag_to_type_tag(func))
+                                                                  convert_proto_struct_tag_to_type_tag(func))
             }
-            OneOftransaction_payload::None => {todo!()}
+            OneOftransaction_payload::None => { todo!() }
         }
     }
 
@@ -194,7 +194,9 @@ impl TransactionFactory {
             LiquidStakingOperation::Unstake(unstake) => {
                 self.payload(tortuga_unstake(unstake.smart_contract_address, unstake.amount))
             }
-            LiquidStakingOperation::Claim => {todo!()}
+            LiquidStakingOperation::Claim(claim) => {
+                self.payload(tortuga_claim(claim.smart_contract_address, claim.idx))
+            }
         }
     }
 
@@ -212,7 +214,7 @@ impl TransactionFactory {
     }
 
     pub fn implicitly_create_user_and_coins_transfer(&self, to: AccountAddress,
-                          amount: u64, coin_type: TypeTag) -> TransactionBuilder {
+                                                     amount: u64, coin_type: TypeTag) -> TransactionBuilder {
         self.payload(aptos_account_transfer_coins(coin_type, to, amount))
     }
 
@@ -239,6 +241,7 @@ mod tests {
     use move_core_types::account_address::AccountAddress;
     use move_core_types::language_storage::TypeTag;
     use tw_encoding::hex;
+    use crate::liquid_staking;
     use crate::liquid_staking::{LiquidStakingOperation, Stake, Unstake};
     use crate::nft::{Offer, NftOperation, Claim};
     use crate::transaction_builder::TransactionFactory;
@@ -247,6 +250,7 @@ mod tests {
     pub struct AccountCreation {
         to: String,
     }
+
     pub struct Transfer {
         to: String,
         amount: u64,
@@ -300,14 +304,13 @@ mod tests {
                 } else {
                     panic!("Unsupported arguments")
                 }
-            },
+            }
             "create_account" => {
                 if let OpsDetails::AccountCreation(account) = ops_details.unwrap() {
                     factory.create_user_account(AccountAddress::from_str(&account.to).unwrap())
                 } else {
                     panic!("Unsupported arguments")
                 }
-
             }
             "coin_transfer" => {
                 if let OpsDetails::TokenTransfer(token_transfer) = ops_details.unwrap() {
@@ -315,28 +318,28 @@ mod tests {
                 } else {
                     panic!("Unsupported arguments")
                 }
-            },
+            }
             "implicit_coin_transfer" => {
                 if let OpsDetails::ImplicitTokenTransfer(token_transfer) = ops_details.unwrap() {
                     factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer.transfer.to).unwrap(), token_transfer.transfer.amount, token_transfer.tag)
                 } else {
                     panic!("Unsupported arguments")
                 }
-            },
+            }
             "nft_ops" => {
                 if let OpsDetails::NftOps(nft) = ops_details.unwrap() {
                     factory.nft_ops(nft)
                 } else {
                     panic!("Unsupported arguments")
                 }
-            },
+            }
             "register_token" => {
                 if let OpsDetails::RegisterToken(register_token) = ops_details.unwrap() {
                     factory.register_token(register_token.coin_type)
                 } else {
                     panic!("Unsupported arguments")
                 }
-            },
+            }
             "liquid_staking_ops" => {
                 if let OpsDetails::LiquidStakingOps(liquid_staking_ops) = ops_details.unwrap() {
                     factory.liquid_staking_ops(liquid_staking_ops)
@@ -757,6 +760,47 @@ mod tests {
                 }"#, // Expected JSON literal
             Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Unstake(Unstake {
                 amount: 99178100,
+                smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
+            }))),
+        );
+    }
+
+    #[test]
+    fn test_implicit_aptos_tortuga_claim() {
+        setup_transaction(
+            "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+            "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
+            "liquid_staking_ops",
+            28, // Sequence number
+            1,
+            10,
+            1682066783,
+            148,
+            "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001", // Expected raw transaction bytes
+            "c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03", // Expected signature
+            "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc440c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03", // Expected encoded transaction
+            r#"{
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "28",
+                    "max_gas_amount": "10",
+                    "gas_unit_price": "148",
+                    "expiration_timestamp_secs": "1682066783",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::claim",
+                        "type_arguments": [],
+                        "arguments": [
+                            "0"
+                        ],
+                        "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0xc936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03",
+                        "type": "ed25519_signature"
+                    }
+                }"#, // Expected JSON literal
+            Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Claim(liquid_staking::Claim {
+                idx: 0,
                 smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
             }))),
         );
