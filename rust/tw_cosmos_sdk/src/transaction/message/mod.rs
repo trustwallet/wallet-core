@@ -10,9 +10,11 @@ use serde_json::Value as Json;
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_proto::google;
 
+pub mod cosmos_auth_message;
+pub mod cosmos_bank_message;
+pub mod cosmos_generic_message;
 pub mod cosmos_staking_message;
 pub mod ibc_message;
-pub mod standard_cosmos_message;
 pub mod terra_wasm_message;
 pub mod thorchain_message;
 pub mod wasm_message;

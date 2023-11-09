@@ -5,36 +5,123 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::address::CosmosAddress;
+use crate::modules::serializer::protobuf_serializer::build_coin;
 use crate::proto::cosmos;
-use crate::transaction::message::{CosmosMessage, ProtobufMessage};
+use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, ProtobufMessage};
+use crate::transaction::Coin;
+use serde::Serialize;
 use tw_coin_entry::error::SigningResult;
-use tw_proto::{google, to_any};
+use tw_proto::to_any;
 
-/// Any raw JSON message.
-/// Supports JSON serialization only.
-pub struct AuthGrantMessage<Address: CosmosAddress> {
-    pub granter: Address,
-    pub grantee: Address,
-    pub grant_msg: google::protobuf::Any,
-    pub expiration_secs: i64,
+/// cosmos-sdk/MsgDelegate
+#[derive(Serialize)]
+pub struct DelegateMessage<Address: CosmosAddress> {
+    pub amount: Coin,
+    pub delegator_address: Address,
+    pub validator_address: Address,
 }
 
-impl<Address: CosmosAddress> CosmosMessage for AuthGrantMessage<Address> {
+impl<Address: CosmosAddress> CosmosMessage for DelegateMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
-        let expiration = google::protobuf::Timestamp {
-            seconds: self.expiration_secs,
-            ..google::protobuf::Timestamp::default()
-        };
-        let grant = cosmos::authz::v1beta1::Grant {
-            authorization: Some(self.grant_msg.clone()),
-            expiration: Some(expiration),
-        };
-
-        let proto_msg = cosmos::authz::v1beta1::MsgGrant {
-            granter: self.granter.to_string(),
-            grantee: self.grantee.to_string(),
-            grant: Some(grant),
+        let proto_msg = cosmos::staking::v1beta1::MsgDelegate {
+            amount: Some(build_coin(&self.amount)),
+            delegator_address: self.delegator_address.to_string(),
+            validator_address: self.validator_address.to_string(),
         };
         Ok(to_any(&proto_msg))
+    }
+
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        message_to_json("cosmos-sdk/MsgDelegate", self)
+    }
+}
+
+/// cosmos-sdk/MsgUndelegate
+#[derive(Serialize)]
+pub struct UndelegateMessage<Address: CosmosAddress> {
+    pub amount: Coin,
+    pub delegator_address: Address,
+    pub validator_address: Address,
+}
+
+impl<Address: CosmosAddress> CosmosMessage for UndelegateMessage<Address> {
+    fn to_proto(&self) -> SigningResult<ProtobufMessage> {
+        let proto_msg = cosmos::staking::v1beta1::MsgUndelegate {
+            amount: Some(build_coin(&self.amount)),
+            delegator_address: self.delegator_address.to_string(),
+            validator_address: self.validator_address.to_string(),
+        };
+        Ok(to_any(&proto_msg))
+    }
+
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        message_to_json("cosmos-sdk/MsgUndelegate", self)
+    }
+}
+
+/// cosmos-sdk/MsgBeginRedelegate
+#[derive(Serialize)]
+pub struct BeginRedelegateMessage<Address: CosmosAddress> {
+    pub amount: Coin,
+    pub delegator_address: Address,
+    pub validator_src_address: Address,
+    pub validator_dst_address: Address,
+}
+
+impl<Address: CosmosAddress> CosmosMessage for BeginRedelegateMessage<Address> {
+    fn to_proto(&self) -> SigningResult<ProtobufMessage> {
+        let proto_msg = cosmos::staking::v1beta1::MsgBeginRedelegate {
+            amount: Some(build_coin(&self.amount)),
+            delegator_address: self.delegator_address.to_string(),
+            validator_src_address: self.validator_src_address.to_string(),
+            validator_dst_address: self.validator_dst_address.to_string(),
+        };
+        Ok(to_any(&proto_msg))
+    }
+
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        message_to_json("cosmos-sdk/MsgBeginRedelegate", self)
+    }
+}
+
+/// cosmos-sdk/MsgWithdrawDelegationReward
+#[derive(Serialize)]
+pub struct WithdrawDelegationRewardMessage<Address: CosmosAddress> {
+    pub delegator_address: Address,
+    pub validator_address: Address,
+}
+
+impl<Address: CosmosAddress> CosmosMessage for WithdrawDelegationRewardMessage<Address> {
+    fn to_proto(&self) -> SigningResult<ProtobufMessage> {
+        let proto_msg = cosmos::distribution::v1beta1::MsgWithdrawDelegatorReward {
+            delegator_address: self.delegator_address.to_string(),
+            validator_address: self.validator_address.to_string(),
+        };
+        Ok(to_any(&proto_msg))
+    }
+
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        message_to_json("cosmos-sdk/MsgWithdrawDelegationReward", self)
+    }
+}
+
+/// cosmos-sdk/MsgSetWithdrawAddress
+#[derive(Serialize)]
+pub struct SetWithdrawAddressMessage<Address: CosmosAddress> {
+    pub delegator_address: Address,
+    pub withdraw_address: Address,
+}
+
+impl<Address: CosmosAddress> CosmosMessage for SetWithdrawAddressMessage<Address> {
+    fn to_proto(&self) -> SigningResult<ProtobufMessage> {
+        let proto_msg = cosmos::distribution::v1beta1::MsgSetWithdrawAddress {
+            delegator_address: self.delegator_address.to_string(),
+            withdraw_address: self.withdraw_address.to_string(),
+        };
+        Ok(to_any(&proto_msg))
+    }
+
+    fn to_json(&self) -> SigningResult<JsonMessage> {
+        message_to_json("cosmos-sdk/MsgSetWithdrawAddress", self)
     }
 }

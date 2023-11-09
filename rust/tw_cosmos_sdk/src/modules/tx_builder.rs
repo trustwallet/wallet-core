@@ -7,12 +7,14 @@
 use crate::address::{Address, CosmosAddress};
 use crate::context::CosmosContext;
 use crate::public_key::CosmosPublicKey;
-use crate::transaction::message::cosmos_staking_message::AuthGrantMessage;
-use crate::transaction::message::ibc_message::{Height, TransferTokensMessage};
-use crate::transaction::message::standard_cosmos_message::{
-    BeginRedelegateMessage, DelegateMessage, JsonRawMessage, SendMessage,
-    SetWithdrawAddressMessage, UndelegateMessage, WithdrawDelegationRewardMessage,
+use crate::transaction::message::cosmos_auth_message::{AuthGrantMessage, AuthRevokeMessage};
+use crate::transaction::message::cosmos_bank_message::SendMessage;
+use crate::transaction::message::cosmos_generic_message::JsonRawMessage;
+use crate::transaction::message::cosmos_staking_message::{
+    BeginRedelegateMessage, DelegateMessage, SetWithdrawAddressMessage, UndelegateMessage,
+    WithdrawDelegationRewardMessage,
 };
+use crate::transaction::message::ibc_message::{Height, TransferTokensMessage};
 use crate::transaction::message::terra_wasm_message::TerraExecuteContractMessage;
 use crate::transaction::message::thorchain_message::ThorchainSendMessage;
 use crate::transaction::message::wasm_message::{
@@ -165,8 +167,13 @@ where
             MessageEnum::sign_direct_message(ref _sign) => {
                 todo!()
             },
-            MessageEnum::auth_grant(ref auth) => Self::auth_grant_msg_from_proto(coin, auth),
-            _ => todo!(),
+            MessageEnum::auth_grant(ref grant) => Self::auth_grant_msg_from_proto(coin, grant),
+            MessageEnum::auth_revoke(ref revoke) => Self::auth_revoke_msg_from_proto(coin, revoke),
+            MessageEnum::msg_vote(_) => todo!(),
+            MessageEnum::msg_stride_liquid_staking_stake(_) => todo!(),
+            MessageEnum::msg_stride_liquid_staking_redeem(_) => todo!(),
+            MessageEnum::thorchain_deposit_message(_) => todo!(),
+            MessageEnum::None => todo!(),
         }
     }
 
@@ -468,6 +475,18 @@ where
             grantee: Address::from_str_with_coin(coin, &auth.grantee)?,
             grant_msg,
             expiration_secs: auth.expiration,
+        };
+        Ok(msg.into_boxed())
+    }
+
+    pub fn auth_revoke_msg_from_proto(
+        coin: &dyn CoinContext,
+        auth: &Proto::mod_Message::AuthRevoke<'_>,
+    ) -> SigningResult<CosmosMessageBox> {
+        let msg = AuthRevokeMessage {
+            granter: Address::from_str_with_coin(coin, &auth.granter)?,
+            grantee: Address::from_str_with_coin(coin, &auth.grantee)?,
+            msg_type_url: auth.msg_type_url.to_string(),
         };
         Ok(msg.into_boxed())
     }
