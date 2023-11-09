@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::borrow::Cow;
 use tw_coin_entry::test_utils::test_context::TestCoinContext;
 use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::test_utils::{
@@ -161,6 +162,93 @@ fn test_sign_ibc_transfer() {
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJ"},"signature":"rQchZ0UyT4LoaLUob+8Qt7V99xzVoRZQirPa39mHCo00fFRRKnbvC16K6AcQxVMQg4GGzzi3aAhxP+cP/XIo5Q=="}]"#,
     });
     // `Transfer` doesn't support JSON serialization and signing.
+    test_sign_json_error::<StandardCosmosContext>(TestErrorInput {
+        coin: &coin,
+        input,
+        error: SigningError::Error_not_supported,
+    });
+}
+
+#[test]
+fn test_sign_direct() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let body_bytes = "0a89010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412690a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b796778306570683664643032122d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537331a090a046d756f6e120131".decode_hex().unwrap();
+    let auth_info_bytes = "0a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a210257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc512040a020801180812110a0b0a046d756f6e120332303010c09a0c".decode_hex().unwrap();
+    let sign_direct = Proto::mod_Message::SignDirect {
+        body_bytes: Cow::from(body_bytes),
+        auth_info_bytes: Cow::from(auth_info_bytes),
+    };
+    let mut input = Proto::SigningInput {
+        account_number: 1037,
+        chain_id: "gaia-13003".into(),
+        private_key: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        messages: vec![make_message(MessageEnum::sign_direct_message(sign_direct))],
+        ..Proto::SigningInput::default()
+    };
+
+    // real-world tx: https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
+    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs
+    // also similar TX: BCDAC36B605576C8182C2829C808B30A69CAD4959D5ED1E6FF9984ABF280D603
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H"}"#,
+        signature: "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"+eH0ABZXpCAJxOtoWWJdLkHpYfxy79KEKQnImOQ5/B9UmRbk7KxnbuNTx9VMWuMKKbQhC4v/Dr/cs3XhBQAvRw=="}]"#,
+    });
+
+    // `Transfer` doesn't support JSON serialization and signing.
+    // Set the default fee to get `SigningError::Error_not_supported`.
+    input.fee = Some(Proto::Fee::default());
+    test_sign_json_error::<StandardCosmosContext>(TestErrorInput {
+        coin: &coin,
+        input,
+        error: SigningError::Error_not_supported,
+    });
+}
+
+#[test]
+fn test_sign_direct_0a90010a() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    // Transaction body has the following content:
+    // https://github.com/trustwallet/wallet-core/blob/1382e3c8ac6d8e956e25c0475039f6c3988f9355/tests/chains/Cosmos/SignerTests.cpp#L327-L340
+    let body_bytes = "0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637".decode_hex().unwrap();
+    let auth_info_bytes = "0a0a0a0012040a020801180112130a0d0a0575636f736d12043230303010c09a0c".decode_hex().unwrap();
+    let sign_direct = Proto::mod_Message::SignDirect {
+        body_bytes: Cow::from(body_bytes),
+        auth_info_bytes: Cow::from(auth_info_bytes),
+    };
+    let mut input = Proto::SigningInput {
+        account_number: 1,
+        chain_id: "cosmoshub-4".into(),
+        private_key: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"
+            .decode_hex()
+            .unwrap()
+            .into(),
+        messages: vec![make_message(MessageEnum::sign_direct_message(sign_direct))],
+        ..Proto::SigningInput::default()
+    };
+
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpMBCpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKLWNvc21vczFwa3B0cmU3ZmRrbDZnZnJ6bGVzamp2aHhobGMzcjRnbW1rOHJzNhItY29zbW9zMXF5cHF4cHE5cWNyc3N6ZzJwdnhxNnJzMHpxZzN5eWM1bHp2N3h1GhAKBXVjb3NtEgcxMjM0NTY3EiEKCgoAEgQKAggBGAESEwoNCgV1Y29zbRIEMjAwMBDAmgwaQEgXmSAlm4M5bz+OX1GtvvZ3fBV2wrZrp4A/Imd55KM7ASivB/siYJegmYiOKzQ82uwoEmFalNnG2BrHHDwDR2Y="}"#,
+        signature: "48179920259b83396f3f8e5f51adbef6777c1576c2b66ba7803f226779e4a33b0128af07fb226097a099888e2b343cdaec2812615a94d9c6d81ac71c3c034766",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"SBeZICWbgzlvP45fUa2+9nd8FXbCtmungD8iZ3nkozsBKK8H+yJgl6CZiI4rNDza7CgSYVqU2cbYGsccPANHZg=="}]"#,
+    });
+
+    // `Transfer` doesn't support JSON serialization and signing.
+    // Set the default fee to get `SigningError::Error_not_supported`.
+    input.fee = Some(Proto::Fee::default());
     test_sign_json_error::<StandardCosmosContext>(TestErrorInput {
         coin: &coin,
         input,

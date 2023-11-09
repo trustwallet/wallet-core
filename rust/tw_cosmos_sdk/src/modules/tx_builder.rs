@@ -176,7 +176,7 @@ where
             MessageEnum::sign_direct_message(ref _sign) => {
                 // `SignDirect` message must be handled before this function is called.
                 // Consider using `Self::try_sign_direct_args` instead.
-                Err(SigningError(SigningErrorType::Error_internal))
+                Err(SigningError(SigningErrorType::Error_not_supported))
             },
             MessageEnum::auth_grant(ref grant) => Self::auth_grant_msg_from_proto(coin, grant),
             MessageEnum::auth_revoke(ref revoke) => Self::auth_revoke_msg_from_proto(coin, revoke),
