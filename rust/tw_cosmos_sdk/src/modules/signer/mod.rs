@@ -62,8 +62,9 @@ impl<Context: CosmosContext> TWSigner<Context> {
         let signature_json = JsonSerializer::<Context>::serialize_signature(
             &public_key,
             signed_tx.signature.clone(),
-        )
-        .to_json_string();
+        );
+        let signature_json = serde_json::to_string(&[signature_json])
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signed_tx.signature),
@@ -95,8 +96,9 @@ impl<Context: CosmosContext> TWSigner<Context> {
         let broadcast_tx = BroadcastMsg::raw(broadcast_mode, &signed_tx_raw).to_json_string();
 
         let signature_json =
-            JsonSerializer::<Context>::serialize_signature(&public_key, signature_data.clone())
-                .to_json_string();
+            JsonSerializer::<Context>::serialize_signature(&public_key, signature_data.clone());
+        let signature_json = serde_json::to_string(&[signature_json])
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signature_data),
@@ -122,8 +124,6 @@ impl<Context: CosmosContext> TWSigner<Context> {
         let signed_tx_json = JsonSerializer::build_signed_tx(&signed_tx)?;
         let broadcast_tx = BroadcastMsg::json(broadcast_mode, &signed_tx_json)?.to_json_string();
 
-        // Legacy implementation:
-        // https://github.com/trustwallet/wallet-core/blob/1382e3c8ac6d8e956e25c0475039f6c3988f9355/src/Cosmos/Signer.cpp#L53
         let signature_json = serde_json::to_string(&signed_tx_json.signatures)
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
 

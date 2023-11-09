@@ -6,6 +6,7 @@
 
 use serde::{Serialize, Serializer};
 use std::fmt;
+use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::bech32;
@@ -96,6 +97,20 @@ impl Bech32Address {
 
     pub fn hrp(&self) -> &str {
         &self.hrp
+    }
+}
+
+impl FromStr for Bech32Address {
+    type Err = AddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let bech32::Decoded { hrp, bytes } =
+            bech32::decode(&s).map_err(|_| AddressError::InvalidInput)?;
+        Ok(Bech32Address {
+            hrp,
+            key_hash: bytes,
+            address_str: s.to_string(),
+        })
     }
 }
 

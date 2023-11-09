@@ -234,7 +234,8 @@ where
             source_channel: transfer.source_channel.to_string(),
             token,
             sender: Address::from_str_with_coin(coin, &transfer.sender)?,
-            receiver: Address::from_str_with_coin(coin, &transfer.receiver)?,
+            // Don't use `Address::from_str_with_coin` as the recipient address can belong to another Cosmos chain.
+            receiver: Address::from_str(&transfer.receiver)?,
             timeout_height: Height {
                 revision_number: height.revision_number,
                 revision_height: height.revision_height,
