@@ -112,34 +112,33 @@ impl TransactionFactory {
             .with_transaction_expiration_time(input.expiration_timestamp_secs);
         match input.transaction_payload {
             OneOftransaction_payload::transfer(transfer) => {
-                return factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount);
+                factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount)
             }
             OneOftransaction_payload::token_transfer(token_transfer) => {
                 let func = token_transfer.function.unwrap();
-                return factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
+                factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
                                               convert_proto_struct_tag_to_type_tag(func),
-                );
+                )
             }
             OneOftransaction_payload::create_account(create_account) => {
-                return factory.create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap());
+                factory.create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap())
             }
             OneOftransaction_payload::nft_message(nft_message) => {
-                return factory.nft_ops(nft_message.into());
+                factory.nft_ops(nft_message.into())
             }
             OneOftransaction_payload::register_token(register_token) => {
-                return factory.register_token(convert_proto_struct_tag_to_type_tag(register_token.function.unwrap()))
+                factory.register_token(convert_proto_struct_tag_to_type_tag(register_token.function.unwrap()))
             }
             OneOftransaction_payload::liquid_staking_message(msg) => {
-                return factory.liquid_staking_ops(msg.into())
+                factory.liquid_staking_ops(msg.into())
             }
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
                 let func = token_transfer_coins.function.unwrap();
-                return factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
+                factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
                                                                          convert_proto_struct_tag_to_type_tag(func))
             }
-            OneOftransaction_payload::None => {}
+            OneOftransaction_payload::None => {todo!()}
         }
-        todo!()
     }
 
     pub fn with_max_gas_amount(mut self, max_gas_amount: u64) -> Self {
@@ -155,23 +154,6 @@ impl TransactionFactory {
     pub fn with_transaction_expiration_time(mut self, transaction_expiration_time: u64) -> Self {
         self.transaction_expiration_time = transaction_expiration_time;
         self
-    }
-
-    pub fn with_chain_id(mut self, chain_id: u8) -> Self {
-        self.chain_id = chain_id;
-        self
-    }
-
-    pub fn get_max_gas_amount(&self) -> u64 {
-        self.max_gas_amount
-    }
-
-    pub fn get_gas_unit_price(&self) -> u64 {
-        self.gas_unit_price
-    }
-
-    pub fn get_transaction_expiration_time(&self) -> u64 {
-        self.transaction_expiration_time
     }
 
     pub fn payload(&self, payload: TransactionPayload) -> TransactionBuilder {
@@ -231,13 +213,6 @@ impl TransactionFactory {
                           amount: u64, coin_type: TypeTag) -> TransactionBuilder {
         self.payload(aptos_account_transfer_coins(coin_type, to, amount))
     }
-    pub fn transfer(&self, _to: AccountAddress, _amount: u64) -> TransactionBuilder {
-        todo!()
-    }
-
-    pub fn account_transfer(&self, _to: AccountAddress, _amount: u64) -> TransactionBuilder {
-        todo!()
-    }
 
     fn transaction_builder(&self, payload: TransactionPayload) -> TransactionBuilder {
         TransactionBuilder {
@@ -282,11 +257,6 @@ mod tests {
 
     pub struct RegisterToken {
         coin_type: TypeTag,
-    }
-
-    pub struct LiquidStakingStake {
-        smart_contract_address: AccountAddress,
-        amount: u64,
     }
 
     pub enum OpsDetails {
