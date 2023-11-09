@@ -11,6 +11,8 @@ pub mod constants;
 pub mod entry;
 
 pub mod nft;
+
+pub mod liquid_staking;
 pub mod signer;
 pub mod transaction;
 pub mod transaction_builder;

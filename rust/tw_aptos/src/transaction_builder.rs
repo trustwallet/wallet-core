@@ -13,6 +13,7 @@ use crate::transaction::RawTransaction;
 use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
 use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins, coin_transfer, managed_coin_register, token_transfers_cancel_offer_script, token_transfers_claim_script, token_transfers_offer_script};
+use crate::liquid_staking::{LiquidStakingOperation, tortuga_stake};
 use crate::nft::NftOperation;
 
 pub struct TransactionBuilder {
@@ -128,8 +129,14 @@ impl TransactionFactory {
             OneOftransaction_payload::register_token(register_token) => {
                 return factory.register_token(convert_proto_struct_tag_to_type_tag(register_token.function.unwrap()))
             }
-            OneOftransaction_payload::liquid_staking_message(_) => {}
-            OneOftransaction_payload::token_transfer_coins(_) => {}
+            OneOftransaction_payload::liquid_staking_message(msg) => {
+                return factory.liquid_staking_ops(msg.into())
+            }
+            OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
+                let func = token_transfer_coins.function.unwrap();
+                return factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
+                                                                         convert_proto_struct_tag_to_type_tag(func))
+            }
             OneOftransaction_payload::None => {}
         }
         todo!()
@@ -194,6 +201,16 @@ impl TransactionFactory {
             NftOperation::Offer(offer) => {
                 self.payload(token_transfers_offer_script(offer.receiver, offer.creator, offer.collection, offer.name, offer.property_version, offer.amount))
             }
+        }
+    }
+
+    pub fn liquid_staking_ops(&self, operation: LiquidStakingOperation) -> TransactionBuilder {
+        match operation {
+            LiquidStakingOperation::Stake(stake) => {
+                self.payload(tortuga_stake(stake.smart_contract_address, stake.amount))
+            }
+            LiquidStakingOperation::Unstake => {todo!()}
+            LiquidStakingOperation::Claim => {todo!()}
         }
     }
 
