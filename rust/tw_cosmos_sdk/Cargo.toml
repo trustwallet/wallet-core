@@ -3,7 +3,8 @@ name = "tw_cosmos_sdk"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+test-utils = []
 
 [dependencies]
 quick-protobuf = "0.8.1"

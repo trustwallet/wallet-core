@@ -6,7 +6,7 @@
 
 use crate::proto::ethermint;
 use crate::public_key::secp256k1::prepare_secp256k1_public_key;
-use crate::public_key::{CosmosPublicKey, ProtobufPublicKey};
+use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_keypair::tw;
 use tw_keypair::KeyPairResult;
@@ -36,6 +36,14 @@ impl CosmosPublicKey for EthermintEthSecp256PublicKey {
 
     fn to_bytes(&self) -> Data {
         self.public_key.clone()
+    }
+}
+
+impl JsonPublicKey for EthermintEthSecp256PublicKey {
+    fn public_key_type(&self) -> String {
+        const ETHERMINT_SECP256K1_PUBLIC_KEY_TYPE: &str = "ethermint/PubKeyEthSecp256k1";
+
+        ETHERMINT_SECP256K1_PUBLIC_KEY_TYPE.to_string()
     }
 }
 

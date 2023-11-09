@@ -13,7 +13,7 @@ pub mod ethermint_eth_secp256k1;
 pub mod injective_eth_secp256k1;
 pub mod secp256k1;
 
-pub trait CosmosPublicKey: Sized {
+pub trait CosmosPublicKey: JsonPublicKey + ProtobufPublicKey + Sized {
     fn from_private_key(
         coin: &dyn CoinContext,
         private_key: &tw::PrivateKey,
@@ -24,15 +24,11 @@ pub trait CosmosPublicKey: Sized {
     fn to_bytes(&self) -> Data;
 }
 
-pub trait ProtobufPublicKey: CosmosPublicKey {
+pub trait ProtobufPublicKey {
     fn to_proto(&self) -> google::protobuf::Any;
 }
 
-pub trait JsonPublicKey: CosmosPublicKey {
+pub trait JsonPublicKey {
     /// In most cases, [`JsonPublicKey::public_key_type`] returns a corresponding protobuf message type.
     fn public_key_type(&self) -> String;
 }
-
-// pub trait JsonPublicKey {
-//     fn to_json(&self) -> Json;
-// }

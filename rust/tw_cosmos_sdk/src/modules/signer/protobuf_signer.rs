@@ -8,7 +8,6 @@ use crate::context::CosmosContext;
 use crate::hasher::CosmosHasher;
 use crate::modules::serializer::protobuf_serializer::{ProtobufSerializer, SignDirectArgs};
 use crate::private_key::{CosmosPrivateKey, SignatureData};
-use crate::public_key::ProtobufPublicKey;
 use crate::transaction::{SignedTransaction, UnsignedTransaction};
 use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
@@ -18,10 +17,7 @@ pub struct ProtobufSigner<Context: CosmosContext> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context: CosmosContext> ProtobufSigner<Context>
-where
-    Context::PublicKey: ProtobufPublicKey,
-{
+impl<Context: CosmosContext> ProtobufSigner<Context> {
     pub fn sign_tx(
         private_key: &Context::PrivateKey,
         unsigned: UnsignedTransaction<Context>,

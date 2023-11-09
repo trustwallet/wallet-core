@@ -36,11 +36,7 @@ pub struct SignDirectArgs {
     pub account_number: u64,
 }
 
-impl<Context> ProtobufSerializer<Context>
-where
-    Context: CosmosContext,
-    Context::PublicKey: ProtobufPublicKey,
-{
+impl<Context: CosmosContext> ProtobufSerializer<Context> {
     /// Serializes a signed transaction into the Cosmos [`tx_proto::TxRaw`] message.
     /// [`tx_proto::TxRaw`] can be broadcasted to the network.
     pub fn build_signed_tx(signed: &SignedTransaction<Context>) -> SigningResult<tx_proto::TxRaw> {

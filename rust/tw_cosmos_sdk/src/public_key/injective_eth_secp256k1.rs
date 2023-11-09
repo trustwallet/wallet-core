@@ -12,7 +12,7 @@
 
 use crate::proto::injective;
 use crate::public_key::secp256k1::prepare_secp256k1_public_key;
-use crate::public_key::{CosmosPublicKey, ProtobufPublicKey};
+use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_keypair::tw::PrivateKey;
 use tw_keypair::KeyPairResult;
@@ -42,6 +42,15 @@ impl CosmosPublicKey for InjectiveEthSecp256PublicKey {
 
     fn to_bytes(&self) -> Data {
         self.public_key.clone()
+    }
+}
+
+impl JsonPublicKey for InjectiveEthSecp256PublicKey {
+    fn public_key_type(&self) -> String {
+        /// https://github.com/cosmostation/cosmostation-chrome-extension/blob/e2fd27d71a17993f8eef07ce30f7a04a32e52788/src/constants/cosmos.ts#L4
+        const INJECTIVE_SECP256K1_PUBLIC_KEY_TYPE: &str = "injective/PubKeyEthSecp256k1";
+
+        INJECTIVE_SECP256K1_PUBLIC_KEY_TYPE.to_string()
     }
 }
 

@@ -11,7 +11,7 @@ use crate::modules::serializer::protobuf_serializer::ProtobufSerializer;
 use crate::modules::signer::json_signer::JsonSigner;
 use crate::modules::signer::protobuf_signer::ProtobufSigner;
 use crate::modules::tx_builder::TxBuilder;
-use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
+use crate::public_key::CosmosPublicKey;
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use tw_coin_entry::coin_context::CoinContext;
@@ -26,11 +26,7 @@ pub struct TWSigner<Context> {
     _phantom: PhantomData<Context>,
 }
 
-impl<Context> TWSigner<Context>
-where
-    Context: CosmosContext,
-    Context::PublicKey: JsonPublicKey + ProtobufPublicKey,
-{
+impl<Context: CosmosContext> TWSigner<Context> {
     #[inline]
     pub fn sign(
         coin: &dyn CoinContext,
@@ -126,17 +122,15 @@ where
         let signed_tx_json = JsonSerializer::build_signed_tx(&signed_tx)?;
         let broadcast_tx = BroadcastMsg::json(broadcast_mode, &signed_tx_json)?.to_json_string();
 
-        // There should be at least one signature.
-        let signature_json = signed_tx_json
-            .signatures
-            .first()
-            .ok_or(SigningError(SigningErrorType::Error_internal))?
-            .to_json_string();
+        // Legacy implementation:
+        // https://github.com/trustwallet/wallet-core/blob/1382e3c8ac6d8e956e25c0475039f6c3988f9355/src/Cosmos/Signer.cpp#L53
+        let signature_json = serde_json::to_string(&signed_tx_json.signatures)
+            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signed_tx.signature),
             signature_json: Cow::from(signature_json),
-            serialized: Cow::from(broadcast_tx),
+            json: Cow::from(broadcast_tx),
             ..Proto::SigningOutput::default()
         })
     }
