@@ -14,6 +14,7 @@ use crate::transaction::{
 };
 use std::marker::PhantomData;
 use tw_coin_entry::error::SigningResult;
+use tw_memory::Data;
 use tw_proto::serialize;
 
 pub fn build_coin(coin: &Coin) -> base_proto::Coin {
@@ -26,6 +27,13 @@ pub fn build_coin(coin: &Coin) -> base_proto::Coin {
 /// `ProtobufSerializer` serializes Cosmos specific Protobuf messages.
 pub struct ProtobufSerializer<Context> {
     _phantom: PhantomData<Context>,
+}
+
+pub struct SignDirectArgs {
+    pub tx_body: Data,
+    pub auth_info: Data,
+    pub chain_id: String,
+    pub account_number: u64,
 }
 
 impl<Context> ProtobufSerializer<Context>
@@ -50,6 +58,14 @@ where
         })
     }
 
+    pub fn build_direct_signed_tx(args: &SignDirectArgs, signature: Data) -> tx_proto::TxRaw {
+        tx_proto::TxRaw {
+            body_bytes: args.tx_body.clone(),
+            auth_info_bytes: args.auth_info.clone(),
+            signatures: vec![signature],
+        }
+    }
+
     /// Serializes an unsigned transaction into the Cosmos [`tx_proto::SignDoc`] message.
     /// [`tx_proto::SignDoc`] is used to generate a transaction prehash and sign it.
     pub fn build_sign_doc(
@@ -68,6 +84,15 @@ where
             chain_id: unsigned.chain_id.clone(),
             account_number: unsigned.account_number,
         })
+    }
+
+    pub fn build_direct_sign_doc(args: &SignDirectArgs) -> tx_proto::SignDoc {
+        tx_proto::SignDoc {
+            body_bytes: args.tx_body.clone(),
+            auth_info_bytes: args.auth_info.clone(),
+            chain_id: args.chain_id.clone(),
+            account_number: args.account_number,
+        }
     }
 
     pub fn build_auth_info(

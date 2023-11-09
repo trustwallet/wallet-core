@@ -6,8 +6,8 @@
 
 use crate::context::CosmosContext;
 use crate::hasher::CosmosHasher;
-use crate::modules::serializer::protobuf_serializer::ProtobufSerializer;
-use crate::private_key::CosmosPrivateKey;
+use crate::modules::serializer::protobuf_serializer::{ProtobufSerializer, SignDirectArgs};
+use crate::private_key::{CosmosPrivateKey, SignatureData};
 use crate::public_key::ProtobufPublicKey;
 use crate::transaction::{SignedTransaction, UnsignedTransaction};
 use std::marker::PhantomData;
@@ -33,5 +33,16 @@ where
         let signature_data = private_key.sign_tx_hash(&hash_to_sign)?;
 
         Ok(unsigned.into_signed(signature_data))
+    }
+
+    pub fn sign_direct(
+        private_key: &Context::PrivateKey,
+        args: &SignDirectArgs,
+    ) -> SigningResult<SignatureData> {
+        let tx_to_sign = ProtobufSerializer::<Context>::build_direct_sign_doc(args);
+        let encoded_tx = serialize(&tx_to_sign)?;
+
+        let hash_to_sign = Context::TxHasher::hash_sign_doc(&encoded_tx);
+        private_key.sign_tx_hash(&hash_to_sign)
     }
 }

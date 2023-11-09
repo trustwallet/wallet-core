@@ -47,6 +47,10 @@ where
         coin: &dyn CoinContext,
         mut input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
+        if let Ok(Some(_)) = TxBuilder::<Context>::try_sign_direct_args(&input) {
+            return Self::sign_as_protobuf_direct(coin, input);
+        }
+
         let private_key = Context::PrivateKey::try_from(&input.private_key)?;
         let public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref())?;
         let broadcast_mode = Self::broadcast_mode(input.mode);
@@ -67,6 +71,39 @@ where
 
         Ok(Proto::SigningOutput {
             signature: Cow::from(signed_tx.signature),
+            signature_json: Cow::from(signature_json),
+            serialized: Cow::from(broadcast_tx),
+            ..Proto::SigningOutput::default()
+        })
+    }
+
+    pub fn sign_as_protobuf_direct(
+        coin: &dyn CoinContext,
+        input: Proto::SigningInput<'_>,
+    ) -> SigningResult<Proto::SigningOutput<'static>> {
+        let private_key = Context::PrivateKey::try_from(&input.private_key)?;
+        let public_key = Context::PublicKey::from_private_key(coin, private_key.as_ref())?;
+
+        let sign_direct_args = TxBuilder::<Context>::try_sign_direct_args(&input)?
+            // This function must be called only when there is a `SignDirect` message only.
+            .ok_or(SigningError(SigningErrorType::Error_internal))?;
+
+        let signature_data =
+            ProtobufSigner::<Context>::sign_direct(&private_key, &sign_direct_args)?;
+        let signed_tx_raw = ProtobufSerializer::<Context>::build_direct_signed_tx(
+            &sign_direct_args,
+            signature_data.clone(),
+        );
+
+        let broadcast_mode = Self::broadcast_mode(input.mode);
+        let broadcast_tx = BroadcastMsg::raw(broadcast_mode, &signed_tx_raw).to_json_string();
+
+        let signature_json =
+            JsonSerializer::<Context>::serialize_signature(&public_key, signature_data.clone())
+                .to_json_string();
+
+        Ok(Proto::SigningOutput {
+            signature: Cow::from(signature_data),
             signature_json: Cow::from(signature_json),
             serialized: Cow::from(broadcast_tx),
             ..Proto::SigningOutput::default()
