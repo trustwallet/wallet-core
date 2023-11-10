@@ -2,9 +2,9 @@ name: Linux CI
 
 on:
   push:
-    branches: [ dev, master ]
+    branches: [ dev, master, master-3 ]
   pull_request:
-    branches: [ dev, master ]
+    branches: [ dev, master, master-3 ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,6 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
+    - name: Remove GCC 13 from runner image
+      shell: bash
+      run: |
+        sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list
+        sudo apt-get update
+        sudo apt-get install -y --allow-downgrades libc6=2.35-0ubuntu3.4 libc6-dev=2.35-0ubuntu3.4 libstdc++6=12.3.0-1ubuntu1~22.04 libgcc-s1=12.3.0-1ubuntu1~22.04
     - uses: actions/checkout@v3
     - name: Install system dependencies
       run: |
