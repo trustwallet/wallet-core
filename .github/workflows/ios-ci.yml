@@ -2,9 +2,9 @@ name: iOS CI
 
 on:
   push:
-    branches: [ dev, master, master-3 ]
+    branches: [ dev, master ]
   pull_request:
-    branches: [ dev, master, master-3 ]
+    branches: [ dev, master ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

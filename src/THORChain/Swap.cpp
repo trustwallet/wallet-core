@@ -80,9 +80,8 @@ std::string chainName(Chain chain) {
     case Chain::ETH:
         return "ETH";
     case Chain::BNB:
-        return "BNB";
     case Chain::BSC:
-        return "BSC";
+        return "BNB";
     case Chain::BTC:
         return "BTC";
     case Chain::DOGE:
