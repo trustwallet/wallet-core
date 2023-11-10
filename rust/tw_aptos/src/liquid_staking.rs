@@ -5,12 +5,16 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use std::str::FromStr;
-use move_core_types::account_address::AccountAddress;
-use move_core_types::ident_str;
-use move_core_types::language_storage::ModuleId;
+use move_core_types::{
+    account_address::AccountAddress,
+    ident_str,
+    language_storage::ModuleId
+};
 use serde_json::json;
-use tw_proto::Aptos::Proto::LiquidStaking;
-use tw_proto::Aptos::Proto::mod_LiquidStaking::OneOfliquid_stake_transaction_payload;
+use tw_proto::{
+    Aptos::Proto::{LiquidStaking, TortugaClaim, TortugaStake, TortugaUnstake},
+    Aptos::Proto::mod_LiquidStaking::OneOfliquid_stake_transaction_payload
+};
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 pub fn tortuga_stake(
@@ -95,6 +99,40 @@ impl From<LiquidStaking<'_>> for LiquidStakingOperation {
                 LiquidStakingOperation::Claim(Claim { idx: claim.idx, smart_contract_address: AccountAddress::from_str(&value.smart_contract_address).unwrap() })
             }
             OneOfliquid_stake_transaction_payload::None => { todo!() }
+        }
+    }
+}
+
+impl From<LiquidStakingOperation> for LiquidStaking<'_> {
+    fn from(value: LiquidStakingOperation) -> Self {
+        match value {
+            LiquidStakingOperation::Stake(stake) => {
+                LiquidStaking {
+                    smart_contract_address: stake.smart_contract_address.to_hex_literal().into(),
+                    liquid_stake_transaction_payload: OneOfliquid_stake_transaction_payload::stake(
+                        TortugaStake {
+                            amount: stake.amount
+                        }),
+                }
+            }
+            LiquidStakingOperation::Unstake(unstake) => {
+                LiquidStaking {
+                    smart_contract_address: unstake.smart_contract_address.to_hex_literal().into(),
+                    liquid_stake_transaction_payload: OneOfliquid_stake_transaction_payload::unstake(
+                        TortugaUnstake {
+                            amount: unstake.amount
+                        }),
+                }
+            }
+            LiquidStakingOperation::Claim(claim) => {
+                LiquidStaking {
+                    smart_contract_address: claim.smart_contract_address.to_hex_literal().into(),
+                    liquid_stake_transaction_payload: OneOfliquid_stake_transaction_payload::claim(
+                        TortugaClaim {
+                            idx: claim.idx
+                        }),
+                }
+            }
         }
     }
 }

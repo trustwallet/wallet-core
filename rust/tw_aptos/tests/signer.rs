@@ -7,7 +7,8 @@
 use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::TypeTag;
-use tw_aptos::liquid_staking::LiquidStakingOperation;
+use tw_aptos::liquid_staking;
+use tw_aptos::liquid_staking::{LiquidStakingOperation, Stake, Unstake};
 use tw_aptos::nft::{Claim, NftOperation, Offer};
 use tw_aptos::signer::{Signer, StandardAptosContext};
 use tw_aptos::transaction_payload::convert_type_tag_to_struct_tag;
@@ -115,7 +116,14 @@ fn setup_proto_transaction<'a>(sender: &'a str,
                 panic!("Unsupported arguments")
             }
         }
-        _ => { todo!() }
+        "liquid_staking_ops" => {
+            if let OpsDetails::LiquidStakingOps(liquid_staking_ops) = ops_details.unwrap() {
+                Proto::mod_SigningInput::OneOftransaction_payload::liquid_staking_message(liquid_staking_ops.into())
+            } else {
+                panic!("Unsupported arguments")
+            }
+        }
+        _ => { Proto::mod_SigningInput::OneOftransaction_payload::None }
     };
 
 
@@ -484,6 +492,135 @@ fn test_aptos_register_token() {
                     "signature": {
                         "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
                         "signature": "0xe230b49f552fb85356dbec9df13f0dc56228eb7a9c29a8af3a99f4ae95b86c72bdcaa4ff1e9beb0bd81c298b967b9d97449856ec8bc672a08e2efef345c37100",
+                        "type": "ed25519_signature"
+                    }
+                }"#);
+}
+
+#[test]
+fn test_aptos_tortuga_stake() {
+    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+                                        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
+                                        "liquid_staking_ops",
+                                        19, // Sequence number
+                                        1,
+                                        5554,
+                                        1670240203,
+                                        100,
+                                        "",
+                                        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Stake(Stake {
+                                            amount: 100000000,
+                                            smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
+                                        }))),
+    );
+    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    test_tx_result(output,
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1300000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000b2150000000000006400000000000000cbd78d630000000001", // Expected raw transaction bytes
+                   "22d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d", // Expected signature
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1300000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000b2150000000000006400000000000000cbd78d630000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc44022d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d", // Expected encoded transaction
+                   r#"{
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "19",
+                    "max_gas_amount": "5554",
+                    "gas_unit_price": "100",
+                    "expiration_timestamp_secs": "1670240203",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+                        "type_arguments": [],
+                        "arguments": [
+                            "100000000"
+                        ],
+                    "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0x22d3166c3003f9c24a35fd39c71eb27e0d2bb82541be610822165c9283f56fefe5a9d46421b9caf174995bd8f83141e60ea8cff521ecf4741fe19e6ae9a5680d",
+                        "type": "ed25519_signature"
+                    }
+                }"#);
+}
+
+#[test]
+fn test_aptos_tortuga_unstake() {
+    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+                                        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
+                                        "liquid_staking_ops",
+                                        20, // Sequence number
+                                        1,
+                                        2371,
+                                        1670304949,
+                                        120,
+                                        "",
+                                        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Unstake(Unstake {
+                                            amount: 99178100,
+                                            smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
+                                        }))),
+    );
+    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    test_tx_result(output,
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001", // Expected raw transaction bytes
+                   "6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c", // Expected signature
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1400000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e9050000000043090000000000007800000000000000b5d48e630000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4406994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c", // Expected encoded transaction
+                   r#"{
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "20",
+                    "max_gas_amount": "2371",
+                    "gas_unit_price": "120",
+                    "expiration_timestamp_secs": "1670304949",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+                        "type_arguments": [],
+                        "arguments": [
+                            "99178100"
+                        ],
+                    "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0x6994b917432ad70ae84d2ce1484e6aece589a68aad1b7c6e38c9697f2a012a083a3a755c5e010fd3d0f149a75dd8d257acbd09f10800e890074e5ad384314d0c",
+                        "type": "ed25519_signature"
+                    }
+                }"#);
+}
+
+#[test]
+fn test_aptos_tortuga_claim() {
+    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+                                        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
+                                        "liquid_staking_ops",
+                                        28, // Sequence number
+                                        1,
+                                        10,
+                                        1682066783,
+                                        148,
+                                        "",
+                                        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Claim(liquid_staking::Claim {
+                                            idx: 0,
+                                            smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
+                                        }))),
+    );
+    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    test_tx_result(output,
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001", // Expected raw transaction bytes
+                   "c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03", // Expected signature
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc1c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657205636c61696d00010800000000000000000a0000000000000094000000000000005f4d42640000000001002089e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc440c936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03", // Expected encoded transaction
+                   r#"{
+                    "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                    "sequence_number": "28",
+                    "max_gas_amount": "10",
+                    "gas_unit_price": "148",
+                    "expiration_timestamp_secs": "1682066783",
+                    "payload": {
+                        "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::claim",
+                        "type_arguments": [],
+                        "arguments": [
+                            "0"
+                        ],
+                        "type": "entry_function_payload"
+                    },
+                    "signature": {
+                        "public_key": "0x89e0211d7e19c7d3a8e2030fe16c936a690ca9b95569098c5d2bf1031ff44bc4",
+                        "signature": "0xc936584f89777e1fe2d5dd75cd8d9c514efc445810ba22f462b6fe7229c6ec7fc1c8b25d3e233eafaa8306433b3220235e563498ba647be38cac87ff618e3d03",
                         "type": "ed25519_signature"
                     }
                 }"#);
