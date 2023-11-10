@@ -43,6 +43,15 @@ impl From<NftMessage<'_>> for NftOperation {
     }
 }
 
+impl From<NftOperation> for NftMessage<'_> {
+    fn from(value: NftOperation) -> Self {
+        match value {
+            NftOperation::Claim(claim) => { NftMessage { nft_transaction_payload: OneOfnft_transaction_payload::claim_nft(claim.into()) } }
+            NftOperation::Offer(offer) => { NftMessage { nft_transaction_payload: OneOfnft_transaction_payload::offer_nft(offer.into()) } }
+            NftOperation::Cancel(cancel) => { NftMessage { nft_transaction_payload: OneOfnft_transaction_payload::cancel_offer_nft(cancel.into()) } }
+        }
+    }
+}
 impl From<OfferNftMessage<'_>> for Offer {
     fn from(value: OfferNftMessage) -> Self {
         Offer {
@@ -50,6 +59,19 @@ impl From<OfferNftMessage<'_>> for Offer {
             creator: AccountAddress::from_str(&value.creator).unwrap(),
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
+            property_version: value.property_version,
+            amount: value.amount,
+        }
+    }
+}
+
+impl From<Offer> for OfferNftMessage<'_> {
+    fn from(value: Offer) -> Self {
+        OfferNftMessage {
+            receiver: value.receiver.to_hex_literal().into(),
+            creator: value.creator.to_hex_literal().into(),
+            collectionName: String::from_utf8_lossy(value.collection.as_slice()).to_string().into(),
+            name: String::from_utf8_lossy(&value.name).to_string().into(),
             property_version: value.property_version,
             amount: value.amount,
         }
@@ -69,6 +91,18 @@ impl From<CancelOfferNftMessage<'_>> for Offer {
     }
 }
 
+impl From<Offer> for CancelOfferNftMessage<'_> {
+    fn from(value: Offer) -> Self {
+        CancelOfferNftMessage {
+            receiver: value.receiver.to_hex_literal().into(),
+            creator: value.creator.to_hex_literal().into(),
+            collectionName: String::from_utf8_lossy(value.collection.as_slice()).to_string().into(),
+            name: String::from_utf8_lossy(value.name.as_slice()).to_string().into(),
+            property_version: value.property_version,
+        }
+    }
+}
+
 impl From<ClaimNftMessage<'_>> for Claim {
     fn from(value: ClaimNftMessage) -> Self {
         Claim {
@@ -76,6 +110,18 @@ impl From<ClaimNftMessage<'_>> for Claim {
             creator: AccountAddress::from_str(&value.creator).unwrap(),
             collection: value.collectionName.as_bytes().to_vec(),
             name: value.name.as_bytes().to_vec(),
+            property_version: value.property_version,
+        }
+    }
+}
+
+impl From<Claim> for ClaimNftMessage<'_> {
+    fn from(value: Claim) -> Self {
+        ClaimNftMessage {
+            sender: value.sender.to_hex_literal().into(),
+            creator: value.creator.to_hex_literal().into(),
+            collectionName: String::from_utf8_lossy(value.collection.as_slice()).to_string().into(),
+            name: String::from_utf8_lossy(value.name.as_slice()).to_string().into(),
             property_version: value.property_version,
         }
     }
