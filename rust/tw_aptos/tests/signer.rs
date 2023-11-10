@@ -4,10 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::str::FromStr;
 use move_core_types::language_storage::TypeTag;
 use tw_aptos::liquid_staking::LiquidStakingOperation;
 use tw_aptos::nft::NftOperation;
 use tw_aptos::signer::{Signer, StandardAptosContext};
+use tw_aptos::transaction_payload::convert_type_tag_to_struct_tag;
 use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex;
 use tw_proto::Aptos::Proto;
@@ -69,6 +71,17 @@ fn setup_proto_transaction<'a>(sender: &'a str,
             if let OpsDetails::AccountCreation(account) = ops_details.unwrap() {
                 Proto::mod_SigningInput::OneOftransaction_payload::create_account(Proto::CreateAccountMessage {
                     auth_key: account.to.into(),
+                })
+            } else {
+                panic!("Unsupported arguments")
+            }
+        }
+        "coin_transfer" => {
+            if let OpsDetails::TokenTransfer(token_transfer) = ops_details.unwrap() {
+                Proto::mod_SigningInput::OneOftransaction_payload::token_transfer(Proto::TokenTransferMessage {
+                    to: token_transfer.transfer.to.into(),
+                    amount: token_transfer.transfer.amount,
+                    function: Some(convert_type_tag_to_struct_tag(token_transfer.tag)),
                 })
             } else {
                 panic!("Unsupported arguments")
@@ -189,4 +202,42 @@ fn test_aptos_sign_create_account() {
                 "type": "ed25519_signature"
             }
         }"#);
+}
+
+#[test]
+fn test_aptos_sign_coin_transfer() {
+    let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
+                                        "coin_transfer",
+                                        24, // Sequence number
+                                        32,
+                                        3296766,
+                                        3664390082,
+                                        100,
+                                        "",
+                                        Some(OpsDetails::TokenTransfer(TokenTransfer { transfer: Transfer { to: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30".to_string(), amount: 100000 }, tag: TypeTag::from_str("0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC").unwrap() })),
+                                        );
+    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    test_tx_result(output,
+                   "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30180000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010743417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b905636f696e730342544300022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008a086010000000000fe4d3200000000006400000000000000c2276ada0000000020", // Expected raw transaction bytes
+                   "7643ec8aae6198bd13ca6ea2962265859cba5a228e7d181131f6c022700dd02a7a04dc0345ad99a0289e5ab80b130b3864e6404079980bc226f1a13aee7d280a", // Expected signature
+                   "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30180000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010743417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b905636f696e730342544300022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008a086010000000000fe4d3200000000006400000000000000c2276ada00000000200020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c407643ec8aae6198bd13ca6ea2962265859cba5a228e7d181131f6c022700dd02a7a04dc0345ad99a0289e5ab80b130b3864e6404079980bc226f1a13aee7d280a", // Expected encoded transaction
+                   r#"{
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": ["0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","100000"],
+                        "function": "0x1::coin::transfer",
+                        "type": "entry_function_payload",
+                        "type_arguments": ["0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC"]
+                    },
+                    "sender": "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "24",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0x7643ec8aae6198bd13ca6ea2962265859cba5a228e7d181131f6c022700dd02a7a04dc0345ad99a0289e5ab80b130b3864e6404079980bc226f1a13aee7d280a",
+                        "type": "ed25519_signature"
+                    }
+                }"#);
 }

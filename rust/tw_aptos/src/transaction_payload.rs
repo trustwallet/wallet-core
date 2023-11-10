@@ -4,11 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use std::default::Default;
 use std::str::FromStr;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, TypeTag};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tw_proto::Aptos;
 use crate::{serde_helper::vec_bytes};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -19,11 +21,23 @@ pub struct EntryFunction {
     #[serde(with = "vec_bytes")]
     args: Vec<Vec<u8>>,
     #[serde(skip_serializing)]
-    json_args: Value
+    json_args: Value,
 }
 
-pub fn convert_proto_struct_tag_to_type_tag(struct_tag: tw_proto::Aptos::Proto::StructTag) -> TypeTag {
+pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
     TypeTag::from_str(&format!("{}::{}::{}", struct_tag.account_address, struct_tag.module, struct_tag.name)).unwrap()
+}
+
+pub fn convert_type_tag_to_struct_tag(type_tag: TypeTag) -> Aptos::Proto::StructTag<'static> {
+    if let TypeTag::Struct(st) = type_tag {
+        Aptos::Proto::StructTag {
+            account_address: st.address.to_hex_literal().into(),
+            module: st.module.to_string().into(),
+            name: st.name.to_string().into(),
+        }
+    } else {
+        Aptos::Proto::StructTag::default()
+    }
 }
 
 impl EntryFunction {
@@ -77,7 +91,7 @@ impl EntryFunction {
             function,
             ty_args,
             args,
-            json_args
+            json_args,
         }
     }
 }
