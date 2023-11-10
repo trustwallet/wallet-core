@@ -4,6 +4,4 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-pub mod json_signer;
-pub mod protobuf_signer;
-pub mod tw_signer;
+pub mod entry;

@@ -27,6 +27,8 @@ lazy_static! {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CoinItem {
+    pub id: String,
+    pub name: String,
     pub coin_id: CoinType,
     pub blockchain: BlockchainType,
     pub public_key_type: PublicKeyType,

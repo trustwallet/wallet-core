@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "chains/tw_cosmos",
     "tw_any_coin",
     "tw_bech32_address",
     "tw_bitcoin",

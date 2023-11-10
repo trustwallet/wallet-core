@@ -8,6 +8,7 @@ use serde::{Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
+use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
 use tw_encoding::bech32;
 use tw_hash::hasher::Hasher;
@@ -58,6 +59,17 @@ impl Bech32Address {
         Bech32Address::new(hrp, key_bytes.to_vec())
     }
 
+    pub fn with_public_key_coin_context(
+        coin: &dyn CoinContext,
+        public_key: &PublicKey,
+    ) -> AddressResult<Bech32Address> {
+        let hrp = coin.hrp().ok_or(AddressError::InvalidHrp)?;
+        let address_hasher = coin
+            .address_hasher()
+            .ok_or(AddressError::UnexpectedHasher)?;
+        Self::with_public_key_hasher(hrp, public_key, address_hasher)
+    }
+
     pub fn with_private_key_coin_context(
         coin: &dyn CoinContext,
         private_key: &PrivateKey,
@@ -97,6 +109,12 @@ impl Bech32Address {
 
     pub fn hrp(&self) -> &str {
         &self.hrp
+    }
+}
+
+impl CoinAddress for Bech32Address {
+    fn data(&self) -> Data {
+        self.key_hash.to_vec()
     }
 }
 
