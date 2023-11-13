@@ -164,6 +164,7 @@ fn test_tx_result(
     assert_eq!(json_value, json_value_expected);
 }
 
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb4d62afd3862116e060dd6ad9848ccb50c2bc177799819f1d29c059ae2042467?network=devnet
 #[test]
 fn test_aptos_sign_transaction_transfer() {
     let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
@@ -204,6 +205,7 @@ fn test_aptos_sign_transaction_transfer() {
         }"#);
 }
 
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x477141736de6b0936a6c3734e4d6fd018c7d21f1f28f99028ef0bc6881168602?network=Devnet
 #[test]
 fn test_aptos_sign_create_account() {
     let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
@@ -243,6 +245,7 @@ fn test_aptos_sign_create_account() {
         }"#);
 }
 
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb5b383a5c7f99b2edb3bed9533f8169a89051b149d65876a82f4c0b9bf78a15b?network=Devnet
 #[test]
 fn test_aptos_sign_coin_transfer() {
     let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
@@ -281,6 +284,7 @@ fn test_aptos_sign_coin_transfer() {
                 }"#);
 }
 
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0x197d40ea12e2bfc65a0a913b9f4ca3b0b0208fe0c1514d3d55cef3d5bcf25211?network=mainnet
 #[test]
 fn test_implicit_aptos_sign_coin_transfer() {
     let input = setup_proto_transaction("0x1869b853768f0ba935d67f837a66b172dd39a60ca2315f8d4e0e669bbd35cf25", // Sender's address
@@ -319,6 +323,7 @@ fn test_implicit_aptos_sign_coin_transfer() {
                 }"#);
 }
 
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0x514e473618bd3cb89a2b110b7c473db9a2e10532f98eb42d02d86fb31c00525d?network=testnet
 #[test]
 fn test_aptos_nft_offer() {
     let input = setup_proto_transaction("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee", // Sender's address
@@ -367,6 +372,7 @@ fn test_aptos_nft_offer() {
                 }"#);
 }
 
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0x0b8c64e6847c368e4c6bd2cce0e9eab378971b0ef2e3bc40cbd292910a80201d?network=testnet
 #[test]
 fn test_aptos_cancel_nft_offer() {
     let input = setup_proto_transaction("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
@@ -415,6 +421,7 @@ fn test_aptos_cancel_nft_offer() {
                 }"#);
 }
 
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x60b51e15140ec0b7650334e948fb447ce3cb13ae63492260461ebfa9d02e85c4?network=testnet
 #[test]
 fn test_aptos_nft_claim() {
     let input = setup_proto_transaction("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
@@ -462,6 +469,7 @@ fn test_aptos_nft_claim() {
                 }"#);
 }
 
+// Successfully broadcasted https://explorer.aptoslabs.com/txn/0xe591252daed785641bfbbcf72a5d17864568cf32e04c0cc9129f3a13834d0e8e?network=testnet
 #[test]
 fn test_aptos_register_token() {
     let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
@@ -500,6 +508,7 @@ fn test_aptos_register_token() {
                 }"#);
 }
 
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/userTxnOverview?network=mainnet
 #[test]
 fn test_aptos_tortuga_stake() {
     let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
@@ -543,6 +552,7 @@ fn test_aptos_tortuga_stake() {
                 }"#);
 }
 
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968?network=mainnet
 #[test]
 fn test_aptos_tortuga_unstake() {
     let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
@@ -586,6 +596,7 @@ fn test_aptos_tortuga_unstake() {
                 }"#);
 }
 
+// // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x9fc874de7a7d3e813d9a1658d896023de270a0096a5e258c196005656ace7d54?network=mainnet
 #[test]
 fn test_aptos_tortuga_claim() {
     let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
@@ -629,6 +640,7 @@ fn test_aptos_tortuga_claim() {
                 }"#);
 }
 
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x7efd69e7f9462774b932ce500ab51c0d0dcc004cf272e09f8ffd5804c2a84e33?network=mainnet
 #[test]
 fn test_aptos_blind_sign() {
     let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
@@ -686,4 +698,100 @@ fn test_aptos_blind_sign() {
                         "type": "ed25519_signature"
                     }
                 }"#);
+}
+
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/payload
+#[test]
+fn test_aptos_blind_sign_staking() {
+    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
+                                        "blind_sign_json",
+                                        43, // Sequence number
+                                        1,
+                                        100011,
+                                        3664390082,
+                                        100,
+                                        r#"{
+                                            "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+                                            "type_arguments": [],
+                                            "arguments": [
+                                            "100000000"
+                                            ],
+                                            "type": "entry_function_payload"
+                                        }"#,
+                                        None,
+    );
+    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    test_tx_result(output,
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
+                   "a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b", // Expected signature
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2b00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f75746572057374616b6500010800e1f50500000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40a41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b", // Expected encoded transaction
+                   r#"{
+                                "expiration_timestamp_secs": "3664390082",
+                                "gas_unit_price": "100",
+                                "max_gas_amount": "100011",
+                                "payload": {
+                                    "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
+                                    "type_arguments": [],
+                                    "arguments": [
+                                    "100000000"
+                                    ],
+                                    "type": "entry_function_payload"
+                                },
+                                "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                                "sequence_number": "43",
+                                "signature": {
+                                    "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                                    "signature": "0xa41b7440a50f36e8491319508734acb55488abc6d88fbc9cb2b37ba23210f01f5d08c856cb7abf18c414cf9302ee144450bd99495a7e21e61f624764db91eb0b",
+                                    "type": "ed25519_signature"
+                                }
+                        }"#);
+}
+
+// Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968/payload
+#[test]
+fn test_aptos_blind_sign_unstaking() {
+    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
+                                        "blind_sign_json",
+                                        44, // Sequence number
+                                        1,
+                                        100011,
+                                        3664390082,
+                                        100,
+                                        r#"{
+                                            "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+                                            "type_arguments": [],
+                                            "arguments": [
+                                            "99178100"
+                                            ],
+                                            "type": "entry_function_payload"
+                                        }"#,
+                                        None,
+    );
+    let output = Signer::<StandardAptosContext>::sign_proto(input);
+    test_tx_result(output,
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada0000000001", // Expected raw transaction bytes
+                   "a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a", // Expected signature
+                   "f3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc2c00000000000000028f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f0c7374616b655f726f7574657207756e7374616b650001087456e90500000000ab860100000000006400000000000000c2276ada00000000010020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40a58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a", // Expected encoded transaction
+                   r#"{
+                            "expiration_timestamp_secs": "3664390082",
+                            "gas_unit_price": "100",
+                            "max_gas_amount": "100011",
+                            "payload": {
+                                "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
+                                "type_arguments": [],
+                                "arguments": [
+                                "99178100"
+                                ],
+                                "type": "entry_function_payload"
+                            },
+                            "sender": "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc",
+                            "sequence_number": "44",
+                            "signature": {
+                                "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                                "signature": "0xa58ad5e3331beb8c0212a18a1f932207cb664b78f5aad3cb1fe7435e0e0e053247ce49b38fd67b064bed34ed643eb6a03165d77c681d7d73ac3161ab984a960a",
+                                "type": "ed25519_signature"
+                            }
+                    }"#);
 }
