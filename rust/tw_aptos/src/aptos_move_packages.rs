@@ -103,7 +103,7 @@ pub fn token_transfers_offer_script(
             bcs::to_bytes(&property_version).unwrap(),
             bcs::to_bytes(&amount).unwrap(),
         ],
-        json!([receiver.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string(), amount.to_string()])
+        json!([receiver.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string(), amount.to_string()]),
     ))
 }
 
@@ -131,7 +131,7 @@ pub fn token_transfers_cancel_offer_script(
             bcs::to_bytes(&name).unwrap(),
             bcs::to_bytes(&property_version).unwrap(),
         ],
-        json!([receiver.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()])
+        json!([receiver.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()]),
     ))
 }
 
@@ -159,7 +159,7 @@ pub fn token_transfers_claim_script(
             bcs::to_bytes(&name).unwrap(),
             bcs::to_bytes(&property_version).unwrap(),
         ],
-        json!([sender.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()])
+        json!([sender.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()]),
     ))
 }
 
@@ -175,6 +175,6 @@ pub fn managed_coin_register(coin_type: TypeTag) -> TransactionPayload {
         ident_str!("register").to_owned(),
         vec![coin_type],
         vec![],
-        json!([])
+        json!([]),
     ))
 }

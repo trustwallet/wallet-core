@@ -71,7 +71,7 @@ impl TransactionFactory {
         }
     }
 
-    pub fn  new_from_protobuf(input: SigningInput) -> SigningResult<TransactionBuilder> {
+    pub fn new_from_protobuf(input: SigningInput) -> SigningResult<TransactionBuilder> {
         let factory = TransactionFactory::new(input.chain_id as u8)
             .with_gas_unit_price(input.gas_unit_price)
             .with_max_gas_amount(input.max_gas_amount)
@@ -83,7 +83,7 @@ impl TransactionFactory {
             OneOftransaction_payload::token_transfer(token_transfer) => {
                 let func = token_transfer.function.unwrap();
                 Ok(factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
-                                       convert_proto_struct_tag_to_type_tag(func),
+                                          convert_proto_struct_tag_to_type_tag(func),
                 ))
             }
             OneOftransaction_payload::create_account(create_account) => {
@@ -101,7 +101,7 @@ impl TransactionFactory {
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
                 let func = token_transfer_coins.function.unwrap();
                 Ok(factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
-                                                                  convert_proto_struct_tag_to_type_tag(func)))
+                                                                     convert_proto_struct_tag_to_type_tag(func)))
             }
             OneOftransaction_payload::None => {
                 let is_blind_sign = !input.any_encoded.is_empty();

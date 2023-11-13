@@ -52,7 +52,7 @@ impl<Context: AptosContext> Compiler<Context> {
         let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone())?;
         let sender = Address::from_str(&input.sender)?;
         let signed_tx = builder.sender(sender.inner()).sequence_number(input.sequence_number as u64).build().compile(
-            signatures.first().unwrap().to_vec(), public_keys.first().unwrap().to_vec()
+            signatures.first().unwrap().to_vec(), public_keys.first().unwrap().to_vec(),
         )?;
         Ok(Proto::SigningOutput {
             raw_txn: signed_tx.raw_txn_bytes().clone().into(),

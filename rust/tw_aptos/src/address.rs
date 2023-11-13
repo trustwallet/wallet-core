@@ -14,7 +14,7 @@ use tw_memory::Data;
 use tw_hash::sha3::sha3_256;
 
 
-pub trait AptosAddress: FromStr<Err = AddressError> + Into<Address> {
+pub trait AptosAddress: FromStr<Err=AddressError> + Into<Address> {
     /// Tries to parse an address from the string representation.
     /// Returns `Ok(None)` if the given `s` string is empty.
     #[inline]
@@ -33,6 +33,7 @@ impl AptosAddress for Address {}
 pub enum Scheme {
     Ed25519 = 0,
 }
+
 #[derive(Clone)]
 pub struct Address {
     addr: AccountAddress,
@@ -47,7 +48,7 @@ impl Address {
         to_hash.push(Scheme::Ed25519 as u8);
         let hashed = sha3_256(to_hash.as_slice());
         let addr = AccountAddress::from_bytes(hashed).map_err(from_account_error)?;
-        Ok(Address{addr})
+        Ok(Address { addr })
     }
 
     pub fn inner(&self) -> AccountAddress {
@@ -89,13 +90,13 @@ impl FromStr for Address {
         }
 
         if working.len() > NUM_CHARS {
-            return Err(AddressError::InvalidInput)
+            return Err(AddressError::InvalidInput);
         } else if !has_0x && working.len() < NUM_CHARS {
-            return Err(AddressError::InvalidInput)
+            return Err(AddressError::InvalidInput);
         }
 
         if !working.chars().all(|c| char::is_ascii_hexdigit(&c)) {
-            return Err(AddressError::InvalidInput)
+            return Err(AddressError::InvalidInput);
         }
 
         let addr = if has_0x {
@@ -104,7 +105,7 @@ impl FromStr for Address {
             AccountAddress::from_str(s.trim())
         }.map_err(from_account_error)?;
 
-        Ok(Address{addr})
+        Ok(Address { addr })
     }
 }
 
@@ -130,6 +131,6 @@ mod tests {
 
     #[test]
     fn test_from_account_error() {
-        assert_eq!(from_account_error(AccountAddressParseError{}), AddressError::InvalidInput);
+        assert_eq!(from_account_error(AccountAddressParseError {}), AddressError::InvalidInput);
     }
 }

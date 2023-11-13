@@ -46,7 +46,6 @@ impl TransactionAuthenticator {
     pub fn to_json(&self) -> Value {
         match self {
             TransactionAuthenticator::Ed25519 { public_key, signature } => {
-
                 json!({"public_key": encode(&public_key, true),
                        "signature": encode(&signature, true),
                        "type": "ed25519_signature"})
@@ -84,6 +83,7 @@ pub struct RawTransaction {
     /// Chain ID of the Aptos network this transaction is intended for.
     chain_id: u8,
 }
+
 impl RawTransaction {
     /// Create a new `RawTransaction` with a payload.
     ///
@@ -204,6 +204,7 @@ pub struct SignedTransaction {
     /// Encoded bytes to be broadcast
     encoded: Vec<u8>,
 }
+
 impl SignedTransaction {
     pub fn raw_txn(&self) -> &RawTransaction {
         &self.raw_txn

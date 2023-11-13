@@ -15,7 +15,7 @@ pub struct Offer {
     pub collection: Vec<u8>,
     pub name: Vec<u8>,
     pub property_version: u64,
-    pub amount: u64
+    pub amount: u64,
 }
 
 pub struct Claim {
@@ -29,7 +29,7 @@ pub struct Claim {
 pub enum NftOperation {
     Claim(Claim),
     Offer(Offer),
-    Cancel(Offer)
+    Cancel(Offer),
 }
 
 impl From<NftMessage<'_>> for NftOperation {
@@ -52,6 +52,7 @@ impl From<NftOperation> for NftMessage<'_> {
         }
     }
 }
+
 impl From<OfferNftMessage<'_>> for Offer {
     fn from(value: OfferNftMessage) -> Self {
         Offer {
