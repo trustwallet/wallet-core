@@ -4,17 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use move_core_types::account_address::{AccountAddress, AccountAddressParseError};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
-use move_core_types::account_address::{AccountAddress, AccountAddressParseError};
 use tw_coin_entry::coin_entry::CoinAddress;
 use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_hash::sha3::sha3_256;
 use tw_keypair::ed25519;
 use tw_memory::Data;
-use tw_hash::sha3::sha3_256;
 
-
-pub trait AptosAddress: FromStr<Err=AddressError> + Into<Address> {
+pub trait AptosAddress: FromStr<Err = AddressError> + Into<Address> {
     /// Tries to parse an address from the string representation.
     /// Returns `Ok(None)` if the given `s` string is empty.
     #[inline]
@@ -43,7 +42,9 @@ impl Address {
     pub const LENGTH: usize = AccountAddress::LENGTH;
     /// Initializes an address with a `ed25519` public key.
 
-    pub fn with_ed25519_pubkey(pubkey: &ed25519::sha512::PublicKey) -> Result<Address, AddressError> {
+    pub fn with_ed25519_pubkey(
+        pubkey: &ed25519::sha512::PublicKey,
+    ) -> Result<Address, AddressError> {
         let mut to_hash = pubkey.as_slice().to_vec();
         to_hash.push(Scheme::Ed25519 as u8);
         let hashed = sha3_256(to_hash.as_slice());
@@ -103,7 +104,8 @@ impl FromStr for Address {
             AccountAddress::from_hex_literal(s.trim())
         } else {
             AccountAddress::from_str(s.trim())
-        }.map_err(from_account_error)?;
+        }
+        .map_err(from_account_error)?;
 
         Ok(Address { addr })
     }
@@ -119,7 +121,7 @@ mod tests {
         let private = PrivateKey::try_from(
             "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5",
         )
-            .unwrap();
+        .unwrap();
         let public = private.public();
         let addr = Address::with_ed25519_pubkey(&public);
         assert_eq!(
@@ -131,6 +133,9 @@ mod tests {
 
     #[test]
     fn test_from_account_error() {
-        assert_eq!(from_account_error(AccountAddressParseError {}), AddressError::InvalidInput);
+        assert_eq!(
+            from_account_error(AccountAddressParseError {}),
+            AddressError::InvalidInput
+        );
     }
 }

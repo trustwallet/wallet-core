@@ -4,18 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::account_address::AccountAddress;
 use move_core_types::ident_str;
 use move_core_types::language_storage::{ModuleId, TypeTag};
 use serde_json::json;
-use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 pub fn aptos_account_transfer(to: AccountAddress, amount: u64) -> TransactionPayload {
     TransactionPayload::EntryFunction(EntryFunction::new(
         ModuleId::new(
             AccountAddress::new([
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 1, ]),
+                0, 0, 0, 1,
+            ]),
             ident_str!("aptos_account").to_owned(),
         ),
         ident_str!("transfer").to_owned(),
@@ -103,7 +104,14 @@ pub fn token_transfers_offer_script(
             bcs::to_bytes(&property_version).unwrap(),
             bcs::to_bytes(&amount).unwrap(),
         ],
-        json!([receiver.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string(), amount.to_string()]),
+        json!([
+            receiver.to_hex_literal(),
+            creator.to_hex_literal(),
+            String::from_utf8_lossy(&collection),
+            String::from_utf8_lossy(&name),
+            property_version.to_string(),
+            amount.to_string()
+        ]),
     ))
 }
 
@@ -131,7 +139,13 @@ pub fn token_transfers_cancel_offer_script(
             bcs::to_bytes(&name).unwrap(),
             bcs::to_bytes(&property_version).unwrap(),
         ],
-        json!([receiver.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()]),
+        json!([
+            receiver.to_hex_literal(),
+            creator.to_hex_literal(),
+            String::from_utf8_lossy(&collection),
+            String::from_utf8_lossy(&name),
+            property_version.to_string()
+        ]),
     ))
 }
 
@@ -159,7 +173,13 @@ pub fn token_transfers_claim_script(
             bcs::to_bytes(&name).unwrap(),
             bcs::to_bytes(&property_version).unwrap(),
         ],
-        json!([sender.to_hex_literal(), creator.to_hex_literal(), String::from_utf8_lossy(&collection), String::from_utf8_lossy(&name), property_version.to_string()]),
+        json!([
+            sender.to_hex_literal(),
+            creator.to_hex_literal(),
+            String::from_utf8_lossy(&collection),
+            String::from_utf8_lossy(&name),
+            property_version.to_string()
+        ]),
     ))
 }
 

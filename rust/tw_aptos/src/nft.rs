@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
+use std::str::FromStr;
 use tw_proto::Aptos::Proto::mod_NftMessage::OneOfnft_transaction_payload;
 use tw_proto::Aptos::Proto::{CancelOfferNftMessage, ClaimNftMessage, NftMessage, OfferNftMessage};
 
@@ -35,10 +35,12 @@ pub enum NftOperation {
 impl From<NftMessage<'_>> for NftOperation {
     fn from(value: NftMessage) -> Self {
         match value.nft_transaction_payload {
-            OneOfnft_transaction_payload::offer_nft(msg) => { NftOperation::Offer(msg.into()) }
-            OneOfnft_transaction_payload::cancel_offer_nft(msg) => { NftOperation::Cancel(msg.into()) }
-            OneOfnft_transaction_payload::claim_nft(msg) => { NftOperation::Claim(msg.into()) }
-            OneOfnft_transaction_payload::None => { todo!() }
+            OneOfnft_transaction_payload::offer_nft(msg) => NftOperation::Offer(msg.into()),
+            OneOfnft_transaction_payload::cancel_offer_nft(msg) => NftOperation::Cancel(msg.into()),
+            OneOfnft_transaction_payload::claim_nft(msg) => NftOperation::Claim(msg.into()),
+            OneOfnft_transaction_payload::None => {
+                todo!()
+            },
         }
     }
 }
@@ -46,9 +48,17 @@ impl From<NftMessage<'_>> for NftOperation {
 impl From<NftOperation> for NftMessage<'_> {
     fn from(value: NftOperation) -> Self {
         match value {
-            NftOperation::Claim(claim) => { NftMessage { nft_transaction_payload: OneOfnft_transaction_payload::claim_nft(claim.into()) } }
-            NftOperation::Offer(offer) => { NftMessage { nft_transaction_payload: OneOfnft_transaction_payload::offer_nft(offer.into()) } }
-            NftOperation::Cancel(cancel) => { NftMessage { nft_transaction_payload: OneOfnft_transaction_payload::cancel_offer_nft(cancel.into()) } }
+            NftOperation::Claim(claim) => NftMessage {
+                nft_transaction_payload: OneOfnft_transaction_payload::claim_nft(claim.into()),
+            },
+            NftOperation::Offer(offer) => NftMessage {
+                nft_transaction_payload: OneOfnft_transaction_payload::offer_nft(offer.into()),
+            },
+            NftOperation::Cancel(cancel) => NftMessage {
+                nft_transaction_payload: OneOfnft_transaction_payload::cancel_offer_nft(
+                    cancel.into(),
+                ),
+            },
         }
     }
 }
@@ -71,7 +81,9 @@ impl From<Offer> for OfferNftMessage<'_> {
         OfferNftMessage {
             receiver: value.receiver.to_hex_literal().into(),
             creator: value.creator.to_hex_literal().into(),
-            collectionName: String::from_utf8_lossy(value.collection.as_slice()).to_string().into(),
+            collectionName: String::from_utf8_lossy(value.collection.as_slice())
+                .to_string()
+                .into(),
             name: String::from_utf8_lossy(&value.name).to_string().into(),
             property_version: value.property_version,
             amount: value.amount,
@@ -97,8 +109,12 @@ impl From<Offer> for CancelOfferNftMessage<'_> {
         CancelOfferNftMessage {
             receiver: value.receiver.to_hex_literal().into(),
             creator: value.creator.to_hex_literal().into(),
-            collectionName: String::from_utf8_lossy(value.collection.as_slice()).to_string().into(),
-            name: String::from_utf8_lossy(value.name.as_slice()).to_string().into(),
+            collectionName: String::from_utf8_lossy(value.collection.as_slice())
+                .to_string()
+                .into(),
+            name: String::from_utf8_lossy(value.name.as_slice())
+                .to_string()
+                .into(),
             property_version: value.property_version,
         }
     }
@@ -121,8 +137,12 @@ impl From<Claim> for ClaimNftMessage<'_> {
         ClaimNftMessage {
             sender: value.sender.to_hex_literal().into(),
             creator: value.creator.to_hex_literal().into(),
-            collectionName: String::from_utf8_lossy(value.collection.as_slice()).to_string().into(),
-            name: String::from_utf8_lossy(value.name.as_slice()).to_string().into(),
+            collectionName: String::from_utf8_lossy(value.collection.as_slice())
+                .to_string()
+                .into(),
+            name: String::from_utf8_lossy(value.name.as_slice())
+                .to_string()
+                .into(),
             property_version: value.property_version,
         }
     }

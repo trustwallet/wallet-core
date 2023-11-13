@@ -4,6 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use crate::address::Address;
+use crate::compiler::Compiler;
+use crate::signer::{Signer, StandardAptosContext};
 use std::str::FromStr;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
@@ -16,10 +19,6 @@ use tw_coin_entry::prefix::NoPrefix;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
-use crate::address::Address;
-use crate::compiler::Compiler;
-use crate::signer::{Signer, StandardAptosContext};
-
 
 pub struct AptosEntry;
 
@@ -68,8 +67,7 @@ impl CoinEntry for AptosEntry {
         &self,
         _coin: &dyn CoinContext,
         input: Self::SigningInput<'_>,
-    ) -> Self::PreSigningOutput
-    {
+    ) -> Self::PreSigningOutput {
         Compiler::<StandardAptosContext>::preimage_hashes(input)
     }
 
@@ -90,5 +88,7 @@ impl CoinEntry for AptosEntry {
     }
 
     #[inline]
-    fn message_signer(&self) -> Option<Self::MessageSigner> { None }
+    fn message_signer(&self) -> Option<Self::MessageSigner> {
+        None
+    }
 }

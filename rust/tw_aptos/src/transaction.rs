@@ -4,17 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::borrow::Cow;
+use crate::constants::APTOS_SALT;
+use crate::transaction_payload::{EntryFunction, TransactionPayload};
 use move_core_types::account_address::AccountAddress;
 use serde::Serialize;
 use serde_json::{json, Value};
+use std::borrow::Cow;
 use tw_coin_entry::error::SigningResult;
+use tw_encoding::hex::encode;
 use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
-use tw_encoding::hex::encode;
 use tw_proto::Aptos::Proto;
-use crate::constants::APTOS_SALT;
-use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 #[derive(Clone, Serialize)]
 pub enum TransactionAuthenticator {
@@ -22,7 +22,7 @@ pub enum TransactionAuthenticator {
     Ed25519 {
         public_key: Vec<u8>,
         signature: Vec<u8>,
-    }
+    },
 }
 
 impl From<TransactionAuthenticator> for Proto::TransactionAuthenticator<'_> {
@@ -36,20 +36,33 @@ impl From<TransactionAuthenticator> for Proto::TransactionAuthenticator<'_> {
 
 impl TransactionAuthenticator {
     pub fn get_signature(&self) -> Vec<u8> {
-        match self { TransactionAuthenticator::Ed25519 { public_key: _public_key, signature } => { signature.clone() } }
+        match self {
+            TransactionAuthenticator::Ed25519 {
+                public_key: _public_key,
+                signature,
+            } => signature.clone(),
+        }
     }
 
     pub fn get_public_key(&self) -> Vec<u8> {
-        match self { TransactionAuthenticator::Ed25519 { public_key, signature: _signature } => { public_key.clone() } }
+        match self {
+            TransactionAuthenticator::Ed25519 {
+                public_key,
+                signature: _signature,
+            } => public_key.clone(),
+        }
     }
 
     pub fn to_json(&self) -> Value {
         match self {
-            TransactionAuthenticator::Ed25519 { public_key, signature } => {
+            TransactionAuthenticator::Ed25519 {
+                public_key,
+                signature,
+            } => {
                 json!({"public_key": encode(&public_key, true),
                        "signature": encode(&signature, true),
                        "type": "ed25519_signature"})
-            }
+            },
         }
     }
 }
@@ -145,7 +158,11 @@ impl RawTransaction {
         self.msg_to_sign()
     }
 
-    pub fn compile(&self, signature: Vec<u8>, public_key: Vec<u8>) -> SigningResult<SignedTransaction> {
+    pub fn compile(
+        &self,
+        signature: Vec<u8>,
+        public_key: Vec<u8>,
+    ) -> SigningResult<SignedTransaction> {
         let serialized = self.serialize();
         let auth = TransactionAuthenticator::Ed25519 {
             public_key,
@@ -161,10 +178,7 @@ impl RawTransaction {
         })
     }
 
-    pub fn sign(
-        self,
-        key_pair: KeyPair,
-    ) -> SigningResult<SignedTransaction> {
+    pub fn sign(self, key_pair: KeyPair) -> SigningResult<SignedTransaction> {
         let to_sign = self.pre_image();
         let signature = key_pair.private().sign(to_sign)?.to_bytes().into_vec();
         let pubkey = key_pair.public().as_slice().to_vec();
@@ -221,7 +235,10 @@ impl SignedTransaction {
 
     pub fn to_json(&self) -> Value {
         let mut json_value = self.raw_txn.to_json();
-        json_value.as_object_mut().unwrap().insert("signature".to_string(), self.authenticator.to_json());
+        json_value
+            .as_object_mut()
+            .unwrap()
+            .insert("signature".to_string(), self.authenticator.to_json());
         json_value
     }
 }

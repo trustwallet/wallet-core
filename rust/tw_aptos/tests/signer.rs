@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::TypeTag;
+use std::str::FromStr;
 use tw_aptos::liquid_staking;
 use tw_aptos::liquid_staking::{LiquidStakingOperation, Stake, Unstake};
 use tw_aptos::nft::{Claim, NftOperation, Offer};
@@ -16,7 +16,6 @@ use tw_coin_entry::error::SigningErrorType;
 use tw_encoding::hex;
 use tw_proto::Aptos::Proto;
 use tw_proto::Aptos::Proto::{SigningInput, SigningOutput};
-
 
 pub struct AccountCreation {
     to: String,
@@ -46,89 +45,100 @@ pub enum OpsDetails {
     NftOps(NftOperation),
 }
 
-fn setup_proto_transaction<'a>(sender: &'a str,
-                               keypair_str: &'a str,
-                               transaction_type: &'a str,
-                               sequence_number: i64,
-                               chain_id: u32,
-                               max_gas_amount: u64,
-                               timestamp: u64,
-                               gas_unit_price: u64,
-                               any_encoded: &'a str,
-                               ops_details: Option<OpsDetails>) -> SigningInput<'a> {
+fn setup_proto_transaction<'a>(
+    sender: &'a str,
+    keypair_str: &'a str,
+    transaction_type: &'a str,
+    sequence_number: i64,
+    chain_id: u32,
+    max_gas_amount: u64,
+    timestamp: u64,
+    gas_unit_price: u64,
+    any_encoded: &'a str,
+    ops_details: Option<OpsDetails>,
+) -> SigningInput<'a> {
     let private = hex::decode(keypair_str).unwrap();
 
     let payload: Proto::mod_SigningInput::OneOftransaction_payload = match transaction_type {
         "transfer" => {
             if let OpsDetails::Transfer(transfer) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::transfer(Proto::TransferMessage {
-                    to: transfer.to.into(),
-                    amount: transfer.amount,
-                })
+                Proto::mod_SigningInput::OneOftransaction_payload::transfer(
+                    Proto::TransferMessage {
+                        to: transfer.to.into(),
+                        amount: transfer.amount,
+                    },
+                )
             } else {
                 panic!("Unsupported arguments")
             }
-        }
+        },
         "create_account" => {
             if let OpsDetails::AccountCreation(account) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::create_account(Proto::CreateAccountMessage {
-                    auth_key: account.to.into(),
-                })
+                Proto::mod_SigningInput::OneOftransaction_payload::create_account(
+                    Proto::CreateAccountMessage {
+                        auth_key: account.to.into(),
+                    },
+                )
             } else {
                 panic!("Unsupported arguments")
             }
-        }
+        },
         "coin_transfer" => {
             if let OpsDetails::TokenTransfer(token_transfer) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::token_transfer(Proto::TokenTransferMessage {
-                    to: token_transfer.transfer.to.into(),
-                    amount: token_transfer.transfer.amount,
-                    function: Some(convert_type_tag_to_struct_tag(token_transfer.tag)),
-                })
+                Proto::mod_SigningInput::OneOftransaction_payload::token_transfer(
+                    Proto::TokenTransferMessage {
+                        to: token_transfer.transfer.to.into(),
+                        amount: token_transfer.transfer.amount,
+                        function: Some(convert_type_tag_to_struct_tag(token_transfer.tag)),
+                    },
+                )
             } else {
                 panic!("Unsupported arguments")
             }
-        }
+        },
         "implicit_coin_transfer" => {
             if let OpsDetails::ImplicitTokenTransfer(token_transfer) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::token_transfer_coins(Proto::TokenTransferCoinsMessage {
-                    to: token_transfer.transfer.to.into(),
-                    amount: token_transfer.transfer.amount,
-                    function: Some(convert_type_tag_to_struct_tag(token_transfer.tag)),
-                })
+                Proto::mod_SigningInput::OneOftransaction_payload::token_transfer_coins(
+                    Proto::TokenTransferCoinsMessage {
+                        to: token_transfer.transfer.to.into(),
+                        amount: token_transfer.transfer.amount,
+                        function: Some(convert_type_tag_to_struct_tag(token_transfer.tag)),
+                    },
+                )
             } else {
                 panic!("Unsupported arguments")
             }
-        }
+        },
         "nft_ops" => {
             if let OpsDetails::NftOps(nft) = ops_details.unwrap() {
                 Proto::mod_SigningInput::OneOftransaction_payload::nft_message(nft.into())
             } else {
                 panic!("Unsupported arguments")
             }
-        }
+        },
         "register_token" => {
             if let OpsDetails::RegisterToken(register_token) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::register_token(Proto::ManagedTokensRegisterMessage {
-                    function: Some(convert_type_tag_to_struct_tag(register_token.coin_type)),
-                })
+                Proto::mod_SigningInput::OneOftransaction_payload::register_token(
+                    Proto::ManagedTokensRegisterMessage {
+                        function: Some(convert_type_tag_to_struct_tag(register_token.coin_type)),
+                    },
+                )
             } else {
                 panic!("Unsupported arguments")
             }
-        }
+        },
         "liquid_staking_ops" => {
             if let OpsDetails::LiquidStakingOps(liquid_staking_ops) = ops_details.unwrap() {
-                Proto::mod_SigningInput::OneOftransaction_payload::liquid_staking_message(liquid_staking_ops.into())
+                Proto::mod_SigningInput::OneOftransaction_payload::liquid_staking_message(
+                    liquid_staking_ops.into(),
+                )
             } else {
                 panic!("Unsupported arguments")
             }
-        }
-        "blind_sign_json" => {
-            Proto::mod_SigningInput::OneOftransaction_payload::None
-        }
-        _ => { Proto::mod_SigningInput::OneOftransaction_payload::None }
+        },
+        "blind_sign_json" => Proto::mod_SigningInput::OneOftransaction_payload::None,
+        _ => Proto::mod_SigningInput::OneOftransaction_payload::None,
     };
-
 
     let input = SigningInput {
         chain_id,
@@ -150,14 +160,23 @@ fn test_tx_result(
     expected_raw_txn_bytes_str: &str,
     expected_signature_str: &str,
     expected_encoded_txn_str: &str,
-    json_literal: &str) {
+    json_literal: &str,
+) {
     assert_eq!(output.error, SigningErrorType::OK);
     assert!(output.error_message.is_empty());
 
-
-    assert_eq!(hex::encode(output.raw_txn.to_vec(), false), expected_raw_txn_bytes_str);
-    assert_eq!(hex::encode(output.authenticator.unwrap().signature.to_vec(), false), expected_signature_str);
-    assert_eq!(hex::encode(output.encoded.to_vec(), false), expected_encoded_txn_str);
+    assert_eq!(
+        hex::encode(output.raw_txn.to_vec(), false),
+        expected_raw_txn_bytes_str
+    );
+    assert_eq!(
+        hex::encode(output.authenticator.unwrap().signature.to_vec(), false),
+        expected_signature_str
+    );
+    assert_eq!(
+        hex::encode(output.encoded.to_vec(), false),
+        expected_encoded_txn_str
+    );
 
     let json_value_expected: serde_json::Value = serde_json::from_str(json_literal).unwrap();
     let json_value: serde_json::Value = serde_json::from_str(output.json.as_ref()).unwrap();
@@ -167,19 +186,21 @@ fn test_tx_result(
 // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb4d62afd3862116e060dd6ad9848ccb50c2bc177799819f1d29c059ae2042467?network=devnet
 #[test]
 fn test_aptos_sign_transaction_transfer() {
-    let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",
-                                        "transfer",
-                                        99,
-                                        33,
-                                        3296766,
-                                        3664390082,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::Transfer(Transfer {
-                                            to: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30".to_string(),
-                                            amount: 1000,
-                                        })));
+    let input = setup_proto_transaction(
+        "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",
+        "transfer",
+        99,
+        33,
+        3296766,
+        3664390082,
+        100,
+        "",
+        Some(OpsDetails::Transfer(Transfer {
+            to: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30".to_string(),
+            amount: 1000,
+        })),
+    );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3063000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e74087472616e7366657200022007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3008e803000000000000fe4d3200000000006400000000000000c2276ada0000000021",
@@ -208,18 +229,20 @@ fn test_aptos_sign_transaction_transfer() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x477141736de6b0936a6c3734e4d6fd018c7d21f1f28f99028ef0bc6881168602?network=Devnet
 #[test]
 fn test_aptos_sign_create_account() {
-    let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "create_account",
-                                        0, // Sequence number
-                                        33,
-                                        3296766,
-                                        3664390082,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::AccountCreation(AccountCreation {
-                                            to: "0x3aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30e".to_string(),
-                                        })));
+    let input = setup_proto_transaction(
+        "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "create_account",
+        0, // Sequence number
+        33,
+        3296766,
+        3664390082,
+        100,
+        "",
+        Some(OpsDetails::AccountCreation(AccountCreation {
+            to: "0x3aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30e".to_string(),
+        })),
+    );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
                    "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3000000000000000000200000000000000000000000000000000000000000000000000000000000000010d6170746f735f6163636f756e740e6372656174655f6163636f756e740001203aa1672641a4e17b3d913b4c0301e805755a80b12756fc729c5878f12344d30efe4d3200000000006400000000000000c2276ada0000000021", // Expected raw transaction bytes
@@ -248,16 +271,27 @@ fn test_aptos_sign_create_account() {
 // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb5b383a5c7f99b2edb3bed9533f8169a89051b149d65876a82f4c0b9bf78a15b?network=Devnet
 #[test]
 fn test_aptos_sign_coin_transfer() {
-    let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "coin_transfer",
-                                        24, // Sequence number
-                                        32,
-                                        3296766,
-                                        3664390082,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::TokenTransfer(TokenTransfer { transfer: Transfer { to: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30".to_string(), amount: 100000 }, tag: TypeTag::from_str("0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC").unwrap() })),
+    let input = setup_proto_transaction(
+        "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "coin_transfer",
+        24, // Sequence number
+        32,
+        3296766,
+        3664390082,
+        100,
+        "",
+        Some(OpsDetails::TokenTransfer(TokenTransfer {
+            transfer: Transfer {
+                to: "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30"
+                    .to_string(),
+                amount: 100000,
+            },
+            tag: TypeTag::from_str(
+                "0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC",
+            )
+            .unwrap(),
+        })),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -326,23 +360,30 @@ fn test_implicit_aptos_sign_coin_transfer() {
 // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x514e473618bd3cb89a2b110b7c473db9a2e10532f98eb42d02d86fb31c00525d?network=testnet
 #[test]
 fn test_aptos_nft_offer() {
-    let input = setup_proto_transaction("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee", // Sender's address
-                                        "7bebb6d543d17f6fe4e685cfab239fa37896edd594ff859f1df32f244fb707e2", // Keypair
-                                        "nft_ops",
-                                        1, // Sequence number
-                                        2,
-                                        3296766,
-                                        3664390082,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::NftOps(NftOperation::Offer(Offer {
-                                            receiver: AccountAddress::from_str("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30").unwrap(),
-                                            creator: AccountAddress::from_str("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac").unwrap(),
-                                            collection: "Topaz Troopers".as_bytes().to_vec(),
-                                            name: "Topaz Trooper #20068".as_bytes().to_vec(),
-                                            property_version: 0,
-                                            amount: 1,
-                                        }))),
+    let input = setup_proto_transaction(
+        "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee", // Sender's address
+        "7bebb6d543d17f6fe4e685cfab239fa37896edd594ff859f1df32f244fb707e2",   // Keypair
+        "nft_ops",
+        1, // Sequence number
+        2,
+        3296766,
+        3664390082,
+        100,
+        "",
+        Some(OpsDetails::NftOps(NftOperation::Offer(Offer {
+            receiver: AccountAddress::from_str(
+                "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+            )
+            .unwrap(),
+            creator: AccountAddress::from_str(
+                "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+            )
+            .unwrap(),
+            collection: "Topaz Troopers".as_bytes().to_vec(),
+            name: "Topaz Trooper #20068".as_bytes().to_vec(),
+            property_version: 0,
+            amount: 1,
+        }))),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -375,23 +416,30 @@ fn test_aptos_nft_offer() {
 // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x0b8c64e6847c368e4c6bd2cce0e9eab378971b0ef2e3bc40cbd292910a80201d?network=testnet
 #[test]
 fn test_aptos_cancel_nft_offer() {
-    let input = setup_proto_transaction("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "nft_ops",
-                                        21, // Sequence number
-                                        2,
-                                        3296766,
-                                        3664390082,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::NftOps(NftOperation::Cancel(Offer {
-                                            receiver: AccountAddress::from_str("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee").unwrap(),
-                                            creator: AccountAddress::from_str("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac").unwrap(),
-                                            collection: "Topaz Troopers".as_bytes().to_vec(),
-                                            name: "Topaz Trooper #20068".as_bytes().to_vec(),
-                                            property_version: 0,
-                                            amount: 0,
-                                        }))),
+    let input = setup_proto_transaction(
+        "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",  // Keypair
+        "nft_ops",
+        21, // Sequence number
+        2,
+        3296766,
+        3664390082,
+        100,
+        "",
+        Some(OpsDetails::NftOps(NftOperation::Cancel(Offer {
+            receiver: AccountAddress::from_str(
+                "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+            )
+            .unwrap(),
+            creator: AccountAddress::from_str(
+                "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+            )
+            .unwrap(),
+            collection: "Topaz Troopers".as_bytes().to_vec(),
+            name: "Topaz Trooper #20068".as_bytes().to_vec(),
+            property_version: 0,
+            amount: 0,
+        }))),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -424,22 +472,29 @@ fn test_aptos_cancel_nft_offer() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x60b51e15140ec0b7650334e948fb447ce3cb13ae63492260461ebfa9d02e85c4?network=testnet
 #[test]
 fn test_aptos_nft_claim() {
-    let input = setup_proto_transaction("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "nft_ops",
-                                        19, // Sequence number
-                                        2,
-                                        3296766,
-                                        3664390082,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::NftOps(NftOperation::Claim(Claim {
-                                            sender: AccountAddress::from_str("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee").unwrap(),
-                                            creator: AccountAddress::from_str("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac").unwrap(),
-                                            collection: "Topaz Troopers".as_bytes().to_vec(),
-                                            name: "Topaz Trooper #20068".as_bytes().to_vec(),
-                                            property_version: 0,
-                                        }))),
+    let input = setup_proto_transaction(
+        "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",  // Keypair
+        "nft_ops",
+        19, // Sequence number
+        2,
+        3296766,
+        3664390082,
+        100,
+        "",
+        Some(OpsDetails::NftOps(NftOperation::Claim(Claim {
+            sender: AccountAddress::from_str(
+                "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+            )
+            .unwrap(),
+            creator: AccountAddress::from_str(
+                "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+            )
+            .unwrap(),
+            collection: "Topaz Troopers".as_bytes().to_vec(),
+            name: "Topaz Trooper #20068".as_bytes().to_vec(),
+            property_version: 0,
+        }))),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -511,19 +566,25 @@ fn test_aptos_register_token() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/userTxnOverview?network=mainnet
 #[test]
 fn test_aptos_tortuga_stake() {
-    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
-                                        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
-                                        "liquid_staking_ops",
-                                        19, // Sequence number
-                                        1,
-                                        5554,
-                                        1670240203,
-                                        100,
-                                        "",
-                                        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Stake(Stake {
-                                            amount: 100000000,
-                                            smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
-                                        }))),
+    let input = setup_proto_transaction(
+        "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05",   // Keypair
+        "liquid_staking_ops",
+        19, // Sequence number
+        1,
+        5554,
+        1670240203,
+        100,
+        "",
+        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Stake(
+            Stake {
+                amount: 100000000,
+                smart_contract_address: AccountAddress::from_str(
+                    "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f",
+                )
+                .unwrap(),
+            },
+        ))),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -555,19 +616,25 @@ fn test_aptos_tortuga_stake() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968?network=mainnet
 #[test]
 fn test_aptos_tortuga_unstake() {
-    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
-                                        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
-                                        "liquid_staking_ops",
-                                        20, // Sequence number
-                                        1,
-                                        2371,
-                                        1670304949,
-                                        120,
-                                        "",
-                                        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Unstake(Unstake {
-                                            amount: 99178100,
-                                            smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
-                                        }))),
+    let input = setup_proto_transaction(
+        "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05",   // Keypair
+        "liquid_staking_ops",
+        20, // Sequence number
+        1,
+        2371,
+        1670304949,
+        120,
+        "",
+        Some(OpsDetails::LiquidStakingOps(
+            LiquidStakingOperation::Unstake(Unstake {
+                amount: 99178100,
+                smart_contract_address: AccountAddress::from_str(
+                    "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f",
+                )
+                .unwrap(),
+            }),
+        )),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -599,19 +666,25 @@ fn test_aptos_tortuga_unstake() {
 // // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x9fc874de7a7d3e813d9a1658d896023de270a0096a5e258c196005656ace7d54?network=mainnet
 #[test]
 fn test_aptos_tortuga_claim() {
-    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
-                                        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05", // Keypair
-                                        "liquid_staking_ops",
-                                        28, // Sequence number
-                                        1,
-                                        10,
-                                        1682066783,
-                                        148,
-                                        "",
-                                        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Claim(liquid_staking::Claim {
-                                            idx: 0,
-                                            smart_contract_address: AccountAddress::from_str("0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f").unwrap(),
-                                        }))),
+    let input = setup_proto_transaction(
+        "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+        "786fc7ceca43b4c1da018fea5d96f35dfdf5605f220b1205ff29c5c6d9eccf05",   // Keypair
+        "liquid_staking_ops",
+        28, // Sequence number
+        1,
+        10,
+        1682066783,
+        148,
+        "",
+        Some(OpsDetails::LiquidStakingOps(LiquidStakingOperation::Claim(
+            liquid_staking::Claim {
+                idx: 0,
+                smart_contract_address: AccountAddress::from_str(
+                    "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f",
+                )
+                .unwrap(),
+            },
+        ))),
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -643,15 +716,16 @@ fn test_aptos_tortuga_claim() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x7efd69e7f9462774b932ce500ab51c0d0dcc004cf272e09f8ffd5804c2a84e33?network=mainnet
 #[test]
 fn test_aptos_blind_sign() {
-    let input = setup_proto_transaction("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "blind_sign_json",
-                                        42, // Sequence number
-                                        1,
-                                        100011,
-                                        3664390082,
-                                        100,
-                                        r#"{
+    let input = setup_proto_transaction(
+        "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "blind_sign_json",
+        42, // Sequence number
+        1,
+        100011,
+        3664390082,
+        100,
+        r#"{
                                             "function": "0x16fe2df00ea7dde4a63409201f7f4e536bde7bb7335526a35d05111e68aa322c::AnimeSwapPoolV1::swap_exact_coins_for_coins_3_pair_entry",
                                             "type_arguments": [
                                                     "0x1::aptos_coin::AptosCoin",
@@ -665,7 +739,7 @@ fn test_aptos_blind_sign() {
                                                 ],
                                            "type": "entry_function_payload"
                                            }"#,
-                                        None,
+        None,
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -703,15 +777,16 @@ fn test_aptos_blind_sign() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x25dca849cb4ebacbff223139f7ad5d24c37c225d9506b8b12a925de70429e685/payload
 #[test]
 fn test_aptos_blind_sign_staking() {
-    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "blind_sign_json",
-                                        43, // Sequence number
-                                        1,
-                                        100011,
-                                        3664390082,
-                                        100,
-                                        r#"{
+    let input = setup_proto_transaction(
+        "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "blind_sign_json",
+        43, // Sequence number
+        1,
+        100011,
+        3664390082,
+        100,
+        r#"{
                                             "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::stake",
                                             "type_arguments": [],
                                             "arguments": [
@@ -719,7 +794,7 @@ fn test_aptos_blind_sign_staking() {
                                             ],
                                             "type": "entry_function_payload"
                                         }"#,
-                                        None,
+        None,
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,
@@ -751,15 +826,16 @@ fn test_aptos_blind_sign_staking() {
 // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x92edb4f756fe86118e34a0e64746c70260ee02c2ae2cf402b3e39f6a282ce968/payload
 #[test]
 fn test_aptos_blind_sign_unstaking() {
-    let input = setup_proto_transaction("0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
-                                        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec", // Keypair
-                                        "blind_sign_json",
-                                        44, // Sequence number
-                                        1,
-                                        100011,
-                                        3664390082,
-                                        100,
-                                        r#"{
+    let input = setup_proto_transaction(
+        "0xf3d7f364dd7705824a5ebda9c7aab6cb3fc7bb5b58718249f12defec240b36cc", // Sender's address
+        "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec",   // Keypair
+        "blind_sign_json",
+        44, // Sequence number
+        1,
+        100011,
+        3664390082,
+        100,
+        r#"{
                                             "function": "0x8f396e4246b2ba87b51c0739ef5ea4f26515a98375308c31ac2ec1e42142a57f::stake_router::unstake",
                                             "type_arguments": [],
                                             "arguments": [
@@ -767,7 +843,7 @@ fn test_aptos_blind_sign_unstaking() {
                                             ],
                                             "type": "entry_function_payload"
                                         }"#,
-                                        None,
+        None,
     );
     let output = Signer::<StandardAptosContext>::sign_proto(input);
     test_tx_result(output,

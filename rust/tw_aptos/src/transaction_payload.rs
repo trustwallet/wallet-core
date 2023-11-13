@@ -4,18 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use std::default::Default;
-use std::str::FromStr;
+use anyhow::{anyhow, Result};
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{ModuleId, StructTag, TypeTag};
 use move_core_types::parser::parse_transaction_argument;
 use move_core_types::transaction_argument::TransactionArgument;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use anyhow::{Result, anyhow};
+use std::default::Default;
+use std::str::FromStr;
 
+use crate::serde_helper::vec_bytes;
 use tw_proto::Aptos;
-use crate::{serde_helper::vec_bytes};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct EntryFunction {
@@ -32,22 +32,32 @@ impl TryFrom<Value> for EntryFunction {
     type Error = anyhow::Error;
 
     fn try_from(value: Value) -> Result<Self> {
-        let function_str = value["function"].as_str().ok_or_else(|| anyhow!("Missing function string"))?;
+        let function_str = value["function"]
+            .as_str()
+            .ok_or_else(|| anyhow!("Missing function string"))?;
         let tag = StructTag::from_str(function_str)?;
 
-        let args = value["arguments"].as_array().ok_or_else(|| anyhow!("Arguments field is not an array or is missing"))?
+        let args = value["arguments"]
+            .as_array()
+            .ok_or_else(|| anyhow!("Arguments field is not an array or is missing"))?
             .iter()
             .map(|element| {
-                let arg_str = element.as_str().ok_or_else(|| anyhow!("Invalid argument string"))?;
+                let arg_str = element
+                    .as_str()
+                    .ok_or_else(|| anyhow!("Invalid argument string"))?;
                 let arg = parse_transaction_argument(arg_str)?;
                 serialize_argument(&arg)
             })
             .collect::<Result<Vec<Vec<u8>>>>()?;
 
-        let ty_args = value["type_arguments"].as_array().ok_or_else(|| anyhow!("Type arguments field is not an array or is missing"))?
+        let ty_args = value["type_arguments"]
+            .as_array()
+            .ok_or_else(|| anyhow!("Type arguments field is not an array or is missing"))?
             .iter()
             .map(|element| {
-                let ty_arg_str = element.as_str().ok_or_else(|| anyhow!("Invalid type argument string"))?;
+                let ty_arg_str = element
+                    .as_str()
+                    .ok_or_else(|| anyhow!("Invalid type argument string"))?;
                 TypeTag::from_str(ty_arg_str)
             })
             .collect::<Result<Vec<TypeTag>>>()?;
@@ -75,12 +85,17 @@ fn serialize_argument(arg: &TransactionArgument) -> Result<Vec<u8>> {
         TransactionArgument::Address(v) => {
             let serialized_v = bcs::to_bytes(v)?;
             bcs::to_bytes(&serialized_v)
-        }
-    }.map_err(|e| anyhow!(e))
+        },
+    }
+    .map_err(|e| anyhow!(e))
 }
 
 pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
-    TypeTag::from_str(&format!("{}::{}::{}", struct_tag.account_address, struct_tag.module, struct_tag.name)).unwrap()
+    TypeTag::from_str(&format!(
+        "{}::{}::{}",
+        struct_tag.account_address, struct_tag.module, struct_tag.name
+    ))
+    .unwrap()
 }
 
 pub fn convert_type_tag_to_struct_tag(type_tag: TypeTag) -> Aptos::Proto::StructTag<'static> {
@@ -99,10 +114,10 @@ impl EntryFunction {
     fn to_json(&self) -> Value {
         // Create a JSON array from the `ty_args` field by filtering and mapping
         // the items that match `TypeTag::Struct` to their string representation.
-        let type_arguments: Value = self.ty_args.iter()
-            .filter_map(|item| {
-                Some(json!(item.to_string()))
-            })
+        let type_arguments: Value = self
+            .ty_args
+            .iter()
+            .filter_map(|item| Some(json!(item.to_string())))
             .collect();
 
         // Construct the final JSON value
@@ -126,9 +141,9 @@ pub enum TransactionPayload {
 impl TransactionPayload {
     pub fn to_json(&self) -> Value {
         match self {
-            TransactionPayload::Script => { Value::default() }
-            TransactionPayload::ModuleBundle => { Value::default() }
-            TransactionPayload::EntryFunction(entry) => { entry.to_json() }
+            TransactionPayload::Script => Value::default(),
+            TransactionPayload::ModuleBundle => Value::default(),
+            TransactionPayload::EntryFunction(entry) => entry.to_json(),
         }
     }
 }
@@ -153,14 +168,14 @@ impl EntryFunction {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
     use crate::address::Address;
+    use crate::transaction_payload::{EntryFunction, TransactionPayload};
     use move_core_types::account_address::AccountAddress;
     use move_core_types::identifier::Identifier;
     use move_core_types::language_storage::{ModuleId, TypeTag};
     use serde_json::{json, Value};
+    use std::str::FromStr;
     use tw_encoding::hex;
-    use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
     #[test]
     fn test_payload_from_json() {
@@ -181,13 +196,25 @@ mod tests {
 
     #[test]
     fn test_basic_payload() {
-        let addr = Address::from_str("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b").unwrap().inner();
+        let addr =
+            Address::from_str("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b")
+                .unwrap()
+                .inner();
         let amount: i64 = 1000;
-        let args = vec![bcs::to_bytes(&addr).unwrap(), bcs::to_bytes(&amount).unwrap()];
+        let args = vec![
+            bcs::to_bytes(&addr).unwrap(),
+            bcs::to_bytes(&amount).unwrap(),
+        ];
         let module = ModuleId::new(AccountAddress::ONE, Identifier::from_str("coin").unwrap());
         let function = Identifier::from_str("transfer").unwrap();
         let type_tag = vec![TypeTag::from_str("0x1::aptos_coin::AptosCoin").unwrap()];
-        let entry = EntryFunction::new(module, function, type_tag, args, json!([addr.to_hex_literal(), amount.to_string()]));
+        let entry = EntryFunction::new(
+            module,
+            function,
+            type_tag,
+            args,
+            json!([addr.to_hex_literal(), amount.to_string()]),
+        );
         let tp = TransactionPayload::EntryFunction(entry);
         let serialized = bcs::to_bytes(&tp).unwrap();
         assert_eq!(hex::encode(serialized, false), "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000");
