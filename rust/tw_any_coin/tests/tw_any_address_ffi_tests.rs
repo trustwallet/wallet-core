@@ -44,6 +44,7 @@ fn test_any_address_derive() {
             BlockchainType::Cosmos => continue,
             BlockchainType::Ethereum => "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::NativeEvmos => "evmos14s0vgnj0pjnazu4hsqlksdk7slah9vcfvt8ssm",
+            BlockchainType::NativeInjective => "inj14s0vgnj0pjnazu4hsqlksdk7slah9vcfyrp6ct",
             BlockchainType::Ronin => "ronin:Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309",
             BlockchainType::InternetComputer => {
                 "290cc7c359f44c8516fc169c5ed4f0f3ae2e24bf5de0d4c51f5e7545b5474faa"
@@ -87,6 +88,10 @@ fn test_any_address_normalize_eth() {
             BlockchainType::NativeEvmos => (
                 "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34",
                 "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34",
+            ),
+            BlockchainType::NativeInjective => (
+                "inj14py36sx57ud82t9yrks9z6hdsrpn5x6k8tf7m3",
+                "inj14py36sx57ud82t9yrks9z6hdsrpn5x6k8tf7m3",
             ),
             BlockchainType::Ronin => (
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
@@ -139,6 +144,10 @@ fn test_any_address_is_valid_coin() {
                 "evmos14py36sx57ud82t9yrks9z6hdsrpn5x6k0r05np",
                 "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34"
             ],
+            BlockchainType::NativeInjective => vec![
+                "inj13u6g7vqgw074mgmf2ze2cadzvkz9snlwcrtq8a",
+                "inj1xmpkmxr4as00em23tc2zgmuyy2gr4h3wgcl6vd"
+            ],
             BlockchainType::Ronin => vec![
                 "0xb16db98b365b1f89191996942612b14f1da4bd5f",
                 "0xb16Db98B365B1f89191996942612B14F1Da4Bd5f",
@@ -182,6 +191,7 @@ fn test_any_address_is_valid_coin_invalid() {
                 "553357cba483f268d044d4bbd4639f82c16028a76eebdf62c51bc11fc918d278",
             ],
             BlockchainType::NativeEvmos => vec!["evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw"],
+            BlockchainType::NativeInjective => vec!["ini13u6g7vqgw074mgmf2ze2cadzvkz9snlwcrtq8a"],
             BlockchainType::Unsupported => unreachable!(),
         };
 

@@ -4,22 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-// Copyright © 2017-2023 Trust Wallet.
-//
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
-
-use crate::proto::injective;
-use crate::public_key::secp256k1::prepare_secp256k1_public_key;
-use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use tw_coin_entry::coin_context::CoinContext;
+use tw_cosmos_sdk::proto::injective;
+use tw_cosmos_sdk::public_key::secp256k1::prepare_secp256k1_public_key;
+use tw_cosmos_sdk::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use tw_keypair::tw::PrivateKey;
 use tw_keypair::KeyPairResult;
 use tw_memory::Data;
 use tw_proto::{google, to_any};
 
-// TODO move to tw_injective blockchain
 pub struct InjectiveEthSecp256PublicKey {
     public_key: Data,
 }

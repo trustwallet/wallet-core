@@ -18,4 +18,5 @@ tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
 tw_native_evmos = { path = "../chains/tw_native_evmos" }
+tw_native_injective = { path = "../chains/tw_native_injective" }
 tw_ronin = { path = "../tw_ronin" }

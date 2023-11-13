@@ -1519,6 +1519,7 @@ dependencies = [
  "tw_memory",
  "tw_misc",
  "tw_native_evmos",
+ "tw_native_injective",
  "tw_ronin",
 ]
 
@@ -1687,6 +1688,17 @@ dependencies = [
 
 [[package]]
 name = "tw_native_evmos"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
+]
+
+[[package]]
+name = "tw_native_injective"
 version = "0.1.0"
 dependencies = [
  "tw_coin_entry",
