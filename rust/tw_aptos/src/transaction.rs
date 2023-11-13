@@ -13,6 +13,7 @@ use tw_keypair::ed25519::sha512::KeyPair;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};
 use tw_encoding::hex::encode;
 use tw_proto::Aptos::Proto;
+use crate::constants::APTOS_SALT;
 use crate::transaction_payload::{EntryFunction, TransactionPayload};
 
 #[derive(Clone, Serialize)]
@@ -135,7 +136,7 @@ impl RawTransaction {
 
     fn msg_to_sign(&self) -> Vec<u8> {
         let serialized = self.serialize();
-        let mut preimage = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
+        let mut preimage = tw_hash::sha3::sha3_256(APTOS_SALT);
         preimage.extend_from_slice(serialized.as_slice());
         preimage
     }
