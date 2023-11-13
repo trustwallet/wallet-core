@@ -28,19 +28,19 @@ impl<Address: CosmosAddress> CosmosMessage for StrideLiquidStakeMessage<Address>
     }
 }
 
-pub struct StrideLiquidRedeemMessage<Address: CosmosAddress> {
-    pub creator: Address,
+pub struct StrideLiquidRedeemMessage {
+    pub creator: String,
     pub amount: U256,
-    pub receiver: Address,
+    pub receiver: String,
     pub host_zone: String,
 }
 
-impl<Address: CosmosAddress> CosmosMessage for StrideLiquidRedeemMessage<Address> {
+impl CosmosMessage for StrideLiquidRedeemMessage {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = stride::stakeibc::MsgRedeemStake {
-            creator: self.creator.to_string(),
+            creator: self.creator.clone(),
             amount: self.amount.to_string(),
-            receiver: self.receiver.to_string(),
+            receiver: self.receiver.clone(),
             host_zone: self.host_zone.clone(),
         };
         Ok(to_any(&proto_msg))

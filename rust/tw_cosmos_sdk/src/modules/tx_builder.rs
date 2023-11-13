@@ -585,15 +585,15 @@ where
     }
 
     pub fn stride_redeem_msg_from_proto(
-        coin: &dyn CoinContext,
+        _coin: &dyn CoinContext,
         redeem: &Proto::mod_Message::MsgStrideLiquidStakingRedeem<'_>,
     ) -> SigningResult<CosmosMessageBox> {
         use crate::transaction::message::stride_message::StrideLiquidRedeemMessage;
 
         let msg = StrideLiquidRedeemMessage {
-            creator: Address::from_str_with_coin(coin, &redeem.creator)?,
+            creator: redeem.creator.to_string(),
             amount: U256::from_str(&redeem.amount)?,
-            receiver: Address::from_str_with_coin(coin, &redeem.receiver)?,
+            receiver: redeem.receiver.to_string(),
             host_zone: redeem.host_zone.to_string(),
         };
         Ok(msg.into_boxed())

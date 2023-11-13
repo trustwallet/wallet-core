@@ -143,13 +143,14 @@ fn test_staking_delegate() {
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
         private_key: account_1337_private_key(),
         messages: vec![make_message(MessageEnum::stake_message(delegate))],
+        mode: Proto::BroadcastMode::ASYNC,
         ..Proto::SigningInput::default()
     };
 
     test_sign_protobuf::<StandardCosmosContext>(TestInput {
         coin: &coin,
         input: input.clone(),
-        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpsBCpgBCiMvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dEZWxlZ2F0ZRJxCi1jb3Ntb3MxaHNrNmpyeXlxamZocDVkaGM1NXRjOWp0Y2t5Z3gwZXBoNmRkMDISNGNvc21vc3ZhbG9wZXIxemt1cHI4M2hyemtuM3VwNWVsa3R6Y3EzdHVmdDhueHNtd2RxZ3AaCgoEbXVvbhICMTASZgpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAcSEgoMCgRtdW9uEgQxMDE4ENmaBhpA8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA=="}"#,
+        tx: r#"{"mode":"BROADCAST_MODE_ASYNC","tx_bytes":"CpsBCpgBCiMvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dEZWxlZ2F0ZRJxCi1jb3Ntb3MxaHNrNmpyeXlxamZocDVkaGM1NXRjOWp0Y2t5Z3gwZXBoNmRkMDISNGNvc21vc3ZhbG9wZXIxemt1cHI4M2hyemtuM3VwNWVsa3R6Y3EzdHVmdDhueHNtd2RxZ3AaCgoEbXVvbhICMTASZgpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAcSEgoMCgRtdW9uEgQxMDE4ENmaBhpA8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA=="}"#,
         signature: "f0ef499bf90be996b6237a680ece6fa4ca3060980dbd808905153fbf1023b3494d658b2ae34aa94dbc0e4db3918c903952343a6ae738d2feae0854f8ab8cfeb8",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA=="}]"#,
     });
@@ -157,7 +158,7 @@ fn test_staking_delegate() {
     test_sign_json::<StandardCosmosContext>(TestInput {
         coin: &coin,
         input,
-        tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"1018","denom":"muon"}],"gas":"101721"},"memo":"","msg":[{"type":"cosmos-sdk/MsgDelegate","value":{"amount":{"amount":"10","denom":"muon"},"delegator_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","validator_address":"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="}]}}"#,
+        tx: r#"{"mode":"async","tx":{"fee":{"amount":[{"amount":"1018","denom":"muon"}],"gas":"101721"},"memo":"","msg":[{"type":"cosmos-sdk/MsgDelegate","value":{"amount":{"amount":"10","denom":"muon"},"delegator_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","validator_address":"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="}]}}"#,
         signature: "c08bdf6c2b0b4428f37975e85d329f1cb19745b000994a743b5df81d57d573aa5f755349befcc848c1d1507818723b1288594bc91df685e89aff22e0303b4861",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="}]"#,
     });
@@ -182,13 +183,14 @@ fn test_staking_undelegate() {
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
         private_key: account_1337_private_key(),
         messages: vec![make_message(MessageEnum::unstake_message(undelegate))],
+        mode: Proto::BroadcastMode::SYNC,
         ..Proto::SigningInput::default()
     };
 
     test_sign_protobuf::<StandardCosmosContext>(TestInput {
         coin: &coin,
         input: input.clone(),
-        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"Cp0BCpoBCiUvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dVbmRlbGVnYXRlEnEKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhI0Y29zbW9zdmFsb3BlcjF6a3VwcjgzaHJ6a24zdXA1ZWxrdHpjcTN0dWZ0OG54c213ZHFncBoKCgRtdW9uEgIxMBJmClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECVyhuw/N9M1V7u6oACyd0SskCOqmWfK51oYHR/5H6ncUSBAoCCAEYBxISCgwKBG11b24SBDEwMTgQ2ZoGGkBhlxHFnjBERxLtjLbMCKXcrDctaSZ9djtWCa3ely1bpV6m+6aAFjpr8aEZH+q2AtjJSEdgpQRJxP+9/gQsRTnZ"}"#,
+        tx: r#"{"mode":"BROADCAST_MODE_SYNC","tx_bytes":"Cp0BCpoBCiUvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dVbmRlbGVnYXRlEnEKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhI0Y29zbW9zdmFsb3BlcjF6a3VwcjgzaHJ6a24zdXA1ZWxrdHpjcTN0dWZ0OG54c213ZHFncBoKCgRtdW9uEgIxMBJmClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECVyhuw/N9M1V7u6oACyd0SskCOqmWfK51oYHR/5H6ncUSBAoCCAEYBxISCgwKBG11b24SBDEwMTgQ2ZoGGkBhlxHFnjBERxLtjLbMCKXcrDctaSZ9djtWCa3ely1bpV6m+6aAFjpr8aEZH+q2AtjJSEdgpQRJxP+9/gQsRTnZ"}"#,
         signature: "619711c59e30444712ed8cb6cc08a5dcac372d69267d763b5609adde972d5ba55ea6fba680163a6bf1a1191feab602d8c9484760a50449c4ffbdfe042c4539d9",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"YZcRxZ4wREcS7Yy2zAil3Kw3LWkmfXY7Vgmt3pctW6VepvumgBY6a/GhGR/qtgLYyUhHYKUEScT/vf4ELEU52Q=="}]"#,
     });
@@ -196,7 +198,7 @@ fn test_staking_undelegate() {
     test_sign_json::<StandardCosmosContext>(TestInput {
         coin: &coin,
         input,
-        tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"1018","denom":"muon"}],"gas":"101721"},"memo":"","msg":[{"type":"cosmos-sdk/MsgUndelegate","value":{"amount":{"amount":"10","denom":"muon"},"delegator_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","validator_address":"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"j4WpUVohGIHa6/s0bCvuyjq1wtQGqbOtQCz92qPQjisTN44Tz++Ozx1lAP6F0M4+eTA03XerqQ8hZCeAfL/3nw=="}]}}"#,
+        tx: r#"{"mode":"sync","tx":{"fee":{"amount":[{"amount":"1018","denom":"muon"}],"gas":"101721"},"memo":"","msg":[{"type":"cosmos-sdk/MsgUndelegate","value":{"amount":{"amount":"10","denom":"muon"},"delegator_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","validator_address":"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"j4WpUVohGIHa6/s0bCvuyjq1wtQGqbOtQCz92qPQjisTN44Tz++Ozx1lAP6F0M4+eTA03XerqQ8hZCeAfL/3nw=="}]}}"#,
         signature: "8f85a9515a211881daebfb346c2beeca3ab5c2d406a9b3ad402cfddaa3d08e2b13378e13cfef8ecf1d6500fe85d0ce3e793034dd77aba90f216427807cbff79f",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"j4WpUVohGIHa6/s0bCvuyjq1wtQGqbOtQCz92qPQjisTN44Tz++Ozx1lAP6F0M4+eTA03XerqQ8hZCeAfL/3nw=="}]"#,
     });

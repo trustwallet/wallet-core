@@ -14,7 +14,7 @@ pub mod message;
 use message::CosmosMessageBox;
 
 /// At this moment, TW only supports the Direct signing mode.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub enum SignMode {
     Direct,
 }
