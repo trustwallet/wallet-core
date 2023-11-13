@@ -14,6 +14,13 @@ pub fn make_fee(gas: u64, amount: Proto::Amount<'_>) -> Proto::Fee<'_> {
     }
 }
 
+pub fn make_fee_none(gas: u64) -> Proto::Fee<'static> {
+    Proto::Fee {
+        amounts: Vec::default(),
+        gas,
+    }
+}
+
 pub fn make_message<'a>(message_oneof: MessageEnum<'a>) -> Proto::Message<'a> {
     Proto::Message { message_oneof }
 }

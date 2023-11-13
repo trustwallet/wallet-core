@@ -51,13 +51,6 @@ pub struct SignatureJson {
     pub signature: Base64Encoded,
 }
 
-impl SignatureJson {
-    pub fn to_json_string(&self) -> String {
-        // It's safe to unwrap here because `SignatureJson` consists of checked fields only.
-        serde_json::to_string(self).expect("Unexpected error on serializing a SignatureJson")
-    }
-}
-
 /// `JsonSerializer` serializes transaction to JSON in Cosmos specific way.
 pub struct JsonSerializer<Context: CosmosContext> {
     _phantom: PhantomData<Context>,
