@@ -22,6 +22,7 @@ tw_proto = { path = "../tw_proto" }
 
 [dev-dependencies]
 tw_coin_entry = { path = "../tw_coin_entry", features = ["test-utils"] }
+tw_cosmos_sdk = { path = "./", features = ["test-utils"] }
 tw_misc = { path = "../tw_misc", features = ["test-utils"] }
 
 [build-dependencies]

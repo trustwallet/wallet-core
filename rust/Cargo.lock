@@ -1449,6 +1449,7 @@ dependencies = [
  "tw_any_coin",
  "tw_coin_entry",
  "tw_coin_registry",
+ "tw_cosmos_sdk",
  "tw_encoding",
  "tw_keypair",
  "tw_memory",
@@ -1517,6 +1518,7 @@ dependencies = [
  "tw_keypair",
  "tw_memory",
  "tw_misc",
+ "tw_native_evmos",
  "tw_ronin",
 ]
 
@@ -1540,6 +1542,7 @@ dependencies = [
  "serde_json",
  "tw_bech32_address",
  "tw_coin_entry",
+ "tw_cosmos_sdk",
  "tw_encoding",
  "tw_hash",
  "tw_keypair",
@@ -1680,6 +1683,17 @@ dependencies = [
  "hex",
  "move-core-types",
  "tw_memory",
+]
+
+[[package]]
+name = "tw_native_evmos"
+version = "0.1.0"
+dependencies = [
+ "tw_coin_entry",
+ "tw_cosmos_sdk",
+ "tw_keypair",
+ "tw_memory",
+ "tw_proto",
 ]
 
 [[package]]

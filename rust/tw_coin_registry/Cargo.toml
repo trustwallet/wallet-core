@@ -17,4 +17,5 @@ tw_internet_computer = { path = "../tw_internet_computer" }
 tw_keypair = { path = "../tw_keypair" }
 tw_memory = { path = "../tw_memory" }
 tw_misc = { path = "../tw_misc" }
+tw_native_evmos = { path = "../chains/tw_native_evmos" }
 tw_ronin = { path = "../tw_ronin" }

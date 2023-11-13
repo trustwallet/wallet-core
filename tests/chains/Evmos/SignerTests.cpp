@@ -62,9 +62,9 @@ TEST(EvmosSigner, SignTxJsonEthermintKeyType) {
                                                 "pub_key":
                                                         {
                                                             "type":"ethermint/PubKeyEthSecp256k1",
-                                                            "value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
+                                                            "value":"BFcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FWj3JBJiUsav6oXsWRf05KLv9Yt53nXEmm6fjB8Zl0wI="
                                                         },
-                                                "signature":"RWt8aaBxdMAeEjym8toWskJ6WaJpEF9Ciucz2lAHkvNnTicGpzxwTUzJbJXRirSnGkejhISaYtDw2RBiq0vg5w=="
+                                                "signature":"1hMFtRqKjB8tiuyHYVYZundPdomebIIvHLC1gj9uXtFc+iO3UAHBysBjFB4brd9AD5yriS3uUDTAqqfg6fNGNg=="
                                             }
                                         ]}
                             })"_json;
@@ -82,7 +82,7 @@ TEST(EvmosSigner, SignTxJsonEthermintKeyType) {
                         "type":"ethermint/PubKeyEthSecp256k1",
                         "value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
                     },
-                "signature":"RWt8aaBxdMAeEjym8toWskJ6WaJpEF9Ciucz2lAHkvNnTicGpzxwTUzJbJXRirSnGkejhISaYtDw2RBiq0vg5w=="
+                "signature":"1hMFtRqKjB8tiuyHYVYZundPdomebIIvHLC1gj9uXtFc+iO3UAHBysBjFB4brd9AD5yriS3uUDTAqqfg6fNGNg=="
             }
         ])"_json;
     EXPECT_EQ(signatures, expectedSignatures);
@@ -116,9 +116,11 @@ TEST(EvmosSigner, CompoundingAuthz) {
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Signer::sign(input, TWCoinTypeNativeEvmos);
+    // TODO the signature has been updated according to the serialization of the `StakeAuthorization` message.
+    // Previous: CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5EjUKM2V2bW9zdmFsb3BlcjF1bWs0MDdlZWQ3YWY2YW52dXQ2bGxnMnpldm5mMGRuMGZlcXFueSABEgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkAm17CZgB7m+CPVlITnrHosklMTL9zrUeGRs8FL8N0GcRami9zdJ+e3xuXOtJmwP7G6QNh85CRYjFj8a8lpmmJM
     auto expected = R"(
                 {
-                    "mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5EjUKM2V2bW9zdmFsb3BlcjF1bWs0MDdlZWQ3YWY2YW52dXQ2bGxnMnpldm5mMGRuMGZlcXFueSABEgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkAm17CZgB7m+CPVlITnrHosklMTL9zrUeGRs8FL8N0GcRami9zdJ+e3xuXOtJmwP7G6QNh85CRYjFj8a8lpmmJM"
+                    "mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvUBCvIBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQSzwEKLGV2bW9zMTJtOWdyZ2FzNjB5azBrdWx0MDc2dnhuc3Jxejh4cGp5OXJwZjNlEixldm1vczE4ZnpxNG5hYzI4Z2ZtYTZncWZ2a3B3cmdwbTVjdGFyMno5bXhmMxpxCmcKKi9jb3Ntb3Muc3Rha2luZy52MWJldGExLlN0YWtlQXV0aG9yaXphdGlvbhI5IAISNQozZXZtb3N2YWxvcGVyMXVtazQwN2VlZDdhZjZhbnZ1dDZsbGcyemV2bmYwZG4wZmVxcW55EgYI4LD6pgYSfQpZCk8KKC9ldGhlcm1pbnQuY3J5cHRvLnYxLmV0aHNlY3AyNTZrMS5QdWJLZXkSIwohA4B2WHbj6sH/GWE7z/YW5PRnXYFGaGRAov7gZZI2Fv2nEgQKAggBGAMSIAoaCgZhZXZtb3MSEDQ1MjE0NzUwMDAwMDAwMDAQ+4QLGkDu0sBTTeGfvUm+W6opsAcvBPLU51CFCtQOc1NCMrwRfGrUm+UBDN0NF3p1V8Ucn1tV9eLv7sXH13t/whbe7sTc"
                 })";
     assertJSONEqual(output.serialized(), expected);
 }

@@ -9,7 +9,6 @@ use tw_keypair::{tw, KeyPairResult};
 use tw_memory::Data;
 use tw_proto::google;
 
-pub mod ethermint_eth_secp256k1;
 pub mod injective_eth_secp256k1;
 pub mod secp256k1;
 

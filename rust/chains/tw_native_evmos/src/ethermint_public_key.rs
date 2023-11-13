@@ -4,18 +4,27 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-use crate::proto::ethermint;
-use crate::public_key::secp256k1::prepare_secp256k1_public_key;
-use crate::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
 use tw_coin_entry::coin_context::CoinContext;
-use tw_keypair::tw;
+use tw_cosmos_sdk::proto::ethermint;
+use tw_cosmos_sdk::public_key::{CosmosPublicKey, JsonPublicKey, ProtobufPublicKey};
+use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::KeyPairResult;
+use tw_keypair::{tw, KeyPairError};
 use tw_memory::Data;
 use tw_proto::{google, to_any};
 
-// TODO move to tw_ethermint blockchain
 pub struct EthermintEthSecp256PublicKey {
     public_key: Data,
+}
+
+impl EthermintEthSecp256PublicKey {
+    pub fn new(public_key: &secp256k1::PublicKey) -> KeyPairResult<EthermintEthSecp256PublicKey> {
+        Ok(EthermintEthSecp256PublicKey {
+            // NativeEvmos chain requires the public key to be compressed.
+            // This trick is needed because `registry.json` contains extended public key type.
+            public_key: public_key.compressed().to_vec(),
+        })
+    }
 }
 
 impl CosmosPublicKey for EthermintEthSecp256PublicKey {
@@ -23,15 +32,16 @@ impl CosmosPublicKey for EthermintEthSecp256PublicKey {
     where
         Self: Sized,
     {
-        let public_key = private_key.get_public_key_by_type(coin.public_key_type())?;
-        Ok(EthermintEthSecp256PublicKey {
-            public_key: public_key.to_bytes(),
-        })
+        let tw_public_key = private_key.get_public_key_by_type(coin.public_key_type())?;
+        let secp256k1_key = tw_public_key
+            .to_secp256k1()
+            .ok_or(KeyPairError::InvalidPublicKey)?;
+        EthermintEthSecp256PublicKey::new(secp256k1_key)
     }
 
-    fn from_bytes(coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self> {
-        let public_key = prepare_secp256k1_public_key(coin, public_key_bytes)?;
-        Ok(EthermintEthSecp256PublicKey { public_key })
+    fn from_bytes(_coin: &dyn CoinContext, public_key_bytes: &[u8]) -> KeyPairResult<Self> {
+        let public_key = secp256k1::PublicKey::try_from(public_key_bytes)?;
+        EthermintEthSecp256PublicKey::new(&public_key)
     }
 
     fn to_bytes(&self) -> Data {

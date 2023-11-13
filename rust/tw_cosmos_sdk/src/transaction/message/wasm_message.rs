@@ -29,7 +29,7 @@ impl ExecuteMsg {
     /// Tries to convert [`ExecuteMsg::String`] to [`ExecuteMsg::Json`], otherwise returns the same object.
     pub fn try_to_json(&self) -> ExecuteMsg {
         if let ExecuteMsg::String(s) = self {
-            if let Ok(json) = serde_json::from_str(&s) {
+            if let Ok(json) = serde_json::from_str(s) {
                 return ExecuteMsg::Json(json);
             }
         }

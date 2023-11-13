@@ -3943,7 +3943,7 @@
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
-    "blockchain": "Cosmos",
+    "blockchain": "NativeEvmos",
     "chainId": "evmos_9001-2",
     "derivation": [
       {

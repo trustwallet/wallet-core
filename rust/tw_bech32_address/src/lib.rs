@@ -123,7 +123,7 @@ impl FromStr for Bech32Address {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bech32::Decoded { hrp, bytes } =
-            bech32::decode(&s).map_err(|_| AddressError::InvalidInput)?;
+            bech32::decode(s).map_err(|_| AddressError::InvalidInput)?;
         Ok(Bech32Address {
             hrp,
             key_hash: bytes,

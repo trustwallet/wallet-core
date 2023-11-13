@@ -17,6 +17,7 @@ pub enum BlockchainType {
     Cosmos,
     Ethereum,
     InternetComputer,
+    NativeEvmos,
     Ronin,
     Unsupported,
 }
@@ -41,6 +42,7 @@ impl FromStr for BlockchainType {
             "Ethereum" => Ok(BlockchainType::Ethereum),
             "InternetComputer" => Ok(BlockchainType::InternetComputer),
             "Ronin" => Ok(BlockchainType::Ronin),
+            "NativeEvmos" => Ok(BlockchainType::NativeEvmos),
             _ => Ok(BlockchainType::Unsupported),
         }
     }

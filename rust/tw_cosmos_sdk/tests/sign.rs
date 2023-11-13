@@ -18,7 +18,7 @@ use tw_proto::Common::Proto::SigningError;
 use tw_proto::Cosmos::Proto;
 use tw_proto::Cosmos::Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
 
-fn account_1337_private_key() -> Cow<'static, [u8]> {
+fn account_1037_private_key() -> Cow<'static, [u8]> {
     "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"
         .decode_hex()
         .unwrap()
@@ -81,7 +81,7 @@ fn test_sign_coin_send() {
         chain_id: "gaia-13003".into(),
         sequence: 8,
         fee: Some(make_fee(200000, make_amount("muon", "200"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::send_coins_message(send_msg))],
         ..Proto::SigningInput::default()
     };
@@ -117,7 +117,7 @@ fn test_sign_raw_json() {
         chain_id: "gaia-13003".into(),
         sequence: 8,
         fee: Some(make_fee(200000, make_amount("muon", "200"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::raw_json_message(raw_json_msg))],
         ..Proto::SigningInput::default()
     };
@@ -197,7 +197,7 @@ fn test_sign_direct() {
     let mut input = Proto::SigningInput {
         account_number: 1037,
         chain_id: "gaia-13003".into(),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::sign_direct_message(sign_direct))],
         ..Proto::SigningInput::default()
     };
@@ -242,7 +242,7 @@ fn test_sign_direct_0a90010a() {
     let mut input = Proto::SigningInput {
         account_number: 1,
         chain_id: "cosmoshub-4".into(),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::sign_direct_message(sign_direct))],
         ..Proto::SigningInput::default()
     };

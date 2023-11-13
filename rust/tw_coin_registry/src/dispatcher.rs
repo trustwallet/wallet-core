@@ -15,6 +15,7 @@ use tw_cosmos::entry::CosmosEntry;
 use tw_ethereum::entry::EthereumEntry;
 use tw_evm::evm_entry::EvmEntryExt;
 use tw_internet_computer::entry::InternetComputerEntry;
+use tw_native_evmos::entry::NativeEvmosEntry;
 use tw_ronin::entry::RoninEntry;
 
 pub type CoinEntryExtStaticRef = &'static dyn CoinEntryExt;
@@ -24,6 +25,7 @@ const BITCOIN: BitcoinEntry = BitcoinEntry;
 const COSMOS: CosmosEntry = CosmosEntry;
 const ETHEREUM: EthereumEntry = EthereumEntry;
 const INTERNET_COMPUTER: InternetComputerEntry = InternetComputerEntry;
+const NATIVE_EVMOS: NativeEvmosEntry = NativeEvmosEntry;
 const RONIN: RoninEntry = RoninEntry;
 
 pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinEntryExtStaticRef> {
@@ -32,6 +34,7 @@ pub fn blockchain_dispatcher(blockchain: BlockchainType) -> RegistryResult<CoinE
         BlockchainType::Cosmos => Ok(&COSMOS),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::InternetComputer => Ok(&INTERNET_COMPUTER),
+        BlockchainType::NativeEvmos => Ok(&NATIVE_EVMOS),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }
@@ -53,6 +56,7 @@ pub fn evm_dispatcher(coin: CoinType) -> RegistryResult<EvmEntryExtStaticRef> {
         BlockchainType::Cosmos => Err(RegistryError::Unsupported),
         BlockchainType::Ethereum => Ok(&ETHEREUM),
         BlockchainType::InternetComputer => Err(RegistryError::Unsupported),
+        BlockchainType::NativeEvmos => Err(RegistryError::Unsupported),
         BlockchainType::Ronin => Ok(&RONIN),
         BlockchainType::Unsupported => Err(RegistryError::Unsupported),
     }

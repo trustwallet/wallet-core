@@ -21,7 +21,7 @@ pub fn make_fee_none(gas: u64) -> Proto::Fee<'static> {
     }
 }
 
-pub fn make_message<'a>(message_oneof: MessageEnum<'a>) -> Proto::Message<'a> {
+pub fn make_message(message_oneof: MessageEnum) -> Proto::Message {
     Proto::Message { message_oneof }
 }
 

@@ -17,7 +17,7 @@ use tw_proto::Common::Proto::SigningError;
 use tw_proto::Cosmos::Proto;
 use tw_proto::Cosmos::Proto::mod_Message::OneOfmessage_oneof as MessageEnum;
 
-fn account_1337_private_key() -> Cow<'static, [u8]> {
+fn account_1037_private_key() -> Cow<'static, [u8]> {
     "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"
         .decode_hex()
         .unwrap()
@@ -141,7 +141,7 @@ fn test_staking_delegate() {
         chain_id: "gaia-13003".into(),
         sequence: 7,
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::stake_message(delegate))],
         mode: Proto::BroadcastMode::ASYNC,
         ..Proto::SigningInput::default()
@@ -181,7 +181,7 @@ fn test_staking_undelegate() {
         chain_id: "gaia-13003".into(),
         sequence: 7,
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::unstake_message(undelegate))],
         mode: Proto::BroadcastMode::SYNC,
         ..Proto::SigningInput::default()
@@ -222,7 +222,7 @@ fn test_staking_restake() {
         chain_id: "gaia-13003".into(),
         sequence: 7,
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::restake_message(redelegate))],
         ..Proto::SigningInput::default()
     };
@@ -260,7 +260,7 @@ fn test_staking_withdraw_rewards() {
         chain_id: "gaia-13003".into(),
         sequence: 7,
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::withdraw_stake_reward_message(
             withdraw,
         ))],
@@ -300,7 +300,7 @@ fn test_staking_set_withdraw_address() {
         chain_id: "gaia-13003".into(),
         sequence: 7,
         fee: Some(make_fee(101721, make_amount("muon", "1018"))),
-        private_key: account_1337_private_key(),
+        private_key: account_1037_private_key(),
         messages: vec![make_message(MessageEnum::set_withdraw_address_message(
             set_address,
         ))],
