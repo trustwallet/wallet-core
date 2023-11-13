@@ -20,7 +20,7 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signRust(dataIn, coin, dataOut);
 }
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {

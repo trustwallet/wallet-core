@@ -129,17 +129,26 @@ impl RawTransaction {
         }
     }
 
-    pub fn sign(
-        self,
-        key_pair: KeyPair,
-    ) -> SigningResult<SignedTransaction> {
-        let serialized = bcs::to_bytes(&self).unwrap();
-        let mut to_sign = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
-        to_sign.extend_from_slice(serialized.as_slice());
-        let signed = key_pair.private().sign(to_sign.clone()).unwrap();
+    fn serialize(&self) -> Vec<u8> {
+        bcs::to_bytes(&self).unwrap()
+    }
+
+    fn msg_to_sign(&self) -> Vec<u8> {
+        let serialized = self.serialize();
+        let mut preimage = tw_hash::sha3::sha3_256("APTOS::RawTransaction".as_bytes());
+        preimage.extend_from_slice(serialized.as_slice());
+        preimage
+    }
+
+    pub fn pre_image(&self) -> Vec<u8> {
+        self.msg_to_sign()
+    }
+
+    pub fn compile(&self, signature: Vec<u8>, public_key: Vec<u8>) -> SigningResult<SignedTransaction> {
+        let serialized = self.serialize();
         let auth = TransactionAuthenticator::Ed25519 {
-            public_key: key_pair.public().as_slice().to_vec(),
-            signature: signed.to_bytes().into_vec(),
+            public_key,
+            signature,
         };
         let mut encoded = serialized.clone();
         encoded.extend_from_slice(bcs::to_bytes(&auth).unwrap().as_slice());
@@ -149,6 +158,16 @@ impl RawTransaction {
             raw_txn_bytes: serialized.to_vec(),
             encoded,
         })
+    }
+
+    pub fn sign(
+        self,
+        key_pair: KeyPair,
+    ) -> SigningResult<SignedTransaction> {
+        let to_sign = self.pre_image();
+        let signature = key_pair.private().sign(to_sign)?.to_bytes().into_vec();
+        let pubkey = key_pair.public().as_slice().to_vec();
+        self.compile(signature, pubkey)
     }
 
     pub fn to_json(&self) -> Value {

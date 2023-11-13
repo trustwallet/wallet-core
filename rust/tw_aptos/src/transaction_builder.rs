@@ -7,10 +7,12 @@
 use std::str::FromStr;
 use move_core_types::account_address::AccountAddress;
 use move_core_types::language_storage::TypeTag;
+use serde_json::Value;
+use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_proto::Aptos::Proto::mod_SigningInput::OneOftransaction_payload;
 use crate::constants::{GAS_UNIT_PRICE, MAX_GAS_AMOUNT};
 use crate::transaction::RawTransaction;
-use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, TransactionPayload};
+use crate::transaction_payload::{convert_proto_struct_tag_to_type_tag, EntryFunction, TransactionPayload};
 use tw_proto::Aptos::Proto::SigningInput;
 use crate::aptos_move_packages::{aptos_account_create_account, aptos_account_transfer, aptos_account_transfer_coins, coin_transfer, managed_coin_register, token_transfers_cancel_offer_script, token_transfers_claim_script, token_transfers_offer_script};
 use crate::liquid_staking::{LiquidStakingOperation, tortuga_claim, tortuga_stake, tortuga_unstake};
@@ -69,39 +71,47 @@ impl TransactionFactory {
         }
     }
 
-    pub fn new_from_protobuf(input: SigningInput) -> TransactionBuilder {
+    pub fn  new_from_protobuf(input: SigningInput) -> SigningResult<TransactionBuilder> {
         let factory = TransactionFactory::new(input.chain_id as u8)
             .with_gas_unit_price(input.gas_unit_price)
             .with_max_gas_amount(input.max_gas_amount)
             .with_transaction_expiration_time(input.expiration_timestamp_secs);
         match input.transaction_payload {
             OneOftransaction_payload::transfer(transfer) => {
-                factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount)
+                Ok(factory.implicitly_create_user_account_and_transfer(AccountAddress::from_str(&transfer.to).unwrap(), transfer.amount))
             }
             OneOftransaction_payload::token_transfer(token_transfer) => {
                 let func = token_transfer.function.unwrap();
-                factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
+                Ok(factory.coins_transfer(AccountAddress::from_str(&token_transfer.to).unwrap(), token_transfer.amount,
                                        convert_proto_struct_tag_to_type_tag(func),
-                )
+                ))
             }
             OneOftransaction_payload::create_account(create_account) => {
-                factory.create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap())
+                Ok(factory.create_user_account(AccountAddress::from_str(&create_account.auth_key).unwrap()))
             }
             OneOftransaction_payload::nft_message(nft_message) => {
-                factory.nft_ops(nft_message.into())
+                Ok(factory.nft_ops(nft_message.into()))
             }
             OneOftransaction_payload::register_token(register_token) => {
-                factory.register_token(convert_proto_struct_tag_to_type_tag(register_token.function.unwrap()))
+                Ok(factory.register_token(convert_proto_struct_tag_to_type_tag(register_token.function.unwrap())))
             }
             OneOftransaction_payload::liquid_staking_message(msg) => {
-                factory.liquid_staking_ops(msg.into())
+                Ok(factory.liquid_staking_ops(msg.into()))
             }
             OneOftransaction_payload::token_transfer_coins(token_transfer_coins) => {
                 let func = token_transfer_coins.function.unwrap();
-                factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
-                                                                  convert_proto_struct_tag_to_type_tag(func))
+                Ok(factory.implicitly_create_user_and_coins_transfer(AccountAddress::from_str(&token_transfer_coins.to).unwrap(), token_transfer_coins.amount,
+                                                                  convert_proto_struct_tag_to_type_tag(func)))
             }
-            OneOftransaction_payload::None => { todo!() }
+            OneOftransaction_payload::None => {
+                let is_blind_sign = !input.any_encoded.is_empty();
+                let v = serde_json::from_str::<Value>(&input.any_encoded)?;
+                if is_blind_sign {
+                    Ok(factory.payload(TransactionPayload::EntryFunction(EntryFunction::try_from(v).unwrap())))
+                } else {
+                    Err(SigningError(SigningErrorType::Error_input_parse))
+                }
+            }
         }
     }
 

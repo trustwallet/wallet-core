@@ -17,3 +17,4 @@ pub mod signer;
 pub mod transaction;
 pub mod transaction_builder;
 pub mod transaction_payload;
+pub mod compiler;

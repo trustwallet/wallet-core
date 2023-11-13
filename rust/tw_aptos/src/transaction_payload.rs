@@ -7,9 +7,13 @@
 use std::default::Default;
 use std::str::FromStr;
 use move_core_types::identifier::Identifier;
-use move_core_types::language_storage::{ModuleId, TypeTag};
+use move_core_types::language_storage::{ModuleId, StructTag, TypeTag};
+use move_core_types::parser::parse_transaction_argument;
+use move_core_types::transaction_argument::TransactionArgument;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use anyhow::{Result, anyhow};
+
 use tw_proto::Aptos;
 use crate::{serde_helper::vec_bytes};
 
@@ -22,6 +26,57 @@ pub struct EntryFunction {
     args: Vec<Vec<u8>>,
     #[serde(skip_serializing)]
     json_args: Value,
+}
+
+impl TryFrom<Value> for EntryFunction {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Value) -> Result<Self> {
+        let function_str = value["function"].as_str().ok_or_else(|| anyhow!("Missing function string"))?;
+        let tag = StructTag::from_str(function_str)?;
+
+        let args = value["arguments"].as_array().ok_or_else(|| anyhow!("Arguments field is not an array or is missing"))?
+            .iter()
+            .map(|element| {
+                let arg_str = element.as_str().ok_or_else(|| anyhow!("Invalid argument string"))?;
+                let arg = parse_transaction_argument(arg_str)?;
+                serialize_argument(&arg)
+            })
+            .collect::<Result<Vec<Vec<u8>>>>()?;
+
+        let ty_args = value["type_arguments"].as_array().ok_or_else(|| anyhow!("Type arguments field is not an array or is missing"))?
+            .iter()
+            .map(|element| {
+                let ty_arg_str = element.as_str().ok_or_else(|| anyhow!("Invalid type argument string"))?;
+                TypeTag::from_str(ty_arg_str)
+            })
+            .collect::<Result<Vec<TypeTag>>>()?;
+
+        Ok(EntryFunction {
+            module: tag.module_id(),
+            function: tag.name,
+            ty_args,
+            args,
+            json_args: value["arguments"].clone(),
+        })
+    }
+}
+
+fn serialize_argument(arg: &TransactionArgument) -> Result<Vec<u8>> {
+    match arg {
+        TransactionArgument::U8(v) => bcs::to_bytes(v),
+        TransactionArgument::U16(v) => bcs::to_bytes(v),
+        TransactionArgument::U32(v) => bcs::to_bytes(v),
+        TransactionArgument::U64(v) => bcs::to_bytes(v),
+        TransactionArgument::U128(v) => bcs::to_bytes(v),
+        TransactionArgument::U256(v) => bcs::to_bytes(v),
+        TransactionArgument::U8Vector(v) => bcs::to_bytes(v),
+        TransactionArgument::Bool(v) => bcs::to_bytes(v),
+        TransactionArgument::Address(v) => {
+            let serialized_v = bcs::to_bytes(v)?;
+            bcs::to_bytes(&serialized_v)
+        }
+    }.map_err(|e| anyhow!(e))
 }
 
 pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
@@ -106,6 +161,23 @@ mod tests {
     use serde_json::{json, Value};
     use tw_encoding::hex;
     use crate::transaction_payload::{EntryFunction, TransactionPayload};
+
+    #[test]
+    fn test_payload_from_json() {
+        let payload_value: Value = json!({
+            "arguments": ["0xc95db29a67a848940829b3df6119b5e67b788ff0248676e4484c7c6f29c0f5e6"],
+            "function": "0xc23c3b70956ce8d88fb18ad9ed3b463fe873cb045db3f6d2e2fb15b9aab71d50::IFO::release",
+            "type": "entry_function_payload",
+            "type_arguments": [
+              "0x48e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced90517::coins::BUSD",
+              "0x48e0e3958d42b8d452c9199d4a221d0d1b15d14655787453dbe77208ced90517::coins::DAI",
+              "0x9936836587ca33240d3d3f91844651b16cb07802faf5e34514ed6f78580deb0a::uints::U1"
+            ]
+        });
+
+        let v = EntryFunction::try_from(payload_value.clone()).unwrap();
+        assert_eq!(payload_value, v.to_json());
+    }
 
     #[test]
     fn test_basic_payload() {

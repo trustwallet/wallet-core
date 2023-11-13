@@ -39,7 +39,7 @@ impl<Context: AptosContext> Signer<Context> {
         input: Proto::SigningInput<'_>,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
         let key_pair = ed25519::sha512::KeyPair::try_from(input.private_key.as_ref())?;
-        let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone());
+        let builder = transaction_builder::TransactionFactory::new_from_protobuf(input.clone())?;
         let sender = Address::from_str(&input.sender)?;
         let signed_tx = builder.sender(sender.inner()).sequence_number(input.sequence_number as u64).build().sign(key_pair)?;
         Ok(Proto::SigningOutput {

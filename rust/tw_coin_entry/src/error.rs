@@ -6,6 +6,7 @@
 
 use std::fmt;
 use std::fmt::Formatter;
+use serde_json::Error;
 use tw_keypair::KeyPairError;
 use tw_number::NumberError;
 use tw_proto::Common::Proto;
@@ -54,6 +55,12 @@ impl From<AddressError> for SigningError {
     #[inline]
     fn from(_err: AddressError) -> Self {
         SigningError(SigningErrorType::Error_invalid_address)
+    }
+}
+
+impl From<serde_json::Error> for SigningError {
+    fn from(_value: Error) -> Self {
+        SigningError(SigningErrorType::Error_input_parse)
     }
 }
 

@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.75"
 serde_json = "1.0.108"
 tw_coin_entry = { path = "../tw_coin_entry" }
 tw_encoding = { path = "../tw_encoding"}

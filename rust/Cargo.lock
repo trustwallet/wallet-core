@@ -22,9 +22,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.69"
+version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "224afbd727c3d6e4b90103ece64b8d1b67fbb1973b1046c2281eed3f3803f800"
+checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
 name = "arbitrary"
@@ -1624,6 +1624,7 @@ dependencies = [
 name = "tw_aptos"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bcs",
  "move-core-types 0.0.4 (git+https://github.com/move-language/move?rev=ea70797099baea64f05194a918cebd69ed02b285)",
  "serde",

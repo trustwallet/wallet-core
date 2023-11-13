@@ -17,6 +17,7 @@ use tw_keypair::tw::PublicKey;
 use tw_proto::Aptos::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
 use crate::address::Address;
+use crate::compiler::Compiler;
 use crate::signer::{Signer, StandardAptosContext};
 
 
@@ -66,20 +67,21 @@ impl CoinEntry for AptosEntry {
     fn preimage_hashes(
         &self,
         _coin: &dyn CoinContext,
-        _input: Self::SigningInput<'_>,
-    ) -> Self::PreSigningOutput {
-        todo!()
+        input: Self::SigningInput<'_>,
+    ) -> Self::PreSigningOutput
+    {
+        Compiler::<StandardAptosContext>::preimage_hashes(input)
     }
 
     #[inline]
     fn compile(
         &self,
         _coin: &dyn CoinContext,
-        _input: Self::SigningInput<'_>,
-        _signatures: Vec<SignatureBytes>,
-        _public_keys: Vec<PublicKeyBytes>,
+        input: Self::SigningInput<'_>,
+        signatures: Vec<SignatureBytes>,
+        public_keys: Vec<PublicKeyBytes>,
     ) -> Self::SigningOutput {
-        todo!()
+        Compiler::<StandardAptosContext>::compile(input, signatures, public_keys)
     }
 
     #[inline]
