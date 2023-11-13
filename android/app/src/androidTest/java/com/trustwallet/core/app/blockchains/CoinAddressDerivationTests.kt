@@ -119,7 +119,7 @@ class CoinAddressDerivationTests {
         NERVOS -> assertEquals("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdtyq04tvp02wectaumxn0664yw2jd53lqk4mxg3", address)
         EVERSCALE -> assertEquals("0:0c39661089f86ec5926ea7d4ee4223d634ba4ed6dcc2e80c7b6a8e6d59f79b04", address)
         TON -> assertEquals("EQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUfk9", address)
-        APTOS -> assertEquals("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", address)
+        APTOS -> assertEquals("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30", address)
         NEBL -> assertEquals("NgDVaXAwNgBwb88xLiFKomfBmPkEh9F2d7", address)
         SUI -> assertEquals("0xada112cfb90b44ba889cc5d39ac2bf46281e4a91f7919c693bcd9b8323e81ed2", address)
         HEDERA -> assertEquals("0.0.302a300506032b657003210049eba62f64d0d941045595d9433e65d84ecc46bcdb1421de55e05fcf2d8357d5", address)
