@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Aptos/Signer.h"
+#include "proto/Aptos.pb.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"

@@ -6,9 +6,6 @@
 
 #include "Entry.h"
 
-#include "Address.h"
-#include "Signer.h"
-
 namespace TW::Aptos {
 
 bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {

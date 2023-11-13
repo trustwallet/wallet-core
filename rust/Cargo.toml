@@ -13,7 +13,6 @@ members = [
     "tw_keypair",
     "tw_memory",
     "tw_misc",
-    "tw_move_parser",
     "tw_number",
     "tw_proto",
     "tw_ronin",

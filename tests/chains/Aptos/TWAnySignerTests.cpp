@@ -4,11 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Aptos/Address.h"
-#include "Aptos/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "proto/Aptos.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <nlohmann/json.hpp>
 #include "TestUtilities.h"
