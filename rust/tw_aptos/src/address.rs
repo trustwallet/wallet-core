@@ -90,9 +90,7 @@ impl FromStr for Address {
             working = &working[2..];
         }
 
-        if working.len() > NUM_CHARS {
-            return Err(AddressError::InvalidInput);
-        } else if !has_0x && working.len() < NUM_CHARS {
+        if working.len() > NUM_CHARS || (!has_0x && working.len() < NUM_CHARS) {
             return Err(AddressError::InvalidInput);
         }
 

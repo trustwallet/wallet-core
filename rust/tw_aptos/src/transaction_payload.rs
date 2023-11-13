@@ -117,7 +117,7 @@ impl EntryFunction {
         let type_arguments: Value = self
             .ty_args
             .iter()
-            .filter_map(|item| Some(json!(item.to_string())))
+            .map(|item| Some(json!(item.to_string())))
             .collect();
 
         // Construct the final JSON value

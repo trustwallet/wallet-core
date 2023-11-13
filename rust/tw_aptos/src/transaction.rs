@@ -59,8 +59,8 @@ impl TransactionAuthenticator {
                 public_key,
                 signature,
             } => {
-                json!({"public_key": encode(&public_key, true),
-                       "signature": encode(&signature, true),
+                json!({"public_key": encode(public_key, true),
+                       "signature": encode(signature, true),
                        "type": "ed25519_signature"})
             },
         }
@@ -172,7 +172,7 @@ impl RawTransaction {
         encoded.extend_from_slice(bcs::to_bytes(&auth).unwrap().as_slice());
         Ok(SignedTransaction {
             raw_txn: self.clone(),
-            authenticator: auth.clone(),
+            authenticator: auth,
             raw_txn_bytes: serialized.to_vec(),
             encoded,
         })
