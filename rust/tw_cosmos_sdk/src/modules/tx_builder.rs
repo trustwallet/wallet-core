@@ -358,7 +358,7 @@ where
 
         let execute_payload = WasmExecutePayload::Transfer {
             amount: U256::from_big_endian_slice(&transfer.amount)?,
-            recipient: Address::from_str_with_coin(coin, &transfer.recipient_address)?,
+            recipient: transfer.recipient_address.to_string(),
         };
 
         let msg = TerraExecuteContractMessage {
@@ -380,7 +380,7 @@ where
 
         let execute_payload = WasmExecutePayload::Send {
             amount: U256::from_big_endian_slice(&send.amount)?,
-            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            contract: send.recipient_contract_address.to_string(),
             msg: send.msg.to_string(),
         };
 
@@ -410,7 +410,7 @@ where
         let msg = TerraExecuteContractMessage {
             sender: Address::from_str_with_coin(coin, &generic.sender_address)?,
             contract: Address::from_str_with_coin(coin, &generic.contract_address)?,
-            execute_msg: ExecuteMsg::RegularString(generic.execute_msg.to_string()),
+            execute_msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
         Ok(msg.into_boxed())
@@ -426,7 +426,7 @@ where
 
         let transfer_payload = WasmExecutePayload::Transfer {
             amount: U256::from_big_endian_slice(&transfer.amount)?,
-            recipient: Address::from_str_with_coin(coin, &transfer.recipient_address)?,
+            recipient: transfer.recipient_address.to_string(),
         };
 
         let msg = WasmExecuteContractMessage {
@@ -449,7 +449,7 @@ where
 
         let execute_payload = WasmExecutePayload::Send {
             amount: U256::from_big_endian_slice(&send.amount)?,
-            contract: Address::from_str_with_coin(coin, &send.contract_address)?,
+            contract: send.recipient_contract_address.to_string(),
             msg: send.msg.to_string(),
         };
 
@@ -478,7 +478,7 @@ where
         let msg = WasmExecuteContractMessage {
             sender: Address::from_str_with_coin(coin, &generic.sender_address)?,
             contract: Address::from_str_with_coin(coin, &generic.contract_address)?,
-            msg: ExecuteMsg::RegularString(generic.execute_msg.to_string()),
+            msg: ExecuteMsg::String(generic.execute_msg.to_string()),
             coins,
         };
         Ok(msg.into_boxed())

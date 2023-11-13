@@ -8,9 +8,10 @@ use crate::address::CosmosAddress;
 use crate::modules::serializer::protobuf_serializer::build_coin;
 use crate::proto::terra;
 use crate::transaction::message::wasm_message::ExecuteMsg;
-use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, ProtobufMessage};
+use crate::transaction::message::{CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
+use serde_json::json;
 use tw_coin_entry::error::SigningResult;
 use tw_proto::to_any;
 
@@ -36,7 +37,17 @@ impl<Address: CosmosAddress> CosmosMessage for TerraExecuteContractMessage<Addre
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
+        // Don't use `message_to_json` because we need to try to convert [`ExecuteMsg::String`] to [`ExecuteMsg::Json`] if possible.
+        let value = json!({
+            "coins": self.coins,
+            "contract": self.contract,
+            "execute_msg": self.execute_msg.try_to_json(),
+            "sender": self.sender,
+        });
         // TODO custom_msg_type
-        message_to_json("wasm/MsgExecuteContract", self)
+        Ok(JsonMessage {
+            msg_type: "wasm/MsgExecuteContract".to_string(),
+            value,
+        })
     }
 }

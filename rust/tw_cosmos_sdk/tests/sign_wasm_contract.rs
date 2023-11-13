@@ -21,6 +21,7 @@ fn account_336_private_key() -> Cow<'static, [u8]> {
         .into()
 }
 
+/// Airdrop Neutron
 #[test]
 fn test_wasm_execute_contract() {
     let coin = TestCoinContext::default()
@@ -58,12 +59,11 @@ fn test_wasm_execute_contract() {
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Aqj8IaI4aVqQd7w6/EfqslJw5HCtwT8Ut+RfDqxz6uVs"},"signature":"wgRcLzPK65da4h5ft1kEHPEyOaF44/U42K0GtVl3Ca5BSAKWbCE51bQnBF7wInk1Qqq0NhmMoUA8oYRZDa94Ow=="}]"#,
     });
 
-    // `AuthGrant` doesn't support JSON serialization and signing.
     test_sign_json::<StandardCosmosContext>(TestInput {
         coin: &coin,
         input,
-        tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"1000","denom":"untrn"}],"gas":"666666"},"memo":"","msg":[{"type":"wasm/MsgExecuteContract","value":{"coins":[],"contract":"neutron1465d8udjudl6cd8kgdlh2s37p7q0cf9x7yveumqwqk6ng94qwnmq7n79qn","msg":"{\"claim\":{\"address\":\"neutron19h42zjnls2tpmg6yylcg6nr56cjxcx35q6xt57\", \"proof\":[\"404ae2093edcca979ccb6ae4a36689cebc9c2c6a2b00b106c5396b079bf6dcf5\",\"282fee30a25a60904f54d4f74aee8fcf8dd2822799c43be733e18e15743d4ece\",\"e10de4202fe6532329d0d463d9669f1b659920868b9ea87d6715bfd223a86a40\",\"564b4122c6f98653153d8e09d5a5f659fa7ebea740aa6b689c94211f8a11cc4b\"], \"amount\":\"2000000\"}}","sender":"neutron19h42zjnls2tpmg6yylcg6nr56cjxcx35q6xt57"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Aqj8IaI4aVqQd7w6/EfqslJw5HCtwT8Ut+RfDqxz6uVs"},"signature":"IYbqX5Mh8atLwMxFL2qvWG+18EXLXy7Z4gZYIOMFqCUZWhLjQ6D2zFDKqKYoLqJD8ZH7VyVDmRUTdDzN0zS+WA=="}]}}"#,
-        signature: "2186ea5f9321f1ab4bc0cc452f6aaf586fb5f045cb5f2ed9e2065820e305a825195a12e343a0f6cc50caa8a6282ea243f191fb572543991513743ccdd334be58",
-        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Aqj8IaI4aVqQd7w6/EfqslJw5HCtwT8Ut+RfDqxz6uVs"},"signature":"IYbqX5Mh8atLwMxFL2qvWG+18EXLXy7Z4gZYIOMFqCUZWhLjQ6D2zFDKqKYoLqJD8ZH7VyVDmRUTdDzN0zS+WA=="}]"#,
+        tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"1000","denom":"untrn"}],"gas":"666666"},"memo":"","msg":[{"type":"wasm/MsgExecuteContract","value":{"coins":[],"contract":"neutron1465d8udjudl6cd8kgdlh2s37p7q0cf9x7yveumqwqk6ng94qwnmq7n79qn","msg":{"claim":{"address":"neutron19h42zjnls2tpmg6yylcg6nr56cjxcx35q6xt57","amount":"2000000","proof":["404ae2093edcca979ccb6ae4a36689cebc9c2c6a2b00b106c5396b079bf6dcf5","282fee30a25a60904f54d4f74aee8fcf8dd2822799c43be733e18e15743d4ece","e10de4202fe6532329d0d463d9669f1b659920868b9ea87d6715bfd223a86a40","564b4122c6f98653153d8e09d5a5f659fa7ebea740aa6b689c94211f8a11cc4b"]}},"sender":"neutron19h42zjnls2tpmg6yylcg6nr56cjxcx35q6xt57"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Aqj8IaI4aVqQd7w6/EfqslJw5HCtwT8Ut+RfDqxz6uVs"},"signature":"R0zmQ4RCZ+UL+dTxgCHjK3IRklnLDWIRn6ZYDT9CZzUThcJdxlwxog0zCAAWhzH6HDv1T6LvdATlm7p93o+jzA=="}]}}"#,
+        signature: "474ce643844267e50bf9d4f18021e32b72119259cb0d62119fa6580d3f4267351385c25dc65c31a20d330800168731fa1c3bf54fa2ef7404e59bba7dde8fa3cc",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Aqj8IaI4aVqQd7w6/EfqslJw5HCtwT8Ut+RfDqxz6uVs"},"signature":"R0zmQ4RCZ+UL+dTxgCHjK3IRklnLDWIRn6ZYDT9CZzUThcJdxlwxog0zCAAWhzH6HDv1T6LvdATlm7p93o+jzA=="}]"#,
     });
 }

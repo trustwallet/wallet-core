@@ -7,25 +7,35 @@
 use crate::address::CosmosAddress;
 use crate::modules::serializer::protobuf_serializer::build_coin;
 use crate::proto::cosmwasm;
-use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, ProtobufMessage};
+use crate::transaction::message::{CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
-use serde_json::Value as Json;
+use serde_json::{json, Value as Json};
 use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
 use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::to_any;
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 #[serde(untagged)]
 pub enum ExecuteMsg {
     /// Either a regular string or a stringified JSON object.
-    RegularString(String),
+    String(String),
     /// JSON object with a type.
     Json(Json),
 }
 
 impl ExecuteMsg {
+    /// Tries to convert [`ExecuteMsg::String`] to [`ExecuteMsg::Json`], otherwise returns the same object.
+    pub fn try_to_json(&self) -> ExecuteMsg {
+        if let ExecuteMsg::String(s) = self {
+            if let Ok(json) = serde_json::from_str(&s) {
+                return ExecuteMsg::Json(json);
+            }
+        }
+        self.clone()
+    }
+
     pub fn json<Payload: Serialize>(payload: Payload) -> SigningResult<ExecuteMsg> {
         let payload = serde_json::to_value(payload)
             .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
@@ -34,7 +44,7 @@ impl ExecuteMsg {
 
     pub fn to_bytes(&self) -> Data {
         match self {
-            ExecuteMsg::RegularString(ref s) => s.as_bytes().to_vec(),
+            ExecuteMsg::String(ref s) => s.as_bytes().to_vec(),
             ExecuteMsg::Json(ref j) => j.to_string().as_bytes().to_vec(),
         }
     }
@@ -61,24 +71,34 @@ impl<Address: CosmosAddress> CosmosMessage for WasmExecuteContractMessage<Addres
     }
 
     fn to_json(&self) -> SigningResult<JsonMessage> {
+        // Don't use `message_to_json` because we need to try to convert [`ExecuteMsg::String`] to [`ExecuteMsg::Json`] if possible.
+        let value = json!({
+            "coins": self.coins,
+            "contract": self.contract,
+            "msg": self.msg.try_to_json(),
+            "sender": self.sender,
+        });
         // TODO custom_msg_type
-        message_to_json("wasm/MsgExecuteContract", self)
+        Ok(JsonMessage {
+            msg_type: "wasm/MsgExecuteContract".to_string(),
+            value,
+        })
     }
 }
 
 #[derive(Serialize)]
-pub enum WasmExecutePayload<Address: CosmosAddress> {
+pub enum WasmExecutePayload {
     #[serde(rename = "transfer")]
     Transfer {
         #[serde(serialize_with = "U256::as_decimal_str")]
         amount: U256,
-        recipient: Address,
+        recipient: String,
     },
     #[serde(rename = "send")]
     Send {
         #[serde(serialize_with = "U256::as_decimal_str")]
         amount: U256,
-        contract: Address,
+        contract: String,
         msg: String,
     },
 }
