@@ -85,9 +85,9 @@ fn serialize_argument(arg: &TransactionArgument) -> Result<Vec<u8>> {
         TransactionArgument::Address(v) => {
             let serialized_v = bcs::to_bytes(v)?;
             bcs::to_bytes(&serialized_v)
-        }
+        },
     }
-        .map_err(|e| anyhow!(e))
+    .map_err(|e| anyhow!(e))
 }
 
 pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag) -> TypeTag {
@@ -95,7 +95,7 @@ pub fn convert_proto_struct_tag_to_type_tag(struct_tag: Aptos::Proto::StructTag)
         "{}::{}::{}",
         struct_tag.account_address, struct_tag.module, struct_tag.name
     ))
-        .unwrap()
+    .unwrap()
 }
 
 pub fn convert_type_tag_to_struct_tag(type_tag: TypeTag) -> Aptos::Proto::StructTag<'static> {
