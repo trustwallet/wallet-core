@@ -66,6 +66,7 @@ enum TWBlockchain {
     TWBlockchainGreenfield = 51,
     TWBlockchainInternetComputer = 52,
     TWBlockchainNativeEvmos = 55, // Cosmos
+    TWBlockchainNativeInjective = 56, // Cosmos
 };
 
 TW_EXTERN_C_END
