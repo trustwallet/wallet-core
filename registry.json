@@ -4533,7 +4533,7 @@
       "url": "https://movo.uk",
       "source": "https://github.com/movosmartchain",
       "rpc": "https://msc-rpc.movoscan.com",
-      "documentation": "https://movo.uk/#whitepaper"
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   }
 ]
